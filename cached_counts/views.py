@@ -180,5 +180,5 @@ class AttentionNeededView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(AttentionNeededView, self).get_context_data(**kwargs)
-        context['post_counts'] = get_attention_needed_posts()
+        context['post_counts'] = get_attention_needed_posts(max_results=50)
         return context
