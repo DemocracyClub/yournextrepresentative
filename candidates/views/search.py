@@ -7,8 +7,6 @@ from elections.uk.lib import is_valid_postcode
 
 
 class PersonSearch(SearchView):
-    results_per_page = 5
-
     def get(self, request, *args, **kwargs):
         ret = super(PersonSearch, self).get(request, *args, **kwargs)
         context = self.get_context_data(**ret.context_data)
@@ -28,4 +26,6 @@ class PersonSearch(SearchView):
     def get_context_data(self, **kwargs):
         context = super(PersonSearch, self).get_context_data(**kwargs)
         context['looks_like_postcode'] = is_valid_postcode(context['query'])
+        # Only return 5 results
+        context['object_list'] = context['object_list'][:5]
         return context
