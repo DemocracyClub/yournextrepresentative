@@ -160,6 +160,7 @@ class Command(BaseCommand):
             parent_area, _ = Area.objects.get_or_create(
                 identifier=post_dict['parent_id'],
                 defaults={'name': post_dict['parent_name']}
+                name=post_dict['parent_name']
             )
 
             AreaExtra.objects.get_or_create(
