@@ -17,11 +17,13 @@ from candidates.mapit import (
     BaseMapItException, BadPostcodeException,
     UnknownMapitException, BadCoordinatesException
 )
+from popolo.models import Area
 
 
 logger = logging.getLogger(__name__)
 
-EE_URL_BASE = "https://elections.democracyclub.org.uk"
+EE_BASE_URL = getattr(
+    settings, "EE_BASE_URL", "https://elections.democracyclub.org.uk/")
 
 
 class NoConstituencyForPostcodeException(BaseMapItException):
@@ -44,13 +46,15 @@ def get_known_area_types(ee_areas):
         else:
             area_id = election['division']['official_identifier']
             area_type = election['division']['division_type']
-
         result.append((
             area_type,
             area_id
         ))
 
-    return result
+    area_ids = [r[1] for r in result]
+    known_areas = Area.objects.filter(identifier__in=area_ids)
+
+    return [(a.extra.type.name,a.identifier) for a in known_areas]
 
 
 def get_areas(url, cache_key, exception):
@@ -87,14 +91,20 @@ def get_areas_from_postcode(original_postcode):
     if cached_result:
         return cached_result
 
-    url = "{0}/api/elections/?postcode={1}".format(
-        EE_URL_BASE, urlquote(postcode))
-    return get_areas(url, cache_key, BadPostcodeException)
+    url = urljoin(EE_BASE_URL, "/api/elections/?postcode={0}".format(
+        urlquote(postcode)))
+    try:
+        areas = get_areas(url, cache_key, BadPostcodeException)
+    except BadPostcodeException:
+        # Give a nicer error message, as this is used on the frontend
+        raise BadPostcodeException(
+            'The postcode “{}” couldn’t be found'.format(original_postcode))
+    return areas
 
 
 def get_areas_from_coords(coords):
-    url = "{0}/api/elections/?coords={1}".format(
-        EE_URL_BASE, urlquote(coords))
+    url = urljoin(EE_BASE_URL, "/api/elections/?coords={0}".format(
+        urlquote(coords)))
 
     cache_key = 'mapit-postcode:' + coords
     cached_result = cache.get(cache_key)
