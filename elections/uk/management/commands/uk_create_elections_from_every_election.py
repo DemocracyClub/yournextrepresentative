@@ -94,6 +94,10 @@ class Command(BaseCommand):
         election_id = election_dict['election_id']
         election_date = election_dict['poll_open_date']
         current = election_dict['current']
+        party_lists_in_use = False
+        if election_dict['voting_system']:
+            party_lists_in_use \
+                = election_dict['voting_system']['uses_party_lists']
 
         if election_id.startswith('parl.'):
             party_lists_in_use = False
@@ -110,7 +114,7 @@ class Command(BaseCommand):
                 "for_post_role": election_dict['election_type']['name'],
                 "candidate_membership_role": "Candidate",
                 "show_official_documents": True,
-                "party_lists_in_use": party_lists_in_use
+                "party_lists_in_use": party_lists_in_use,
             }
         )[0]
 
