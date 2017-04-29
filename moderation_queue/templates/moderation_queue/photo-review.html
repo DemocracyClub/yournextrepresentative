@@ -170,15 +170,6 @@
 
       </fieldset>
 
-      <fieldset class="rejection_reason">
-          {{ form.rejection_reason.errors }}
-          <label for="{{ form.rejection_reason.id_for_label }}">{% blocktrans trimmed %}
-            Reason for rejection (<strong>Warning:</strong> this will be
-            emailed to the user):{% endblocktrans %}
-          </label>
-          {{ form.rejection_reason }}
-      </fieldset>
-
       <input type="submit" id="decision-submit" class="button" value="{% trans "Submit" %}">
 
       <a href="{% url 'photo-review-list' %}" class="button">{% trans "Cancel" %}</a>
