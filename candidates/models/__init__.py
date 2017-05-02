@@ -29,6 +29,7 @@ from .fields import ComplexPopoloField
 from .db import LoggedAction
 from .db import PersonRedirect
 from .db import UserTermsAgreement
+from .db import ChangeReviewed
 
 from .auth import TRUSTED_TO_MERGE_GROUP_NAME
 from .auth import TRUSTED_TO_LOCK_GROUP_NAME

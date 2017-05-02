@@ -42,6 +42,13 @@ class UserTermsAgreement(models.Model):
     assigned_to_dc = models.BooleanField(default=False)
 
 
+class ChangeReviewed(models.Model):
+    person = models.ForeignKey(Person)
+    logged_action = models.ForeignKey(LoggedAction)
+    reviewer = models.ForeignKey(User)
+    created = models.DateTimeField(auto_now_add=True)
+
+
 def create_user_terms_agreement(sender, instance, created, **kwargs):
     if created:
         UserTermsAgreement.objects.create(user=instance)
