@@ -39,8 +39,7 @@ class TestRecentChangesView(TestUserMixin, WebTest):
         self.action2.delete()
         self.action1.delete()
 
-    def test_recent_changes_page(self):
-        # Just a smoke test to check that the page loads:
+    def test_loads_all_recent_changes(self):
         response = self.app.get('/recent-changes')
-        table = response.html.find('table')
-        self.assertEqual(3, len(table.find_all('tr')))
+        tbody = response.html.find('tbody')
+        self.assertEqual(len(tbody.find_all('tr')), 2)

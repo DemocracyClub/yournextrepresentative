@@ -12,26 +12,30 @@
 {% block content %}
 
 <table>
-  <tr>
-    <th>{% trans "User" %}</th>
-    <th>{% trans "Date and time" %}</th>
-    <th>{% trans "Action" %}</th>
-    <th>{% trans "Candidate edited" %}</th>
-    <th>{% trans "Information source" %}</th>
-  </tr>
-  {% for action in actions %}
-    <tr>
-      <td>{{ action.user.username }}</td>
-      <td>{{ action.created }}</td>
-      <td>{{ action.action_type }}</td>
-      {% if action.person %}
-        <td><a href="{% url 'person-view' person_id=action.person.id %}">{{ action.person.name }}</a></td>
-      {% else %}
-        <td></td>
-      {% endif %}
-      <td>{{ action.source }}</td>
-    </tr>
-  {% endfor %}
+    <thead>
+        <tr>
+            <th>{% trans "User" %}</th>
+            <th>{% trans "Date and time" %}</th>
+            <th>{% trans "Action" %}</th>
+            <th>{% trans "Candidate edited" %}</th>
+            <th>{% trans "Information source" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+      {% for action in actions %}
+        <tr>
+            <td>{{ action.user.username }}</td>
+            <td>{{ action.created }}</td>
+            <td>{{ action.action_type }}</td>
+            {% if action.person %}
+            <td><a href="{% url 'person-view' person_id=action.person.id %}">{{ action.person.name }}</a></td>
+            {% else %}
+            <td></td>
+            {% endif %}
+            <td>{{ action.source }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
 </table>
 
 <div class="pagination">
