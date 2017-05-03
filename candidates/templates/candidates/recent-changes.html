@@ -19,6 +19,7 @@
             <th>{% trans "Action" %}</th>
             <th>{% trans "Candidate edited" %}</th>
             <th>{% trans "Information source" %}</th>
+            <th>{% trans "Review" %}</th>
         </tr>
     </thead>
     <tbody>
@@ -33,6 +34,14 @@
             <td></td>
             {% endif %}
             <td>{{ action.source }}</td>
+            <td>
+                <form method="post" action="{% url 'mark-change-as-reviewed' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="person_id" value="{{ action.person.id }}"/>
+                    <input type="hidden" name="logged_action_id" value="{{ action.id }}"/>
+                    <input type="submit" value="Mark as reviewed">
+                </form>
+            </td>
         </tr>
       {% endfor %}
     </tbody>

@@ -207,6 +207,11 @@ patterns_to_format = [
         'name': 'recent-changes'
     },
     {
+        'pattern': r'^mark-change-as-reviewed$',
+        'view': views.MarkChangeAsReviewedView.as_view(),
+        'name': 'mark-change-as-reviewed'
+    },
+    {
         'pattern': r'^leaderboard$',
         'view': views.LeaderboardView.as_view(),
         'name': 'leaderboard'

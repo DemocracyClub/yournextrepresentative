@@ -7,6 +7,7 @@ from candidates.tests import factories
 from .auth import TestUserMixin
 from ..models import LoggedAction
 
+
 class TestRecentChangesView(TestUserMixin, WebTest):
 
     def setUp(self):
@@ -34,12 +35,26 @@ class TestRecentChangesView(TestUserMixin, WebTest):
             popit_person_new_version='987654321',
             source='Also just for testing',
         )
+        self.response = self.app.get('/recent-changes', user=self.user)
 
     def tearDown(self):
         self.action2.delete()
         self.action1.delete()
 
     def test_loads_all_recent_changes(self):
-        response = self.app.get('/recent-changes')
-        tbody = response.html.find('tbody')
+        tbody = self.response.html.find('tbody')
         self.assertEqual(len(tbody.find_all('tr')), 2)
+
+    def test_allows_to_mark_a_change_as_reviewed(self):
+        tbody = self.response.html.find('tbody')
+        attrs = {'method': 'post', 'action': '/mark-change-as-reviewed'}
+        self.assertEqual(len(tbody.find_all('form', attrs=attrs)), 2)
+
+    def test_review_form_has_person_input(self):
+        person_input = self.response.html.find_all('input', attrs={'name': 'person_id'})[0]
+        self.assertEqual(person_input.get('value'), '1234')
+
+    def test_review_form_has_logged_action_input(self):
+        action_input = self.response.html.find_all('input', attrs={'name': 'logged_action_id'})[0]
+        value = str(LoggedAction.objects.last().id)
+        self.assertEqual(action_input.get('value'), value)

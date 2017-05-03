@@ -591,3 +591,14 @@ class OtherNameForm(forms.ModelForm):
         ),
         max_length=512,
     )
+
+
+class ChangeReviewedForm(forms.Form):
+    person_id = StrippedCharField(
+        widget=forms.HiddenInput(),
+        required=True
+    )
+    logged_action_id = StrippedCharField(
+        widget=forms.HiddenInput(),
+        required=True
+    )
