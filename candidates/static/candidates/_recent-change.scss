@@ -32,6 +32,15 @@ $recent-change-reviewed-background-color: mix(#fff, #62B356, 90%) !default;
   p {
     font-size: (14em/16); // 14px
   }
+
+  pre {
+    font-size: 0.8em;
+    margin: 1em 0;
+    padding: 1em;
+    border: 1px solid rgba(#000, 0.2);
+    border-radius: $button-radius;
+    background: #fff;
+  }
 }
 
 .recent-change__moderation {

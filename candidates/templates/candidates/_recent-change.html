@@ -5,7 +5,16 @@
             {# TODO: colour coding for user link based on xp level #}
             {% include 'candidates/_recent-change-summary.html' with action=action %}
         </h2>
+
         {# TODO: inline JSON diff #}
+      {% if 0 %}
+        <pre>Added: name => "A Politician"
+Added: gender => "female"
+Added: identifiers => [ { "identifier": "123456789", "scheme": "twitter" } ]
+Added: id => "12345"
+Added: standing_in => "is known to be standing in Trumpton in the 2017 General Election"</pre>
+      {% endif %}
+
         {# TODO: automatically linkify URLs in action.source #}
         <p><em>Source:</em> {{ action.source }}</p>
     </div>
