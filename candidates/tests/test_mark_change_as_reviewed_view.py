@@ -24,7 +24,7 @@ class TestMarkChangeAsReviewedView(TestUserMixin, WebTest):
             popit_person_new_version='1234567890abcdef',
             source='Just for tests...',
         )
-        self.app.get('/recent-changes', user=self.user)
+        self.app.get('/recent-changes', user=self.user_who_can_review_changes)
 
     def test_redirects_to_recent_changes_page(self):
         response = self.post_to_change_reviewed(
@@ -78,7 +78,7 @@ class TestMarkChangeAsReviewedView(TestUserMixin, WebTest):
                     'csrfmiddlewaretoken': self.app.cookies['csrftoken'],
                     'logged_action_id': LoggedAction.objects.last().id,
                 },
-                user=self.user,
+                user=self.user_who_can_review_changes,
             )
 
     def test_errors_if_logged_action_field_not_present(self):
@@ -89,10 +89,18 @@ class TestMarkChangeAsReviewedView(TestUserMixin, WebTest):
                     'csrfmiddlewaretoken': self.app.cookies['csrftoken'],
                     'person_id': Person.objects.last().id,
                 },
-                user=self.user,
+                user=self.user_who_can_review_changes,
             )
 
-    def post_to_change_reviewed(self, person_id, logged_action_id):
+    def test_forbids_access_if_reviewer_has_no_review_permissions(self):
+        response = self.post_to_change_reviewed(
+            Person.objects.last().id,
+            LoggedAction.objects.last().id,
+            self.user
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def post_to_change_reviewed(self, person_id, logged_action_id, user=None):
         return self.app.post(
             '/mark-change-as-reviewed',
             {
@@ -100,6 +108,6 @@ class TestMarkChangeAsReviewedView(TestUserMixin, WebTest):
                 'person_id': person_id,
                 'logged_action_id': logged_action_id,
             },
-            user=self.user,
+            user=user or self.user_who_can_review_changes,
             expect_errors=True,
         )

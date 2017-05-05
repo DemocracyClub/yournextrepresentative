@@ -8,6 +8,7 @@ from .auth import TestUserMixin
 from .factories import PersonExtraFactory
 from ..models import LoggedAction
 
+
 class TestLeaderboardView(TestUserMixin, WebTest):
 
     def setUp(self):
@@ -81,4 +82,5 @@ class TestLeaderboardView(TestUserMixin, WebTest):
             '5,ermintrude,0\r\n'
             '6,frankie,0\r\n'
             '7,johnrefused,0\r\n'
+            '8,ursula,0\r\n'
         )

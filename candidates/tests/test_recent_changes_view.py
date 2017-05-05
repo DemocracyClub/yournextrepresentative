@@ -35,7 +35,7 @@ class TestRecentChangesView(TestUserMixin, WebTest):
             popit_person_new_version='987654321',
             source='Also just for testing',
         )
-        self.response = self.app.get('/recent-changes', user=self.user)
+        self.response = self.app.get('/recent-changes', user=self.user_who_can_review_changes)
 
     def tearDown(self):
         self.action2.delete()
@@ -58,3 +58,7 @@ class TestRecentChangesView(TestUserMixin, WebTest):
         action_input = self.response.html.find_all('input', attrs={'name': 'logged_action_id'})[0]
         value = str(LoggedAction.objects.last().id)
         self.assertEqual(action_input.get('value'), value)
+
+    def test_page_is_forbidden_if_user_has_no_review_permissions(self):
+        response = self.app.get('/recent-changes', user=self.user, expect_errors=True)
+        self.assertEqual(response.status_code, 403)

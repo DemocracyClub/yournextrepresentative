@@ -12,15 +12,17 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView, View
 
+from auth_helpers.views import GroupRequiredMixin
 from ..forms import ChangeReviewedForm
 from .mixins import ContributorsMixin
-from ..models import ChangeReviewed, LoggedAction
+from ..models import ChangeReviewed, LoggedAction, TRUSTED_TO_REVIEW_CHANGES_GROUP_NAME
 
 from popolo.models import Person
 
 
-class RecentChangesView(ContributorsMixin, TemplateView):
+class RecentChangesView(GroupRequiredMixin, ContributorsMixin, TemplateView):
     template_name = 'candidates/recent-changes.html'
+    required_group_name = TRUSTED_TO_REVIEW_CHANGES_GROUP_NAME
 
     def get_context_data(self, **kwargs):
         context = super(RecentChangesView, self).get_context_data(**kwargs)
@@ -36,7 +38,9 @@ class RecentChangesView(ContributorsMixin, TemplateView):
         return context
 
 
-class MarkChangeAsReviewedView(View):
+class MarkChangeAsReviewedView(GroupRequiredMixin, View):
+    required_group_name = TRUSTED_TO_REVIEW_CHANGES_GROUP_NAME
+
     def post(self, request, *args, **kwargs):
         form = ChangeReviewedForm(data=self.request.POST)
 

@@ -6,6 +6,7 @@ from candidates.models import (
     TRUSTED_TO_MERGE_GROUP_NAME,
     TRUSTED_TO_LOCK_GROUP_NAME,
     TRUSTED_TO_RENAME_GROUP_NAME,
+    TRUSTED_TO_REVIEW_CHANGES_GROUP_NAME,
     RESULT_RECORDERS_GROUP_NAME,
 )
 from official_documents.models import DOCUMENT_UPLOADERS_GROUP_NAME
@@ -22,6 +23,7 @@ class TestUserMixin(object):
                 ('charles', 'user_who_can_lock', [TRUSTED_TO_LOCK_GROUP_NAME]),
                 ('delilah', 'user_who_can_upload_documents', [DOCUMENT_UPLOADERS_GROUP_NAME]),
                 ('ermintrude', 'user_who_can_rename', [TRUSTED_TO_RENAME_GROUP_NAME]),
+                ('ursula', 'user_who_can_review_changes', [TRUSTED_TO_REVIEW_CHANGES_GROUP_NAME]),
                 ('frankie', 'user_who_can_record_results', [RESULT_RECORDERS_GROUP_NAME]),
         ):
             u = User.objects.create_user(
