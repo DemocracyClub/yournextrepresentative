@@ -11,6 +11,23 @@
 
 {% block content %}
 
+{# TODO: Make this form work! #}
+{# TODO: Show this only to moderators #}
+<form class="recent-changes-filters">
+  <p>
+    <input type="checkbox" id="recent-change-filter-1">
+    <label for="recent-change-filter-1">Show inline diffs</label>
+  </p>
+  <p>
+    <input type="checkbox" id="recent-change-filter-2">
+    <label for="recent-change-filter-2">Ignore changes by trusted users</label>
+  </p>
+  <p>
+    <input type="checkbox" id="recent-change-filter-3">
+    <label for="recent-change-filter-3">Ignore already reviewed changes</label>
+  </p>
+</form>
+
 {% for action in actions %}
   {% include 'candidates/_recent-change.html' with action=action %}
 {% endfor %}

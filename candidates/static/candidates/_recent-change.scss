@@ -63,6 +63,12 @@ $recent-change-reviewed-background-color: mix(#fff, #62B356, 90%) !default;
   @include high-dpi-background-image('img/thumbs-up-green', 20px, 20px);
 }
 
+.recent-changes-filters {
+  p {
+    margin-bottom: 0;
+  }
+}
+
 @media (min-width: $small-breakpoint) {
   .recent-change {
     @include flex-container();
@@ -78,5 +84,19 @@ $recent-change-reviewed-background-color: mix(#fff, #62B356, 90%) !default;
   .recent-change__moderation {
     @include flex(0 0 auto);
     width: 14em;
+  }
+
+  .recent-changes-filters {
+    @include flex-container();
+    margin-left: -0.5em;
+    margin-right: -0.5em;
+
+    p {
+      margin: 0 0.5em;
+    }
+
+    input[type="checkbox"] {
+      margin-bottom: 0;
+    }
   }
 }
