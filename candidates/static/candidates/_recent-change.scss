@@ -37,6 +37,10 @@ $recent-change-reviewed-background-color: mix(#fff, #62B356, 90%) !default;
 .recent-change__moderation {
   & > * {
     margin-bottom: 0.5em;
+    padding-left: 32px;
+    min-height: 20px;
+    background-position: 0% 50%;
+    background-repeat: no-repeat;
   }
 
   & > :last-child {
@@ -46,6 +50,17 @@ $recent-change-reviewed-background-color: mix(#fff, #62B356, 90%) !default;
 
 .recent-change__moderation__warning {
   color: $color-orange;
+  @include high-dpi-background-image('img/warning-triangle-orange', 20px, 20px);
+}
+
+.recent-change__moderation__review {
+  display: block;
+  line-height: 1.6; // like `p`
+  @include high-dpi-background-image('img/thumbs-up-blue-outline', 20px, 20px);
+}
+
+.recent-change__moderation__reviewed {
+  @include high-dpi-background-image('img/thumbs-up-green', 20px, 20px);
 }
 
 @media (min-width: $small-breakpoint) {
