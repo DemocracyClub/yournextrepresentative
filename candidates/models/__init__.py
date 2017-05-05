@@ -34,4 +34,5 @@ from .db import ChangeReviewed
 from .auth import TRUSTED_TO_MERGE_GROUP_NAME
 from .auth import TRUSTED_TO_LOCK_GROUP_NAME
 from .auth import TRUSTED_TO_RENAME_GROUP_NAME
+from .auth import TRUSTED_TO_REVIEW_CHANGES_GROUP_NAME
 from .auth import RESULT_RECORDERS_GROUP_NAME
