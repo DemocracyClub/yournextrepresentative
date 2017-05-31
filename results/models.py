@@ -13,15 +13,12 @@ class ResultEvent(models.Model):
         ordering = ['created']
 
     created = models.DateTimeField(auto_now_add=True)
-    election = models.CharField(blank=True, null=True, max_length=512)
-    election_new = models.ForeignKey(Election, blank=True, null=True)
+    election = models.ForeignKey(Election, blank=True, null=True)
     winner = models.ForeignKey(Person)
-    winner_person_name = models.CharField(blank=False, max_length=1024)
-    post_id = models.CharField(blank=False, max_length=256)
-    post_name = models.CharField(blank=True, null=True, max_length=1024)
+    old_post_id = models.CharField(blank=False, max_length=256)
+    old_post_name = models.CharField(blank=True, null=True, max_length=1024)
     post_new = models.ForeignKey(Post, blank=True, null=True)
-    winner_party_id = models.CharField(blank=True, null=True, max_length=256)
-    winner_party_new = models.ForeignKey(Organization, blank=True, null=True)
+    winner_party = models.ForeignKey(Organization, blank=True, null=True)
     source = models.CharField(max_length=512)
     user = models.ForeignKey(User, blank=True, null=True)
     proxy_image_url_template = \
