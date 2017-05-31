@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from popolo.models import Person
+from elections.models import Election
 from candidates.models import OrganizationExtra
 
 class ResultEvent(models.Model):
@@ -13,6 +14,7 @@ class ResultEvent(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     election = models.CharField(blank=True, null=True, max_length=512)
+    election_new = models.ForeignKey(Election, blank=True, null=True)
     winner = models.ForeignKey(Person)
     winner_person_name = models.CharField(blank=False, max_length=1024)
     post_id = models.CharField(blank=False, max_length=256)
