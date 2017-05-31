@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 MAPIT_BASE_URL = 'http://mapit.democracyclub.org.uk/'
 
 SITE_OWNER = 'Democracy Club'
-COPYRIGHT_HOLDER = 'Democracy Club Limited'
+COPYRIGHT_HOLDER = 'Democracy Club Community Interest Company'
 
 
 INSTALLED_APPS = [
