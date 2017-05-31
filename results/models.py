@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models
 
-from popolo.models import Person
+from popolo.models import Organization, Person
 from elections.models import Election
 from candidates.models import OrganizationExtra
 
@@ -20,6 +20,7 @@ class ResultEvent(models.Model):
     post_id = models.CharField(blank=False, max_length=256)
     post_name = models.CharField(blank=True, null=True, max_length=1024)
     winner_party_id = models.CharField(blank=True, null=True, max_length=256)
+    winner_party_new = models.ForeignKey(Organization, blank=True, null=True)
     source = models.CharField(max_length=512)
     user = models.ForeignKey(User, blank=True, null=True)
     proxy_image_url_template = \
