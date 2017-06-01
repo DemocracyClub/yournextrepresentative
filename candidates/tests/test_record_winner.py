@@ -14,6 +14,7 @@ from .factories import (
 from .dates import processors_after
 from .uk_examples import UK2015ExamplesMixin
 
+from results.models import ResultEvent
 
 class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
@@ -34,20 +35,20 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             organization=self.labour_party_extra.base
         )
 
-        winner = PersonExtraFactory.create(
+        self.winner = PersonExtraFactory.create(
             base__id='4322',
             base__name='Helen Hayes'
         )
 
         CandidacyExtraFactory.create(
             election=self.election,
-            base__person=winner.base,
+            base__person=self.winner.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base
             )
 
         MembershipFactory.create(
-            person=winner.base,
+            person=self.winner.base,
             organization=self.labour_party_extra.base
         )
 
@@ -112,6 +113,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             expect_errors=True,
         )
         self.assertEqual(post_response.status_code, 403)
+        self.assertEqual(0, ResultEvent.objects.count())
 
     def test_record_winner_privileged(self):
         base_record_url = reverse(
@@ -138,6 +140,16 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         person = Person.objects.get(id=4322)
         self.assertTrue(person.extra.get_elected(self.election))
+        resultevent = ResultEvent.objects.get()
+        self.assertEqual(resultevent.election, self.election)
+        self.assertEqual(resultevent.winner, self.winner.base)
+        self.assertEqual(resultevent.old_post_id, '65808')
+        self.assertEqual(resultevent.old_post_name, 'Member of Parliament for Dulwich and West Norwood')
+        self.assertEqual(resultevent.post, self.dulwich_post_extra.base)
+        self.assertEqual(resultevent.winner_party, self.labour_party_extra.base)
+        self.assertEqual(resultevent.source, 'BBC website')
+        self.assertEqual(resultevent.user, self.user_who_can_record_results)
+        self.assertEqual(resultevent.parlparse_id, '')
 
     def test_cannot_record_multiple_winners(self):
         base_record_url = reverse(
@@ -175,6 +187,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         with self.assertRaises(Exception) as context:
             submission_response = form.submit()
             self.assertEqual('There were already 1 winners' in context.exception)
+        self.assertEqual(1, ResultEvent.objects.count())
 
     def test_record_multiple_winners(self):
         self.election.people_elected_per_post = 2
@@ -221,6 +234,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         person = Person.objects.get(id=2009)
         self.assertTrue(person.extra.get_elected(self.election))
+        self.assertEqual(2, ResultEvent.objects.count())
 
     def test_record_multiple_winners_per_post_setting(self):
         post_election = PostExtraElection.objects.get(
@@ -271,6 +285,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         person = Person.objects.get(id=2009)
         self.assertTrue(person.extra.get_elected(self.election))
+        self.assertEqual(2, ResultEvent.objects.count())
 
 class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
