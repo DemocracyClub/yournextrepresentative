@@ -69,6 +69,9 @@ class ResultEventsAtomFeedGenerator(Atom1Feed):
         super(ResultEventsAtomFeedGenerator, self). \
             add_item_elements(handler, item)
         keys = [
+            'election_slug',
+            'election_name',
+            'election_date',
             'post_id',
             'winner_person_id',
             'winner_person_name',
@@ -101,6 +104,9 @@ class ResultEventsFeed(BasicResultEventsFeed):
             user_id = o.user.id
 
         return {
+            'election_slug': o.election.slug,
+            'election_name': o.election.name,
+            'election_date': o.election.election_date,
             'post_id': o.post.extra.slug if o.post else o.old_post_id,
             'winner_person_id': o.winner.id,
             'winner_person_name': o.winner.name,
