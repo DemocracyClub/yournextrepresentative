@@ -19,13 +19,18 @@ class BasicResultEventsFeed(Feed):
     description = _("A basic feed of election results")
 
     def items(self):
-        return ResultEvent.objects.filter(created__gte="2017-05-04")
+        return ResultEvent.objects.filter(created__gte="2017-05-04") \
+            .select_related('user') \
+            .select_related('election') \
+            .select_related('post__extra') \
+            .select_related('winner') \
+            .select_related('winner_party__extra')
 
     def item_title(self, item):
         return _('{name} ({party}) won in {cons}').format(
-            name=item.winner_person_name,
-            party=item.winner_party_name,
-            cons=item.post_name,
+            name=item.winner.name,
+            party=item.winner_party.name,
+            cons=item.short_post_name,
         )
 
     def item_description(self, item):
@@ -33,10 +38,10 @@ class BasicResultEventsFeed(Feed):
             '{name} ({party}) won the ballot in {cons}, quoting the '
             "source '{source}').")
         return message.format(
-            name=item.winner_person_name,
+            name=item.winner.name,
             datetime=item.created.strftime("%Y-%m-%d %H:%M:%S"),
-            party=item.winner_party_name,
-            cons=item.post_name,
+            party=item.winner_party.name,
+            cons=item.short_post_name,
             source=item.source,
             site_name=Site.objects.get_current().name,
         )
@@ -96,13 +101,13 @@ class ResultEventsFeed(BasicResultEventsFeed):
             user_id = o.user.id
 
         return {
-            'post_id': o.post_id,
+            'post_id': o.post.extra.slug if o.post else o.old_post_id,
             'winner_person_id': o.winner.id,
             'winner_person_name': o.winner.name,
-            'winner_party_id': o.winner_party_id,
-            'winner_party_name': o.winner_party_name,
+            'winner_party_id': o.winner_party.extra.slug,
+            'winner_party_name': o.winner_party.name,
             'user_id': user_id,
-            'post_name': o.post_name,
+            'post_name': o.short_post_name,
             'information_source': o.source,
             'image_url_template': o.proxy_image_url_template,
             'parlparse_id': o.parlparse_id,

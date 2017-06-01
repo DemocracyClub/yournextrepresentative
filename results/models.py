@@ -5,7 +5,7 @@ from django.db import models
 
 from popolo.models import Organization, Person, Post
 from elections.models import Election
-from candidates.models import OrganizationExtra
+
 
 class ResultEvent(models.Model):
 
@@ -26,9 +26,7 @@ class ResultEvent(models.Model):
     parlparse_id = models.CharField(blank=True, null=True, max_length=256)
 
     @property
-    def winner_party_name(self):
-        return OrganizationExtra.objects \
-            .select_related('base') \
-            .get(
-                slug=self.winner_party_id
-            ).base.name
+    def short_post_name(self):
+        if self.post:
+            return self.post.extra.short_label
+        return self.old_post_name
