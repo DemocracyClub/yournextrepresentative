@@ -4,16 +4,18 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 from io import BytesIO
+from os.path import join
 
 from django_webtest import WebTest
 
 from lxml import etree
 
+from django.conf import settings
 from django.utils import timezone
 from django.utils.feedgenerator import rfc3339_date
 
+from candidates.models import ImageExtra
 from candidates.tests import factories
-
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from .models import ResultEvent
@@ -50,6 +52,23 @@ class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__id='4322',
             base__name='Tessa Jowell'
         )
+        example_image_filename = join(
+            settings.BASE_DIR, 'moderation_queue', 'tests', 'example-image.jpg'
+        )
+        self.example_image = ImageExtra.objects.create_from_file(
+            example_image_filename,
+            'images/jowell-pilot.jpg',
+            base_kwargs={
+                'content_object': person_extra,
+                'is_primary': True,
+                'source': 'Taken from Wikipedia',
+            },
+            extra_kwargs={
+                'copyright': 'example-license',
+                'uploading_user': self.user,
+                'user_notes': 'A photo of Tessa Jowell',
+            },
+        ).base
         result_event = ResultEvent.objects.create(
             election=self.election,
             winner=person_extra.base,
@@ -94,6 +113,7 @@ class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
     <user_id>{user_id}</user_id>
     <post_name>Dulwich and West Norwood</post_name>
     <information_source>Seen on the BBC news</information_source>
+    <image_url>https://example.com{image_url_path}</image_url>
     <parlparse_id>uk.org.publicwhip/person/123456</parlparse_id>
   </entry>
 </feed>
@@ -103,6 +123,7 @@ class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
     item_id=result_event.id,
     user_id=self.user.id,
     election_date=self.election.election_date,
+    image_url_path=self.example_image.image.url,
 )
         self.compare_xml(expected, xml_pretty)
 

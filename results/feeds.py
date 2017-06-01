@@ -2,11 +2,14 @@ from __future__ import unicode_literals
 
 from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
+from django.db.models import Prefetch
 from django.utils.feedgenerator import Atom1Feed
+from django.utils.six.moves.urllib_parse import urlunsplit
 from django.utils.translation import ugettext_lazy as _
 
 from compat import text_type
 
+from candidates.models import ImageExtra
 from .models import ResultEvent
 
 
@@ -24,7 +27,8 @@ class BasicResultEventsFeed(Feed):
             .select_related('election') \
             .select_related('post__extra') \
             .select_related('winner') \
-            .select_related('winner_party__extra')
+            .select_related('winner_party__extra') \
+            .prefetch_related('winner__extra__images')
 
     def item_title(self, item):
         return _('{name} ({party}) won in {cons}').format(
@@ -82,7 +86,7 @@ class ResultEventsAtomFeedGenerator(Atom1Feed):
             'information_source',
         ]
         for k in [
-            'image_url_template',
+            'image_url',
             'parlparse_id',
         ]:
             if item[k]:
@@ -102,7 +106,13 @@ class ResultEventsFeed(BasicResultEventsFeed):
         user_id = None
         if o.user:
             user_id = o.user.id
-
+        image_url = o.image_url_path
+        if image_url:
+            # FIXME: this is just assuming 'https' as the protocol and
+            # that the current site has a correct domain at the moment,
+            # since this class doesn't have access to the request object.
+            image_url = urlunsplit(
+                ('https', Site.objects.get_current().domain, image_url, '', ''))
         return {
             'election_slug': o.election.slug,
             'election_name': o.election.name,
@@ -115,6 +125,6 @@ class ResultEventsFeed(BasicResultEventsFeed):
             'user_id': user_id,
             'post_name': o.short_post_name,
             'information_source': o.source,
-            'image_url_template': o.proxy_image_url_template,
+            'image_url': image_url,
             'parlparse_id': o.parlparse_id,
         }

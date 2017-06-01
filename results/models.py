@@ -21,8 +21,6 @@ class ResultEvent(models.Model):
     winner_party = models.ForeignKey(Organization, blank=True, null=True)
     source = models.CharField(max_length=512)
     user = models.ForeignKey(User, blank=True, null=True)
-    proxy_image_url_template = \
-        models.CharField(blank=True, null=True, max_length=1024)
     parlparse_id = models.CharField(blank=True, null=True, max_length=256)
 
     @property
@@ -30,3 +28,12 @@ class ResultEvent(models.Model):
         if self.post:
             return self.post.extra.short_label
         return self.old_post_name
+
+    @property
+    def image_url_path(self):
+        url_path = ''
+        for image in self.winner.extra.images.all():
+            if image.is_primary:
+                url_path = image.image.url
+                break
+        return url_path
