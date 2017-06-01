@@ -17,7 +17,7 @@ class ResultEvent(models.Model):
     winner = models.ForeignKey(Person)
     old_post_id = models.CharField(blank=False, max_length=256)
     old_post_name = models.CharField(blank=True, null=True, max_length=1024)
-    post_new = models.ForeignKey(Post, blank=True, null=True)
+    post = models.ForeignKey(Post, blank=True, null=True)
     winner_party = models.ForeignKey(Organization, blank=True, null=True)
     source = models.CharField(max_length=512)
     user = models.ForeignKey(User, blank=True, null=True)
