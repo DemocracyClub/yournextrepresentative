@@ -83,6 +83,9 @@ class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
     </author>
     <id>http://example.com/#{item_id}</id>
     <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
+    <election_slug>2015</election_slug>
+    <election_name>2015 General Election</election_name>
+    <election_date>{election_date}</election_date>
     <post_id>65808</post_id>
     <winner_person_id>4322</winner_person_id>
     <winner_person_name>Tessa Jowell</winner_person_name>
@@ -99,6 +102,7 @@ class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
     space_separated=result_event.created.strftime("%Y-%m-%d %H:%M:%S"),
     item_id=result_event.id,
     user_id=self.user.id,
+    election_date=self.election.election_date,
 )
         self.compare_xml(expected, xml_pretty)
 
