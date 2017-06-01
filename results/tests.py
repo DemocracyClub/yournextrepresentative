@@ -74,7 +74,7 @@ class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
   <id>http://example.com/</id>
   <updated>{updated}</updated>
   <entry>
-    <title>Tessa Jowell (Labour Party) won in Member of Parliament for Dulwich and West Norwood</title>
+    <title>Tessa Jowell (Labour Party) won in Dulwich and West Norwood</title>
     <link href="http://example.com/#{item_id}" rel="alternate"/>
     <published>{updated}</published>
     <updated>{updated}</updated>
@@ -82,14 +82,14 @@ class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
       <name>john</name>
     </author>
     <id>http://example.com/#{item_id}</id>
-    <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Member of Parliament for Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
+    <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
     <post_id>65808</post_id>
     <winner_person_id>4322</winner_person_id>
     <winner_person_name>Tessa Jowell</winner_person_name>
     <winner_party_id>party:53</winner_party_id>
     <winner_party_name>Labour Party</winner_party_name>
     <user_id>{user_id}</user_id>
-    <post_name>Member of Parliament for Dulwich and West Norwood</post_name>
+    <post_name>Dulwich and West Norwood</post_name>
     <information_source>Seen on the BBC news</information_source>
     <parlparse_id>uk.org.publicwhip/person/123456</parlparse_id>
   </entry>
@@ -115,7 +115,7 @@ class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
   <id>http://example.com/</id>
   <updated>{updated}</updated>
   <entry>
-    <title>Tessa Jowell (Labour Party) won in Member of Parliament for Dulwich and West Norwood</title>
+    <title>Tessa Jowell (Labour Party) won in Dulwich and West Norwood</title>
     <link href="http://example.com/#{item_id}" rel="alternate"/>
     <published>{updated}</published>
     <updated>{updated}</updated>
@@ -123,7 +123,7 @@ class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
       <name>john</name>
     </author>
     <id>http://example.com/#{item_id}</id>
-    <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Member of Parliament for Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
+    <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
   </entry>
 </feed>
 '''.format(
