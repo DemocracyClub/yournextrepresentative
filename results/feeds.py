@@ -36,7 +36,7 @@ class BasicResultEventsFeed(Feed):
     def item_description(self, item):
         message = _('A {site_name} volunteer recorded at {datetime} that '
             '{name} ({party}) won the ballot in {cons}, quoting the '
-            "source '{source}').")
+            "source '{source}'.")
         return message.format(
             name=item.winner.name,
             datetime=item.created.strftime("%Y-%m-%d %H:%M:%S"),

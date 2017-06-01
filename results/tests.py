@@ -92,7 +92,7 @@ class TestResultsFeed(TestUserMixin, WebTest):
       <name>john</name>
     </author>
     <id>http://example.com/#{item_id}</id>
-    <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Member of Parliament for Dulwich and West Norwood, quoting the source 'Seen on the BBC news').</summary>
+    <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Member of Parliament for Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
     <post_id>65808</post_id>
     <winner_person_id>4322</winner_person_id>
     <winner_person_name>Tessa Jowell</winner_person_name>
@@ -133,7 +133,7 @@ class TestResultsFeed(TestUserMixin, WebTest):
       <name>john</name>
     </author>
     <id>http://example.com/#{item_id}</id>
-    <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Member of Parliament for Dulwich and West Norwood, quoting the source 'Seen on the BBC news').</summary>
+    <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Member of Parliament for Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
   </entry>
 </feed>
 '''.format(
