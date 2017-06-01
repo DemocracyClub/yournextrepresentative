@@ -53,10 +53,8 @@ class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
         result_event = ResultEvent.objects.create(
             election=self.election,
             winner=person_extra.base,
-            winner_person_name=person_extra.base.name,
-            post_id=self.dulwich_post_extra.slug,
-            post_name=self.dulwich_post_extra.base.label,
-            winner_party_id=self.labour_party_extra.slug,
+            post=self.dulwich_post_extra.base,
+            winner_party=self.labour_party_extra.base,
             source='Seen on the BBC news',
             user=self.user,
             parlparse_id='uk.org.publicwhip/person/123456',
