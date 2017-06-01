@@ -7,54 +7,64 @@ from .models import ResultEvent
 
 class ResultEventAdmin(admin.ModelAdmin):
     list_display = (
+        'pk',
+        'election',
         'user',
         'created',
-        'winner_id',
-        'person_link',
-        'winner_party_id',
-        'winner_party_name',
-        'post_id',
-        'post_name',
-        'constituency_link',
+        'winner_link',
+        'old_post_id',
+        'old_post_name',
+        'post_link',
         'source',
     )
     search_fields = (
+        'id',
+        'election__name',
         'user__username',
-        'winner_id',
-        'winner_person_name',
-        'winner_party_id',
-        'post_id',
-        'post_name',
+        'winner__name',
+        'old_post_id',
+        'old_post_name',
         'source',
     )
     ordering = ('-created',)
 
-    def person_link(self, o):
+    def get_queryset(self, request):
+        qs = super(ResultEventAdmin, self).get_queryset(request)
+        return qs.select_related('user', 'winner', 'post__extra', 'winner_party__extra', 'election')
+
+    def winner_link(self, o):
         url = reverse(
             'person-view',
             kwargs={
-                'person_id': o.person_id,
-                'ignored_slug': slugify(o.post_name),
+                'person_id': o.winner.id,
+                'ignored_slug': slugify(o.winner.name),
             }
         )
         return '<a href="{0}">{1}</a>'.format(
             url,
-            o.winner_person_name,
+            o.winner.name,
         )
-    person_link.allow_tags = True
+    winner_link.allow_tags = True
 
-    def constituency_link(self, o):
-        url = reverse(
-            'constituency',
-            kwargs={
-                'post_id': o.post_id,
-                'ignored_slug': slugify(o.post_name),
-            }
-        )
-        return '<a href="{0}">{1}</a>'.format(
-            url,
-            o.post_name,
-        )
-    constituency_link.allow_tags = True
+    def post_link(self, o):
+        if o.post:
+            url = reverse(
+                'constituency',
+                kwargs={
+                    'election': o.election.slug,
+                    'post_id': o.post.extra.slug,
+                    'ignored_slug': slugify(o.post.extra.short_label),
+                }
+            )
+            return '<a href="{0}">{1}</a>'.format(
+                url,
+                o.post.extra.short_label,
+            )
+        else:
+            # There is still data in the database for some posts that
+            # were deleted and never recreated, so we can't create a
+            # link for them.
+            return ''
+    post_link.allow_tags = True
 
 admin.site.register(ResultEvent, ResultEventAdmin)
