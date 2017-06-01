@@ -19,7 +19,7 @@ class BasicResultEventsFeed(Feed):
     description = _("A basic feed of election results")
 
     def items(self):
-        return ResultEvent.objects.filter(created__gte="2017-05-04") \
+        return ResultEvent.objects.filter(election__current=True) \
             .select_related('user') \
             .select_related('election') \
             .select_related('post__extra') \
