@@ -15,10 +15,11 @@ from django.utils.feedgenerator import rfc3339_date
 from candidates.tests import factories
 
 from candidates.tests.auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from .models import ResultEvent
 
 
-class TestResultsFeed(TestUserMixin, WebTest):
+class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     maxDiff = None
 
@@ -44,27 +45,18 @@ class TestResultsFeed(TestUserMixin, WebTest):
             self.assertEqual(xml_a, xml_b)
 
     def setUp(self):
-        wmc_area_type = factories.AreaTypeFactory.create()
+        super(TestResultsFeed, self).setUp()
         person_extra = factories.PersonExtraFactory.create(
             base__id='4322',
             base__name='Tessa Jowell'
         )
-        election = factories.ElectionFactory.create(
-            slug='2015',
-            name='2015 General Election',
-            area_types=(wmc_area_type,),
-        )
-        factories.PartyExtraFactory.create(
-            slug='party:53',
-            base__name='Labour Party',
-        )
         result_event = ResultEvent.objects.create(
-            election=election,
+            election=self.election,
             winner=person_extra.base,
             winner_person_name=person_extra.base.name,
-            post_id='65808',
-            post_name='Member of Parliament for Dulwich and West Norwood',
-            winner_party_id='party:53',
+            post_id=self.dulwich_post_extra.slug,
+            post_name=self.dulwich_post_extra.base.label,
+            winner_party_id=self.labour_party_extra.slug,
             source='Seen on the BBC news',
             user=self.user,
             parlparse_id='uk.org.publicwhip/person/123456',
