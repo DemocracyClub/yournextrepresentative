@@ -21,7 +21,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from .models import ResultEvent
 
 
-class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
+class XMLEqualityMixin(object):
 
     maxDiff = None
 
@@ -45,6 +45,10 @@ class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
         tree_b.getroottree().write_c14n(c14n_b)
         if c14n_a.getvalue() != c14n_b.getvalue():
             self.assertEqual(xml_a, xml_b)
+
+
+class TestResultsFeed(
+        XMLEqualityMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super(TestResultsFeed, self).setUp()
