@@ -454,10 +454,6 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
             membership_new_winner.extra.elected = True
             membership_new_winner.extra.save()
 
-            parlparse_id = ''
-            parlparse_identifier = self.person.identifiers.filter(scheme='uk.org.publicwhip').first()
-            if parlparse_identifier:
-                parlparse_id = parlparse_identifier.identifier
             ResultEvent.objects.create(
                 election=self.election_data,
                 winner=self.person,
@@ -467,7 +463,8 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 winner_party=membership_new_winner.on_behalf_of,
                 source=form.cleaned_data['source'],
                 user=self.request.user,
-                parlparse_id=parlparse_id,
+                parlparse_id=self.person.extra.get_identifier(
+                    'uk.org.publicwhip'),
             )
 
             self.person.extra.record_version(change_metadata)
