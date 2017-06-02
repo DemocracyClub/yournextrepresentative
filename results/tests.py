@@ -82,7 +82,6 @@ class TestResultsFeed(
             user=self.user,
             parlparse_id='uk.org.publicwhip/person/123456',
         )
-        result_event.created = datetime(2015, 12, 1, 15, 59)
 
     def test_all_feed_with_one_item(self):
         response = self.app.get('/results/all.atom')
