@@ -46,6 +46,7 @@ result:</p>
     &lt;/author&gt;
     &lt;id&gt;https://candidates.democracyclub.org.uk/#32346&lt;/id&gt;
     &lt;summary type="html"&gt;A Democracy Club Candidates volunteer recorded at 2017-06-09 10:36:38 that David Cameron (Conservative and Unionist Party) won the ballot in Witney, quoting the source 'BBC news'.&lt;/summary&gt;
+    &lt;retraction&gt;0&lt;/retraction&gt;
     &lt;election_slug&gt;parl.2017-06-08&lt;/election_slug&gt;
     &lt;election_name&gt;2017 General Election&lt;/election_name&gt;
     &lt;election_date&gt;2017-06-08&lt;/election_date&gt;
@@ -88,11 +89,29 @@ result:</p>
 </pre>
 
 <p>
+
   If you're using this feed, please be aware that it's possible
-  that a volunteer will record the wrong winner in error. At the
-  moment retractions of results aren't recorded in these results
-  feeds, but we're adding that very soon.
+  that a volunteer will record the wrong winner in error. In
+  that case, there will be an entry in the feed to indicate that
+  that statement about the winner has been retracted. If you're
+  using the extended feed, that will have
+  a <tt>&lt;retracted&gt;1&lt;/retracted&gt;</tt> element. If
+  you're using the basic feed, then the entry will look like:
 </p>
+
+<pre class="feed-example">
+&lt;entry&gt;
+  &lt;title&gt;Correction: retracting the statement that Tessa Jowell (Labour Party) won in Dulwich and West Norwood&lt;/title&gt;
+  &lt;link href="http://example.com/#32" rel="alternate"/&gt;
+  &lt;published&gt;2017-06-09T11:25:00.110335+00:00&lt;/published&gt;
+  &lt;updated&gt;2017-06-09T11:25:00.110335+00:00&lt;/updated&gt;
+  &lt;author&gt;
+    &lt;name&gt;john&lt;/name&gt;
+  &lt;/author&gt;
+  &lt;id&gt;http://example.com/#32&lt;/id&gt;
+  &lt;summary type="html"&gt;At 2017-06-09 11:25:00, a example.com volunteer retracted the previous assertion that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Result recorded in error, retracting'.&lt;/summary&gt;
+&lt;/entry&gt;
+</pre>
 
 <p>
   This feed contains results from any election, so if you just
