@@ -29,16 +29,26 @@ class BasicResultEventsFeed(Feed):
             .prefetch_related('winner__extra__images')
 
     def item_title(self, item):
-        return _('{name} ({party}) won in {cons}').format(
+        if item.retraction:
+            msg =  _('Correction: retracting the statement that {name} '
+                     '({party}) won in {cons}')
+        else:
+            msg = _('{name} ({party}) won in {cons}')
+        return msg.format(
             name=item.winner.name,
             party=item.winner_party.name,
             cons=item.short_post_name,
         )
 
     def item_description(self, item):
-        message = _('A {site_name} volunteer recorded at {datetime} that '
-            '{name} ({party}) won the ballot in {cons}, quoting the '
-            "source '{source}'.")
+        if item.retraction:
+            message = _('At {datetime}, a {site_name} volunteer retracted the '
+                        'previous assertion that {name} ({party}) won the '
+                        "ballot in {cons}, quoting the source '{source}'.")
+        else:
+            message = _('A {site_name} volunteer recorded at {datetime} that '
+                        '{name} ({party}) won the ballot in {cons}, quoting '
+                        "the source '{source}'.")
         return message.format(
             name=item.winner.name,
             datetime=item.created.strftime("%Y-%m-%d %H:%M:%S"),
@@ -71,6 +81,7 @@ class ResultEventsAtomFeedGenerator(Atom1Feed):
         super(ResultEventsAtomFeedGenerator, self). \
             add_item_elements(handler, item)
         keys = [
+            'retraction',
             'election_slug',
             'election_name',
             'election_date',
@@ -112,6 +123,7 @@ class ResultEventsFeed(BasicResultEventsFeed):
             image_url = urlunsplit(
                 ('https', Site.objects.get_current().domain, image_url, '', ''))
         return {
+            'retraction': int(o.retraction),
             'election_slug': o.election.slug,
             'election_name': o.election.name,
             'election_date': o.election.election_date,
