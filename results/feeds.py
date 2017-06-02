@@ -2,14 +2,12 @@ from __future__ import unicode_literals
 
 from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
-from django.db.models import Prefetch
 from django.utils.feedgenerator import Atom1Feed
 from django.utils.six.moves.urllib_parse import urlunsplit
 from django.utils.translation import ugettext_lazy as _
 
 from compat import text_type
 
-from candidates.models import ImageExtra
 from .models import ResultEvent
 
 
