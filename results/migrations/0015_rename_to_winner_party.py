@@ -1,0 +1,19 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('results', '0014_rename_election_new_to_election'),
+    ]
+
+    operations = [
+        migrations.RenameField(
+            model_name='resultevent',
+            old_name='winner_party_new',
+            new_name='winner_party',
+        ),
+    ]

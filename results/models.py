@@ -3,8 +3,9 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models
 
-from popolo.models import Person
-from candidates.models import OrganizationExtra
+from popolo.models import Organization, Person, Post
+from elections.models import Election
+
 
 class ResultEvent(models.Model):
 
@@ -12,22 +13,27 @@ class ResultEvent(models.Model):
         ordering = ['created']
 
     created = models.DateTimeField(auto_now_add=True)
-    election = models.CharField(blank=True, null=True, max_length=512)
+    election = models.ForeignKey(Election, blank=True, null=True)
     winner = models.ForeignKey(Person)
-    winner_person_name = models.CharField(blank=False, max_length=1024)
-    post_id = models.CharField(blank=False, max_length=256)
-    post_name = models.CharField(blank=True, null=True, max_length=1024)
-    winner_party_id = models.CharField(blank=True, null=True, max_length=256)
+    old_post_id = models.CharField(blank=False, max_length=256)
+    old_post_name = models.CharField(blank=True, null=True, max_length=1024)
+    post = models.ForeignKey(Post, blank=True, null=True)
+    winner_party = models.ForeignKey(Organization, blank=True, null=True)
     source = models.CharField(max_length=512)
     user = models.ForeignKey(User, blank=True, null=True)
-    proxy_image_url_template = \
-        models.CharField(blank=True, null=True, max_length=1024)
     parlparse_id = models.CharField(blank=True, null=True, max_length=256)
 
     @property
-    def winner_party_name(self):
-        return OrganizationExtra.objects \
-            .select_related('base') \
-            .get(
-                slug=self.winner_party_id
-            ).base.name
+    def short_post_name(self):
+        if self.post:
+            return self.post.extra.short_label
+        return self.old_post_name
+
+    @property
+    def image_url_path(self):
+        url_path = ''
+        for image in self.winner.extra.images.all():
+            if image.is_primary:
+                url_path = image.image.url
+                break
+        return url_path

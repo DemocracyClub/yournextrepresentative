@@ -4,21 +4,24 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 from io import BytesIO
+from os.path import join
 
 from django_webtest import WebTest
 
 from lxml import etree
 
+from django.conf import settings
 from django.utils import timezone
 from django.utils.feedgenerator import rfc3339_date
 
+from candidates.models import ImageExtra
 from candidates.tests import factories
-
 from candidates.tests.auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from .models import ResultEvent
 
 
-class TestResultsFeed(TestUserMixin, WebTest):
+class TestResultsFeed(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     maxDiff = None
 
@@ -44,27 +47,33 @@ class TestResultsFeed(TestUserMixin, WebTest):
             self.assertEqual(xml_a, xml_b)
 
     def setUp(self):
-        wmc_area_type = factories.AreaTypeFactory.create()
+        super(TestResultsFeed, self).setUp()
         person_extra = factories.PersonExtraFactory.create(
             base__id='4322',
             base__name='Tessa Jowell'
         )
-        election = factories.ElectionFactory.create(
-            slug='2015',
-            name='2015 General Election',
-            area_types=(wmc_area_type,),
+        example_image_filename = join(
+            settings.BASE_DIR, 'moderation_queue', 'tests', 'example-image.jpg'
         )
-        factories.PartyExtraFactory.create(
-            slug='party:53',
-            base__name='Labour Party',
-        )
+        self.example_image = ImageExtra.objects.create_from_file(
+            example_image_filename,
+            'images/jowell-pilot.jpg',
+            base_kwargs={
+                'content_object': person_extra,
+                'is_primary': True,
+                'source': 'Taken from Wikipedia',
+            },
+            extra_kwargs={
+                'copyright': 'example-license',
+                'uploading_user': self.user,
+                'user_notes': 'A photo of Tessa Jowell',
+            },
+        ).base
         result_event = ResultEvent.objects.create(
-            election=election,
+            election=self.election,
             winner=person_extra.base,
-            winner_person_name=person_extra.base.name,
-            post_id='65808',
-            post_name='Member of Parliament for Dulwich and West Norwood',
-            winner_party_id='party:53',
+            post=self.dulwich_post_extra.base,
+            winner_party=self.labour_party_extra.base,
             source='Seen on the BBC news',
             user=self.user,
             parlparse_id='uk.org.publicwhip/person/123456',
@@ -84,7 +93,7 @@ class TestResultsFeed(TestUserMixin, WebTest):
   <id>http://example.com/</id>
   <updated>{updated}</updated>
   <entry>
-    <title>Tessa Jowell (Labour Party) won in Member of Parliament for Dulwich and West Norwood</title>
+    <title>Tessa Jowell (Labour Party) won in Dulwich and West Norwood</title>
     <link href="http://example.com/#{item_id}" rel="alternate"/>
     <published>{updated}</published>
     <updated>{updated}</updated>
@@ -92,15 +101,19 @@ class TestResultsFeed(TestUserMixin, WebTest):
       <name>john</name>
     </author>
     <id>http://example.com/#{item_id}</id>
-    <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Member of Parliament for Dulwich and West Norwood, quoting the source 'Seen on the BBC news').</summary>
+    <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
+    <election_slug>2015</election_slug>
+    <election_name>2015 General Election</election_name>
+    <election_date>{election_date}</election_date>
     <post_id>65808</post_id>
     <winner_person_id>4322</winner_person_id>
     <winner_person_name>Tessa Jowell</winner_person_name>
     <winner_party_id>party:53</winner_party_id>
     <winner_party_name>Labour Party</winner_party_name>
     <user_id>{user_id}</user_id>
-    <post_name>Member of Parliament for Dulwich and West Norwood</post_name>
+    <post_name>Dulwich and West Norwood</post_name>
     <information_source>Seen on the BBC news</information_source>
+    <image_url>https://example.com{image_url_path}</image_url>
     <parlparse_id>uk.org.publicwhip/person/123456</parlparse_id>
   </entry>
 </feed>
@@ -109,6 +122,8 @@ class TestResultsFeed(TestUserMixin, WebTest):
     space_separated=result_event.created.strftime("%Y-%m-%d %H:%M:%S"),
     item_id=result_event.id,
     user_id=self.user.id,
+    election_date=self.election.election_date,
+    image_url_path=self.example_image.image.url,
 )
         self.compare_xml(expected, xml_pretty)
 
@@ -125,7 +140,7 @@ class TestResultsFeed(TestUserMixin, WebTest):
   <id>http://example.com/</id>
   <updated>{updated}</updated>
   <entry>
-    <title>Tessa Jowell (Labour Party) won in Member of Parliament for Dulwich and West Norwood</title>
+    <title>Tessa Jowell (Labour Party) won in Dulwich and West Norwood</title>
     <link href="http://example.com/#{item_id}" rel="alternate"/>
     <published>{updated}</published>
     <updated>{updated}</updated>
@@ -133,7 +148,7 @@ class TestResultsFeed(TestUserMixin, WebTest):
       <name>john</name>
     </author>
     <id>http://example.com/#{item_id}</id>
-    <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Member of Parliament for Dulwich and West Norwood, quoting the source 'Seen on the BBC news').</summary>
+    <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
   </entry>
 </feed>
 '''.format(
