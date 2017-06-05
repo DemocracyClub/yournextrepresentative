@@ -76,6 +76,55 @@ class ReviewControlForm(forms.ModelForm):
         }
 
 
+def mark_candidates_as_winner(request, instance):
+    for candidate_result in instance.candidate_results.all():
+        membership = candidate_result.membership
+        post_election = instance.post_election_result.post_election
+        election = post_election.election
+
+        source = instance.review_source
+        if not source:
+            source = instance.source
+
+        change_metadata = get_change_metadata(
+            request, source
+        )
+
+
+        if candidate_result.is_winner:
+            membership.extra.elected = True
+            membership.extra.save()
+
+
+            ResultEvent.objects.create(
+                election=election,
+                winner=membership.person,
+                winner_person_name=membership.person.name,
+                post_id=post_election.postextra.slug,
+                post_name=post_election.postextra.base.label,
+                winner_party_id=membership.on_behalf_of.extra.slug,
+                source=source,
+                user=instance.reviewed_by,
+            )
+
+            membership.person.extra.record_version(change_metadata)
+            membership.person.save()
+
+            LoggedAction.objects.create(
+                user=instance.reviewed_by,
+                action_type='set-candidate-elected',
+                popit_person_new_version=change_metadata['version_id'],
+                person=membership.person,
+                source=source,
+            )
+        else:
+            change_metadata['information_source'] = \
+                'Setting as "not elected" by implication'
+            membership.person.extra.record_version(change_metadata)
+            membership.extra.elected = False
+            membership.extra.save()
+
+
 class ReviewVotesForm(forms.ModelForm):
     class Meta:
         model = ResultSet
@@ -98,59 +147,12 @@ class ReviewVotesForm(forms.ModelForm):
 
         super(ReviewVotesForm, self).__init__(*args, **kwargs)
 
-    def mark_candidates_as_winner(self, request, instance):
-        for candidate_result in instance.candidate_results.all():
-            membership = candidate_result.membership
-            post_election = instance.post_election_result.post_election
-            election = post_election.election
-
-            source = instance.review_source
-            if not source:
-                source = instance.source
-
-            change_metadata = get_change_metadata(
-                request, source
-            )
-
-
-            if candidate_result.is_winner:
-                membership.extra.elected = True
-                membership.extra.save()
-
-
-                ResultEvent.objects.create(
-                    election=election,
-                    winner=membership.person,
-                    winner_person_name=membership.person.name,
-                    post_id=post_election.postextra.slug,
-                    post_name=post_election.postextra.base.label,
-                    winner_party_id=membership.on_behalf_of.extra.slug,
-                    source=source,
-                    user=instance.reviewed_by,
-                )
-
-                membership.person.extra.record_version(change_metadata)
-                membership.person.save()
-
-                LoggedAction.objects.create(
-                    user=instance.reviewed_by,
-                    action_type='set-candidate-elected',
-                    popit_person_new_version=change_metadata['version_id'],
-                    person=membership.person,
-                    source=source,
-                )
-            else:
-                change_metadata['information_source'] = \
-                    'Setting as "not elected" by implication'
-                membership.person.extra.record_version(change_metadata)
-                membership.extra.elected = False
-                membership.extra.save()
     def save(self):
         instance.review_status = CONFIRMED_STATUS
         instance = super(ReviewVotesForm, self).save(commit=True)
 
         with transaction.atomic():
-            self.mark_candidates_as_winner(self.request, instance)
+            mark_candidates_as_winner(self.request, instance)
 
         return instance
 
@@ -211,56 +213,6 @@ class ResultSetForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].initial = initial_values.get(field)
 
-
-    def mark_candidates_as_winner(self, request, instance):
-        for candidate_result in instance.candidate_results.all():
-            membership = candidate_result.membership
-            post_election = instance.post_election_result.post_election
-            election = post_election.election
-
-            source = instance.review_source
-            if not source:
-                source = instance.source
-
-            change_metadata = get_change_metadata(
-                request, source
-            )
-
-
-            if candidate_result.is_winner:
-                membership.extra.elected = True
-                membership.extra.save()
-
-
-                ResultEvent.objects.create(
-                    election=election,
-                    winner=membership.person,
-                    winner_person_name=membership.person.name,
-                    post_id=post_election.postextra.slug,
-                    post_name=post_election.postextra.base.label,
-                    winner_party_id=membership.on_behalf_of.extra.slug,
-                    source=source,
-                    user=instance.reviewed_by,
-                )
-
-                membership.person.extra.record_version(change_metadata)
-                membership.person.save()
-
-                LoggedAction.objects.create(
-                    user=instance.reviewed_by,
-                    action_type='set-candidate-elected',
-                    popit_person_new_version=change_metadata['version_id'],
-                    person=membership.person,
-                    source=source,
-                )
-            else:
-                change_metadata['information_source'] = \
-                    'Setting as "not elected" by implication'
-                membership.person.extra.record_version(change_metadata)
-                membership.extra.elected = False
-                membership.extra.save()
-
-
     def save(self, request):
         with transaction.atomic():
 
@@ -289,6 +241,6 @@ class ResultSetForm(forms.ModelForm):
                     num_ballots_reported=self[field_name].value(),
                 )
 
-            self.mark_candidates_as_winner(request, instance)
+            mark_candidates_as_winner(request, instance)
 
         return instance
