@@ -95,14 +95,13 @@ def mark_candidates_as_winner(request, instance):
             membership.extra.elected = True
             membership.extra.save()
 
-
             ResultEvent.objects.create(
                 election=election,
                 winner=membership.person,
-                winner_person_name=membership.person.name,
-                post_id=post_election.postextra.slug,
-                post_name=post_election.postextra.base.label,
-                winner_party_id=membership.on_behalf_of.extra.slug,
+                post=post_election.postextra.base,
+                old_post_id=post_election.postextra.slug,
+                old_post_name=post_election.postextra.base.label,
+                winner_party=membership.on_behalf_of,
                 source=source,
                 user=instance.reviewed_by,
             )
