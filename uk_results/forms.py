@@ -102,7 +102,7 @@ class ReviewVotesForm(forms.ModelForm):
         for candidate_result in instance.candidate_results.all():
             membership = candidate_result.membership
             post_election = instance.post_election_result.post_election
-            election = membership.extra.election
+            election = post_election.election
 
             source = instance.review_source
             if not source:
