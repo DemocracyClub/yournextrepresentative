@@ -188,7 +188,7 @@ class BulkAddReviewView(BaseBulkAddView):
             defaults={
                 'party_list_position': None,
                 'election': election,
-                'elected': False,
+                'elected': None,
             }
         )
 
