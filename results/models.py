@@ -22,6 +22,7 @@ class ResultEvent(models.Model):
     source = models.CharField(max_length=512)
     user = models.ForeignKey(User, blank=True, null=True)
     parlparse_id = models.CharField(blank=True, null=True, max_length=256)
+    retraction = models.BooleanField(default=False)
 
     @property
     def short_post_name(self):

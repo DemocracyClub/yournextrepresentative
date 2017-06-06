@@ -454,10 +454,6 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
             membership_new_winner.extra.elected = True
             membership_new_winner.extra.save()
 
-            parlparse_id = ''
-            parlparse_identifier = self.person.identifiers.filter(scheme='uk.org.publicwhip').first()
-            if parlparse_identifier:
-                parlparse_id = parlparse_identifier.identifier
             ResultEvent.objects.create(
                 election=self.election_data,
                 winner=self.person,
@@ -467,7 +463,8 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 winner_party=membership_new_winner.on_behalf_of,
                 source=form.cleaned_data['source'],
                 user=self.request.user,
-                parlparse_id=parlparse_id,
+                parlparse_id=self.person.extra.get_identifier(
+                    'uk.org.publicwhip'),
             )
 
             self.person.extra.record_version(change_metadata)
@@ -524,15 +521,31 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
                 role=self.election_data.candidate_membership_role,
                 extra__election=self.election_data,
             )
+            source = _('Result recorded in error, retracting')
             for candidacy in all_candidacies.all():
+                if candidacy.extra.elected:
+                    # If elected is True then a ResultEvent will have
+                    # been created and been included in the feed, so
+                    # we need to create a corresponding retraction
+                    # ResultEvent.
+                    ResultEvent.objects.create(
+                        election=self.election_data,
+                        winner=candidacy.person,
+                        old_post_id=candidacy.post.extra.slug,
+                        old_post_name=candidacy.post.label,
+                        post=candidacy.post,
+                        winner_party=candidacy.on_behalf_of,
+                        source=source,
+                        user=self.request.user,
+                        parlparse_id=candidacy.person.extra.get_identifier(
+                            'uk.org.publicwhip'),
+                        retraction=True,
+                    )
                 if candidacy.extra.elected is not None:
                     candidacy.extra.elected = None
                     candidacy.extra.save()
                     candidate = candidacy.person
-                    change_metadata = get_change_metadata(
-                        self.request,
-                        _('Result recorded in error, retracting')
-                    )
+                    change_metadata = get_change_metadata(self.request, source)
                     candidate.extra.record_version(change_metadata)
                     candidate.save()
 

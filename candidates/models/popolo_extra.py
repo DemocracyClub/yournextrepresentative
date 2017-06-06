@@ -391,6 +391,13 @@ class PersonExtra(HasImageMixin, models.Model):
             return path
         return request.build_absolute_uri(path)
 
+    def get_identifier(self, scheme):
+        identifier_object = self.base.identifiers.filter(
+            scheme='uk.org.publicwhip').first()
+        if identifier_object:
+            return identifier_object.identifier
+        return ''
+
     @property
     def current_candidacies(self):
         result = self.base.memberships.filter(
