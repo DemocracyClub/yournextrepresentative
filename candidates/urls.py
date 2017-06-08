@@ -128,7 +128,7 @@ patterns_to_format = [
         'name': 'person-create-select-election'
     },
     {
-        'pattern': r'^person/(?P<person_id>\d+)/update$',
+        'pattern': r'^person/(?P<person_id>\d+)/update/?$',
         'view': views.UpdatePersonView.as_view(),
         'name': 'person-update'
     },
@@ -173,7 +173,7 @@ patterns_to_format = [
         'name': 'person-other-name-delete',
     },
     {
-        'pattern': r'^person/(?P<person_id>\d+)/other-name/(?P<pk>\d+)/update$',
+        'pattern': r'^person/(?P<person_id>\d+)/other-name/(?P<pk>\d+)/update/?$',
         'view': views.PersonOtherNameUpdateView.as_view(),
         'name': 'person-other-name-update',
     },
