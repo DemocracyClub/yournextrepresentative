@@ -25,11 +25,13 @@
             </section>
           {% endif %}
 
-          {% if not post_election.postelectionresult_set.confirmed %}
-            <a href="{% url "report-post-votes-view" post_election.id %}" class="button">
-            Report results for {{post_data.label}}
-            </a>
-          {% endif %}
+          {% comment %}
+            {% if not post_election.postelectionresult_set.confirmed %}
+              <a href="{% url "report-post-votes-view" post_election.id %}" class="button">
+              Report results for {{post_data.label}}
+              </a>
+            {% endif %}
+          {% endcomment %}
         {% endif %}
 
         {% if not candidates_locked %}
