@@ -144,11 +144,20 @@ class Command(BaseCommand):
         election_model.save()
         return organization_extra
 
-    def get_party_set(self, territory_code):
+    def get_party_set(self, area_info):
         """
         The list of parties used for this election depends on the territory.
         Currently only Northern Ireland uses a different set.
         """
+
+        # The division can have a different code to the organisation
+        # for example UK wide orgs like `parl` has divisions in 4 differet
+        # territories. We need to use the most specific code here.
+        if area_info['division']['territory_code']:
+            territory_code = area_info['division']['territory_code']
+        else:
+            territory_code = area_info['organisation']['territory_code']
+
         if territory_code == "NIR":
             partyset_name = "Northern Ireland"
             country = "ni"
@@ -199,8 +208,7 @@ class Command(BaseCommand):
         election.
         """
 
-        party_set = self.get_party_set(
-            area_info['organisation']['territory_code'])
+        party_set = self.get_party_set(area_info)
 
         area_type = self.get_area_type(area_info, election)
 
