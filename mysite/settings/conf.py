@@ -553,6 +553,7 @@ def get_settings(conf_file_leafname, election_app=None, tests=False):
     add_election_specific_settings(result, election_app_fully_qualified)
 
     result['RESULTS_FEATURE_ACTIVE'] = True
+    result['CAN_EDIT_ELECTIONS'] = conf.get('CAN_EDIT_ELECTIONS', True)
 
     result['DATE_FORMAT'] = conf.get('DATE_FORMAT', "jS E Y")
 
