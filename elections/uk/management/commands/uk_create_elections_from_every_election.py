@@ -22,7 +22,11 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
-        # TODO Consider filtering on future or current elections?
+
+        # Mark all elections as not current, any that are current will
+        # be (re)set later
+        Election.objects.update(current=False)
+
         url = "{}api/elections?group_type=organisation&current=1".format(
             self.EE_BASE_URL)
         while url:
