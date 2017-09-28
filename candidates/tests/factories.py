@@ -140,7 +140,8 @@ class PostExtraFactory(factory.DjangoModelFactory):
             for election in extracted:
                 PostExtraElectionFactory.create(
                     postextra=self,
-                    election=election
+                    election=election,
+                    ballot_paper_id="{}.{}".format(election.slug, self.slug),
                 )
 
 

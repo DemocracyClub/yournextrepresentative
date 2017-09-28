@@ -803,6 +803,7 @@ class PostExtra(HasImageMixin, models.Model):
 class PostExtraElection(models.Model):
     postextra = models.ForeignKey(PostExtra)
     election = models.ForeignKey(Election)
+    ballot_paper_id = models.CharField(blank=True, max_length=255, unique=True)
 
     candidates_locked = models.BooleanField(default=False)
     winner_count = models.IntegerField(blank=True, null=True)
@@ -811,12 +812,9 @@ class PostExtraElection(models.Model):
         unique_together = ('election', 'postextra')
 
     def __repr__(self):
-        '''Note that this repr may cause two extra queries'''
-
-        fmt = "<PostExtraElection election__slug='{e}' postextra__slug='{p}'{l}{w}>"
+        fmt = "<PostExtraElection ballot_paper_id='{e}'{l}{w}>"
         return fmt.format(
-            e=self.election.slug,
-            p=self.postextra.slug,
+            e=self.ballot_paper_id,
             l=(' candidates_locked=True' if self.candidates_locked else ''),
             w=(' winner_count={0}'.format(self.winner_count)
                if (self.winner_count is not None) else ''))
