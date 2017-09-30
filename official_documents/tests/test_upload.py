@@ -89,7 +89,7 @@ class TestModels(TestUserMixin, WebTest):
             user=self.user_who_can_upload_documents
         )
         self.assertIn(
-            'As you have permission to upload documents',
+            'as you have permission to upload documents',
             response.text
         )
         response = self.app.get(

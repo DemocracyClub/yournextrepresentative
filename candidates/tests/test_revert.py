@@ -98,6 +98,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
               },
               "homepage_url": "http://example.org/tessajowell",
               "birth_date": "1947-09-17",
+              "biography": "",
               "wikipedia_url": "",
               "party_memberships": {
                 "2010": {
@@ -217,6 +218,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     }
                 },
                 'birth_date': '1947-09-17',
+                'biography': '',
                 'identifiers': [
                     {
                         'identifier': '2959',
@@ -230,7 +232,8 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 'email': 'tessa.jowell@example.com',
                 'extra_fields': {
                     'cv': '',
-                    'notes': 'Some original notes here'
+                    'notes': 'Some original notes here',
+                    'favourite_biscuits': ''
                 }
             },
             'information_source': 'Reverting to version 5469de7db0cbd155 for testing purposes',

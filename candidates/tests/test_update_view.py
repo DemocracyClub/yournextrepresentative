@@ -167,6 +167,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             {
                 'cv': 'http://example.org/cv.pdf',
                 'notes': '',
+                'favourite_biscuits': '',
             }
         )
         self.assertEqual(
