@@ -65,4 +65,9 @@ urlpatterns = [
     url(r'^get_involved/$',
         views.HelpOutCTAView.as_view()
     ),
+    url(r'^areas-of-type/(?P<area_type>.*?)(?:/(?P<ignored_slug>.*))?$',
+        views.AreasOfTypeRedirectView.as_view(),
+        name='areas-of-type-view',
+    ),
+
 ]

@@ -2,8 +2,6 @@
 
 from __future__ import unicode_literals
 
-import re
-
 from django_webtest import WebTest
 
 from .auth import TestUserMixin
@@ -14,9 +12,10 @@ from .factories import (
 )
 from .uk_examples import UK2015ExamplesMixin
 
+
 class TestAreasOfTypeView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
-    def setUp(self):
+    def setUpAll(self):
         super(TestAreasOfTypeView, self).setUp()
         person_extra = PersonExtraFactory.create(
             base__id='2009',
@@ -44,22 +43,14 @@ class TestAreasOfTypeView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_any_areas_of_type_page_without_login(self):
         response = self.app.get('/areas-of-type/WMC/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(
-            re.search(
-                r'''(?msx)
-  <a\s+href="/areas/WMC--65808/dulwich-and-west-norwood">
-  Dulwich\s+and\s+West\s+Norwood</a>''',
-                response.text
-            )
-        )
+        self.assertEqual(response.status_code, 301)
 
     def test_get_malformed_url(self):
         response = self.app.get(
             '/areas-of-type/3243452345/invalid',
             expect_errors=True
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 301)
 
 
     def test_get_non_existent(self):
@@ -67,4 +58,11 @@ class TestAreasOfTypeView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             '/areas-of-type/AAA/',
             expect_errors=True
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 301)
+
+    def test_posts_of_type(self):
+        response = self.app.get(
+            '/posts-of-type/WMC/',
+            expect_errors=True
+        )
+        self.assertEqual(response.status_code, 200)

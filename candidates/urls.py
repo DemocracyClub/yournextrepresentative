@@ -183,9 +183,9 @@ patterns_to_format = [
         'name': 'areas-view',
     },
     {
-        'pattern': r'^areas-of-type/(?P<area_type>.*?)(?:/(?P<ignored_slug>.*))?$',
-        'view': views.AreasOfTypeView.as_view(),
-        'name': 'areas-of-type-view',
+        'pattern': r'^posts-of-type/(?P<post_type>.*?)(?:/(?P<ignored_slug>.*))?$',
+        'view': views.PostsOfTypeView.as_view(),
+        'name': 'posts-of-type-view',
     },
     {
         'pattern': r'^election/{election}/party/(?P<organization_id>[^/]+)/(?P<ignored_slug>.*)$',

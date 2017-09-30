@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
 
+"""
+NOTE: Both views in this file are deprecated and redirects should be found
+      for them. It's not obvious where the area view should redirect to
+      at the moment
+"""
+
 from __future__ import unicode_literals
 
-import re
-
 from django.db.models import Prefetch
-from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseBadRequest
 from django.views.generic import TemplateView
-from django.utils.text import slugify
 from django.utils.translation import ugettext as _
-from django.shortcuts import get_object_or_404
 
-from candidates.models import AreaExtra, MembershipExtra
+from candidates.models import AreaExtra, PostExtra, MembershipExtra
 from candidates.models.auth import get_edits_allowed, is_post_locked
 
-from elections.models import AreaType, Election
+from elections.models import Election
 
 from ..forms import NewPersonForm, ToggleLockForm
 from .helpers import (
@@ -23,7 +24,20 @@ from .helpers import (
     get_person_form_fields, split_by_elected
 )
 
+
 class AreasView(TemplateView):
+    """
+    This view should be considered deprecated, but is here in order to maintain
+    URLs that might exist in the wild. It will get less useful over time as:
+
+    1. Even a well formed URL will only return information for posts
+       with current elections
+    2. New posts might have different IDs as we can't rely on GSS codes for
+       new areas
+    3. A postcode more in keeping with the _intent_ of this view – but the
+       conversion of postcode to areas was previously done elsewhere
+    """
+
     template_name = 'candidates/areas.html'
 
     def get(self, request, *args, **kwargs):
@@ -134,46 +148,33 @@ class AreasView(TemplateView):
         context['suppress_official_documents'] = True
         return context
 
-class AreasOfTypeView(TemplateView):
-    template_name = 'candidates/areas-of-type.html'
+
+class PostsOfTypeView(TemplateView):
+    """
+    TODO: Move this out of the candidates app in to a posts app
+    TODO: convert this view in to a redirect to EveryElection?
+
+    It's not obvious that this view is needed or of use to anyone.
+
+    It replaces `AreasOfTypeView` – a view that listed areas of a type,
+    where the type was a type code from mySociety's MaPit install.
+
+    Since "Areas" as a concept have been deprecated in YNR this view offers:
+
+    1. A view of posts that have this type ID (post slugs start with the type)
+    2. A message explaining that this view isn't a useful thing to
+       use (for people who might have bookmarked the URL)
+
+    This view should be removed in the future if it's not providing anything
+    useful. It shouldn't be linked to unless it's actually useful.
+    """
+    template_name = 'candidates/posts-of-type.html'
 
     def get_context_data(self, **kwargs):
-        context = super(AreasOfTypeView, self).get_context_data(**kwargs)
-        requested_area_type = kwargs['area_type']
-        all_area_tuples = set(
-            (area_type.name, election_data.area_generation)
-            for election_data in Election.objects.current().by_date()
-            for area_type in election_data.area_types.all()
-            if area_type.name == requested_area_type
-        )
-        if not all_area_tuples:
-            raise Http404(_("Area '{0}' not found").format(requested_area_type))
-        if len(all_area_tuples) > 1:
-            message = _("Multiple Area generations for type {area_type} found")
-            raise Exception(message.format(area_type=requested_area_type))
-        prefetch_qs = AreaExtra.objects.select_related('base').order_by('base__name')
-        area_type = get_object_or_404(
-            AreaType.objects \
-                .prefetch_related(Prefetch('areas', queryset=prefetch_qs)),
-            name=requested_area_type
-        )
-        areas = [
-            (
-                reverse(
-                    'areas-view',
-                    kwargs={
-                        'type_and_area_ids': '{type}--{area_id}'.format(
-                            type=requested_area_type,
-                            area_id=area.base.identifier
-                        ),
-                        'ignored_slug': slugify(area.base.name)
-                    }
-                ),
-                area.base.name,
-                requested_area_type,
-            )
-            for area in area_type.areas.all()
-        ]
-        context['areas'] = areas
-        context['area_type'] = area_type
+        context = super(PostsOfTypeView, self).get_context_data(**kwargs)
+        post_type = context['post_type']
+
+        posts_qs = PostExtra.objects.filter(slug__startswith=post_type)
+        posts_qs = posts_qs.select_related('base').order_by('base__label')
+        context['posts'] = posts_qs
         return context
