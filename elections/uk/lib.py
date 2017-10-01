@@ -9,8 +9,6 @@ from popolo.models import Post
 
 from uk_results.models import CandidateResult
 
-from .mapit import get_areas_from_postcode, get_areas_from_coords
-
 
 def shorten_post_label(post_label):
     result = re.sub(r'^Member of Parliament for ', '', post_label)
@@ -76,30 +74,6 @@ def get_extra_csv_values(person, election, post):
         'party_ec_id': party_ec_id,
         'favourite_biscuits': favourite_biscuits,
     }
-
-
-def fetch_area_ids(**kwargs):
-    if kwargs['postcode']:
-        areas = get_areas_from_postcode(kwargs['postcode'])
-
-    if kwargs['coords']:
-        areas = get_areas_from_coords(kwargs['coords'])
-
-    return areas
-
-def fetch_posts_for_area(**kwargs):
-    areas = fetch_area_ids(**kwargs)
-
-    area_ids = [area[1] for area in areas]
-
-    posts = Post.objects.filter(
-        area__identifier__in=area_ids,
-    ).select_related(
-        'area', 'area__extra__type', 'organization'
-    ).prefetch_related(
-        'extra__elections'
-    )
-    return posts
 
 
 def is_valid_postcode(postcode):

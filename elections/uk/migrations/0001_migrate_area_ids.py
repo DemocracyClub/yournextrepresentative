@@ -6,7 +6,7 @@ import os
 
 from django.db import migrations
 
-from elections.uk import mapit
+from elections.uk import geo_helpers
 
 logger = logging.getLogger(__name__)
 

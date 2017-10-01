@@ -19,7 +19,7 @@ from tasks.models import PersonTask
 from elections.models import Election
 
 from ..forms import PostcodeForm
-from ..mapit import get_areas_from_postcode
+from ..geo_helpers import get_post_elections_from_postcode
 
 
 class ConstituencyPostcodeFinderView(ContributorsMixin, FormView):

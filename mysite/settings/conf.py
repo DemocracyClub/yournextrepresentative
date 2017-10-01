@@ -456,7 +456,7 @@ def get_settings(conf_file_leafname, election_app=None, tests=False):
         ),
 
         # By default, cache successful results from MapIt for a day
-        'MAPIT_CACHE_SECONDS': 86400,
+        'EE_CACHE_SECONDS': 86400,
         'DATABASES': databases,
         'CACHES': {
             'default': cache,
