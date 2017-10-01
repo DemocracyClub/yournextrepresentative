@@ -75,7 +75,7 @@ def fake_requests_for_every_election(url, *args, **kwargs):
     })
 
 @attr(country='uk')
-@patch('elections.uk.mapit.requests')
+@patch('elections.uk.geo_helpers.requests')
 class TestConstituencyPostcodeFinderView(WebTest):
     def setUp(self):
         wmc_area_type = AreaTypeFactory.create()

@@ -81,7 +81,7 @@ def fake_requests_for_every_election(url, *args, **kwargs):
 
 
 @attr(country='uk')
-@patch('elections.uk.mapit.requests')
+@patch('elections.uk.geo_helpers.requests')
 class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super(TestUpcomingElectionsAPI, self).setUp()

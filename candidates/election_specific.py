@@ -3,14 +3,6 @@ from __future__ import unicode_literals
 from contextlib import contextmanager
 
 from django.conf import settings
-from candidates.mapit import get_areas_from_coords
-
-
-def default_fetch_area_ids(**kwargs):
-    if kwargs['coords']:
-        areas = get_areas_from_coords(kwargs['coords'])
-
-    return areas
 
 
 @contextmanager
@@ -27,7 +19,6 @@ imports_and_defaults = (
     ('EXTRA_CSV_ROW_FIELDS', []),
     ('shorten_post_label', lambda post_label: post_label),
     ('get_extra_csv_values', lambda person, election, post: {}),
-    ('fetch_area_ids', default_fetch_area_ids),
     ('additional_merge_actions', default_additional_merge_actions),
 )
 

@@ -26,23 +26,6 @@ from rest_framework import pagination, viewsets
 
 from compat import text_type
 
-from ..election_specific import fetch_area_ids
-
-
-def fetch_posts_for_area(**kwargs):
-    areas = fetch_area_ids(**kwargs)
-
-    area_ids = [area[1] for area in areas]
-
-    posts = Post.objects.filter(
-        area__identifier__in=area_ids,
-    ).select_related(
-        'area', 'area__extra__type', 'organization', 'extra',
-    ).prefetch_related(
-        'extra__elections'
-    )
-    return posts
-
 
 def parse_date(date_text):
     if date_text == 'today':
