@@ -53,11 +53,6 @@ urlpatterns = [
 
 patterns_to_format = [
     {
-        'pattern': r'^$',
-        'view': views.AddressFinderView.as_view(),
-        'name': 'lookup-address',
-    },
-    {
         'pattern': r'^posts$',
         'view': views.PostListView.as_view(),
         'name': 'posts',
