@@ -3,6 +3,7 @@
 from mock import patch, Mock
 
 from django_webtest import WebTest
+from unittest import skip
 
 from candidates.tests.factories import (
     AreaTypeFactory, ElectionFactory, PostExtraFactory,
@@ -35,7 +36,7 @@ def fake_requests_for_mapit(url):
     })
 
 
-@patch('candidates.views.frontpage.requests')
+# @patch('candidates.views.frontpage.requests')
 class TestGeolocator(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
@@ -77,24 +78,28 @@ class TestGeolocator(UK2015ExamplesMixin, WebTest):
             base__area=area_extra.base,
         )
 
+    @skip("Geo location feature removed for now")
     def test_valid_coords_redirects_to_constituency(self, mock_requests):
         mock_requests.get.side_effect = fake_requests_for_mapit
         response = self.app.get('/geolocator/-0.143207,51.5')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'url': '/areas/WMC--gss:E14000639'})
 
+    @skip("Geo location feature removed for now")
     def test_valid_coords_redirects_with_two_elections(self, mock_requests):
         mock_requests.get.side_effect = fake_requests_for_mapit
         response = self.app.get('/geolocator/-0.09153,51.444')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'url': '/areas/LAC--gss:E32000010,WMC--gss:E14000673'})
 
+    @skip("Geo location feature removed for now")
     def test_invalid_coords_returns_error(self, mock_requests):
         mock_requests.get.side_effect = fake_requests_for_mapit
         response = self.app.get('/geolocator/-0.143207,1.5')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'error': 'Your location does not seem to be covered by this site'})
 
+    @skip("Geo location feature removed for now")
     def test_handles_mapit_error(self, mock_requests):
         mock_requests.get.side_effect = fake_requests_for_mapit
         response = self.app.get('/geolocator/-0.207,1.5')
