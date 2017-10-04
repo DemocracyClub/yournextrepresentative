@@ -157,7 +157,7 @@ class Command(BaseCommand):
         # The division can have a different code to the organisation
         # for example UK wide orgs like `parl` has divisions in 4 differet
         # territories. We need to use the most specific code here.
-        if area_info['division']['territory_code']:
+        if area_info['division'] and area_info['division']['territory_code']:
             territory_code = area_info['division']['territory_code']
         else:
             territory_code = area_info['organisation']['territory_code']
