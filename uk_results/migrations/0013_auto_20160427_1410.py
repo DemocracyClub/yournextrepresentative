@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resultset',
             name='review_status',
-            field=models.CharField(blank=True, max_length=100, choices=[(b'unconfirmed', b'Unconfirmed'), (b'confirmed', b'Confirmed'), (b'rejected', b'Rejected')]),
+            field=models.CharField(blank=True, max_length=100, choices=[('unconfirmed', 'Unconfirmed'), ('confirmed', 'Confirmed'), ('rejected', 'Rejected')]),
         ),
         migrations.AddField(
             model_name='resultset',
