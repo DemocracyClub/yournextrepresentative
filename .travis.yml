@@ -12,7 +12,7 @@ python:
   - '3.4'
   - '3.5'
 addons:
-  postgresql: "9.1"
+  postgresql: "9.5"
 
 cache:
   pip: true
