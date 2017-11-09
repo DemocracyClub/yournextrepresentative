@@ -14,6 +14,13 @@ python:
 addons:
   postgresql: "9.1"
 
+cache:
+  pip: true
+  ccache: true
+  directories:
+    - /home/travis/virtualenv
+    - $HOME/.pip-cache/
+
 install:
   - gem install --no-ri --no-rdoc compass -v 0.12.7
   - gem install --no-ri --no-rdoc sass -v 3.2.19
