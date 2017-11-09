@@ -33,7 +33,7 @@ def metadescription(person, last_candidacy, today):
     else:
         output = person.name
 
-    output += " - " + _("find out more on {site_name}").format(
+    output += " – " + _("find out more on {site_name}").format(
         site_name=Site.objects.get_current().name
     )
     return output
