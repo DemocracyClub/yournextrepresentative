@@ -24,6 +24,7 @@ PEOPLE_LIABLE_TO_VANDALISM = {
     737, # Ruth Davidson
 
     34605, # Matt Furey-King (due to a vandalism incident)
+    31705, # Lance Charles Quantrill (due to a vandalism incident)
 
     1528, # Janus Polenceus
     25402, # Giles Game
