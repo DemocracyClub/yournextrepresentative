@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
-from datetime import date, timedelta
+from datetime import timedelta
+import re
 
 import factory
 
@@ -138,10 +139,17 @@ class PostExtraFactory(factory.DjangoModelFactory):
             return
         if extracted:
             for election in extracted:
+                if re.search("\d\d\d\d-\d\d-\d\d$", election.slug):
+                    parts = election.slug.split('.')
+                    parts.insert(-1, self.slug)
+                    ballot_paper_id = ".".join(parts)
+                else:
+                    ballot_paper_id = "{}.{}".format(election.slug, self.slug)
+
                 PostExtraElectionFactory.create(
                     postextra=self,
                     election=election,
-                    ballot_paper_id="{}.{}".format(election.slug, self.slug),
+                    ballot_paper_id=ballot_paper_id,
                 )
 
 
