@@ -7,4 +7,10 @@ from . import views
 urlpatterns = [
     # Add URL configuration here if you want to replace any of the
     # default views from the candidates application.
+    url(
+        r'^$',
+        views.ConstituencyPostcodeFinderView.as_view(),
+        name='lookup-postcode'
+    ),
+
 ]

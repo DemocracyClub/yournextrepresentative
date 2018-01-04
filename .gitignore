@@ -16,3 +16,5 @@ __pycache__
 /mysite/settings/local_settings.py
 /mysite/static/jsi18n
 /web/down.html
+.DS_Store
+mysite/local_settings.py
