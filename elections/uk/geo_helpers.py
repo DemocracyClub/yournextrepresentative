@@ -44,10 +44,11 @@ def get_post_elections(url, cache_key, exception):
         ee_result = r.json()
         ballot_paper_ids = [
             e['election_id']
-            for e in ee_result
-            if not r['group_type']]
+            for e in ee_result['results']
+            if not e['group_type']]
         pee_qs = PostExtraElection.objects.filter(
-            ballot_paper_ids__in=ballot_paper_ids)
+            ballot_paper_id__in=ballot_paper_ids,
+            election__current=True)
         cache.set(cache_key, pee_qs, settings.EE_CACHE_SECONDS)
         return pee_qs
     elif r.status_code == 400:
