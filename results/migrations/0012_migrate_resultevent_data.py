@@ -25,7 +25,8 @@ def migrate_remaining_fields_to_popolo_models(apps, schema_editor):
                     election_date__year=re.created.year,
                 )
         else:
-            election = Election.objects.get(name=re.election)
+            election = Election.objects.filter(
+                name=re.election, election_date__lte=re.created).first()
         re.election_new = election
         re.post_new = post
         # Now get the party of the winner:
