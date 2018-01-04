@@ -79,44 +79,28 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
         london_assembly = ParliamentaryChamberExtraFactory.create(
             slug='london-assembly', base__name='London Assembly'
         )
-        lac_area_type = AreaTypeFactory.create(name='LAC')
-        gla_area_type = AreaTypeFactory.create(name='GLA')
-        area_extra_lac = AreaExtraFactory.create(
-            base__identifier='gss:E32000010',
-            base__name="Dulwich and West Norwood",
-            type=lac_area_type,
-        )
-        area_extra_gla = AreaExtraFactory.create(
-            base__identifier='unit_id:41441',
-            base__name='Greater London Authority',
-            type=gla_area_type,
-        )
         election_lac = ElectionFactory.create(
-            slug='gb-gla-2016-05-05-c',
+            slug='gla.c.2016-05-05',
             organization=london_assembly.base,
             name='2016 London Assembly Election (Constituencies)',
             election_date=self.future_date.isoformat(),
-            area_types=(lac_area_type,),
         )
         self.election_gla = ElectionFactory.create(
-            slug='gb-gla-2016-05-05-a',
+            slug='gla.a.2016-05-05',
             organization=london_assembly.base,
             name='2016 London Assembly Election (Additional)',
             election_date=self.future_date.isoformat(),
-            area_types=(gla_area_type,),
         )
         PostExtraFactory.create(
             elections=(election_lac,),
-            base__area=area_extra_lac.base,
             base__organization=london_assembly.base,
-            slug='gss:E32000010',
+            slug='lambeth-and-southwark',
             base__label='Assembly Member for Lambeth and Southwark',
         )
         self.post_extra = PostExtraFactory.create(
             elections=(self.election_gla,),
-            base__area=area_extra_gla.base,
             base__organization=london_assembly.base,
-            slug='unit_id:41441',
+            slug='london',
             base__label='Assembly Member',
         )
 
@@ -125,7 +109,6 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
 
         mock_requests.get.side_effect = fake_requests_for_every_election
         response = self.app.get('/upcoming-elections/?postcode=SE24+0AG')
-
         output = response.json
         self.assertEqual(len(output), 2)
 
@@ -134,29 +117,19 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
             {
                 'organization': 'London Assembly',
                 'election_date': text_type(self.future_date.isoformat()),
-                'election_id': 'gb-gla-2016-05-05-c',
+                'election_id': 'gla.c.2016-05-05',
                 'election_name':
                     '2016 London Assembly Election (Constituencies)',
                 'post_name': 'Assembly Member for Lambeth and Southwark',
-                'post_slug': 'gss:E32000010',
-                'area': {
-                    'identifier': 'gss:E32000010',
-                    'type': 'LAC',
-                    'name': 'Dulwich and West Norwood'
-                }
+                'post_slug': 'lambeth-and-southwark',
             },
             {
                 'organization': 'London Assembly',
                 'election_date': text_type(self.future_date.isoformat()),
-                'election_id': 'gb-gla-2016-05-05-a',
+                'election_id': 'gla.a.2016-05-05',
                 'election_name': '2016 London Assembly Election (Additional)',
                 'post_name': 'Assembly Member',
-                'post_slug': 'unit_id:41441',
-                'area': {
-                    'identifier': 'unit_id:41441',
-                    'type': 'GLA',
-                    'name': 'Greater London Authority'
-                }
+                'post_slug': 'london',
             },
         ]
 
@@ -187,28 +160,18 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
         output = response.json
         self.assertEqual(len(output), 2)
         expected = [{
-            u'area': {
-                u'identifier': u'gss:E32000010',
-                u'name': u'Dulwich and West Norwood',
-                u'type': u'LAC'
-            },
             u'candidates': [],
             u'election_date': text_type(self.future_date.isoformat()),
-            u'election_id': u'gb-gla-2016-05-05-c',
+            u'election_id': u'gla.c.2016-05-05',
             u'election_name':
                 u'2016 London Assembly Election (Constituencies)',
             u'organization': u'London Assembly',
             u'post': {
                 u'post_candidates': None,
                 u'post_name': u'Assembly Member for Lambeth and Southwark',
-                u'post_slug': u'gss:E32000010'
+                u'post_slug': u'lambeth-and-southwark'
             }},
-            {u'area': {
-                u'identifier': u'unit_id:41441',
-                u'name': u'Greater London Authority',
-                u'type': u'GLA'
-            },
-            u'candidates': [
+            {u'candidates': [
                 {
                     u'birth_date': u'',
                     u'contact_details': [],
@@ -225,9 +188,9 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
                     u'memberships': [{
                         u'elected': None,
                         u'election': {
-                            u'id': u'gb-gla-2016-05-05-a',
+                            u'id': u'gla.a.2016-05-05',
                             u'name': u'2016 London Assembly Election (Additional)',
-                            u'url': u'http://localhost:80/api/v0.9/elections/gb-gla-2016-05-05-a/'
+                            u'url': u'http://localhost:80/api/v0.9/elections/gla.a.2016-05-05/'
                         },
                         u'end_date': None,
                         u'id': membership_pk,
@@ -245,10 +208,10 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
                             u'url': u'http://localhost:80/api/v0.9/persons/2009/'
                         },
                         u'post': {
-                            u'id': u'unit_id:41441',
+                            u'id': u'london',
                             u'label': u'Assembly Member',
-                            u'slug': u'unit_id:41441',
-                            u'url': u'http://localhost:80/api/v0.9/posts/unit_id:41441/'
+                            u'slug': u'london',
+                            u'url': u'http://localhost:80/api/v0.9/posts/london/'
                         },
                         u'role': u'Candidate',
                         u'start_date': None,
@@ -262,13 +225,13 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
                 }
             ],
             u'election_date': text_type(self.future_date.isoformat()),
-            u'election_id': u'gb-gla-2016-05-05-a',
+            u'election_id': u'gla.a.2016-05-05',
             u'election_name': u'2016 London Assembly Election (Additional)',
             u'organization': u'London Assembly',
             u'post': {
                 u'post_candidates': None,
                 u'post_name': u'Assembly Member',
-                u'post_slug': u'unit_id:41441'
+                u'post_slug': u'london'
             }
         }]
 
