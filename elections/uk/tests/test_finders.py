@@ -13,11 +13,10 @@ from unittest import skip
 from django_webtest import WebTest
 
 from candidates.tests.factories import (
-    AreaTypeFactory, ElectionFactory, PostExtraFactory,
+    ElectionFactory, PostExtraFactory,
     ParliamentaryChamberFactory, ParliamentaryChamberExtraFactory,
-    PartySetFactory, AreaExtraFactory
+    PartySetFactory
 )
-from elections.models import Election
 from .mapit_postcode_results import se240ag_result, sw1a1aa_result
 from .ee_postcode_results import ee_se240ag_result, ee_sw1a1aa_result
 
@@ -79,28 +78,19 @@ def fake_requests_for_every_election(url, *args, **kwargs):
 @patch('elections.uk.geo_helpers.requests')
 class TestConstituencyPostcodeFinderView(WebTest):
     def setUp(self):
-        wmc_area_type = AreaTypeFactory.create()
         gb_parties = PartySetFactory.create(slug='gb', name='Great Britain')
         commons = ParliamentaryChamberFactory.create()
         election = ElectionFactory.create(
             slug='2015',
             name='2015 General Election',
-            area_types=(wmc_area_type,),
             organization=commons,
         )
-        area_extra = AreaExtraFactory.create(
-            base__name="Dulwich and West Norwood",
-            base__identifier='gss:E14000673',
-            type=wmc_area_type,
-        )
-        self.area = area_extra.base
         PostExtraFactory.create(
             elections=(election,),
             base__organization=commons,
             slug='65808',
             base__label='Member of Parliament for Dulwich and West Norwood',
             party_set=gb_parties,
-            base__area=area_extra.base,
         )
 
     def test_front_page(self, mock_requests):
@@ -133,29 +123,15 @@ class TestConstituencyPostcodeFinderView(WebTest):
         london_assembly = ParliamentaryChamberExtraFactory.create(
             slug='london-assembly', base__name='London Assembly'
         )
-        lac_area_type = AreaTypeFactory.create(name='LAC')
-        gla_area_type = AreaTypeFactory.create(name='GLA')
-        area_extra_lac = AreaExtraFactory.create(
-            base__identifier='gss:E32000010',
-            base__name="Dulwich and West Norwood",
-            type=lac_area_type,
-        )
-        area_extra_gla = AreaExtraFactory.create(
-            base__identifier='unit_id:41441',
-            base__name='Greater London Authority',
-            type=gla_area_type,
-        )
         election_lac = ElectionFactory.create(
             slug='gb-gla-2016-05-05-c',
             organization=london_assembly.base,
             name='2016 London Assembly Election (Constituencies)',
-            area_types=(lac_area_type,),
         )
         election_gla = ElectionFactory.create(
             slug='gb-gla-2016-05-05-a',
             organization=london_assembly.base,
             name='2016 London Assembly Election (Additional)',
-            area_types=(gla_area_type,),
         )
         PostExtraFactory.create(
             elections=(election_lac,),
@@ -194,28 +170,18 @@ class TestConstituencyPostcodeFinderView(WebTest):
         london_assembly = ParliamentaryChamberExtraFactory.create(
             slug='london-assembly', base__name='London Assembly'
         )
-        lac_area_type = AreaTypeFactory.create(name='LAC')
-        gla_area_type = AreaTypeFactory.create(name='GLA')
-        area_extra_gla = AreaExtraFactory.create(
-            base__identifier='unit_id:41441',
-            base__name='Greater London Authority',
-            type=gla_area_type,
-        )
         ElectionFactory.create(
             slug='gb-gla-2016-05-05-c',
             organization=london_assembly.base,
             name='2016 London Assembly Election (Constituencies)',
-            area_types=(lac_area_type,),
         )
         election_gla = ElectionFactory.create(
             slug='gb-gla-2016-05-05-a',
             organization=london_assembly.base,
             name='2016 London Assembly Election (Additional)',
-            area_types=(gla_area_type,),
         )
         PostExtraFactory.create(
             elections=(election_gla,),
-            base__area=area_extra_gla.base,
             base__organization=london_assembly.base,
             slug='2247',
             base__label='2016 London Assembly Election (Additional)',

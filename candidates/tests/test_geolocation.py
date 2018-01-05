@@ -6,9 +6,8 @@ from django_webtest import WebTest
 from unittest import skip
 
 from candidates.tests.factories import (
-    AreaTypeFactory, ElectionFactory, PostExtraFactory,
-    ParliamentaryChamberExtraFactory,
-    AreaExtraFactory
+    ElectionFactory, PostExtraFactory,
+    ParliamentaryChamberExtraFactory
 )
 
 from .uk_examples import UK2015ExamplesMixin
@@ -41,18 +40,12 @@ class TestGeolocator(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super(TestGeolocator, self).setUp()
-        lac_area_type = AreaTypeFactory.create(name='LAC')
         lac = ParliamentaryChamberExtraFactory.create(slug='lac')
 
         election2 = ElectionFactory.create(
             slug='2015-secondary',
             name='2015 Secondary Election',
-            area_types=(lac_area_type,),
             organization=lac.base
-        )
-        area_extra = AreaExtraFactory.create(
-            base__name="Westminster",
-            type=self.wmc_area_type,
         )
 
         PostExtraFactory.create(
@@ -64,18 +57,12 @@ class TestGeolocator(UK2015ExamplesMixin, WebTest):
             base__area=area_extra.base,
         )
 
-        area_extra = AreaExtraFactory.create(
-            base__name="Lambeth and Southwark",
-            type=lac_area_type,
-        )
-
         PostExtraFactory.create(
             elections=(election2,),
             base__organization=self.commons,
             slug='11822',
             base__label='London Assembly Member for Lambeth and Southwark',
             party_set=self.gb_parties,
-            base__area=area_extra.base,
         )
 
     @skip("Geo location feature removed for now")

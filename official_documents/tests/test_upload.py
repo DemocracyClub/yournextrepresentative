@@ -13,7 +13,7 @@ from candidates.tests.auth import TestUserMixin
 from official_documents.models import OfficialDocument
 
 from candidates.tests.factories import (
-    AreaTypeFactory, ElectionFactory, ParliamentaryChamberFactory,
+    ElectionFactory, ParliamentaryChamberFactory,
     PostExtraFactory, PartySetFactory
 )
 
@@ -38,12 +38,10 @@ class TestModels(TestUserMixin, WebTest):
     )
 
     def setUp(self):
-        wmc_area_type = AreaTypeFactory.create()
         gb_parties = PartySetFactory.create(slug='gb', name='Great Britain')
         election = ElectionFactory.create(
             slug='2015',
             name='2015 General Election',
-            area_types=(wmc_area_type,)
         )
         commons = ParliamentaryChamberFactory.create()
         self.post_extra = PostExtraFactory.create(

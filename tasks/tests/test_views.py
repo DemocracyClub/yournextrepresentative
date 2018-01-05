@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 
 from candidates.tests.factories import (
-    AreaTypeFactory, ElectionFactory, CandidacyExtraFactory,
+    ElectionFactory, CandidacyExtraFactory,
     ParliamentaryChamberFactory, PartyFactory, PartyExtraFactory,
     PersonExtraFactory, PostExtraFactory
 )

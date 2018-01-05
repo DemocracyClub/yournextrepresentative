@@ -13,8 +13,8 @@ from django.core.management import call_command
 from django_webtest import WebTest
 
 from .factories import (
-    AreaExtraFactory, CandidacyExtraFactory, MembershipFactory,
-    PersonExtraFactory, PostExtraFactory,
+    CandidacyExtraFactory, MembershipFactory,
+    PersonExtraFactory,
 )
 from .uk_examples import UK2015ExamplesMixin
 

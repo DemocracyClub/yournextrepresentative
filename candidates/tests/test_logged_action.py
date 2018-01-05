@@ -75,12 +75,10 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
 
     def test_guess_of_postextraelection_past(self):
-        ced_area_type = factories.AreaTypeFactory.create(name='CED')
         past_election = factories.ElectionFactory.create(
             current=False,
             name='2017 Essex County Council local election',
             election_date='2017-05-04',
-            area_types=(ced_area_type,),
         )
         council = factories.OrganizationFactory.create(
             name='Essex County Council')

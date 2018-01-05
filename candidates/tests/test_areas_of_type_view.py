@@ -7,8 +7,7 @@ from django_webtest import WebTest
 from .auth import TestUserMixin
 
 from .factories import (
-    AreaExtraFactory, CandidacyExtraFactory, PersonExtraFactory,
-    PostExtraFactory,
+    CandidacyExtraFactory, PersonExtraFactory, PostExtraFactory
 )
 from .uk_examples import UK2015ExamplesMixin
 
@@ -28,13 +27,8 @@ class TestAreasOfTypeView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__on_behalf_of=self.labour_party_extra.base
             )
 
-        aldershot_area_extra = AreaExtraFactory.create(
-            base__identifier='65730',
-            type=self.wmc_area_type,
-        )
         PostExtraFactory.create(
             elections=(self.election,),
-            base__area=aldershot_area_extra.base,
             base__organization=self.commons,
             slug='65730',
             base__label='Member of Parliament for Aldershot',

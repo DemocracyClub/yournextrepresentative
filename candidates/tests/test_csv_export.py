@@ -58,29 +58,9 @@ class CSVTests(TestUserMixin, UK2015ExamplesMixin, TestCase):
             base__name='Daithí McKay',
             base__gender='male',
         )
-        camberwell_area_extra = self.camberwell_post_extra.base.area.extra
-        camberwell_area_extra.base.other_identifiers.create(
-            scheme='mapit-area-url',
-            identifier='http://mapit.mysociety.org/area/65913',
-        )
-        dulwich_area_extra = self.dulwich_post_extra.base.area.extra
-        dulwich_area_extra.base.other_identifiers.create(
-            scheme='mapit-area-url',
-            identifier='http://mapit.mysociety.org/area/65808',
-        )
-        north_antrim_area_extra = factories.AreaExtraFactory.create(
-            base__identifier='66135',
-            base__name='North Antrim',
-            type=self.wmc_area_type,
-        )
-        north_antrim_area_extra.base.other_identifiers.create(
-            scheme='mapit-area-url',
-            identifier='http://mapit.mysociety.org/area/66135',
-        )
         north_antrim_post_extra = factories.PostExtraFactory.create(
             elections=(self.election, self.earlier_election),
             base__organization=self.commons,
-            base__area=north_antrim_area_extra.base,
             slug='66135',
             base__label='Member of Parliament for North Antrim',
             party_set=self.ni_parties,

@@ -9,8 +9,7 @@ from django.test import TestCase
 from official_documents.models import OfficialDocument
 
 from candidates.tests.factories import (
-    AreaTypeFactory, ElectionFactory, ParliamentaryChamberFactory,
-    PostExtraFactory
+    ElectionFactory, ParliamentaryChamberFactory, PostExtraFactory
 )
 
 from compat import text_type
@@ -19,11 +18,9 @@ from compat import text_type
 class TestModels(TestCase):
 
     def setUp(self):
-        wmc_area_type = AreaTypeFactory.create()
         election = ElectionFactory.create(
             slug='2015',
             name='2015 General Election',
-            area_types=(wmc_area_type,)
         )
         commons = ParliamentaryChamberFactory.create()
         self.post = PostExtraFactory.create(
