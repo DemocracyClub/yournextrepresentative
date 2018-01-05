@@ -50,33 +50,4 @@ class Command(BaseCommand):
         to expose division geographies
         """
         return
-        for council_election in qs:
-            for post in council_election.election.posts.all():
-
-                parent_gss = council_election.council.pk
-                division_slug = post.base.area.identifier.split(':')[1]
-                area_name = post.base.area.name
-                print(area_name, division_slug)
-                try:
-                    existing_area = ElectionArea.objects.get(
-                        area_gss=division_slug,
-                        election=council_election.election,
-                    )
-                except ElectionArea.DoesNotExist:
-                    pass
-
-
-                # geojson = self.get_geo_json_from_ee(gss)
-                # parent = ElectionArea.objects.get(area_gss=parent_gss)
-                #
-                # ElectionArea.objects.update_or_create(
-                #     area_gss=gss,
-                #     election=council_election.election,
-                #     parent=parent,
-                #     area_name=area_name,
-                #     defaults={
-                #         'geo_json': geojson
-                #     }
-                # )
-
 
