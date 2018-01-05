@@ -583,7 +583,7 @@ class ConstituenciesDeclaredListView(ElectionMixin, TemplateView):
             constituency_declared.append(membership.post.id)
             total_declared += 1
             constituencies.append((membership.post, True))
-        for membership in Membership.objects.select_related('post', 'post__area', 'post__extra').filter(
+        for membership in Membership.objects.select_related('post', 'post__extra').filter(
             post__isnull=False,
             extra__election=self.election_data,
             role=self.election_data.candidate_membership_role
@@ -592,7 +592,6 @@ class ConstituenciesDeclaredListView(ElectionMixin, TemplateView):
                 continue
             constituency_seen[membership.post.id] = True
             constituencies.append((membership.post, False))
-        constituencies.sort(key=lambda c: c[0].area.name)
         context['constituencies'] = constituencies
         context['total_constituencies'] = total_constituencies
         context['total_left'] = total_constituencies - total_declared

@@ -90,19 +90,19 @@ class TestConstituenciesDeclared(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(
             re.search(
-                r'''(?ms)<del><a[^>]*>Dulwich and West Norwood''',
+                r'''(?ms)<del><a[^>]*>Member of Parliament for Dulwich and West Norwood''',
                 response.text
             )
         )
         self.assertTrue(
             re.search(
-                r'''(?ms)<a[^>]*>Camberwell and Peckham''',
+                r'''(?ms)<a[^>]*>Member of Parliament for Camberwell and Peckham''',
                 response.text
             )
         )
         self.assertFalse(
             re.search(
-                r'''(?ms)<del><a[^>]*>Camberwell and Peckham''',
+                r'''(?ms)<del><a[^>]*>Member of Parliament for Camberwell and Peckham''',
                 response.text
             )
         )
@@ -124,13 +124,13 @@ class TestConstituenciesDeclared(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(
             re.search(
-                r'''(?ms)<del><a[^>]*>Dulwich and West Norwood''',
+                r'''(?ms)<del><a[^>]*>Member of Parliament for Dulwich and West Norwood''',
                 response.text
             )
         )
         self.assertTrue(
             re.search(
-                r'''(?ms)<del><a[^>]*>Camberwell and Peckham''',
+                r'''(?ms)<del><a[^>]*>Member of Parliament for Camberwell and Peckham''',
                 response.text
             )
         )
