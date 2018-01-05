@@ -109,7 +109,6 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
             json['persons'],
             'http://localhost:80/api/v0.9/persons/'
         )
-        self.assertEqual(json['areas'], 'http://localhost:80/api/v0.9/areas/')
         self.assertEqual(
             json['organizations'],
             'http://localhost:80/api/v0.9/organizations/'
@@ -122,9 +121,6 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
 
         persons_resp = self.app.get('/api/v0.9/persons/')
         self.assertEqual(persons_resp.status_code, 200)
-
-        areas_resp = self.app.get('/api/v0.9/areas/')
-        self.assertEqual(areas_resp.status_code, 200)
 
         organizations_resp = self.app.get('/api/v0.9/organizations/')
         self.assertEqual(organizations_resp.status_code, 200)
@@ -193,33 +189,6 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
         self.assertEqual(memberships[1]['role'], 'Candidate')
 
         self.assertEqual(len(person['versions']), 0)
-
-    def test_api_areas(self):
-        areas_resp = self.app.get('/api/v0.9/areas/')
-
-        areas = areas_resp.json
-
-        self.assertEqual(areas['count'], len(areas['results']))
-        self.assertEqual(areas['count'], 4)
-
-    def test_api_area(self):
-        areas_resp = self.app.get('/api/v0.9/areas/')
-        areas = areas_resp.json
-
-        area_id = 0
-        for area in areas['results']:
-            if area['identifier'] == '65808':
-                area_id = area['id']
-                break
-
-        area_url = '/api/v0.9/areas/{0}/'.format(area_id)
-        area_resp = self.app.get(area_url)
-        self.assertEqual(area_resp.status_code, 200)
-
-        area = area_resp.json
-        self.assertEqual(area['identifier'], '65808')
-        self.assertEqual(area['name'], 'Dulwich and West Norwood')
-        self.assertEqual(area['type']['name'], 'WMC')
 
     def test_api_organizations(self):
         organizations_resp = self.app.get('/api/v0.9/organizations/')

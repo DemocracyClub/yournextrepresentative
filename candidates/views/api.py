@@ -20,8 +20,8 @@ from rest_framework.response import Response
 from images.models import Image
 from candidates import serializers
 from candidates import models as extra_models
-from elections.models import AreaType, Election
-from popolo.models import Area, Membership, Person, Post
+from elections.models import Election
+from popolo.models import Membership, Person, Post
 from rest_framework import pagination, viewsets
 from elections.uk.geo_helpers import (
     get_post_elections_from_coords, get_post_elections_from_postcode)
@@ -318,7 +318,6 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = extra_models.PostExtra.objects \
         .select_related(
             'base__organization__extra',
-            'base__area__extra__type',
             'party_set',
         ) \
         .prefetch_related(
@@ -327,7 +326,6 @@ class PostViewSet(viewsets.ModelViewSet):
                 extra_models.PostExtraElection.objects \
                     .select_related('election')
             ),
-            'base__area__other_identifiers',
             Prefetch(
                 'base__memberships',
                 Membership.objects.select_related(
@@ -342,20 +340,6 @@ class PostViewSet(viewsets.ModelViewSet):
         .order_by('base__id')
     lookup_field = 'slug'
     serializer_class = serializers.PostExtraSerializer
-    pagination_class = ResultsSetPagination
-
-
-class AreaViewSet(viewsets.ModelViewSet):
-    queryset = Area.objects \
-        .prefetch_related('extra') \
-        .order_by('id')
-    serializer_class = serializers.AreaSerializer
-    pagination_class = ResultsSetPagination
-
-
-class AreaTypeViewSet(viewsets.ModelViewSet):
-    queryset = AreaType.objects.order_by('id')
-    serializer_class = serializers.AreaTypeSerializer
     pagination_class = ResultsSetPagination
 
 
