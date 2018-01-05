@@ -59,9 +59,7 @@ def get_extra_csv_values(person, election, post):
         for i in m.on_behalf_of.identifiers.all():
             if i.scheme == 'electoral-commission':
                 party_ec_id = i.identifier
-        for i in m.post.area.other_identifiers.all():
-            if i.scheme == 'gss':
-                gss_code = i.identifier
+        # TODO Add identifiers here
         break
     favourite_biscuits = ''
     for efv in person.extra_field_values.all():

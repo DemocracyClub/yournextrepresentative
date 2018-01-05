@@ -671,14 +671,7 @@ class PersonExtra(HasImageMixin, models.Model):
             proxy_image_url_template = ''
             if elected is not None:
                 elected_for_csv = str(elected)
-            mapit_identifier = None
-            for identifier in post.area.other_identifiers.all():
-                if identifier.scheme == 'mapit-area-url':
-                    mapit_identifier = identifier
-            if mapit_identifier:
-                mapit_url = mapit_identifier.identifier
-            else:
-                mapit_url = ''
+            mapit_url = ''
             primary_image = None
             for image in self.images.all():
                 if image.is_primary:

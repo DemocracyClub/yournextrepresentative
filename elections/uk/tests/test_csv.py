@@ -63,7 +63,7 @@ class CSVTests(UK2015ExamplesMixin, TestCase):
         self.assertEqual(person_dict['id'], 2009)
 
         # Test the extra CSV fields:
-        self.assertEqual(person_dict['gss_code'], 'E14000615')
+        self.assertEqual(person_dict['gss_code'], '')
         self.assertEqual(person_dict['parlparse_id'], 'uk.org.publicwhip/person/10326')
         self.assertEqual(person_dict['theyworkforyou_url'], 'http://www.theyworkforyou.com/mp/10326')
         self.assertEqual(person_dict['party_ec_id'], 'PP53')
