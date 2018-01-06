@@ -16,6 +16,11 @@ urlpatterns = [
         name='lookup-postcode'
     ),
     url(
+        r'^postcode/(?P<postcode>[^/]+)/$',
+        views.PostcodeView.as_view(),
+        name='postcode-view'
+    ),
+    url(
         r'^election/{election}/post/(?P<post_id>[-\w\:]+)/(?P<ignored_slug>{ignore_pattern})$'.format(
             election=r'(?P<election>[^/]+)',
             ignore_pattern=post_ignored_slug_re,

@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
 from django.db.models import F
 
 from candidates.views.mixins import ContributorsMixin
@@ -19,7 +19,7 @@ from tasks.models import PersonTask
 from elections.models import Election
 
 from ..forms import PostcodeForm
-from ..geo_helpers import get_post_elections_from_postcode
+from elections.uk.geo_helpers import get_post_elections_from_postcode
 
 
 class HomePageView(ContributorsMixin, FormView):
@@ -29,20 +29,7 @@ class HomePageView(ContributorsMixin, FormView):
     @method_decorator(cache_control(max_age=(60 * 10)))
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
-        return super(ConstituencyPostcodeFinderView, self).dispatch(*args, **kwargs)
-
-    def process_postcode(self, postcode):
-        types_and_areas = get_areas_from_postcode(postcode)
-        if settings.AREAS_TO_ALWAYS_RETURN:
-            types_and_areas += settings.AREAS_TO_ALWAYS_RETURN
-        types_and_areas_joined = ','.join(sorted(
-            '{0}--{1}'.format(*t) for t in types_and_areas
-        ))
-        return HttpResponseRedirect(
-            reverse('areas-view', kwargs={
-                'type_and_area_ids': types_and_areas_joined
-            })
-        )
+        return super(HomePageView, self).dispatch(*args, **kwargs)
 
     def get_form_kwargs(self):
         if self.request.method == 'GET' and 'q' in self.request.GET:
@@ -61,13 +48,19 @@ class HomePageView(ContributorsMixin, FormView):
             # for the form in this case.
             return self.post(request, *args, **kwargs)
         else:
-            return super(ConstituencyPostcodeFinderView, self).get(request, *args, **kwargs)
+            return super(HomePageView, self).get(request, *args, **kwargs)
 
     def form_valid(self, form):
-        return self.process_postcode(form.cleaned_data['q'])
+        postcode = form.cleaned_data['q']
+        return HttpResponseRedirect(
+            reverse('postcode-view', kwargs={
+                'postcode': postcode
+            })
+        )
 
     def sopn_progress_by_election_slug_prefix(self, election_slug_prefix):
-        election_qs = Election.objects.filter(slug__startswith=election_slug_prefix)
+        election_qs = Election.objects.filter(
+            slug__startswith=election_slug_prefix)
         return self.sopn_progress_by_election(election_qs)
 
     def sopn_progress_by_election(self, election_qs):
@@ -152,4 +145,12 @@ class HomePageView(ContributorsMixin, FormView):
             random_offset = random.randrange(min(50, task_count))
             context['person_task'] = PersonTask.objects.unfinished_tasks()[random_offset]
 
+        return context
+
+class PostcodeView(TemplateView):
+    template_name = "candidates/postcode_view.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(PostcodeView, self).get_context_data(**kwargs)
+        context['pees'] = get_post_elections_from_postcode(kwargs['postcode'])
         return context

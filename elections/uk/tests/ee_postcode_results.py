@@ -128,7 +128,7 @@ ee_se240ag_result = {
             "group_type": None
         },
         {
-            "election_id": "local.place-name-2.2017-03-23",
+            "election_id": "parl.dulwich-and-west-norwood.2017-03-23",
             "division": {
                 "division_election_sub_type": "",
                 "division_type": "WMC",
