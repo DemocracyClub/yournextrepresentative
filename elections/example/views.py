@@ -9,6 +9,6 @@ from candidates.views.mixins import ContributorsMixin
 from elections.uk.forms import PostcodeForm
 
 
-class ConstituencyPostcodeFinderView(ContributorsMixin, FormView):
+class HomePageView(ContributorsMixin, FormView):
     template_name = 'candidates/finder.html'
     form_class = PostcodeForm

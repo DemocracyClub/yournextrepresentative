@@ -22,7 +22,7 @@ from ..forms import PostcodeForm
 from ..geo_helpers import get_post_elections_from_postcode
 
 
-class ConstituencyPostcodeFinderView(ContributorsMixin, FormView):
+class HomePageView(ContributorsMixin, FormView):
     template_name = 'candidates/finder.html'
     form_class = PostcodeForm
 
@@ -52,7 +52,7 @@ class ConstituencyPostcodeFinderView(ContributorsMixin, FormView):
                 'prefix': self.get_prefix(),
             }
         else:
-            return super(ConstituencyPostcodeFinderView, self).get_form_kwargs()
+            return super(HomePageView, self).get_form_kwargs()
 
     def get(self, request, *args, **kwargs):
         if 'q' in request.GET:
@@ -101,9 +101,8 @@ class ConstituencyPostcodeFinderView(ContributorsMixin, FormView):
 
         return context
 
-
     def get_context_data(self, **kwargs):
-        context = super(ConstituencyPostcodeFinderView, self).get_context_data(**kwargs)
+        context = super(HomePageView, self).get_context_data(**kwargs)
         context['postcode_form'] = kwargs.get('form') or PostcodeForm()
         context['show_postcode_form'] = True
         context['show_name_form'] = False

@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^uk_results/', include('uk_results.urls')),
     url(
         r'^$',
-        views.ConstituencyPostcodeFinderView.as_view(),
+        views.HomePageView.as_view(),
         name='lookup-postcode'
     ),
     url(

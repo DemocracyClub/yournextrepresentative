@@ -76,7 +76,7 @@ def fake_requests_for_every_election(url, *args, **kwargs):
 
 @attr(country='uk')
 @patch('elections.uk.geo_helpers.requests')
-class TestConstituencyPostcodeFinderView(WebTest):
+class TestHomePageView(WebTest):
     def setUp(self):
         gb_parties = PartySetFactory.create(slug='gb', name='Great Britain')
         commons = ParliamentaryChamberFactory.create()

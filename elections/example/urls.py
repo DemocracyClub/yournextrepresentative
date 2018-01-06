@@ -9,7 +9,7 @@ urlpatterns = [
     # default views from the candidates application.
     url(
         r'^$',
-        views.ConstituencyPostcodeFinderView.as_view(),
+        views.HomePageView.as_view(),
         name='lookup-postcode'
     ),
 
