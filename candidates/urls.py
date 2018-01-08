@@ -275,12 +275,6 @@ patterns_to_format = [
         'view': views.PersonSearch.as_view(),
         'name': 'person-search'
     },
-    # TODO Add this back in
-    # {
-    #     'pattern': r'^geolocator/(?P<latitude>[\d.\-]+),(?P<longitude>[\d.\-]+)',
-    #     'view': views.GeoLocatorView.as_view(),
-    #     'name': 'geolocator'
-    # }
 ]
 
 urlpatterns += [

@@ -19,7 +19,9 @@ from tasks.models import PersonTask
 from elections.models import Election
 
 from ..forms import PostcodeForm
-from elections.uk.geo_helpers import get_post_elections_from_postcode
+from elections.uk.geo_helpers import (
+    get_post_elections_from_postcode, get_post_elections_from_coords
+)
 
 
 class HomePageView(ContributorsMixin, FormView):
@@ -154,3 +156,17 @@ class PostcodeView(TemplateView):
         context = super(PostcodeView, self).get_context_data(**kwargs)
         context['pees'] = get_post_elections_from_postcode(kwargs['postcode'])
         return context
+
+
+class GeoLocatorView(TemplateView):
+    template_name = "candidates/postcode_view.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(GeoLocatorView, self).get_context_data(**kwargs)
+
+        latitude = kwargs['latitude']
+        longitude = kwargs['longitude']
+        coords = ",".join((latitude, longitude))
+        context['pees'] = get_post_elections_from_coords(coords)
+        return context
+

@@ -27,6 +27,12 @@ def fake_requests_for_every_election(url, *args, **kwargs):
     if url == urljoin(EE_BASE_URL, '/api/elections/?postcode=se240ag'):
         status_code = 200
         json_result = ee_se240ag_result
+    elif url == urljoin(EE_BASE_URL, '/api/elections/?postcode=se240xx'):
+        status_code = 400
+        json_result = {"detail": "Unknown postcode"}
+    elif url == urljoin(EE_BASE_URL, '/api/elections/?coords=-0.143207%2C51.5'):
+        status_code = 200
+        json_result = ee_se240ag_result
     elif url == urljoin(EE_BASE_URL, '/api/elections/?postcode=sw1a1aa'):
         status_code = 200
         json_result = ee_sw1a1aa_result
@@ -62,33 +68,7 @@ class TestHomePageView(WebTest):
             party_set=gb_parties,
         )
 
-    def test_front_page(self, mock_requests):
-        response = self.app.get('/')
-        # Check that there is a form on that page
-        response.forms['form-postcode']
-
-    def test_valid_postcode_redirects_to_constituency(self, mock_requests):
-        mock_requests.get.side_effect = fake_requests_for_every_election
-        response = self.app.get('/')
-        form = response.forms['form-postcode']
-        form['q'] = 'SE24 0AG'
-        response = form.submit()
-        self.assertEqual(response.status_code, 302)
-        split_location = urlsplit(response.location)
-        self.assertEqual(split_location.path, '/')
-        self.assertEqual(split_location.query, 'q=SE24%200AG')
-        response = self.app.get(response.location)
-        split_location = urlsplit(response.location)
-        self.assertEqual(
-            split_location.path,
-            '/postcode/SE24%200AG/',
-        )
-        # follow the redirect
-        response = response.follow()
-        self.assertEqual(len(response.context['pees']), 1)
-
-    def test_valid_postcode_returns_multiple_areas(self, mock_requests):
-        mock_requests.get.side_effect = fake_requests_for_every_election
+    def _setup_extra_posts(self):
         # Create some extra posts and areas:
         london_assembly = ParliamentaryChamberExtraFactory.create(
             slug='london-assembly', base__name='London Assembly'
@@ -115,7 +95,53 @@ class TestHomePageView(WebTest):
             slug='london',
             base__label='2016 London Assembly Election (Additional)',
         )
-        # ----------------------------
+
+    def test_front_page(self, mock_requests):
+        response = self.app.get('/')
+        # Check that there is a form on that page
+        response.forms['form-postcode']
+
+    def test_valid_postcode_redirects_to_constituency(self, mock_requests):
+        mock_requests.get.side_effect = fake_requests_for_every_election
+        response = self.app.get('/')
+        form = response.forms['form-postcode']
+        form['q'] = 'SE24 0AG'
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+        split_location = urlsplit(response.location)
+        self.assertEqual(split_location.path, '/')
+        self.assertEqual(split_location.query, 'q=SE24%200AG')
+        response = self.app.get(response.location)
+        split_location = urlsplit(response.location)
+        self.assertEqual(
+            split_location.path,
+            '/postcode/SE24%200AG/',
+        )
+        # follow the redirect
+        response = response.follow()
+        self.assertEqual(len(response.context['pees']), 1)
+
+    def test_invalid_postcode(self, mock_requests):
+        mock_requests.get.side_effect = fake_requests_for_every_election
+        response = self.app.get('/')
+        form = response.forms['form-postcode']
+        form['q'] = 'SE24 0XX'
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+        response = self.app.get(response.location)
+
+        self.assertEqual(
+            response.context['postcode_form'].errors,
+            {'q': [
+                u'The postcode \u201cSE24 0XX\u201d couldn\u2019t be found'
+            ]}
+        )
+
+    def test_valid_postcode_returns_multiple_areas(self, mock_requests):
+        mock_requests.get.side_effect = fake_requests_for_every_election
+
+        self._setup_extra_posts()
+
         response = self.app.get('/')
         form = response.forms['form-postcode']
         form['q'] = 'SE24 0AG'
@@ -183,3 +209,17 @@ class TestHomePageView(WebTest):
         self.assertEqual(
             a['href'],
             '/person/create/select_election?name=SW1A 1\u04d4A')
+
+    def test_valid_coords_redirects_to_constituency(self, mock_requests):
+        mock_requests.get.side_effect = fake_requests_for_every_election
+        response = self.app.get('/geolocator/-0.143207,51.5')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['pees']), 1)
+
+
+    def test_valid_coords_redirects_with_multiple_elections(self, mock_requests):
+        mock_requests.get.side_effect = fake_requests_for_every_election
+        self._setup_extra_posts()
+        response = self.app.get('/geolocator/-0.143207,51.5')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['pees']), 3)
