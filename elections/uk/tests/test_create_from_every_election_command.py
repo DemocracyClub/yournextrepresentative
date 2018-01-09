@@ -219,7 +219,7 @@ class EE_ImporterTest(WebTest):
         })
 
         self.assertEqual(every_election.PostExtra.objects.all().count(), 0)
-        with self.assertNumQueries(290):
+        with self.assertNumQueries(303):
             call_command('uk_create_elections_from_every_election')
         self.assertEqual(
             every_election.PostExtraElection.objects.all().count(),

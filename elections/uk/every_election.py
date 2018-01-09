@@ -74,7 +74,7 @@ class EEElection(dict):
             if self['voting_system']:
                 party_lists_in_use = self['voting_system']['uses_party_lists']
 
-            election_obj, created = YNRElection.objects.get_or_create(
+            election_obj, created = YNRElection.objects.update_or_create(
                 slug=self['election_id'],
                 election_date=self['poll_open_date'],
                 defaults={
@@ -116,7 +116,7 @@ class EEElection(dict):
                 country = "gb"
 
             self.party_set_object, self.party_set_created =\
-                PartySet.objects.get_or_create(
+                PartySet.objects.update_or_create(
                     slug=country, defaults={'name': partyset_name}
                 )
         return (self.party_set_object, self.party_set_created)
