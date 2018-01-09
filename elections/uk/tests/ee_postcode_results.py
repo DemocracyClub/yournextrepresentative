@@ -66,7 +66,7 @@ ee_se240ag_result = {
     "count": 3,
     "results": [
         {
-            "election_id": "local.place-name.2017-03-23",
+            "election_id": "gla.c.lambeth-and-southwark.2016-05-05",
             "division": {
                 "division_election_sub_type": "",
                 "division_type": "LAC",
@@ -97,7 +97,7 @@ ee_se240ag_result = {
             "group_type": None
         },
         {
-            "election_id": "local.place-name-1.2017-03-23",
+            "election_id": "gla.a.london.2016-05-05",
             "division": {
                 "division_election_sub_type": "",
                 "division_type": "GLA",
@@ -128,7 +128,7 @@ ee_se240ag_result = {
             "group_type": None
         },
         {
-            "election_id": "local.place-name-2.2017-03-23",
+            "election_id": "parl.dulwich-and-west-norwood.2017-03-23",
             "division": {
                 "division_election_sub_type": "",
                 "division_type": "WMC",

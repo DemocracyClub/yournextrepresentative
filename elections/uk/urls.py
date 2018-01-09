@@ -12,8 +12,18 @@ urlpatterns = [
     url(r'^uk_results/', include('uk_results.urls')),
     url(
         r'^$',
-        views.ConstituencyPostcodeFinderView.as_view(),
+        views.HomePageView.as_view(),
         name='lookup-postcode'
+    ),
+    url(
+        r'^postcode/(?P<postcode>[^/]+)/$',
+        views.PostcodeView.as_view(),
+        name='postcode-view'
+    ),
+    url(
+        r'^geolocator/(?P<latitude>[\d.\-]+),(?P<longitude>[\d.\-]+)',
+        views.GeoLocatorView.as_view(),
+        name='geolocator'
     ),
     url(
         r'^election/{election}/post/(?P<post_id>[-\w\:]+)/(?P<ignored_slug>{ignore_pattern})$'.format(
@@ -65,4 +75,9 @@ urlpatterns = [
     url(r'^get_involved/$',
         views.HelpOutCTAView.as_view()
     ),
+    url(r'^areas-of-type/(?P<area_type>.*?)(?:/(?P<ignored_slug>.*))?$',
+        views.AreasOfTypeRedirectView.as_view(),
+        name='areas-of-type-view',
+    ),
+
 ]

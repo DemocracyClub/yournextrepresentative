@@ -213,7 +213,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 )
             post = last_candidacy.post
             if post is not None:
-                image_search_query += ' "{0}"'.format(post.area.name)
+                image_search_query += ' "{0}"'.format(post.label)
         return 'https://www.google.co.uk/search?tbm=isch&q={0}'.format(
             urlquote(image_search_query)
         )

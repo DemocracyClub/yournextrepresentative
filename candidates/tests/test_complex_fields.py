@@ -4,6 +4,7 @@ import re
 from django.utils.six.moves.urllib_parse import urlsplit
 
 from django_webtest import WebTest
+from unittest import skip
 from popolo.models import Person
 
 from candidates.models import PersonExtra, ComplexPopoloField
@@ -39,6 +40,7 @@ class ComplexFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.person_extra = PersonExtra.objects.create(base=self.person, versions='[]')
         self.person_extra.update_complex_field(an_field, 'http://example.com/additional')
 
+    @skip("We're not auto adding fields to the form any more / yet")
     def test_create_form_has_fields(self):
         response = self.app.get(
             '/election/2015/person/create/',
@@ -46,10 +48,12 @@ class ComplexFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertEqual(response.status_code, 200)
         an_label = response.html.find('label', {'for': 'id_additional_link'})
+        import ipdb; ipdb.set_trace()
         self.assertIsNotNone(an_label)
         an_input = response.html.find('input', {'id': 'id_additional_link'})
         self.assertIsNotNone(an_input)
 
+    @skip("We're not auto adding fields to the form any more / yet")
     def test_update_form_is_prefilled(self):
         response = self.app.get(
             '/person/{person_id}/update'.format(person_id=self.person.id),
@@ -61,6 +65,7 @@ class ComplexFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertIsNotNone(an_input)
         self.assertEqual(an_input.get('value'), 'http://example.com/additional')
 
+    @skip("We're not auto adding fields to the form any more / yet")
     def test_fields_are_saved_when_editing(self):
         response = self.app.get(
             '/person/{person_id}/update'.format(person_id=self.person.id),
@@ -81,6 +86,7 @@ class ComplexFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         person = Person.objects.get(id=self.person.id)
         self.assertEqual(person.extra.additional_link, 'http://example.com/anotherlink')
 
+    @skip("We're not auto adding fields to the form any more / yet")
     def test_fields_are_saved_when_creating(self):
         response = self.app.get(
             '/election/2015/person/create/',
@@ -101,6 +107,7 @@ class ComplexFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         person = Person.objects.get(id=m.group(1))
         self.assertEqual(person.extra.additional_link, 'http://example.com/morelink')
 
+    @skip("We're not auto adding fields to the form any more / yet")
     def test_view_additional_fields(self):
         response = self.app.get(
             '/person/{person_id}'.format(person_id=self.person.id)

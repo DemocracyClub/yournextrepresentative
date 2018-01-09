@@ -20,28 +20,13 @@ from rest_framework.response import Response
 from images.models import Image
 from candidates import serializers
 from candidates import models as extra_models
-from elections.models import AreaType, Election
-from popolo.models import Area, Membership, Person, Post
+from elections.models import Election
+from popolo.models import Membership, Person, Post
 from rest_framework import pagination, viewsets
+from elections.uk.geo_helpers import (
+    get_post_elections_from_coords, get_post_elections_from_postcode)
 
 from compat import text_type
-
-from ..election_specific import fetch_area_ids
-
-
-def fetch_posts_for_area(**kwargs):
-    areas = fetch_area_ids(**kwargs)
-
-    area_ids = [area[1] for area in areas]
-
-    posts = Post.objects.filter(
-        area__identifier__in=area_ids,
-    ).select_related(
-        'area', 'area__extra__type', 'organization', 'extra',
-    ).prefetch_related(
-        'extra__elections'
-    )
-    return posts
 
 
 def parse_date(date_text):
@@ -81,7 +66,10 @@ class UpcomingElectionsView(View):
             }
 
         try:
-            posts = fetch_posts_for_area(postcode=postcode, coords=coords)
+            if coords:
+                pees = get_post_elections_from_coords(coords)
+            else:
+                pees = get_post_elections_from_postcode(postcode)
         except Exception as e:
             errors = {
                 'error': e.message
@@ -93,23 +81,16 @@ class UpcomingElectionsView(View):
             )
 
         results = []
-        for post in posts:
-            for election in post.extra.elections.all():
-                if not handle_election(election, request, only_upcoming=True):
-                    continue
-                results.append({
-                    'post_name': post.label,
-                    'post_slug': post.extra.slug,
-                    'organization': post.organization.name,
-                    'area': {
-                        'type': post.area.extra.type.name,
-                        'name': post.area.name,
-                        'identifier': post.area.identifier,
-                    },
-                    'election_date': text_type(election.election_date),
-                    'election_name': election.name,
-                    'election_id': election.slug
-                })
+        pees = pees.select_related('postextra__base', 'election')
+        for pee in pees:
+            results.append({
+                'post_name': pee.postextra.base.label,
+                'post_slug': pee.postextra.slug,
+                'organization': pee.postextra.base.organization.name,
+                'election_date': text_type(pee.election.election_date),
+                'election_name': pee.election.name,
+                'election_id': pee.election.slug
+            })
 
         return HttpResponse(
             json.dumps(results), content_type='application/json'
@@ -135,69 +116,68 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
             return self._error('Postcode or Co-ordinates required')
 
         try:
-            posts = fetch_posts_for_area(postcode=postcode, coords=coords)
+            if coords:
+                pees = get_post_elections_from_coords(coords)
+            else:
+                pees = get_post_elections_from_postcode(postcode)
         except Exception as e:
             return self._error(e.message)
 
         results = []
-        for post in posts:
-            for election in post.extra.elections.all():
-                if not handle_election(election, request):
-                    continue
-                candidates = []
-                for membership in post.memberships.filter(
-                        extra__election=election,
-                        role=election.candidate_membership_role) \
-                        .prefetch_related(
-                            Prefetch(
-                                'person__memberships',
-                                Membership.objects.select_related(
-                                    'on_behalf_of__extra',
-                                    'organization__extra',
-                                    'post__extra',
-                                    'extra__election',
-                                )
-                            ),
-                            Prefetch(
-                                'person__extra__images',
-                                Image.objects.select_related('extra__uploading_user')
-                            ),
-                            'person__other_names',
-                            'person__contact_details',
-                            'person__links',
-                            'person__identifiers',
-                            'person__extra_field_values',
-                        ) \
-                        .select_related('person__extra'):
-                    candidates.append(
-                        serializers.NoVersionPersonSerializer(
-                            instance=membership.person,
-                            context={
-                                'request': request,
-                            },
-                            read_only=True,
-                        ).data
-                    )
-                election = {
-                    'election_date': text_type(election.election_date),
-                    'election_name': election.name,
-                    'election_id': election.slug,
-                    'post': {
-                        'post_name': post.label,
-                        'post_slug': post.extra.slug,
-                        'post_candidates': None
-                    },
-                    'area': {
-                        'type': post.area.extra.type.name,
-                        'name': post.area.name,
-                        'identifier': post.area.identifier,
-                    },
-                    'organization': post.organization.name,
-                    'candidates': candidates,
+        pees = pees.select_related(
+            'postextra__base__organization',
+            'election'
+        )
+        for pee in pees:
+            candidates = []
+            for membership in pee.postextra.base.memberships.filter(
+                    extra__election=pee.election,
+                    role=pee.election.candidate_membership_role) \
+                    .prefetch_related(
+                        Prefetch(
+                            'person__memberships',
+                            Membership.objects.select_related(
+                                'on_behalf_of__extra',
+                                'organization__extra',
+                                'post__extra',
+                                'extra__election',
+                            )
+                        ),
+                        Prefetch(
+                            'person__extra__images',
+                            Image.objects.select_related('extra__uploading_user')
+                        ),
+                        'person__other_names',
+                        'person__contact_details',
+                        'person__links',
+                        'person__identifiers',
+                        'person__extra_field_values',
+                    ) \
+                    .select_related('person__extra'):
+                candidates.append(
+                    serializers.NoVersionPersonSerializer(
+                        instance=membership.person,
+                        context={
+                            'request': request,
+                        },
+                        read_only=True,
+                    ).data
+                )
+            election = {
+                'election_date': text_type(pee.election.election_date),
+                'election_name': pee.election.name,
+                'election_id': pee.election.slug,
+                'post': {
+                    'post_name': pee.postextra.base.label,
+                    'post_slug': pee.postextra.slug,
+                    'post_candidates': None
+                },
+                'organization': pee.postextra.base.organization.name,
+                'candidates': candidates,
 
-                }
+            }
 
-                results.append(election)
+            results.append(election)
 
         return Response(results)
 
@@ -338,7 +318,6 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = extra_models.PostExtra.objects \
         .select_related(
             'base__organization__extra',
-            'base__area__extra__type',
             'party_set',
         ) \
         .prefetch_related(
@@ -347,7 +326,6 @@ class PostViewSet(viewsets.ModelViewSet):
                 extra_models.PostExtraElection.objects \
                     .select_related('election')
             ),
-            'base__area__other_identifiers',
             Prefetch(
                 'base__memberships',
                 Membership.objects.select_related(
@@ -362,20 +340,6 @@ class PostViewSet(viewsets.ModelViewSet):
         .order_by('base__id')
     lookup_field = 'slug'
     serializer_class = serializers.PostExtraSerializer
-    pagination_class = ResultsSetPagination
-
-
-class AreaViewSet(viewsets.ModelViewSet):
-    queryset = Area.objects \
-        .prefetch_related('extra') \
-        .order_by('id')
-    serializer_class = serializers.AreaSerializer
-    pagination_class = ResultsSetPagination
-
-
-class AreaTypeViewSet(viewsets.ModelViewSet):
-    queryset = AreaType.objects.order_by('id')
-    serializer_class = serializers.AreaTypeSerializer
     pagination_class = ResultsSetPagination
 
 

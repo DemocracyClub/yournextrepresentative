@@ -4,7 +4,7 @@ from datetime import date, timedelta
 from django.test import TestCase
 
 from candidates.tests.factories import (
-    AreaTypeFactory, ElectionFactory, ParliamentaryChamberExtraFactory,
+    ElectionFactory, ParliamentaryChamberExtraFactory,
 )
 
 from .models import Election
@@ -13,14 +13,12 @@ from .models import Election
 class ElectionTests(TestCase):
 
     def setUp(self):
-        area_type = AreaTypeFactory.create()
         org = ParliamentaryChamberExtraFactory.create()
 
         self.election = ElectionFactory.create(
             slug='2015',
             name='2015 Election',
             election_date=date.today(),
-            area_types=(area_type,),
             organization=org.base
         )
 

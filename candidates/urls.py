@@ -21,8 +21,6 @@ api_router = routers.DefaultRouter()
 api_router.register(r'persons', views.PersonViewSet, base_name='person')
 api_router.register(r'organizations', views.OrganizationViewSet)
 api_router.register(r'posts', views.PostViewSet)
-api_router.register(r'areas', views.AreaViewSet)
-api_router.register(r'area_types', views.AreaTypeViewSet)
 api_router.register(r'elections', views.ElectionViewSet)
 api_router.register(r'party_sets', views.PartySetViewSet)
 api_router.register(r'images', views.ImageViewSet)
@@ -183,9 +181,9 @@ patterns_to_format = [
         'name': 'areas-view',
     },
     {
-        'pattern': r'^areas-of-type/(?P<area_type>.*?)(?:/(?P<ignored_slug>.*))?$',
-        'view': views.AreasOfTypeView.as_view(),
-        'name': 'areas-of-type-view',
+        'pattern': r'^posts-of-type/(?P<post_type>.*?)(?:/(?P<ignored_slug>.*))?$',
+        'view': views.PostsOfTypeView.as_view(),
+        'name': 'posts-of-type-view',
     },
     {
         'pattern': r'^election/{election}/party/(?P<organization_id>[^/]+)/(?P<ignored_slug>.*)$',
@@ -277,11 +275,6 @@ patterns_to_format = [
         'view': views.PersonSearch.as_view(),
         'name': 'person-search'
     },
-    {
-        'pattern': r'^geolocator/(?P<latitude>[\d.\-]+),(?P<longitude>[\d.\-]+)',
-        'view': views.GeoLocatorView.as_view(),
-        'name': 'geolocator'
-    }
 ]
 
 urlpatterns += [

@@ -64,7 +64,6 @@ class PostElectionCombinationTests(UK2015ExamplesMixin, TestCase):
             slug='2005',
             name='2005 General Election',
             for_post_role='Member of Parliament',
-            area_types=(self.wmc_area_type,)
         )
         # Create a broken candidacy, where the post / election
         # combination isn't represented in PostExtraElection
@@ -100,7 +99,6 @@ class PreventCreatingBadMembershipExtras(UK2015ExamplesMixin, TestCase):
             slug='2005',
             name='2005 General Election',
             for_post_role='Member of Parliament',
-            area_types=(self.wmc_area_type,)
         )
         membership = Membership.objects.create(
             role='Candidate',

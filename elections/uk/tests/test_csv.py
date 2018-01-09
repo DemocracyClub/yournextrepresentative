@@ -24,24 +24,6 @@ class CSVTests(UK2015ExamplesMixin, TestCase):
             base__email='jowell@example.com',
             base__gender='female',
         )
-        camberwell_area_extra = self.camberwell_post_extra.base.area.extra
-        camberwell_area_extra.base.other_identifiers.create(
-            scheme='mapit-area-url',
-            identifier='http://mapit.mysociety.org/area/65913',
-        )
-        camberwell_area_extra.base.other_identifiers.create(
-            scheme='gss',
-            identifier='E14000615',
-        )
-        dulwich_area_extra = self.dulwich_post_extra.base.area.extra
-        dulwich_area_extra.base.other_identifiers.create(
-            scheme='mapit-area-url',
-            identifier='http://mapit.mysociety.org/area/65808',
-        )
-        dulwich_area_extra.base.other_identifiers.create(
-            scheme='gss',
-            identifier='E14000673',
-        )
         factories.CandidacyExtraFactory.create(
             election=self.election,
             base__person=self.gb_person_extra.base,
@@ -81,7 +63,7 @@ class CSVTests(UK2015ExamplesMixin, TestCase):
         self.assertEqual(person_dict['id'], 2009)
 
         # Test the extra CSV fields:
-        self.assertEqual(person_dict['gss_code'], 'E14000615')
+        self.assertEqual(person_dict['gss_code'], '')
         self.assertEqual(person_dict['parlparse_id'], 'uk.org.publicwhip/person/10326')
         self.assertEqual(person_dict['theyworkforyou_url'], 'http://www.theyworkforyou.com/mp/10326')
         self.assertEqual(person_dict['party_ec_id'], 'PP53')

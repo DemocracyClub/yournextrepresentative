@@ -3,7 +3,6 @@ from .api import *
 from .areas import *
 from .candidacies import *
 from .constituencies import *
-from .frontpage import *
 from .help import *
 from .parties import *
 from .people import *

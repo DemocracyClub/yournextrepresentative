@@ -57,31 +57,6 @@ class SourceSerializer(serializers.ModelSerializer):
         model = popolo_models.Source
         fields = ('note', 'url')
 
-
-class AreaTypeSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = election_models.AreaType
-        fields = ('id', 'url',  'name', 'source')
-
-
-class AreaSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = popolo_models.Area
-        fields = (
-            'id',
-            'url',
-            'name',
-            'identifier',
-            'classification',
-            'other_identifiers',
-            'parent',
-            'type',
-        )
-
-    other_identifiers = IdentifierSerializer(many=True, read_only=True)
-    type = AreaTypeSerializer(source='extra.type')
-
-
 class ObjectWithImageField(serializers.RelatedField):
 
     def to_representation(self, value):
@@ -221,7 +196,6 @@ class ElectionSerializer(MinimalElectionSerializer):
             'election_date',
             'current',
             'use_for_candidate_suggestions',
-            'area_types',
             'area_generation',
             'organization',
             'party_lists_in_use',
@@ -233,8 +207,6 @@ class ElectionSerializer(MinimalElectionSerializer):
 
 
     organization = MinimalOrganizationExtraSerializer(source='organization.extra')
-
-    area_types = AreaTypeSerializer(many=True, read_only=True)
 
 
 class MinimalPostExtraSerializer(serializers.HyperlinkedModelSerializer):
@@ -410,14 +382,12 @@ class PostExtraSerializer(MinimalPostExtraSerializer):
             'group',
             'party_set',
             'organization',
-            'area',
             'elections',
             'memberships',
         )
 
     role = serializers.ReadOnlyField(source='base.role')
     party_set = PartySetSerializer(read_only=True)
-    area = AreaSerializer(source='base.area')
 
     memberships = MembershipSerializer(
         many=True, read_only=True, source='base.memberships')

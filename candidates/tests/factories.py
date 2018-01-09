@@ -1,19 +1,11 @@
 from __future__ import unicode_literals
 
-from datetime import date, timedelta
+from datetime import timedelta
+import re
 
 import factory
 
 from .dates import date_in_near_future, FOUR_YEARS_IN_DAYS
-
-
-class AreaTypeFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = 'elections.AreaType'
-
-    name = 'WMC'
-    source = 'MapIt'
 
 
 class PartySetFactory(factory.DjangoModelFactory):
@@ -65,15 +57,6 @@ class ElectionFactory(BaseElectionFactory):
     class Meta:
         model = 'elections.Election'
 
-    # FIXME: not sure why this can't be in the base class
-    @factory.post_generation
-    def area_types(self, create, extracted, **kwargs):
-        if not create:
-            return
-        if extracted:
-            for area_type in extracted:
-                self.area_types.add(area_type)
-
 
 class EarlierElectionFactory(BaseElectionFactory):
 
@@ -86,29 +69,6 @@ class EarlierElectionFactory(BaseElectionFactory):
         date_in_near_future - timedelta(days=FOUR_YEARS_IN_DAYS)
     current = False
     use_for_candidate_suggestions = True
-
-    # FIXME: not sure why this can't be in the base class
-    @factory.post_generation
-    def area_types(self, create, extracted, **kwargs):
-        if not create:
-            return
-        if extracted:
-            for area_type in extracted:
-                self.area_types.add(area_type)
-
-
-class AreaFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = 'popolo.Area'
-
-
-class AreaExtraFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = 'candidates.AreaExtra'
-
-    base = factory.SubFactory(AreaFactory)
 
 
 class PostFactory(factory.DjangoModelFactory):
@@ -138,9 +98,17 @@ class PostExtraFactory(factory.DjangoModelFactory):
             return
         if extracted:
             for election in extracted:
+                if re.search("\d\d\d\d-\d\d-\d\d$", election.slug):
+                    parts = election.slug.split('.')
+                    parts.insert(-1, self.slug)
+                    ballot_paper_id = ".".join(parts)
+                else:
+                    ballot_paper_id = "{}.{}".format(election.slug, self.slug)
+
                 PostExtraElectionFactory.create(
                     postextra=self,
-                    election=election
+                    election=election,
+                    ballot_paper_id=ballot_paper_id,
                 )
 
 

@@ -8,11 +8,11 @@ from django.db import transaction
 
 
 from candidates.models import (
-    AreaExtra, OrganizationExtra, PartySet, PostExtra, PostExtraElection
+    OrganizationExtra, PartySet, PostExtra, PostExtraElection
 )
 from candidates.models import check_constraints
 from elections.models import AreaType, Election
-from popolo.models import Area, Organization, Post
+from popolo.models import Organization, Post
 
 
 class Command(BaseCommand):
@@ -240,18 +240,6 @@ class Command(BaseCommand):
             # TODO this might not always be true, get the count from EE
             winner_count = 1
 
-        area, _ = Area.objects.update_or_create(
-            identifier=area_identifier,
-            defaults={
-                'name': area_name,
-            }
-        )
-
-        AreaExtra.objects.get_or_create(
-            base=area,
-            defaults={'type': area_type}
-        )
-
         try:
             post_extra = PostExtra.objects.get(slug=post_extra_slug)
             post = post_extra.base
@@ -265,7 +253,6 @@ class Command(BaseCommand):
                 slug=post_extra_slug,
             )
 
-        post.area = area
         post.role = post_role
         post.label = area_name
         post.organization = organization_extra.base

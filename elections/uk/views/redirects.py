@@ -99,3 +99,12 @@ class HelpOutCTAView(RedirectView):
                 postextra_election.postextra.slug
             )
         return "/?get_involved_link=1"
+
+class AreasOfTypeRedirectView(RedirectView):
+    permanent = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        return '/posts-of-type/{}/{}'.format(
+            kwargs['area_type'],
+            kwargs['ignored_slug'],
+        )
