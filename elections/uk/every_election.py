@@ -228,6 +228,7 @@ class EveryElectionImporter(object):
         url = "{}?{}".format(url, prams)
         while url:
             req = requests.get(url)
+            req.raise_for_status()
             data = req.json()
             for result in data['results']:
                 election_id = result['election_id']
