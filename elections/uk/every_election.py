@@ -1,4 +1,4 @@
-import requests
+from collections import OrderedDict
 
 try:
     #python2
@@ -6,6 +6,8 @@ try:
 except ImportError:
     #python3
     from urllib.parse import urlencode
+
+import requests
 
 from django.conf import settings
 
@@ -224,7 +226,7 @@ class EveryElectionImporter(object):
         """
 
         url = "{}api/elections/".format(self.EE_BASE_URL)
-        prams = urlencode(self.query_args)
+        prams = urlencode(OrderedDict(sorted(self.query_args.items())))
         url = "{}?{}".format(url, prams)
         while url:
             req = requests.get(url)
