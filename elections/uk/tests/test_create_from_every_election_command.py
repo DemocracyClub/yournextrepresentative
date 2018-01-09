@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from mock import patch, Mock
 
 from django.utils.six.moves.urllib_parse import urljoin
+from django.core.management import call_command
 from django.conf import settings
 
 from django_webtest import WebTest
@@ -210,5 +211,38 @@ class EE_ImporterTest(WebTest):
         self.assertEqual(every_election.YNRElection.objects.all().count(), 9)
         self.assertEqual(check_constraints(), [])
 
+    @patch('elections.uk.every_election.requests')
+    def test_import_management_command(self, mock_requests):
+        mock_requests.get.side_effect = lambda m: Mock(**{
+            'json.return_value': each_type_of_election_on_one_day,
+            'status_code': 200
+        })
 
-
+        self.assertEqual(every_election.PostExtra.objects.all().count(), 0)
+        with self.assertNumQueries(290):
+            call_command('uk_create_elections_from_every_election')
+        self.assertEqual(
+            every_election.PostExtraElection.objects.all().count(),
+            15
+        )
+        self.assertEqual(
+            list(every_election.PostExtraElection.objects.all().values_list(
+                'ballot_paper_id', flat=True).order_by('ballot_paper_id')),
+            [
+                'local.adur.buckingham.2019-01-17',
+                'mayor.greater-manchester-ca.2019-01-17',
+                'mayor.hackney.2019-01-17',
+                'naw.c.aberavon.2019-01-17',
+                'naw.c.mid-and-west-wales.2019-01-17',
+                'naw.r.aberavon.2019-01-17',
+                'naw.r.mid-and-west-wales.2019-01-17',
+                'nia.lagan-valley.2019-01-17',
+                'parl.aberavon.2019-01-17',
+                'parl.ynys-mon.2019-01-17',
+                'pcc.avon-and-somerset.2019-01-17',
+                'sp.c.aberdeen-central.2019-01-17',
+                'sp.c.glasgow.2019-01-17',
+                'sp.r.aberdeen-central.2019-01-17',
+                'sp.r.glasgow.2019-01-17',
+            ]
+        )
