@@ -66,9 +66,6 @@ class EEElection(dict):
         return (self.organization_object, self.organization_created)
 
     def get_or_create_election(self):
-        if not self.children:
-            raise ValueError("Can't create YNR Election from a ballot ID")
-
         if hasattr(self, 'election_object'):
             self.election_created = False
         else:
@@ -206,6 +203,12 @@ class EEElection(dict):
         return (self.post_extra_object, self.post_extra_created)
 
 
+def is_mayor_or_pcc_ballot(election):
+    return (election['group_type'] == 'organisation' and\
+        not election['children'] and\
+        election['election_type']['election_type'] in ['mayor', 'pcc'])
+
+
 class EveryElectionImporter(object):
     def __init__(self, query_args=None):
         self.EE_BASE_URL = getattr(
@@ -239,13 +242,17 @@ class EveryElectionImporter(object):
 
     @property
     def ballot_ids(self):
-        return {
-            k: v
-            for k, v in self.election_tree.items()
-            if v['group_type'] is None
-        }
+        ballots = {}
+        for k, v in self.election_tree.items():
+            if v['group_type'] is None:
+                ballots[k] = v
+            if is_mayor_or_pcc_ballot(v):
+                ballots[k] = v
+                # note: this (intentionally) creates a circular reference
+                # we need to be careful how we parse this data structure
+                ballots[k]['group'] = v['election_id']
+        return ballots
 
     def get_parent(self, election_id):
         child = self.election_tree[election_id]
         return self.election_tree[child.parent]
-
