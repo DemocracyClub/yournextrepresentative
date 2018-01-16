@@ -73,11 +73,6 @@ class EE_ImporterTest(WebTest):
         parent = self.ee_importer.get_parent(self.child_id)
         self.assertEqual(parent['election_id'], self.parent_id)
 
-    def test_create_election_from_post(self):
-        child = self.ee_importer.election_tree[self.child_id]
-        with self.assertRaises(ValueError):
-            child.get_or_create_election()
-
     def test_create_election_from_election_dict(self):
         election = self.ee_importer.election_tree[self.parent_id]
 
@@ -208,7 +203,7 @@ class EE_ImporterTest(WebTest):
             parent = self.ee_importer.get_parent(ballot_id)
             election_dict.get_or_create_post_election(parent=parent)
         self.assertEqual(every_election.PostExtra.objects.all().count(), 11)
-        self.assertEqual(every_election.YNRElection.objects.all().count(), 9)
+        self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
         self.assertEqual(check_constraints(), [])
 
     @patch('elections.uk.every_election.requests')
