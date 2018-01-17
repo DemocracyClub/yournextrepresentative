@@ -5,9 +5,9 @@ from django_webtest import WebTest
 
 from .auth import TestUserMixin
 from .dates import (
-    processors_before,
-    processors_on_election_day,
-    processors_after,
+    templates_before,
+    templates_on_election_day,
+    templates_after,
 )
 from .uk_examples import UK2015ExamplesMixin
 from .factories import CandidacyExtraFactory, PersonExtraFactory
@@ -28,7 +28,7 @@ class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__on_behalf_of=self.labour_party_extra.base
         )
 
-    @override_settings(TEMPLATE_CONTEXT_PROCESSORS=processors_before)
+    @override_settings(TEMPLATES=templates_before)
     def test_no_was_elected_button_before(self):
         response = self.app.get(
             '/election/2015/post/65808/dulwich-and-west-norwood',
@@ -39,7 +39,7 @@ class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response,
         )
 
-    @override_settings(TEMPLATE_CONTEXT_PROCESSORS=processors_on_election_day)
+    @override_settings(TEMPLATES=templates_on_election_day)
     def test_show_was_elected_button_on_election_day(self):
         response = self.app.get(
             '/election/2015/post/65808/dulwich-and-west-norwood',
@@ -50,7 +50,7 @@ class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response,
         )
 
-    @override_settings(TEMPLATE_CONTEXT_PROCESSORS=processors_after)
+    @override_settings(TEMPLATES=templates_after)
     def test_show_was_elected_button_after(self):
         response = self.app.get(
             '/election/2015/post/65808/dulwich-and-west-norwood',
