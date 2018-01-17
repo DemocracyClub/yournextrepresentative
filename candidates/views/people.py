@@ -351,7 +351,7 @@ class UpdatePersonView(LoginRequiredMixin, FormView):
             json.loads(person.extra.versions)
         )
 
-        context = get_person_form_fields(context, kwargs['form'])
+        context = get_person_form_fields(context, context['form'])
 
         if 'highlight_field' in self.request.GET:
             context['couldnt_find_field_form'] = PersonTaskForm(
@@ -456,7 +456,7 @@ class NewPersonView(ElectionMixin, LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super(NewPersonView, self).get_context_data(**kwargs)
 
-        context['add_candidate_form'] = kwargs['form']
+        context['add_candidate_form'] = context['form']
 
         context['extra_fields'] = []
         extra_fields = ExtraField.objects.all()
