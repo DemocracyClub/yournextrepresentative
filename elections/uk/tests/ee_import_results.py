@@ -11161,17 +11161,7 @@ each_type_of_election_on_one_day = json.loads("""
         "election_type": "mayor"
       },
       "election_subtype": null,
-      "organisation": {
-        "official_identifier": "greater-manchester-ca",
-        "organisation_type": "combined-authority",
-        "organisation_subtype": "",
-        "official_name": "Greater Manchester",
-        "common_name": "Greater Manchester",
-        "gss": "",
-        "slug": "greater-manchester-ca",
-        "territory_code": "ENG",
-        "election_name": "Greater Manchester"
-      },
+      "organisation": null,
       "group": null,
       "group_type": "election",
       "children": [
@@ -11206,7 +11196,7 @@ each_type_of_election_on_one_day = json.loads("""
         "election_name": "Greater Manchester"
       },
       "group": "mayor.2019-01-17",
-      "group_type": null,
+      "group_type": "organisation",
       "children": [],
       "elected_role": "Mayor",
       "division": null,
@@ -11240,7 +11230,7 @@ each_type_of_election_on_one_day = json.loads("""
         "election_name": "Hackney local election"
       },
       "group": "mayor.2019-01-17",
-      "group_type": null,
+      "group_type": "organisation",
       "children": [],
       "elected_role": "Mayor",
       "division": null,
@@ -11837,17 +11827,7 @@ each_type_of_election_on_one_day = json.loads("""
         "election_type": "pcc"
       },
       "election_subtype": null,
-      "organisation": {
-        "official_identifier": "avon-and-somerset",
-        "organisation_type": "police_area",
-        "organisation_subtype": "",
-        "official_name": "Avon and Somerset Constabulary",
-        "common_name": "Avon and Somerset Constabulary",
-        "gss": "",
-        "slug": "avon-and-somerset",
-        "territory_code": "ENG",
-        "election_name": "Police and Crime Commissioner for Avon and Somerset Constabulary"
-      },
+      "organisation": null,
       "group": null,
       "group_type": "election",
       "children": [
@@ -11881,7 +11861,7 @@ each_type_of_election_on_one_day = json.loads("""
         "election_name": "Police and Crime Commissioner for Avon and Somerset Constabulary"
       },
       "group": "pcc.2019-01-17",
-      "group_type": null,
+      "group_type": "organisation",
       "children": [],
       "elected_role": "Police and Crime Commissioner",
       "division": null,
