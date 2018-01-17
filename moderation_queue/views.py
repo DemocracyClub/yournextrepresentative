@@ -465,8 +465,8 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                         'photo_review_url': photo_review_url,
                         'intro': _(
                             "Thank-you for uploading a photo of "
-                            "{candidate_name} to {site_name}, but "
-                            "unfortunately we can't use that image because:"
+                            "{candidate_name} to {site_name}, "
+                            "but unfortunately we can't use that image because:"
                         ).format(
                             candidate_name=candidate_name,
                             site_name=site_name

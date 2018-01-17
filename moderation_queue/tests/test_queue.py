@@ -7,7 +7,6 @@ import re
 from shutil import rmtree
 
 from django.contrib.auth.models import User, Group
-from django.contrib.sites.models import Site
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
@@ -88,7 +87,6 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             base__on_behalf_of=self.labour_party_extra.base
         )
 
-        self.site = Site.objects.create(domain='example.com', name='YNR')
         self.test_upload_user = User.objects.create_user(
             'john',
             'john@example.com',
@@ -145,7 +143,6 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         self.q3.delete()
         self.test_upload_user.delete()
         self.test_reviewer.delete()
-        self.site.delete()
         super(PhotoReviewTests, self).tearDown()
 
     def test_photo_review_queue_view_not_logged_in(self):
@@ -215,7 +212,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             self,
             mock_send_mail
     ):
-        with self.settings(SITE_ID=self.site.id):
+        with self.settings(SITE_ID=1):
             review_url = reverse(
                 'photo-review',
                 kwargs={'queued_image_id': self.q1.id}
@@ -234,8 +231,8 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             self.assertEqual('/moderation/photo/review', split_location.path)
 
             mock_send_mail.assert_called_once_with(
-                'YNR image upload approved',
-                "Thank-you for submitting a photo to YNR; that's been uploaded\nnow for the candidate page here:\n\n  http://localhost:80/person/2009/tessa-jowell\n\nMany thanks from the YNR volunteers\n",
+                'example.com image upload approved',
+                "Thank-you for submitting a photo to example.com; that's been\nuploaded now for the candidate page here:\n\n  http://localhost:80/person/2009/tessa-jowell\n\nMany thanks from the example.com volunteers\n",
                 'admins@example.com',
                 ['john@example.com'],
                 fail_silently=False
@@ -271,7 +268,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             self,
             mock_send_mail
     ):
-        with self.settings(SITE_ID=self.site.id):
+        with self.settings(SITE_ID=1):
             review_url = reverse(
                 'photo-review',
                 kwargs={'queued_image_id': self.q1.id}
@@ -297,8 +294,8 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             self.assertEqual(la.source, 'Rejected a photo upload from john')
 
             mock_send_mail.assert_called_once_with(
-                'YNR image moderation results',
-                "Thank-you for uploading a photo of Tessa Jowell to YNR, but\nunfortunately we can't use that image because:\n\n  There\'s no clear source or copyright statement\n\nYou can just reply to this email if you want to discuss that\nfurther, or you can try uploading a photo with a different\nreason or justification for its use using this link:\n\n  http://localhost:80/moderation/photo/upload/2009\n\nMany thanks from the YNR volunteers\n\n-- \nFor administrators' use: http://localhost:80/moderation/photo/review/{0}\n".format(self.q1.id),
+                'example.com image moderation results',
+                "Thank-you for uploading a photo of Tessa Jowell to example.com,\nbut unfortunately we can't use that image because:\n\n  There\'s no clear source or copyright statement\n\nYou can just reply to this email if you want to discuss that\nfurther, or you can try uploading a photo with a different\nreason or justification for its use using this link:\n\n  http://localhost:80/moderation/photo/upload/2009\n\nMany thanks from the example.com volunteers\n\n-- \nFor administrators' use: http://localhost:80/moderation/photo/review/{0}\n".format(self.q1.id),
                 'admins@example.com',
                 ['john@example.com', 'support@example.com'],
                 fail_silently=False
@@ -370,7 +367,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             self,
             mock_send_mail
     ):
-        with self.settings(SITE_ID=self.site.id):
+        with self.settings(SITE_ID=1):
             review_url = reverse(
                 'photo-review',
                 kwargs={'queued_image_id': self.q_no_uploading_user.id}
@@ -422,7 +419,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             self,
             mock_send_mail
     ):
-        with self.settings(SITE_ID=self.site.id):
+        with self.settings(SITE_ID=1):
             review_url = reverse(
                 'photo-review',
                 kwargs={'queued_image_id': self.q_no_uploading_user.id}
