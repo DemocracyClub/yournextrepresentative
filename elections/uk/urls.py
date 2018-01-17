@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.conf.urls import url, include
 
-from . import views
+from elections.uk import views
 
 post_ignored_slug_re = r'(?!record-winner$|retract-winner$|.*\.csv$).*'
 
