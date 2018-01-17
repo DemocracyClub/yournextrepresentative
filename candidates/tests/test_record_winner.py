@@ -135,7 +135,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/election/2015/post/65808/dulwich-and-west-norwood',
+            '/election/2015/post/65808/dulwich-and-west-norwood',
         )
 
         person = Person.objects.get(id=4322)
@@ -172,7 +172,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/election/2015/post/65808/dulwich-and-west-norwood',
+            '/election/2015/post/65808/dulwich-and-west-norwood',
         )
 
         person = Person.objects.get(id=4322)
@@ -213,7 +213,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/election/2015/post/65808/dulwich-and-west-norwood',
+            '/election/2015/post/65808/dulwich-and-west-norwood',
         )
 
         person = Person.objects.get(id=4322)
@@ -231,7 +231,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/election/2015/post/65808/dulwich-and-west-norwood',
+            '/election/2015/post/65808/dulwich-and-west-norwood',
         )
 
         person = Person.objects.get(id=2009)
@@ -265,7 +265,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/election/2015/post/65808/dulwich-and-west-norwood',
+            '/election/2015/post/65808/dulwich-and-west-norwood',
         )
 
         person = Person.objects.get(id=4322)
@@ -283,7 +283,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/election/2015/post/65808/dulwich-and-west-norwood',
+            '/election/2015/post/65808/dulwich-and-west-norwood',
         )
 
         person = Person.objects.get(id=2009)
@@ -415,7 +415,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location,
-            'http://localhost:80/election/2015/post/65808/dulwich-and-west-norwood',
+            '/election/2015/post/65808/dulwich-and-west-norwood',
         )
 
         person = Person.objects.get(id=4322)

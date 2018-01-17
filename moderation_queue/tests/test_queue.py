@@ -485,7 +485,7 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location,
-            'http://localhost:80/accounts/login/?next=/moderation/suggest-lock/')
+            '/accounts/login/?next=/moderation/suggest-lock/')
 
     def test_suggested_lock_review_view_no_suggestions(self):
         url = reverse('suggestions-to-lock-review-list')

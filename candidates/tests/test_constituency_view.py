@@ -307,7 +307,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location,
-            "http://localhost:80/election/2015/post/14419/edinburgh-east"
+            "/election/2015/post/14419/edinburgh-east"
         )
 
     def test_mark_may_stand_actually_standing(self):
@@ -339,7 +339,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location,
-            "http://localhost:80/election/2015/post/14419/edinburgh-east"
+            "/election/2015/post/14419/edinburgh-east"
         )
 
     def test_mark_may_stand_not_standing_again(self):
@@ -376,7 +376,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location,
-            "http://localhost:80/election/2015/post/14419/edinburgh-east"
+            "/election/2015/post/14419/edinburgh-east"
         )
 
     def test_mark_not_standing_standing_again(self):
@@ -414,7 +414,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location,
-            "http://localhost:80/election/2015/post/65808/dulwich-and-west-norwood"
+            "/election/2015/post/65808/dulwich-and-west-norwood"
         )
 
     def test_return_404_when_post_not_associated_with_election(self):

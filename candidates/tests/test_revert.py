@@ -178,7 +178,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         revert_form['source'] =  'Reverting to version 5469de7db0cbd155 for testing purposes'
         response = revert_form.submit()
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.location, 'http://localhost:80/person/2009')
+        self.assertEqual(response.location, '/person/2009')
 
         # Now get the person from the database and check if the
         # details are the same as the earlier version:

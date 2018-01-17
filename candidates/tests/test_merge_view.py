@@ -311,7 +311,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location,
-            'http://localhost:80/person/2009/tessa-jowell'
+            '/person/2009/tessa-jowell'
         )
 
         # Check that the redirect object has been made:
@@ -526,7 +526,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location,
-            'http://localhost:80/person/2111/stuart-jeffery'
+            '/person/2111/stuart-jeffery'
         )
 
         merged_person = Person.objects.get(pk='2111')

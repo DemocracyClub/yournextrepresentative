@@ -31,7 +31,7 @@ class TestRenameRestriction(TestUserMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/update-disallowed',
+            '/update-disallowed',
         )
 
     @override_settings(RESTRICT_RENAMES=True)
@@ -47,7 +47,7 @@ class TestRenameRestriction(TestUserMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/person/4322',
+            '/person/4322',
         )
 
     def test_renames_unrestricted_unprivileged(self):
@@ -62,7 +62,7 @@ class TestRenameRestriction(TestUserMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/person/4322',
+            '/person/4322',
         )
 
     def test_renames_unrestricted_privileged(self):
@@ -77,5 +77,5 @@ class TestRenameRestriction(TestUserMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/person/4322',
+            '/person/4322',
         )

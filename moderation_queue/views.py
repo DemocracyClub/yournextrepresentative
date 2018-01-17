@@ -402,7 +402,10 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 person=person,
                 source=update_message,
             )
-            candidate_full_url = person_extra.get_absolute_url(self.request)
+            candidate_full_url = self.request.build_absolute_uri(
+                person_extra.get_absolute_url(self.request)
+            )
+
             self.send_mail(
                 _('{site_name} image upload approved').format(
                     site_name=site_name
