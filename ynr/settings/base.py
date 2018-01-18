@@ -58,7 +58,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             root('templates'),
-            root('mysite', 'templates'),
+            root('ynr', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -67,12 +67,12 @@ TEMPLATES = [
                 "django.core.context_processors.request",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.i18n",
-                "mysite.context_processors.add_settings",
-                "mysite.context_processors.election_date",
-                "mysite.context_processors.add_group_permissions",
-                "mysite.context_processors.add_notification_data",
-                "mysite.context_processors.locale",
-                "mysite.context_processors.add_site",
+                "ynr.context_processors.add_settings",
+                "ynr.context_processors.election_date",
+                "ynr.context_processors.add_group_permissions",
+                "ynr.context_processors.add_notification_data",
+                "ynr.context_processors.locale",
+                "ynr.context_processors.add_site",
             ],
         },
     },
@@ -158,15 +158,15 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_FORMS = {
-    'login': 'mysite.forms.CustomLoginForm',
-    'signup': 'mysite.forms.CustomSignupForm',
+    'login': 'ynr.forms.CustomLoginForm',
+    'signup': 'ynr.forms.CustomSignupForm',
 }
 
 ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_USERNAME_VALIDATORS = 'mysite.helpers.allauth_validators'
+ACCOUNT_USERNAME_VALIDATORS = 'ynr.helpers.allauth_validators'
 SOCIALACCOUNT_AUTO_SIGNUP = True
-ROOT_URLCONF = 'mysite.urls'
-WSGI_APPLICATION = 'mysite.wsgi.application'
+ROOT_URLCONF = 'ynr.urls'
+WSGI_APPLICATION = 'ynr.wsgi.application'
 
 # Django Debug Toolbar settings:
 DEBUG_TOOLBAR_PATCH_SETTINGS = False,
@@ -401,7 +401,7 @@ ELECTION_APP_FULLY_QUALIFIED = 'elections.uk'
 
 NEW_ACCOUNTS_ALLOWED = True
 
-ACCOUNT_ADAPTER = 'mysite.account_adapter.NoNewUsersAccountAdapter'
+ACCOUNT_ADAPTER = 'ynr.account_adapter.NoNewUsersAccountAdapter'
 CANDIDATES_REQUIRED_FOR_WEIGHTED_PARTY_LIST = 20
 HOIST_ELECTED_CANDIDATES = True
 

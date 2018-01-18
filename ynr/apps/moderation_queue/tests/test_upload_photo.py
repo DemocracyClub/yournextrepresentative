@@ -20,7 +20,7 @@ from unittest import skip
 from webtest import Upload
 
 from ..models import QueuedImage
-from mysite.helpers import mkdir_p
+from ynr.helpers import mkdir_p
 
 from candidates.models import LoggedAction
 from candidates.management.images import (

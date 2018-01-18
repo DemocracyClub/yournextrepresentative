@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand
 from django.test import Client
 from django.utils.six.moves.urllib_parse import urlsplit, parse_qs
 
-from mysite.helpers import mkdir_p
+from ynr.helpers import mkdir_p
 
 
 def hostname_and_secure(url):

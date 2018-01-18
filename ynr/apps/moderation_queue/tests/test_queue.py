@@ -22,7 +22,7 @@ from popolo.models import Person
 from ..models import QueuedImage, PHOTO_REVIEWERS_GROUP_NAME, SuggestedPostLock
 from candidates.models import LoggedAction, PostExtraElection
 from official_documents.models import OfficialDocument
-from mysite.helpers import mkdir_p
+from ynr.helpers import mkdir_p
 
 from candidates.tests.factories import (
     PersonExtraFactory, CandidacyExtraFactory,

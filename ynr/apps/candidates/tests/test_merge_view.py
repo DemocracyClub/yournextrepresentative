@@ -15,7 +15,7 @@ from popolo.models import Membership, Person
 
 from candidates.models import PersonRedirect, MembershipExtra, ImageExtra
 from candidates.models.versions import revert_person_from_version_data
-from mysite.helpers import mkdir_p
+from ynr.helpers import mkdir_p
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
 from . import factories
