@@ -31,11 +31,13 @@ SITE_ID = 1
 SITE_NAME = "Democracy Club Candidates"
 
 # Google analytics settings:
-GOOGLE_ANALYTICS_ACCOUNT = None
+GOOGLE_ANALYTICS_ACCOUNT = 'UA-52202336-3'
+# This should be set to true unless you're using the old version of
+# Google Analytics.
 USE_UNIVERSAL_ANALYTICS = True
 
 # The Twitter account referenced in the Twitter card data:
-TWITTER_USERNAME = ''
+TWITTER_USERNAME = 'democlub'
 
 # The email address which is made public on the site for sending
 # support email to:
@@ -343,8 +345,14 @@ THUMBNAIL_CACHE = 'thumbnails'
 THUMBNAIL_DEBUG = DEBUG
 
 # Settings for restricting user activity to reduce abuse:
+
+# If this is true, you have to be in the 'Trusted to Rename' group in
+# order to change the name of a candidate:
 RESTRICT_RENAMES = False
+
+# If this is set to false, then no edits of people are allowed.
 EDITS_ALLOWED = True
+
 SHOW_BANNER = False
 
 # A bearer token for the Twitter API for mapping between
@@ -399,6 +407,9 @@ MARKDOWN_DEUX_STYLES = {
 ELECTION_APP = 'uk'
 ELECTION_APP_FULLY_QUALIFIED = 'elections.uk'
 
+# If this is set to false, then no new accounts may be created - you
+# might want this past a certain point in the election to reduce
+# opportunities for "drive-by" malicious edits.
 NEW_ACCOUNTS_ALLOWED = True
 
 ACCOUNT_ADAPTER = 'ynr.account_adapter.NoNewUsersAccountAdapter'
@@ -415,6 +426,7 @@ COPYRIGHT_HOLDER = 'Democracy Club Community Interest Company'
 
 IMAGE_PROXY_URL = ''
 
+RESULTS_FEATURE_ACTIVE = False
 
 # .local.py overrides all the common settings.
 try:
