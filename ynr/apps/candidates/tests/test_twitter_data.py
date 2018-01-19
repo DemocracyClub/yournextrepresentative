@@ -55,6 +55,7 @@ def fake_twitter_api_post(*args, **kwargs):
 
 class TestTwitterData(TestCase):
 
+    @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN=None)
     def test_error_on_missing_token(self):
         with self.assertRaisesRegexp(
                 Exception,

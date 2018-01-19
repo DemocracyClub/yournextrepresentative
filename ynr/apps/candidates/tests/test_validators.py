@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from unittest import skip
 
 from django.test import TestCase
+from django.test.utils import override_settings
 
 from ..forms import BasePersonForm, UpdatePersonForm
 
@@ -10,6 +11,7 @@ from .factories import PersonExtraFactory
 from .uk_examples import UK2015ExamplesMixin
 
 
+@override_settings(TWITTER_APP_ONLY_BEARER_TOKEN=None)
 class TestValidators(UK2015ExamplesMixin, TestCase):
 
     def setUp(self):

@@ -28,6 +28,7 @@ example_version_id = '5aa6418325c1a0bb'
 TEST_MEDIA_ROOT = realpath(join(dirname(__file__), 'media'))
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
+@override_settings(TWITTER_APP_ONLY_BEARER_TOKEN=None)
 @patch('candidates.views.people.additional_merge_actions')
 class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
