@@ -19,6 +19,7 @@ from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from .models import ResultEvent
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 
 class XMLEqualityMixin(object):
@@ -56,9 +57,7 @@ class TestResultsFeed(
             base__id='4322',
             base__name='Tessa Jowell'
         )
-        example_image_filename = join(
-            settings.BASE_DIR, 'moderation_queue', 'tests', 'example-image.jpg'
-        )
+        example_image_filename = EXAMPLE_IMAGE_FILENAME
         self.example_image = ImageExtra.objects.create_from_file(
             example_image_filename,
             'images/jowell-pilot.jpg',

@@ -12,6 +12,7 @@ from moderation_queue.models import QueuedImage
 from .auth import TestUserMixin
 from .factories import PersonExtraFactory
 from .output import capture_output, split_output
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 
 @patch('candidates.management.commands.candidates_add_twitter_images_to_queue.requests')
@@ -21,10 +22,7 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
     maxDiff = None
 
     def setUp(self):
-        self.image_filename = join(
-            dirname(__file__), '..', '..', 'moderation_queue', 'tests',
-            'example-image.jpg'
-        )
+        self.image_filename = EXAMPLE_IMAGE_FILENAME
         with open(self.image_filename, 'rb') as f:
             self.example_image_binary_data = f.read()
 

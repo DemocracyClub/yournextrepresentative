@@ -15,6 +15,7 @@ from . import factories
 from .auth import TestUserMixin
 from .dates import date_in_near_future, FOUR_YEARS_IN_DAYS
 from .uk_examples import UK2015ExamplesMixin
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 
 def get_person_extra_with_joins(person_id):
@@ -25,9 +26,6 @@ class CSVTests(TestUserMixin, UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
         super(CSVTests, self).setUp()
-        example_image_filename = join(
-            settings.BASE_DIR, 'moderation_queue', 'tests', 'example-image.jpg'
-        )
         # The second person's name (and party name) have diacritics in
         # them to test handling of Unicode when outputting to CSV.
         self.gb_person_extra = factories.PersonExtraFactory.create(
@@ -39,7 +37,7 @@ class CSVTests(TestUserMixin, UK2015ExamplesMixin, TestCase):
             base__gender='female',
         )
         ImageExtra.objects.create_from_file(
-            example_image_filename,
+            EXAMPLE_IMAGE_FILENAME,
             'images/jowell-pilot.jpg',
             base_kwargs={
                 'content_object': self.gb_person_extra,

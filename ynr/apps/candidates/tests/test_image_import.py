@@ -10,6 +10,7 @@ from candidates.models import ImageExtra
 
 from . import factories
 from .auth import TestUserMixin
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 
 def get_file_md5sum(filename):
@@ -25,10 +26,7 @@ class TestImageImport(TestUserMixin, TestCase):
             base__name='Labour Party',
         )
         self.org_ct = ContentType.objects.get_for_model(self.labour_extra)
-        self.image_filename = join(
-            dirname(__file__), '..', '..', 'moderation_queue', 'tests',
-            'example-image.jpg'
-        )
+        self.image_filename = EXAMPLE_IMAGE_FILENAME
 
     def test_import_new_image(self):
         md5sum = get_file_md5sum(self.image_filename)

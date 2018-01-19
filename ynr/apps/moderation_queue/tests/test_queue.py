@@ -29,6 +29,7 @@ from candidates.tests.factories import (
 )
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.tests.auth import TestUserMixin
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 TEST_MEDIA_ROOT = realpath(join(dirname(__file__), 'media'))
 
@@ -45,9 +46,7 @@ def get_image_type_and_dimensions(image_data):
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 
-    example_image_filename = join(
-        settings.BASE_DIR, 'moderation_queue', 'tests', 'example-image.jpg'
-    )
+    example_image_filename = EXAMPLE_IMAGE_FILENAME
 
     @classmethod
     def setUpClass(cls):

@@ -19,6 +19,8 @@ from ynr.helpers import mkdir_p
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
 from . import factories
+from ynr.helpers import mkdir_p
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 example_timestamp = '2014-09-29T10:11:59.216159'
 example_version_id = '5aa6418325c1a0bb'
@@ -31,9 +33,6 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super(TestMergePeopleView, self).setUp()
-        example_image_filename = join(
-            settings.BASE_DIR, 'moderation_queue', 'tests', 'example-image.jpg'
-        )
         mkdir_p(TEST_MEDIA_ROOT)
         # Create Tessa Jowell (the primary person)
         person_extra = factories.PersonExtraFactory.create(
@@ -117,7 +116,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ''',
         )
         ImageExtra.objects.create_from_file(
-            example_image_filename,
+            EXAMPLE_IMAGE_FILENAME,
             'images/jowell-pilot.jpg',
             base_kwargs={
                 'content_object': person_extra,
@@ -239,7 +238,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 ]
             ''')
         ImageExtra.objects.create_from_file(
-            example_image_filename,
+            EXAMPLE_IMAGE_FILENAME,
             'images/collins-pilot.jpg',
             base_kwargs={
                 'content_object': person_extra,

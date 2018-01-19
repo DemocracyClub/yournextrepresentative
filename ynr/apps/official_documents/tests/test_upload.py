@@ -16,6 +16,7 @@ from candidates.tests.factories import (
     ElectionFactory, ParliamentaryChamberFactory,
     PostExtraFactory, PartySetFactory
 )
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 TEST_MEDIA_ROOT=realpath(
     join(
@@ -33,9 +34,7 @@ TEST_MEDIA_ROOT=realpath(
 
 class TestModels(TestUserMixin, WebTest):
 
-    example_image_filename = join(
-        settings.BASE_DIR, 'moderation_queue', 'tests', 'example-image.jpg'
-    )
+    example_image_filename = EXAMPLE_IMAGE_FILENAME
 
     def setUp(self):
         gb_parties = PartySetFactory.create(slug='gb', name='Great Britain')
