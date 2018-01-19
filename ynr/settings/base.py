@@ -19,6 +19,7 @@ def here(*path):
 def root(*path):
     return abspath(join(abspath(here('..')), *path))
 
+sys.path.insert(0, root('apps'))
 PROJECT_ROOT = here("..")
 ROOT = PROJECT_ROOT
 BASE_DIR = root('..')
