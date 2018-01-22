@@ -6,7 +6,7 @@ from django_webtest import WebTest
 
 from .auth import TestUserMixin
 from .factories import PersonExtraFactory
-from ..models import LoggedAction
+from candidates.models import LoggedAction
 
 class TestLeaderboardView(TestUserMixin, WebTest):
 

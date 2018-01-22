@@ -19,7 +19,7 @@ from django_webtest import WebTest
 from unittest import skip
 from webtest import Upload
 
-from ..models import QueuedImage
+from moderation_queue.models import QueuedImage
 from ynr.helpers import mkdir_p
 
 from candidates.models import LoggedAction

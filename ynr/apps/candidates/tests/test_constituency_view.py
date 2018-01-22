@@ -13,7 +13,7 @@ from .uk_examples import UK2015ExamplesMixin
 
 from compat import BufferDictReader
 
-from ..models import MembershipExtra, PersonExtra
+from candidates.models import MembershipExtra, PersonExtra
 
 
 class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):

@@ -6,7 +6,7 @@ from django_webtest import WebTest
 
 from popolo.models import Person
 from .auth import TestUserMixin
-from ..models import LoggedAction
+from candidates.models import LoggedAction
 
 class TestFeeds(TestUserMixin, WebTest):
 

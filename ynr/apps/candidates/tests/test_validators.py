@@ -5,7 +5,7 @@ from unittest import skip
 from django.test import TestCase
 from django.test.utils import override_settings
 
-from ..forms import BasePersonForm, UpdatePersonForm
+from candidates.forms import BasePersonForm, UpdatePersonForm
 
 from .factories import PersonExtraFactory
 from .uk_examples import UK2015ExamplesMixin

@@ -7,10 +7,10 @@ from popolo.models import Membership, Post
 
 from elections.models import Election
 
-from ..models import (
+from candidates.models import (
     MembershipExtra, PostExtra,
     check_paired_models, check_membership_elections_consistent)
-from ..models.constraints import check_no_candidancy_for_election
+from candidates.models.constraints import check_no_candidancy_for_election
 from .factories import (
     ElectionFactory, MembershipExtraFactory, PersonExtraFactory)
 from .uk_examples import UK2015ExamplesMixin

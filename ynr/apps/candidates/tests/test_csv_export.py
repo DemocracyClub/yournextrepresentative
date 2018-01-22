@@ -9,7 +9,7 @@ from django.conf import settings
 from django.test import TestCase
 
 from candidates.models import PersonExtra, ImageExtra, PersonRedirect
-from ..csv_helpers import list_to_csv
+from candidates.csv_helpers import list_to_csv
 
 from . import factories
 from .auth import TestUserMixin

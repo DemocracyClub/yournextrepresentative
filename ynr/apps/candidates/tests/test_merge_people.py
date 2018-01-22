@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.test import TestCase
 
-from ..models import merge_popit_people
+from candidates.models import merge_popit_people
 
 class TestMergePeople(TestCase):
 

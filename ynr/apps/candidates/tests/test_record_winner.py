@@ -6,7 +6,7 @@ from django_webtest import WebTest
 
 from popolo.models import Person
 
-from ..models import PostExtraElection
+from candidates.models import PostExtraElection
 from .auth import TestUserMixin
 from .factories import (
     CandidacyExtraFactory, MembershipFactory, PersonExtraFactory,

@@ -8,7 +8,7 @@ from django_webtest import WebTest
 
 from popolo.models import Person
 
-from ..models import LoggedAction
+from candidates.models import LoggedAction
 
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
