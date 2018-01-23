@@ -28,6 +28,7 @@ DEBUG = False
 ALLOWED_HOSTS = []
 
 SITE_ID = 1
+SITE_NAME = "Democracy Club Candidates"
 
 # Google analytics settings:
 GOOGLE_ANALYTICS_ACCOUNT = None
