@@ -313,7 +313,7 @@ EE_CACHE_SECONDS = 86400
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ynr',
+        'NAME': '',
         # Note that there are various comments on the web
         # suggesting that settings CONN_MAX_AGE != 0 is a bad
         # idea when eventlet or gevent workers are being used.
