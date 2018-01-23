@@ -11,3 +11,5 @@ __pycache__
 /mysite/settings/local.py
 /mysite/static/jsi18n
 .DS_Store
+.tox
+.cache
