@@ -85,7 +85,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'django_nose',
     'django_extensions',
     'pipeline',
     'statici18n',
@@ -303,8 +302,6 @@ PIPELINE = {
     'YUI_BINARY': '/usr/bin/env yui-compressor',
 }
 
-
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 SOURCE_HINTS = (
     u"Please don't quote third-party candidate sites \u2014 ",

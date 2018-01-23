@@ -17,7 +17,6 @@ from PIL import Image
 from io import BytesIO
 from django_webtest import WebTest
 from mock import patch
-from nose.plugins.attrib import attr
 
 from popolo.models import Person
 from ..models import QueuedImage, PHOTO_REVIEWERS_GROUP_NAME, SuggestedPostLock
@@ -506,7 +505,6 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertContains(response, '<h3>')
 
 
-@attr(country='uk')
 class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
     def test_sopn_review_view_no_reviews(self):

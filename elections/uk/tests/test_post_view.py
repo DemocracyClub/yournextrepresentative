@@ -5,14 +5,11 @@ from django_webtest import WebTest
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
 
-from nose.plugins.attrib import attr
-
 from candidates.models import PostExtraElection
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
-@attr(country='uk')
 class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_suggest_post_lock_offered_with_document_when_unlocked(self):

@@ -2,14 +2,11 @@ from __future__ import unicode_literals
 
 from django.test import TestCase
 
-from nose.plugins.attrib import attr
-
 from candidates.models import PersonExtra, PersonRedirect
 from candidates.tests import factories
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
-@attr(country='uk')
 class CSVTests(UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
