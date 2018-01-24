@@ -1,0 +1,16 @@
+[run]
+branch = True
+source =
+
+    auth_helpers
+    bulk_adding
+    cached_counts
+    candidates
+    compat
+    elections
+    moderation_queue
+    official_documents
+    results
+    tasks
+    uk_results
+
