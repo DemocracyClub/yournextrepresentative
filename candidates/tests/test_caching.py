@@ -58,6 +58,6 @@ class TestCaching(TestUserMixin, UK2015ExamplesMixin, WebTest):
         with_slash = without_slash + '/'
         response = self.app.get(without_slash)
         self.assertEqual(response.status_code, 301)
-        self.assertEqual(response.location, 'http://localhost:80' + with_slash)
+        self.assertEqual(response.location, with_slash)
         response = self.app.get(with_slash)
         self.assertEqual(response.status_code, 200)

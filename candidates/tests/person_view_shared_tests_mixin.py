@@ -6,7 +6,7 @@ from django.test.utils import override_settings
 from django_webtest import WebTest
 
 from .auth import TestUserMixin
-from .dates import processors_before, processors_after
+from .dates import templates_before, templates_after
 from .factories import (
     CandidacyExtraFactory, PersonExtraFactory
 )
@@ -42,12 +42,12 @@ class PersonViewSharedTestsMixin(TestUserMixin, UK2015ExamplesMixin, WebTest):
             )
         )
 
-    @override_settings(TEMPLATE_CONTEXT_PROCESSORS=processors_before)
+    @override_settings(TEMPLATES=templates_before)
     def test_get_tessa_jowell_before_election(self):
         response = self.app.get('/person/2009/tessa-jowell')
         self.assertContains(response, 'Contesting the 2015 General Election')
 
-    @override_settings(TEMPLATE_CONTEXT_PROCESSORS=processors_after)
+    @override_settings(TEMPLATES=templates_after)
     def test_get_tessa_jowell_after_election(self):
         response = self.app.get('/person/2009/tessa-jowell')
         self.assertContains(response, 'Contested the 2015 General Election')

@@ -1,3 +1,4 @@
+import copy
 from datetime import date, timedelta
 
 from django.conf import settings
@@ -16,11 +17,22 @@ election_date_after = lambda r: {
     'DATE_TODAY': date.today() + timedelta(days=28)
 }
 
-processors = settings.TEMPLATE_CONTEXT_PROCESSORS
+default_templates = settings.TEMPLATES
 
-processors_before = processors + \
-    ("candidates.tests.dates.election_date_before",)
-processors_on_election_day = processors + \
-    ("candidates.tests.dates.election_date_on_election_day",)
-processors_after = processors + \
-    ("candidates.tests.dates.election_date_after",)
+def _insert_context_processor(path):
+    templates = copy.deepcopy(default_templates)
+    cps = list(templates[0]['OPTIONS']['context_processors'])
+    cps.append(path)
+    templates[0]['OPTIONS']['context_processors'] = cps
+    return templates
+
+
+templates_before = _insert_context_processor(
+    "candidates.tests.dates.election_date_before"
+)
+templates_on_election_day = _insert_context_processor(
+    "candidates.tests.dates.election_date_on_election_day"
+)
+templates_after = _insert_context_processor(
+    "candidates.tests.dates.election_date_after"
+)

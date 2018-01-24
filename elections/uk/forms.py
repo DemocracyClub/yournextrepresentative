@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 
 from compat import text_type
 
-from .geo_helpers import (
+from elections.uk.geo_helpers import (
     get_post_elections_from_postcode,
     UnknownGeoException, BadPostcodeException
 )

@@ -87,7 +87,7 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location,
-            'http://localhost:80/person/5678/other-names'
+            '/person/5678/other-names'
         )
         self.assertEqual(
             1,
@@ -151,7 +151,7 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/person/5678/other-names'
+            '/person/5678/other-names'
         )
         self.assertEqual(
             3,
@@ -219,7 +219,7 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/person/5678/other-names'
+            '/person/5678/other-names'
         )
         self.assertEqual(
             2,

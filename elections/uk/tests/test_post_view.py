@@ -74,7 +74,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location,
-            'http://localhost:80/election/2015/post/14419/edinburgh-east')
+            '/election/2015/post/14419/edinburgh-east')
 
         suggested_locks = SuggestedPostLock.objects.all()
         self.assertEqual(suggested_locks.count(), 1)

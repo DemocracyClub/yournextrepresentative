@@ -6,7 +6,7 @@ from elections.models import Election
 from candidates.models import PartySet
 
 from .base import BaseResultModel, ResultStatusMixin
-from .map_models import ElectionArea, PartyWithColour
+from uk_results.models.map_models import ElectionArea, PartyWithColour
 
 
 class Council(models.Model):

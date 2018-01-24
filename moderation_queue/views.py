@@ -402,7 +402,10 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 person=person,
                 source=update_message,
             )
-            candidate_full_url = person_extra.get_absolute_url(self.request)
+            candidate_full_url = self.request.build_absolute_uri(
+                person_extra.get_absolute_url(self.request)
+            )
+
             self.send_mail(
                 _('{site_name} image upload approved').format(
                     site_name=site_name
@@ -462,8 +465,8 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                         'photo_review_url': photo_review_url,
                         'intro': _(
                             "Thank-you for uploading a photo of "
-                            "{candidate_name} to {site_name}, but "
-                            "unfortunately we can't use that image because:"
+                            "{candidate_name} to {site_name}, "
+                            "but unfortunately we can't use that image because:"
                         ).format(
                             candidate_name=candidate_name,
                             site_name=site_name

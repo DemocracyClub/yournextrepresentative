@@ -90,7 +90,7 @@ class TestConstituencyLockAndUnlock(TestUserMixin, UK2015ExamplesMixin, WebTest)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location,
-            "http://localhost:80/election/2015/post/65808/dulwich-and-west-norwood"
+            "/election/2015/post/65808/dulwich-and-west-norwood"
         )
 
     def test_constituency_unlock(self):
@@ -116,7 +116,7 @@ class TestConstituencyLockAndUnlock(TestUserMixin, UK2015ExamplesMixin, WebTest)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location,
-            "http://localhost:80/election/2015/post/65808/dulwich-and-west-norwood"
+            "/election/2015/post/65808/dulwich-and-west-norwood"
         )
 
     def test_constituencies_unlocked_list(self):
@@ -196,7 +196,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         expected_person = Person.objects.get(name='Imaginary Candidate')
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/person/{0}'.format(expected_person.id)
+            '/person/{0}'.format(expected_person.id)
         )
 
     def test_move_into_locked_unprivileged_disallowed(self):
@@ -222,7 +222,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/person/4322'
+            '/person/4322'
         )
 
     def test_move_out_of_locked_unprivileged_disallowed(self):
@@ -248,7 +248,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/person/4170'
+            '/person/4170'
         )
 
     # Now the tests to check that the only privileged users can change
@@ -277,7 +277,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/person/4170'
+            '/person/4170'
         )
 
     def test_change_party_in_unlocked_unprivileged_allowed(self):
@@ -292,5 +292,5 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            'http://localhost:80/person/4322'
+            '/person/4322'
         )
