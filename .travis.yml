@@ -17,13 +17,17 @@ cache:
   directories:
     - /home/travis/virtualenv
     - $HOME/.pip-cache/
+before_cache:
+    - rm -f .tox/py34-django19/log/*.log
+    - rm -f .tox/py35-django19/log/*.log
+    - rm -f .cache/pip/log/*.log
 
 env:
   - ES_VERSION=2.3.1 ES_DOWNLOAD_URL=https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/${ES_VERSION}/elasticsearch-${ES_VERSION}.tar.gz
 
 install:
   # Install ES
-  - wget ${ES_DOWNLOAD_URL}
+  - wget -nc ${ES_DOWNLOAD_URL}
   - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
   - ./elasticsearch-${ES_VERSION}/bin/elasticsearch &
   # Make sure pip is at the latest version:
@@ -31,11 +35,6 @@ install:
   # Now install the rest of the required Python packages:
   - CFLAGS="-O0" pip install -r requirements.txt
   - pip install python-coveralls
-  # Create a basic general.yml file:
-  - sed -r
-    -e "s,(YNMP_DB_USER:) .*,\\1 'postgres',"
-    -e "s,(SECRET_KEY:) '',\\1 'notatallsecret',"
-    conf/general.yml-example > conf/general.yml
   - ./manage.py compilemessages
 
 script:
