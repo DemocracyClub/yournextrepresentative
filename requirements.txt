@@ -44,7 +44,7 @@ jsonpointer==2.0
 libsass==0.13.6
 lxml==4.1.1
 mock==2.0.0
-mysociety-django-images==0.0.5
+mysociety-django-images==0.0.6
 ndg-httpsclient==0.4.0
 nose==1.3.7
 numpy==1.9.1
