@@ -2,7 +2,7 @@ beautifulsoup4==4.6.0
 bleach==2.1.2
 certifi==2018.1.18
 cffi==1.11.4
-coverage==3.7.1
+coverage==4.4.2
 cryptography==1.2.3
 decorator==4.0.4
 Django>=1.9,<1.10
