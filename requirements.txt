@@ -35,7 +35,7 @@ futures==3.2.0
 html5lib==1.0.1
 idna==2.6
 ipaddress==1.0.19
-ipdb==0.8
+ipdb==0.10.3
 ipython==4.0.0
 ipython-genutils==0.1.0
 jsonfield==1.0.3
