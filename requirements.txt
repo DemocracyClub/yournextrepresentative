@@ -6,7 +6,7 @@ coverage==4.4.2
 cryptography==2.1.4
 decorator==4.2.1
 Django==2.0.1
-django-allauth==0.31.0
+django-allauth==0.34.0
 django-appconf==1.0.1
 django-braces==1.4.0
 django-cors-headers==1.1.0
