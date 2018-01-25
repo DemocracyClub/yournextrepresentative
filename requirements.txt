@@ -70,7 +70,7 @@ requests-oauthlib==0.8.0
 simplegeneric==0.8.1
 six==1.11.0
 sorl-thumbnail==12.4.1
-sqlparse==0.1.15
+sqlparse==0.2.4
 traitlets==4.0.0
 Unidecode==0.4.17
 urllib3==1.13
