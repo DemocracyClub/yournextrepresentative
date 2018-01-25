@@ -60,7 +60,7 @@ pygeocoder==1.2.5
 pyOpenSSL==17.5.0
 python-dateutil==2.6.1
 python-magic==0.4.15
-python-memcached==1.54
+python-memcached==1.59
 python-openid==2.2.5
 python-slugify==0.0.7
 PyYAML==3.11
