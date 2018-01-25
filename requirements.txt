@@ -57,7 +57,7 @@ psycopg2==2.7.3.2
 pyasn1==0.4.2
 pycparser==2.18
 pygeocoder==1.2.5
-pyOpenSSL==0.15.1
+pyOpenSSL==17.5.0
 python-dateutil==2.4.2
 python-magic==0.4.6
 python-memcached==1.54
