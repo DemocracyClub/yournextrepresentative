@@ -28,6 +28,7 @@ DEBUG = False
 ALLOWED_HOSTS = []
 
 SITE_ID = 1
+SITE_NAME = "Democracy Club Candidates"
 
 # Google analytics settings:
 GOOGLE_ANALYTICS_ACCOUNT = None
@@ -85,7 +86,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'django_nose',
     'django_extensions',
     'pipeline',
     'statici18n',
@@ -304,8 +304,6 @@ PIPELINE = {
 }
 
 
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
 SOURCE_HINTS = (
     u"Please don't quote third-party candidate sites \u2014 ",
     u"we prefer URLs of news stories or official candidate pages."
@@ -316,7 +314,7 @@ EE_CACHE_SECONDS = 86400
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ynr',
+        'NAME': '',
         # Note that there are various comments on the web
         # suggesting that settings CONN_MAX_AGE != 0 is a bad
         # idea when eventlet or gevent workers are being used.
@@ -427,5 +425,12 @@ except ImportError:
         fg="red"
     ))
 
-if len(sys.argv) > 1 and sys.argv[1] in ['test']:
+def _is_running_tests():
+    if len(sys.argv) > 1 and sys.argv[1] in ['test']:
+        return True
+    if os.environ.get('RUN_ENV') == 'test':
+        return True
+    return False
+
+if _is_running_tests():
     from .testing import *  # noqa

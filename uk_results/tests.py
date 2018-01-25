@@ -4,8 +4,6 @@ from mock import patch
 
 from django.test import TestCase
 
-from nose.plugins.attrib import attr
-
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import (
     CandidacyExtraFactory, PersonExtraFactory)
@@ -17,7 +15,6 @@ from .models import CandidateResult, PostElectionResult, ResultSet
 from .forms import mark_candidates_as_winner
 
 
-@attr(country='uk')
 class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
 
     def setUp(self):

@@ -1,5 +1,4 @@
 from django_webtest import WebTest
-from nose.plugins.attrib import attr
 from popolo.models import Person
 
 from candidates.tests import factories
@@ -10,7 +9,6 @@ from candidates.models import PostExtraElection
 from uk_results.models import CandidateResult, PostElectionResult, ResultSet
 
 
-@attr(country='uk')
 class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):

@@ -9,12 +9,10 @@ from candidates.tests.auth import TestUserMixin
 
 from official_documents.models import OfficialDocument
 
-from nose.plugins.attrib import attr
 from candidates.tests import factories
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
-@attr(country='uk')
 class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):

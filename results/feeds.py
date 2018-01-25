@@ -5,6 +5,7 @@ from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.utils.six.moves.urllib_parse import urlunsplit
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 
 from compat import text_type
 
@@ -14,7 +15,7 @@ from .models import ResultEvent
 class BasicResultEventsFeed(Feed):
     feed_type = Atom1Feed
     title = _("Election results from {site_name}").format(
-        site_name=Site.objects.get_current().name
+        site_name=settings.SITE_NAME
     )
     link = "/"
     description = _("A basic feed of election results")
@@ -107,7 +108,7 @@ class ResultEventsAtomFeedGenerator(Atom1Feed):
 class ResultEventsFeed(BasicResultEventsFeed):
     feed_type = ResultEventsAtomFeedGenerator
     title = _("Election results from {site_name} (with extra data)").format(
-        site_name=Site.objects.get_current().name
+        site_name=settings.SITE_NAME
     )
     description = _("A feed of results from the UK 2015 General Election (with extra data)")
 

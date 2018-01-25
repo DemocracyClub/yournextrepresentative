@@ -9,7 +9,6 @@ from datetime import date, timedelta
 from django.conf import settings
 from django.utils.six.moves.urllib_parse import urljoin
 
-from nose.plugins.attrib import attr
 from django_webtest import WebTest
 
 from candidates.tests.factories import (
@@ -52,7 +51,6 @@ def fake_requests_for_every_election(url, *args, **kwargs):
     })
 
 
-@attr(country='uk')
 @patch('elections.uk.geo_helpers.requests')
 class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
     def setUp(self):

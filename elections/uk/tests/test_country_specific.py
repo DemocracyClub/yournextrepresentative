@@ -2,12 +2,9 @@ from mock import patch
 
 from django.test import TestCase
 
-from nose.plugins.attrib import attr
-
 from candidates.election_specific import additional_merge_actions
 from candidates.tests import factories
 
-@attr(country='uk')
 class TestUKSpecificOverride(TestCase):
 
     @patch('elections.uk.lib.additional_merge_actions')
