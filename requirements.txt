@@ -55,7 +55,7 @@ pickleshare==0.7.4
 Pillow==5.0.0
 psycopg2==2.7.3.2
 pyasn1==0.4.2
-pycparser==2.14
+pycparser==2.18
 pygeocoder==1.2.5
 pyOpenSSL==0.15.1
 python-dateutil==2.4.2
