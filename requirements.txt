@@ -62,7 +62,7 @@ pytest-cov
 pytest-django
 pytest-env
 pytest-flakes
-pytest-pep8
+pytest-pep8==1.0.6
 python-dateutil==2.4.2
 python-magic==0.4.6
 python-memcached==1.54
