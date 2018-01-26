@@ -58,7 +58,7 @@ pycparser==2.14
 pygeocoder==1.2.5
 pyOpenSSL==0.15.1
 pytest
-pytest-cov
+pytest-cov==2.5.1
 pytest-django
 pytest-env
 pytest-flakes
