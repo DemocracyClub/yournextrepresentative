@@ -16,7 +16,7 @@ django-debug-toolbar==1.9
 django-debug-toolbar-template-timings
 django-extensions==1.6.1
 django-filter==0.13
-django-haystack==2.5.1
+django-haystack==2.6.1
 django-markdown-deux==1.0.5
 django-model-utils==2.3.1
 django-notifications-hq==1.0.0
