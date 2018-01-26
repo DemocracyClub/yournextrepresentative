@@ -40,7 +40,7 @@ ipython==4.0.0
 ipython-genutils==0.1.0
 jsonfield==1.0.3
 jsonpatch==1.13
-jsonpointer==1.10
+jsonpointer==2.0
 libsass==0.11.1
 lxml==3.4.1
 mock==1.0.1
