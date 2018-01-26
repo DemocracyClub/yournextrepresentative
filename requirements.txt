@@ -47,7 +47,7 @@ mock==1.0.1
 mysociety-django-images==0.0.5
 ndg-httpsclient==0.4.0
 numpy==1.9.1
-oauthlib==0.7.2
+oauthlib==2.0.6
 path.py==8.1.1
 pexpect==3.3
 pickleshare==0.5
