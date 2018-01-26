@@ -14,7 +14,7 @@ django-date-extensions==1.1.0
 django-crispy-forms==1.6.0
 django-debug-toolbar==1.9
 django-debug-toolbar-template-timings
-django-extensions==1.6.1
+django-extensions==1.9.9
 django-filter==0.13
 django-haystack==2.5.1
 django-markdown-deux==1.0.5
