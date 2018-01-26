@@ -59,7 +59,7 @@ pygeocoder==1.2.5
 pyOpenSSL==0.15.1
 pytest
 pytest-cov
-pytest-django
+pytest-django==3.1.2
 pytest-env
 pytest-flakes
 pytest-pep8
