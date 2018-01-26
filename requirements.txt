@@ -57,7 +57,7 @@ pyasn1==0.1.9
 pycparser==2.14
 pygeocoder==1.2.5
 pyOpenSSL==0.15.1
-pytest
+pytest==3.3.2
 pytest-cov
 pytest-django
 pytest-env
