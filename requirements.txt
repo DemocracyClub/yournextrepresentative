@@ -41,7 +41,7 @@ ipython-genutils==0.1.0
 jsonfield==1.0.3
 jsonpatch==1.13
 jsonpointer==1.10
-libsass==0.11.1
+libsass==0.13.6
 lxml==3.4.1
 mock==1.0.1
 mysociety-django-images==0.0.5
