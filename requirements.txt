@@ -3,7 +3,7 @@ bleach==1.4.1
 certifi==2015.04.28
 cffi==1.5.0
 coverage>=3.6
-cryptography==1.2.3
+cryptography==2.1.4
 decorator==4.0.4
 Django>=1.9,<1.10
 django-allauth==0.31.0
