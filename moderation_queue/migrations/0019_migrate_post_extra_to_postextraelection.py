@@ -12,8 +12,16 @@ def migrate_post_extra_to_postextraelection(apps, schema_editor):
         # If there's more than one postextraelection, then make sure
         # that we create new SuggestedPostLocks for the rest of them:
         postextraelections = spl.post_extra.postextraelection_set.all()
-        use_for_original, use_for_new_list = \
-            postextraelections[0], postextraelections[1:]
+
+        if not postextraelections.exists():
+            continue
+        try:
+            use_for_original, use_for_new_list = \
+                postextraelections[0], postextraelections[1:]
+        except IndexError:
+            use_for_original = postextraelections[0]
+            use_for_new_list = []
+
         # Update the SuggestedPostLock on the original:
         spl.postextraelection = use_for_original
         spl.save()
