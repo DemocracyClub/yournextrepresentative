@@ -60,7 +60,7 @@ pyOpenSSL==0.15.1
 pytest
 pytest-cov
 pytest-django
-pytest-env
+pytest-env==0.6.2
 pytest-flakes
 pytest-pep8
 python-dateutil==2.4.2
