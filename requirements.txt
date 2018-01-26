@@ -12,7 +12,7 @@ django-braces==1.4.0
 django-cors-headers==1.1.0
 django-date-extensions==1.1.0
 django-crispy-forms==1.6.0
-django-debug-toolbar==1.9
+django-debug-toolbar==1.9.1
 django-debug-toolbar-template-timings
 django-extensions==1.6.1
 django-filter==0.13
