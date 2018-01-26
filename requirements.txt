@@ -7,7 +7,7 @@ cryptography==1.2.3
 decorator==4.0.4
 Django>=1.9,<1.10
 django-allauth==0.31.0
-django-appconf==1.0.1
+django-appconf==1.0.2
 django-braces==1.4.0
 django-cors-headers==1.1.0
 django-date-extensions==1.1.0
