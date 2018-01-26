@@ -23,7 +23,7 @@ django-notifications-hq==1.0.0
 django-pipeline==1.6.8
 -e git+https://github.com/mysociety/django-popolo@update-with-better-migrations-redux#egg=mysociety-django-popolo
 django-statici18n==1.1.5
-django-webtest==1.7.8
+django-webtest==1.9.2
 djangorestframework==3.3.3
 djangorestframework-jsonp==1.0.2
 docutils==0.10
