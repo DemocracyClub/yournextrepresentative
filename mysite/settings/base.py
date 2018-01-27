@@ -66,6 +66,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.core.context_processors.request",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.i18n",
                 "mysite.context_processors.add_settings",
                 "mysite.context_processors.election_date",
                 "mysite.context_processors.add_group_permissions",
