@@ -426,6 +426,11 @@ IMAGE_PROXY_URL = ''
 
 RESULTS_FEATURE_ACTIVE = False
 
+
+# import application constants
+from .constants.needs_review import * # noqa
+
+
 # .local.py overrides all the common settings.
 try:
     from .local import *  # noqa
