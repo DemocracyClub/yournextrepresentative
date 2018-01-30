@@ -3,13 +3,13 @@ __pycache__
 *.mo
 /db.sqlite3
 /static
-/candidates/static/candidates/style.css
-/elections/*/static/candidates/style.css
+/ynr/apps/candidates/static/candidates/style.css
+/ynr/apps/elections/*/static/candidates/style.css
+/ynr/settings/local.py
 .sass-cache
 /htmlcov
 /.coverage
-/mysite/settings/local.py
-/mysite/static/jsi18n
+/ynr/static/jsi18n
 .DS_Store
 .tox
 .cache
