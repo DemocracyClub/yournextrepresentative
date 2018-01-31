@@ -35,6 +35,11 @@ class EEElection(dict):
     def children(self):
         return self['children']
 
+    @property
+    def is_leaf_node(self):
+        return (not self['children'] and\
+            self['group_type'] in ['organisation', None])
+
     def get_or_create_organisation(self):
         org_name = self['organisation']['official_name']
         classification = self['organisation']['organisation_type']
@@ -204,9 +209,7 @@ class EEElection(dict):
 
 
 def is_mayor_or_pcc_ballot(election):
-    is_leaf_node = (not election['children'] and\
-        election['group_type'] in ['organisation', None])
-    return (is_leaf_node and\
+    return (election.is_leaf_node and\
         election['election_type']['election_type'] in ['mayor', 'pcc'])
 
 
