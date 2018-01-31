@@ -1,10 +1,5 @@
 from __future__ import unicode_literals
 
-# INSTALLED_APPS = [
-#     'bulk_adding',
-#     'uk_results',
-# ]
-#
 
 PEOPLE_LIABLE_TO_VANDALISM = {
     2811, # Theresa May
