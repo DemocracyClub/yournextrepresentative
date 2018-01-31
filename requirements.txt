@@ -12,7 +12,7 @@ django-braces==1.4.0
 django-cors-headers==1.1.0
 django-date-extensions==1.1.0
 django-crispy-forms==1.6.0
-django-debug-toolbar==1.9
+django-debug-toolbar==1.9.1
 django-debug-toolbar-template-timings
 django-extensions==1.6.1
 django-filter==0.13
@@ -75,7 +75,7 @@ requests-oauthlib==0.5.0
 simplegeneric==0.8.1
 six==1.10.0
 sorl-thumbnail==12.3
-sqlparse==0.1.15
+sqlparse==0.2.4
 tox
 traitlets==4.0.0
 Unidecode==0.4.17
