@@ -1,7 +1,6 @@
 [run]
 branch = True
 source =
-
     auth_helpers
     bulk_adding
     cached_counts
@@ -13,3 +12,10 @@ source =
     results
     tasks
     uk_results
+omit =
+    */tests/*
+    */tests.py
+    */apps.py
+    */migrations/*
+    ynr/wsgi.py
+    ynr/settings/*
