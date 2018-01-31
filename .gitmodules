@@ -1,6 +1,6 @@
-[submodule "foundation"]
-        path = ynr/apps/candidates/static/foundation
-        url = https://github.com/zurb/foundation.git
-[submodule "candidates/static/select2"]
-        path = ynr/apps/candidates/static/select2
-        url = https://github.com/ivaynberg/select2.git
+[submodule "ynr/apps/candidates/static/foundation"]
+	path = ynr/apps/candidates/static/foundation
+	url = https://github.com/zurb/foundation.git
+[submodule "ynr/apps/candidates/static/select2"]
+	path = ynr/apps/candidates/static/select2
+	url = https://github.com/ivaynberg/select2.git

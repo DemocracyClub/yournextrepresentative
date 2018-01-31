@@ -3,6 +3,9 @@ __pycache__
 *.mo
 /db.sqlite3
 /static
+ynr/static/*
+ynr/media/*
+!.gitkeep
 /ynr/apps/candidates/static/candidates/style.css
 /ynr/apps/elections/*/static/candidates/style.css
 /ynr/settings/local.py
