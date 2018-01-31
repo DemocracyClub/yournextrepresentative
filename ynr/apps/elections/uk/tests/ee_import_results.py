@@ -11196,7 +11196,7 @@ each_type_of_election_on_one_day = json.loads("""
         "election_name": "Greater Manchester"
       },
       "group": "mayor.2019-01-17",
-      "group_type": "organisation",
+      "group_type": null,
       "children": [],
       "elected_role": "Mayor",
       "division": null,
