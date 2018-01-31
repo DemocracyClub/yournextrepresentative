@@ -204,8 +204,9 @@ class EEElection(dict):
 
 
 def is_mayor_or_pcc_ballot(election):
-    return (election['group_type'] == 'organisation' and\
-        not election['children'] and\
+    is_leaf_node = (not election['children'] and\
+        election['group_type'] in ['organisation', None])
+    return (is_leaf_node and\
         election['election_type']['election_type'] in ['mayor', 'pcc'])
 
 
