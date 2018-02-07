@@ -213,7 +213,7 @@ result:</p>
 
   <ul>
     <li>{% if all_results_exists %}
-      <a href="{{ MEDIA_URL }}candidates-elected-all.csv">{% blocktrans %}Download data about all of the candidates{% endblocktrans %}</a>
+      <a href="{{ settings.MEDIA_URL }}candidates-elected-all.csv">{% blocktrans %}Download data about all of the candidates{% endblocktrans %}</a>
       {% else %}
       <em>{% trans "(The file of all elected candidates has not yet been generated.)" %}</em>
       {% endif %}
@@ -233,7 +233,7 @@ result:</p>
           {% for election in role_data.elections %}
             {% with slug=election.election.slug title=election.election.name %}
               <li>{% if election.results_file_exists %}
-                <a href="{{ MEDIA_URL }}candidates-elected-{{ slug }}.csv">{% blocktrans %}Download of the {{ title }} elected candidates {% endblocktrans %}</a>
+                <a href="{{ settings.MEDIA_URL }}candidates-elected-{{ slug }}.csv">{% blocktrans %}Download of the {{ title }} elected candidates {% endblocktrans %}</a>
                 {% else %}
                 <em>{% blocktrans %}
                   (The file of elected candidates in {{ title }} has not yet been generated.)
