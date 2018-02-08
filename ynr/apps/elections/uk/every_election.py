@@ -84,6 +84,7 @@ class EEElection(dict):
                 defaults={
                     'current': self['current'],
                     "candidate_membership_role": "Candidate",
+                    "for_post_role": self['election_type']['name'],
                     "show_official_documents": True,
                     "name": self['election_title'],
                     "party_lists_in_use": party_lists_in_use,
