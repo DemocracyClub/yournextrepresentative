@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-{% with email=settings.SUPPORT_EMAIL %}
+{% with email=settings.SUPPORT_EMAIL MEDIA_URL=settings.MEDIA_URL %}
 
 <div class="help-about">
 
