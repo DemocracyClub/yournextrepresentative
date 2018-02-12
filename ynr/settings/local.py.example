@@ -38,3 +38,6 @@ ADMINS = ()
 # RAVEN_CONFIG = {
 #     'dsn': ''
 # }
+
+# To disable new accounts
+# ACCOUNT_ADAPTER = 'ynr.account_adapter.NoNewUsersAccountAdapter'

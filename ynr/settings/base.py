@@ -408,12 +408,6 @@ MARKDOWN_DEUX_STYLES = {
 ELECTION_APP = 'uk'
 ELECTION_APP_FULLY_QUALIFIED = 'elections.uk'
 
-# If this is set to false, then no new accounts may be created - you
-# might want this past a certain point in the election to reduce
-# opportunities for "drive-by" malicious edits.
-NEW_ACCOUNTS_ALLOWED = True
-
-ACCOUNT_ADAPTER = 'ynr.account_adapter.NoNewUsersAccountAdapter'
 CANDIDATES_REQUIRED_FOR_WEIGHTED_PARTY_LIST = 20
 HOIST_ELECTED_CANDIDATES = True
 
