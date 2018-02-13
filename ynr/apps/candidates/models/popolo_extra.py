@@ -812,6 +812,14 @@ class PostExtraElection(models.Model):
             w=(' winner_count={0}'.format(self.winner_count)
                if (self.winner_count is not None) else ''))
 
+    def get_absolute_url(self):
+        return reverse('constituency', args=[
+            self.election.slug,
+            self.postextra.slug,
+            slugify(self.postextra.base.label)
+        ])
+
+
 class MembershipExtra(models.Model):
     base = models.OneToOneField(Membership, related_name='extra')
 
