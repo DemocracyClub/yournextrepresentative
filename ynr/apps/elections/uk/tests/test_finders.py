@@ -120,6 +120,9 @@ class TestHomePageView(WebTest):
         # follow the redirect
         response = response.follow()
         self.assertEqual(len(response.context['pees']), 1)
+        self.assertContains(
+            response,
+            '2015 General Election')
 
     def test_invalid_postcode(self, mock_requests):
         mock_requests.get.side_effect = fake_requests_for_every_election
@@ -158,6 +161,12 @@ class TestHomePageView(WebTest):
         )
         response = response.follow()
         self.assertEqual(len(response.context['pees']), 3)
+        self.assertContains(response,
+            "2016 London Assembly Election (Additional)")
+        self.assertContains(response,
+            "2016 London Assembly Election (Constituencies)")
+        self.assertContains(response,
+            "2015 General Election")
 
     def test_unknown_postcode_returns_to_finder_with_error(self, mock_requests):
         mock_requests.get.side_effect = fake_requests_for_every_election

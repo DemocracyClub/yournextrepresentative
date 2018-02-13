@@ -1,1 +1,19 @@
+{% extends "base.html" %}
 
+{% block title %}Current elections in {{ postcode }}{% endblock title %}
+
+{% block hero %}
+  <h1>Current elections in {{ postcode }}</h1>
+{% endblock %}
+
+
+{% block content %}
+
+{% for pee in pees %}
+  <h2>{{ pee.election.name }}</h2>
+  <a href="{{ pee.get_absolute_url }}">{{ pee.postextra.base.label }}</a>
+
+{% empty %}
+<p>We don't know of any upcoming elections for {{ postcode }}</p>
+{% endfor %}
+{% endblock content %}
