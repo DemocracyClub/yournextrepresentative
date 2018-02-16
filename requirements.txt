@@ -52,7 +52,7 @@ path.py==8.1.1
 pexpect==3.3
 pickleshare==0.5
 Pillow==3.2.0
-psycopg2==2.7.1
+psycopg2-binary==2.7.4
 pyasn1==0.1.9
 pycparser==2.14
 pygeocoder==1.2.5
