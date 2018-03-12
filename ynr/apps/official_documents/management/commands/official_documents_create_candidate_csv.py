@@ -43,6 +43,13 @@ class Command(BaseCommand):
                 'base__person',
             )
 
+            out_dict = {
+                'election_id': document.election.slug,
+                'division_id': document.post.extra.slug,
+                'division_name': document.post.extra.short_label,
+                'document_id': document.pk,
+            }
+
             for membership in document_memberships:
 
                 other_names = "|".join(
@@ -56,16 +63,16 @@ class Command(BaseCommand):
                     party_id = party.identifiers.get(
                         scheme='popit-organization').identifier
 
-                out_dict = {
-                    'election_id': membership.election.slug,
-                    'division_id': membership.base.post.extra.slug,
-                    'division_name': membership.base.post.extra.short_label,
+                out_dict.update({
                     'candidate_id': membership.base.person.id,
                     'candidate_name': membership.base.person.name,
                     'candidate_other_names': other_names,
                     'party_id': party_id,
                     'party_name': party.name,
-                    'document_id': document.pk,
-                }
+                })
+
                 out_csv.writerow(out_dict)
+            else:
+                out_csv.writerow(out_dict)
+
         self.stdout.write(out_csv.output)
