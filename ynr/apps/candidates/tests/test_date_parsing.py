@@ -62,11 +62,3 @@ class DateParsingTests(TestCase):
     def test_nonsense_string(self):
         with self.assertRaises(ValueError):
             parse_approximate_date('this is not a date')
-
-    def test_spanish_date_string(self):
-        with self.assertRaises(ValueError):
-            parsed = parse_approximate_date('20 febrero 1954 ')
-        with override('es'):
-            parsed = parse_approximate_date('20 febrero 1954 ')
-            self.assertEqual(type(parsed), ApproximateDate)
-            self.assertEqual(repr(parsed), '1954-02-20')

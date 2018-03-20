@@ -71,7 +71,6 @@ TEMPLATES = [
                 "django.core.context_processors.media",
                 "django.core.context_processors.request",
                 "django.template.context_processors.debug",
-                "django.template.context_processors.i18n",
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "ynr.context_processors.add_group_permissions",
@@ -96,7 +95,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django_extensions',
     'pipeline',
-    'statici18n',
     'sorl.thumbnail',
     'rest_framework',
     'rest_framework.authtoken',
@@ -198,8 +196,8 @@ LOCALE_PATHS = [root('../locale')]
 LANGUAGES = [('en', 'English'), ]
 LANGUAGE_CODE = 'en-gb'
 TIME_ZONE = 'Europe/London'
-USE_I18N = True
-USE_L10N = True
+USE_I18N = False
+USE_L10N = False
 USE_TZ = True
 DD_MM_DATE_FORMAT_PREFERRED = True
 
@@ -210,7 +208,6 @@ MEDIA_URL = '/media/'
 # Settings for staticfiles and Django pipeline:
 STATIC_URL = '/static/'
 STATIC_ROOT = root('static')
-STATICI18N_ROOT = root('static')
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
