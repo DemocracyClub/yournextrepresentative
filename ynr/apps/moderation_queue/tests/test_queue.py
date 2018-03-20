@@ -169,9 +169,9 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         photo_rows = queue_table.find_all('tr')
         self.assertEqual(3, len(photo_rows))
         cells = photo_rows[1].find_all('td')
-        self.assertEqual(cells[1].text, 'john')
-        self.assertEqual(cells[2].text, '2009')
-        a = cells[3].find('a')
+        self.assertEqual(cells[2].text, 'john')
+        self.assertEqual(cells[3].text, '2009')
+        a = cells[4].find('a')
         link_text = re.sub(r'\s+', ' ', a.text).strip()
         link_url = a['href']
         self.assertEqual(link_text, 'Review')

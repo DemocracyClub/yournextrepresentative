@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load thumbnail %}
 
 {% block body_class %}{% endblock %}
 
@@ -15,6 +16,7 @@
     <table>
       <thead>
         <tr>
+          <th></th>
           <th>{% trans "Date uploaded" %}</th>
           <th>{% trans "Uploading user" %}</th>
           <th>{% trans "Candidate ID" %}</th>
@@ -24,6 +26,11 @@
       <tbody>
       {% for queued_image in object_list %}
         <tr>
+          <td>
+          {% thumbnail queued_image.image "x200" as im %}
+            <img src="{{ im.url }}">
+          {% endthumbnail %}
+          </td>
           <td>{{ queued_image.created }}</td>
           <td>{{ queued_image.user.username }}</td>
           <td>{{ queued_image.person.id }}</td>
