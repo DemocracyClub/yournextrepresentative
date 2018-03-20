@@ -1,11 +1,12 @@
 from __future__ import unicode_literals
 
 from django_webtest import WebTest
+from django.contrib.auth.models import Group
 
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
 
-from candidates.models import PostExtraElection
+from candidates.models import PostExtraElection, TRUSTED_TO_LOCK_GROUP_NAME
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
@@ -80,3 +81,36 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(suggested_lock.postextraelection.election.slug, '2015')
         self.assertEqual(suggested_lock.user, self.user)
         self.assertEqual(suggested_lock.justification, 'I liked totally reviewed the SOPN')
+
+    def test_post_lock_not_offered_when_user_suggested_lock(self):
+        group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
+        self.user.groups.add(group)
+        self.user.save()
+
+        OfficialDocument.objects.create(
+            election=self.election,
+            post=self.edinburgh_east_post_extra.base,
+            source_url='http://example.com',
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            uploaded_file="sopn.pdf"
+        )
+
+        pee = PostExtraElection.objects.get(
+            election__slug='2015',
+            postextra__slug='14419',
+        )
+
+        SuggestedPostLock.objects.create(
+            postextraelection=pee,
+            user=self.user,
+            justification='I liked totally reviewed the SOPN',
+        )
+
+        response = self.app.get(
+            '/election/2015/post/14419/edinburgh-east',
+            user=self.user,
+        )
+        self.assertContains(
+            response,
+            "Locking disabled because you suggested locking this post"
+        )
