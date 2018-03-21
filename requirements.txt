@@ -1,3 +1,4 @@
+aenum==1.4.5
 beautifulsoup4==4.4.1
 bleach==1.4.1
 certifi==2015.04.28
@@ -28,7 +29,6 @@ djangorestframework==3.3.3
 djangorestframework-jsonp==1.0.2
 docutils==0.10
 elasticsearch==0.4.5
-enum34==1.1.2
 factory-boy==2.6.0
 fake-factory==0.5.3
 futures==3.0.3
