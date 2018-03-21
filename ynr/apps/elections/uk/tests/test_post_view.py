@@ -114,3 +114,36 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response,
             "Locking disabled because you suggested locking this post"
         )
+
+    def test_post_lock_offered_when_suggested_lock_exists(self):
+        group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
+        self.user.groups.add(group)
+        self.user.save()
+
+        OfficialDocument.objects.create(
+            election=self.election,
+            post=self.edinburgh_east_post_extra.base,
+            source_url='http://example.com',
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            uploaded_file="sopn.pdf"
+        )
+
+        pee = PostExtraElection.objects.get(
+            election__slug='2015',
+            postextra__slug='14419',
+        )
+
+        SuggestedPostLock.objects.create(
+            postextraelection=pee,
+            user=self.users_to_delete[-1],
+            justification='I liked totally reviewed the SOPN',
+        )
+
+        response = self.app.get(
+            '/election/2015/post/14419/edinburgh-east',
+            user=self.user,
+        )
+        self.assertContains(
+            response,
+            "Lock candidate list"
+        )
