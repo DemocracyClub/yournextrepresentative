@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from django_webtest import WebTest
 from django.test import TestCase
 from django.test.utils import override_settings
+from django.utils.timezone import make_aware
 
 from lxml import etree
 
@@ -56,7 +57,7 @@ class TestNeedsReview(TestUserMixin, WebTest):
 
     def setUp(self):
         super(TestNeedsReview, self).setUp()
-        self.current_datetime = datetime(2017, 5, 2, 18, 10, 5, 0)
+        self.current_datetime = make_aware(datetime(2017, 5, 2, 18, 10, 5, 0))
         # Reuse existing users created in TestUserMixin:
         for username, u in (
                 ('lapsed_experienced', self.user),
