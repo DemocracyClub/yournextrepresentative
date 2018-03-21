@@ -6,8 +6,8 @@ notifications:
 language: python
 python:
   - '2.7'
-  - '3.4'
   - '3.5'
+  - '3.6'
 addons:
   postgresql: "9.5"
 
@@ -36,6 +36,6 @@ after_success:
   - coveralls
 before_cache:
     - rm -f .tox/py27-django19/log/*.log
-    - rm -f .tox/py34-django19/log/*.log
     - rm -f .tox/py35-django19/log/*.log
+    - rm -f .tox/py36-django19/log/*.log
     - rm -f .cache/pip/log/*.log
