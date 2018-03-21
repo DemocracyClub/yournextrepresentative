@@ -61,17 +61,31 @@
   {# Use the post label here, since multiple posts may be used on a page #}
   {% url 'constituency' election=election post_id=post_data.id ignored_slug=post_data.label|slugify as post_url %}
   {% url 'constituencies' election=election_data.slug as election_posts_url %}
-
   {% if user_can_lock %}
     <form method="post" action="{% url 'constituency-lock' election=election %}">
       {% csrf_token %}
       {% for field in lock_form %}{{ field }}{% endfor %}
-      <input type="submit" class="button small" value="{% if candidates_locked %}{% trans "Unlock candidate list" %}{% else %}{% trans "Lock candidate list" %}{% endif %}">
+      {% if current_user_suggested_lock %}
+        <p>
+          Locking disabled because you suggested locking this post.
+          Someone else will double check it soon.
+        </p>
+      {% else %}
+        <button type="submit" class="button small">
+          {% if candidates_locked %}
+            {% trans "Unlock candidate list" %}
+          {% else %}
+            {% trans "Lock candidate list" %}
+          {% endif %}"
+        </button>
+      {% endif %}
+      <p>
       {% if candidates_locked %}
         {% trans "(This list of candidates is currently <strong>locked</strong>.)" %}
       {% else %}
         {% trans "(This list of candidates is currently <strong>unlocked</strong>.)" %}
       {% endif %}
+      </p>
     </form>
   {% else %}
     {% if candidates_locked %}
