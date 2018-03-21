@@ -174,7 +174,8 @@ class PhotoReviewList(GroupRequiredMixin, ListView):
     def get_queryset(self):
         return QueuedImage.objects. \
             filter(decision='undecided'). \
-            order_by('created')
+            order_by('created'). \
+            select_related('user', 'person',)
 
 
 def tidy_party_name(name):
