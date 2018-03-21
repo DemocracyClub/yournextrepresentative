@@ -545,11 +545,10 @@ class PersonExtra(HasImageMixin, models.Model):
             msg = "Couldn't find version {0} for person with ID {1}"
             raise VersionNotFound(msg.format(version_id, self.base.id))
         template = loader.get_template('candidates/_diffs_against_parents.html')
-        context = Context({
+        rendered = template.render({
             'diffs_against_all_parents': right_version_diff['diffs'],
             'inline_style': inline_style,
         })
-        rendered = template.render(context)
         return squash_whitespace('<dl>{0}</dl>'.format(rendered))
 
     def record_version(self, change_metadata):
