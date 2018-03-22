@@ -93,7 +93,6 @@ class BallotPaperFactory(factory.DjangoModelFactory):
     class Meta:
         model = "candidates.Ballot"
 
-
 class OrganizationFactory(factory.DjangoModelFactory):
     class Meta:
         model = "popolo.Organization"
