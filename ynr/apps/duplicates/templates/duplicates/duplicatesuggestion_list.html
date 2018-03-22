@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Duplicates{% endblock title %}
+
+{% block content %}
+<h1>Duplicates</h1>
+{% for object in object_list %}
+  {{ object }}
+{% endfor %}
+{% endblock content %}
