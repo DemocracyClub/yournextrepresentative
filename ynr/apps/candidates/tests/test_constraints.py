@@ -50,6 +50,9 @@ class PostElectionCombinationTests(UK2015ExamplesMixin, TestCase):
             base__post=post_extra.base,
             base__organization=election.organization,
             election=election,
+            post_election=election.postextraelection_set.get(
+                postextra=post_extra
+            )
         )
         self.assertEqual(
             check_membership_elections_consistent(),
@@ -146,6 +149,9 @@ class PreventCreatingBadMembershipExtras(UK2015ExamplesMixin, TestCase):
             base__post=post_extra.base,
             base__role=self.election.candidate_membership_role,
             election=self.election,
+            post_election=self.election.postextraelection_set.get(
+                postextra=post_extra
+            )
         )
         with self.assertRaisesRegexp(
                 Exception,

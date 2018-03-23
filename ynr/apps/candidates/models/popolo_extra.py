@@ -132,6 +132,8 @@ def mark_as_standing(person_extra, election_data, post, party, party_list_positi
         MembershipExtra.objects.create(
             base=membership,
             election=election_data,
+            post_election=election_data.postextraelection_set.get(
+                postextra=post.extra)
         )
     # Update the party list position in case it's changed:
     membership_extra = membership.extra

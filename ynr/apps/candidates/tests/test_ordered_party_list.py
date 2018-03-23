@@ -24,8 +24,9 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__person=tessa_jowell.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
-            party_list_position=1
-            )
+            party_list_position=1,
+            post_election=self.dulwich_post_extra_pee,
+        )
         MembershipFactory.create(
             person=tessa_jowell.base,
             organization=self.labour_party_extra.base
@@ -40,8 +41,9 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__person=winner.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
-            party_list_position=2
-            )
+            party_list_position=2,
+            post_election=self.dulwich_post_extra_pee,
+        )
         MembershipFactory.create(
             person=winner.base,
             organization=self.labour_party_extra.base
@@ -56,8 +58,9 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__person=james_smith.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
-            party_list_position=3
-            )
+            party_list_position=3,
+            post_election=self.dulwich_post_extra_pee,
+        )
         MembershipFactory.create(
             person=james_smith.base,
             organization=self.labour_party_extra.base

@@ -144,7 +144,10 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
             election=self.election_gla,
             base__person=person_extra.base,
             base__post=self.post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.election_gla.postextraelection_set.get(
+                postextra=self.post_extra
+            )
         )
         membership_pk = person_extra.base.memberships.first().pk
 

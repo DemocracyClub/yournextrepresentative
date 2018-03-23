@@ -73,7 +73,10 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
                 )
                 MembershipExtra.objects.create(
                     base=membership,
-                    election=self.election_data
+                    election=self.election_data,
+                    post_election=self.election_data.postextraelection_set.get(
+                        postextra=post.extra
+                    ),
                 )
 
             person.extra.record_version(change_metadata)

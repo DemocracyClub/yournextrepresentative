@@ -54,25 +54,29 @@ class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
             election=self.earlier_election,
             base__person=person_old_election.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee_earlier,
         )
         factories.CandidacyExtraFactory.create(
             election=self.election,
             base__person=person_no_details.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
         )
         factories.CandidacyExtraFactory.create(
             election=self.election,
             base__person=person_empty_slogan.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
         )
         factories.CandidacyExtraFactory.create(
             election=self.election,
             base__person=person_with_details.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.green_party_extra.base
+            base__on_behalf_of=self.green_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
         )
 
     def test_find_those_missing_dob(self):

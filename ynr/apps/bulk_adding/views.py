@@ -173,6 +173,8 @@ class BulkAddReviewView(BaseBulkAddView):
         party = Organization.objects.get(pk=data['party'].split('__')[0])
         post = context['post_extra'].base
         election = Election.objects.get(slug=context['election'])
+        pee = election.postextraelection_set.get(
+            postextra=context['post_extra'])
 
         person_extra.not_standing.remove(election)
 
@@ -188,6 +190,7 @@ class BulkAddReviewView(BaseBulkAddView):
 
         MembershipExtra.objects.get_or_create(
             base=membership,
+            post_election=pee,
             defaults={
                 'party_list_position': None,
                 'election': election,

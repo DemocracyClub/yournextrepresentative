@@ -134,13 +134,15 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
         )
         factories.CandidacyExtraFactory.create(
             election=self.earlier_election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee_earlier,
         )
         # Now create Shane Collins (who we'll merge into Tessa Jowell)
         person_extra = factories.PersonExtraFactory.create(
@@ -256,13 +258,15 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.green_party_extra.base
+            base__on_behalf_of=self.green_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
         )
         factories.CandidacyExtraFactory.create(
             election=self.earlier_election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.green_party_extra.base
+            base__on_behalf_of=self.green_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
         )
 
     def tearDown(self):

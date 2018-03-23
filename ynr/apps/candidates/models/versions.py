@@ -180,6 +180,9 @@ def revert_person_from_version_data(person, person_extra, version_data, part_of_
                 election=election,
                 elected=standing_in.get('elected'),
                 party_list_position=standing_in.get('party_list_position'),
+                post_election=election.postextraelection_set.get(
+                    postextra=post.extra
+                )
             )
     person.save()
     person_extra.save()

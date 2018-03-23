@@ -39,6 +39,9 @@ class TestPartyDropDownOrdering(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     base__person=pe.base,
                     base__post=posts_extra[created % len(posts_extra)].base,
                     base__on_behalf_of=party.base,
+                    post_election=election.postextraelection_set.get(
+                        postextra=posts_extra[created % len(posts_extra)]
+                    ),
                 )
                 created += 1
 

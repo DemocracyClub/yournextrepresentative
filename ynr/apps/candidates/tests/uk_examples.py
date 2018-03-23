@@ -108,7 +108,17 @@ class UK2015ExamplesMixin(object):
                 party_set=self.gb_parties,
                 group=cons['country'],
             )
+
             setattr(self, cons['attr'], pe)
+
+            pee_attr_name = "{}_pee".format(cons['attr'])
+            pee = pe.postextraelection_set.get(election=self.election)
+            setattr(self, pee_attr_name, pee)
+
+            pee_attr_name = "{}_pee_earlier".format(cons['attr'])
+            pee = pe.postextraelection_set.get(election=self.earlier_election)
+            setattr(self, pee_attr_name, pee)
+
 
         # Also create a local election and post:
         self.local_council = factories.OrganizationExtraFactory.create(

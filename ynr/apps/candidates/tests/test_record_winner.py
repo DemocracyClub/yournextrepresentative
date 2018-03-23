@@ -28,8 +28,9 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
-            )
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
+        )
         MembershipFactory.create(
             person=person_extra.base,
             organization=self.labour_party_extra.base
@@ -44,8 +45,9 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             election=self.election,
             base__person=self.winner.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
-            )
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
+        )
 
         MembershipFactory.create(
             person=self.winner.base,
@@ -304,8 +306,9 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
-            )
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
+        )
         MembershipFactory.create(
             person=person_extra.base,
             organization=self.labour_party_extra.base
@@ -321,8 +324,9 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__person=self.winner.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
-            elected=True
-            )
+            elected=True,
+            post_election=self.dulwich_post_extra_pee,
+        )
 
         MembershipFactory.create(
             person=self.winner.base,
