@@ -827,6 +827,7 @@ class MembershipExtra(models.Model):
     election = models.ForeignKey(
         Election, blank=True, null=True, related_name='candidacies'
     )
+    post_election = models.ForeignKey('candidates.PostExtraElection')
 
     def save(self, *args, **kwargs):
         if self.election and getattr(self, 'check_for_broken', True):
