@@ -308,7 +308,16 @@ class ConstituencyListView(ElectionMixin, TemplateView):
                 election=self.election_data
             ).order_by('postextra__base__label') \
             .select_related('postextra__base') \
-            .prefetch_related('suggestedpostlock_set')
+            .select_related('election') \
+            .prefetch_related('suggestedpostlock_set')\
+            .prefetch_related(
+                Prefetch(
+                    'membershipextra_set',
+                    MembershipExtra.objects.select_related(
+                        'base__person__extra',
+                    )
+                )
+            )
 
         return context
 
