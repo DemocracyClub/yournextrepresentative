@@ -241,3 +241,9 @@ class EE_ImporterTest(WebTest):
                 'sp.r.glasgow.2019-01-17',
             ]
         )
+
+        # Check we set the winner count value
+        pee = every_election.PostExtraElection.objects.get(
+            ballot_paper_id='local.adur.buckingham.2019-01-17',
+        )
+        self.assertEqual(pee.winner_count, 3)

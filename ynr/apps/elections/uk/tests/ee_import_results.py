@@ -57,6 +57,7 @@ current_elections = json.loads("""
         "local.warrington.2018-02-22"
       ],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": null,
       "voting_system": null,
       "current": true,
@@ -101,6 +102,7 @@ current_elections = json.loads("""
         "local.aberdeen-city.torryferryhill.2018-02-22"
       ],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "STV",
@@ -135,6 +137,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -190,6 +193,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -245,6 +249,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -300,6 +305,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -355,6 +361,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -410,6 +417,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -465,6 +473,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -520,6 +529,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -575,6 +585,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -630,6 +641,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -685,6 +697,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -740,6 +753,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -795,6 +809,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -870,6 +885,7 @@ current_elections = json.loads("""
         "local.aberdeenshire.westhill-and-district.2018-02-22"
       ],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "STV",
@@ -904,6 +920,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -959,6 +976,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1014,6 +1032,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1069,6 +1088,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1124,6 +1144,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1179,6 +1200,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1234,6 +1256,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1289,6 +1312,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1344,6 +1368,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1399,6 +1424,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1454,6 +1480,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1509,6 +1536,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1564,6 +1592,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1619,6 +1648,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1674,6 +1704,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1729,6 +1760,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1784,6 +1816,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1839,6 +1872,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1894,6 +1928,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -1964,6 +1999,7 @@ current_elections = json.loads("""
         "local.adur.widewater.2018-02-22"
       ],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "FPTP",
@@ -1998,6 +2034,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2053,6 +2090,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2108,6 +2146,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2163,6 +2202,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2218,6 +2258,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2273,6 +2314,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2328,6 +2370,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2383,6 +2426,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2438,6 +2482,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2493,6 +2538,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2548,6 +2594,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2603,6 +2650,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2658,6 +2706,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2713,6 +2762,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -2777,6 +2827,7 @@ current_elections = json.loads("""
         "local.angus.montrose-and-district.2018-02-22"
       ],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "STV",
@@ -2811,6 +2862,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -2866,6 +2918,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -2921,6 +2974,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -2976,6 +3030,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -3031,6 +3086,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -3086,6 +3142,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -3141,6 +3198,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -3196,6 +3254,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2017-05-04",
@@ -3279,6 +3338,7 @@ current_elections = json.loads("""
         "local.bedford.wyboston.2018-02-22"
       ],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "FPTP",
@@ -3313,6 +3373,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -3368,6 +3429,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -3423,6 +3485,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -3478,6 +3541,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -3533,6 +3597,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -3588,6 +3653,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -3643,6 +3709,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -3698,6 +3765,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -3753,6 +3821,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -3808,6 +3877,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -3863,6 +3933,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -3918,6 +3989,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -3973,6 +4045,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4028,6 +4101,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4083,6 +4157,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4138,6 +4213,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4193,6 +4269,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4248,6 +4325,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4303,6 +4381,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4358,6 +4437,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4413,6 +4493,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4468,6 +4549,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4523,6 +4605,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4578,6 +4661,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4633,6 +4717,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4688,6 +4773,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4743,6 +4829,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2011-01-28",
@@ -4820,6 +4907,7 @@ current_elections = json.loads("""
         "local.brent.willesden-green.2018-02-22"
       ],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "FPTP",
@@ -4854,6 +4942,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -4909,6 +4998,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -4964,6 +5054,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5019,6 +5110,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5074,6 +5166,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5129,6 +5222,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5184,6 +5278,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5239,6 +5334,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5294,6 +5390,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5349,6 +5446,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5404,6 +5502,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5459,6 +5558,7 @@ current_elections = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5525,6 +5625,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5580,6 +5681,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5635,6 +5737,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5690,6 +5793,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5745,6 +5849,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5800,6 +5905,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5855,6 +5961,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5910,6 +6017,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -5965,6 +6073,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6043,6 +6152,7 @@ current_elections_page_2 = json.loads("""
         "local.bromley.west-wickham.2018-02-22"
       ],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "FPTP",
@@ -6077,6 +6187,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6132,6 +6243,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6187,6 +6299,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6242,6 +6355,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6297,6 +6411,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6352,6 +6467,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6407,6 +6523,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6462,6 +6579,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6517,6 +6635,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6572,6 +6691,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6627,6 +6747,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6682,6 +6803,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6737,6 +6859,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6792,6 +6915,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6847,6 +6971,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6902,6 +7027,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -6957,6 +7083,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -7012,6 +7139,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -7067,6 +7195,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -7122,6 +7251,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -7177,6 +7307,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -7232,6 +7363,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -7304,6 +7436,7 @@ current_elections_page_2 = json.loads("""
         "local.daventry.yelvertoft.2018-02-22"
       ],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "FPTP",
@@ -7338,6 +7471,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -7393,6 +7527,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -7448,6 +7583,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -7503,6 +7639,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -7558,6 +7695,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -7613,6 +7751,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -7668,6 +7807,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -7723,6 +7863,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -7778,6 +7919,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -7833,6 +7975,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -7888,6 +8031,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -7943,6 +8087,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -7998,6 +8143,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -8053,6 +8199,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -8108,6 +8255,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -8163,6 +8311,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2012-05-31",
@@ -8249,6 +8398,7 @@ current_elections_page_2 = json.loads("""
         "local.denbighshire.tremeirchion.2018-02-22"
       ],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "FPTP",
@@ -8283,6 +8433,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -8338,6 +8489,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -8393,6 +8545,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -8448,6 +8601,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -8503,6 +8657,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -8558,6 +8713,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -8613,6 +8769,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -8668,6 +8825,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -8723,6 +8881,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -8778,6 +8937,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -8833,6 +8993,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -8888,6 +9049,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -8943,6 +9105,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -8998,6 +9161,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9053,6 +9217,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9108,6 +9273,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9163,6 +9329,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9218,6 +9385,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9273,6 +9441,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9328,6 +9497,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9383,6 +9553,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9438,6 +9609,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9493,6 +9665,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9548,6 +9721,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9603,6 +9777,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9658,6 +9833,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9713,6 +9889,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9768,6 +9945,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9823,6 +10001,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9878,6 +10057,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -9964,6 +10144,7 @@ current_elections_page_2 = json.loads("""
         "local.eden.warcop.2018-02-22"
       ],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "FPTP",
@@ -9998,6 +10179,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10053,6 +10235,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10108,6 +10291,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10163,6 +10347,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10218,6 +10403,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10273,6 +10459,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10328,6 +10515,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10383,6 +10571,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10438,6 +10627,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10493,6 +10683,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10548,6 +10739,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10603,6 +10795,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10658,6 +10851,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10713,6 +10907,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10768,6 +10963,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10823,6 +11019,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10878,6 +11075,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10933,6 +11131,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -10988,6 +11187,7 @@ current_elections_page_2 = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -11055,6 +11255,7 @@ each_type_of_election_on_one_day = json.loads("""
         "local.adur.2019-01-17"
       ],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": null,
       "voting_system": null,
       "current": true,
@@ -11087,6 +11288,7 @@ each_type_of_election_on_one_day = json.loads("""
         "local.adur.buckingham.2019-01-17"
       ],
       "elected_role": "Local Councillor",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "FPTP",
@@ -11121,6 +11323,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Local Councillor",
+      "seats_contested": 3,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -11169,6 +11372,7 @@ each_type_of_election_on_one_day = json.loads("""
         "mayor.hackney.2019-01-17"
       ],
       "elected_role": "Mayor",
+      "seats_contested": null,
       "division": null,
       "voting_system": null,
       "current": true,
@@ -11199,6 +11403,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Mayor",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "sv",
@@ -11233,6 +11438,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": "organisation",
       "children": [],
       "elected_role": "Mayor",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "sv",
@@ -11270,6 +11476,7 @@ each_type_of_election_on_one_day = json.loads("""
         "naw.r.2019-01-17"
       ],
       "elected_role": "Assembly Member",
+      "seats_contested": null,
       "division": null,
       "voting_system": null,
       "current": true,
@@ -11306,6 +11513,7 @@ each_type_of_election_on_one_day = json.loads("""
         "naw.c.mid-and-west-wales.2019-01-17"
       ],
       "elected_role": "Assembly Member",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "AMS",
@@ -11343,6 +11551,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Assembly Member",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2016-04-13",
@@ -11401,6 +11610,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Assembly Member",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2016-04-13",
@@ -11462,6 +11672,7 @@ each_type_of_election_on_one_day = json.loads("""
         "naw.r.mid-and-west-wales.2019-01-17"
       ],
       "elected_role": "Assembly Member",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "AMS",
@@ -11499,6 +11710,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Assembly Member",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2016-04-13",
@@ -11557,6 +11769,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Assembly Member",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2016-04-13",
@@ -11614,6 +11827,7 @@ each_type_of_election_on_one_day = json.loads("""
         "nia.lagan-valley.2019-01-17"
       ],
       "elected_role": "Assembly Member",
+      "seats_contested": null,
       "division": null,
       "voting_system": null,
       "current": true,
@@ -11644,6 +11858,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Assembly Member",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2004-12-02",
@@ -11702,6 +11917,7 @@ each_type_of_election_on_one_day = json.loads("""
         "parl.ynys-mon.2019-01-17"
       ],
       "elected_role": "Member of Parliament",
+      "seats_contested": null,
       "division": null,
       "voting_system": null,
       "current": true,
@@ -11732,6 +11948,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Member of Parliament",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2010-07-18",
@@ -11787,6 +12004,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Member of Parliament",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2010-07-18",
@@ -11834,6 +12052,7 @@ each_type_of_election_on_one_day = json.loads("""
         "pcc.avon-and-somerset.2019-01-17"
       ],
       "elected_role": "Police and Crime Commissioner",
+      "seats_contested": null,
       "division": null,
       "voting_system": null,
       "current": true,
@@ -11864,6 +12083,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": "organisation",
       "children": [],
       "elected_role": "Police and Crime Commissioner",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "sv",
@@ -11901,6 +12121,7 @@ each_type_of_election_on_one_day = json.loads("""
         "sp.r.2019-01-17"
       ],
       "elected_role": "Member of the Scottish Parliament",
+      "seats_contested": null,
       "division": null,
       "voting_system": null,
       "current": true,
@@ -11937,6 +12158,7 @@ each_type_of_election_on_one_day = json.loads("""
         "sp.c.glasgow.2019-01-17"
       ],
       "elected_role": "Member of the Scottish Parliament",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "AMS",
@@ -11974,6 +12196,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Member of the Scottish Parliament",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2016-04-13",
@@ -12032,6 +12255,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Member of the Scottish Parliament",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2016-04-13",
@@ -12093,6 +12317,7 @@ each_type_of_election_on_one_day = json.loads("""
         "sp.r.glasgow.2019-01-17"
       ],
       "elected_role": "Member of the Scottish Parliament",
+      "seats_contested": null,
       "division": null,
       "voting_system": {
         "slug": "AMS",
@@ -12130,6 +12355,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Member of the Scottish Parliament",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2016-04-13",
@@ -12188,6 +12414,7 @@ each_type_of_election_on_one_day = json.loads("""
       "group_type": null,
       "children": [],
       "elected_role": "Member of the Scottish Parliament",
+      "seats_contested": null,
       "division": {
         "divisionset": {
           "start_date": "2016-04-13",
