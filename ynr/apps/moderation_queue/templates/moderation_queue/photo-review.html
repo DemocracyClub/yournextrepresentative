@@ -89,43 +89,39 @@
 
     <h3>{% trans "User-submitted information" %}</h3>
 
-    {% with username=queued_image.user.username %}
-
-      <p>{% blocktrans trimmed with email=queued_image.user.email %}
-        Uploaded by user {{ username }} with confirmed email
-        <tt>{{ email }}</tt>.{% endblocktrans %}
-        {% if person.email %}
-          {% blocktrans trimmed with email=person.email %}
-          (The candidate's unconfirmed email address is
-          <tt>{{ email }}</tt>.){% endblocktrans %}
-        {% endif %}
-        </p>
-
-      {% if why_allowed == 'public-domain' %}
-        <p>
-          {% blocktrans %}{{ username }} asserted that photo is free of copyright restrictions{% endblocktrans %}
-        </p>
-      {% elif why_allowed == 'copyright-assigned' %}
-        <p>
-          {% blocktrans with copyright_holder=settings.COPYRIGHT_HOLDER trimmed %}
-            {{ username }} assigned the copyright to {{ copyright_holder }}
-          {% endblocktrans %}
-        </p>
-      {% elif why_allowed == 'profile-photo' %}
-        <p>{% blocktrans trimmed %}
-          {{ username }} said that this is the candidate's public profile
-          photo from social media or their official campaign page
-        {% endblocktrans %}</p>
+    <p>{% blocktrans trimmed %}
+      Uploaded by user {{ username }} with confirmed email
+      <tt>{{ email }}</tt>.{% endblocktrans %}
+      {% if person.email %}
+        {% blocktrans trimmed with email=person.email %}
+        (The candidate's unconfirmed email address is
+        <tt>{{ email }}</tt>.){% endblocktrans %}
       {% endif %}
+      </p>
 
-      {% if justification_for_use %}
-        <p>{% blocktrans trimmed with justification=justification_for_use|safe %}
-          {{ username }}'s justification for use of this photo was:
-          &#8220;{{ justification }}&#8221;
-        {% endblocktrans %}</p>
-      {% endif %}
+    {% if why_allowed == 'public-domain' %}
+      <p>
+        {% blocktrans %}{{ username }} asserted that photo is free of copyright restrictions{% endblocktrans %}
+      </p>
+    {% elif why_allowed == 'copyright-assigned' %}
+      <p>
+        {% blocktrans with copyright_holder=settings.COPYRIGHT_HOLDER trimmed %}
+          {{ username }} assigned the copyright to {{ copyright_holder }}
+        {% endblocktrans %}
+      </p>
+    {% elif why_allowed == 'profile-photo' %}
+      <p>{% blocktrans trimmed %}
+        {{ username }} said that this is the candidate's public profile
+        photo from social media or their official campaign page
+      {% endblocktrans %}</p>
+    {% endif %}
 
-    {% endwith %}
+    {% if justification_for_use %}
+      <p>{% blocktrans trimmed with justification=justification_for_use|safe %}
+        {{ username }}'s justification for use of this photo was:
+        &#8220;{{ justification }}&#8221;
+      {% endblocktrans %}</p>
+    {% endif %}
 
     <h3>{% trans "Your decision" %}</h3>
 

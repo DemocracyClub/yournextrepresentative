@@ -49,12 +49,13 @@ or remove copyright restrictions by releasing into the public domain
   <input type="submit" class="button" value="{% trans "Continue" %}">
 </form>
 
-{% url 'account_logout' as url|add:"?next="|add:next_path_escaped %}
-<p>{% blocktrans trimmed with email=settings.SUPPORT_EMAIL %}
-  Otherwise you can <a href="{{ url }}">log out</a>. Please do
-  <a href="mailto:{{ email }}">email us</a> if you have any
+
+<p>
+  Otherwise you can
+  <a href="{% url 'account_logout' as logout_url|add:"?next="|add:next_path_escaped %}">log out</a>.
+  Please do <a href="https://democracyclub.org.uk/contact/">contact us</a> if you have any
   questions about this agreement.
-  {% endblocktrans %}</p>
+</p>
 
 <div class="further-copyright-explanation">
 

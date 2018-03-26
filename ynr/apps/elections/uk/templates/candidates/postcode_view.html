@@ -6,7 +6,6 @@
   <h1>Current elections in {{ postcode }}</h1>
 {% endblock %}
 
-
 {% block content %}
 
 {% for pee in pees %}
@@ -14,6 +13,11 @@
   <a href="{{ pee.get_absolute_url }}">{{ pee.postextra.base.label }}</a>
 
 {% empty %}
-<p>We don't know of any upcoming elections for {{ postcode }}</p>
+  {% if postcode %}
+    <p>We don't know of any upcoming elections for {{ postcode }}</p>
+  {% else %}
+    <p>We don't know of any upcoming elections in this area</p>
+  {% endif %}
 {% endfor %}
+
 {% endblock content %}

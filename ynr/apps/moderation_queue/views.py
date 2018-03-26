@@ -231,6 +231,14 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             pk=kwargs['queued_image_id']
         )
         context['queued_image'] = self.queued_image
+        if context['queued_image'].user:
+            username = context['queued_image'].user.username
+            email = context['queued_image'].user.email
+        else:
+            username = "a robot 🤖"
+            email = None
+        context['username'] = username
+        context['email'] = email
         person = Person.objects.get(
             id=self.queued_image.person.id,
         )

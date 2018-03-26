@@ -3,8 +3,9 @@ from __future__ import unicode_literals
 from django_webtest import WebTest
 
 from .auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
-class TestLoggingOutMiddleware(TestUserMixin, WebTest):
+class TestLoggingOutMiddleware(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_no_logout_if_is_active(self):
         self.app.get('/', user=self.user)

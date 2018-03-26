@@ -168,5 +168,8 @@ class GeoLocatorView(TemplateView):
         longitude = kwargs['longitude']
         coords = ",".join((latitude, longitude))
         context['pees'] = get_post_elections_from_coords(coords)
+        # populate the postcode template var with None so the template
+        # knows it's a geo-lookup
+        context['postcode'] = None
         return context
 

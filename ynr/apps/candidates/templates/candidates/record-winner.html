@@ -28,7 +28,7 @@
 <input
     type="submit"
     class="button"
-    value="{% blocktrans trimmed with name=person.name party=person.last_party.name %}
+    value="{% blocktrans trimmed with name=person.name party=person.extra.last_party.name %}
 Yes, {{ name }} ({{ party }}) won in {{ constituency_name }}{% endblocktrans %}"/>
 
 <p>
