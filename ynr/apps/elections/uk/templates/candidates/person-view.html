@@ -146,8 +146,10 @@
       <dt>{% trans "Email" %}</dt>
       <dd>{% if person.email %}<a href="mailto:{{ person.email }}">{{ person.email }}</a>{% endif %}</dd>
     {% endif %}
-    <dt>{% trans "Party" %}</dt>
-    <dd>{{ last_candidacy.on_behalf_of.name }}</dd>
+    {% if last_candidacy %}
+      <dt>{% trans "Party" %}</dt>
+      <dd>{{ last_candidacy.on_behalf_of.name }}</dd>
+    {% endif %}
     {% if 'summary' in simple_fields %}
       <dt>{% trans "Summary" %}</dt>
       <dd>{% if person.summary %}{{ person.summary }}{% endif %}</dd>
@@ -210,13 +212,8 @@
                     The 'S' format only gives an English ordinal suffix, so only
                     use it if the LANGUAGE is English.
                   {% endcomment %}
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    ({% blocktrans with dob=person.extra.dob_as_date|date:"jS F Y" %}Date of birth: {{ dob }}
-                     {% endblocktrans %})
-                  {% else %}
-                    ({% blocktrans with dob=person.extra.dob_as_date|date:"j F Y" %}Date of birth: {{ dob }}
-                     {% endblocktrans %})
-                  {% endif %}
+                  ({% blocktrans with dob=person.extra.dob_as_date|date:"jS F Y" %}Date of birth: {{ dob }}
+                   {% endblocktrans %})
                 </small>
             {% endif %}
           {% else %}

@@ -32,7 +32,7 @@
           {% endthumbnail %}
           </td>
           <td>{{ queued_image.created }}</td>
-          <td>{{ queued_image.user.username }}</td>
+          <td>{% if queued_image.user %}{{ queued_image.user.username }}{% else %}a robot 🤖{% endif %}</td>
           <td>{{ queued_image.person.id }}</td>
           <td><a href="{% url 'photo-review' queued_image_id=queued_image.id %}">{% trans "Review" %}</a></td>
         </tr>

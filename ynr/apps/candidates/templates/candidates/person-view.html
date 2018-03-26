@@ -198,11 +198,7 @@
                     The 'S' format only gives an English ordinal suffix, so only
                     use it if the LANGUAGE is English.
                   {% endcomment %}
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    ({% blocktrans trimmed with dob=person.extra.dob_as_date|date:"jS E Y" %}Date of birth: {{ dob }}{% endblocktrans %})
-                  {% else %}
-                    ({% blocktrans trimmed with dob=person.extra.dob_as_date|date:"j E Y" %}Date of birth: {{ dob }}{% endblocktrans %})
-                  {% endif %}
+                  ({% blocktrans trimmed with dob=person.extra.dob_as_date|date:"jS E Y" %}Date of birth: {{ dob }}{% endblocktrans %})
                 </small>
             {% endif %}
           {% else %}
