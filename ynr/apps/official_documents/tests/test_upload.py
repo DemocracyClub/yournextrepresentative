@@ -41,6 +41,7 @@ class TestModels(TestUserMixin, WebTest):
         election = ElectionFactory.create(
             slug='2015',
             name='2015 General Election',
+            current=True,
         )
         commons = ParliamentaryChamberFactory.create()
         self.post_extra = PostExtraFactory.create(
@@ -104,3 +105,17 @@ class TestModels(TestUserMixin, WebTest):
         od = ods[0]
         self.assertEqual(od.source_url, 'http://example.org/foo')
         self.assertEqual(od.post.extra.slug, '65808')
+
+        # Test that the document is listed on the all documents page
+        url = reverse('unlocked_posts_with_documents')
+        response = self.app.get(url)
+        self.assertContains(
+            response,
+            "nomination papers that need importing"
+        )
+
+        self.assertContains(
+            response,
+            "Member of Parliament for Dulwich and West Norwood"
+        )
+

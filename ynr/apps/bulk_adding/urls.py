@@ -21,8 +21,4 @@ urlpatterns = [
         views.BulkAddReviewView.as_view(),
         name='bulk_add_review'
     ),
-    url(r'^$',
-        views.UnlockedWithDocumentsView.as_view(),
-        name='unlocked_posts_with_documents'),
-
 ]

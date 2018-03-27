@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django.views.generic import CreateView, DetailView
+from django.views.generic import CreateView, DetailView, TemplateView
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
 
@@ -86,3 +86,25 @@ def get_add_from_document_cta_flash_message(document, remaining_posts):
             'remaining_posts': remaining_posts,
         }
     )
+
+
+class UnlockedWithDocumentsView(TemplateView):
+    template_name = "official_documents/unlocked_with_documents.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            UnlockedWithDocumentsView, self).get_context_data(**kwargs)
+
+        SOPNs_qs = OfficialDocument.objects.filter(
+            election__current=True).select_related(
+                'election', 'post__extra',
+            )
+
+        SOPNs_qs = SOPNs_qs.exclude(
+            post__in=SuggestedPostLock.objects.all().values(
+                'postextraelection__postextra__base'))
+
+        context['unlocked_sopns'] = SOPNs_qs.filter(
+            post__extra__postextraelection__candidates_locked=False)
+
+        return context

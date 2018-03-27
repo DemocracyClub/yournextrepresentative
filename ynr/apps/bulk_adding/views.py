@@ -271,26 +271,3 @@ class BulkAddReviewView(BaseBulkAddView):
 
     def form_invalid(self, context):
         return self.render_to_response(context)
-
-
-class UnlockedWithDocumentsView(TemplateView):
-    template_name = "official_documents/unlocked_with_documents.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(
-            UnlockedWithDocumentsView, self).get_context_data(**kwargs)
-
-        SOPNs_qs = OfficialDocument.objects.filter(
-            election__current=True).select_related(
-                'election', 'post__extra',
-                'post__extra__postextraelection'
-            )
-
-        SOPNs_qs = SOPNs_qs.exclude(
-            post__in=SuggestedPostLock.objects.all().values(
-                'post_extra__base'))
-
-        context['unlocked_sopns'] = SOPNs_qs.filter(
-            post__extra__postextraelection__candidates_locked=False)
-
-        return context
