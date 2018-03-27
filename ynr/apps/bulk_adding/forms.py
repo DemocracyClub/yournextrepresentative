@@ -22,15 +22,16 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
 
     def add_fields(self, form, index):
         super(BaseBulkAddFormSet, self).add_fields(form, index)
-        form.fields["party"] = forms.ChoiceField(
-            choices=self.parties,
-            widget=forms.Select(attrs={
-                'class': 'party-select',
-            }),
-        )
+        if hasattr(self, 'parties'):
+            form.fields["party"] = forms.ChoiceField(
+                choices=self.parties,
+                widget=forms.Select(attrs={
+                    'class': 'party-select',
+                }),
+            )
 
-        if 'party' in getattr(form, '_hide', []):
-            form.fields["party"].widget = forms.HiddenInput()
+            if 'party' in getattr(form, '_hide', []):
+                form.fields["party"].widget = forms.HiddenInput()
 
         if hasattr(self, 'source'):
             form.fields["source"].initial = self.source
@@ -39,8 +40,9 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
 
 class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
     def suggested_people(self, person_name):
-        sqs = search_person_by_name(person_name)
-        return sqs[:5]
+        if person_name:
+            sqs = search_person_by_name(person_name)
+            return sqs[:5]
 
     def format_value(self, suggestion):
         """
