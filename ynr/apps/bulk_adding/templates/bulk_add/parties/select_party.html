@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Add from party list</h2>
+<p>
+  Parties often publish lists of each candidate per ward on a single page.
+  This page is designed to make adding them all easier.
+</p>
+
+<h3>{{ election_obj.name }}</h3>
+
+<form method=post>
+  {% csrf_token %}
+  {{ form }}
+  <button type=submit>Next</button>
+</form>
+{% endblock content %}

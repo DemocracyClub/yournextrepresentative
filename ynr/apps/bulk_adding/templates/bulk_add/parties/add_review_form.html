@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ election_obj.name }}: {{ party }} candidates</h2>
+<form method=POST>
+{% csrf_token %}
+{% for formset in formsets %}
+<div style="clear: both; margin-top:2em">
+  <h3>{{ formset.pee.postextra.base.label }}</h3>
+  <div style="margin-top:2em; margin-left: 1em">
+
+  {{ formset.management_form }}
+  {% for form in formset.data %}
+    {{ form.errors }}
+    {% if form.name.value %}
+      <h4>Candidate: {{ form.name.value }}</h4>
+      {% if form.select_person.1 %}
+      <p>Some similar names have been found in our database. </p>
+      <p>
+        If you're sure this is a new candidate, please select
+        'Add {{ form.name.value }} as a new person'. Otherwise, please check the
+        similar names, and if it is the same person, select their name
+        instead. The system will update them with the new candidacy.
+      </p>
+      {% endif %}
+      {% for choice in form.select_person %}
+        <label for="{{ choice.id_for_label }}" style="font-size:1em;clear:both;margin-bottom:0.5em">
+          <div style="display:block;float:left;width:3em">
+            {{ choice.tag }}
+          </div>
+          {% if choice.choice_value != '_new' %}
+          <div>
+            Mark <a href="{% url 'person-view' choice.choice_value %}" target="_blank">
+            {{ choice.choice_label }}</a> as standing in {{ formset.pee.postextra.base.label }}
+          </div>
+          {% else %}
+          <div>
+            Add <strong>{{ form.name.value }}</strong> as a new person
+          </div>
+          {% endif %}
+        </label>
+        {{ form.name }}
+        {{ form.source }}
+        {{ form.party }}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+  </div>
+</div>
+{% endfor %}
+<div style="clear: both; margin-top: 2em">
+  <button type=submit>Next</button>
+</div>
+</form>
+{% endblock content %}
