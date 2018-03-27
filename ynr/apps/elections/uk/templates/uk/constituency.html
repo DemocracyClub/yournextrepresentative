@@ -36,7 +36,7 @@
 
         {% if not candidates_locked %}
             {% if some_official_documents %}
-                <a href="{% url "bulk_add" election post_data.id %}" class="button">Add candidates from nomination paper in {{post_data.label}}</a>
+                <a href="{% url "bulk_add_from_sopn" election post_data.id %}" class="button">Add candidates from nomination paper in {{post_data.label}}</a>
             {% endif %}
         {% endif %}
 

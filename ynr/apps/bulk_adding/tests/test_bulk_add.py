@@ -21,7 +21,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def testNoFormIfNoSopn(self):
         response = self.app.get(
-            '/bulk_adding/2015/65808/',
+            '/bulk_adding/sopn/2015/65808/',
             user=self.user_who_can_upload_documents
         )
 
@@ -47,7 +47,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            '/bulk_adding/2015/65808/',
+            '/bulk_adding/sopn/2015/65808/',
             user=self.user_who_can_upload_documents
         )
 
@@ -73,7 +73,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            '/bulk_adding/2015/65808/',
+            '/bulk_adding/sopn/2015/65808/',
             user=self.user
         )
 
@@ -137,7 +137,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            '/bulk_adding/2015/65808/',
+            '/bulk_adding/sopn/2015/65808/',
             user=self.user
         )
 
@@ -199,7 +199,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            '/bulk_adding/2015/65808/',
+            '/bulk_adding/sopn/2015/65808/',
             user=self.user
         )
 
@@ -228,3 +228,12 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(same_membership.post, self.dulwich_post_extra.base)
         self.assertEqual(same_membership.on_behalf_of, self.green_party_extra.base)
         self.assertEqual(same_membership.id, existing_membership.id)
+
+    def test_old_url_redirects(self):
+        response = self.app.get(
+            '/bulk_adding/2015/65808/',
+            user=self.user
+        )
+
+        self.assertEqual(response.status_code, 302)
+

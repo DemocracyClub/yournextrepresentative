@@ -24,7 +24,7 @@
         {% elif lock_suggested %}
         - <abbr title="Someone suggested locking this post">🔓</abbr>
         {% else %}
-        <a href="{% url 'bulk_add' election=document.election.slug post_id=document.post.extra.slug %}" class="button tiny">
+        <a href="{% url 'bulk_add_from_sopn' election=document.election.slug post_id=document.post.extra.slug %}" class="button tiny">
         Add candidates</a>
         {% endif %}
 

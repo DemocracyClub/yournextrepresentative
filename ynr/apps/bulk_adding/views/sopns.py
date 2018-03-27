@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import transaction
 from django.db.models import F
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -26,10 +26,18 @@ from official_documents.models import OfficialDocument
 from official_documents.views import get_add_from_document_cta_flash_message
 from moderation_queue.models import SuggestedPostLock
 
-from . import forms
+from bulk_adding import forms
 
 
-class BaseBulkAddView(LoginRequiredMixin, TemplateView):
+class BulkAddSOPNRedirectView(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse('bulk_add_from_sopn', kwargs={
+            'election': kwargs['election'],
+            'post_id': kwargs['post_id'],
+        })
+
+
+class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
     # required_group_name = models.TRUSTED_TO_BULK_ADD_GROUP_NAME
 
     def add_election_and_post_to_context(self, context):
@@ -62,11 +70,11 @@ class BaseBulkAddView(LoginRequiredMixin, TemplateView):
             return self.form_invalid(context)
 
 
-class BulkAddView(BaseBulkAddView):
-    template_name = "bulk_add/add_form.html"
+class BulkAddSOPNView(BaseSOPNBulkAddView):
+    template_name = "bulk_add/sopns/add_form.html"
 
     def get_context_data(self, **kwargs):
-        context = super(BulkAddView, self).get_context_data(**kwargs)
+        context = super(BulkAddSOPNView, self).get_context_data(**kwargs)
         context.update(self.add_election_and_post_to_context(context))
 
         form_kwargs = {
@@ -102,7 +110,7 @@ class BulkAddView(BaseBulkAddView):
     def form_valid(self, context):
         self.request.session['bulk_add_data'] = context['formset'].cleaned_data
         return HttpResponseRedirect(
-            reverse('bulk_add_review', kwargs={
+            reverse('bulk_add_sopn_review', kwargs={
                 'election': context['election'],
                 'post_id': context['post_id'],
             })
@@ -112,11 +120,11 @@ class BulkAddView(BaseBulkAddView):
         return self.render_to_response(context)
 
 
-class BulkAddReviewView(BaseBulkAddView):
-    template_name = "bulk_add/add_review_form.html"
+class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
+    template_name = "bulk_add/sopns/add_review_form.html"
 
     def get_context_data(self, **kwargs):
-        context = super(BulkAddReviewView, self).get_context_data(**kwargs)
+        context = super(BulkAddSOPNReviewView, self).get_context_data(**kwargs)
         context.update(self.add_election_and_post_to_context(context))
 
         initial = []

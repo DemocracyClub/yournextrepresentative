@@ -10,15 +10,23 @@ urlpatterns = [
             election=constants.ELECTION_ID_REGEX,
             post=constants.POST_ID_REGEX
         ),
-        views.BulkAddView.as_view(),
+        views.BulkAddSOPNRedirectView.as_view(),
         name='bulk_add'
     ),
     url(
-        r'^{election}/{post}/review/$'.format(
+        r'^sopn/{election}/{post}/$'.format(
             election=constants.ELECTION_ID_REGEX,
             post=constants.POST_ID_REGEX
         ),
-        views.BulkAddReviewView.as_view(),
-        name='bulk_add_review'
+        views.BulkAddSOPNView.as_view(),
+        name='bulk_add_from_sopn'
+    ),
+    url(
+        r'^sopn/{election}/{post}/review/$'.format(
+            election=constants.ELECTION_ID_REGEX,
+            post=constants.POST_ID_REGEX
+        ),
+        views.BulkAddSOPNReviewView.as_view(),
+        name='bulk_add_sopn_review'
     ),
 ]
