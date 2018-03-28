@@ -111,7 +111,7 @@ class TestModels(TestUserMixin, WebTest):
         response = self.app.get(url)
         self.assertContains(
             response,
-            "nomination papers that need importing"
+            "Unlocked posts with nomination papers"
         )
 
         self.assertContains(
