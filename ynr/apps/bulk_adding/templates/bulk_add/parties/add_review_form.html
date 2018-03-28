@@ -8,9 +8,9 @@
 <div style="clear: both; margin-top:2em">
   <h3>{{ formset.pee.postextra.base.label }}</h3>
   <div style="margin-top:2em; margin-left: 1em">
-
   {{ formset.management_form }}
   {% for form in formset.data %}
+    {{ form.name }}
     <div style="margin-top:2em; margin-left: 1em">
     {% if form.name.value %}
       <h4>Candidate: {{ form.name.value }}</h4>
@@ -40,7 +40,6 @@
           </div>
           {% endif %}
         </label>
-        {{ form.name }}
       {% endfor %}
     {% endif %}
     </div>
