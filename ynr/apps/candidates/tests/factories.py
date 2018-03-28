@@ -109,6 +109,7 @@ class PostExtraFactory(factory.DjangoModelFactory):
                     postextra=self,
                     election=election,
                     ballot_paper_id=ballot_paper_id,
+                    winner_count=1,
                 )
 
 
