@@ -11,6 +11,7 @@
 
   {{ formset.management_form }}
   {% for form in formset.data %}
+    <div style="margin-top:2em; margin-left: 1em">
     {% if form.name.value %}
       <h4>Candidate: {{ form.name.value }}</h4>
       {% if form.select_person.1 %}
@@ -42,6 +43,7 @@
         {{ form.name }}
       {% endfor %}
     {% endif %}
+    </div>
   {% endfor %}
   </div>
 </div>
