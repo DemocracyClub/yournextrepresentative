@@ -189,7 +189,7 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
         ])
         for pee in qs.filter(pk__in=pee_ids):
             factory = django_forms.formset_factory(
-                forms.NameOnlyPersonForm,
+                forms.ReviewSinglePersonNameOnlyForm,
                 extra=pee.winner_count or WINNER_COUNT_IF_NONE,
                 formset=forms.BulkAddReviewNameOnlyFormSet
             )
