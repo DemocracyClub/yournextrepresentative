@@ -76,6 +76,8 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
 
     def add_fields(self, form, index):
         super(BaseBulkAddReviewFormSet, self).add_fields(form, index)
+        if not form['name'].value():
+            return
         suggestions = self.suggested_people(form['name'].value())
 
         CHOICES = [('_new', 'Add new person')]
