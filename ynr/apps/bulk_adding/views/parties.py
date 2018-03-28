@@ -139,8 +139,13 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
 
             pee = election.postextraelection_set.get(pk=post['pee_pk'])
 
-            formset = forms.BulkAddReviewNameOnlyFormSet(
-                initial=post['data'], prefix=pee.pk)
+            if self.request.POST:
+                formset = forms.BulkAddReviewNameOnlyFormSet(
+                    self.request.POST,
+                    initial=post['data'], prefix=pee.pk)
+            else:
+                formset = forms.BulkAddReviewNameOnlyFormSet(
+                    initial=post['data'], prefix=pee.pk)
             formsets.append({
                 'pee': pee,
                 'data': formset,
@@ -174,7 +179,7 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
         if all([f.is_valid() for f in formsets]):
             return self.form_valid(formsets)
         else:
-            return self.form_invalid(formsets)
+            return self.form_invalid()
 
     def form_valid(self, formsets):
         source = self.request.session['bulk_add_by_party_data'].get('source')
@@ -200,6 +205,6 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
         url = reverse('lookup-postcode')
         return HttpResponseRedirect(url)
 
-    def form_invalid(self, formsets):
+    def form_invalid(self):
         context = self.get_context_data()
         return self.render_to_response(context)

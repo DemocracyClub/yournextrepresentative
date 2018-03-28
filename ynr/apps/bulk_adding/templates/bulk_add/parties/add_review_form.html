@@ -11,7 +11,6 @@
 
   {{ formset.management_form }}
   {% for form in formset.data %}
-    {{ form.errors }}
     {% if form.name.value %}
       <h4>Candidate: {{ form.name.value }}</h4>
       {% if form.select_person.1 %}
@@ -23,6 +22,7 @@
         instead. The system will update them with the new candidacy.
       </p>
       {% endif %}
+      {{ form.select_person.errors }}
       {% for choice in form.select_person %}
         <label for="{{ choice.id_for_label }}" style="font-size:1em;clear:both;margin-bottom:0.5em">
           <div style="display:block;float:left;width:3em">
