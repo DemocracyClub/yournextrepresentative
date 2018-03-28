@@ -36,6 +36,11 @@ class SelectPartyForm(BasePartyBulkAddView, FormView):
     template_name = "bulk_add/parties/select_party.html"
     form_class = forms.SelectPartyForm
 
+    def get_context_data(self, **kwargs):
+        context = super(SelectPartyForm, self).get_context_data(**kwargs)
+        context['election_obj'] = self.get_election()
+        return context
+
     def get_form_kwargs(self):
         kwargs = super(SelectPartyForm, self).get_form_kwargs()
         kwargs['election'] = self.get_election()
