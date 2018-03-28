@@ -17,7 +17,10 @@ WINNER_COUNT_IF_NONE = 5
 
 class BasePartyBulkAddView(LoginRequiredMixin, TemplateView):
     def get_election(self):
-        return Election.objects.get(slug=self.kwargs['election'])
+        if not hasattr(self, '_election_obj'):
+            self._election_obj = Election.objects.get(
+                slug=self.kwargs['election'])
+        return self._election_obj
 
     def get_party(self):
         identifier = Identifier.objects.get(
