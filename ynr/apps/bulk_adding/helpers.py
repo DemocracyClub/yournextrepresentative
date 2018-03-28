@@ -7,7 +7,6 @@ from candidates.views.version_data import get_change_metadata, get_client_ip
 
 
 def add_person(request, person_data):
-    # TODO Move this out of the view layer
     person = Person.objects.create(name=person_data['name'])
     person_extra = PersonExtra.objects.create(base=person)
 
