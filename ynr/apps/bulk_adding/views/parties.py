@@ -58,7 +58,8 @@ class SelectPartyForm(BasePartyBulkAddView, FormView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        org = OrganizationExtra.objects.get(pk=form.cleaned_data['party'])
+        org = OrganizationExtra.objects.get(
+            base__pk=form.cleaned_data['party'])
         org_ec_id = org.base.identifiers.get(scheme='electoral-commission')
         return HttpResponseRedirect(
             reverse('bulk_add_by_party', kwargs={
