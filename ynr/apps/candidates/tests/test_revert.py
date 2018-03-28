@@ -13,7 +13,7 @@ from popolo.models import Identifier
 
 from candidates.models import MembershipExtra, PersonExtra, ExtraField
 
-from compat import bytes_to_unicode
+from compat import bytes_to_unicode, deep_sort
 
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
@@ -244,7 +244,10 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             'version_id': '5aa6418325c1a0bb'
         }
 
-        self.assertEqual(new_versions[0], expected_new_version)
+        self.assertDictEqual(
+            deep_sort(new_versions[0]),
+            deep_sort(expected_new_version)
+        )
 
         self.assertEqual(person_extra.base.birth_date, '1947-09-17')
         self.assertEqual(person_extra.homepage_url, 'http://example.org/tessajowell')

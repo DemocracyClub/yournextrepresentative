@@ -51,7 +51,7 @@ class SelectPartyForm(BasePartyBulkAddView, FormView):
 
     def form_invalid(self, form):
         form_data = dict(form.data)
-        for k, v in form_data.items():
+        for k in list(form_data):
             if not k == "csrfmiddlewaretoken":
                 del form_data[k]
             form.data = form_data
