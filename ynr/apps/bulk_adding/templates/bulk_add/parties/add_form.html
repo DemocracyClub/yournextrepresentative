@@ -9,7 +9,9 @@
   {% for post_info in posts %}
     <div>
       <h4>{{ post_info.pee.postextra.base.label }}</h4>
+      {% if post_info.pee.winner_count %}
       <p>{{ post_info.pee.winner_count }} seat{{ post_info.pee.winner_count|pluralize }} contested.</p>
+      {% endif %}
       {% if existing %}
       <h5>Existing {{ party.name }} candidates</h5>
       <ul>
