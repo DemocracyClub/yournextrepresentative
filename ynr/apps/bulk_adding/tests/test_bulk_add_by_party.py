@@ -114,6 +114,8 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_submit_name_for_area(self):
         pee = self.election.postextraelection_set.first()
+        pee.winner_count = 3
+        pee.save()
 
         # Make sure we have no people or logged actions
         self.assertEqual(pee.postextra.base.memberships.count(), 0)
@@ -126,7 +128,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertEqual(
             len(form.fields),
-            23
+            25
         )
 
         form['source'] = "https://example.com/candidates/"
@@ -148,9 +150,9 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "This field is required."
         )
 
-        # Not submit the valid form
+        # Now submit the valid form
         form["{}-0-select_person".format(pee.pk)] = '_new'
-        form.submit()
+        response = form.submit().follow()
 
         # We should have a new person and membership
         self.assertTrue(
