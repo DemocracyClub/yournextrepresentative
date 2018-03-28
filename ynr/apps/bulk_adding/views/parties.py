@@ -1,24 +1,14 @@
-"""
-TODO: Add initial party
-TODO: Don't assume gb partyset
-TODO: Find a way to deal with elections that split partysets
-
-"""
-from django.views.generic import TemplateView, FormView
-from django.db import transaction
-from django import forms as django_forms
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-
-
 from braces.views import LoginRequiredMixin
+from django import forms as django_forms
+from django.core.urlresolvers import reverse
+from django.db import transaction
+from django.http import HttpResponseRedirect
+from django.views.generic import FormView, TemplateView
 from popolo.models import Identifier
 
-from elections.models import Election
-from bulk_adding import forms
-from bulk_adding import helpers
-
+from bulk_adding import forms, helpers
 from candidates.models import MembershipExtra, OrganizationExtra, PersonExtra
+from elections.models import Election
 
 # Assume 5 winners if we have no other info.
 # If someone reports this, we can update EE and re-import
@@ -72,7 +62,6 @@ class SelectPartyForm(BasePartyBulkAddView, FormView):
 
 class BulkAddPartyView(BasePartyBulkAddView):
     template_name = "bulk_add/parties/add_form.html"
-
 
     def get_context_data(self, **kwargs):
         context = super(BulkAddPartyView, self).get_context_data(**kwargs)
@@ -207,7 +196,6 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                         formset.pee,
                         source
                     )
-
 
         url = reverse('lookup-postcode')
         return HttpResponseRedirect(url)

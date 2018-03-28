@@ -1,9 +1,9 @@
-from popolo.models import Person, Membership
-from candidates.models import (
-    PersonExtra, MembershipExtra, raise_if_unsafe_to_delete)
+from popolo.models import Membership, Person
+
+from candidates.models import (LoggedAction, MembershipExtra, PersonExtra,
+                               raise_if_unsafe_to_delete)
 from candidates.models.auth import check_creation_allowed
 from candidates.views.version_data import get_change_metadata, get_client_ip
-from candidates.models import LoggedAction
 
 
 def add_person(request, person_data):

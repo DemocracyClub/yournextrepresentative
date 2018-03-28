@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
-import json
 
 from django import forms
 from django.db.models import Count
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
-from candidates.views import search_person_by_name
 from candidates.models import PartySet
+from candidates.views import search_person_by_name
 
 
 class BaseBulkAddFormSet(forms.BaseFormSet):
@@ -52,14 +51,19 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         """
         name = suggestion.name
         try:
-            candidacy = suggestion.object.memberships \
-                        .select_related(
-                            'post__extra',
-                            'on_behalf_of',
-                            'extra__election') \
-                        .order_by('-extra__election__election_date').first()
+            candidacy = suggestion.object.memberships.select_related(
+                'post__extra',
+                'on_behalf_of',
+                'extra__election'
+            ).order_by(
+                '-extra__election__election_date'
+            ).first()
             if candidacy:
-                name = "<strong>{name}</strong> (previously stood in {post} in the {election} as a {party} candidate)".format(
+                name = """
+                    <strong>{name}</strong>
+                        (previously stood in {post} in the {election} as a
+                        {party} candidate)
+                        """.format(
                     name=name,
                     post=candidacy.post.extra.short_label,
                     election=candidacy.extra.election.name,
@@ -77,7 +81,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         CHOICES = [('_new', 'Add new person')]
         if suggestions:
             CHOICES += [self.format_value(suggestion)
-                for suggestion in suggestions]
+                        for suggestion in suggestions]
         form.fields['select_person'] = forms.ChoiceField(
             choices=CHOICES, widget=forms.RadioSelect())
 
@@ -85,18 +89,18 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             form.fields["party"] = forms.ChoiceField(
                 choices=self.parties,
                 widget=forms.HiddenInput(attrs={
-                    'readonly':'readonly',
+                    'readonly': 'readonly',
                     'class': 'party-select',
                 }),
                 required=False
             )
 
 
-
 class NameOnlyPersonForm(forms.Form):
     name = forms.CharField(
         label=_("Name (style: Ali Smith, not SMITH Ali)"),
         required=True)
+
 
 class QuickAddSinglePersonForm(NameOnlyPersonForm):
     source = forms.CharField(required=True)
@@ -105,13 +109,13 @@ class QuickAddSinglePersonForm(NameOnlyPersonForm):
 class ReviewSinglePersonNameOnlyForm(forms.Form):
     name = forms.CharField(
         required=False,
-        widget=forms.HiddenInput(attrs={'readonly':'readonly'}))
+        widget=forms.HiddenInput(attrs={'readonly': 'readonly'}))
 
 
 class ReviewSinglePersonForm(ReviewSinglePersonNameOnlyForm):
     source = forms.CharField(
         required=False,
-        widget=forms.HiddenInput(attrs={'readonly':'readonly'}))
+        widget=forms.HiddenInput(attrs={'readonly': 'readonly'}))
     party_description = forms.CharField(
         required=False,
         widget=forms.HiddenInput())
@@ -134,10 +138,9 @@ BulkAddReviewFormSet = forms.formset_factory(
     formset=BaseBulkAddReviewFormSet)
 
 
-
-
 class BulkAddByPartyFormset(forms.BaseFormSet):
     pass
+
 
 class SelectPartyForm(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -168,6 +171,7 @@ class SelectPartyForm(forms.Form):
             self.cleaned_data = {}
             raise forms.ValidationError('Select one and only one party')
         form_data['party'] = [v for v in form_data.values() if v][0]
+
 
 class AddByPartyForm(forms.Form):
 

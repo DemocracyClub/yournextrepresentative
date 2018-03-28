@@ -2,31 +2,26 @@
 
 from __future__ import unicode_literals
 
+from braces.views import LoginRequiredMixin
+from django.contrib import messages
+from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import F
-from django.views.generic import TemplateView, RedirectView
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from django.contrib import messages
 from django.utils.text import slugify
-
-from braces.views import LoginRequiredMixin
-
-from auth_helpers.views import GroupRequiredMixin, user_in_group
-from elections.models import Election
-from candidates.models import (
-    PostExtra, PostExtraElection, PersonExtra, MembershipExtra,
-    raise_if_unsafe_to_delete)
-from candidates.models.auth import check_creation_allowed, check_update_allowed
-from candidates.views.version_data import get_change_metadata, get_client_ip
-from candidates.views.people import get_call_to_action_flash_message
-from candidates.models import LoggedAction
-from popolo.models import Person, Membership, Organization
-from official_documents.models import OfficialDocument
-from official_documents.views import get_add_from_document_cta_flash_message
-from moderation_queue.models import SuggestedPostLock
+from django.views.generic import RedirectView, TemplateView
+from popolo.models import Membership, Organization, Person
 
 from bulk_adding import forms
+from candidates.models import (LoggedAction, MembershipExtra, PersonExtra,
+                               PostExtra, PostExtraElection,
+                               raise_if_unsafe_to_delete)
+from candidates.models.auth import check_creation_allowed
+from candidates.views.version_data import get_change_metadata, get_client_ip
+from elections.models import Election
+from moderation_queue.models import SuggestedPostLock
+from official_documents.models import OfficialDocument
+from official_documents.views import get_add_from_document_cta_flash_message
 
 
 class BulkAddSOPNRedirectView(RedirectView):
@@ -41,8 +36,10 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
     # required_group_name = models.TRUSTED_TO_BULK_ADD_GROUP_NAME
 
     def add_election_and_post_to_context(self, context):
-        context['post_extra'] = PostExtra.objects.get(slug=context['post_id'])
-        context['election_obj'] = Election.objects.get(slug=context['election'])
+        context['post_extra'] = PostExtra.objects.get(
+            slug=context['post_id'])
+        context['election_obj'] = Election.objects.get(
+            slug=context['election'])
         context['post_election'] = \
             context['election_obj'].postextraelection_set.get(
                 postextra=context['post_extra'])
@@ -211,13 +208,14 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
         # object (other than its MembershipExtra) that has a
         # ForeignKey to the membership, since that would result in
         # losing data.
-        for old_membership in Membership.objects \
+        qs = Membership.objects \
             .exclude(pk=membership.pk) \
             .filter(
                 person=person_extra.base,
                 extra__election=election,
                 role=election.candidate_membership_role,
-            ):
+            )
+        for old_membership in qs:
             raise_if_unsafe_to_delete(old_membership)
             old_membership.delete()
 
