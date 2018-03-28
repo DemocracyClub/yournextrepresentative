@@ -83,6 +83,22 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "No Conservative Party candidates know yet."
         )
 
+    def test_submit_name_for_area_without_source(self):
+        pee = self.election.postextraelection_set.first()
+        form = self.app.get(
+            '/bulk_adding/party/2015/PP52/',
+            user=self.user_who_can_upload_documents
+        ).forms[1]
+
+        form['{}-0-name'.format(pee.pk)] = "Pemphero Pasternak"
+
+        response = form.submit()
+        self.assertContains(
+            response,
+            "This field is required"
+        )
+
+
     def test_submit_name_for_area(self):
         pee = self.election.postextraelection_set.first()
 

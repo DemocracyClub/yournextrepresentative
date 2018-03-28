@@ -76,7 +76,7 @@ class BulkAddPartyView(BasePartyBulkAddView):
         context = super(BulkAddPartyView, self).get_context_data(**kwargs)
         context['election_obj'] = self.get_election()
         context['party'] = self.get_party()
-        context['form'] = forms.AddByPartyForm()
+        context['form'] = kwargs.get('form', forms.AddByPartyForm())
         posts = []
         qs = self.get_pee_qs(context['election_obj'])
         for pee in qs:
@@ -103,6 +103,9 @@ class BulkAddPartyView(BasePartyBulkAddView):
 
     def post(self, *args, **kwargs):
         qs = self.get_pee_qs(self.get_election())
+        form = forms.AddByPartyForm(self.request.POST)
+        if not form.is_valid():
+            return self.render_to_response(self.get_context_data(form=form))
         session_data = {
             'source': self.request.POST.get('source'),
             'post_data': []
