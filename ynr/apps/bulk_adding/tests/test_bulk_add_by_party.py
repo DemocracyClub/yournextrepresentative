@@ -98,6 +98,19 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "This field is required"
         )
 
+    def test_submit_name_for_area_without_any_names(self):
+        form = self.app.get(
+            '/bulk_adding/party/2015/PP52/',
+            user=self.user_who_can_upload_documents
+        ).forms[1]
+
+        form['source'] = "https://example.com/candidates/"
+
+        response = form.submit()
+        self.assertContains(
+            response,
+            "Please enter at least one name"
+        )
 
     def test_submit_name_for_area(self):
         pee = self.election.postextraelection_set.first()

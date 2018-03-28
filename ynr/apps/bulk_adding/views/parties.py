@@ -104,10 +104,19 @@ class BulkAddPartyView(BasePartyBulkAddView):
     def post(self, *args, **kwargs):
         qs = self.get_pee_qs(self.get_election())
         form = forms.AddByPartyForm(self.request.POST)
-        if not form.is_valid():
+
+        has_some_data = any([
+            v for k, v in self.request.POST.items()
+            if k.endswith('-name')
+        ])
+        if not has_some_data:
+            form.add_error(None, "Please enter at least one name")
+
+        if not has_some_data or not form.is_valid():
             return self.render_to_response(self.get_context_data(form=form))
+
         session_data = {
-            'source': self.request.POST.get('source'),
+            'source': form.cleaned_data['source'],
             'post_data': []
         }
         for pee in qs:
