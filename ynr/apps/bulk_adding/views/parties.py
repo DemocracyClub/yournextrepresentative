@@ -156,6 +156,7 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
         formsets = []
         for post in post_data:
             if not any(post['data']):
+                # This post election might not have any names, that's ok.
                 continue
 
             pee = election.postextraelection_set.get(pk=post['pee_pk'])
@@ -204,10 +205,18 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
 
     def form_valid(self, formsets):
         source = self.request.session['bulk_add_by_party_data'].get('source')
+        assert len(formsets) >= 1
         with transaction.atomic():
             for formset in formsets:
                 for person_form in formset:
                     data = person_form.cleaned_data
+
+                    # Ignore blank extra forms with no name
+                    # This happens when we have fewer names
+                    # than the winner_count for this pee
+                    if not data.get('select_person'):
+                        continue
+
                     data['source'] = source
                     if data.get('select_person') == "_new":
                         # Add a new person
