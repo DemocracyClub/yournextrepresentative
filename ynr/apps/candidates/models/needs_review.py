@@ -62,9 +62,27 @@ def needs_review_due_to_candidate_specifically(logged_action_qs):
         la: [_("Edit of a candidate whose record may be particularly liable to vandalism")]
         for la in logged_action_qs if la.person_id in needs_review_person_ids}
 
+def needs_review_due_to_statement_edit(logged_action_qs):
+    las_with_statements_changed = []
+    for la in logged_action_qs:
+        if not la.person:
+            continue
+        for version_diff in la.person.extra.version_diffs:
+            if version_diff['version_id'] == la.popit_person_new_version:
+                this_diff = version_diff['diffs'][0]['parent_diff']
+                for op in this_diff:
+                    if op['path'] == 'biography':
+                        # this is an edit to a biography / statement
+                        las_with_statements_changed.append(la)
+
+    return {
+        la: [_("Edit of a statement to voters")]
+        for la in las_with_statements_changed}
+
 
 needs_review_fns = [
     needs_review_due_to_first_edits,
     needs_review_due_to_subject_having_died,
     needs_review_due_to_candidate_specifically,
+    needs_review_due_to_statement_edit,
 ]
