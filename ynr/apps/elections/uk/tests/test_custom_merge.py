@@ -28,18 +28,23 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__person=self.primary_person,
             base__post=self.camberwell_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.camberwell_post_extra_pee_earlier,
         )
         factories.CandidacyExtraFactory.create(
             election=self.local_election,
             base__person=self.secondary_person,
             base__post=self.local_post.base,
             base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.local_election.postextraelection_set.get(
+                postextra=self.local_post
+            ),
         )
         secondary_membership_extra = factories.CandidacyExtraFactory.create(
             election=self.election,
             base__person=self.secondary_person,
             base__post=self.camberwell_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.camberwell_post_extra_pee
         )
 
         # Now attach a vote count to the secondary person's candidacy:
@@ -87,18 +92,23 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__person=self.primary_person,
             base__post=self.camberwell_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.camberwell_post_extra_pee_earlier,
         )
         factories.CandidacyExtraFactory.create(
             election=self.local_election,
             base__person=self.secondary_person,
             base__post=self.local_post.base,
             base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.local_election.postextraelection_set.get(
+                postextra=self.local_post
+            )
         )
         factories.CandidacyExtraFactory.create(
             election=self.election,
             base__person=self.secondary_person,
             base__post=self.camberwell_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.camberwell_post_extra_pee,
         )
 
         # Now attach a vote count to the primary person's candidacy:

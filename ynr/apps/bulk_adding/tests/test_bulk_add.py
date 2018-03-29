@@ -121,7 +121,10 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             election=self.local_election,
             base__person=existing_person,
             base__post=self.local_post.base,
-            base__on_behalf_of=self.labour_party_extra.base
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.local_election.postextraelection_set.get(
+                postextra=self.local_post
+            )
         ).base
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:
@@ -180,7 +183,10 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__person=existing_person,
             # !!! This is the line that differs from the previous test:
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.election.postextraelection_set.get(
+                postextra=self.dulwich_post_extra
+            )
         ).base
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:

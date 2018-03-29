@@ -191,11 +191,7 @@ class EEElection(dict):
             parent.get_or_create_election()
 
             # Get the winner count
-            if self['division']:
-                winner_count = self['division']['seats_total']
-            else:
-                # TODO this might not always be true, get the count from EE
-                winner_count = 1
+            winner_count = self['seats_contested']
 
             self.post_extra_object, self.post_extra_created = \
                 PostExtraElection.objects.update_or_create(

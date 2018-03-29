@@ -50,42 +50,13 @@ class PostElectionCombinationTests(UK2015ExamplesMixin, TestCase):
             base__post=post_extra.base,
             base__organization=election.organization,
             election=election,
+            post_election=election.postextraelection_set.get(
+                postextra=post_extra
+            )
         )
         self.assertEqual(
             check_membership_elections_consistent(),
             [])
-
-    def test_membership_extra_not_in_post_election_extra(self):
-        new_candidate = PersonExtraFactory.create(
-            base__name='John Doe'
-        )
-        post_extra = PostExtra.objects.get(slug='14419')
-        election = ElectionFactory.create(
-            slug='2005',
-            name='2005 General Election',
-            for_post_role='Member of Parliament',
-        )
-        # Create a broken candidacy, where the post / election
-        # combination isn't represented in PostExtraElection
-        # relationships. (In order to create this bad data for the
-        # test, we add an attribute to the MembershipExtra class to
-        # tell the save method not to try preventing creation of the
-        # bad data.)
-        with patch.object(
-                MembershipExtra, 'check_for_broken', False, create=True):
-            MembershipExtraFactory.create(
-                base__person=new_candidate.base,
-                base__post=post_extra.base,
-                base__organization=election.organization,
-                election=election,
-            )
-        expected_error = "There was a membership for John Doe ({0}) with " \
-            "post Member of Parliament for Edinburgh East (14419) and " \
-            "election 2005 but there's no PostExtraElection linking " \
-            "them.".format(new_candidate.base.id)
-        self.assertEqual(
-            check_membership_elections_consistent(),
-            [expected_error])
 
 
 class PreventCreatingBadMembershipExtras(UK2015ExamplesMixin, TestCase):
@@ -146,6 +117,9 @@ class PreventCreatingBadMembershipExtras(UK2015ExamplesMixin, TestCase):
             base__post=post_extra.base,
             base__role=self.election.candidate_membership_role,
             election=self.election,
+            post_election=self.election.postextraelection_set.get(
+                postextra=post_extra
+            )
         )
         with self.assertRaisesRegexp(
                 Exception,

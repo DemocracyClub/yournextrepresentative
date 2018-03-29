@@ -13,21 +13,50 @@
 
 {% block content %}
 
-<p>{% blocktrans trimmed %}
-Follow one of the links below to see the known candidates
-for that post:{% endblocktrans %}</p>
+<p>Posts in the {{ election_data.name }}</p>
 
-<ul>
-  {% for postextraelection in all_constituencies %}
-    <li>
-     <a href="{% url 'constituency' election=election post_id=postextraelection.postextra.slug ignored_slug=postextraelection.postextra.base.label|slugify %}">
-        {{ postextraelection.postextra.base.label }}</a>
-        {% if postextraelection.candidates_locked %}
-         - <abbr title="Candidates verified and post locked">🔒</abbr>
-        {% elif postextraelection.postextra.suggestedpostlock_set.exists %}
-        - <abbr title="Someone suggested locking this post">🔓</abbr>
-        {% endif %}
-    </li>  {% endfor %}
-</ul>
+<a href="{{ MEDIA_URL }}candidates-{{ election_data.slug }}.csv" class="button small">
+  Download CSV of all candidates in the {{ election_data.name }}
+</a>
+
+
+{% for postextraelection in all_constituencies %}
+  <h3>
+    <a href="{{ postextraelection.get_absolute_url }}">{{ postextraelection.postextra.base.label }}</a>
+    {% if postextraelection.candidates_locked %}
+     <abbr title="Candidates verified and post locked">🔒</abbr>
+    {% elif postextraelection.postextra.suggestedpostlock_set.exists %}
+     <abbr title="Someone suggested locking this post">🔓</abbr>
+    {% endif %}
+  </h3>
+  <p>
+    {% if postextraelection.winner_count %}
+      {{ postextraelection.winner_count }} seat{{ postextraelection.winner_count|pluralize }} up for election.
+    {% endif %}
+    {{ postextraelection.membershipextra_set.count }} candidates known.
+  </p>
+
+  {% if postextraelection.membershipextra_set.count %}
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Party</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for membership in postextraelection.membershipextra_set.all %}
+      <tr>
+        <td><a href="{{ membership.base.person.extra.get_absolute_url }}">{{ membership.base.person.name }}</a></td>
+        <td>{{ membership.base.on_behalf_of }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  <a class="show-new-candidate-form button tiny" href="{{ postextraelection.get_absolute_url }}">Add candidates</a>
+{% endfor %}
+
 
 {% endblock %}

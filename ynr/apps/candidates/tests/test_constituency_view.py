@@ -32,8 +32,9 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
-            )
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
+        )
         MembershipFactory.create(
             person=person_extra.base,
             organization=self.labour_party_extra.base
@@ -59,7 +60,8 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__person=dulwich_not_stand.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
-            )
+            post_election=self.dulwich_post_extra_pee_earlier
+        )
         dulwich_not_stand.not_standing.add(self.election)
 
         CandidacyExtraFactory.create(
@@ -68,14 +70,18 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__post=winner_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
             elected=True,
+            post_election=self.election.postextraelection_set.get(
+                postextra=winner_post_extra
             )
+        )
 
         CandidacyExtraFactory.create(
             election=self.election,
             base__person=edinburgh_candidate.base,
             base__post=winner_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
-            )
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
+        )
         MembershipFactory.create(
             person=edinburgh_candidate.base,
             organization=self.labour_party_extra.base
@@ -88,8 +94,11 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             election=self.earlier_election,
             base__person=edinburgh_may_stand.base,
             base__post=winner_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.earlier_election.postextraelection_set.get(
+                postextra=winner_post_extra
             )
+        )
 
     def test_any_constituency_page_without_login(self):
         # Just a smoke test for the moment:

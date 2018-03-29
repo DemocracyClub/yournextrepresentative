@@ -25,8 +25,9 @@ class TestConstituenciesDeclared(TestUserMixin, UK2015ExamplesMixin, WebTest):
             election=self.election,
             base__person=tessa_jowell.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
-            )
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
+        )
         MembershipFactory.create(
             person=tessa_jowell.base,
             organization=self.labour_party_extra.base
@@ -41,8 +42,9 @@ class TestConstituenciesDeclared(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__person=winner.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
-            elected=True
-            )
+            elected=True,
+            post_election=self.dulwich_post_extra_pee,
+        )
         MembershipFactory.create(
             person=winner.base,
             organization=self.labour_party_extra.base
@@ -56,8 +58,9 @@ class TestConstituenciesDeclared(TestUserMixin, UK2015ExamplesMixin, WebTest):
             election=self.election,
             base__person=james_smith.base,
             base__post=self.camberwell_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base
-            )
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.camberwell_post_extra_pee,
+        )
         MembershipFactory.create(
             person=james_smith.base,
             organization=self.labour_party_extra.base

@@ -34,7 +34,10 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
             election=self.election,
             base__person=person_extra.base,
             base__post=constituencies['Doncaster North'].base,
-            base__on_behalf_of=self.labour_party_extra.base
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.election.postextraelection_set.get(
+                postextra=constituencies['Doncaster North']
+            ),
         )
         person_extra = PersonExtraFactory.create(
             base__id='3814',
@@ -44,7 +47,11 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
             election=self.earlier_election,
             base__person=person_extra.base,
             base__post=constituencies['South Shields'].base,
-            base__on_behalf_of=self.labour_party_extra.base
+            base__on_behalf_of=self.labour_party_extra.base,
+            post_election=self.earlier_election.postextraelection_set.get(
+                postextra=constituencies['South Shields']
+            ),
+
         )
         conservative_opponent_extra = PersonExtraFactory.create(
             base__id='6648',
@@ -54,7 +61,10 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
             election=self.election,
             base__person=conservative_opponent_extra.base,
             base__post=constituencies['South Shields'].base,
-            base__on_behalf_of=self.conservative_party_extra.base
+            base__on_behalf_of=self.conservative_party_extra.base,
+            post_election=self.election.postextraelection_set.get(
+                postextra=constituencies['South Shields']
+            ),
         )
 
     def test_parties_page(self):

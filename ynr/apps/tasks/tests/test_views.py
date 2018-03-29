@@ -24,7 +24,8 @@ class TestFieldView(UK2015ExamplesMixin, TestCase):
             election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.green_party_extra.base
+            base__on_behalf_of=self.green_party_extra.base,
+            post_election=self.dulwich_post_extra_pee
         )
 
         person_extra = PersonExtraFactory.create(
@@ -37,7 +38,8 @@ class TestFieldView(UK2015ExamplesMixin, TestCase):
             election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.green_party_extra.base
+            base__on_behalf_of=self.green_party_extra.base,
+            post_election=self.dulwich_post_extra_pee
         )
 
     def test_context_data(self):
