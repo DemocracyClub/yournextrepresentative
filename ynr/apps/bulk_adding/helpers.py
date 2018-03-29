@@ -56,6 +56,7 @@ def update_person(request=None, person_extra=None,
             'party_list_position': None,
             'election': election,
             'elected': None,
+            'post_election': post_election,
         }
     )
 
