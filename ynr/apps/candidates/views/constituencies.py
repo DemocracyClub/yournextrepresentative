@@ -127,7 +127,9 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
             if self.request.user.is_authenticated():
                 context['current_user_suggested_lock'] = \
                     SuggestedPostLock.objects.filter(
-                        user=self.request.user).exists()
+                        user=self.request.user,
+                        postextraelection=pee,
+                    ).exists()
 
             context['suggest_lock_form'] = SuggestedPostLockForm(
                 initial={'postextraelection': pee},

@@ -82,6 +82,56 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(suggested_lock.user, self.user)
         self.assertEqual(suggested_lock.justification, 'I liked totally reviewed the SOPN')
 
+    def test_post_lock_disabled_not_shown_when_no_suggested_lock(self):
+        group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
+        self.user.groups.add(group)
+        self.user.save()
+
+        OfficialDocument.objects.create(
+            election=self.election,
+            post=self.edinburgh_east_post_extra.base,
+            source_url='http://example.com',
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            uploaded_file="sopn.pdf"
+        )
+
+        pee = PostExtraElection.objects.get(
+            election__slug='2015',
+            postextra__slug='14419',
+        )
+
+        SuggestedPostLock.objects.create(
+            postextraelection=pee,
+            user=self.users_to_delete[-1],
+            justification='I liked totally reviewed the SOPN',
+        )
+
+        SuggestedPostLock.objects.create(
+            postextraelection=PostExtraElection.objects.get(
+                election__slug='2010',
+                postextra__slug='14419',
+            ),
+            user=self.user,
+            justification='I liked totally reviewed the SOPN',
+        )
+
+        response = self.app.get(
+            '/election/2015/post/14419/edinburgh-east',
+            user=self.user,
+        )
+
+        self.assertFalse(response.context['current_user_suggested_lock'])
+
+        self.assertNotContains(
+            response,
+            "Locking disabled because you suggested"
+        )
+
+        self.assertNotContains(
+            response,
+            "Thanks, you've suggested we lock this list"
+        )
+
     def test_post_lock_not_offered_when_user_suggested_lock(self):
         group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
         self.user.groups.add(group)
