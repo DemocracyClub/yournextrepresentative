@@ -232,7 +232,7 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                         source
                     )
 
-        url = reverse('lookup-postcode')
+        url = self.get_election().get_absolute_url()
         return HttpResponseRedirect(url)
 
     def form_invalid(self):
