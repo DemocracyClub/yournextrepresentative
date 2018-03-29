@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from collections import defaultdict, OrderedDict
 from datetime import date
 
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
@@ -87,6 +88,15 @@ class Election(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self, request=None):
+        return reverse(
+            'constituencies',
+            kwargs={
+                'election': self.slug,
+            }
+        )
+
 
     @property
     def in_past(self):
