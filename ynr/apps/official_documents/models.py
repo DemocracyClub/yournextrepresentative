@@ -25,6 +25,7 @@ def document_file_name(instance, filename):
 
 @python_2_unicode_compatible
 class OfficialDocument(TimeStampedModel):
+    # TODO FK to post_election and remove the Election and Post FKs
     NOMINATION_PAPER = 'Nomination paper'
 
     DOCUMENT_TYPES = (
