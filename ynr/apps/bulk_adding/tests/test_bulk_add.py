@@ -4,13 +4,11 @@ from django.core.management import call_command
 from django_webtest import WebTest
 from popolo.models import Membership, Person
 
-from candidates.tests.test_update_view import membership_id_set
-from candidates.tests.auth import TestUserMixin
-
-from official_documents.models import OfficialDocument
-
 from candidates.tests import factories
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.test_update_view import membership_id_set
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from official_documents.models import OfficialDocument
 
 
 class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -21,7 +19,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def testNoFormIfNoSopn(self):
         response = self.app.get(
-            '/bulk_adding/2015/65808/',
+            '/bulk_adding/sopn/2015/65808/',
             user=self.user_who_can_upload_documents
         )
 
@@ -38,7 +36,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def testFormIfSopn(self):
         post = self.dulwich_post_extra
 
-        doc = OfficialDocument.objects.create(
+        OfficialDocument.objects.create(
             election=self.election,
             post=post.base,
             source_url='http://example.com',
@@ -47,7 +45,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            '/bulk_adding/2015/65808/',
+            '/bulk_adding/sopn/2015/65808/',
             user=self.user_who_can_upload_documents
         )
 
@@ -73,7 +71,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            '/bulk_adding/2015/65808/',
+            '/bulk_adding/sopn/2015/65808/',
             user=self.user
         )
 
@@ -137,7 +135,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            '/bulk_adding/2015/65808/',
+            '/bulk_adding/sopn/2015/65808/',
             user=self.user
         )
 
@@ -162,12 +160,18 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(len(new_memberships), 1)
         new_membership = Membership.objects.get(pk=list(new_memberships)[0])
         self.assertEqual(new_membership.post, self.dulwich_post_extra.base)
-        self.assertEqual(new_membership.on_behalf_of, self.green_party_extra.base)
+        self.assertEqual(
+            new_membership.on_behalf_of,
+            self.green_party_extra.base
+        )
         same_memberships = memberships_before & memberships_after
         self.assertEqual(len(same_memberships), 1)
         same_membership = Membership.objects.get(pk=list(same_memberships)[0])
         self.assertEqual(same_membership.post, self.local_post.base)
-        self.assertEqual(same_membership.on_behalf_of, self.labour_party_extra.base)
+        self.assertEqual(
+            same_membership.on_behalf_of,
+            self.labour_party_extra.base
+        )
         self.assertEqual(same_membership.id, existing_membership.id)
 
     def test_adding_to_existing_person_same_election(self):
@@ -199,7 +203,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            '/bulk_adding/2015/65808/',
+            '/bulk_adding/sopn/2015/65808/',
             user=self.user
         )
 
@@ -226,5 +230,16 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(len(same_memberships), 1)
         same_membership = Membership.objects.get(pk=list(same_memberships)[0])
         self.assertEqual(same_membership.post, self.dulwich_post_extra.base)
-        self.assertEqual(same_membership.on_behalf_of, self.green_party_extra.base)
+        self.assertEqual(
+            same_membership.on_behalf_of,
+            self.green_party_extra.base
+        )
         self.assertEqual(same_membership.id, existing_membership.id)
+
+    def test_old_url_redirects(self):
+        response = self.app.get(
+            '/bulk_adding/2015/65808/',
+            user=self.user
+        )
+
+        self.assertEqual(response.status_code, 302)

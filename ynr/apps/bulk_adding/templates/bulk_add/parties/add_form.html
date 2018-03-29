@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Add {{ party.name }} candidates for the {{ election_obj.name }}</h2>
+
+<form method=post>
+  {% csrf_token %}
+  {{ form }}
+  {% for post_info in posts %}
+    <div>
+      <h4>{{ post_info.pee.postextra.base.label }}</h4>
+      {% if post_info.pee.winner_count %}
+      <p>{{ post_info.pee.winner_count }} seat{{ post_info.pee.winner_count|pluralize }} contested.</p>
+      {% endif %}
+      {% if existing %}
+      <h5>Existing {{ party.name }} candidates</h5>
+      <ul>
+      {% for me in existing %}
+        <li><a href="{{ me.base.person.get_absolute_url }}">{{ me.base.person.name }}</a></li>
+      {% endfor %}
+      </ul>
+      {% else %}
+      <p>No {{ party.name }} candidates know yet.</p>
+      {% endif %}
+      {{ post_info.formset }}
+    </div>
+  {% endfor %}
+  <button type=submit>Next</button>
+</form>
+{% endblock content %}

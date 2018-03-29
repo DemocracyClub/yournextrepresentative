@@ -19,6 +19,8 @@
   Download CSV of all candidates in the {{ election_data.name }}
 </a>
 
+<a href="{% url "bulk_add_party_select" election_data.slug %}" class="button small">
+    Add candidates for a single party</a>
 
 {% for postextraelection in all_constituencies %}
   <h3>

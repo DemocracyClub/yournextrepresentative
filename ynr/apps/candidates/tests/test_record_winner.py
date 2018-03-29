@@ -195,6 +195,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_record_multiple_winners(self):
         self.election.people_elected_per_post = 2
+        self.election.postextraelection_set.update(winner_count=2)
         self.election.save()
         base_record_url = reverse(
             'record-winner',

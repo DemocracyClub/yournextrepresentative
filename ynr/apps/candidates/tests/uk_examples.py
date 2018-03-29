@@ -69,6 +69,12 @@ class UK2015ExamplesMixin(object):
                 slug=party['id'],
                 base__name=party['name'],
             )
+            p.base.identifiers.update_or_create(
+                scheme='electoral-commission',
+                defaults={
+                    'identifier': "PP{}".format(party['id'].split(':')[1]),
+                }
+            )
             setattr(self, party['attr'], p)
             party['party_set'].parties.add(p.base)
         # Create some example posts as well:

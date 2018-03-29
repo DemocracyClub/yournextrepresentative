@@ -162,7 +162,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 'name': 'Tessa Jowell',
                 'old_person_ids': '',
                 'parlparse_id': '',
-                'party_ec_id': '',
+                'party_ec_id': 'PP53',
                 'party_id': 'party:53',
                 'party_lists_in_use': 'False',
                 'party_list_position': '',

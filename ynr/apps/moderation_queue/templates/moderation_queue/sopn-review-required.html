@@ -11,7 +11,7 @@
         {{ postextraelection.postextra.base.label }}
     </a>
     {% if postextraelection.postextra.base.officialdocument_set.exists %}
-    <a href="{% url "bulk_add" postextraelection.election.slug postextraelection.postextra.slug %}" class="button tiny">
+    <a href="{% url "bulk_add_from_sopn" postextraelection.election.slug postextraelection.postextra.slug %}" class="button tiny">
         Add candidates from nomination paper</a>
     {% endif %}
     </li>

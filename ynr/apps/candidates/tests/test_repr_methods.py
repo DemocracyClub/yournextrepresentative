@@ -13,7 +13,7 @@ class TestReprMethods(UK2015ExamplesMixin, TestCase):
         )
         self.assertEqual(
             repr(pee),
-            "<PostExtraElection ballot_paper_id='2015.65913'>",
+            "<PostExtraElection ballot_paper_id='2015.65913' winner_count=1>",
         )
 
     def test_logged_action_repr_locked_with_winner_count(self):

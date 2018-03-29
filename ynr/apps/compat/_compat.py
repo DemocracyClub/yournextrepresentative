@@ -98,3 +98,29 @@ def unicode_to_bytes(unicode_):
     if isinstance(unicode_, text_type):
         return unicode_.encode(_ENCODING)
     return unicode_
+
+def deep_sort(obj):
+    """
+    Recursively sort list or dict nested lists
+
+    Thanks to https://stackoverflow.com/questions/18464095/how-to-achieve-assertdictequal-with-assertsequenceequal-applied-to-values#27949519
+    """
+
+    if isinstance(obj, dict):
+        _sorted = {}
+        for key in sorted(list(obj)):
+            _sorted[key] = deep_sort(obj[key])
+
+    elif isinstance(obj, list):
+        sort_key = None
+        new_list = []
+        for val in obj:
+            new_list.append(deep_sort(val))
+            if isinstance(val, dict):
+                sort_key = sorted(list(val))[0]
+        _sorted = sorted(new_list, key=lambda  k: k[sort_key])
+
+    else:
+        _sorted = obj
+
+    return _sorted
