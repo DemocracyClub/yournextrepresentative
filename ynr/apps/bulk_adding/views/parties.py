@@ -80,15 +80,16 @@ class BulkAddPartyView(BasePartyBulkAddView):
         posts = []
         qs = self.get_pee_qs(context['election_obj'])
         for pee in qs:
-            factory = django_forms.formset_factory(
-                forms.NameOnlyPersonForm,
-                extra=pee.winner_count or WINNER_COUNT_IF_NONE,
-                formset=forms.BulkAddByPartyFormset
-            )
             existing = MembershipExtra.objects.filter(
                 election=pee.election,
                 base__post=pee.postextra.base,
                 base__on_behalf_of=context['party'],
+            )
+            extra_forms = pee.winner_count or WINNER_COUNT_IF_NONE
+            factory = django_forms.formset_factory(
+                forms.NameOnlyPersonForm,
+                extra=extra_forms - existing.count(),
+                formset=forms.BulkAddByPartyFormset
             )
             post_info = {
                 'pee': pee,
