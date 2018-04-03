@@ -142,10 +142,6 @@ class HomePageView(ContributorsMixin, FormView):
         context['sopn_progress'] = self.sopn_progress_by_election(
             election_qs=election_qs)
 
-        task_count = PersonTask.objects.unfinished_tasks().count()
-        if task_count > 0:
-            random_offset = random.randrange(min(50, task_count))
-            context['person_task'] = PersonTask.objects.unfinished_tasks()[random_offset]
 
         return context
 

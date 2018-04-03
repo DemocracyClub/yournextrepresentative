@@ -2,6 +2,7 @@
 {% load absolute %}
 {% load i18n %}
 {% load metadescription %}
+{% load home_page_tags %}
 
 {% block extra_head %}
     <!-- Open Graph and Twitter card data -->
@@ -91,27 +92,12 @@
     {# </form> #}
     {# <hr> #}
 
-
-    {# <h4>or</h4> #}
-
     <form id="form-postcode" action="{% url 'person-search' %}" method="get" {% if show_name_form %}style="display: none"{% endif %}>
       {{ postcode_form.as_p }}
       <input type="submit" class="button" value="Help get data!" />
     </form>
-
-    {% if person_task %}
-    <hr>
     <h4>or</h4>
-
-    <h3>Improve our data!</h3>
-    <h4>Can you find {{ person_task.person.name }}'s
-      {% if person_task.task_field == 'facebook_page_url' %}Facebook page?{% endif %}
-      {% if person_task.task_field == 'email' %}email address?{% endif %}
-      {% if person_task.task_field == 'twitter_username' %}Twitter page?{% endif %}
-      {% if person_task.task_field == 'homepage_url' %}web site?{% endif %}
-    </h4>
-    <p><a href="{% url 'person-update' person_task.person.pk %}?highlight_field={{ person_task.task_field }}" class="button">Start the search</a></p>
-    {% endif %}
+    {% person_tasks %}
   </div>
 
 </div>
