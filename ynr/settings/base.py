@@ -79,6 +79,7 @@ TEMPLATES = [
                 "ynr.context_processors.add_site",
                 "ynr.context_processors.election_date",
                 "ynr.context_processors.locale",
+                "elections.uk.context_processors.site_wide_messages",
             ],
         },
     },
