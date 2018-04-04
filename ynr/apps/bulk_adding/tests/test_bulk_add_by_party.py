@@ -123,7 +123,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = self.app.get(
             '/bulk_adding/party/2015/PP52/',
-            user=self.user_who_can_upload_documents
+            user=self.user
         ).forms[1]
 
         self.assertEqual(
