@@ -10,14 +10,11 @@ from django.db.models import F
 from django.http import HttpResponseRedirect
 from django.utils.text import slugify
 from django.views.generic import RedirectView, TemplateView
-from popolo.models import Membership, Organization, Person
+from popolo.models import Organization
 
 from bulk_adding import forms
-from candidates.models import (LoggedAction, MembershipExtra, PersonExtra,
-                               PostExtra, PostExtraElection,
-                               raise_if_unsafe_to_delete)
-from candidates.models.auth import check_creation_allowed
-from candidates.views.version_data import get_change_metadata, get_client_ip
+from bulk_adding import helpers
+from candidates.models import PersonExtra, PostExtra, PostExtraElection
 from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
@@ -148,93 +145,6 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
             )
         return context
 
-    def add_person(self, person_data):
-        # TODO Move this out of the view layer
-        person = Person.objects.create(name=person_data['name'])
-        person_extra = PersonExtra.objects.create(base=person)
-        check_creation_allowed(
-            self.request.user, person_extra.current_candidacies
-        )
-
-        change_metadata = get_change_metadata(
-            self.request, person_data['source']
-        )
-
-        person_extra.record_version(change_metadata)
-        person_extra.save()
-
-        LoggedAction.objects.create(
-            user=self.request.user,
-            person=person,
-            action_type='person-create',
-            ip_address=get_client_ip(self.request),
-            popit_person_new_version=change_metadata['version_id'],
-            source=change_metadata['information_source'],
-        )
-
-        return person_extra
-
-    def update_person(self, context, data, person_extra):
-        party = Organization.objects.get(pk=data['party'].split('__')[0])
-        post = context['post_extra'].base
-        election = Election.objects.get(slug=context['election'])
-        pee = election.postextraelection_set.get(
-            postextra=context['post_extra'])
-
-        person_extra.not_standing.remove(election)
-
-        membership, _ = Membership.objects.update_or_create(
-            post=post,
-            person=person_extra.base,
-            extra__election=election,
-            role=election.candidate_membership_role,
-            defaults={
-                'on_behalf_of': party,
-            }
-        )
-
-        MembershipExtra.objects.get_or_create(
-            base=membership,
-            post_election=pee,
-            defaults={
-                'party_list_position': None,
-                'election': election,
-                'elected': None,
-            }
-        )
-
-        # Now remove other memberships in this election for that
-        # person, although we raise an exception if there is any
-        # object (other than its MembershipExtra) that has a
-        # ForeignKey to the membership, since that would result in
-        # losing data.
-        qs = Membership.objects \
-            .exclude(pk=membership.pk) \
-            .filter(
-                person=person_extra.base,
-                extra__election=election,
-                role=election.candidate_membership_role,
-            )
-        for old_membership in qs:
-            raise_if_unsafe_to_delete(old_membership)
-            old_membership.delete()
-
-        change_metadata = get_change_metadata(
-            self.request, data['source']
-        )
-
-        person_extra.record_version(change_metadata)
-        person_extra.save()
-
-        LoggedAction.objects.create(
-            user=self.request.user,
-            person=person_extra.base,
-            action_type='person-update',
-            ip_address=get_client_ip(self.request),
-            popit_person_new_version=change_metadata['version_id'],
-            source=change_metadata['information_source'],
-        )
-
     def form_valid(self, context):
 
         with transaction.atomic():
@@ -242,11 +152,20 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                 data = person_form.cleaned_data
                 if data.get('select_person') == "_new":
                     # Add a new person
-                    person_extra = self.add_person(data)
+                    person_extra = helpers.add_person(self.request, data)
                 else:
                     person_extra = PersonExtra.objects.get(
                         base__pk=int(data['select_person']))
-                self.update_person(context, data, person_extra)
+
+                helpers.update_person(
+                    self.request,
+                    person_extra,
+                    Organization.objects.get(
+                        pk=person_form.cleaned_data['party']),
+                    context['post_election'],
+                    data['source']
+                )
+
             if self.request.POST.get('suggest_locking') == 'on':
                 pee = PostExtraElection.objects.get(
                     postextra=context['post_extra'],
