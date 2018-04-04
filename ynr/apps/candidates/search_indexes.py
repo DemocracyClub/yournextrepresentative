@@ -1,9 +1,10 @@
 from haystack import indexes
+from celery_haystack.indexes import CelerySearchIndex
 
 from popolo.models import Person
 
 
-class PersonIndex(indexes.SearchIndex, indexes.Indexable):
+class PersonIndex(CelerySearchIndex, indexes.Indexable):
     # FIXME: this doesn't seem to work for partial names despite what
     # docs say
     text = indexes.EdgeNgramField(document=True, use_template=True)
