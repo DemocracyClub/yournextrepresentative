@@ -2,6 +2,8 @@
 aenum==1.4.5
 beautifulsoup4==4.4.1
 bleach==1.4.1
+celery[redis]==4.1.0
+celery-haystack==0.10
 certifi==2015.04.28
 cffi==1.5.0
 coverage>=3.6

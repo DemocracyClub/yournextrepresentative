@@ -126,6 +126,8 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
     'uk_results',
     'bulk_adding',
+    'celery_haystack',
+    'celery',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -375,6 +377,7 @@ REST_FRAMEWORK = {
 NOTIFICATIONS_USE_JSONFIELD = True
 
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
 
 HAYSTACK_CONNECTIONS = {
     'default': {
