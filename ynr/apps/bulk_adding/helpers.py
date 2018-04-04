@@ -12,10 +12,6 @@ def add_person(request, person_data):
     person = Person.objects.create(name=person_data['name'])
     person_extra = PersonExtra.objects.create(base=person)
 
-    check_creation_allowed(
-        request.user, person_extra.current_candidacies
-    )
-
     change_metadata = get_change_metadata(
         request, person_data['source']
     )
@@ -41,6 +37,10 @@ def update_person(request=None, person_extra=None,
     election = post_election.election
 
     person_extra.not_standing.remove(election)
+
+    check_creation_allowed(
+        request.user, person_extra.current_candidacies
+    )
 
     membership, _ = Membership.objects.update_or_create(
         post=post_election.postextra.base,
