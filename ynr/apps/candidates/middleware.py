@@ -74,8 +74,13 @@ class CopyrightAssignmentMiddleware(object):
                 return None
         if not request.user.is_authenticated():
             return None
+        if request.session.get('terms_agreement_assigned_to_dc') == True:
+            return None
+
         already_assigned = request.user.terms_agreement.assigned_to_dc
         if already_assigned:
+            request.session['terms_agreement_assigned_to_dc'] = True
+            request.session.save()
             return None
         else:
             # Then redirect to a view that asks you to assign
