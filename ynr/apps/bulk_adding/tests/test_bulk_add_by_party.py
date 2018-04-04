@@ -151,8 +151,9 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         # Now submit the valid form
-        form["{}-0-select_person".format(pee.pk)] = '_new'
-        response = form.submit().follow()
+        with self.assertNumQueries(66):
+            form["{}-0-select_person".format(pee.pk)] = '_new'
+            response = form.submit().follow()
 
         # We should have a new person and membership
         self.assertTrue(
