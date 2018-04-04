@@ -13,8 +13,8 @@ from official_documents.models import DOCUMENT_UPLOADERS_GROUP_NAME
 class TestUserMixin(object):
 
     @classmethod
-    def setUpClass(cls):
-        super(TestUserMixin, cls).setUpClass()
+    def setUpTestData(cls):
+        super(TestUserMixin, cls).setUpTestData()
         cls.users_to_delete = []
         for username, attr, group_names in (
                 ('john', 'user', []),
@@ -45,9 +45,3 @@ class TestUserMixin(object):
             'notagoodpasswordeither',
         )
         cls.users_to_delete.append(cls.user_refused)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestUserMixin, cls).tearDownClass()
-        for u in cls.users_to_delete:
-            u.delete()
