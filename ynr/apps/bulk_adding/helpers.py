@@ -4,11 +4,11 @@ from candidates.models import (LoggedAction, MembershipExtra, PersonExtra,
                                raise_if_unsafe_to_delete)
 from candidates.models.auth import check_creation_allowed
 from candidates.views.version_data import get_change_metadata, get_client_ip
-from tasks.models import connect_task_signal, disconnect_task_signal
+from tasks.models import pause_task_signal
 
 
+@pause_task_signal
 def add_person(request, person_data):
-    disconnect_task_signal()
     person = Person.objects.create(name=person_data['name'])
     person_extra = PersonExtra.objects.create(base=person)
 
@@ -27,13 +27,12 @@ def add_person(request, person_data):
         popit_person_new_version=change_metadata['version_id'],
         source=change_metadata['information_source'],
     )
-    connect_task_signal()
     return person_extra
 
 
+@pause_task_signal
 def update_person(request=None, person_extra=None,
                   party=None, post_election=None, source=None):
-    disconnect_task_signal()
     election = post_election.election
 
     person_extra.not_standing.remove(election)
@@ -93,4 +92,3 @@ def update_person(request=None, person_extra=None,
         popit_person_new_version=change_metadata['version_id'],
         source=change_metadata['information_source'],
     )
-    connect_task_signal()
