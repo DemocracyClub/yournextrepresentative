@@ -16,7 +16,7 @@ def add_person(request, person_data):
         request, person_data['source']
     )
 
-    person_extra.record_version(change_metadata)
+    person_extra.record_version(change_metadata, new_person=True)
     person_extra.save()
 
     LoggedAction.objects.create(

@@ -553,12 +553,13 @@ class PersonExtra(HasImageMixin, models.Model):
         })
         return squash_whitespace('<dl>{0}</dl>'.format(rendered))
 
-    def record_version(self, change_metadata):
+    def record_version(self, change_metadata, new_person=False):
         versions = []
         if self.versions:
             versions = json.loads(self.versions)
         new_version = change_metadata.copy()
-        new_version['data'] = get_person_as_version_data(self.base)
+        new_version['data'] = get_person_as_version_data(
+            self.base, new_person=new_person)
         versions.insert(0, new_version)
         self.versions = json.dumps(versions)
 
