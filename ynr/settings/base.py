@@ -375,10 +375,8 @@ REST_FRAMEWORK = {
 # allow attaching extra data to notifications:
 NOTIFICATIONS_USE_JSONFIELD = True
 
-HAYSTACK_SIGNAL_PROCESSOR = 'celery_haystack.signals.CelerySignalProcessor'
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
-
-CELERY_BROKER_URL = "redis://localhost:6379/0"
 
 HAYSTACK_CONNECTIONS = {
     'default': {
