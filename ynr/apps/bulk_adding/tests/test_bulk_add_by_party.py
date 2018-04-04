@@ -1,9 +1,9 @@
 from django.core.management import call_command
 from django_webtest import WebTest
 
+from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from candidates.models import LoggedAction
 
 
 class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -33,7 +33,6 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response,
             "Select one and only one party"
         )
-
 
     def test_submit_party_redirects_to_person_form(self):
         form = self.app.get(

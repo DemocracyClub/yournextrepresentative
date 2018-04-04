@@ -4,7 +4,7 @@ from candidates.models import (LoggedAction, MembershipExtra, PersonExtra,
                                raise_if_unsafe_to_delete)
 from candidates.models.auth import check_creation_allowed
 from candidates.views.version_data import get_change_metadata, get_client_ip
-from tasks.models import disconnect_task_signal, connect_task_signal
+from tasks.models import connect_task_signal, disconnect_task_signal
 
 
 def add_person(request, person_data):

@@ -12,8 +12,7 @@ from django.utils.text import slugify
 from django.views.generic import RedirectView, TemplateView
 from popolo.models import Organization
 
-from bulk_adding import forms
-from bulk_adding import helpers
+from bulk_adding import forms, helpers
 from candidates.models import PersonExtra, PostExtra, PostExtraElection
 from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
