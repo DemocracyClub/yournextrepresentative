@@ -8,6 +8,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
+        super(TestBulkAddingByParty, self).setUp()
         self.factory = RequestFactory()
 
     def test_add_person(self):

@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from django.contrib.contenttypes.models import ContentType
 
 from datetime import date
 
 from . import factories
 
 class UK2015ExamplesMixin(object):
+
+    def setUp(self):
+        ContentType.objects.clear_cache()
 
     @classmethod
     def setUpTestData(cls):
