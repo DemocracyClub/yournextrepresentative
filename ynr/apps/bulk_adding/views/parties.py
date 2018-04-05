@@ -76,7 +76,8 @@ class BulkAddPartyView(BasePartyBulkAddView):
         context = super(BulkAddPartyView, self).get_context_data(**kwargs)
         context['election_obj'] = self.get_election()
         context['party'] = self.get_party()
-        context['form'] = kwargs.get('form', forms.AddByPartyForm())
+        context['form'] = kwargs.get('form', forms.AddByPartyForm(
+            self.request.POST))
         posts = []
         qs = self.get_pee_qs(context['election_obj'])
         for pee in qs:
@@ -91,10 +92,15 @@ class BulkAddPartyView(BasePartyBulkAddView):
                 extra=extra_forms - existing.count(),
                 formset=forms.BulkAddByPartyFormset
             )
+            if self.request.POST:
+                formset = factory(self.request.POST, prefix=pee.pk)
+            else:
+                formset = factory(prefix=pee.pk)
+
             post_info = {
                 'pee': pee,
                 'existing': existing,
-                'formset': factory(prefix=pee.pk),
+                'formset': formset
             }
             posts.append(post_info)
 
