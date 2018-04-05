@@ -97,6 +97,10 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response,
             "This field is required"
         )
+        self.assertContains(
+            response,
+            "Pemphero Pasternak"
+        )
 
     def test_submit_name_for_area_without_any_names(self):
         form = self.app.get(
