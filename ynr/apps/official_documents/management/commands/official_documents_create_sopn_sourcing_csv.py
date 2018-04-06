@@ -31,6 +31,12 @@ class Command(BaseCommand):
             required=True
         )
 
+        parser.add_argument(
+            '--non-current',
+            action='store_true',
+            help="Also include elections marked as not current"
+        )
+
     def handle(self, *args, **options):
 
         out_csv = BufferDictWriter(self.fieldnames)
@@ -43,6 +49,9 @@ class Command(BaseCommand):
         ).order_by(
             'election__slug'
         )
+
+        if not options['non_current']:
+            qs = qs.filter(election__current=True)
 
         for pee in qs:
             row = {
