@@ -1,9 +1,9 @@
 from django.core.management import call_command
 from django_webtest import WebTest
 
+from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from candidates.models import LoggedAction
 
 
 class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -33,7 +33,6 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response,
             "Select one and only one party"
         )
-
 
     def test_submit_party_redirects_to_person_form(self):
         form = self.app.get(
@@ -127,7 +126,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = self.app.get(
             '/bulk_adding/party/2015/PP52/',
-            user=self.user_who_can_upload_documents
+            user=self.user
         ).forms[1]
 
         self.assertEqual(
@@ -155,8 +154,9 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         # Now submit the valid form
-        form["{}-0-select_person".format(pee.pk)] = '_new'
-        response = form.submit().follow()
+        with self.assertNumQueries(66):
+            form["{}-0-select_person".format(pee.pk)] = '_new'
+            response = form.submit().follow()
 
         # We should have a new person and membership
         self.assertTrue(

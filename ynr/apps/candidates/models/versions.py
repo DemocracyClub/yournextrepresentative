@@ -13,70 +13,92 @@ from ..twitter_api import update_twitter_user_id, TwitterAPITokenMissing
 # FIXME: handle the extra fields (e.g. cv & program for BF)
 # FIXME: check all the preserve_fields are dealt with
 
-def get_person_as_version_data(person):
+def get_person_as_version_data(person, new_person=False):
+    """
+    If new_person is True then skip some DB checks that we know will be
+    empty. This should reduce the number of queries needed.
+    """
     from candidates.election_specific import shorten_post_label
     result = {}
     person_extra = person.extra
     result['id'] = str(person.id)
+
     for field in SimplePopoloField.objects.all():
         result[field.name] = getattr(person, field.name) or ''
     for field in ComplexPopoloField.objects.all():
-        result[field.name] = getattr(person_extra, field.name)
-    extra_values = {
-        extra_value.field.key: extra_value.value
-        for extra_value in person.extra_field_values.select_related('field')
-    }
+        if new_person:
+            # Just set the attrs, as these will all be empty
+            result[field.name] = ''
+        else:
+            result[field.name] = getattr(person_extra, field.name)
+
+    extra_values = {}
+    result['other_names'] = []
+    standing_in = {}
+    party_memberships = {}
+    result['image'] = ''
+
+    if not new_person:
+        result['other_names'] = [
+            {
+                'name': on.name,
+                'note': on.note,
+                'start_date': on.start_date,
+                'end_date': on.end_date,
+            }
+            for on in person.other_names.order_by(
+                'name', 'start_date', 'end_date')
+        ]
+
+        identifiers = list(person.identifiers.all())
+        if identifiers:
+            result['identifiers'] = [
+                {
+                    'scheme': i.scheme,
+                    'identifier': i.identifier,
+                }
+                for i in identifiers
+            ]
+        result['image'] = person.image
+
+        for membership in person.memberships.filter(post__isnull=False):
+            from candidates.models import MembershipExtra
+            post = membership.post
+            try:
+                membership_extra = membership.extra
+            except MembershipExtra.DoesNotExist:
+                continue
+            election = membership_extra.election
+            standing_in[election.slug] = {
+                'post_id': post.extra.slug,
+                'name': shorten_post_label(post.label)
+            }
+            if membership_extra.elected is not None:
+                standing_in[election.slug]['elected'] = \
+                    membership_extra.elected
+            if membership_extra.party_list_position is not None:
+                standing_in[election.slug]['party_list_position'] = \
+                    membership_extra.party_list_position
+            party = membership.on_behalf_of
+            party_memberships[election.slug] = {
+                'id': party.extra.slug,
+                'name': party.name,
+            }
+        for not_standing_in_election in person_extra.not_standing.all():
+            standing_in[not_standing_in_election.slug] = None
+
+        extra_values = {
+            extra_value.field.key: extra_value.value
+            for extra_value in person.extra_field_values.select_related('field')
+        }
+
     extra_fields = {
         extra_field.key: extra_values.get(extra_field.key, '')
         for extra_field in ExtraField.objects.all()
     }
     if extra_fields:
         result['extra_fields'] = extra_fields
-    result['other_names'] = [
-        {
-            'name': on.name,
-            'note': on.note,
-            'start_date': on.start_date,
-            'end_date': on.end_date,
-        }
-        for on in person.other_names.order_by('name', 'start_date', 'end_date')
-    ]
-    identifiers = list(person.identifiers.all())
-    if identifiers:
-        result['identifiers'] = [
-            {
-                'scheme': i.scheme,
-                'identifier': i.identifier,
-            }
-            for i in identifiers
-        ]
-    result['image'] = person.image
-    standing_in = {}
-    party_memberships = {}
-    for membership in person.memberships.filter(post__isnull=False):
-        from candidates.models import MembershipExtra
-        post = membership.post
-        try:
-            membership_extra = membership.extra
-        except MembershipExtra.DoesNotExist:
-            continue
-        election = membership_extra.election
-        standing_in[election.slug] = {
-            'post_id': post.extra.slug,
-            'name': shorten_post_label(post.label)
-        }
-        if membership_extra.elected is not None:
-            standing_in[election.slug]['elected'] = membership_extra.elected
-        if membership_extra.party_list_position is not None:
-            standing_in[election.slug]['party_list_position'] = \
-                membership_extra.party_list_position
-        party = membership.on_behalf_of
-        party_memberships[election.slug] = {
-            'id': party.extra.slug,
-            'name': party.name,
-        }
-    for not_standing_in_election in person_extra.not_standing.all():
-        standing_in[not_standing_in_election.slug] = None
+
     result['standing_in'] = standing_in
     result['party_memberships'] = party_memberships
     return result

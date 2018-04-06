@@ -80,4 +80,22 @@ def person_saved(sender, **kwargs):
             task.found = True
             task.save()
 
-post_save.connect(person_saved, sender=PersonExtra)
+
+
+def connect_task_signal():
+    post_save.connect(person_saved, sender=PersonExtra)
+
+def disconnect_task_signal():
+    # Disconnect the task.post_save  signal
+    post_save.disconnect(receiver=person_saved, sender=PersonExtra)
+
+def pause_task_signal(fn):
+    def wrapped_fn(*args, **kwargs):
+        disconnect_task_signal()
+        try:
+            return fn(*args, **kwargs)
+        finally:
+            connect_task_signal()
+    return wrapped_fn
+
+connect_task_signal()

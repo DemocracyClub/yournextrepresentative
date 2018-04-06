@@ -4,21 +4,19 @@ from candidates.models import (LoggedAction, MembershipExtra, PersonExtra,
                                raise_if_unsafe_to_delete)
 from candidates.models.auth import check_creation_allowed
 from candidates.views.version_data import get_change_metadata, get_client_ip
+from tasks.models import pause_task_signal
 
 
+@pause_task_signal
 def add_person(request, person_data):
     person = Person.objects.create(name=person_data['name'])
     person_extra = PersonExtra.objects.create(base=person)
-
-    check_creation_allowed(
-        request.user, person_extra.current_candidacies
-    )
 
     change_metadata = get_change_metadata(
         request, person_data['source']
     )
 
-    person_extra.record_version(change_metadata)
+    person_extra.record_version(change_metadata, new_person=True)
     person_extra.save()
 
     LoggedAction.objects.create(
@@ -29,16 +27,19 @@ def add_person(request, person_data):
         popit_person_new_version=change_metadata['version_id'],
         source=change_metadata['information_source'],
     )
-
     return person_extra
 
 
+@pause_task_signal
 def update_person(request=None, person_extra=None,
                   party=None, post_election=None, source=None):
-
     election = post_election.election
 
     person_extra.not_standing.remove(election)
+
+    check_creation_allowed(
+        request.user, person_extra.current_candidacies
+    )
 
     membership, _ = Membership.objects.update_or_create(
         post=post_election.postextra.base,

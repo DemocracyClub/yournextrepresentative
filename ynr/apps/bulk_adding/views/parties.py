@@ -213,6 +213,7 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
     def form_valid(self, formsets):
         source = self.request.session['bulk_add_by_party_data'].get('source')
         assert len(formsets) >= 1
+
         with transaction.atomic():
             for formset in formsets:
                 for person_form in formset:
@@ -231,6 +232,8 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                     else:
                         person_extra = PersonExtra.objects.get(
                             base__pk=int(data['select_person']))
+
+                    # Update the person's candacies
                     helpers.update_person(
                         self.request,
                         person_extra,

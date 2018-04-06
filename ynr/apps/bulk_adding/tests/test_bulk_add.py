@@ -90,7 +90,17 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = response.follow()
         form = response.forms[1]
         form['form-0-select_person'].select('_new')
-        response = form.submit()
+
+        # As Chris points out[1], this is quite a large number, and also quite
+        # arbitrary.
+        #
+        # The reason for the large numer is explained in the GutHub thread
+        # linked to below. The arbitrarness isn't amazing, but the idea is to
+        # make it lower and at least make sure it's not getting biggier.
+        #
+        # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
+        with self.assertNumQueries(70):
+            response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
         homer = Person.objects.get()
