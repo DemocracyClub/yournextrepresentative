@@ -522,6 +522,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
             election=self.election,
             document_type=OfficialDocument.NOMINATION_PAPER,
             post=self.dulwich_post_extra.base,
+            post_election=self.dulwich_post_extra_pee,
             source_url="http://example.com"
         )
         url = reverse('sopn-review-required')
@@ -542,6 +543,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
             election=self.election,
             document_type=OfficialDocument.NOMINATION_PAPER,
             post=self.dulwich_post_extra.base,
+            post_election=self.dulwich_post_extra_pee,
             source_url="http://example.com"
         )
         url = reverse('sopn-review-required')
@@ -559,6 +561,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
             election=self.election,
             document_type=OfficialDocument.NOMINATION_PAPER,
             post=self.dulwich_post_extra.base,
+            post_election=self.dulwich_post_extra_pee,
             source_url="http://example.com"
         )
         url = reverse('sopn-review-required')

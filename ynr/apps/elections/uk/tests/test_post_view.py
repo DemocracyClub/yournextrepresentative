@@ -19,6 +19,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.edinburgh_east_post_extra.base,
             source_url='http://example.com',
             document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.edinburgh_east_post_extra_pee,
             uploaded_file="sopn.pdf"
         )
         response = self.app.get(
@@ -46,6 +47,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.edinburgh_east_post_extra.base,
             source_url='http://example.com',
             document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.edinburgh_east_post_extra_pee,
             uploaded_file="sopn.pdf"
         )
         response = self.app.get(
@@ -60,6 +62,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.edinburgh_east_post_extra.base,
             source_url='http://example.com',
             document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.edinburgh_east_post_extra_pee,
             uploaded_file="sopn.pdf"
         )
         response = self.app.get(
@@ -92,6 +95,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.edinburgh_east_post_extra.base,
             source_url='http://example.com',
             document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.edinburgh_east_post_extra_pee,
             uploaded_file="sopn.pdf"
         )
 
@@ -142,6 +146,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.edinburgh_east_post_extra.base,
             source_url='http://example.com',
             document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.edinburgh_east_post_extra_pee,
             uploaded_file="sopn.pdf"
         )
 
@@ -175,6 +180,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.edinburgh_east_post_extra.base,
             source_url='http://example.com',
             document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.edinburgh_east_post_extra_pee,
             uploaded_file="sopn.pdf"
         )
 

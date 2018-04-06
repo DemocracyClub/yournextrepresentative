@@ -12,7 +12,7 @@ from .forms import UploadDocumentForm
 from .models import DOCUMENT_UPLOADERS_GROUP_NAME, OfficialDocument
 
 from popolo.models import Post
-from candidates.models import is_post_locked
+from candidates.models import is_post_locked, PostExtraElection
 
 
 class DocumentView(DetailView):
@@ -33,10 +33,15 @@ class CreateDocumentView(ElectionMixin, GroupRequiredMixin, CreateView):
 
     def get_initial(self):
         post = get_object_or_404(Post, extra__slug=self.kwargs['post_id'])
+        pee = PostExtraElection.objects.get(
+            postextra__base=post,
+            election=self.election_data
+        )
         return {
             'election': self.election_data,
             'document_type': OfficialDocument.NOMINATION_PAPER,
             'post': post,
+            'post_election': pee,
         }
 
     def get_context_data(self, **kwargs):

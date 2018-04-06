@@ -41,6 +41,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=post.base,
             source_url='http://example.com',
             document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.dulwich_post_extra_pee,
             uploaded_file="sopn.pdf"
         )
 
@@ -67,6 +68,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=post,
             source_url='http://example.com',
             document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.dulwich_post_extra_pee,
             uploaded_file="sopn.pdf"
         )
 
@@ -131,6 +133,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.dulwich_post_extra.base,
             source_url='http://example.com',
             document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.dulwich_post_extra_pee,
             uploaded_file="sopn.pdf"
         )
 
@@ -199,6 +202,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.dulwich_post_extra.base,
             source_url='http://example.com',
             document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.dulwich_post_extra_pee,
             uploaded_file="sopn.pdf"
         )
 
