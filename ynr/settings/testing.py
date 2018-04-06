@@ -17,6 +17,13 @@ PASSWORD_HASHERS = [
 
 RUNNING_TESTS = True
 
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'STORAGE': 'ram',
+    },
+}
+
 SECRET_KEY = "just here for testing"
 
 if os.environ.get('TRAVIS'):

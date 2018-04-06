@@ -18,15 +18,9 @@ cache:
     - $HOME/.pip-cache/
     - $HOME/.tox/
     - .tox
-env:
-  - ES_VERSION=2.3.1 ES_DOWNLOAD_URL=https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/${ES_VERSION}/elasticsearch-${ES_VERSION}.tar.gz
 
 install:
   - pip install tox coveralls tox-travis
-  # Install ES
-  - wget -nc ${ES_DOWNLOAD_URL}
-  - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
-  - ./elasticsearch-${ES_VERSION}/bin/elasticsearch &
   # Make sure pip is at the latest version:
   - pip install -U pip
 
