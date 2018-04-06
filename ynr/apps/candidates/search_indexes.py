@@ -12,6 +12,7 @@ class PersonIndex(CelerySearchIndex, indexes.Indexable):
     family_name = indexes.CharField(model_attr='family_name')
     given_name = indexes.CharField(model_attr='given_name')
     additional_name = indexes.CharField(model_attr='additional_name')
+    last_updated = indexes.DateTimeField(model_attr='updated_at')
 
     def get_updated_field(self):
         return 'updated_at'
