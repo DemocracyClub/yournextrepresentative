@@ -39,6 +39,9 @@ def download_file_cached(url):
     except requests.exceptions.SSLError:
         print("Caught an SSLError, so retrying without certificate validation")
         r = requests.get(url, verify=False)
+    except:
+        print("Error downloading {}".format(url))
+        raise
     with open(filename, 'w') as f:
         f.write(r.content)
     return filename
@@ -102,16 +105,18 @@ class Command(BaseCommand):
                     name, document_url
                 ))
                 continue
+            except:
+                continue
             mime_type = mime_type_magic.from_file(downloaded_filename)
             extension = mimetypes.guess_extension(mime_type)
             if mime_type not in allowed_mime_types:
                 print("Ignoring unknown MIME type {0} for {1}".format(
                     mime_type,
-                    name,
+                    pee.ballot_paper_id,
                 ))
                 continue
             filename = "official_documents/{post_id}/statement-of-persons-nominated{extension}".format(
-                post_id=post.extra.slug,
+                post_id=pee.postextra.slug,
                 extension=extension,
             )
             with open(downloaded_filename, 'rb') as f:
@@ -126,4 +131,4 @@ class Command(BaseCommand):
                 source_url=document_url
             )
             message = "Successfully added the Statement of Persons Nominated for {0}"
-            print(message.format(name))
+            print(message.format(pee.ballot_paper_id))
