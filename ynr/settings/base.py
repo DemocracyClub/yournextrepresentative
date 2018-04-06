@@ -381,9 +381,8 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',  # noqa
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'ynr',
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': '.haystack',
     },
 }
 
