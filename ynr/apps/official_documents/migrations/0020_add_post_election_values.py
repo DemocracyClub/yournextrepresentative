@@ -31,12 +31,4 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(add_post_elections, do_nothing),
-        migrations.AlterField(
-            model_name='officialdocument',
-            name='post_election',
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE,
-                to='candidates.PostExtraElection'
-            ),
-        ),
     ]
