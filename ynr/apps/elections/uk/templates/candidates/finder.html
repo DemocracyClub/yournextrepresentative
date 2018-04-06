@@ -44,14 +44,6 @@
 <div class="finder__forms">
   <div class="finder__forms__container">
 
-
-    {# <div style="background-color:#FFFF8E;padding:0.5em;margin-bottom:1em;clear:both"> #}
-    {#   <h2> #}
-    {#     <a href="https://democracyclub.org.uk/blog/2017/04/18/its-ge2017/">#GE2017 update</a> #}
-    {#   </h2> #}
-    {#   <p>There’s going to be a general election on 8 June. <a href="https://democracyclub.org.uk/blog/2017/04/18/its-ge2017/">Read about how you can help</a>, or <a href="https://democracyclub.org.uk/donate/">donate now</a> to support our work.</p> #}
-    {# </div> #}
-
     {# <h2>Election Results</h2> #}
     {# {% include "uk_results/includes/map.html" %} #}
     {# <h3>Enter results as they come in</h3> #}
@@ -66,31 +58,14 @@
     {# <div class="radius progress success large-12" role="progressbar" aria-valuenow="{{ votes_confirmed }}" aria-valuemin="0" aria-valuemax="{{ votes_total }}"> #}
     {#   <span class="meter" style="width: {{ votes_percent }}%"></span> #}
     {# </div> #}
+    {% sopn_import_progress %}
+  </div>
 
-    {# <h2>General election 2017 nomination papers&nbsp;(SOPNs)</h2> #}
-    {# <p>Official document containing candidate information has just been published on local authority websites.</p> #}
-    {# <p>Help us find all the nomination papers for the Scottish local elections</p> #}
-    {# <a class="button" href="https://docs.google.com/spreadsheets/d/1wZeniqnMi1dyuB1eqCCumUq1kp8O_57TQsLyPwmLtQc/edit#gid=0"> #}
-    {#     Add links to nomination papers #}
-    {# </a> #}
-    {# {% include "candidates/homepage_sopn_progress.html" with sopn_progress=sopn_progress %} #}
+</div>
 
-    {# <hr> #}
 
-    {# <hr> #}
-    {# <h2>Find information on your candidates</h2> #}
-    {# <h4> #}
-    {#   <label for="who_postcode" {% if request.GET.postcode_invalid %} class="error"{% endif %}>Enter your postcode</label> #}
-    {# </h4> #}
-    {# <form method="get" action="/postcode_redirect"> #}
-    {#  #}
-    {#   <input type="text" name="postcode" value="{{ request.GET.who_postcode }}" id="who_postcode" {% if request.GET.postcode_invalid %} class="error"{% endif %}> #}
-    {#   {% if request.GET.postcode_invalid %} #}
-    {#   <small class="error">Invalid postcode.  Please enter a full UK postcode.</small> #}
-    {#   {% endif %} #}
-    {#   <button type="submit" class="button" >Find your candidates</button> #}
-    {# </form> #}
-    {# <hr> #}
+<div class="finder__forms" style="margin-top:-2em">
+  <div class="finder__forms__container" style="top:0">
 
     <form id="form-postcode" action="{% url 'person-search' %}" method="get" {% if show_name_form %}style="display: none"{% endif %}>
       {{ postcode_form.as_p }}
