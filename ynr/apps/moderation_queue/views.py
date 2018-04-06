@@ -615,12 +615,16 @@ class SOPNReviewRequiredView(ListView):
         """
         return PostExtraElection.objects \
             .filter(
-                postextra__base__officialdocument__election=F('election'),
                 suggestedpostlock__isnull=True,
                 candidates_locked=False,
-                election__current=True).select_related(
-                    'postextra__base', 'election').order_by(
-                        'election', 'postextra__base__label')
+                election__current=True
+            ).exclude(
+                officialdocument=None
+            ).select_related(
+                'postextra__base', 'election'
+            ).order_by(
+                'election', 'postextra__base__label'
+            )
 
 
 class PersonNameCleanupView(TemplateView):
