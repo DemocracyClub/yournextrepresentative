@@ -2,6 +2,7 @@ import random
 
 from django import template
 from django.db.models import F
+from django.conf import settings
 
 from candidates.models import PostExtraElection
 from elections.models import Election
@@ -18,7 +19,7 @@ def sopn_progress_by_election_slug_prefix(self, election_slug_prefix):
     return self.sopn_progress_by_election(election_qs)
 
 
-def sopn_progress_by_election(self, election_qs):
+def sopn_progress_by_election(election_qs):
     context = {}
     if not election_qs.exists():
         return context
@@ -65,12 +66,20 @@ def election_night_countil_control_progress(context):
         context['council_election_percent'] = 0
 
 
-@register.inclusion_tag('link.html', takes_context=True)
+@register.inclusion_tag('includes/sopn_import_progress.html',
+                        takes_context=True)
 def sopn_import_progress(context):
-    election_qs = Election.objects.filter(
-        election_date="2017-06-08")
-    context['sopn_progress'] = sopn_progress_by_election(
-        election_qs=election_qs)
+
+    context['SHOW_SOPN_TRACKER'] = getattr(
+        settings, 'SHOW_SOPN_TRACKER', False)
+    if context['SHOW_SOPN_TRACKER']:
+        context['sopn_tracker_election_name'] \
+            = settings.SOPN_TRACKER_INFO['election_name']
+        election_qs = Election.objects.filter(
+            election_date=settings.SOPN_TRACKER_INFO['election_date'])
+        context['sopn_progress'] = sopn_progress_by_election(
+            election_qs=election_qs)
+    return context
 
 
 @register.inclusion_tag('includes/tasks.html', takes_context=True)
