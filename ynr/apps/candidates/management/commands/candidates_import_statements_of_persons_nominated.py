@@ -12,8 +12,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import FileSystemStorage
 
 from official_documents.models import OfficialDocument
-from elections.models import Election
-from popolo.models import Post, Area
+from candidates.models import PostExtraElection
 
 from compat import BufferDictReader
 
@@ -23,17 +22,6 @@ allowed_mime_types = set([
     b'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ])
 
-PDF_COLUMN_HEADERS_TO_TRY = (
-    'Statement of Persons Nominated (SOPN) URL',
-    'Link to PDF',
-)
-
-POST_OR_AREA_COLUMN_HEADERS_TO_TRY = (
-    'Region',
-    'Constituency',
-    'Ward',
-    'Area',
-)
 
 def download_file_cached(url):
     url_hash = hashlib.md5(url).hexdigest()
@@ -70,24 +58,10 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--delete-existing', action='store_true')
-        parser.add_argument('--election')
 
     def handle(self, *args, **options):
 
         csv_url, = args
-
-        override_election = None
-        override_election_slug = options['election']
-        if override_election_slug:
-            try:
-                override_election = Election.objects.get(
-                    slug=override_election_slug
-                )
-            except Election.DoesNotExist:
-                msg = 'No election with slug {0} found'
-                raise CommandError(msg.format(override_election_slug))
-
-        election_name_to_election = {}
 
         mime_type_magic = magic.Magic(mime=True)
         storage = FileSystemStorage()
@@ -96,64 +70,16 @@ class Command(BaseCommand):
         r.encoding = 'utf-8'
         reader = BufferDictReader(r.text)
         for row in reader:
-            post_or_area_header = get_column_header(
-                POST_OR_AREA_COLUMN_HEADERS_TO_TRY, row
-            )
+            pee = PostExtraElection.objects.get(
+                ballot_paper_id=row['ballot_paper_id'])
+            document_url = row['Link to PDF']
 
-            name = row[post_or_area_header]
-            if not name:
-                continue
-            name = name.strip()
-
-            # If there was no election specified, try to find it from
-            # the 'Election' column (which has the election name):
-            if override_election_slug:
-                election = override_election
-            else:
-                if 'Election' not in row:
-                    raise CommandError("There is no election name in the 'Election' column, so you must supply an election slug with --election")
-                election_name = row['Election']
-                election = election_name_to_election.get(election_name)
-                if election is None:
-                    election = Election.objects.get(slug=election_name)
-                    election_name_to_election[election_name] = election
-
-            try:
-                post = Post.objects.get(
-                    extra__slug=name,
-                    extra__elections=election,
-                )
-            except Post.DoesNotExist:
-                msg = "Failed to find the post {0}, guessing it might be the area name instead"
-                # print(msg.format(name))
-                # If the post name isn't there, try getting it from
-                # the area:
-                try:
-                    area = Area.objects.get(name=name)
-                except (Area.DoesNotExist, Area.MultipleObjectsReturned):
-                    pass
-
-                try:
-                    post = Post.objects.get(label=name, extra__elections=election)
-                    area = post.area
-                except Post.DoesNotExist:
-                    # print("Failed to find post with for {0}".format(name))
-                    continue
-
-            # Check that the post is actually valid for this election:
-            if election not in post.extra.elections.all():
-                msg = "The post {post} wasn't in the election {election}"
-                raise CommandError(msg.format(post=post.label, election=election.name))
-
-            document_url_column = get_column_header(PDF_COLUMN_HEADERS_TO_TRY, row)
-            document_url = row[document_url_column]
             if not document_url:
                 # print("No URL for {0}".format(name))
                 continue
             existing_documents = OfficialDocument.objects.filter(
                 document_type=OfficialDocument.NOMINATION_PAPER,
-                post_id=post,
-                election=election,
+                post_election=pee
             )
             if existing_documents.count() > 0:
                 if options['delete_existing']:
@@ -194,8 +120,9 @@ class Command(BaseCommand):
             OfficialDocument.objects.create(
                 document_type=OfficialDocument.NOMINATION_PAPER,
                 uploaded_file=storage_filename,
-                election=election,
-                post=post,
+                election=pee.election,
+                post=pee.postextra.base,
+                post_election=pee,
                 source_url=document_url
             )
             message = "Successfully added the Statement of Persons Nominated for {0}"

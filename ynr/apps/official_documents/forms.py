@@ -12,12 +12,14 @@ class UploadDocumentForm(forms.ModelForm):
             'uploaded_file',
             'source_url',
             'post',
+            'post_election',
             'document_type',
         )
 
         widgets = {
             'post': forms.HiddenInput(),
-            'election': forms.HiddenInput()
+            'election': forms.HiddenInput(),
+            'post_election': forms.HiddenInput(),
         }
 
     document_type = forms.CharField(widget=forms.HiddenInput())
