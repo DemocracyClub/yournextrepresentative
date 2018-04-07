@@ -160,7 +160,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     self.request,
                     person_extra,
                     Organization.objects.get(
-                        pk=person_form.cleaned_data['party']),
+                        pk=person_form.cleaned_data['party'].split('__')[0]),
                     context['post_election'],
                     data['source']
                 )
