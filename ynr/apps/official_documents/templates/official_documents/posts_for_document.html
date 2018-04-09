@@ -15,24 +15,20 @@
     area{{ document_posts.count|pluralize }}.</p>
 
 <ul>
-  {% for document, locked, lock_suggested in document_posts %}
+  {% for document in document_posts %}
     <li>
-     <a href="{% url 'constituency' election=document.election.slug post_id=document.post.extra.slug ignored_slug=document.post.extra.base.label|slugify %}">
-        {{ document.post.extra.base.label }}</a>
-        {% if locked %}
+     <a href="{{ document.post_election.get_absolute_url }}">
+        {{ document.post_election.postextra.base.label }}</a>
+        {% if document.locked %}
          - <abbr title="Candidates verified and post locked">🔒</abbr>
-        {% elif lock_suggested %}
+        {% elif document.lock_suggested %}
         - <abbr title="Someone suggested locking this post">🔓</abbr>
         {% else %}
-        <a href="{% url 'bulk_add_from_sopn' election=document.election.slug post_id=document.post.extra.slug %}" class="button tiny">
+        <a href="{% url 'bulk_add_from_sopn' election=document.post_election.election.slug post_id=document.post_election.postextra.slug %}" class="button tiny">
         Add candidates</a>
         {% endif %}
-
-
-
-    </li>  {% endfor %}
+    </li>
+  {% endfor %}
 </ul>
-
-
 
 {% endblock content %}

@@ -7,7 +7,8 @@ from slugify import slugify
 from django.views.decorators.cache import cache_control
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import (
+    HttpResponse, HttpResponseRedirect, Http404, JsonResponse)
 from django.utils.decorators import method_decorator
 from django.utils.http import urlquote
 from django.utils.translation import ugettext as _
@@ -359,13 +360,18 @@ class ConstituencyLockView(ElectionMixin, GroupRequiredMixin, View):
                     ip_address=get_client_ip(self.request),
                     source=message,
                 )
-            return HttpResponseRedirect(
-                reverse('constituency', kwargs={
-                    'election': self.election,
-                    'post_id': post_id,
-                    'ignored_slug': slugify(post_name),
+            if self.request.is_ajax():
+                return JsonResponse({
+                    'locked': extra_election.candidates_locked
                 })
-            )
+            else:
+                return HttpResponseRedirect(
+                    reverse('constituency', kwargs={
+                        'election': self.election,
+                        'post_id': post_id,
+                        'ignored_slug': slugify(post_name),
+                    })
+                )
         else:
             message = _('Invalid data POSTed to ConstituencyLockView')
             raise ValidationError(message)

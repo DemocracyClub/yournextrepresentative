@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.conf.urls import url
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .views import (
     upload_photo, upload_photo_image, upload_photo_url,
@@ -32,7 +33,7 @@ urlpatterns = [
         SuggestLockView.as_view(),
         name="constituency-suggest-lock"),
     url(r'^suggest-lock/$',
-        SuggestLockReviewListView.as_view(),
+        ensure_csrf_cookie(SuggestLockReviewListView.as_view()),
         name="suggestions-to-lock-review-list"),
     url(r'^sopn-review-required/$',
         SOPNReviewRequiredView.as_view(),

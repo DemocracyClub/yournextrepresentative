@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import bleach
 import os
 import re
+import random
 
 from os.path import join
 from tempfile import NamedTemporaryFile
@@ -15,7 +16,7 @@ from django.contrib import messages
 from django.core.files import File
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
-from django.db.models import F
+from django.db import models
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
@@ -34,7 +35,7 @@ from .models import QueuedImage, SuggestedPostLock, PHOTO_REVIEWERS_GROUP_NAME
 from candidates.management.images import (
     get_file_md5sum, ImageDownloadException, download_image_from_url)
 from candidates.models import (LoggedAction, ImageExtra,
-                               PersonExtra, PostExtraElection)
+                               PersonExtra, PostExtraElection, MembershipExtra)
 from candidates.views.version_data import get_client_ip, get_change_metadata
 
 from popolo.models import Person
@@ -578,29 +579,55 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
 
 
 class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
-    '''This is the view which lists all post lock suggestions that need review
+    """
+    This is the view which lists all post lock suggestions that need review
 
-    Most people will get to this by clicking on the red highlighted 'Post lock suggestions'
-    counter in the header.'''
+    Most people will get to this by clicking on the red highlighted 'Post lock
+    suggestions' counter in the header.
+    """
 
     template_name = "moderation_queue/suggestedpostlock_review.html"
 
     def get_lock_suggestions(self, mine):
-        method = 'filter' if mine else 'exclude'
-        return getattr(
-            SuggestedPostLock.objects.filter(
-                postextraelection__candidates_locked=False),
-            method)(user=self.request.user).select_related(
-                'user', 'postextraelection__postextra__base',
-                'postextraelection__election')
+
+        qs = PostExtraElection.objects.filter(
+            election__current=True,
+            candidates_locked=False,
+        ).exclude(
+            suggestedpostlock=None
+        ).select_related(
+            'election',
+            'postextra',
+            'postextra__base',
+        ).prefetch_related(
+            'officialdocument_set',
+            models.Prefetch(
+                'suggestedpostlock_set',
+                SuggestedPostLock.objects.select_related('user')
+            ),
+            models.Prefetch(
+                'membershipextra_set',
+                MembershipExtra.objects.select_related(
+                    'base__person__extra',
+                ).prefetch_related(
+                    'base__on_behalf_of'
+                )
+            )
+        )
+
+        if mine:
+            qs = qs.filter(suggestedpostlock__user=self.request.user)
+        else:
+            qs = qs.exclude(suggestedpostlock__user=self.request.user)
+
+        return qs
 
     def get_context_data(self, **kwargs):
-        context = super(SuggestLockReviewListView, self).get_context_data(**kwargs)
-        context['others_and_my_suggestions'] = [
-            self.get_lock_suggestions(mine=False),
-            self.get_lock_suggestions(mine=True),
+        context = super(
+            SuggestLockReviewListView, self).get_context_data(**kwargs)
+        context['my_suggestions'] = self.get_lock_suggestions(mine=True)
+        context['other_suggestions'] = self.get_lock_suggestions(mine=False)
 
-        ]
         return context
 
 
@@ -609,11 +636,29 @@ class SOPNReviewRequiredView(ListView):
 
     template_name = "moderation_queue/sopn-review-required.html"
 
+    def get(self, *args, **kwargs):
+        if 'random' in self.request.GET:
+            qs = self.get_queryset()
+            random_offset = random.randrange(qs.count())
+            pee = qs[random_offset]
+            url = reverse(
+                'bulk_add_from_sopn',
+                args=(
+                 pee.election.slug,
+                 pee.postextra.slug
+                )
+
+            )
+            return HttpResponseRedirect(url)
+        else:
+            return super(SOPNReviewRequiredView, self).get(*args, **kwargs)
+
+
     def get_queryset(self):
         """
         PostExtraElection objects with a document but no lock suggestion
         """
-        return PostExtraElection.objects \
+        qs = PostExtraElection.objects \
             .filter(
                 suggestedpostlock__isnull=True,
                 candidates_locked=False,
@@ -622,9 +667,13 @@ class SOPNReviewRequiredView(ListView):
                 officialdocument=None
             ).select_related(
                 'postextra__base', 'election'
+            ).prefetch_related(
+                'officialdocument_set'
             ).order_by(
-                'election', 'postextra__base__label'
+                'officialdocument__source_url', 'election', 'postextra__base__label'
             )
+        return qs
+
 
 
 class PersonNameCleanupView(TemplateView):

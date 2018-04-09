@@ -22,6 +22,11 @@ class DocumentView(DetailView):
         context = super(DocumentView, self).get_context_data(**kwargs)
         post = get_object_or_404(Post, id=self.object.post_id)
         context['post_label'] = post.label
+        context['documents_with_same_source'] = \
+            OfficialDocument.objects.filter(
+                source_url=context['object'].source_url
+            )
+
         return context
 
 
@@ -60,26 +65,17 @@ class PostsForDocumentView(DetailView):
         documents = OfficialDocument.objects.filter(
             source_url=self.object.source_url
         ).select_related(
-            'post__extra', 'election'
+            'post_election__postextra',
+            'post_election__postextra__base',
+            'post_election__election',
+        ).order_by(
+            'post__label'
+        ).prefetch_related(
+            'post_election__suggestedpostlock_set'
         )
 
-        """
-        This might seem a bit inefficient but there's not likely to
-        be many posts here and this page isn't used much. And rewriting
-        the query to gather this information in a single go is going to
-        make the code and the template unpleasant.
-        """
-        context['document_posts'] = [
-            (
-                document,
-                is_post_locked(document.post, document.election),
-                SuggestedPostLock.objects.filter(
-                    postextraelection__postextra=document.post.extra,
-                    postextraelection__election=document.election,
-                ).exists()
-            )
-            for document in documents
-        ]
+        context['document_posts'] = documents
+
         return context
 
 

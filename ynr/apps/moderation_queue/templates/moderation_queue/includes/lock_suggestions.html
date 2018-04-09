@@ -1,0 +1,74 @@
+<p>Suggestions are grouped by nomination paper</p>
+
+{% regroup post_elections by officialdocument_set.first.source_url as post_elections_by_source %}
+
+{% for suggestions in post_elections_by_source %}
+<h3>{{ suggestions.list.0.election.name }}</h3>
+
+
+<p>
+  {% if suggestions.list.0.officialdocument_set.exists %}
+    {% with suggestions.list.0.officialdocument_set.first as nomination_paper %}
+    <strong><a href="{{ nomination_paper.get_absolute_url }}">
+        View the nomination paper</a></strong>
+    {% endwith %}
+  {% endif %}
+
+</p>
+<p>
+  {% if suggestions.grouper %}
+
+    <a href="{{ suggestions.grouper }}">
+  {% endif %}
+
+    Source: {{ suggestions.grouper|default_if_none:"No source" }}
+  {% if suggestions.grouper %}
+    </a>
+  {% endif %}
+</p>
+
+
+{% for post_election in suggestions.list %}
+      <h4>
+          <a href="{{ post_election.get_absolute_url }}">
+            {{ post_election.postextra.short_label }}
+          </a>
+      </h4>
+      <p>Suggested by:</p>
+      <ul>
+        {% for spl in post_election.suggestedpostlock_set.all %}
+          <li>{{ spl.user }}{% if spl.justification %}: {{ spl.justification }}{% endif %}</li>
+        {% endfor %}
+      </ul>
+
+      {% if show_lock_button %}
+        {% include "moderation_queue/includes/ajax_lock_button_html.html" with postextraelection=post_election %}
+      {% endif %}
+
+      {% if post_election.membershipextra_set.exists %}
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Party</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for membership in post_election.membershipextra_set.all %}
+          <tr>
+            <td><a href="{{ membership.base.person.extra.get_absolute_url }}">{{ membership.base.person.name }}</a></td>
+            <td>{{ membership.base.on_behalf_of }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+
+
+{% endfor %}
+
+
+
+  <hr>
+  {% endfor %}

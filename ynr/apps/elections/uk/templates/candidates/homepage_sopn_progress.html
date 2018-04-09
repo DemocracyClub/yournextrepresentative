@@ -1,4 +1,5 @@
 {% load humanize %}
+{% if SHOW_SOPN_TRACKER %}
 <style>
 .big_number {
     font-size:3em;
@@ -15,7 +16,9 @@
     aria-valuemin="0" aria-valuemax="{{ sopn_progress.posts_total }}">
   <span class="meter" style="width: {{ sopn_progress.sopns_imported_percent }}%"></span>
 </div>
-<a class="button" href="{% url "sopn-review-required" %}">Start verifying</a>
+<a class="button" href="{% url "sopn-review-required" %}?random">Start verifying</a>
+<br>or<br>
+<a class="button" href="{% url "sopn-review-required" %}">See the full list of SOPNs</a>
 
 <h3><strong>{{ sopn_progress.posts_lock_suggested|intcomma }}</strong> areas have suggested locks</h3>
 <div class="radius progress success large-12" role="progressbar"
@@ -30,3 +33,4 @@
     aria-valuemax="{{ sopn_progress.posts_total }}">
   <span class="meter" style="width: {{ sopn_progress.posts_locked_percent }}%"></span>
 </div>
+{% endif %}

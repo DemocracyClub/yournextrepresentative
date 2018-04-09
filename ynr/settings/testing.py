@@ -26,6 +26,8 @@ HAYSTACK_CONNECTIONS = {
 
 SECRET_KEY = "just here for testing"
 
+SHOW_SOPN_TRACKER = False
+
 if os.environ.get('TRAVIS'):
     try:
         from .travis import *  # noqa
