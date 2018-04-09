@@ -1,4 +1,5 @@
 {% load humanize %}
+{% if SHOW_SOPN_TRACKER %}
 <style>
 .big_number {
     font-size:3em;
@@ -30,3 +31,4 @@
     aria-valuemax="{{ sopn_progress.posts_total }}">
   <span class="meter" style="width: {{ sopn_progress.posts_locked_percent }}%"></span>
 </div>
+{% endif %}
