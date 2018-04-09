@@ -56,6 +56,11 @@ patterns_to_format = [
         'name': 'posts',
     },
     {
+        'pattern': r'^election/{election}/$',
+        'view': views.BallotPaperIDRedirectView.as_view(),
+        'name': 'ballot_paper_id_redirect'
+    },
+    {
         'pattern': r'^election/{election}/constituencies$',
         'view': views.ConstituencyListView.as_view(),
         'name': 'constituencies'

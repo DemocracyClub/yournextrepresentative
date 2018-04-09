@@ -12,7 +12,7 @@ from django.http import (
 from django.utils.decorators import method_decorator
 from django.utils.http import urlquote
 from django.utils.translation import ugettext as _
-from django.views.generic import TemplateView, FormView, View
+from django.views.generic import TemplateView, FormView, View, RedirectView
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.db.models import Prefetch
@@ -300,6 +300,13 @@ class ConstituencyDetailCSVView(ElectionMixin, View):
         response.write(list_to_csv(all_people))
         return response
 
+class BallotPaperIDRedirectView(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        pee = get_object_or_404(
+            PostExtraElection,
+            ballot_paper_id=kwargs['election']
+        )
+        return pee.get_absolute_url()
 
 class ConstituencyListView(ElectionMixin, TemplateView):
     template_name = 'candidates/constituencies.html'
