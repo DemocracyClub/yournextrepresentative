@@ -21,6 +21,15 @@ The source URL for this document was: <a href="{{ source_url }}">{{ source_url }
 {% endblocktrans %}
 </p>
 
+{% if documents_with_same_source.exists %}
+<p>
+  <strong>
+  Watch out! This document contains candidate info for {{ documents_with_same_source.count }}
+  area{{ documents_with_same_source.count|pluralize }}</strong>.
+  Make sure you're looking at the right area.
+</p>
+{% endif %}
+
 <iframe
   src="http{% if request.is_secure %}s{% endif %}://docs.google.com/viewer?url=http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}{{ object.uploaded_file.url | urlencode}}&amp;embedded=true"
   frameborder="0"

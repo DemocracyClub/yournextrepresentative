@@ -22,6 +22,11 @@ class DocumentView(DetailView):
         context = super(DocumentView, self).get_context_data(**kwargs)
         post = get_object_or_404(Post, id=self.object.post_id)
         context['post_label'] = post.label
+        context['documents_with_same_source'] = \
+            OfficialDocument.objects.filter(
+                source_url=context['object'].source_url
+            )
+
         return context
 
 
