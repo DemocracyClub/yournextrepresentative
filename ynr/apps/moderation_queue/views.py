@@ -613,7 +613,11 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
                     'base__on_behalf_of'
                 )
             )
-        ).order_by('officialdocument__source_url')
+        ).order_by(
+            'officialdocument__source_url',
+            'postextra__base__label'
+
+        )
 
         if mine:
             qs = qs.filter(suggestedpostlock__user=self.request.user)
