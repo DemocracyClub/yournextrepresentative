@@ -1,6 +1,7 @@
 from __future__ import print_function, unicode_literals
 
 import errno
+import re
 import hashlib
 import magic
 import mimetypes
@@ -22,6 +23,10 @@ allowed_mime_types = set([
     b'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ])
 
+headers = {
+    'User-Agent': 'DemocracyClub Candidates'
+}
+
 
 def download_file_cached(url):
     url_hash = hashlib.md5(url).hexdigest()
@@ -32,10 +37,11 @@ def download_file_cached(url):
         if e.errno != errno.EEXIST:
             raise
     filename = join(directory, url_hash)
+
     if exists(filename):
         return filename
     try:
-        r = requests.get(url)
+        r = requests.get(url, headers=headers)
     except requests.exceptions.SSLError:
         print("Caught an SSLError, so retrying without certificate validation")
         r = requests.get(url, verify=False)
@@ -110,11 +116,43 @@ class Command(BaseCommand):
             mime_type = mime_type_magic.from_file(downloaded_filename)
             extension = mimetypes.guess_extension(mime_type)
             if mime_type not in allowed_mime_types:
-                print("Ignoring unknown MIME type {0} for {1}".format(
-                    mime_type,
-                    pee.ballot_paper_id,
-                ))
-                continue
+                recovered = False
+                # Attempt to get a PDF link form the URL
+                ignore_urls = [
+                    'drive.google.com',
+                ]
+                if not any([x in document_url for x in ignore_urls]):
+                    try:
+
+                        req = requests.get(
+                            document_url, headers=headers, verify=False)
+                        if req.status_code == 200:
+                            re_sre = r'(http[^"\']+\.pdf)'
+                            matches = re.findall(re_sre, req.content)
+                            if len(matches) == 1:
+                                document_url = matches[0]
+
+                            downloaded_filename \
+                                = download_file_cached(document_url)
+                            mime_type = mime_type_magic.from_file(
+                                downloaded_filename)
+                            extension = mimetypes.guess_extension(mime_type)
+                            if mime_type not in allowed_mime_types:
+                                raise ValueError(
+                                    'Recovery failed to get a PDF for {}'.format(
+                                        pee.ballot_paper_id))
+                            else:
+                                recovered = True
+                    except Exception as e:
+                        print(e)
+
+                else:
+                    print("Ignoring unknown MIME type {0} for {1}".format(
+                        mime_type,
+                        pee.ballot_paper_id,
+                    ))
+                if not recovered:
+                    continue
             filename = "official_documents/{post_id}/statement-of-persons-nominated{extension}".format(
                 post_id=pee.postextra.slug,
                 extension=extension,
