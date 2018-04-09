@@ -1,0 +1,43 @@
+<p>Suggestions are grouped by nomination paper</p>
+
+{% for suggestion in suggestions %}
+{{ suggestion.officialdocument_set }}
+
+{% endfor %}
+{% regroup suggestions by officialdocument_set.first.source_url as suggestions_list %}
+
+
+  {% for document_and_suggested_locks in suggestions_list %}
+
+  {% with document_and_suggested_locks.list.0.postextraelection.officialdocument_set.first as nomination_paper %}
+  <h3>{{ nomination_paper.postextraelection.election.name }}</h3>
+
+  <strong><a href="{{ nomination_paper.get_absolute_url }}">
+      View the nomination paper</a></strong>
+  {% endwith %}
+
+  <h4>
+      <a href="{{ document_and_suggested_locks.list.0.postextraelection.get_absolute_url }}">
+        {{ document_and_suggested_locks.list.0.postextraelection.postextra.short_label }}
+      </a>
+  </h4>
+
+
+  {% if show_lock_button %}
+  {% include "moderation_queue/includes/ajax_lock_button_html.html" with postextraelection=document_and_suggested_locks.list.0.postextraelection %}
+  {% endif %}
+
+
+  <ul>
+  {% for suggestion in document_and_suggested_locks.list %}
+    <li>
+      User {{ suggestion.user }} suggested locking this.
+      {% if suggestion.justification %}
+      They said:
+      <blockquote>{{ suggestion.justification }}</blockquote>
+      {% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+  <hr>
+  {% endfor %}

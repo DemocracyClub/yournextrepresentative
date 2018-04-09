@@ -1,0 +1,64 @@
+<script>
+  $(document).ready(function(){
+
+    LOCKED_TEXT = "Lock now";
+    UNLOCKED_TEXT = "Unlock now";
+
+    var form = $('.lock_button_container form');
+
+    var locked = form.find('input[name=lock]').val();
+    if (locked === "True") {
+      form.append('<button data-op="unlock">' + UNLOCKED_TEXT + '</button>')
+    } else {
+      form.append('<button type=submit class="ajax_lock_button" data-op="lock">' + LOCKED_TEXT + '</button>')
+    }
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", window.csrftoken);
+            }
+        }
+    });
+
+    $('.ajax_lock_button').on('click', function(e) {
+      e.preventDefault();
+      this_button = $(e.target);
+      this_button.attr("disabled", "disabled");
+      this_op = this_button.data('op');
+      if (this_op == "lock") {
+        this_button.html("Locking…");
+      } else {
+        this_button.html("unlocking…");
+      }
+      form = this_button.parent();
+      post_url = form.attr('action');
+
+      $.ajax({
+              url: post_url,
+              type: 'post',
+              dataType: 'json',
+              data: form.serialize(),
+              success: function(data) {
+                if (data['locked']) {
+                  this_button.html(UNLOCKED_TEXT);
+                  this_button.data("op", 'unlock');
+                  form.find('input[name=lock]').val('False')
+                } else {
+                  this_button.html(LOCKED_TEXT);
+                  this_button.data("op", 'lock');
+                  form.find('input[name=lock]').val('True')
+                }
+                this_button.removeAttr("disabled");
+              }
+          });
+
+    })
+
+
+  });
+</script>

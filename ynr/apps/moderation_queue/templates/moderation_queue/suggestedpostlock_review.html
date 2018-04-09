@@ -3,6 +3,7 @@
 {% block content %}
 <h1>Posts with lock suggestions</h1>
 
+{% include "moderation_queue/includes/ajax_lock_button_js.html" %}
 
 {% if other_suggestions %}
   <h2>Suggestions to review</h2>
