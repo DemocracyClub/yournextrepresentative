@@ -3,28 +3,31 @@
 {% regroup post_elections by officialdocument_set.first.source_url as post_elections_by_source %}
 
 {% for suggestions in post_elections_by_source %}
-{{ suggestions.list.0.officialdocument_set }}
-{% with suggestions.list.0.officialdocument_set.first as nomination_paper %}
-<h3>{{ nomination_paper.postextraelection.election.name }}</h3>
-
-<strong><a href="{{ nomination_paper.get_absolute_url }}">
-    View the nomination paper</a></strong>
-{% endwith %}
+<h3>{{ suggestions.list.0.election.name }}</h3>
 
 
 <p>
-  {% if suggestions.grouper %}
-  <a href="{{ suggestions.grouper }}">
+  {% if suggestions.list.0.officialdocument_set.exists %}
+    {% with suggestions.list.0.officialdocument_set.first as nomination_paper %}
+    <strong><a href="{{ nomination_paper.get_absolute_url }}">
+        View the nomination paper</a></strong>
+    {% endwith %}
   {% endif %}
 
-  Source: {{ suggestions.grouper|default_if_none:"No source" }}
+</p>
+<p>
   {% if suggestions.grouper %}
-  </a>
+
+    <a href="{{ suggestions.grouper }}">
+  {% endif %}
+
+    Source: {{ suggestions.grouper|default_if_none:"No source" }}
+  {% if suggestions.grouper %}
+    </a>
   {% endif %}
 </p>
 
 
-<h3>{{ suggestions.list.0.election.name }}</h3>
 {% for post_election in suggestions.list %}
       <h4>
           <a href="{{ post_election.get_absolute_url }}">
