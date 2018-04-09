@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import bleach
 import os
 import re
+import random
 
 from os.path import join
 from tempfile import NamedTemporaryFile
@@ -634,6 +635,24 @@ class SOPNReviewRequiredView(ListView):
     '''List all post that have a nominations paper, but no lock suggestion'''
 
     template_name = "moderation_queue/sopn-review-required.html"
+
+    def get(self, *args, **kwargs):
+        if 'random' in self.request.GET:
+            qs = self.get_queryset()
+            random_offset = random.randrange(qs.count())
+            pee = qs[random_offset]
+            url = reverse(
+                'bulk_add_from_sopn',
+                args=(
+                 pee.election.slug,
+                 pee.postextra.slug
+                )
+
+            )
+            return HttpResponseRedirect(url)
+        else:
+            return super(SOPNReviewRequiredView, self).get(*args, **kwargs)
+
 
     def get_queryset(self):
         """
