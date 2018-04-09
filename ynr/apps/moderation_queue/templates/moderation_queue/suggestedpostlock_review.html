@@ -7,13 +7,13 @@
 
 {% if other_suggestions %}
   <h2>Suggestions to review</h2>
-  {% include "moderation_queue/includes/lock_suggestions.html" with suggestions=other_suggestions show_lock_button=1%}
+  {% include "moderation_queue/includes/lock_suggestions.html" with post_elections=other_suggestions show_lock_button=1%}
 {% endif %}
 
 {% if my_suggestions %}
   <h2>My own lock suggestions</h2>
   <p>Someone else needs to review these:</p>
-  {% include "moderation_queue/includes/lock_suggestions.html" with suggestions=my_suggestions %}
+  {% include "moderation_queue/includes/lock_suggestions.html" with post_elections=my_suggestions %}
 
 {% endif %}
 

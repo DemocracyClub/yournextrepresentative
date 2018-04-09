@@ -15,7 +15,7 @@ from django.contrib import messages
 from django.core.files import File
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
-from django.db.models import F
+from django.db import models
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
@@ -34,7 +34,7 @@ from .models import QueuedImage, SuggestedPostLock, PHOTO_REVIEWERS_GROUP_NAME
 from candidates.management.images import (
     get_file_md5sum, ImageDownloadException, download_image_from_url)
 from candidates.models import (LoggedAction, ImageExtra,
-                               PersonExtra, PostExtraElection)
+                               PersonExtra, PostExtraElection, MembershipExtra)
 from candidates.views.version_data import get_client_ip, get_change_metadata
 
 from popolo.models import Person
@@ -588,19 +588,36 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
     template_name = "moderation_queue/suggestedpostlock_review.html"
 
     def get_lock_suggestions(self, mine):
-        qs = SuggestedPostLock.objects.filter(
-            postextraelection__candidates_locked=False
+
+        qs = PostExtraElection.objects.filter(
+            election__current=True,
+            candidates_locked=False,
+        ).exclude(
+            suggestedpostlock=None
         ).select_related(
-            'user',
-            'postextraelection__postextra__base',
-            'postextraelection__election'
+            'election',
+            'postextra',
+            'postextra__base',
         ).prefetch_related(
-            'postextraelection__officialdocument_set'
+            'officialdocument_set',
+            models.Prefetch(
+                'suggestedpostlock_set',
+                SuggestedPostLock.objects.select_related('user')
+            ),
+            models.Prefetch(
+                'membershipextra_set',
+                MembershipExtra.objects.select_related(
+                    'base__person__extra',
+                ).prefetch_related(
+                    'base__on_behalf_of'
+                )
+            )
         )
+
         if mine:
-            qs = qs.filter(user=self.request.user)
+            qs = qs.filter(suggestedpostlock__user=self.request.user)
         else:
-            qs = qs.exclude(user=self.request.user)
+            qs = qs.exclude(suggestedpostlock__user=self.request.user)
 
         return qs
 
