@@ -174,17 +174,18 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     user=self.request.user,
                     postextraelection=pee,
                 )
-        if self.remaining_posts_for_sopn().exists():
-            messages.add_message(
-                self.request,
-                messages.SUCCESS,
-                get_add_from_document_cta_flash_message(
-                    self.official_document,
-                    self.remaining_posts_for_sopn()
-                ),
-                extra_tags='safe do-something-else'
-            )
 
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            get_add_from_document_cta_flash_message(
+                self.official_document,
+                self.remaining_posts_for_sopn()
+            ),
+            extra_tags='safe do-something-else'
+        )
+
+        if self.remaining_posts_for_sopn().exists():
             url = reverse('posts_for_document', kwargs={
                 'pk': self.official_document.pk
             })
