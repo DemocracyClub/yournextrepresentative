@@ -55,3 +55,17 @@ class OfficialDocument(TimeStampedModel):
     @models.permalink
     def get_absolute_url(self):
         return ('uploaded_document_view', (), {'pk': self.pk})
+
+    @property
+    def locked(self):
+        """
+        Is this post election locked?
+        """
+        return self.post_election.candidates_locked
+
+    @property
+    def lock_suggested(self):
+        """
+        Is there a suggested lock for this document?
+        """
+        return self.post_election.suggestedpostlock_set.exists()
