@@ -6,15 +6,6 @@ function escapeID(originalID) {
   return originalID.replace( /(:|\.|\[|\]|,)/g, "\\$1" );
 }
 
-/* Get the element that should have its visibility changed to hide or show
-   a Select2. */
-
-function getSelect2Enclosure(selectElement) {
-  /* This assumes that there's a label that's a sibling of the
-   * Select2, and that they're the only elements in a containing
-   * element (the one that will be returned by this function) */
-  return selectElement.select2('container').parent();
-}
 
 /* Change the visibility of a Select2 widget; select2Element should be a
    jQuery-wrapped element */
@@ -23,15 +14,14 @@ function setSelect2Visibility(select2Element, visibility) {
   /* If visibility is false, this both disables the Select2 boxes and
    * hides them by hiding their enclosing element. Otherwise it
    * enables it and makes the enclosure visible. */
-  var enclosure = getSelect2Enclosure(select2Element);
   select2Element.prop(
     'disabled',
     !visibility
   );
   if (visibility) {
-    enclosure.show()
+    select2Element.show()
   } else {
-    enclosure.hide();
+    select2Element.hide();
   }
 }
 
