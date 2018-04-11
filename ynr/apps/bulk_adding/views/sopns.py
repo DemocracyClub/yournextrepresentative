@@ -40,7 +40,10 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
             context['election_obj'].postextraelection_set.get(
                 postextra=context['post_extra'])
         context['parties'] = context['post_extra'].party_set.party_choices(
-            exclude_deregistered=True, include_description_ids=True)
+            exclude_deregistered=True,
+            include_description_ids=True,
+            include_non_current=False
+        )
         context['official_document'] = OfficialDocument.objects.filter(
             post__extra__slug=context['post_id'],
             election__slug=context['election'],

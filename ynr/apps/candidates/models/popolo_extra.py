@@ -881,7 +881,7 @@ class PartySet(models.Model):
 
     def party_choices(self,
             include_descriptions=True, exclude_deregistered=False,
-            include_description_ids=False):
+            include_description_ids=False, include_non_current=True):
         # For various reasons, we've found it's best to order the
         # parties by those that have the most candidates - this means
         # that the commonest parties to select are at the top of the
@@ -900,6 +900,9 @@ class PartySet(models.Model):
                 membership_count=models.Count('memberships_on_behalf_of__pk')
             ).order_by('-membership_count', 'name').only('end_date', 'name')
 
+        if not include_non_current:
+            parties_current_qs = parties_current_qs.exclude(membership_count=0)
+
         parties_notcurrent_qs = self.parties.filter(
                 ~models.Q(
                     memberships_on_behalf_of__extra__election__current=True)
@@ -916,7 +919,8 @@ class PartySet(models.Model):
         queries = []
         if current_memberships.count() > minimum_count:
             queries.append(parties_current_qs)
-            queries.append(parties_notcurrent_qs)
+            if include_non_current:
+                queries.append(parties_notcurrent_qs)
         elif total_memberships.count() > minimum_count:
             queries.append(candidacies_ever_qs)
         else:

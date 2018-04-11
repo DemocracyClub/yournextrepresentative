@@ -160,7 +160,9 @@ class SelectPartyForm(forms.Form):
             self.fields["party_{}".format(ps.slug)] = forms.ChoiceField(
                 required=False,
                 choices=ps.party_choices(
-                    exclude_deregistered=True, include_descriptions=False),
+                    exclude_deregistered=True,
+                    include_descriptions=False,
+                    include_non_current=False),
                 widget=forms.Select(attrs={
                     'class': 'party-select',
                 }),
