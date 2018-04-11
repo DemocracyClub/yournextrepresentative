@@ -6,6 +6,8 @@ from haystack.query import SearchQuerySet
 from haystack.generic_views import SearchView
 from haystack.forms import SearchForm
 
+from popolo.models import Person
+
 
 def search_person_by_name(name, sqs=None):
     """
@@ -53,7 +55,7 @@ class PersonSearch(SearchView):
 
     def get(self, request, *args, **kwargs):
         ret = super(PersonSearch, self).get(request, *args, **kwargs)
-        context = self.get_context_data(**ret.context_data)
+        context = ret.context_data
 
         if context['looks_like_postcode']:
             if not context['object_list']:
@@ -70,4 +72,9 @@ class PersonSearch(SearchView):
     def get_context_data(self, **kwargs):
         context = super(PersonSearch, self).get_context_data(**kwargs)
         context['looks_like_postcode'] = is_valid_postcode(context['query'])
+        object_list = context['object_list']
+        actual_pks = Person.objects.filter(
+            pk__in=[r.pk for r in object_list]).values_list('pk', flat=True)
+        context['object_list'] = [
+            o for o in object_list if int(o.pk) in actual_pks]
         return context
