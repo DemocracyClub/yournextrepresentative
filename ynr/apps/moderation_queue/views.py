@@ -624,7 +624,7 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
         else:
             qs = qs.exclude(suggestedpostlock__user=self.request.user)
 
-        return qs
+        return qs[:200]
 
     def get_context_data(self, **kwargs):
         context = super(
