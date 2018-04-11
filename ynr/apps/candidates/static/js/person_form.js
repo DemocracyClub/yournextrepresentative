@@ -39,8 +39,19 @@ function setSelect2Visibility(select2Element, visibility) {
 
 function setUpPartySelect2s() {
   $('.party-select').not('.select2-offscreen').not('.select2-container')
-    .select2({width: '100%'});
+    .select2({
+        width: '100%',
+        placeholder: 'Select a party',
+        allowClear: true
+    });
 }
+
+$(document).on('focus', '.select2', function (e) {
+  if (e.originalEvent) {
+    $(this).siblings('select').select2('open');
+  }
+});
+
 
 /* Make all the post drop-downs into Select2 widgets */
 
