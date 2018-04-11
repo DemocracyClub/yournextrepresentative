@@ -1,24 +1,18 @@
 {% load humanize %}
 {% if SHOW_SOPN_TRACKER %}
-<style>
-.big_number {
-    font-size:3em;
-    text-align:center;
-    display:block;
-    font-weight:bold;
-}
-</style>
-<p><span class="big_number">{{ sopn_progress.posts_total|intcomma }}</span> areas in total</p>
 
-<h3><strong>{{ sopn_progress.sopns_imported|intcomma }}</strong> areas have SOPNs and are ready to verify</h3>
-<div class="radius progress success large-12" role="progressbar"
-    aria-valuenow="{{ sopn_progress.sopns_imported }}"
-    aria-valuemin="0" aria-valuemax="{{ sopn_progress.posts_total }}">
-  <span class="meter" style="width: {{ sopn_progress.sopns_imported_percent }}%"></span>
-</div>
-<a class="button" href="{% url "sopn-review-required" %}?random">Start verifying</a>
+<p>Out of {{ sopn_progress.posts_total|intcomma }} areas in total
+  {{ sopn_progress.sopns_imported|intcomma }}</strong> areas have SOPNs
+  imported.
+</p>
+{# <div class="radius progress success large-12" role="progressbar" #}
+{#     aria-valuenow="{{ sopn_progress.sopns_imported }}" #}
+{#     aria-valuemin="0" aria-valuemax="{{ sopn_progress.posts_total }}"> #}
+{#   <span class="meter" style="width: {{ sopn_progress.sopns_imported_percent }}%"></span> #}
+{# </div> #}
+<a class="button" href="{% url "sopn-review-required" %}?random">Start adding candidates</a>
 <br>or<br>
-<a class="button" href="{% url "sopn-review-required" %}">See the full list of SOPNs</a>
+<a class="button small" href="{% url "sopn-review-required" %}">See the full list of SOPNs</a>
 
 <h3><strong>{{ sopn_progress.posts_lock_suggested|intcomma }}</strong> areas have suggested locks</h3>
 <div class="radius progress success large-12" role="progressbar"
