@@ -243,7 +243,7 @@ PIPELINE = {
             'source_filenames': (
                 'candidates/style.scss',
                 'cached_counts/style.scss',
-                'select2/dist/css/select2.min.css',
+                'select2/dist/css/select2.css',
                 'jquery/jquery-ui.css',
                 'jquery/jquery-ui.structure.css',
                 'jquery/jquery-ui.theme.css',
@@ -288,7 +288,7 @@ PIPELINE = {
                 'foundation/js/foundation/foundation.interchange.js',
                 'foundation/js/foundation/foundation.abide.js',
                 'foundation/js/foundation/foundation.tab.js',
-                'select2/dist/js/select2.min.js',
+                'select2/dist/js/select2.js',
                 'js/constituency.js',
                 'js/person_form.js',
                 'js/home_geolocation_form.js',
