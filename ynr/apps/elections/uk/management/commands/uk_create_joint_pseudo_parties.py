@@ -46,7 +46,7 @@ def create_or_update_party(joint_party_name, sub_parties):
 
 
 joint_description_re = re.compile(
-    r'^(?P<joint_name>.*?) \([jJ]oint [dD]escriptions? with (?P<sub_party>.*)\)'
+    r'^(?P<joint_name>.*?) \([jJ]oint [dD]escriptions? with\s?(?P<sub_party>.*)\)'
 )
 
 
