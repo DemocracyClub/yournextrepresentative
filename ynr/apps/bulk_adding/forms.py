@@ -16,6 +16,9 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
         if 'parties' in kwargs:
             self.parties = kwargs['parties']
             del kwargs['parties']
+        if 'party_set' in kwargs:
+            self.party_set = kwargs['party_set']
+            del kwargs['party_set']
         if 'source' in kwargs:
             self.source = kwargs['source']
             del kwargs['source']
@@ -28,6 +31,8 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
                 choices=self.parties,
                 widget=forms.Select(attrs={
                     'class': 'party-select',
+                    'show_load_more': 1,
+                    'data-partyset': self.party_set.slug
                 }),
             )
 

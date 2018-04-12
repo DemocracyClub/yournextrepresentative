@@ -75,6 +75,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
 
         form_kwargs = {
             'parties': context['parties'],
+            'party_set': context['post_extra'].party_set,
         }
 
         if 'official_document' in context and \
