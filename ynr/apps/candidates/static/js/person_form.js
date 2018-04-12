@@ -29,7 +29,7 @@ function setSelect2Visibility(select2Element, visibility) {
 /* Make all the party drop-downs into Select2 widgets */
 
 function setUpPartySelect2s() {
-  $('.party-select').not('.select2-offscreen').not('.select2-container').each(function(i) {
+  $('select.party-select').not('.select2-offscreen').not('.select2-container').each(function(i) {
     var partySelect = $(this)
     var select_options = {
       width: '100%',
