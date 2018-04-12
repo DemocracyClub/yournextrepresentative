@@ -256,6 +256,11 @@ patterns_to_format = [
         'name': 'post-id-to-party-set'
     },
     {
+        'pattern': r'^all-parties.json$',
+        'view': cache_page(60*60)(views.AllPartiesJSONView.as_view()),
+        'name': 'all-parties-json-view'
+    },
+    {
         'pattern': r'^version.json',
         'view': views.VersionView.as_view(),
         'name': 'version'

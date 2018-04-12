@@ -14,8 +14,6 @@ function setSelect2Visibility(select2Element, visibility) {
   /* If visibility is false, this both disables the Select2 boxes and
    * hides them by hiding their enclosing element. Otherwise it
    * enables it and makes the enclosure visible. */
-  console.log(select2Element)
-  console.log(visibility)
   select2Element.prop(
     'disabled',
     !visibility
@@ -31,12 +29,68 @@ function setSelect2Visibility(select2Element, visibility) {
 /* Make all the party drop-downs into Select2 widgets */
 
 function setUpPartySelect2s() {
-  $('.party-select').not('.select2-offscreen').not('.select2-container')
-    .select2({
-        width: '100%',
-        placeholder: 'Select a party',
-        allowClear: true
-    });
+  $('.party-select').not('.select2-offscreen').not('.select2-container').each(function(i) {
+    var partySelect = $(this)
+    var select_options = {
+      width: '100%',
+      placeholder: 'Select a party',
+      allowClear: true
+    }
+
+    if (partySelect.attr('show_load_more')) {
+      var data = {
+          id: 0,
+          text: 'Click to load more parties…'
+      };
+      var loadMoreOption = new Option(data.text, data.id, false, false);
+      partySelect.append(loadMoreOption)
+
+      select_options.matcher = function(params, data) {
+        var match = partySelect.select2.defaults.defaults.matcher(params, data);
+        if (match) {
+          return match;
+        }
+        if (data.id === "0") {
+          return data;
+        } else {
+          return null
+        }
+      }
+      partySelect.on('select2:select', function (e) {
+          var data = e.params.data;
+          if (data.id == 0) {
+            var initial_val = partySelect.val();
+            var partyset = $(this).data('partyset');
+            // partySelect.find('option[value="0"]').text('Loading…');
+            data.text = "Loading…"
+            partySelect.trigger('change.select2');
+
+            $.getJSON('/all-parties.json?partyset=' + partyset, function(items) {
+              $.each(items['items'], function(party_id, descs) {
+                var group = $('<optgroup label="' + descs['text'] + '" />');
+                if (descs['children']) {
+                  $.each(descs['children'], function(child) {
+                    $('<option value="'+this.id+'"/>').html(this.text).appendTo(group);
+                  });
+
+                  group.appendTo(partySelect);
+                }
+              });
+              partySelect.find('option[value="0"]').remove();
+              partySelect.select2('open');
+            });
+
+
+
+
+
+          }
+      });
+
+    }
+
+    partySelect.select2(select_options);
+  });
 }
 
 $(document).on('focus', '.select2', function (e) {
@@ -57,11 +111,20 @@ function setUpPostSelect2s() {
      * Select2 box; also, don't try to reinitialize a select that's
      * already a Select2 */
     if (!(hidden || $(postSelect).data('select2'))) {
-      postSelect.select2({
+        var select_config = {
         placeholder: 'Post',
         allowClear: true,
         width: '100%'
-      });
+      }
+      if (postSelect.prop('show_load_more')) {
+          var load_more_option = {
+              id: 0,
+              text: 'Load more parties…'
+          }
+          postSelect.append(load_more_option)
+          // select_config.
+      }
+      postSelect.select2(select_config);
     }
     postSelect.on('change', function (e) {
       updateFields();
