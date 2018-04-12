@@ -14,14 +14,17 @@ function setSelect2Visibility(select2Element, visibility) {
   /* If visibility is false, this both disables the Select2 boxes and
    * hides them by hiding their enclosing element. Otherwise it
    * enables it and makes the enclosure visible. */
+  console.log(select2Element)
+  console.log(visibility)
   select2Element.prop(
     'disabled',
     !visibility
   );
+
   if (visibility) {
-    select2Element.show()
+    select2Element.parent().show()
   } else {
-    select2Element.hide();
+    select2Element.parent().hide();
   }
 }
 
