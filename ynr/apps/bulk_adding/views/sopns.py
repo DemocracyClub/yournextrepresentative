@@ -39,10 +39,15 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         context['post_election'] = \
             context['election_obj'].postextraelection_set.get(
                 postextra=context['post_extra'])
+        kwargs = {
+            'exclude_deregistered': True,
+            'include_description_ids': True,
+
+        }
+        if not self.request.POST:
+            kwargs['include_non_current'] = False
         context['parties'] = context['post_extra'].party_set.party_choices(
-            exclude_deregistered=True,
-            include_description_ids=True,
-            include_non_current=False
+            **kwargs
         )
         context['official_document'] = OfficialDocument.objects.filter(
             post__extra__slug=context['post_id'],
@@ -140,7 +145,8 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
 
         if self.request.POST:
             context['formset'] = forms.BulkAddReviewFormSet(
-                self.request.POST, parties=context['parties']
+                self.request.POST,
+                parties=context['parties']
             )
         else:
             context['formset'] = forms.BulkAddReviewFormSet(
