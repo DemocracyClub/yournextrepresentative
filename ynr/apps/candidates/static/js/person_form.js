@@ -221,8 +221,9 @@ function showElectionsForm() {
     })
     $('#add_more_elections').select2({
       data: select_data,
-    }).on('change', function(e) {
-      var url = window.location.pathname + '/single_election_form/' + e.val;
+    }).on('select2:select', function(e) {
+      var data = e.params.data;
+      var url = window.location.pathname + '/single_election_form/' + data.id;
       $.get(url, function(data) {
         $('.extra_elections_forms').html(data);
         setUpStandingCheckbox();
