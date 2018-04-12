@@ -288,7 +288,7 @@ PIPELINE = {
                 'foundation/js/foundation/foundation.interchange.js',
                 'foundation/js/foundation/foundation.abide.js',
                 'foundation/js/foundation/foundation.tab.js',
-                'select2/dist/js/select2.js',
+                'select2/dist/js/select2.full.js',
                 'js/constituency.js',
                 'js/person_form.js',
                 'js/home_geolocation_form.js',
