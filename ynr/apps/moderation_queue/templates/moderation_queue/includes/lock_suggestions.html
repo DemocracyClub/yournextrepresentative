@@ -53,6 +53,7 @@
         <div class="large-5 columns">
           {% if post_election.membershipextra_set.exists %}
           <table>
+            <caption><strong>{{ post_election.membershipextra_set.count }} people</strong></caption>
             <thead>
               <tr>
                 <th>Name</th>
