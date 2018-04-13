@@ -8,6 +8,13 @@
   We know it doesn't work in all cases, but it makes reviewing quicker in the simple cases.
 </p>
 <a class="button tiny" href="?pdfembed=1">Embed PDFs</a>
+{% else %}
+<style>
+  .content .container {
+    max-width:100% !important;
+    width:90em !important;
+  }
+</style>
 {% endif %}
 
 {% include "moderation_queue/includes/ajax_lock_button_js.html" %}
