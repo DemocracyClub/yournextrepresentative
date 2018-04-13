@@ -108,21 +108,25 @@
 
                   // Prepare canvas using PDF page dimensions
                   var canvas = document.getElementById('the-canvas-{{ post_election.postextra.pk }}');
-                  var context = canvas.getContext('2d');
-                  canvas.height = viewport.height;
-                  canvas.width = viewport.width;
-                  // Render PDF page into canvas context
-                  var renderContext = {
-                    canvasContext: context,
-                    viewport: viewport
-                  };
+                  if (canvas.getAttribute('data')!='loaded') {
+                    canvas.setAttribute('data', 'loaded')
+                    var context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    // Render PDF page into canvas context
+                    var renderContext = {
+                      canvasContext: context,
+                      viewport: viewport
+                    };
 
-                  var renderTask = page.render(renderContext);
-                  renderTask.then(function () {
-                    console.log('Page rendered');
-                  });
+                    var renderTask = page.render(renderContext);
+                    renderTask.then(function () {
+                      console.log('Page rendered');
+                    });
 
+                  }
 
+                  // Break on the first page found with the text
               } else {
 
               }
