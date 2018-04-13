@@ -101,7 +101,7 @@
                     txtadd = page_text.items[i].str
                     txt += txtadd.replace(/[^a-zA-Z0-9:;,.?!-() ]/g,'');
                 }
-                if (txt.toLowerCase().indexOf(ward_name_{{ post_election.postextra.pk }}.toLowerCase()) !== -1) {
+                if (txt.toLowerCase().indexOf(' ' + ward_name_{{ post_election.postextra.pk }}.toLowerCase() + ' ') !== -1) {
 
                   var scale = 1.2;
                   var viewport = page.getViewport(scale);
