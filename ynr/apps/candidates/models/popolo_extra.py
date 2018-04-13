@@ -383,8 +383,10 @@ class PersonExtra(HasImageMixin, models.Model):
 
     @property
     def last_name_guess(self):
-        print(self.base.name.split(' ')[-1])
-        return self.base.name.split(' ')[-1]
+        try:
+            return self.base.name.strip().split(' ')[-1]
+        except:
+            return self.base.name
 
     def get_absolute_url(self, request=None):
         path = reverse(
