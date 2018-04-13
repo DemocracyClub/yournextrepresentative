@@ -15,13 +15,22 @@ class ContributorsMixin(object):
     def get_leaderboards(self, all_time=True):
         result = []
         boards = [
-            (_('In the last week'), timezone.now() - timedelta(days=7))
+            (
+                _('In the last week'),
+                timezone.now() - timedelta(days=7),
+                timezone.now()
+            ),
+            (
+                _('2018 local elections'),
+                "2018-03-01",
+                "2018-05-03",
+            )
         ]
         if all_time:
-            boards.insert(0, (_('All Time'), None))
+            boards.insert(0, (_('All Time'), None, None))
 
 
-        for title, since in boards:
+        for title, since, until in boards:
             interesting_actions=LoggedAction.objects.exclude(
                 action_type='set-candidate-not-elected'
             )
@@ -30,6 +39,9 @@ class ContributorsMixin(object):
                 qs = interesting_actions.filter(created__gt=since)
             else:
                 qs = interesting_actions
+
+            if until:
+                qs = qs.filter(created__lt=until)
 
             rows = qs.annotate(
                     username=F('user__username')
