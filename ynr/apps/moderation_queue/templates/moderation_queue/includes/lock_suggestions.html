@@ -89,48 +89,52 @@
         loadingTask.promise.then(function(pdf) {
           console.log('PDF loaded');
 
-          // Fetch the first page
-          var pageNumber = 1;
-          pdf.getPage(pageNumber).then(function(page, foo) {
-            var text_content = page.getTextContent()
-            text_content.then(function(page_text) {
-              var txt = "";
-              for(var i=0;i<page_text.items.length;i++){
-                  txtadd = page_text.items[i].str
-                  txt += txtadd.replace(/[^a-zA-Z0-9:;,.?!-() ]/g,'');
-              }
-              console.log(txt)
-              if (txt.toLowerCase().indexOf(ward_name_{{ post_election.postextra.pk }}.toLowerCase()) !== -1) {
-                console.log("MATCH")
+          var maxPages = pdf.pdfInfo.numPages;
 
-                var scale = 1.1;
-                var viewport = page.getViewport(scale);
+          for (var j = 1; j <= maxPages; j++) {
 
-                // Prepare canvas using PDF page dimensions
-                var canvas = document.getElementById('the-canvas-{{ post_election.postextra.pk }}');
-                console.log(canvas)
-                var context = canvas.getContext('2d');
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                // Render PDF page into canvas context
-                var renderContext = {
-                  canvasContext: context,
-                  viewport: viewport
-                };
+            pdf.getPage(j).then(function(page) {
+              page.text_content = page.getTextContent()
+              page.text_content.then(function(page_text) {
+                var txt = "";
+                for(var i=0;i<page_text.items.length;i++){
+                    txtadd = page_text.items[i].str
+                    txt += txtadd.replace(/[^a-zA-Z0-9:;,.?!-() ]/g,'');
+                }
+                if (txt.toLowerCase().indexOf(ward_name_{{ post_election.postextra.pk }}.toLowerCase()) !== -1) {
 
-                var renderTask = page.render(renderContext);
-                renderTask.then(function () {
-                  console.log('Page rendered');
-                });
+                  var scale = 1.2;
+                  var viewport = page.getViewport(scale);
+
+                  // Prepare canvas using PDF page dimensions
+                  var canvas = document.getElementById('the-canvas-{{ post_election.postextra.pk }}');
+                  var context = canvas.getContext('2d');
+                  canvas.height = viewport.height;
+                  canvas.width = viewport.width;
+                  // Render PDF page into canvas context
+                  var renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                  };
+
+                  var renderTask = page.render(renderContext);
+                  renderTask.then(function () {
+                    console.log('Page rendered');
+                  });
 
 
               } else {
-                console.log(ward_name_{{ post_election.postextra.pk }})
+
               }
             })
 
 
           });
+
+
+        }
+
+
         }, function (reason) {
           // PDF loading error
           console.error(reason);
