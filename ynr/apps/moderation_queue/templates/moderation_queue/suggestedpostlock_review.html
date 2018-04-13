@@ -2,6 +2,13 @@
 
 {% block content %}
 <h1>Posts with lock suggestions</h1>
+{% if not test_pdf_view %}
+<p>
+  <strong>New!</strong>: Try out an experimental feature of putting PDFs alongside the tables.
+  We know it doesn't work in all cases, but it makes reviewing quicker in the simple cases.
+</p>
+<a class="button tiny" href="?pdfembed=1">Embed PDFs</a>
+{% endif %}
 
 {% include "moderation_queue/includes/ajax_lock_button_js.html" %}
 
