@@ -67,14 +67,15 @@ function setUpPartySelect2s() {
 
             $.getJSON('/all-parties.json?partyset=' + partyset, function(items) {
               $.each(items['items'], function(party_id, descs) {
-                var group = $('<optgroup label="' + descs['text'] + '" />');
+                var group = $('<optgroup label="' + descs.text + '" />');
                 if (descs['children']) {
                   $.each(descs['children'], function(child) {
                     $('<option value="'+this.id+'"/>').html(this.text).appendTo(group);
                   });
-
-                  group.appendTo(partySelect);
+                } else {
+                    $('<option value="'+descs.id+'"/>').html(descs.text).appendTo(group);
                 }
+                group.appendTo(partySelect);
               });
               partySelect.find('option[value="0"]').remove();
               partySelect.select2('open');
