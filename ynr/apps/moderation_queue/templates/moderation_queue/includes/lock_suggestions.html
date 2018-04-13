@@ -1,7 +1,7 @@
 <p>Suggestions are grouped by nomination paper</p>
 
 {% regroup post_elections by officialdocument_set.first.source_url as post_elections_by_source %}
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.489/pdf.min.js" integrity="sha256-oZZ43I3ygV6OgXOlMWVGEpkMfIAjS8Y7mBz9z2h9E2A=" crossorigin="anonymous"></script>
 {% for suggestions in post_elections_by_source %}
 <h3>{{ suggestions.list.0.election.name }}</h3>
 
@@ -27,7 +27,6 @@
   {% endif %}
 </p>
 
-
 {% for post_election in suggestions.list %}
       <h4>
           <a href="{{ post_election.get_absolute_url }}">
@@ -45,25 +44,98 @@
         {% include "moderation_queue/includes/ajax_lock_button_html.html" with postextraelection=post_election %}
       {% endif %}
 
-      {% if post_election.membershipextra_set.exists %}
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Party</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for membership in post_election.membershipextra_set.all|dictsort:"base.person.extra.last_name_guess"%}
-          <tr>
-            <td><a href="{{ membership.base.person.extra.get_absolute_url }}">{{ membership.base.person.name }}</a></td>
-            <td>{{ membership.base.on_behalf_of }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% endif %}
 
+
+
+
+
+      <div class="row" style="display:flex; align-items:center;">
+        <div class="large-5 columns">
+          {% if post_election.membershipextra_set.exists %}
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Party</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for membership in post_election.membershipextra_set.all|dictsort:"base.person.extra.last_name_guess"%}
+              <tr>
+                <td><a href="{{ membership.base.person.extra.get_absolute_url }}">{{ membership.base.person.name }}</a></td>
+                <td>{{ membership.base.on_behalf_of }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+        </div>
+        <div class="large-7 columns">
+          {% if test_pdf_view %}
+          <canvas id="the-canvas-{{ post_election.postextra.pk }}" style="max-width:100%"></canvas>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if test_pdf_view %}
+
+
+
+      <script>
+        var url = '{{ suggestions.list.0.officialdocument_set.first.uploaded_file.url }}';
+        var ward_name_{{ post_election.postextra.pk }} = '{{ post_election.postextra.short_label }}'
+        var loadingTask = pdfjsLib.getDocument(url);
+        loadingTask.promise.then(function(pdf) {
+          console.log('PDF loaded');
+
+          // Fetch the first page
+          var pageNumber = 1;
+          pdf.getPage(pageNumber).then(function(page, foo) {
+            var text_content = page.getTextContent()
+            text_content.then(function(page_text) {
+              var txt = "";
+              for(var i=0;i<page_text.items.length;i++){
+                  txtadd = page_text.items[i].str
+                  txt += txtadd.replace(/[^a-zA-Z0-9:;,.?!-() ]/g,'');
+              }
+              console.log(txt)
+              if (txt.toLowerCase().indexOf(ward_name_{{ post_election.postextra.pk }}.toLowerCase()) !== -1) {
+                console.log("MATCH")
+
+                var scale = 1.1;
+                var viewport = page.getViewport(scale);
+
+                // Prepare canvas using PDF page dimensions
+                var canvas = document.getElementById('the-canvas-{{ post_election.postextra.pk }}');
+                console.log(canvas)
+                var context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                // Render PDF page into canvas context
+                var renderContext = {
+                  canvasContext: context,
+                  viewport: viewport
+                };
+
+                var renderTask = page.render(renderContext);
+                renderTask.then(function () {
+                  console.log('Page rendered');
+                });
+
+
+              } else {
+                console.log(ward_name_{{ post_election.postextra.pk }})
+              }
+            })
+
+
+          });
+        }, function (reason) {
+          // PDF loading error
+          console.error(reason);
+        });
+      </script>
+      {% endif %}
 
 
 {% endfor %}

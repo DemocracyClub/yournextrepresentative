@@ -624,13 +624,14 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
         else:
             qs = qs.exclude(suggestedpostlock__user=self.request.user)
 
-        return qs[:200]
+        return qs[:10]
 
     def get_context_data(self, **kwargs):
         context = super(
             SuggestLockReviewListView, self).get_context_data(**kwargs)
         context['my_suggestions'] = self.get_lock_suggestions(mine=True)
         context['other_suggestions'] = self.get_lock_suggestions(mine=False)
+        context['test_pdf_view'] = bool(self.request.GET.get('pdfembed'))
 
         return context
 
