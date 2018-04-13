@@ -2,6 +2,8 @@
 
 {% regroup post_elections by officialdocument_set.first.source_url as post_elections_by_source %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.489/pdf.min.js" integrity="sha256-oZZ43I3ygV6OgXOlMWVGEpkMfIAjS8Y7mBz9z2h9E2A=" crossorigin="anonymous"></script>
+
+
 {% for suggestions in post_elections_by_source %}
 <h3>{{ suggestions.list.0.election.name }}</h3>
 
@@ -17,11 +19,9 @@
 </p>
 <p>
   {% if suggestions.grouper %}
-
     <a href="{{ suggestions.grouper }}">
   {% endif %}
-
-    Source: {{ suggestions.grouper|default_if_none:"No source" }}
+  Source: {{ suggestions.grouper|default_if_none:"No source" }}
   {% if suggestions.grouper %}
     </a>
   {% endif %}
