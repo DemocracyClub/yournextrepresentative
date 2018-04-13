@@ -24,7 +24,7 @@
             </div>
             {% if choice.choice_value != '_new' %}
             <div>
-                Mark <a href="{% url 'person-view' choice.choice_value %}" target="_blank">
+                Set <a href="{% url 'person-view' choice.choice_value %}" target="_blank">
                 {{ choice.choice_label }}</a> as standing in {{ election_obj.name }}: {{ post_extra.base.label }}
             </div>
             {% else %}
