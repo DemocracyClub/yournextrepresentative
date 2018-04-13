@@ -54,7 +54,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for membership in post_election.membershipextra_set.all %}
+          {% for membership in post_election.membershipextra_set.all|dictsort:"base.person.extra.last_name_guess"%}
           <tr>
             <td><a href="{{ membership.base.person.extra.get_absolute_url }}">{{ membership.base.person.name }}</a></td>
             <td>{{ membership.base.on_behalf_of }}</td>

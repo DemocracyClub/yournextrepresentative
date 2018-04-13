@@ -381,6 +381,11 @@ class PersonExtra(HasImageMixin, models.Model):
     def get_slug(self):
         return slugify(self.base.name)
 
+    @property
+    def last_name_guess(self):
+        print(self.base.name.split(' ')[-1])
+        return self.base.name.split(' ')[-1]
+
     def get_absolute_url(self, request=None):
         path = reverse(
             'person-view',
