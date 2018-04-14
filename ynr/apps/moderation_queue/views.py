@@ -594,7 +594,8 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
             election__current=True,
             candidates_locked=False,
         ).exclude(
-            suggestedpostlock=None
+            suggestedpostlock=None,
+            officialdocument=None
         ).select_related(
             'election',
             'postextra',
@@ -643,20 +644,20 @@ class SOPNReviewRequiredView(ListView):
 
     def get(self, *args, **kwargs):
         if 'random' in self.request.GET:
-            qs = self.get_queryset()
-            random_offset = random.randrange(qs.count())
-            pee = qs[random_offset]
-            url = reverse(
-                'bulk_add_from_sopn',
-                args=(
-                 pee.election.slug,
-                 pee.postextra.slug
-                )
+            count = self.get_queryset().count()
+            if count:
+                random_offset = random.randrange(count)
+                pee = qs[random_offset]
+                url = reverse(
+                    'bulk_add_from_sopn',
+                    args=(
+                     pee.election.slug,
+                     pee.postextra.slug
+                    )
 
-            )
-            return HttpResponseRedirect(url)
-        else:
-            return super(SOPNReviewRequiredView, self).get(*args, **kwargs)
+                )
+                return HttpResponseRedirect(url)
+        return super(SOPNReviewRequiredView, self).get(*args, **kwargs)
 
 
     def get_queryset(self):

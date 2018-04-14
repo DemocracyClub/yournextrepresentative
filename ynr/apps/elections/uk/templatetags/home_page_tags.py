@@ -26,9 +26,8 @@ def sopn_progress_by_election(election_qs):
     pee_qs = PostExtraElection.objects.filter(election__in=election_qs)
     context['posts_total'] = pee_qs.count()
 
-    context['sopns_imported'] = pee_qs.filter(
-        postextra__base__officialdocument__election=F('election'),
-    ).count()
+    context['sopns_imported'] = pee_qs.exclude(
+        officialdocument=None).count()
     context['sopns_imported_percent'] = round(
         float(context['sopns_imported']) /
         float(context['posts_total'])
