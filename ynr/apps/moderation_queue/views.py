@@ -644,7 +644,8 @@ class SOPNReviewRequiredView(ListView):
 
     def get(self, *args, **kwargs):
         if 'random' in self.request.GET:
-            count = self.get_queryset().count()
+            qs = self.get_queryset()
+            count = qs.count()
             if count:
                 random_offset = random.randrange(count)
                 pee = qs[random_offset]
