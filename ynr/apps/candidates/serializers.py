@@ -265,7 +265,14 @@ class MembershipSerializer(serializers.HyperlinkedModelSerializer):
 class PostElectionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = candidates_models.PostExtraElection
-        fields = ('id', 'url', 'post', 'election', 'winner_count')
+        fields = (
+            'id',
+            'url',
+            'post',
+            'election',
+            'winner_count',
+            'ballot_paper_id',
+        )
     post = MinimalPostExtraSerializer(
         read_only=True, source='postextra'
     )
@@ -366,6 +373,7 @@ class EmbeddedPostElectionSerializer(serializers.HyperlinkedModelSerializer):
             'name',
             'id',
             'url',
+            'ballot_paper_id',
         )
     name = serializers.ReadOnlyField(source="election.name")
     id = serializers.ReadOnlyField(source="election.slug")
