@@ -1,10 +1,10 @@
 import random
 
 from django import template
-from django.db.models import F
+from django.db.models import F, Sum
 from django.conf import settings
 
-from candidates.models import PostExtraElection
+from candidates.models import PostExtraElection, MembershipExtra
 from elections.models import Election
 from uk_results.models import CouncilElection
 from tasks.models import PersonTask
@@ -90,4 +90,31 @@ def person_tasks(context):
             PersonTask.objects.unfinished_tasks()[random_offset]
     else:
         person_task = None
+    return context
+
+
+@register.inclusion_tag('includes/election_stats.html',
+                        takes_context=True)
+def current_election_stats(context):
+    context['SHOW_ELECTION_STATS'] = getattr(
+        settings, 'SHOW_ELECTION_STATS', False)
+
+    if context['SHOW_ELECTION_STATS']:
+        context['election_name'] \
+            = settings.SOPN_TRACKER_INFO['election_name']
+        election_qs = Election.objects.filter(
+            election_date=settings.SOPN_TRACKER_INFO['election_date'])
+
+        stats = {
+            'elections': election_qs.count(),
+            'seats_contested': PostExtraElection.objects.filter(
+                election__in=election_qs
+            ).aggregate(
+                count=Sum('winner_count')
+            )['count'],
+            'candidates': MembershipExtra.objects.filter(
+                post_election__election__in=election_qs).count(),
+        }
+        context['elction_stats'] = stats
+
     return context

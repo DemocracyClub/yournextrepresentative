@@ -59,6 +59,7 @@
     {#   <span class="meter" style="width: {{ votes_percent }}%"></span> #}
     {# </div> #}
     {% sopn_import_progress %}
+    {% current_election_stats %}
   </div>
 
 </div>
@@ -67,12 +68,12 @@
 <div class="finder__forms" style="margin-top:-2em">
   <div class="finder__forms__container" style="top:0">
 
+    {% person_tasks %}
+    <h4>or</h4>
     <form id="form-postcode" action="{% url 'person-search' %}" method="get" {% if show_name_form %}style="display: none"{% endif %}>
       {{ postcode_form.as_p }}
       <input type="submit" class="button" value="Help get data!" />
     </form>
-    <h4>or</h4>
-    {% person_tasks %}
   </div>
 
 </div>
