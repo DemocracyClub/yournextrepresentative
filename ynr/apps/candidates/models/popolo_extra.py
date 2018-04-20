@@ -776,6 +776,12 @@ class OrganizationExtra(HasImageMixin, models.Model):
         # has been select_related.
         return self.base.name
 
+    def ec_id(self):
+        party_id = self.base.identifiers.filter(
+            scheme="electoral-commission").first()
+        return party_id.identifier
+
+
 
 @python_2_unicode_compatible
 class PostExtra(HasImageMixin, models.Model):

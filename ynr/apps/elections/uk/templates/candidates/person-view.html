@@ -273,6 +273,15 @@
     {% endif %}
   </div>
 
+
+  <div class="person__actions__action">
+    <h2>Add Party info</h2>
+    <p>Know something about {{ person.name }}'s local party?</p>
+    <p><a class="button" href="https://docs.google.com/forms/d/e/1FAIpQLSefxjlpi4UVK38CUGKZmZM3zjJO7hJfI58wSX6VZ0ifA54GAQ/viewform?usp=pp_url&entry.166120474={{ last_candidacy.extra.post_election.election.slug }}&entry.339427281={{ last_candidacy.on_behalf_of.extra.ec_id }}">
+      Add it here
+    </a></p>
+  </div>
+
   <div class="person__actions__action person__actions__data">
     <h2>{% trans "Use this data!" %}</h2>
     <p>{% trans "Open data JSON API:" %}</p>
