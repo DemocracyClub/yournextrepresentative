@@ -777,9 +777,12 @@ class OrganizationExtra(HasImageMixin, models.Model):
         return self.base.name
 
     def ec_id(self):
-        party_id = self.base.identifiers.filter(
-            scheme="electoral-commission").first()
-        return party_id.identifier
+        try:
+            party_id = self.base.identifiers.filter(
+                scheme="electoral-commission").first()
+            return party_id.identifier
+        except:
+            return "ynmp-party:2"
 
 
 
