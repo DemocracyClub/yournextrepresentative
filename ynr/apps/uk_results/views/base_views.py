@@ -1,11 +1,4 @@
-import json
-
-from django.views.generic import TemplateView, View
-from django.http import HttpResponse
-from django.db.models import Count
-
-from elections.models import Election
-
+from django.views.generic import TemplateView
 
 
 class ResultsHomeView(TemplateView):
@@ -19,4 +12,3 @@ class ResultsHomeView(TemplateView):
 
     def test_func(self, user):
         return True
-

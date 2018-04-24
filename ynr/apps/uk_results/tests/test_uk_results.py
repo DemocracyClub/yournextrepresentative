@@ -1,16 +1,11 @@
 from __future__ import print_function, unicode_literals
 
-from mock import patch
-
 from django.test import TestCase
 
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import (
-    CandidacyExtraFactory, PersonExtraFactory)
+from candidates.tests.factories import (CandidacyExtraFactory,
+                                        PersonExtraFactory)
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-
-from results.models import ResultEvent
-
 from uk_results.models import CandidateResult, ResultSet
 
 

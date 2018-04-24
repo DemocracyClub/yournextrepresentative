@@ -1,2 +1,2 @@
-from .base_views import *
-from .api import *
+from .base_views import *  # noqa
+from .api import *  # noqa

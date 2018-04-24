@@ -1,6 +1,7 @@
 import re
-from django.template import Library, Node, TemplateSyntaxError
+
 from django.http import QueryDict
+from django.template import Library, Node, TemplateSyntaxError
 from django.utils.encoding import smart_str
 
 register = Library()

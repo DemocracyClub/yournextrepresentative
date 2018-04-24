@@ -1,5 +1,6 @@
 from django.conf import settings
 
+
 def show_results_feature(request):
     in_group = request.user.groups.filter(
         name='Trusted to confirm control results').exists()

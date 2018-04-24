@@ -2,11 +2,9 @@ from __future__ import unicode_literals
 
 from rest_framework import serializers
 
-from .models import ResultSet, CandidateResult
+from candidates.serializers import MembershipSerializer
 
-from candidates.serializers import (
-    MembershipSerializer, EmbeddedPostElectionSerializer
-)
+from .models import CandidateResult, ResultSet
 
 
 class CandidateResultSerializer(serializers.HyperlinkedModelSerializer):
@@ -38,4 +36,3 @@ class ResultSetSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
     user_id = serializers.ReadOnlyField(source='user.id')
     candidate_results = CandidateResultSerializer(many=True, read_only=True)
-

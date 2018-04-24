@@ -1,19 +1,9 @@
-from rest_framework import serializers, viewsets, filters
+from rest_framework import filters, viewsets
 
-from django.db.models import Prefetch
-
-import django_filters
-from django_filters.widgets import BooleanWidget
-
-from candidates.serializers import OrganizationExtraSerializer
 from candidates.views import ResultsSetPagination
 
-from ..serializers import (
-    CandidateResultSerializer, ResultSetSerializer
-)
-from ..models import (
-    CandidateResult, ResultSet,
-)
+from ..models import CandidateResult, ResultSet
+from ..serializers import CandidateResultSerializer, ResultSetSerializer
 
 
 class CandidateResultViewSet(viewsets.ModelViewSet):
