@@ -12,36 +12,6 @@ urlpatterns = [
         name='results-home'
     ),
 
-
-    # Control
-    url(
-        r'^councils$',
-        views.CouncilsWithElections.as_view(),
-        name='councils-with-elections'
-    ),
-    url(
-        r'^(?P<election_id>.*\d\d\d\d-\d\d-\d\d)$',
-        views.CouncilElectionView.as_view(),
-        name='council-election-view'
-    ),
-    url(
-        r'^(?P<election_id>[^/]+)/report$',
-        views.ReportCouncilElectionView.as_view(),
-        name='report-council-election-view'
-    ),
-    url(
-        r'^latest_control$',
-        views.LatestControlResults.as_view(),
-        name='latest-control-view'
-    ),
-    url(
-        r'^review_control/(?P<pk>[^/]+)$',
-        views.ConfirmControl.as_view(),
-        name='review-control-view'
-    ),
-
-
-
     # Votes
     url(
         r'^posts/(?P<post_election_id>[\d]+)/$',

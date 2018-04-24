@@ -12,68 +12,8 @@ from candidates.models import LoggedAction, PostExtraElection
 
 from results.models import ResultEvent
 
-from .models import CouncilElectionResultSet, ResultSet
+from .models import ResultSet
 from .constants import CONFIRMED_STATUS
-
-
-class ReportCouncilElectionControlForm(forms.ModelForm):
-    class Meta:
-        model = CouncilElectionResultSet
-        fields = [
-            'council_election',
-            'controller',
-            'noc',
-            'source',
-        ]
-        widgets = {
-            'council_election': forms.HiddenInput(),
-            'source': forms.Textarea(
-                attrs={'rows': 1, 'columns': 72}
-            )
-        }
-
-    def __init__(self, council_election, *args, **kwargs):
-        super(ReportCouncilElectionControlForm, self).__init__(*args, **kwargs)
-        self.fields['controller'].choices = \
-            council_election.party_set.party_choices(include_descriptions=False)
-        self.fields['controller'].label = "Controlling party"
-        self.fields['noc'].label = "No overall control"
-        self.fields['council_election'].initial = council_election.pk
-
-
-    controller = forms.ChoiceField(
-        choices=[],
-        widget=forms.Select(attrs={
-            'class': 'party-select',
-        }),
-        required=False
-    )
-
-    def clean(self, **kwargs):
-        if not any(
-                (self.cleaned_data['controller'], self.cleaned_data['noc'])):
-            raise forms.ValidationError(
-                'Please select a party or check "No overall control"')
-        if self.cleaned_data.get('controller'):
-            self.cleaned_data['controller'] = \
-                Organization.objects.get(pk=self.cleaned_data['controller'])
-        return self.cleaned_data
-
-
-class ReviewControlForm(forms.ModelForm):
-    class Meta:
-        model = CouncilElectionResultSet
-        fields = [
-            'review_status',
-            'reviewed_by',
-            'review_source',
-        ]
-        widgets = {
-            'reviewed_by': forms.HiddenInput(),
-            'review_source': forms.Textarea(
-                attrs={'rows': 1, 'columns': 72}
-            )
-        }
 
 
 def mark_candidates_as_winner(request, instance):

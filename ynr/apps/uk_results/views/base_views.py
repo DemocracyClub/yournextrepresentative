@@ -6,7 +6,6 @@ from django.db.models import Count
 
 from elections.models import Election
 
-from ..models import ElectionArea
 from ..constants import RESULTS_DATE
 from .base import BaseResultsViewMixin
 
@@ -16,24 +15,6 @@ class ResultsHomeView(BaseResultsViewMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ResultsHomeView, self).get_context_data(**kwargs)
-        from uk_results.models import CouncilElection
-
-
-        ec_qs = CouncilElection.objects.filter(
-            election__election_date=RESULTS_DATE)
-        ec_qs = ec_qs.annotate(
-            post_count=Count('election__postextraelection__postextra')
-            ).filter(post_count__gt=4)
-
-        context['council_total'] = ec_qs.count()
-        context['council_confirmed'] = ec_qs.filter(
-            confirmed=True).count()
-
-        context['council_election_percent'] = round(
-            float(context['council_confirmed']) /
-            float(context['council_total'])
-            * 100)
-
 
         from candidates.models import PostExtraElection
         from uk_results.models import PostElectionResult
