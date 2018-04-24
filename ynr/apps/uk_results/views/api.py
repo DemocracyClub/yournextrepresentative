@@ -9,10 +9,10 @@ from candidates.serializers import OrganizationExtraSerializer
 from candidates.views import ResultsSetPagination
 
 from ..serializers import (
-    CandidateResultSerializer, PostElectionResultSerializer, ResultSetSerializer
+    CandidateResultSerializer, ResultSetSerializer
 )
 from ..models import (
-    CandidateResult, PostElectionResult, ResultSet,
+    CandidateResult, ResultSet,
 )
 
 
@@ -42,34 +42,3 @@ class ResultSetViewSet(viewsets.ModelViewSet):
 
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ['review_status',]
-
-
-
-class PostElectionResultViewSet(viewsets.ModelViewSet):
-    queryset = PostElectionResult.objects \
-        .select_related('post_election__postextra') \
-        .prefetch_related(
-            Prefetch(
-                'result_sets',
-                ResultSet.objects.select_related(
-                    'post_election_result__post_election__postextra',
-                    'user',
-                ) \
-                .prefetch_related(
-                    Prefetch(
-                        'candidate_results',
-                        CandidateResult.objects.select_related(
-                            'membership__on_behalf_of__extra',
-                            'membership__organization__extra',
-                            'membership__post__extra',
-                            'membership__extra__election',
-                            'membership__person',
-                        )
-                    )
-                )
-            ),
-        ) \
-        .order_by('id')
-    serializer_class = PostElectionResultSerializer
-    pagination_class = ResultsSetPagination
-    filter_fields = ('confirmed',)

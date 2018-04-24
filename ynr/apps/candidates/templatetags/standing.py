@@ -24,7 +24,6 @@ def get_candidacy(person, election):
                     'result',
                     CandidateResult.objects.select_related(
                         'result_set',
-                        'result_set__post_election_result',
                     )
                 )
             )
@@ -56,7 +55,7 @@ def get_known_candidacy_prefix_and_suffix(candidacy):
                     else:
                         suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-not-elected">Not elected</span>'
                     suffix += ' <span class="vote-count">({0} votes)</span>'.format(
-                         candidate_result.num_ballots_reported
+                         candidate_result.num_ballots
                     )
                     suffix += '<br>'
     elif candidacy.extra.party_list_position:
