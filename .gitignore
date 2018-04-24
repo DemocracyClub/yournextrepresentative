@@ -16,3 +16,5 @@ ynr/media/*
 .DS_Store
 .tox
 .cache
+.haystack
+.pytest_cache
