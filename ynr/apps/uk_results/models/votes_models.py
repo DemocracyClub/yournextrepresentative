@@ -6,23 +6,12 @@ from django.db import transaction
 from .base import BaseResultModel, ResultStatusMixin
 
 
-class PostElectionResultManager(models.Manager):
-    def confirmed(self):
-        qs = self.filter(confirmed=True)
-        if qs.exists():
-            return qs.latest()
-        else:
-            return False
-
-
 
 class PostElectionResult(models.Model):
     post_election = models.ForeignKey('candidates.PostExtraElection')
     confirmed = models.BooleanField(default=True)
     confirmed_resultset = models.OneToOneField(
         'ResultSet', null=True)
-
-    objects = PostElectionResultManager()
 
     class Meta:
         get_latest_by = 'confirmed_resultset__created'

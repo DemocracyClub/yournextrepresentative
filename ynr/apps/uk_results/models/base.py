@@ -19,9 +19,6 @@ class ResultStatusMixin(models.Model):
     class Meta:
         abstract = True
 
-    is_final = models.BooleanField(default=False)
-    final_source = models.TextField(null=True)
-
     review_status = models.CharField(blank=True, max_length=100,
         choices=REPORTED_RESULT_STATUSES)
 

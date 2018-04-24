@@ -10,4 +10,3 @@ def show_results_feature(request):
             (in_group, results_feature_active)
         ),
     }
-
