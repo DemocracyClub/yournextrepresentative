@@ -128,6 +128,7 @@ INSTALLED_APPS = (
     'bulk_adding',
     'celery_haystack',
     'celery',
+    'parties',
 )
 
 MIDDLEWARE_CLASSES = (

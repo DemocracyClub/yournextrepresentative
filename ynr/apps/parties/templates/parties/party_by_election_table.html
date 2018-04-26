@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>All candidate for {{ party.name }} in the {{ election.name }}</h2>
+
+<table>
+  <thead>
+    <tr>
+      <td>Name</td>
+      <td>Ward</td>
+      <td>Email</td>
+      <td>Twitter</td>
+      <td>Facebook</td>
+      <td>Statement</td>
+      <td>Edit link</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% for membership_extra in candidates %}
+      <tr>
+        <td>
+          <a href="{{ membership_extra.base.person.extra.get_absolute_url }}">
+            {{ membership_extra.base.person.name }}
+          </a>
+        </td>
+        <td>{{ membership_extra.post_election.postextra.base.label }}</td>
+        <td>{% include "parties/_row_item.html" with item=membership_extra.base.person.email %}</td>
+        <td>{% include "parties/_row_item.html" with item=membership_extra.base.person.extra.twitter_username|urlize type="twitter" %}</td>
+        <td>{% include "parties/_row_item.html" with item=membership_extra.base.person.extra.facebook_personal_url|urlize %}</td>
+        <td>{% include "parties/_row_item.html" with item=membership_extra.base.person.biography|truncatechars:30 %}</td>
+        <td><a href="{% url "person-update" membership_extra.base.person.pk %}" class="button tiny">Edit</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock content %}

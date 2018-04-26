@@ -1,0 +1,9 @@
+{% if item %}
+  {% if type == "twitter" %}
+    <a href="https://twitter.com/{{ item }}">@{{ item }}</a>
+  {% else %}
+    {{ item }}
+  {% endif %}
+{% else %}
+  <span style="color:red; font-weight:bold;" title="Missing">X</span>
+{% endif %}
