@@ -60,8 +60,8 @@ def prune(output_directory):
         current_timestamped_directory = os.readlink(latest_symlink)
         timestamped_directories_to_remove.discard(
             current_timestamped_directory)
-    # Don't remove any directory dated in the last 36 hours:
-    remove_before = datetime.now() - timedelta(hours=36)
+    # Don't remove any directory dated in the last 12 hours:
+    remove_before = datetime.now() - timedelta(hours=12)
     too_recent = set(
         e for e in timestamped_directories_to_remove
         if datetime.strptime(e, '%Y-%m-%dT%H:%M:%S') >= remove_before)
@@ -93,7 +93,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--prune',
             action='store_true',
-            help=('Prune older timestamped directories (those over 36 hours '
+            help=('Prune older timestamped directories (those over 12 hours '
                   'old, never deleting the latest successfully generated one '
                   'or any of the 4 most recent)')
         )
