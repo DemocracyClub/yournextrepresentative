@@ -273,7 +273,7 @@
     {% endif %}
   </div>
 
-
+  {% if last_candidacy %}
   <div class="person__actions__action">
     <h2>Add Party info</h2>
     <p>Know something about {{ person.name }}'s local party?</p>
@@ -281,6 +281,7 @@
       Add it here
     </a></p>
   </div>
+  {% endif %}
 
   <div class="person__actions__action person__actions__data">
     <h2>{% trans "Use this data!" %}</h2>

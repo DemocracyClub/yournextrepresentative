@@ -63,13 +63,13 @@ class PersonViewSharedTestsMixin(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_shows_no_edit_buttons_if_user_not_authenticated(self):
         response = self.app.get('/person/2009/tessa-jowell')
         edit_buttons = response.html.find_all('a', attrs={'class': 'button'})
-        self.assertEqual(len(edit_buttons), 1)
+        self.assertEqual(len(edit_buttons), 2)
         self.assertEqual(edit_buttons[0].string, 'Log in to edit')
 
     def test_shows_edit_buttons_if_user_authenticated(self):
         response = self.app.get('/person/2009/tessa-jowell', user=self.user)
         edit_buttons = response.html.find_all('a', attrs={'class': 'button'})
-        self.assertEqual(len(edit_buttons), 2)
+        self.assertEqual(len(edit_buttons), 3)
 
     def test_links_to_person_edit_page(self):
         response = self.app.get('/person/2009/tessa-jowell', user=self.user)
