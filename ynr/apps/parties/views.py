@@ -1,4 +1,5 @@
 from django.views.generic import TemplateView
+from django.shortcuts import get_object_or_404
 
 from popolo.models import Identifier
 from candidates.models import MembershipExtra
@@ -14,7 +15,16 @@ class CandidatesByElectionForPartyView(TemplateView):
         party = Identifier.objects.get(
             identifier=kwargs['party_id']).content_object
 
-        election = Election.objects.get(slug=kwargs['election'])
+        election = None
+        try:
+            election = Election.objects.get(slug=kwargs['election'])
+        except Election.DoesNotExist:
+            # This might be a ballot paper ID
+            election = get_object_or_404(
+                Election,
+                postextraelection__ballot_paper_id=kwargs['election']
+            )
+
 
         candidates = MembershipExtra.objects.filter(
             post_election__election=election,
