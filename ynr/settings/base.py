@@ -129,6 +129,7 @@ INSTALLED_APPS = (
     'celery_haystack',
     'celery',
     'parties',
+    'candidatebot',
 )
 
 MIDDLEWARE_CLASSES = (
