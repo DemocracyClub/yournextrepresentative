@@ -31,9 +31,12 @@ class Command(BaseCommand):
 
                 try:
                     bot = CandidateBot(row['democlub_id'])
-                    bot.add_email(row['email'])
-                    bot.save(source)
-                    # print(person)
+                    try:
+                        bot.add_email(row['email'])
+                        bot.save(source)
+                    except ValueError:
+                        #Email exists, move on
+                        pass
                 except Person.DoesNotExist:
                     print("Person ID {} not found".format(
                         row['democlub_id']))
