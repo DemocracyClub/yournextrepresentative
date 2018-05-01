@@ -142,4 +142,12 @@ class ResultSetForm(forms.ModelForm):
             mark_candidates_as_winner(request, instance)
             instance.record_version()
 
+            LoggedAction.objects.create(
+                user=instance.user,
+                action_type='entered-results-data',
+                source=instance.source,
+                post_election=instance.post_election,
+            )
+
+
         return instance

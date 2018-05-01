@@ -59,6 +59,8 @@ class LoggedAction(models.Model):
     ip_address = models.CharField(max_length=50, blank=True, null=True)
     source = models.TextField()
     post = models.ForeignKey(Post, blank=True, null=True)
+    post_election = models.ForeignKey(
+        'candidates.PostExtraElection', null=True)
 
     objects = LoggedActionQuerySet.as_manager()
 

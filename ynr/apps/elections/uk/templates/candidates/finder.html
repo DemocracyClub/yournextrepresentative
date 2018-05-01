@@ -121,6 +121,8 @@
             reviewed overall control for a council
           {% elif action.action_type == 'set-candidate-elected' %}
             marked <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a> as the winner
+          {% elif action.action_type == 'entered-results-data' %}
+            entered results data for <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.postextra.base.label }}</a>
           {% else %}
             updated <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
           {% endif %}
