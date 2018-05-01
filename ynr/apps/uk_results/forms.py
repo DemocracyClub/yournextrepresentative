@@ -121,13 +121,15 @@ class ResultSetForm(forms.ModelForm):
             instance.save()
 
             winner_count = self.post_election.winner_count
-
-            winners = dict(sorted(
-                [("{}-{}".format(self[y].value(), x.base.person.id), x)
-                    for x, y in self.memberships],
-                reverse=True,
-                key=lambda votes: int(votes[0].split('-')[0])
-            )[:winner_count])
+            if winner_count:
+                winners = dict(sorted(
+                    [("{}-{}".format(self[y].value(), x.base.person.id), x)
+                        for x, y in self.memberships],
+                    reverse=True,
+                    key=lambda votes: int(votes[0].split('-')[0])
+                )[:winner_count])
+            else:
+                winners = {}
 
             for membership_extra, field_name in self.memberships:
                 instance.candidate_results.update_or_create(
