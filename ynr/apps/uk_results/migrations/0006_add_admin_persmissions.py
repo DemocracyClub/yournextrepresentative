@@ -8,11 +8,14 @@ from auth_helpers.migrations import (
     get_migration_group_delete,
 )
 
-from uk_results.models import (
-    TRUSTED_TO_CONFIRM_CONTROL_RESULTS_GROUP_NAME,
-    TRUSTED_TO_CONFIRM_VOTE_RESULTS_GROUP_NAME,
-    )
-
+try:
+    from uk_results.models import (
+        TRUSTED_TO_CONFIRM_CONTROL_RESULTS_GROUP_NAME,
+        TRUSTED_TO_CONFIRM_VOTE_RESULTS_GROUP_NAME,
+        )
+except:
+    TRUSTED_TO_CONFIRM_CONTROL_RESULTS_GROUP_NAME = 'trusted_to_confirm_control'
+    TRUSTED_TO_CONFIRM_VOTE_RESULTS_GROUP_NAME = 'trusted_to_confirm_votes'
 
 class Migration(migrations.Migration):
 

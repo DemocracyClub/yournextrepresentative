@@ -24,7 +24,6 @@ def get_candidacy(person, election):
                     'result',
                     CandidateResult.objects.select_related(
                         'result_set',
-                        'result_set__post_election_result',
                     )
                 )
             )
@@ -44,21 +43,19 @@ def get_known_candidacy_prefix_and_suffix(candidacy):
     prefix = ''
     suffix = ''
     if 'uk_results' in settings.INSTALLED_APPS:
-        candidate_results = candidacy.result.all().order_by(
-            'membership').distinct('membership')
-        if candidate_results.exists():
-            for candidate_result in candidate_results:
-                if candidate_result.result_set.post_election_result.confirmed:
-                    # Then we're OK to display this result:
-                    suffix += '<br>'
-                    if candidate_result.is_winner:
-                        suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-elected">Elected!</span>'
-                    else:
-                        suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-not-elected">Not elected</span>'
-                    suffix += ' <span class="vote-count">({0} votes)</span>'.format(
-                         candidate_result.num_ballots_reported
-                    )
-                    suffix += '<br>'
+        candidate_result = getattr(candidacy, 'result', None)
+        if candidate_result:
+            # Then we're OK to display this result:
+            suffix += '<br>'
+            if candidate_result.is_winner:
+                suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-elected">Elected!</span>'
+            else:
+                suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-not-elected">Not elected</span>'
+            suffix += ' <span class="vote-count">({0} votes)</span>'.format(
+                 candidate_result.num_ballots
+            )
+            suffix += '<br>'
+
     elif candidacy.extra.party_list_position:
         prefix += u'<div title="{0}" aria-label="{0}" class="person-position">{1}</div>'.format(
             _(u'Party list position'),

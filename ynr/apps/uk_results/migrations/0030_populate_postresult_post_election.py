@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from collections import defaultdict
 
-from django.db import migrations, models
+from django.db import migrations
 
 
 def set_post_election_from_post(apps, schema_editor):

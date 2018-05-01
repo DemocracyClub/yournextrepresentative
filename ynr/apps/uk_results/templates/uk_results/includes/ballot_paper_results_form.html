@@ -1,0 +1,34 @@
+<form method=post class="ballot_paper_results_form">
+  {{ form.errors }}
+  {% csrf_token %}
+  <table>
+    <tbody>
+      {% for membership_field in form.membership_fields %}
+      <tr>
+        <td>{{ membership_field.label }}</td>
+        <td>
+          {{ membership_field.errors }}
+          {{ membership_field }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tbody>
+      <tr>
+        <td>{{ results_form.num_spoilt_ballots.label }}</td>
+        <td>{{ results_form.num_spoilt_ballots }}</td>
+      </tr>
+      <tr>
+        <td>{{ results_form.num_turnout_reported.label }}</td>
+        <td>{{ results_form.num_turnout_reported }}</td>
+      </tr>
+    </tbody>
+    <tbody>
+      <tr>
+        <td>{{ results_form.source.label }}</td>
+        <td>{{ results_form.source }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <button type=submit>Save</button>
+</form>

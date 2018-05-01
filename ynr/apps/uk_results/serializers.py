@@ -2,11 +2,9 @@ from __future__ import unicode_literals
 
 from rest_framework import serializers
 
-from .models import PostElectionResult, ResultSet, CandidateResult
+from candidates.serializers import MembershipSerializer
 
-from candidates.serializers import (
-    MembershipSerializer, EmbeddedPostElectionSerializer
-)
+from .models import CandidateResult, ResultSet
 
 
 class CandidateResultSerializer(serializers.HyperlinkedModelSerializer):
@@ -16,7 +14,7 @@ class CandidateResultSerializer(serializers.HyperlinkedModelSerializer):
             'id', 'url',
             'membership',
             'result_set',
-            'num_ballots_reported', 'is_winner',
+            'num_ballots', 'is_winner',
         )
 
     membership = MembershipSerializer(read_only=True)
@@ -38,16 +36,3 @@ class ResultSetSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
     user_id = serializers.ReadOnlyField(source='user.id')
     candidate_results = CandidateResultSerializer(many=True, read_only=True)
-
-
-class PostElectionResultSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = PostElectionResult
-        fields = (
-            'id', 'url',
-            'confirmed',
-            'post_election',
-            'result_sets',
-        )
-    post_election = EmbeddedPostElectionSerializer()
-    result_sets = ResultSetSerializer(many=True)

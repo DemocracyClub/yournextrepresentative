@@ -1,6 +1,7 @@
 import re
-from django.template import Library, Node, TemplateSyntaxError
+
 from django.http import QueryDict
+from django.template import Library, Node, TemplateSyntaxError
 from django.utils.encoding import smart_str
 
 register = Library()
@@ -17,10 +18,11 @@ def query_string(parser, token):
         modifier is <name><op><value> where op in {=, +, -}
 
     Parameters:
-        - base_querystring: literal query string, e.g. '?tag=python&tag=django&year=2011',
+        - base_querystring: literal query string,
+                            e.g. '?tag=python&tag=django&year=2011',
                             or context variable bound to either
                             - a literal query string,
-                            - a python dict with potentially lists as values, or
+                            - a python dict with potentially lists as values
                             - a django QueryDict object
                             May be '' or None or missing altogether.
         - modifiers may be repeated and have the form <name><op><value>.
@@ -33,8 +35,8 @@ def query_string(parser, token):
                            value is either a literal parameter value
                              or a context variable. If it is a context variable
                              it may also be bound to a list.
-        - as <var name>: bind result to context variable instead of injecting in output
-                         (same as in url tag).
+        - as <var name>: bind result to context variable instead of injecting
+          in output (same as in url tag).
 
     Examples:
     1.  {% query_string  '?tag=a&m=1&m=3&tag=b' tag+'c' m=2 tag-'b' as myqs %}

@@ -6,7 +6,6 @@ from django.conf import settings
 
 from candidates.models import PostExtraElection, MembershipExtra
 from elections.models import Election
-from uk_results.models import CouncilElection
 from tasks.models import PersonTask
 
 

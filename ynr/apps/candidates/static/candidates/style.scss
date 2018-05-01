@@ -74,3 +74,13 @@ $high_dpi_screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi
 @import "search";
 @import "data_timeline";
 @import "accounts";
+
+tbody + tbody {
+  border-top:1px solid #DDD;
+
+  &:before {
+    content: '';
+    display: block;
+    height: 2em;
+  }
+}

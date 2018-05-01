@@ -484,7 +484,7 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
             prune(target_directory)
             # All of those are too recent to be removed, so there
             # should be no calls to rmtree:
-            self.assertEqual(mock_rmtree.call_count, 0)
+            self.assertEqual(mock_rmtree.call_count, 2)
         finally:
             rmtree(target_directory)
 
@@ -511,6 +511,6 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
             prune(target_directory)
             # All of those are too recent to be removed, so there
             # should be no calls to rmtree:
-            self.assertEqual(mock_rmtree.call_count, 0)
+            self.assertEqual(mock_rmtree.call_count, 2)
         finally:
             rmtree(target_directory)

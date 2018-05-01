@@ -18,7 +18,7 @@ from candidates.models import ImageExtra
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from .models import ResultEvent
+from results.models import ResultEvent
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 

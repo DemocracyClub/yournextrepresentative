@@ -44,6 +44,10 @@
       <tr>
         <th>Name</th>
         <th>Party</th>
+        {% if postextraelection.resultset %}
+        <th>Votes</th>
+        <th>Elected?</th>
+        {% endif %}
       </tr>
     </thead>
     <tbody>
@@ -51,6 +55,10 @@
       <tr>
         <td><a href="{{ membership.base.person.extra.get_absolute_url }}">{{ membership.base.person.name }}</a></td>
         <td>{{ membership.base.on_behalf_of }}</td>
+        {% if postextraelection.resultset %}
+        <td>{{ membership.base.result.num_ballots }}</td>
+        <td>{{ membership.base.result.is_winner|yesno|title }}</td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
@@ -58,6 +66,13 @@
   {% endif %}
 
   <a class="show-new-candidate-form button tiny" href="{{ postextraelection.get_absolute_url }}">Add candidates</a>
+  {% if postextraelection.election.in_past %}
+    {% if postextraelection.resultset %}
+    <a class="button tiny" href="{% url "ballot_paper_results_form" postextraelection.ballot_paper_id %}">Edit Results</a>
+    {% else %}
+    <a class="button tiny" href="{% url "ballot_paper_results_form" postextraelection.ballot_paper_id %}">Add Results</a>
+    {% endif %}
+  {% endif %}
 {% endfor %}
 
 
