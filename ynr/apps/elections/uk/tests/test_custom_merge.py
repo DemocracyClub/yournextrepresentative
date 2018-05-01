@@ -79,7 +79,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         after_merging = Person.objects.get(pk=3885)
         membership = after_merging.memberships.get(
             extra__election=self.election)
-        candidate_result = membership.result.get()
+        candidate_result = membership.result
         self.assertEqual(candidate_result.num_ballots, 32614)
 
     def test_uk_results_for_primary_preserved(self):
@@ -139,5 +139,5 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         after_merging = Person.objects.get(pk=3885)
         membership = after_merging.memberships.get(
             extra__election=self.earlier_election)
-        candidate_result = membership.result.get()
+        candidate_result = membership.result
         self.assertEqual(candidate_result.num_ballots, 27619)

@@ -78,7 +78,7 @@ class CandidateResult(TimeStampedModel):
         related_name='candidate_results',
     )
 
-    membership = models.ForeignKey(
+    membership = models.OneToOneField(
         'popolo.Membership',
         related_name='result',
     )
