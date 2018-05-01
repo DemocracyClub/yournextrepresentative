@@ -451,6 +451,8 @@ LOGGING = {
 }
 
 
+CANDIDATE_BOT_USERNAME = 'CandidateBot'
+
 # import application constants
 from .constants.needs_review import * # noqa
 
