@@ -9,8 +9,10 @@ class ResultSet(TimeStampedModel):
     post_election = models.OneToOneField(
         'candidates.PostExtraElection')
 
-    num_turnout_reported = models.IntegerField(null=True)
-    num_spoilt_ballots = models.IntegerField(null=True)
+    num_turnout_reported = models.IntegerField(
+        null=True, verbose_name="Reported Turnout")
+    num_spoilt_ballots = models.IntegerField(
+        null=True, verbose_name="Spoilt Ballots")
     source = models.TextField(null=True)
 
     user = models.ForeignKey(

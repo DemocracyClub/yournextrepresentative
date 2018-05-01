@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load parse_iso %}
+
+{% block hero %}
+<h2>Enter results for
+  <a href="{{ post_election.get_absolute_url }}">
+    {{ post_election.postextra.base.label }} in the {{ post_election.election.name }}
+  </a>
+</h2>
+{% endblock  %}
+
+{% block content %}
+  {% include "uk_results/includes/ballot_paper_results_form.html" with results_form=form %}
+
+
+  {% if resultset.versions %}
+  <h3>Older versions</h3>
+  {% for version in resultset.versions %}
+    <table style="min-width:50%">
+      <caption>
+        User <tt>{{ version.user }}</tt> entered the following
+        {{ version.created|parse_iso|naturaltime }} from the source: <br>
+        <q>{{ version.source }}</q>
+      </caption>
+      <tbody>
+        {% for candidate_result in version.candidate_results %}
+        <tr>
+          <th>
+            {{ candidate_result.person_name }}
+          </th>
+          <td>
+            {{ candidate_result.num_ballots }}
+            {% if candidate_result.is_winner %}
+            (winner)
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tbody>
+        <tr>
+          <th>
+            Spoilt ballots
+          </th>
+          <td>
+            {{ version.spoilt_ballots }}
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Turnout
+          </th>
+          <td>
+            {{ version.turnout }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  {% endfor %}
+  {% endif %}
+
+{% endblock content %}

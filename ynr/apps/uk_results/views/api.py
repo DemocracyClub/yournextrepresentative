@@ -25,10 +25,9 @@ class ResultSetViewSet(viewsets.ModelViewSet):
         .select_related(
             'post_election_result__post_election__postextra',
             'user',
-        ) \
-        .order_by('id')
+        ).order_by('id')
     serializer_class = ResultSetSerializer
     pagination_class = ResultsSetPagination
 
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ['review_status',]
+    filter_fields = ['review_status', ]
