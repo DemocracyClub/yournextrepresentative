@@ -57,3 +57,59 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
                 is_winner=w)
             for c, v, w in zip(candidacies, votes, winner)
         ]
+
+        self.expected = {
+            'ballot_paper_id': 'local.maidstone.DIW:E05005004.2016-05-05',
+            'created': self.result_set.created.isoformat(),
+            'candidate_results': [
+                {
+                    'is_winner': True,
+                    'num_ballots': 5000,
+                    'person_id': 14,
+                    'person_name': 'Bob',
+                },
+                {
+                    'is_winner': False,
+                    'num_ballots': 3000,
+                    'person_id': 15,
+                    'person_name': 'Carol',
+                },
+                {
+                    'is_winner': False,
+                    'num_ballots': 2000,
+                    'person_id': 13,
+                    'person_name': 'Alice',
+
+                }
+            ],
+            'source': 'Example ResultSet for testing',
+            'spoilt_ballots': 30,
+            'turnout': 10000,
+            'user': 'john'
+        }
+
+    def test_as_dict(self):
+        self.maxDiff = None
+        self.assertEqual(self.result_set.as_dict(), self.expected)
+
+    def test_record_version(self):
+        self.assertEqual(self.result_set.versions, [])
+        self.result_set.record_version()
+        self.assertEqual(self.result_set.versions, [self.expected])
+
+        # Make sure we don't create duplicate versons
+        self.result_set.record_version()
+        self.result_set.record_version()
+        self.assertEqual(self.result_set.versions, [self.expected])
+
+        # Make sure we can force a duplicate though
+        self.result_set.record_version(force=True)
+        self.assertEqual(len(self.result_set.versions), 2)
+        self.assertEqual(
+            self.result_set.versions,
+            [self.expected, self.expected]
+        )
+
+        self.result_set.num_turnout_reported = 300
+        self.result_set.save()
+        self.result_set.record_version()

@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
 
@@ -17,14 +18,56 @@ class ResultSet(TimeStampedModel):
         related_name='result_sets',
         null=True,
     )
+    versions = JSONField(default=list)
 
     ip_address = models.GenericIPAddressField(null=True)
 
     def __str__(self):
-        return u"pk=%d user=%r post=%r" % (
-            self.pk,
-            self.user,
+        return "Result for {}".format(
+            self.post_election.ballot_paper_id,
         )
+
+    def as_dict(self):
+        """
+        A representation of the model and related CandidateResult models
+        as JSON.
+
+        Used for storing versions.
+
+        # TODO use API serializer for this?
+        """
+        data = {
+            'created': self.created.isoformat(),
+            'ballot_paper_id': self.post_election.ballot_paper_id,
+            'turnout': self.num_turnout_reported,
+            'spoilt_ballots': self.num_spoilt_ballots,
+            'source': self.source,
+            'user': getattr(self.user, 'username', None),
+            'candidate_results': [],
+        }
+
+        for result in self.candidate_results.all():
+            data['candidate_results'].append({
+                'num_ballots': result.num_ballots,
+                'is_winner': result.is_winner,
+                'person_id': result.membership.person_id,
+                'person_name': result.membership.person.name,
+            })
+        return data
+
+    def record_version(self, force=False, save=True):
+        existing = self.versions
+        this_version = self.as_dict()
+        if existing:
+            latest = existing[0]
+            if force or latest != this_version:
+                existing.insert(0, this_version)
+        else:
+            existing.insert(0, this_version)
+        self.versions = existing
+        if save:
+            self.save()
+        return existing
 
 
 class CandidateResult(TimeStampedModel):
