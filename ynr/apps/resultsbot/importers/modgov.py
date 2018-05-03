@@ -81,6 +81,7 @@ class ModGovImporter(BaseImporter):
         self.url = kwargs.pop('url')
         super(ModGovImporter, self).__init__(*args, **kwargs)
         self.get_data()
+        self.saved_numseats = SavedMapping('num_seats.json')
 
     def get_data(self):
         self.data = requests.get(self.url).content
@@ -103,15 +104,22 @@ class ModGovImporter(BaseImporter):
                     # chances are this is a mistake
                     pass
                 else:
-                    print(division.title)
-                    print(self.url)
-                    print(division.numseats, division.local_area.winner_count)
-                    print("winner_count mismatch, update local?")
-                    answer = raw_input("y/n: ")
-                    if answer.lower() == "y":
-                        division.local_area.winner_count = \
-                            int(division.numseats)
-                        division.local_area.save()
+                    key = division.local_area.ballot_paper_id
+                    should_ask = self.saved_numseats.get(key, True)
+                    if should_ask:
+                        print(division.title)
+                        print(self.url)
+                        print(division.numseats, division.local_area.winner_count)
+                        print("winner_count mismatch, update local?")
+                        answer = raw_input("y/n: ")
+                        if answer.lower() == "y":
+                            division.local_area.winner_count = \
+                                int(division.numseats)
+                            division.local_area.save()
+                        self.saved_numseats[key] = False
+                        self.saved_numseats.save()
+                    else:
+                        pass
             yield division
 
     def candidates(self, division):

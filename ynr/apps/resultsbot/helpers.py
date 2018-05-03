@@ -107,10 +107,10 @@ class ResultsBot(object):
                     }
                 )
 
-            self._mark_candidates_as_winner(instance)
             versions, changed = instance.record_version()
 
             if changed:
+                self._mark_candidates_as_winner(instance)
                 LoggedAction.objects.create(
                     user=instance.user,
                     action_type='entered-results-data',

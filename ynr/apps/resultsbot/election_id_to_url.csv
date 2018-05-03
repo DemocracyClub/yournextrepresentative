@@ -1,4 +1,4 @@
-local.kirklees.2017-10-26,https://democracy.kirklees.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=15
+local.swindon.2018-05-03,https://ww5.swindon.gov.uk/moderngov/mgWebService.asmx/GetElectionResults?lElectionId=1
 local.aylesbury-vale.2018-05-03,https://aylesburyvale.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=51
 local.barking-and-dagenham.2018-05-03,https://modgov.lbbd.gov.uk/internet/mgWebService.asmx/GetElectionResults?lElectionId=5
 local.basildon.2018-05-03,https://www.basildonmeetings.info/mgWebService.asmx/GetElectionResults?lElectionId=38
@@ -34,7 +34,6 @@ local.southampton.2018-05-03,https://www.southampton.gov.uk/moderngov/mgWebServi
 local.st-helens.2018-05-03,http://moderngov.sthelens.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=14
 local.stockport.2018-05-03,http://democracy.stockport.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=48
 local.sutton.2018-05-03,https://moderngov.sutton.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=15
-local.swindon.2018-05-03,https://ww5.swindon.gov.uk/moderngov/mgWebService.asmx/GetElectionResults?lElectionId=1
 local.tameside.2018-05-03,http://tameside.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=43
 local.tower-hamlets.2018-05-03,http://democracy.towerhamlets.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=43
 local.trafford.2018-05-03,https://democratic.trafford.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=6
@@ -42,3 +41,4 @@ local.tunbridge-wells.2018-05-03,http://democracy.tunbridgewells.gov.uk/meetings
 local.wirral.2018-05-03,https://democracy.wirral.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=5
 local.wokingham.2018-05-03,https://wokingham.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=11
 local.wolverhampton.2018-05-03,https://wolverhampton.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=13
+local.kirklees.2017-10-26,https://democracy.kirklees.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=15
