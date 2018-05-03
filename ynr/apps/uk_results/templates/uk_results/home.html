@@ -1,24 +1,19 @@
 {% extends "uk_results/uk_results_base.html" %}
 
 {% block results_title %}
-<h1>Results</h1>
+<h1>Results (beta)</h1>
 {% endblock results_title %}
 
 {% block results_content %}
-{# <hr> #}
-{# <h1>PRE</h1> #}
-{# {% include "uk_results/includes/home_pages/pre-election-day.html" %} #}
-{# <hr> #}
-{# <h1>POST-Poll, pre-results</h1> #}
-{% include "uk_results/includes/home_pages/post-election-day-no-results.html" %}
-{#  #}
-{# <hr> #}
-{# <h1>RESULTS COMING IN</h1> #}
-{# {% include "uk_results/includes/home_pages/post-election-day-results.html" %} #}
-{#  #}
-{# <hr> #}
-{# <h1>FINISHED!</h1> #}
-{# {% include "uk_results/includes/home_pages/post-election-finished.html" %} #}
+<h2>Entering results</h2>
+<ol>
+  <li>Find some results for an election on a council website</li>
+  <li>Find that election on our <a href="/posts/">elections page</a></li>
+  <li>Click on the election and click "add results" against the area you have results for.</li>
+</ol>
+
+</p>
+
 
 <h3>Use the data!</h3>
 <p>The data for results is <a href="https://candidates.democracyclub.org.uk/help/api">
@@ -32,14 +27,15 @@
 
 <h4>Votes API</h4>
 <p>We list all votes reported to us.</p>
-<p>Unfiltered, this endpoint contains all results reported by any member of the public.  Use with care!</p>
-<p>You can filter by results confirmed by LGiU and Democracy Club by adding
-  <code>?review_status=confirmed</code></p>
+<p>This endpoint contains all results reported by any member of the public. Use with care!</p>
+
 <p>
-  <a href="https://candidates.democracyclub.org.uk/api/v0.9/result_sets/" class="button success">
-    All confirmed results</a>
+  <a href="https://candidates.democracyclub.org.uk/api/v0.9/result_sets/?election_date=2018-05-03" class="button success">
+    All results</a>
 </p>
 
+<h4>CSV</h4>
+<p>Coming soon…</p>
 
 
 

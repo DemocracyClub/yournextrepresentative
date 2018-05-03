@@ -117,3 +117,27 @@ def current_election_stats(context):
         context['elction_stats'] = stats
 
     return context
+
+@register.inclusion_tag('includes/results_progress.html',
+                        takes_context=True)
+def results_progress(context):
+    context['SHOW_RESULTS_PROGRESS'] = getattr(
+        settings, 'SHOW_RESULTS_PROGRESS', False)
+
+    if context['SHOW_RESULTS_PROGRESS']:
+        election_date = settings.SOPN_TRACKER_INFO['election_date']
+
+        context['election_name'] \
+            = settings.SOPN_TRACKER_INFO['election_name']
+        pee_qs = PostExtraElection.objects.filter(
+            election__election_date=election_date)
+
+        context['results_entered'] = pee_qs.exclude(resultset=None).count()
+        context['areas_total'] = pee_qs.count()
+        context['results_percent'] = round(
+            float(context['results_entered']) /
+            float(context['areas_total'])
+            * 100)
+
+
+    return context
