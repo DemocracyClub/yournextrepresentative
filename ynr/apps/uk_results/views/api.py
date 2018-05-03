@@ -1,4 +1,6 @@
-from rest_framework import filters, viewsets
+from rest_framework import viewsets
+from rest_framework import filters as rf_filters
+from django_filters import filters, filterset
 
 from candidates.views import ResultsSetPagination
 
@@ -20,14 +22,26 @@ class CandidateResultViewSet(viewsets.ModelViewSet):
     pagination_class = ResultsSetPagination
 
 
+
+class ProductFilter(filterset.FilterSet):
+    election_id = filters.CharFilter(
+        name="post_election__election__slug")
+    election_date = filters.DateFilter(
+        name="post_election__election__election_date")
+
+    class Meta:
+        model = ResultSet
+        fields = ['election_date', 'election_id']
+
+
 class ResultSetViewSet(viewsets.ModelViewSet):
     queryset = ResultSet.objects \
         .select_related(
-            'post_election_result__post_election__postextra',
+            'post_election__postextra__base',
             'user',
         ).order_by('id')
     serializer_class = ResultSetSerializer
     pagination_class = ResultsSetPagination
 
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ['review_status', ]
+    filter_backends = (rf_filters.DjangoFilterBackend,)
+    filter_class = ProductFilter
