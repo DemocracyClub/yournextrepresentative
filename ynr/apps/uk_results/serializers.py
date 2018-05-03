@@ -25,14 +25,19 @@ class ResultSetSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ResultSet
         fields = (
-            'id', 'url',
+            'id',
+            'url',
             'candidate_results',
             'ip_address',
-            'num_turnout_reported', 'num_spoilt_ballots',
-            # 'post_result',
-            'user', 'user_id',
+            'num_turnout_reported',
+            'num_spoilt_ballots',
+            'user',
+            'user_id',
+            'ballot_paper_id'
         )
     # post_result = PostResultSerializer()
     user = serializers.ReadOnlyField(source='user.username')
+    ballot_paper_id = serializers.ReadOnlyField(
+        source='post_election.ballot_paper_id')
     user_id = serializers.ReadOnlyField(source='user.id')
     candidate_results = CandidateResultSerializer(many=True, read_only=True)
