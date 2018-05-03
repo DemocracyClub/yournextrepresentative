@@ -130,6 +130,7 @@ INSTALLED_APPS = (
     'celery',
     'parties',
     'candidatebot',
+    'resultsbot',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -452,6 +453,7 @@ LOGGING = {
 
 
 CANDIDATE_BOT_USERNAME = 'CandidateBot'
+RESULTS_BOT_USERNAME = 'ResultsBot'
 
 # import application constants
 from .constants.needs_review import * # noqa

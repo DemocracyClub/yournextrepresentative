@@ -60,16 +60,20 @@ class ResultSet(TimeStampedModel):
     def record_version(self, force=False, save=True):
         existing = self.versions
         this_version = self.as_dict()
+        changed = False
         if existing:
             latest = existing[0]
             if force or latest != this_version:
+                changed = True
                 existing.insert(0, this_version)
         else:
+            changed = True
             existing.insert(0, this_version)
+
         self.versions = existing
         if save:
             self.save()
-        return existing
+        return (existing, changed)
 
 
 class CandidateResult(TimeStampedModel):
