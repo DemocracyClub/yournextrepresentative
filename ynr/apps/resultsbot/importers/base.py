@@ -268,7 +268,8 @@ class CandidateMatcher(object):
             import ipdb; ipdb.set_trace()
         value = self.membership_map.get(key, None)
         if value:
-            return candidates_for_party.get(pk=value)
+            return self.ballot_paper.local_area.membershipextra_set.get(
+                pk=value)
 
 
     def match_party_and_name(self):
@@ -281,16 +282,20 @@ class CandidateMatcher(object):
                 person_name = membership.base.person.name.lower()
                 if  person_name == self.candidate.name.lower():
                     return membership
+                person_name = person_name.replace('  ', ' ')
                 split_person_name = person_name.split(' ')
                 split_candidate_name = self.candidate.name.lower().split(' ')
                 if split_person_name[0] == split_candidate_name[0]:
                     if split_person_name[-1] == split_candidate_name[-1]:
                         return membership
+                if split_person_name[-1].strip() == split_candidate_name[0].strip():
+                    if split_person_name[0].strip() == split_candidate_name[-1].strip():
+                        return membership
 
     def _manual_matcher(self, qs):
         print("No match for '{}' in {}. Please pick from the following".format(
             self.candidate.name,
-            ballot_paper.ballot_paper_id
+            self.ballot_paper.title
         ))
         for i, membership in enumerate(qs, start=1):
             print("\t{}\t{}".format(i, membership.base.person.name))

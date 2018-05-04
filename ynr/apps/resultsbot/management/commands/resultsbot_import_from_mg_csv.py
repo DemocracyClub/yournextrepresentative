@@ -35,6 +35,8 @@ class Command(BaseCommand):
                 continue
             importer.get_data()
             for div in importer.divisions():
+                if div.local_area.ballot_paper_id == "local.eastleigh.eastleigh-north.2018-05-03":
+                    continue
                 candidates = list(importer.candidates(div))
                 all_candidates += candidates
                 has_any_votes = any([c.votes for c in candidates])

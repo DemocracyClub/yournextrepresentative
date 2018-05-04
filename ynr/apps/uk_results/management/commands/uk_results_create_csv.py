@@ -20,6 +20,7 @@ class Command(BaseCommand):
         'party_name',
         'person_name',
         'ballots_cast',
+        'is_winner',
     ]
 
 
@@ -60,6 +61,8 @@ class Command(BaseCommand):
             }
 
             for membership in result.post_election.membershipextra_set.all():
+                if not hasattr(membership.base, 'result'):
+                    continue
                 row = row_base
                 party = membership.base.on_behalf_of
                 try:
@@ -76,5 +79,6 @@ class Command(BaseCommand):
                 row['person_id'] = membership.base.person.pk
                 row['person_name'] = membership.base.person.name
                 row['ballots_cast'] = membership.base.result.num_ballots
+                row['is_winner'] = membership.base.result.is_winner
                 csv_out.writerow(row)
         self.stdout.write(csv_out.output)
