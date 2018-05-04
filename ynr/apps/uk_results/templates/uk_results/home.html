@@ -7,9 +7,9 @@
 {% block results_content %}
 <h2>Entering results</h2>
 <ol>
-  <li>Find some results for an election on a council website</li>
-  <li>Find that election on our <a href="/posts">elections page</a></li>
-  <li>Click on the election and click "add results" against the area you have results for.</li>
+  <li>Find <a href="{% url "current-elections-with-no-resuts" %}">an area without results yet</a></li>
+  <li>Click "add results"</li>
+  <li>Find the results on the council website</li>
 </ol>
 
 </p>
@@ -35,7 +35,13 @@
 </p>
 
 <h4>CSV</h4>
-<p>Coming soon…</p>
+  <a href="https://candidates.democracyclub.org.uk/media/csv-archives/results-2018-05-03.csv" class="button success">
+    CSV file</a>
+<p>
+  The CSV file is likely to change format over time.
+  <a href="https://democracyclub.org.uk/contact/">Get in touch</a>
+  if you have any requirements for it
+</p>
 
 
 

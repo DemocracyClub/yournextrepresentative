@@ -4,9 +4,11 @@ import csv
 import os
 
 from django.core.management.base import BaseCommand
+from django.db.models import Prefetch
 
 from compat import BufferDictWriter
 from uk_results.models import ResultSet
+from candidates.models import MembershipExtra
 
 
 class Command(BaseCommand):
@@ -37,8 +39,15 @@ class Command(BaseCommand):
             'post_election',
             'post_election__election',
         ).prefetch_related(
-            'post_election__membershipextra_set',
-            # TODO optimize this
+            Prefetch(
+                'post_election__membershipextra_set',
+                MembershipExtra.objects.select_related(
+                    'base',
+                    'base__person',
+                    'base__on_behalf_of',
+                )
+            )
+
         )
 
         csv_out = BufferDictWriter(fieldnames=self.FIELDNAMES)

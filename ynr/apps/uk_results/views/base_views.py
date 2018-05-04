@@ -1,3 +1,5 @@
+from datetime import date
+
 from braces.views import LoginRequiredMixin
 from django.views.generic import FormView, TemplateView
 
@@ -48,3 +50,21 @@ class BallotPaperResultsUpdateView(LoginRequiredMixin, FormView):
     def get_success_url(self):
         url = self.pee.get_absolute_url()
         return url
+
+class CurrentElectionsWithNoResuts(TemplateView):
+    template_name = "uk_results/current_elections_with_no_resuts.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            CurrentElectionsWithNoResuts, self).get_context_data(**kwargs)
+
+        context['elections'] = PostExtraElection.objects.filter(
+            election__current=True,
+            election__election_date__lt=date.today(),
+            resultset=None,
+        ).select_related(
+            'postextra__base',
+            'election',
+        ).order_by('election')
+
+        return context
