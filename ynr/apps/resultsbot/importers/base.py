@@ -288,8 +288,9 @@ class CandidateMatcher(object):
                         return membership
 
     def _manual_matcher(self, qs):
-        print("No match for '{}'. Please pick from the following".format(
-            self.candidate.name
+        print("No match for '{}' in {}. Please pick from the following".format(
+            self.candidate.name,
+            ballot_paper.ballot_paper_id
         ))
         for i, membership in enumerate(qs, start=1):
             print("\t{}\t{}".format(i, membership.base.person.name))
