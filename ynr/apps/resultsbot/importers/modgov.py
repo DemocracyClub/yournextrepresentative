@@ -72,9 +72,11 @@ class ModGovDivision(BaseDivision):
     @property
     def spoiled_votes(self):
         for spoiled in self.soup.find_all('spoiledvote'):
-            if spoiled.description.get_text(strip=True) == "Rejected":
-                return int(spoiled.numvotes.get_text(strip=True))
-
+            try:
+                if spoiled.description.get_text(strip=True) == "Rejected":
+                    return int(spoiled.numvotes.get_text(strip=True))
+            except:
+                pass
 
 class ModGovImporter(BaseImporter):
     def __init__(self, *args, **kwargs):

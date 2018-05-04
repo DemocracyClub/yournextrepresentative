@@ -304,7 +304,7 @@ class CandidateMatcher(object):
         picked_membership = qs[match-1]
         self.membership_map[key] = picked_membership.pk
         self.membership_map.save()
-        return picked_membership.pk
+        return picked_membership
 
 
     def match_manually(self):

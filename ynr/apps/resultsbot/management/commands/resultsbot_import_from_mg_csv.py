@@ -27,6 +27,12 @@ class Command(BaseCommand):
         for election_id, url in id_to_url.items():
 
             importer = ModGovImporter(election_id, url=url)
+            pee_with_result = [
+                hasattr(pee, 'resultset')
+                for pee in importer.election.postextraelection_set.all()
+            ]
+            if all(pee_with_result):
+                continue
             importer.get_data()
             for div in importer.divisions():
                 candidates = list(importer.candidates(div))
