@@ -272,8 +272,11 @@ class CandidateMatcher(object):
                 pk=value)
 
 
-    def match_party_and_name(self):
-        candidates_for_party = self.get_memberships()
+    def match_party_and_name(self, qs=None):
+        if not qs:
+            candidates_for_party = self.get_memberships()
+        else:
+            candidates_for_party = qs
         if candidates_for_party.count() == 1:
             # Only one person it can be, init?
             return candidates_for_party.first()
@@ -304,7 +307,7 @@ class CandidateMatcher(object):
                 # Ignore middle names
                 if split_person_name[0] == split_candidate_name[0]:
                     if split_person_name[-1] == split_candidate_name[-1]:
-                        return membersip
+                        return membership
 
                 # LAST, First
                 if split_person_name[-1] == split_candidate_name[0]:
@@ -344,6 +347,10 @@ class CandidateMatcher(object):
         return self._manual_matcher(candidates_for_party)
 
     def match_from_all_manually(self):
+        qs = self.ballot_paper.local_area.membershipextra_set.all()
+        match = match_party_and_name(qs=qs)
+        if match:
+            return match
         return self._manual_matcher(
-            self.ballot_paper.local_area.membershipextra_set.all()
+            qs
         )
