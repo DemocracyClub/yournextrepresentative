@@ -28,7 +28,6 @@ class ResultSetSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'url',
             'candidate_results',
-            'ip_address',
             'num_turnout_reported',
             'num_spoilt_ballots',
             'user',

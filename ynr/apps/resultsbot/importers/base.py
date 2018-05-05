@@ -322,7 +322,7 @@ class CandidateMatcher(object):
             self.ballot_paper.title
         ))
         for i, membership in enumerate(qs, start=1):
-            print("\t{}\t{}".format(i, membership.base.person.name))
+            print("\t{}\t{}".format(i, membership.base.person.name.encode('utf8')))
         match = raw_input("Enter selection: ")
         if match == "s":
             return
