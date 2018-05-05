@@ -279,18 +279,42 @@ class CandidateMatcher(object):
             return candidates_for_party.first()
         else:
             for membership in candidates_for_party:
-                person_name = membership.base.person.name.lower()
-                if  person_name == self.candidate.name.lower():
+
+                def _clean_name(name):
+                    name =name.lower()
+                    name =name.replace('  ', ' ')
+                    name =name.replace(',', '')
+                    name =name.replace('councillor', '')
+                    return name
+
+                person_name = _clean_name(membership.base.person.name.lower())
+                candidate_name = _clean_name(self.candidate.name.lower())
+
+                if  person_name == candidate_name:
                     return membership
-                person_name = person_name.replace('  ', ' ')
-                split_person_name = person_name.split(' ')
-                split_candidate_name = self.candidate.name.lower().split(' ')
+
+                def _name_to_parts(name):
+                    name = name.split(' ')
+                    name = [n.strip().encode('utf8') for n in name]
+                    return name
+
+                split_person_name = _name_to_parts(person_name)
+                split_candidate_name = _name_to_parts(candidate_name)
+
+                # Ignore middle names
                 if split_person_name[0] == split_candidate_name[0]:
                     if split_person_name[-1] == split_candidate_name[-1]:
+                        return membersip
+
+                # LAST, First
+                if split_person_name[-1] == split_candidate_name[0]:
+                    if split_person_name[0] == split_candidate_name[-1]:
                         return membership
-                if split_person_name[-1].strip() == split_candidate_name[0].strip():
-                    if split_person_name[0].strip() == split_candidate_name[-1].strip():
-                        return membership
+
+                print("person name {} didn't match to candidate {}".format(
+                    split_person_name,
+                    split_candidate_name
+                ))
 
     def _manual_matcher(self, qs):
         print("No match for '{}' in {}. Please pick from the following".format(
