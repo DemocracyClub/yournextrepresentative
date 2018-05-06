@@ -3,6 +3,7 @@ local.aylesbury-vale.2018-05-03,https://aylesburyvale.moderngov.co.uk/mgWebServi
 local.barking-and-dagenham.2018-05-03,https://modgov.lbbd.gov.uk/internet/mgWebService.asmx/GetElectionResults?lElectionId=5
 local.basildon.2018-05-03,https://www.basildonmeetings.info/mgWebService.asmx/GetElectionResults?lElectionId=38
 local.bexley.2018-05-03,https://democracy.bexley.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=10
+local.bradford.2018-05-03,https://bradford.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=43
 local.brent.2018-05-03,https://democracy.brent.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=32
 local.bromley.2018-05-03,https://cds.bromley.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=1
 local.cambridge.2018-05-03,https://democracy.cambridge.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=25
