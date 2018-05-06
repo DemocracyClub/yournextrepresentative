@@ -29,6 +29,7 @@ local.newcastle-upon-tyne.2018-05-03,http://democracy.newcastle.gov.uk/mgWebServ
 local.newham.2018-05-03,https://mgov.newham.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=11
 local.portsmouth.2018-05-03,http://democracy.portsmouth.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=10
 local.richmond-upon-thames.2018-05-03,https://cabnet.richmond.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=12
+local.rochdale.2018-05-03,http://democracy.rochdale.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=33
 local.sefton.2018-05-03,http://modgov.sefton.gov.uk/moderngov/mgWebService.asmx/GetElectionResults?lElectionId=25
 local.south-cambridgeshire.2018-05-03,http://scambs.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=81
 local.southampton.2018-05-03,https://www.southampton.gov.uk/moderngov/mgWebService.asmx/GetElectionResults?lElectionId=13
@@ -39,6 +40,7 @@ local.tameside.2018-05-03,http://tameside.moderngov.co.uk/mgWebService.asmx/GetE
 local.tower-hamlets.2018-05-03,http://democracy.towerhamlets.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=43
 local.trafford.2018-05-03,https://democratic.trafford.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=6
 local.tunbridge-wells.2018-05-03,http://democracy.tunbridgewells.gov.uk/meetings/mgWebService.asmx/GetElectionResults?lElectionId=10
+local.west-lancashire.2018-05-03,https://democracy.westlancs.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=500000001
 local.wirral.2018-05-03,https://democracy.wirral.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=5
 local.wokingham.2018-05-03,https://wokingham.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=11
 local.wolverhampton.2018-05-03,https://wolverhampton.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=13
