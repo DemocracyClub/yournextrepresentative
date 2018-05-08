@@ -5,8 +5,10 @@ from django.utils.six.moves.urllib_parse import urljoin
 
 from elections.models import Election
 from .base import (
-    BaseCandidate, BaseDivision, BaseImporter, PartyMatacher,
-    CandidateMatcher, SavedMapping)
+    BaseCandidate, BaseDivision, BaseImporter)
+from resultsbot.matchers.mappings import SavedMapping
+from resultsbot.matchers.candidate import CandidateMatcher
+from resultsbot.matchers.party import PartyMatacher
 
 
 class ModGovCandidate(BaseCandidate):
