@@ -1,11 +1,14 @@
 from __future__ import unicode_literals
 
+import json
+from collections import defaultdict
+
 from django.core.management.base import BaseCommand
 from django.db.models import Prefetch
 
+from candidates.models import MembershipExtra
 from compat import BufferDictWriter
 from uk_results.models import ResultSet
-from candidates.models import MembershipExtra
 
 
 class Command(BaseCommand):
@@ -18,8 +21,10 @@ class Command(BaseCommand):
         'person_name',
         'ballots_cast',
         'is_winner',
+        'spoilt_ballots',
+        'turnout',
+        'source',
     ]
-
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -28,9 +33,18 @@ class Command(BaseCommand):
             required=True
         )
 
+        parser.add_argument(
+            '--format',
+            action='store',
+            required=True,
+            choices=['csv', 'json']
+        )
+
 
     def handle(self, **options):
         date = options['election_date']
+        format = options['format']
+
         qs = ResultSet.objects.filter(
             post_election__election__election_date=date
         ).select_related(
@@ -47,20 +61,19 @@ class Command(BaseCommand):
             )
 
         )
-
-        csv_out = BufferDictWriter(fieldnames=self.FIELDNAMES)
-        csv_out.writeheader()
+        out_data = []
         for result in qs:
-            row_base = {
-                'election_id': result.post_election.election.slug,
-                'ballot_paper_id': result.post_election.ballot_paper_id,
-
-            }
 
             for membership in result.post_election.membershipextra_set.all():
                 if not hasattr(membership.base, 'result'):
                     continue
-                row = row_base
+                row = {
+                    'election_id': result.post_election.election.slug,
+                    'ballot_paper_id': result.post_election.ballot_paper_id,
+                    'turnout': result.num_turnout_reported,
+                    'spoilt_ballots': result.num_spoilt_ballots,
+                    'source': result.source,
+                }
                 party = membership.base.on_behalf_of
                 try:
                     if party.name == "Independent":
@@ -77,5 +90,35 @@ class Command(BaseCommand):
                 row['person_name'] = membership.base.person.name
                 row['ballots_cast'] = membership.base.result.num_ballots
                 row['is_winner'] = membership.base.result.is_winner
+                out_data.append(row)
+
+        if format == "csv":
+            csv_out = BufferDictWriter(fieldnames=self.FIELDNAMES)
+            csv_out.writeheader()
+            for row in out_data:
                 csv_out.writerow(row)
-        self.stdout.write(csv_out.output)
+            self.stdout.write(csv_out.output)
+        else:
+            json_data = defaultdict(dict)
+            for person in out_data:
+                election_dict = json_data[person['ballot_paper_id']]
+                election_dict['turnout'] = person['turnout']
+                election_dict['spoilt_ballots'] = person['spoilt_ballots']
+                election_dict['source'] = person['source']
+
+                if 'candidates' not in election_dict:
+                    election_dict['candidates'] = []
+                election_dict['candidates'].append({
+                    'person_name': person['person_name'],
+                    'person_id': person['person_id'],
+                    'party_name': person['party_name'],
+                    'party_id': person['party_id'],
+                    'ballots_cast': person['ballots_cast'],
+                    'is_winner': person['is_winner']
+                })
+                election_dict['candidates'] = sorted(
+                    election_dict['candidates'],
+                    key=lambda p: p['ballots_cast'],
+                    reverse=True
+                )
+            self.stdout.write(json.dumps(json_data, indent=4))
