@@ -35,6 +35,8 @@ class Command(BaseCommand):
                 continue
             importer.get_data()
             for div in importer.divisions():
+                if div.local_area.ballot_paper_id == "local.tower-hamlets.whitechapel.2018-05-03":
+                    continue
                 if div.local_area.ballot_paper_id == "local.eastleigh.eastleigh-north.2018-05-03":
                     continue
                 candidates = list(importer.candidates(div))

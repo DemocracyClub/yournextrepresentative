@@ -65,6 +65,6 @@ class CurrentElectionsWithNoResuts(TemplateView):
         ).select_related(
             'postextra__base',
             'election',
-        ).order_by('election')
+        ).order_by('election', 'postextra__base__label')
 
         return context

@@ -79,7 +79,7 @@ class ResultSetForm(forms.ModelForm):
         self.fields['num_spoilt_ballots'].required = False
         self.fields['num_spoilt_ballots'].label += " (Not required)"
         self.fields['num_turnout_reported'].required = False
-        self.fields['num_turnout_reported'].label += " (Not required)"
+        self.fields['num_turnout_reported'].label += " (Percent, not required)"
 
         existing_fields = self.fields
         fields = OrderedDict()
