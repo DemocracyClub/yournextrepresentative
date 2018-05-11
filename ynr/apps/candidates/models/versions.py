@@ -4,7 +4,7 @@ from collections import defaultdict
 from datetime import datetime
 import re
 
-from .fields import ExtraField, SimplePopoloField, ComplexPopoloField
+from .fields import ExtraField, ComplexPopoloField
 
 from django.db.models import F
 from django.conf import settings

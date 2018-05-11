@@ -9,8 +9,7 @@ from django.conf import settings
 from django_extensions.db.models import TimeStampedModel
 
 from popolo.models import Person
-from candidates.models import (PersonExtra, ComplexPopoloField,
-                               SimplePopoloField)
+from candidates.models import PersonExtra, ComplexPopoloField
 
 
 class PersonTaskManager(models.Manager):

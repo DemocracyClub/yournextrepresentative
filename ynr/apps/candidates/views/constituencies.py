@@ -31,7 +31,7 @@ from ..forms import NewPersonForm, ToggleLockForm, ConstituencyRecordWinnerForm
 from ..models import (
     TRUSTED_TO_LOCK_GROUP_NAME, get_edits_allowed, is_post_locked,
     RESULT_RECORDERS_GROUP_NAME, LoggedAction, PostExtra, OrganizationExtra,
-    MembershipExtra, PartySet, SimplePopoloField, ExtraField, PostExtraElection,
+    MembershipExtra, PartySet, ExtraField, PostExtraElection,
     PersonRedirect
 )
 from official_documents.models import OfficialDocument

@@ -94,11 +94,11 @@ class Command(BaseCommand):
             raise CommandError(msg)
 
     def remove_field_objects(self):
-        # The initial migrations create SimplePopoloField and
-        # ComplexPopoloField objects so that there's a useful default
+        # The initial migrations create ComplexPopoloField
+        # objects so that there's a useful default
         # set of fields.  However, if the database is otherwise empty
         # and we're running this script, the fields will be defined by
-        # those simple and complex fields we find from the API. So
+        # those complex fields we find from the API. So
         # remove those fields:
         models.ComplexPopoloField.objects.all().delete()
 
@@ -434,7 +434,7 @@ class Command(BaseCommand):
             no_style(), [
                 emodels.AreaType, models.PartySet, pmodels.Area,
                 emodels.Election, Image, models.ExtraField,
-                models.SimplePopoloField, models.ComplexPopoloField,
+                models.ComplexPopoloField,
                 pmodels.Person,
             ]
         )

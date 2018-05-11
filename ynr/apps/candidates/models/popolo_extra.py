@@ -32,7 +32,7 @@ from images.models import Image, HasImageMixin
 
 from compat import python_2_unicode_compatible
 from .fields import (
-    ExtraField, PersonExtraFieldValue, SimplePopoloField, ComplexPopoloField,
+    ExtraField, PersonExtraFieldValue, ComplexPopoloField,
     get_complex_popolo_fields,
 )
 from ..diffs import get_version_diffs
