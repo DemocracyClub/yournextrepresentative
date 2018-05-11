@@ -27,6 +27,7 @@ HAYSTACK_CONNECTIONS = {
 SECRET_KEY = "just here for testing"
 
 SHOW_SOPN_TRACKER = False
+SHOW_RESULTS_PROGRESS = False
 
 if os.environ.get('TRAVIS'):
     try:
