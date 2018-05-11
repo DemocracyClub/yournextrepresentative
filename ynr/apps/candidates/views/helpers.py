@@ -11,8 +11,8 @@ from elections.models import Election
 from slugify import slugify
 
 from ..models import (
-    MembershipExtra, PartySet, SimplePopoloField, ExtraField,
-    ComplexPopoloField, PostExtraElection
+    MembershipExtra, PartySet, ExtraField,
+    ComplexPopoloField
 )
 
 

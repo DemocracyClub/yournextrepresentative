@@ -10,6 +10,7 @@ import official_documents.models
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('candidates', '0041_auto_20180323_1400'),
     ]
 
     operations = [
