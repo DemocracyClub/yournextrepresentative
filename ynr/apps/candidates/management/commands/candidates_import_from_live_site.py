@@ -100,7 +100,6 @@ class Command(BaseCommand):
         # and we're running this script, the fields will be defined by
         # those simple and complex fields we find from the API. So
         # remove those fields:
-        models.SimplePopoloField.objects.all().delete()
         models.ComplexPopoloField.objects.all().delete()
 
     def get_api_results(self, endpoint):
@@ -152,10 +151,6 @@ class Command(BaseCommand):
             with show_data_on_error('extra_field', extra_field):
                 del extra_field['url']
                 models.ExtraField.objects.create(**extra_field)
-        for simple_field in self.get_api_results('simple_fields'):
-            with show_data_on_error('simple_field', simple_field):
-                simple_field.pop('url', None)
-                models.SimplePopoloField.objects.create(**simple_field)
         for complex_field in self.get_api_results('complex_fields'):
             with show_data_on_error('complex_field', complex_field):
                 complex_field.pop('url', None)

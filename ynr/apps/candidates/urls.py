@@ -27,7 +27,6 @@ api_router.register(r'post_elections', views.PostExtraElectionViewSet)
 api_router.register(r'memberships', views.MembershipViewSet)
 api_router.register(r'logged_actions', views.LoggedActionViewSet)
 api_router.register(r'extra_fields', views.ExtraFieldViewSet)
-api_router.register(r'simple_fields', views.SimplePopoloFieldViewSet)
 api_router.register(r'complex_fields', views.ComplexPopoloFieldViewSet)
 api_router.register(r'person_redirects', views.PersonRedirectViewSet)
 

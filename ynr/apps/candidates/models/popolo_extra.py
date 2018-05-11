@@ -59,7 +59,7 @@ def update_person_from_form(person, person_extra, form):
         form_data['birth_date'] = repr(birth_date_date).replace("-00-00", "")
     else:
         form_data['birth_date'] = ''
-    for field in SimplePopoloField.objects.all():
+    for field in settings.SIMPLE_POPOLO_FIELDS:
         setattr(person, field.name, form_data[field.name])
     for field in ComplexPopoloField.objects.all():
         person_extra.update_complex_field(field, form_data[field.name])
@@ -279,7 +279,10 @@ class PersonExtraQuerySet(models.QuerySet):
             base__memberships__extra__election__current=True
         )
         # The field can be one of several types:
-        simple_field = SimplePopoloField.objects.filter(name=field).first()
+        simple_field = [
+            f for f in settings.SIMPLE_POPOLO_FIELDS
+            if f.name == field
+        ]
         if simple_field:
             return people_in_current_elections.filter(**{'base__' + field: ''})
         complex_field = ComplexPopoloField.objects.filter(name=field).first()
@@ -589,7 +592,7 @@ class PersonExtra(HasImageMixin, models.Model):
 
     def get_initial_form_data(self):
         initial_data = {}
-        for field in SimplePopoloField.objects.all():
+        for field in settings.SIMPLE_POPOLO_FIELDS:
             initial_data[field.name] = getattr(self.base, field.name)
         for field in ComplexPopoloField.objects.all():
             initial_data[field.name] = getattr(self, field.name)
