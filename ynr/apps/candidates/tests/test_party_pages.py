@@ -31,7 +31,6 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
             base__name='Ed Miliband'
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_extra.base,
             base__post=constituencies['Doncaster North'].base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -44,7 +43,6 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
             base__name='David Miliband'
         )
         CandidacyExtraFactory.create(
-            election=self.earlier_election,
             base__person=person_extra.base,
             base__post=constituencies['South Shields'].base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -58,7 +56,6 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
             base__name='Mark Fletcher'
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=conservative_opponent_extra.base,
             base__post=constituencies['South Shields'].base,
             base__on_behalf_of=self.conservative_party_extra.base,

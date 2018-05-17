@@ -141,7 +141,6 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_extra.base,
             base__post=post_extra_locked.base,
             base__on_behalf_of=self.green_party_extra.base,
@@ -156,7 +155,6 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.green_party_extra.base,

@@ -61,9 +61,9 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             candidacy = suggestion.object.memberships.select_related(
                 'post__extra',
                 'on_behalf_of',
-                'extra__election'
+                'extra__post_election__election'
             ).order_by(
-                '-extra__election__election_date'
+                '-extra__post_election__election__election_date'
             ).first()
             if candidacy:
                 name = """
@@ -73,7 +73,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
                         """.format(
                     name=name,
                     post=candidacy.post.extra.short_label,
-                    election=candidacy.extra.election.name,
+                    election=candidacy.extra.post_election.election.name,
                     party=candidacy.on_behalf_of.name,
                 )
                 name = SafeText(name)

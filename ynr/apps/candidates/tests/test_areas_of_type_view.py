@@ -21,7 +21,6 @@ class TestAreasOfTypeView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='Tessa Jowell'
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,

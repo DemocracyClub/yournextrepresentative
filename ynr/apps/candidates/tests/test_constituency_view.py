@@ -29,7 +29,6 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='Helen Hayes'
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -56,7 +55,6 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         CandidacyExtraFactory.create(
-            election=self.earlier_election,
             base__person=dulwich_not_stand.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -65,7 +63,6 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         dulwich_not_stand.not_standing.add(self.election)
 
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=edinburgh_winner.base,
             base__post=winner_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -76,7 +73,6 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=edinburgh_candidate.base,
             base__post=winner_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -91,7 +87,6 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             organization=self.labour_party_extra.base
         )
         CandidacyExtraFactory.create(
-            election=self.earlier_election,
             base__person=edinburgh_may_stand.base,
             base__post=winner_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -303,7 +298,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         membership = MembershipExtra.objects.filter(
             base__person_id=818,
             base__post__extra__slug='14419',
-            election__slug='2015'
+            post_election__election__slug='2015'
         )
         self.assertFalse(membership.exists())
 
@@ -340,7 +335,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         membership = MembershipExtra.objects.filter(
             base__person_id=5163,
             base__post__extra__slug='14419',
-            election__slug='2015'
+            post_election__election__slug='2015'
         )
 
         self.assertTrue(membership.exists())
@@ -372,7 +367,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         membership = MembershipExtra.objects.filter(
             base__person_id=5163,
             base__post__extra__slug='14419',
-            election__slug='2015'
+            post_election__election__slug='2015'
         )
         self.assertFalse(membership.exists())
 
@@ -409,7 +404,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         membership = MembershipExtra.objects.filter(
             base__person_id=4322,
             base__post__extra__slug='65808',
-            election__slug='2015'
+            post_election__election__slug='2015'
         )
 
         self.assertTrue(membership.exists())

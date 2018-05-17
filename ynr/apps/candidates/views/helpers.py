@@ -129,15 +129,12 @@ def get_candidacy_fields_for_person_form(form):
     return fields
 
 
-def get_party_people_for_election_from_memberships(
-        election,
-        party_id,
-        memberships
-):
+def get_party_people_for_election_from_memberships(election, party_id,
+                                                   memberships):
     election_data = Election.objects.get_by_slug(election)
     memberships = memberships.select_related('extra', 'person').filter(
         role=election_data.candidate_membership_role,
-        extra__election=election_data,
+        extra__post_election__election=election_data,
         on_behalf_of_id=party_id
     ).order_by('extra__party_list_position').all()
 
@@ -163,11 +160,11 @@ def split_candidacies(election_data, memberships):
             membership_extra = membership.extra
         except MembershipExtra.DoesNotExist:
             continue
-        if membership_extra.election == election_data:
+        if membership_extra.post_election.election == election_data:
             if not membership.role == election_data.candidate_membership_role:
                 continue
             current_candidadacies.add(membership)
-        elif membership_extra.election:
+        elif membership_extra.post_election.election:
             past_candidadacies.add(membership)
 
     return current_candidadacies, past_candidadacies

@@ -131,14 +131,12 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             },
         )
         factories.CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
         factories.CandidacyExtraFactory.create(
-            election=self.earlier_election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -255,14 +253,12 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             },
         )
         factories.CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.green_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
         factories.CandidacyExtraFactory.create(
-            election=self.earlier_election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.green_party_extra.base,
@@ -347,12 +343,12 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         candidacies = MembershipExtra.objects.filter(
             base__person=merged_person,
-            base__role=F('election__candidate_membership_role')
-        ).order_by('election__election_date')
+            base__role=F('post_election__election__candidate_membership_role')
+        ).order_by('post_election__election__election_date')
 
         self.assertEqual(len(candidacies), 2)
         for c, expected_election in zip(candidacies, ('2010', '2015')):
-            self.assertEqual(c.election.slug, expected_election)
+            self.assertEqual(c.post_election.election.slug, expected_election)
             self.assertEqual(c.base.post.extra.slug, '65808')
 
         # Check that there are only two Membership objects, since
@@ -537,12 +533,12 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         candidacies = MembershipExtra.objects.filter(
             base__person=merged_person,
-            base__role=F('election__candidate_membership_role')
+            base__role=F('post_election__election__candidate_membership_role')
         ).values_list(
-            'election__slug',
+            'post_election__election__slug',
             'base__post__extra__slug',
             'base__on_behalf_of__extra__slug',
-        ).order_by('election__slug')
+        ).order_by('post_election__election__slug')
 
         self.assertEqual(
             list(candidacies),

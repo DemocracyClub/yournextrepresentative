@@ -20,7 +20,6 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='Tessa Jowell'
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=tessa_jowell.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -37,7 +36,6 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='Helen Hayes'
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=winner.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -54,7 +52,6 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='James Smith'
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=james_smith.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,

@@ -74,14 +74,12 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             base__name='Tessa Jowell'
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_2009.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_2007.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -465,14 +463,12 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
             base__name='Tessa Jowell'
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_2009.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_2007.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,

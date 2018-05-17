@@ -259,7 +259,7 @@ class MembershipSerializer(serializers.HyperlinkedModelSerializer):
     post = MinimalPostExtraSerializer(
         read_only=True, source='post.extra')
 
-    election = MinimalElectionSerializer(source='extra.election')
+    election = MinimalElectionSerializer(source='extra.post_election.election')
 
 
 class PostElectionSerializer(serializers.HyperlinkedModelSerializer):

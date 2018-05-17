@@ -131,7 +131,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
         for pee in pees:
             candidates = []
             for membership in pee.postextra.base.memberships.filter(
-                    extra__election=pee.election,
+                    extra__post_election__election=pee.election,
                     role=pee.election.candidate_membership_role) \
                     .prefetch_related(
                         Prefetch(
@@ -140,7 +140,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                                 'on_behalf_of__extra',
                                 'organization__extra',
                                 'post__extra',
-                                'extra__election',
+                                'extra__post_election__election',
                             )
                         ),
                         Prefetch(
@@ -310,7 +310,7 @@ class PersonViewSet(viewsets.ModelViewSet):
                         'extra',
                     )
                 ),
-                'memberships__extra__election',
+                'memberships__extra__post_election__election',
                 'memberships__organization__extra',
                 'extra__images',
                 'other_names',
@@ -373,7 +373,7 @@ class PostViewSet(viewsets.ModelViewSet):
                     'on_behalf_of__extra',
                     'organization__extra',
                     'post__extra',
-                    'extra__election',
+                    'extra__post_election__election',
                 )
             )
         ) \

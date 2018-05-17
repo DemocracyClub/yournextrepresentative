@@ -14,7 +14,7 @@ def fix_2015_winners(apps, schema_editor):
         if re.winner.id == 1:
             re.winner = Person.objects.get(
                 memberships__extra__elected=True,
-                memberships__extra__election=re.election,
+                memberships__extra__post_election__election=re.election,
                 memberships__post=re.post_new,
                 memberships__on_behalf_of=re.winner_party)
             re.save()

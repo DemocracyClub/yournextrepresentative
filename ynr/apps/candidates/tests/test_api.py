@@ -49,7 +49,6 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
             base__name='Peter McColl'
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -61,7 +60,6 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
         )
 
         CandidacyExtraFactory.create(
-            election=self.earlier_election,
             base__person=dulwich_not_stand.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -70,7 +68,6 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
         dulwich_not_stand.not_standing.add(self.election)
 
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=edinburgh_winner.base,
             base__post=self.edinburgh_east_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -79,7 +76,6 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
         )
 
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=edinburgh_candidate.base,
             base__post=self.edinburgh_east_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -95,7 +91,6 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
             organization=self.labour_party_extra.base
         )
         CandidacyExtraFactory.create(
-            election=self.earlier_election,
             base__person=edinburgh_may_stand.base,
             base__post=self.edinburgh_east_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
