@@ -846,9 +846,6 @@ class MembershipExtra(models.Model):
 
     elected = models.NullBooleanField()
     party_list_position = models.IntegerField(null=True)
-    election = models.ForeignKey(
-        Election, blank=True, null=True, related_name='candidacies'
-    )
     post_election = models.ForeignKey('candidates.PostExtraElection')
 
     def save(self, *args, **kwargs):
