@@ -153,7 +153,8 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
         context['candidate_list_edits_allowed'] = \
             get_edits_allowed(self.request.user, context['candidates_locked'])
 
-        extra_qs = MembershipExtra.objects.select_related('election')
+        extra_qs = MembershipExtra.objects.select_related(
+            'post_election__election')
         current_candidacies, past_candidacies = \
             split_candidacies(
                 self.election_data,
@@ -282,7 +283,7 @@ class ConstituencyDetailCSVView(ElectionMixin, View):
         all_people = []
         for me in MembershipExtra.objects \
                 .filter(
-                    election=self.election_data,
+                    post_election__election=self.election_data,
                     base__post=post
                 ) \
                 .select_related('base__person') \
@@ -454,7 +455,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
         with transaction.atomic():
             number_of_existing_winners = self.post_data.memberships.filter(
                 extra__elected=True,
-                extra__election=self.election_data
+                extra__post_election__election=self.election_data
             ).count()
             max_winners = get_max_winners(self.post_data, self.election_data)
             if max_winners >= 0 and number_of_existing_winners >= max_winners:
@@ -472,7 +473,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 role=candidate_role,
                 post=self.post_data,
                 person=self.person,
-                extra__election=self.election_data,
+                extra__post_election__election=self.election_data,
             )
             membership_new_winner.extra.elected = True
             membership_new_winner.extra.save()
@@ -509,7 +510,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 max_reached = (max_winners == (number_of_existing_winners + 1))
                 if max_reached:
                     losing_candidacies = self.post_data.memberships.filter(
-                        extra__election=self.election_data,
+                        extra__post_election__election=self.election_data,
                     ).exclude(extra__elected=True)
                     for candidacy in losing_candidacies:
                         if candidacy.extra.elected != False:
@@ -542,7 +543,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
 
             all_candidacies = post.memberships.filter(
                 role=self.election_data.candidate_membership_role,
-                extra__election=self.election_data,
+                extra__post_election__election=self.election_data,
             )
             source = _('Result recorded in error, retracting')
             for candidacy in all_candidacies.all():
@@ -597,18 +598,22 @@ class ConstituenciesDeclaredListView(ElectionMixin, TemplateView):
         total_constituencies = Post.objects.filter(
             extra__elections=self.election_data
         ).count()
-        for membership in Membership.objects.select_related('post', 'post__area', 'post__extra').filter(
+        for membership in Membership.objects.select_related(
+                'post', 'post__area', 'post__extra'
+        ).filter(
             post__isnull=False,
-            extra__election_id=self.election_data.id,
+            extra__post_election__election_id=self.election_data.id,
             role=self.election_data.candidate_membership_role,
             extra__elected=True
         ):
             constituency_declared.append(membership.post.id)
             total_declared += 1
             constituencies.append((membership.post, True))
-        for membership in Membership.objects.select_related('post', 'post__extra').filter(
+        for membership in Membership.objects.select_related(
+                'post', 'post__extra'
+        ).filter(
             post__isnull=False,
-            extra__election=self.election_data,
+            extra__post_election__election=self.election_data,
             role=self.election_data.candidate_membership_role
         ).exclude(post_id__in=constituency_declared):
             if constituency_seen.get(membership.post.id, False):

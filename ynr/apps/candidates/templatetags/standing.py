@@ -31,7 +31,7 @@ def get_candidacy(person, election):
             memberships_qs = person.memberships.all()
         return memberships_qs.get(
                 role=election.candidate_membership_role,
-                extra__election=election
+                extra__post_election__election=election
          )
     except Membership.DoesNotExist:
         return None

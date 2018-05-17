@@ -128,7 +128,6 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='Bart Simpson'
         ).base
         existing_membership = factories.CandidacyExtraFactory.create(
-            election=self.local_election,
             base__person=existing_person,
             base__post=self.local_post.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -196,7 +195,6 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='Bart Simpson'
         ).base
         existing_membership = factories.CandidacyExtraFactory.create(
-            election=self.election,
             base__person=existing_person,
             # !!! This is the line that differs from the previous test:
             base__post=self.dulwich_post_extra.base,

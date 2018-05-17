@@ -48,7 +48,6 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                 )
                 party = parties_extra[n%5]
                 factories.CandidacyExtraFactory.create(
-                    election=self.election,
                     base__person=person_extra.base,
                     base__post=post_extra.base,
                     base__on_behalf_of=party.base,
@@ -62,7 +61,6 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
         # First, one sticking with the same party (but in a different
         # post):
         factories.CandidacyExtraFactory.create(
-            election=self.earlier_election,
             base__person=Person.objects.get(id=7000),
             base__post=posts_extra[1].base,
             base__on_behalf_of=parties_extra[0].base,
@@ -72,7 +70,6 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
         )
         # Now one in the same post but standing for a different party:
         factories.CandidacyExtraFactory.create(
-            election=self.earlier_election,
             base__person=Person.objects.get(id=7001),
             base__post=posts_extra[1].base,
             base__on_behalf_of=parties_extra[2].base,

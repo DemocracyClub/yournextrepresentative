@@ -44,7 +44,6 @@ def update_person(request=None, person_extra=None,
     membership, _ = Membership.objects.update_or_create(
         post=post_election.postextra.base,
         person=person_extra.base,
-        extra__election=election,
         role=election.candidate_membership_role,
         defaults={
             'on_behalf_of': party,
@@ -55,7 +54,6 @@ def update_person(request=None, person_extra=None,
         base=membership,
         defaults={
             'party_list_position': None,
-            'election': election,
             'elected': None,
             'post_election': post_election,
         }
@@ -70,7 +68,7 @@ def update_person(request=None, person_extra=None,
         .exclude(pk=membership.pk) \
         .filter(
             person=person_extra.base,
-            extra__election=election,
+            extra__post_election=post_election,
             role=election.candidate_membership_role,
         )
     for old_membership in old_memberships:

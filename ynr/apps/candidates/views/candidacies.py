@@ -59,7 +59,7 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
                 person=person,
                 post=post,
                 role=self.election_data.candidate_membership_role,
-                extra__election=self.election_data
+                extra__post_election__election=self.election_data
             ).exists()
 
             person.extra.not_standing.remove(self.election_data)
@@ -73,7 +73,6 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
                 )
                 MembershipExtra.objects.create(
                     base=membership,
-                    election=self.election_data,
                     post_election=self.election_data.postextraelection_set.get(
                         postextra=post.extra
                     ),
@@ -117,7 +116,7 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
             memberships_to_delete = person.memberships.filter(
                 post=post,
                 role=self.election_data.candidate_membership_role,
-                extra__election=self.election_data,
+                extra__post_election__election=self.election_data,
             )
             for m in memberships_to_delete:
                 raise_if_unsafe_to_delete(m)

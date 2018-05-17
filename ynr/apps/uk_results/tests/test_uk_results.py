@@ -37,7 +37,6 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         # Create their candidacies:
         candidacies = [
             CandidacyExtraFactory.create(
-                election=self.local_election,
                 post_election=pee,
                 base__person=person_extra.base,
                 base__post=self.local_post.base,

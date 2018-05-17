@@ -69,8 +69,9 @@ def get_person_as_version_data(person, new_person=False):
                 membership_extra = membership.extra
             except MembershipExtra.DoesNotExist:
                 continue
-            election = membership_extra.election
-            standing_in[election.slug] = {
+            post_election = membership_extra.post_election
+            election = post_election.election
+            standing_in[post_election.election.slug] = {
                 'post_id': post.extra.slug,
                 'name': shorten_post_label(post.label)
             }
@@ -81,7 +82,7 @@ def get_person_as_version_data(person, new_person=False):
                 standing_in[election.slug]['party_list_position'] = \
                     membership_extra.party_list_position
             party = membership.on_behalf_of
-            party_memberships[election.slug] = {
+            party_memberships[post_election.election.slug] = {
                 'id': party.extra.slug,
                 'name': party.name,
             }
@@ -165,7 +166,7 @@ def revert_person_from_version_data(person, person_extra, version_data, part_of_
     # Remove all candidacies, and recreate:
     for membership in Membership.objects.filter(
         person=person_extra.base,
-        role=F('extra__election__candidate_membership_role')
+        role=F('extra__post_election__election__candidate_membership_role')
     ):
         # At the moment the merge code has its own way of preserving
         # the uk_results CandidateResult data (see
@@ -200,7 +201,6 @@ def revert_person_from_version_data(person, person_extra, version_data, part_of_
             )
             MembershipExtra.objects.create(
                 base=membership,
-                election=election,
                 elected=standing_in.get('elected'),
                 party_list_position=standing_in.get('party_list_position'),
                 post_election=election.postextraelection_set.get(

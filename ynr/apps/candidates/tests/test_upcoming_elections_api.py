@@ -141,7 +141,6 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
         )
 
         CandidacyExtraFactory.create(
-            election=self.election_gla,
             base__person=person_extra.base,
             base__post=self.post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
