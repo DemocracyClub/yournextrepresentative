@@ -61,9 +61,9 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             candidacy = suggestion.object.memberships.select_related(
                 'post__extra',
                 'on_behalf_of',
-                'extra__post_election__election'
+                'post_election__election'
             ).order_by(
-                '-extra__post_election__election__election_date'
+                '-post_election__election__election_date'
             ).first()
             if candidacy:
                 name = """

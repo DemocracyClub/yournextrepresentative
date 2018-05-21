@@ -35,10 +35,10 @@
     {% if postextraelection.winner_count %}
       {{ postextraelection.winner_count }} seat{{ postextraelection.winner_count|pluralize }} up for election.
     {% endif %}
-    {{ postextraelection.membershipextra_set.count }} candidates known.
+    {{ postextraelection.membership_set.count }} candidates known.
   </p>
 
-  {% if postextraelection.membershipextra_set.count %}
+  {% if postextraelection.membership_set.exists %}
   <table>
     <thead>
       <tr>
@@ -51,13 +51,13 @@
       </tr>
     </thead>
     <tbody>
-      {% for membership in postextraelection.membershipextra_set.all %}
+      {% for membership in postextraelection.membership_set.all %}
       <tr>
-        <td><a href="{{ membership.base.person.extra.get_absolute_url }}">{{ membership.base.person.name }}</a></td>
-        <td>{{ membership.base.on_behalf_of }}</td>
+        <td><a href="{{ membership.person.extra.get_absolute_url }}">{{ membership.person.name }}</a></td>
+        <td>{{ membership.on_behalf_of }}</td>
         {% if postextraelection.resultset %}
-        <td>{{ membership.base.result.num_ballots }}</td>
-        <td>{{ membership.base.result.is_winner|yesno|title }}</td>
+        <td>{{ membership.result.num_ballots }}</td>
+        <td>{{ membership.result.is_winner|yesno|title }}</td>
         {% endif %}
       </tr>
       {% endfor %}

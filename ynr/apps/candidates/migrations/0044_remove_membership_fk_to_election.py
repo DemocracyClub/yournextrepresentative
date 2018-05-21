@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('candidates', '0043_remove_simple_popolo_field'),
+        ('candidates', '0044_delete_membership_extra'),
     ]
 
     operations = [

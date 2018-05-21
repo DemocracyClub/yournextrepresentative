@@ -57,8 +57,8 @@ def check_membership_elections_consistent():
         set(models.PostExtraElection.objects \
             .values_list('postextra', 'election'))
 
-    for me in models.MembershipExtra.objects.select_related(
-            'base__post__extra', 'post_election__election', 'base__person'):
+    for me in models.Membership.objects.select_related(
+            'post__extra', 'post_election__election', 'person'):
         post_extra = me.post_election.postextra
         election = me.post_election.election
         if (post_extra.id, election.id) not in postextra_election_tuples_allowed:
@@ -77,8 +77,8 @@ def check_membership_elections_consistent():
 
 def check_no_candidancy_for_election(person, election):
     if election.postextraelection_set.filter(
-            membershipextra__base__person=person,
-            membershipextra__base__role=election.candidate_membership_role).exists():
+            membership__person=person,
+            membership__role=election.candidate_membership_role).exists():
         msg = 'There was an existing candidacy for {person} ({person_id}) ' \
             'in the election "{election}"'
         raise Exception(msg.format(

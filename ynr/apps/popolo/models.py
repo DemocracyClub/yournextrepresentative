@@ -256,6 +256,26 @@ class Membership(Dateframeable, Timestampable, models.Model):
     # array of items referencing "http://popoloproject.com/schemas/link.json#"
     sources = GenericRelation('Source', help_text="URLs to source documents about the membership")
 
+
+    # Moved from MembeshipExtra
+    elected = models.NullBooleanField()
+    party_list_position = models.IntegerField(null=True)
+    post_election = models.ForeignKey('candidates.PostExtraElection')
+
+    def save(self, *args, **kwargs):
+        if self.post_election and getattr(self, 'check_for_broken', True):
+            if self.post_election.election in self.person.extra.not_standing.all():
+                msg = 'Trying to add a Membership with an election ' \
+                      '"{election}", but that\'s in {person} ' \
+                      '({person_id})\'s not_standing list.'
+                raise Exception(msg.format(
+                    election=self.post_election.election,
+                    person=self.person.name,
+                    person_id=self.person.id))
+        super(Membership, self).save(*args, **kwargs)
+
+
+
     try:
         # PassTrhroughManager was removed in django-model-utils 2.4, see issue #22
         objects = PassThroughManager.for_queryset_class(MembershipQuerySet)()

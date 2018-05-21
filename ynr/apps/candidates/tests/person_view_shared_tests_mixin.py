@@ -8,7 +8,7 @@ from django_webtest import WebTest
 from .auth import TestUserMixin
 from .dates import templates_before, templates_after
 from .factories import (
-    CandidacyExtraFactory, PersonExtraFactory
+    MembershipFactory, PersonExtraFactory
 )
 from .uk_examples import UK2015ExamplesMixin
 
@@ -21,10 +21,10 @@ class PersonViewSharedTestsMixin(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__id='2009',
             base__name='Tessa Jowell'
         )
-        CandidacyExtraFactory.create(
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
 

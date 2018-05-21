@@ -110,7 +110,7 @@ class Command(BaseCommand):
                 # election
                 role = election.candidate_membership_role
                 qs = PersonExtra.objects.filter(
-                    base__memberships__extra__post_election__election=election,
+                    base__memberships__post_election__election=election,
                     base__memberships__role=role,
                 )
                 all_people, elected_people = self.get_people(election, qs)

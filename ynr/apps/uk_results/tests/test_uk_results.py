@@ -3,7 +3,7 @@ from __future__ import print_function, unicode_literals
 from django.test import TestCase
 
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import (CandidacyExtraFactory,
+from candidates.tests.factories import (MembershipFactory,
                                         PersonExtraFactory)
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from uk_results.models import CandidateResult, ResultSet
@@ -36,12 +36,12 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         ]
         # Create their candidacies:
         candidacies = [
-            CandidacyExtraFactory.create(
+            MembershipFactory.create(
                 post_election=pee,
-                base__person=person_extra.base,
-                base__post=self.local_post.base,
-                base__on_behalf_of=party_extra.base,
-            ).base
+                person=person_extra.base,
+                post=self.local_post.base,
+                on_behalf_of=party_extra.base,
+            )
             for person_extra, party_extra
             in zip(self.persons_extra, parties_extra)
         ]

@@ -8,7 +8,6 @@ from django.http import HttpResponse
 
 from django.views.generic import TemplateView
 
-from candidates.models import MembershipExtra
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from popolo.models import Membership, Person

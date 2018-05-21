@@ -6,7 +6,7 @@ from collections import defaultdict
 from django.core.management.base import BaseCommand
 from django.db.models import Prefetch
 
-from candidates.models import MembershipExtra
+from popolo.models import Membership
 from compat import BufferDictWriter
 from uk_results.models import ResultSet
 
@@ -52,11 +52,10 @@ class Command(BaseCommand):
             'post_election__election',
         ).prefetch_related(
             Prefetch(
-                'post_election__membershipextra_set',
-                MembershipExtra.objects.select_related(
-                    'base',
-                    'base__person',
-                    'base__on_behalf_of',
+                'post_election__membership_set',
+                Membership.objects.select_related(
+                    'person',
+                    'on_behalf_of',
                 )
             )
 
@@ -64,8 +63,8 @@ class Command(BaseCommand):
         out_data = []
         for result in qs:
 
-            for membership in result.post_election.membershipextra_set.all():
-                if not hasattr(membership.base, 'result'):
+            for membership in result.post_election.membership_set.all():
+                if not hasattr(membership, 'result'):
                     continue
                 row = {
                     'election_id': result.post_election.election.slug,
@@ -74,7 +73,7 @@ class Command(BaseCommand):
                     'spoilt_ballots': result.num_spoilt_ballots,
                     'source': result.source,
                 }
-                party = membership.base.on_behalf_of
+                party = membership.on_behalf_of
                 try:
                     if party.name == "Independent":
                         party_id = "ynmp-party:2"
@@ -85,11 +84,11 @@ class Command(BaseCommand):
                 except:
                     party_id = ""
                 row['party_id'] = party_id
-                row['party_name'] = membership.base.on_behalf_of.name
-                row['person_id'] = membership.base.person.pk
-                row['person_name'] = membership.base.person.name
-                row['ballots_cast'] = membership.base.result.num_ballots
-                row['is_winner'] = membership.base.result.is_winner
+                row['party_name'] = membership.on_behalf_of.name
+                row['person_id'] = membership.person.pk
+                row['person_name'] = membership.person.name
+                row['ballots_cast'] = membership.result.num_ballots
+                row['is_winner'] = membership.result.is_winner
                 out_data.append(row)
 
         if format == "csv":

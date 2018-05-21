@@ -473,7 +473,7 @@ class UpdatePersonForm(AddElectionFieldsMixin, BasePersonForm):
     def __init__(self, *args, **kwargs):
         super(UpdatePersonForm, self).__init__(*args, **kwargs)
         self.elections_with_fields = list(Election.objects.filter(
-                postextraelection__membershipextra__base__person=self.initial['person'],
+                postextraelection__membership__person=self.initial['person'],
                 current=True
             ).order_by('-election_date'))
         # The fields on this form depends on how many elections are

@@ -384,7 +384,6 @@ class Command(BaseCommand):
                     kwargs['election'] = emodels.Election.objects.get(
                         slug=m_data['election']['id']
                     )
-                models.MembershipExtra.objects.create(**kwargs)
         for image_data in self.get_api_results('images'):
             with show_data_on_error('image_data', image_data):
                 endpoint, object_id = re.search(

@@ -13,7 +13,7 @@ from django.http import Http404, HttpResponseBadRequest
 from django.views.generic import TemplateView
 from django.utils.translation import ugettext as _
 
-from candidates.models import AreaExtra, PostExtra, MembershipExtra
+from candidates.models import AreaExtra, PostExtra
 from candidates.models.auth import get_edits_allowed, is_post_locked
 
 from elections.models import Election

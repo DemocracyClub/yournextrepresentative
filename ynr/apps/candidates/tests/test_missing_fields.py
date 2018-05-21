@@ -50,28 +50,28 @@ class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
             field=slogan_field,
             value='Things can only get better',
         )
-        factories.CandidacyExtraFactory.create(
-            base__person=person_old_election.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        factories.MembershipFactory.create(
+            person=person_old_election.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee_earlier,
         )
-        factories.CandidacyExtraFactory.create(
-            base__person=person_no_details.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        factories.MembershipFactory.create(
+            person=person_no_details.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
-        factories.CandidacyExtraFactory.create(
-            base__person=person_empty_slogan.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        factories.MembershipFactory.create(
+            person=person_empty_slogan.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
-        factories.CandidacyExtraFactory.create(
-            base__person=person_with_details.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.green_party_extra.base,
+        factories.MembershipFactory.create(
+            person=person_with_details.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.green_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
 

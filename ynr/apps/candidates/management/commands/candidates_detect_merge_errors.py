@@ -35,9 +35,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         qs = Person.objects.all()
         qs = qs.values(
-            'pk', 'memberships__extra__post_election'
+            'pk', 'memberships__post_election'
         ).annotate(
-            pees=Count('memberships__extra__post_election')
+            pees=Count('memberships__post_election')
         ).filter(
             pees__gt=1
         )
@@ -48,9 +48,9 @@ class Command(BaseCommand):
             ))
             if options['fix']:
                 with transaction.atomic():
-                    duplicate_pee_pk = row['memberships__extra__post_election']
+                    duplicate_pee_pk = row['memberships__post_election']
                     membership = Membership.objects.filter(
-                        extra__post_election=duplicate_pee_pk,
+                        post_election=duplicate_pee_pk,
                         person_id=row['pk'],
                     ).first()
 

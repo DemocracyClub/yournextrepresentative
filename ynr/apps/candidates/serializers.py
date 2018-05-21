@@ -248,9 +248,8 @@ class MembershipSerializer(serializers.HyperlinkedModelSerializer):
             'election',
         )
 
-    elected = serializers.ReadOnlyField(source='extra.elected')
-    party_list_position = serializers.ReadOnlyField(
-        source='extra.party_list_position')
+    elected = serializers.ReadOnlyField()
+    party_list_position = serializers.ReadOnlyField()
     person = MinimalPersonSerializer(read_only=True)
     organization = MinimalOrganizationExtraSerializer(
         read_only=True, source='organization.extra')
@@ -259,7 +258,7 @@ class MembershipSerializer(serializers.HyperlinkedModelSerializer):
     post = MinimalPostExtraSerializer(
         read_only=True, source='post.extra')
 
-    election = MinimalElectionSerializer(source='extra.post_election.election')
+    election = MinimalElectionSerializer(source='post_election.election')
 
 
 class PostElectionSerializer(serializers.HyperlinkedModelSerializer):

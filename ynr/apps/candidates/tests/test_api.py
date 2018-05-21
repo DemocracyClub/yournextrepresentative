@@ -13,8 +13,7 @@ from django.core.management import call_command
 from django_webtest import WebTest
 
 from .factories import (
-    CandidacyExtraFactory, MembershipFactory,
-    PersonExtraFactory,
+    MembershipFactory, PersonExtraFactory,
 )
 from .uk_examples import UK2015ExamplesMixin
 
@@ -48,52 +47,45 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
             base__id='5163',
             base__name='Peter McColl'
         )
-        CandidacyExtraFactory.create(
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
         MembershipFactory.create(
             person=person_extra.base,
-            organization=self.labour_party_extra.base
+            organization=self.labour_party_extra.base,
+            post_election = self.dulwich_post_extra_pee,
         )
 
-        CandidacyExtraFactory.create(
-            base__person=dulwich_not_stand.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        MembershipFactory.create(
+            person=dulwich_not_stand.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee_earlier
         )
         dulwich_not_stand.not_standing.add(self.election)
 
-        CandidacyExtraFactory.create(
-            base__person=edinburgh_winner.base,
-            base__post=self.edinburgh_east_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        MembershipFactory.create(
+            person=edinburgh_winner.base,
+            post=self.edinburgh_east_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             elected=True,
             post_election=self.edinburgh_east_post_extra_pee,
         )
 
-        CandidacyExtraFactory.create(
-            base__person=edinburgh_candidate.base,
-            base__post=self.edinburgh_east_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
-            post_election=self.edinburgh_east_post_extra_pee,
-        )
         MembershipFactory.create(
             person=edinburgh_candidate.base,
-            organization=self.labour_party_extra.base
+            post=self.edinburgh_east_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
+            post_election=self.edinburgh_east_post_extra_pee,
         )
 
         MembershipFactory.create(
-            person=edinburgh_winner.base,
-            organization=self.labour_party_extra.base
-        )
-        CandidacyExtraFactory.create(
-            base__person=edinburgh_may_stand.base,
-            base__post=self.edinburgh_east_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+            person=edinburgh_may_stand.base,
+            post=self.edinburgh_east_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.edinburgh_east_post_extra_pee_earlier,
         )
 

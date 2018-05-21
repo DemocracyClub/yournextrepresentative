@@ -47,10 +47,10 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                     base__name='Test Candidate {0}'.format(i)
                 )
                 party = parties_extra[n%5]
-                factories.CandidacyExtraFactory.create(
-                    base__person=person_extra.base,
-                    base__post=post_extra.base,
-                    base__on_behalf_of=party.base,
+                factories.MembershipFactory.create(
+                    person=person_extra.base,
+                    post=post_extra.base,
+                    on_behalf_of=party.base,
                     post_election=self.election.postextraelection_set.get(
                         postextra=post_extra
                     )
@@ -60,19 +60,19 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
         # Now create a couple of candidacies in the earlier election.
         # First, one sticking with the same party (but in a different
         # post):
-        factories.CandidacyExtraFactory.create(
-            base__person=Person.objects.get(id=7000),
-            base__post=posts_extra[1].base,
-            base__on_behalf_of=parties_extra[0].base,
+        factories.MembershipFactory.create(
+            person=Person.objects.get(id=7000),
+            post=posts_extra[1].base,
+            on_behalf_of=parties_extra[0].base,
             post_election=self.earlier_election.postextraelection_set.get(
                 postextra=posts_extra[1]
             )
         )
         # Now one in the same post but standing for a different party:
-        factories.CandidacyExtraFactory.create(
-            base__person=Person.objects.get(id=7001),
-            base__post=posts_extra[1].base,
-            base__on_behalf_of=parties_extra[2].base,
+        factories.MembershipFactory.create(
+            person=Person.objects.get(id=7001),
+            post=posts_extra[1].base,
+            on_behalf_of=parties_extra[2].base,
             post_election=self.earlier_election.postextraelection_set.get(
                 postextra=posts_extra[1]
             )

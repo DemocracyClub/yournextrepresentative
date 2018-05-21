@@ -15,7 +15,6 @@ from candidates.models.popolo_extra import VersionNotFound
 from candidates.models.popolo_extra import PersonExtra
 from candidates.models.popolo_extra import OrganizationExtra
 from candidates.models.popolo_extra import PostExtra
-from candidates.models.popolo_extra import MembershipExtra
 from candidates.models.popolo_extra import PartySet
 from candidates.models.popolo_extra import ImageExtra
 from candidates.models.popolo_extra import parse_approximate_date

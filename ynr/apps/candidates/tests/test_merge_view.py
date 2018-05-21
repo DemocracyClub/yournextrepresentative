@@ -13,7 +13,7 @@ from django_webtest import WebTest
 
 from popolo.models import Membership, Person
 
-from candidates.models import PersonRedirect, MembershipExtra, ImageExtra
+from candidates.models import PersonRedirect, ImageExtra
 from candidates.models.versions import revert_person_from_version_data
 from ynr.helpers import mkdir_p
 from .auth import TestUserMixin
@@ -130,16 +130,16 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 'user_notes': 'A photo of Tessa Jowell',
             },
         )
-        factories.CandidacyExtraFactory.create(
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        factories.MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
-        factories.CandidacyExtraFactory.create(
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        factories.MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee_earlier,
         )
         # Now create Shane Collins (who we'll merge into Tessa Jowell)
@@ -252,16 +252,16 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 'user_notes': 'A photo of Shane Collins',
             },
         )
-        factories.CandidacyExtraFactory.create(
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.green_party_extra.base,
+        factories.MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.green_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
-        factories.CandidacyExtraFactory.create(
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.green_party_extra.base,
+        factories.MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.green_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
 
@@ -341,21 +341,17 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(merged_person.honorific_prefix, 'Mr')
         self.assertEqual(merged_person.honorific_suffix, 'DBE')
 
-        candidacies = MembershipExtra.objects.filter(
-            base__person=merged_person,
-            base__role=F('post_election__election__candidate_membership_role')
+        candidacies = Membership.objects.filter(
+            person=merged_person,
+            role=F('post_election__election__candidate_membership_role')
         ).order_by('post_election__election__election_date')
 
         self.assertEqual(len(candidacies), 2)
         for c, expected_election in zip(candidacies, ('2010', '2015')):
             self.assertEqual(c.post_election.election.slug, expected_election)
-            self.assertEqual(c.base.post.extra.slug, '65808')
+            self.assertEqual(c.post.extra.slug, '65808')
 
-        # Check that there are only two Membership objects, since
-        # there has been a bug where the MembershipExtra objects were
-        # cleared on merging, but the Membership objects were left
-        # behind.  So make sure there are only two as a regression
-        # test.
+        # Check that there are only two Membership objects
         self.assertEqual(
             2,
             Membership.objects.filter(person=merged_person).count()
@@ -531,13 +527,13 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         merged_person = Person.objects.get(pk='2111')
 
-        candidacies = MembershipExtra.objects.filter(
-            base__person=merged_person,
-            base__role=F('post_election__election__candidate_membership_role')
+        candidacies = Membership.objects.filter(
+            person=merged_person,
+            role=F('post_election__election__candidate_membership_role')
         ).values_list(
             'post_election__election__slug',
-            'base__post__extra__slug',
-            'base__on_behalf_of__extra__slug',
+            'post__extra__slug',
+            'on_behalf_of__extra__slug',
         ).order_by('post_election__election__slug')
 
         self.assertEqual(

@@ -35,7 +35,7 @@ from .models import QueuedImage, SuggestedPostLock, PHOTO_REVIEWERS_GROUP_NAME
 from candidates.management.images import (
     get_file_md5sum, ImageDownloadException, download_image_from_url)
 from candidates.models import (LoggedAction, ImageExtra,
-                               PersonExtra, PostExtraElection, MembershipExtra)
+                               PersonExtra, PostExtraElection)
 from candidates.views.version_data import get_client_ip, get_change_metadata
 
 from popolo.models import Person
@@ -589,7 +589,7 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
     template_name = "moderation_queue/suggestedpostlock_review.html"
 
     def get_lock_suggestions(self, mine):
-
+        # TODO optimize this
         qs = PostExtraElection.objects.filter(
             election__current=True,
             candidates_locked=False,
@@ -606,14 +606,6 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
                 'suggestedpostlock_set',
                 SuggestedPostLock.objects.select_related('user')
             ),
-            models.Prefetch(
-                'membershipextra_set',
-                MembershipExtra.objects.select_related(
-                    'base__person__extra',
-                ).prefetch_related(
-                    'base__on_behalf_of'
-                )
-            )
         ).order_by(
             'officialdocument__source_url',
             'postextra__base__label'
