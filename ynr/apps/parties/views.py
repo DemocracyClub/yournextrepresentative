@@ -1,8 +1,7 @@
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 
-from popolo.models import Identifier
-from candidates.models import MembershipExtra
+from popolo.models import Identifier, Membership
 from elections.models import Election
 
 
@@ -26,14 +25,13 @@ class CandidatesByElectionForPartyView(TemplateView):
             )
 
 
-        candidates = MembershipExtra.objects.filter(
+        candidates = Membership.objects.filter(
             post_election__election=election,
-            base__on_behalf_of=party
+            on_behalf_of=party
         ).select_related(
             'post_election',
-            'base',
-            'base__person',
-            'base__person__extra',
+            'person',
+            'person__extra',
         ).order_by('post_election__postextra__base__label')
 
         context['party'] = party

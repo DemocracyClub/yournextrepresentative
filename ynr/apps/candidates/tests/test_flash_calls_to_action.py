@@ -24,14 +24,14 @@ class TestGetFlashMessage(UK2015ExamplesMixin, TestCase):
         )
         post_extra_in_2010 = self.edinburgh_east_post_extra
         post_extra_in_2015 = self.edinburgh_north_post_extra
-        factories.CandidacyExtraFactory.create(
-            base__person=self.fake_person_extra.base,
-            base__post=post_extra_in_2010.base,
+        factories.MembershipFactory.create(
+            person=self.fake_person_extra.base,
+            post=post_extra_in_2010.base,
             post_election=self.edinburgh_east_post_extra_pee
         )
-        factories.CandidacyExtraFactory.create(
-            base__person=self.fake_person_extra.base,
-            base__post=post_extra_in_2015.base,
+        factories.MembershipFactory.create(
+            person=self.fake_person_extra.base,
+            post=post_extra_in_2015.base,
             post_election=self.edinburgh_north_post_extra_pee
         )
 

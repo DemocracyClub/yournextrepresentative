@@ -2,15 +2,10 @@
 
 from __future__ import unicode_literals
 
-import re
-
 from django_webtest import WebTest
 
 from .auth import TestUserMixin
 
-from .factories import (
-    CandidacyExtraFactory, PersonExtraFactory, PostExtraFactory
-)
 from .uk_examples import UK2015ExamplesMixin
 
 class TestAreasView(TestUserMixin, UK2015ExamplesMixin, WebTest):

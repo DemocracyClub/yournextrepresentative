@@ -162,22 +162,4 @@ class MembershipFactory(factory.DjangoModelFactory):
     class Meta:
         model = 'popolo.Membership'
 
-
-class MembershipExtraFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = 'candidates.MembershipExtra'
-
-    base = factory.SubFactory(MembershipFactory)
-
-
-class CandidacyFactory(MembershipFactory):
-
     role = 'Candidate'
-
-
-class CandidacyExtraFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = 'candidates.MembershipExtra'
-
-    base = factory.SubFactory(CandidacyFactory)

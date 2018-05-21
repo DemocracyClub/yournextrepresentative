@@ -1,6 +1,6 @@
 from popolo.models import Membership, Person
 
-from candidates.models import (LoggedAction, MembershipExtra, PersonExtra,
+from candidates.models import (LoggedAction, PersonExtra,
                                raise_if_unsafe_to_delete)
 from candidates.models.auth import check_creation_allowed
 from candidates.views.version_data import get_change_metadata, get_client_ip
@@ -45,30 +45,24 @@ def update_person(request=None, person_extra=None,
         post=post_election.postextra.base,
         person=person_extra.base,
         role=election.candidate_membership_role,
+        post_election=post_election,
         defaults={
             'on_behalf_of': party,
-        }
-    )
-
-    MembershipExtra.objects.get_or_create(
-        base=membership,
-        defaults={
             'party_list_position': None,
             'elected': None,
-            'post_election': post_election,
         }
     )
 
     # Now remove other memberships in this election for that
     # person, although we raise an exception if there is any
-    # object (other than its MembershipExtra) that has a
+    # object that has a
     # ForeignKey to the membership, since that would result in
     # losing data.
     old_memberships = Membership.objects \
         .exclude(pk=membership.pk) \
         .filter(
             person=person_extra.base,
-            extra__post_election=post_election,
+            post_election=post_election,
             role=election.candidate_membership_role,
         )
     for old_membership in old_memberships:

@@ -34,10 +34,10 @@ class TestPartyDropDownOrdering(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     base__id=person_id,
                     base__name='John Doe {0}'.format(person_id),
                 )
-                factories.CandidacyExtraFactory.create(
-                    base__person=pe.base,
-                    base__post=posts_extra[created % len(posts_extra)].base,
-                    base__on_behalf_of=party.base,
+                factories.MembershipFactory.create(
+                    person=pe.base,
+                    post=posts_extra[created % len(posts_extra)].base,
+                    on_behalf_of=party.base,
                     post_election=election.postextraelection_set.get(
                         postextra=posts_extra[created % len(posts_extra)]
                     ),

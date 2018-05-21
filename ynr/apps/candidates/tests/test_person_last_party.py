@@ -15,17 +15,17 @@ class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
             base__id=1234,
             base__name='John Doe',
         )
-        factories.CandidacyExtraFactory.create(
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        factories.MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
 
         )
-        factories.CandidacyExtraFactory.create(
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.ld_party_extra.base,
+        factories.MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.ld_party_extra.base,
             post_election=self.dulwich_post_extra_pee_earlier,
         )
         self.assertEqual(
@@ -38,10 +38,10 @@ class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
             base__id=1234,
             base__name='John Doe',
         )
-        factories.CandidacyExtraFactory.create(
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.ld_party_extra.base,
+        factories.MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.ld_party_extra.base,
             post_election=self.dulwich_post_extra_pee_earlier,
         )
         self.assertEqual(
@@ -54,10 +54,10 @@ class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
             base__id=1234,
             base__name='John Doe',
         )
-        factories.CandidacyExtraFactory.create(
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        factories.MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
         self.assertEqual(

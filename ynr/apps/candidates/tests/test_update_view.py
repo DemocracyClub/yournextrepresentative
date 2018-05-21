@@ -14,7 +14,7 @@ from .auth import TestUserMixin
 from popolo.models import Person, Membership
 
 from candidates.models import ExtraField
-from .factories import CandidacyExtraFactory, PersonExtraFactory
+from .factories import MembershipFactory, PersonExtraFactory
 from .uk_examples import UK2015ExamplesMixin
 
 
@@ -31,10 +31,10 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='Tessa Jowell'
         )
 
-        CandidacyExtraFactory.create(
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.green_party_extra.base,
+        MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.green_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
 
@@ -203,7 +203,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             new_candidacy.post.label, 'Shepway South Ward')
         self.assertEqual(
-            new_candidacy.extra.post_election.election.slug, 'local.maidstone.2016-05-05')
+            new_candidacy.post_election.election.slug, 'local.maidstone.2016-05-05')
         self.assertEqual(
             new_candidacy.on_behalf_of.name, 'Labour Party')
         same_before_and_after = memberships_before & memberships_afterwards

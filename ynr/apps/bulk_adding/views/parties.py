@@ -4,10 +4,10 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.views.generic import FormView, TemplateView
-from popolo.models import Identifier
+from popolo.models import Identifier, Membership
 
 from bulk_adding import forms, helpers
-from candidates.models import MembershipExtra, OrganizationExtra, PersonExtra
+from candidates.models import OrganizationExtra, PersonExtra
 from elections.models import Election
 
 # Assume 5 winners if we have no other info.
@@ -81,10 +81,10 @@ class BulkAddPartyView(BasePartyBulkAddView):
         posts = []
         qs = self.get_pee_qs(context['election_obj'])
         for pee in qs:
-            existing = MembershipExtra.objects.filter(
+            existing = Membership.objects.filter(
                 post_election__election=pee.election,
-                base__post=pee.postextra.base,
-                base__on_behalf_of=context['party'],
+                post=pee.postextra.base,
+                on_behalf_of=context['party'],
             )
             extra_forms = pee.winner_count or WINNER_COUNT_IF_NONE
             factory = django_forms.formset_factory(

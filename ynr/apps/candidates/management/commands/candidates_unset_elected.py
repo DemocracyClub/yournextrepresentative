@@ -4,7 +4,7 @@ from datetime import date
 
 from django.core.management.base import BaseCommand, CommandError
 
-from candidates.models import MembershipExtra
+from popolo.models import Membership
 from elections.models import Election
 
 
@@ -30,5 +30,5 @@ class Command(BaseCommand):
             msg = "The election {0.name} ({0.slug}) is in the past: run with " \
                   "-f if you really want to do this"
             raise CommandError(msg.format(election))
-        MembershipExtra.objects.filter(post_election__election=election) \
+        Membership.objects.filter(post_election__election=election) \
             .update(elected=None)
