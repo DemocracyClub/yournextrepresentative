@@ -844,26 +844,6 @@ class PostExtraElection(models.Model):
         ])
 
 
-class MembershipExtra(models.Model):
-    base = models.OneToOneField(Membership, related_name='extra')
-
-    elected = models.NullBooleanField()
-    party_list_position = models.IntegerField(null=True)
-    post_election = models.ForeignKey('candidates.PostExtraElection')
-
-    def save(self, *args, **kwargs):
-        if self.post_election and getattr(self, 'check_for_broken', True):
-            if self.post_election.election in self.base.person.extra.not_standing.all():
-                msg = 'Trying to add a MembershipExtra with an election ' \
-                      '"{election}", but that\'s in {person} ' \
-                      '({person_id})\'s not_standing list.'
-                raise Exception(msg.format(
-                    election=self.post_election.election,
-                    person=self.base.person.name,
-                    person_id=self.base.person.id))
-        super(MembershipExtra, self).save(*args, **kwargs)
-
-
 @python_2_unicode_compatible
 class AreaExtra(models.Model):
     base = models.OneToOneField(Area, related_name='extra')
