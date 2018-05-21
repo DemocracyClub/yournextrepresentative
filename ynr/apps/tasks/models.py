@@ -4,12 +4,12 @@ import json
 from django.db import models
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from django_extensions.db.models import TimeStampedModel
 
 from popolo.models import Person
-from candidates.models import (PersonExtra, ComplexPopoloField,
-                               SimplePopoloField)
+from candidates.models import PersonExtra, ComplexPopoloField
 
 
 class PersonTaskManager(models.Manager):
@@ -46,8 +46,11 @@ class PersonTask(TimeStampedModel):
             return value
 
         person_qs = PersonExtra.objects.filter(base=self.person)
-        simple_field = SimplePopoloField.objects.filter(
-            name=self.task_field).first()
+        simple_field = [
+            f for f in settings.SIMPLE_POPOLO_FIELDS
+            if f.name == self.task_field
+        ]
+
         if simple_field:
             return person_qs.filter(**{'base__' + self.task_field: ''})
 

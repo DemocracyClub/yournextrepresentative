@@ -27,7 +27,6 @@ from candidates.models.field_mappings import CSV_ROW_FIELDS
 
 from candidates.models.fields import ExtraField
 from candidates.models.fields import PersonExtraFieldValue
-from candidates.models.fields import SimplePopoloField
 from candidates.models.fields import ComplexPopoloField
 
 

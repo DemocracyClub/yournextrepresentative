@@ -17,7 +17,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from candidates.models import (
-    PartySet, parse_approximate_date, ExtraField, SimplePopoloField, ComplexPopoloField
+    PartySet, parse_approximate_date, ExtraField, ComplexPopoloField
 )
 from popolo.models import Organization, OtherName, Post
 from .twitter_api import get_twitter_user_id, TwitterAPITokenMissing
@@ -137,7 +137,7 @@ class BasePersonForm(forms.Form):
                     "Unknown field type: {0}".format(field.type)
                 )
 
-        for field in SimplePopoloField.objects.all():
+        for field in settings.SIMPLE_POPOLO_FIELDS:
             opts = {
                 'label': _(field.label),
                 'required': field.required

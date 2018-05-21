@@ -458,6 +458,7 @@ RESULTS_BOT_USERNAME = 'ResultsBot'
 # import application constants
 from .constants.needs_review import * # noqa
 
+from ynr_refactoring.settings import *  # noqa
 
 # .local.py overrides all the common settings.
 try:

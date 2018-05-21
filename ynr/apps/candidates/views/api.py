@@ -430,12 +430,6 @@ class ExtraFieldViewSet(viewsets.ModelViewSet):
     pagination_class = ResultsSetPagination
 
 
-class SimplePopoloFieldViewSet(viewsets.ModelViewSet):
-    queryset = extra_models.SimplePopoloField.objects.order_by('id')
-    serializer_class = serializers.SimplePopoloFieldSerializer
-    pagination_class = ResultsSetPagination
-
-
 class ComplexPopoloFieldViewSet(viewsets.ModelViewSet):
     queryset = extra_models.ComplexPopoloField.objects.order_by('id')
     serializer_class = serializers.ComplexPopoloFieldSerializer

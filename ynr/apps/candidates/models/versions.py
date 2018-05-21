@@ -4,9 +4,10 @@ from collections import defaultdict
 from datetime import datetime
 import re
 
-from .fields import ExtraField, SimplePopoloField, ComplexPopoloField
+from .fields import ExtraField, ComplexPopoloField
 
 from django.db.models import F
+from django.conf import settings
 
 from ..twitter_api import update_twitter_user_id, TwitterAPITokenMissing
 
@@ -23,7 +24,7 @@ def get_person_as_version_data(person, new_person=False):
     person_extra = person.extra
     result['id'] = str(person.id)
 
-    for field in SimplePopoloField.objects.all():
+    for field in settings.SIMPLE_POPOLO_FIELDS:
         result[field.name] = getattr(person, field.name) or ''
     for field in ComplexPopoloField.objects.all():
         if new_person:
@@ -110,7 +111,7 @@ def revert_person_from_version_data(person, person_extra, version_data, part_of_
 
     from elections.models import Election
 
-    for field in SimplePopoloField.objects.all():
+    for field in settings.SIMPLE_POPOLO_FIELDS:
         new_value = version_data.get(field.name)
         if new_value:
             setattr(person, field.name, new_value)

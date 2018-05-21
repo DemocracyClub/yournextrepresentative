@@ -20,6 +20,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('uk', '0003_adjust_roles_for_grouping'),
+        ('candidates', '0021_simplepopolofield')
     ]
 
     operations = [

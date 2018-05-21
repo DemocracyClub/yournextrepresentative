@@ -7,7 +7,7 @@ from django.forms import ModelForm
 
 from .models import (
     LoggedAction, PartySet, ExtraField, PersonExtraFieldValue,
-    SimplePopoloField, ComplexPopoloField, PostExtraElection
+    ComplexPopoloField, PostExtraElection
 )
 
 
@@ -62,11 +62,6 @@ class PersonExtraFieldValueAdminForm(ModelForm):
 @admin.register(PersonExtraFieldValue)
 class PersonExtraFieldValueAdmin(admin.ModelAdmin):
     form = PersonExtraFieldValueAdminForm
-
-
-@admin.register(SimplePopoloField)
-class SimplePopoloFieldAdmin(admin.ModelAdmin):
-    list_display = ['name', 'label']
 
 
 @admin.register(PostExtraElection)

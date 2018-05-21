@@ -39,7 +39,7 @@ from ..models.versions import (
 )
 from ..models import (
     PersonExtra, merge_popit_people, ExtraField, PersonExtraFieldValue,
-    SimplePopoloField, ComplexPopoloField
+    ComplexPopoloField
 )
 from .helpers import (
     get_field_groupings, get_person_form_fields
@@ -130,7 +130,7 @@ class PersonView(TemplateView):
         context['has_current_elections'] = any([
             e.current for e in context['elections_to_list']])
         context['simple_fields'] = [
-            field.name for field in SimplePopoloField.objects.all()
+            field.name for field in settings.SIMPLE_POPOLO_FIELDS
         ]
         personal_fields, demographic_fields = get_field_groupings()
         context['has_demographics'] = any(

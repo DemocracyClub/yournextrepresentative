@@ -434,14 +434,6 @@ class ExtraFieldSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'url', 'key', 'type', 'label', 'order')
 
 
-class SimplePopoloFieldSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = candidates_models.SimplePopoloField
-        fields = (
-            'id', 'url', 'name', 'label', 'required', 'info_type_key', 'order'
-        )
-
-
 class ComplexPopoloFieldSerializer(serializers. HyperlinkedModelSerializer):
     class Meta:
         model = candidates_models.ComplexPopoloField

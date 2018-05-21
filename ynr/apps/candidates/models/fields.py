@@ -18,49 +18,6 @@ def get_complex_popolo_fields():
 
 
 @python_2_unicode_compatible
-class SimplePopoloField(models.Model):
-
-    class Meta:
-        ordering = ('order',)
-
-    VALID_FIELDS = (
-        ('name', 'Name'),
-        ('family_name', 'Family Name'),
-        ('given_name', 'Given Name'),
-        ('additional_name', 'Additional Name'),
-        ('honorific_prefix', 'Honorific Prefix'),
-        ('honorific_suffix', 'Honorific Suffix'),
-        ('patronymic_name', 'Patronymic Name'),
-        ('sort_name', 'Sort Name'),
-        ('email', 'Email'),
-        ('gender', 'Gender'),
-        ('birth_date', 'Birth Date'),
-        ('death_date', 'Death Date'),
-        ('summary', 'Summary'),
-        ('biography', 'Biography'),
-        ('national_identity', 'National Identity'),
-    )
-
-    name = models.CharField(
-        choices=VALID_FIELDS,
-        max_length=256
-    )
-    label = models.CharField(max_length=256)
-    required = models.BooleanField(default=False)
-    info_type_key = models.CharField(
-        choices=(
-            ('text', 'Text Field'),
-            ('email', 'Email Field'),
-        ),
-        max_length=256
-    )
-    order = models.IntegerField(blank=True)
-
-    def __str__(self):
-        return self.name
-
-
-@python_2_unicode_compatible
 class ComplexPopoloField(models.Model):
     """
     This model stores the name of the underlying relation, some details about

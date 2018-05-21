@@ -11,8 +11,8 @@ from elections.models import Election
 from slugify import slugify
 
 from ..models import (
-    MembershipExtra, PartySet, SimplePopoloField, ExtraField,
-    ComplexPopoloField, PostExtraElection
+    MembershipExtra, PartySet, ExtraField,
+    ComplexPopoloField
 )
 
 
@@ -72,7 +72,7 @@ def get_person_form_fields(context, form):
     personal_fields, demographic_fields = get_field_groupings()
     context['personal_fields'] = []
     context['demographic_fields'] = []
-    simple_fields = SimplePopoloField.objects.all()
+    simple_fields = settings.SIMPLE_POPOLO_FIELDS
     for field in simple_fields:
         if field.name in personal_fields:
             context['personal_fields'].append(
