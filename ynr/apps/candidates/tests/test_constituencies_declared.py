@@ -22,7 +22,6 @@ class TestConstituenciesDeclared(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='Tessa Jowell'
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=tessa_jowell.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -38,7 +37,6 @@ class TestConstituenciesDeclared(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='Helen Hayes'
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=winner.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -55,7 +53,6 @@ class TestConstituenciesDeclared(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='James Smith'
         )
         CandidacyExtraFactory.create(
-            election=self.election,
             base__person=james_smith.base,
             base__post=self.camberwell_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -112,7 +109,7 @@ class TestConstituenciesDeclared(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response.mustcontain('3 still undeclared (25% done)')
 
         unelected = MembershipExtra.objects.filter(
-            election=self.election,
+            post_election__election=self.election,
             base__person_id=2010,
             base__post__extra__slug='65913'
         ).first()

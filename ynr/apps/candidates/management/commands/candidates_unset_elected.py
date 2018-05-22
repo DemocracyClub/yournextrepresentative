@@ -13,12 +13,14 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             'ELECTION-ID',
-            help='The ID of the election for which to reset all candidacy elected statuses'
+            help='The ID of the election for which to reset all candidacy '
+                 'elected statuses'
         )
         parser.add_argument(
             '-f', '--force',
             action='store_true',
-            help='Unset the candidacy elected status even if the election is in the past'
+            help='Unset the candidacy elected status even if the election is '
+                 'in the past'
         )
 
     def handle(self, **options):
@@ -28,5 +30,5 @@ class Command(BaseCommand):
             msg = "The election {0.name} ({0.slug}) is in the past: run with " \
                   "-f if you really want to do this"
             raise CommandError(msg.format(election))
-        MembershipExtra.objects.filter(election=election) \
+        MembershipExtra.objects.filter(post_election__election=election) \
             .update(elected=None)

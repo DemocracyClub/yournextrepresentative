@@ -49,7 +49,6 @@ class PostElectionCombinationTests(UK2015ExamplesMixin, TestCase):
             base__person=new_candidate.base,
             base__post=post_extra.base,
             base__organization=election.organization,
-            election=election,
             post_election=election.postextraelection_set.get(
                 postextra=post_extra
             )
@@ -60,31 +59,6 @@ class PostElectionCombinationTests(UK2015ExamplesMixin, TestCase):
 
 
 class PreventCreatingBadMembershipExtras(UK2015ExamplesMixin, TestCase):
-
-    def test_prevent_creating_no_poestextraelection(self):
-        new_candidate = PersonExtraFactory.create(
-            base__name='John Doe'
-        )
-        post_extra = PostExtra.objects.get(slug='14419')
-        election = ElectionFactory.create(
-            slug='2005',
-            name='2005 General Election',
-            for_post_role='Member of Parliament',
-        )
-        membership = Membership.objects.create(
-            role='Candidate',
-            person=new_candidate.base,
-            on_behalf_of=self.green_party_extra.base,
-            post=post_extra.base,
-        )
-        with self.assertRaisesRegexp(
-                Exception,
-                r'Trying to create a candidacy for post Member of Parliament ' \
-                'for Edinburgh East and election 2005 General Election that ' \
-                'aren\'t linked'):
-            MembershipExtra.objects.create(
-                base=membership,
-                election=election)
 
     def test_prevent_creating_conflicts_with_not_standing(self):
         new_candidate = PersonExtraFactory.create(
@@ -104,7 +78,8 @@ class PreventCreatingBadMembershipExtras(UK2015ExamplesMixin, TestCase):
                 r'\({0}\)\'s not_standing list'.format(new_candidate.base.id)):
             MembershipExtra.objects.create(
                 base=membership,
-                election=self.election)
+                post_election=self.camberwell_post_extra_pee
+            )
 
     def test_raise_if_candidacy_exists(self):
         new_candidate = PersonExtraFactory.create(
@@ -116,7 +91,6 @@ class PreventCreatingBadMembershipExtras(UK2015ExamplesMixin, TestCase):
             base__person=new_candidate.base,
             base__post=post_extra.base,
             base__role=self.election.candidate_membership_role,
-            election=self.election,
             post_election=self.election.postextraelection_set.get(
                 postextra=post_extra
             )

@@ -16,7 +16,6 @@ class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
             base__name='John Doe',
         )
         factories.CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -24,7 +23,6 @@ class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
 
         )
         factories.CandidacyExtraFactory.create(
-            election=self.earlier_election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.ld_party_extra.base,
@@ -41,7 +39,6 @@ class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
             base__name='John Doe',
         )
         factories.CandidacyExtraFactory.create(
-            election=self.earlier_election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.ld_party_extra.base,
@@ -58,7 +55,6 @@ class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
             base__name='John Doe',
         )
         factories.CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,

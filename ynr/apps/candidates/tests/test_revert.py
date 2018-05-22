@@ -141,14 +141,12 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             note='wikipedia',
         )
         factories.CandidacyExtraFactory.create(
-            election=self.election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
         factories.CandidacyExtraFactory.create(
-            election=self.earlier_election,
             base__person=person_extra.base,
             base__post=self.dulwich_post_extra.base,
             base__on_behalf_of=self.labour_party_extra.base,
@@ -271,11 +269,11 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         candidacies = MembershipExtra.objects.filter(
             base__person=person_extra.base,
-            base__role=F('election__candidate_membership_role')
-        ).order_by('election__election_date')
+            base__role=F('post_election__election__candidate_membership_role')
+        ).order_by('post_election__election__election_date')
 
         self.assertEqual(len(candidacies), 1)
-        self.assertEqual(candidacies[0].election.slug, '2010')
+        self.assertEqual(candidacies[0].post_election.election.slug, '2010')
 
         # The homepage link should have been added and the Wikipedia
         # one removed:

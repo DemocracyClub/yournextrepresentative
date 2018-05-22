@@ -50,7 +50,6 @@ from tasks.forms import PersonTaskForm
 
 def get_call_to_action_flash_message(person, new_person=False):
     """Get HTML for a flash message after a person has been created or updated"""
-
     return render_to_string(
         'candidates/_person_update_call_to_action.html',
         {
@@ -71,9 +70,9 @@ def get_call_to_action_flash_message(person, new_person=False):
                     election_data.name
                 )
                 for election_data in Election.objects.filter(
-                    candidacies__base__person=person,
+                    postextraelection__membershipextra__base__person=person,
                     current=True
-                )
+                ).distinct()
             ]
         }
     )
@@ -121,7 +120,7 @@ class PersonView(TemplateView):
         # show those that they are standing in:
         if len(elections_by_date) > 2:
             context['elections_to_list'] = Election.objects.filter(
-                candidacies__base__person=self.person
+                postextraelection__membershipextra__base__person=self.person
             ).order_by('-election_date')
         else:
             context['elections_to_list'] = elections_by_date
