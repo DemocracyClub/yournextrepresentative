@@ -141,3 +141,27 @@ def results_progress(context):
 
 
     return context
+
+
+@register.inclusion_tag('includes/by-election-ctas.html',
+                        takes_context=True)
+def by_election_ctas(context):
+    context['SHOW_BY_ELECTION_CTA'] = getattr(
+        settings, 'SHOW_BY_ELECTION_CTA', False)
+
+    if context['SHOW_BY_ELECTION_CTA']:
+        all_pees = PostExtraElection.objects.filter(
+            election__current=True).order_by(
+                'election__election_date',
+                'election'
+            ).select_related(
+                'election',
+                'postextra__base',
+            ).prefetch_related(
+                'election__candidacies',
+            )
+        context['upcoming_pees'] = [
+            pee for pee in all_pees if not pee.election.in_past]
+        context['past_pees'] = [
+            pee for pee in all_pees if pee.election.in_past]
+    return context
