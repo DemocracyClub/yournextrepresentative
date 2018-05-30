@@ -8,8 +8,10 @@
         <tr>
             <th>Election</th>
             <th>Area</th>
-            <th>Candidates known</th>
-            <th>Locked?</th>
+            {% if request.user.is_authenticated %}
+                <th>Candidates known</th>
+                <th>Locked?</th>
+            {% endif %}
         </tr>
         </thead>
         <tbody>
@@ -23,6 +25,7 @@
                 <tr>
                     <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.election }}</a></td>
                     <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.postextra.base.label }}</a></td>
+                    {% if request.user.is_authenticated %}
                     <td>
                         {{ pee.election.candidacies.count|default:"0" }}
                     </td>
@@ -35,6 +38,7 @@
                             No
                         {% endif %}
                     </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
@@ -48,7 +52,9 @@
         <tr>
             <th>Election</th>
             <th>Area</th>
+            {% if request.user.is_authenticated %}
             <th>Results?</th>
+            {% endif %}
         </tr>
         </thead>
         <tbody>
@@ -61,11 +67,13 @@
             <tr>
                 <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.election }}</a></td>
                 <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.postextra.base.label }}</a></td>
+                {% if request.user.is_authenticated %}
                 <td>
                     <a href="{% url "ballot_paper_results_form" pee.ballot_paper_id %}">
                     {{ pee.resultset|yesno|title }}
                     </a>
                 </td>
+                {% endif %}
 
             </tr>
         {% endfor %}
