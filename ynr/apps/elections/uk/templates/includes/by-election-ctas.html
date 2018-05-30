@@ -1,7 +1,8 @@
 {% if SHOW_BY_ELECTION_CTA %}
     <h2>By-elections</h2>
-    <h3>Upcoming elections</h3>
 
+    {% if upcoming_pees %}
+    <h3>Upcoming elections</h3>
     <table>
         <thead>
         <tr>
@@ -38,7 +39,9 @@
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
 
+    {% if past_pees %}
     <h3>Recently past elections</h3>
     <table>
         <thead>
@@ -68,6 +71,6 @@
         {% endfor %}
         </tbody>
     </table>
-
+    {% endif %}
 
 {% endif %}
