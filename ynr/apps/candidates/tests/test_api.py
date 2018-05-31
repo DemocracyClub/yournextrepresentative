@@ -56,7 +56,7 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=person_extra.base,
             organization=self.labour_party_extra.base,
-            post_election = self.dulwich_post_extra_pee,
+            post_election = self.edinburgh_east_post_extra_pee,
         )
 
         MembershipFactory.create(

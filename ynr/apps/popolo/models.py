@@ -285,6 +285,9 @@ class Membership(Dateframeable, Timestampable, models.Model):
     def __str__(self):
         return self.label
 
+    class Meta:
+        unique_together = ('person', 'post_election')
+
 @python_2_unicode_compatible
 class ContactDetail(Timestampable, Dateframeable, GenericRelatable,  models.Model):
     """

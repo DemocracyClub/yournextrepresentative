@@ -262,7 +262,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person_extra.base,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.green_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.edinburgh_east_post_extra_pee,
         )
 
     def tearDown(self):
