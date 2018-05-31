@@ -24,8 +24,8 @@ def mark_candidates_as_winner(request, instance):
         )
 
         if candidate_result.is_winner:
-            membership.extra.elected = True
-            membership.extra.save()
+            membership.elected = True
+            membership.save()
 
             ResultEvent.objects.create(
                 election=election,
@@ -52,8 +52,8 @@ def mark_candidates_as_winner(request, instance):
             change_metadata['information_source'] = \
                 'Setting as "not elected" by implication'
             membership.person.extra.record_version(change_metadata)
-            membership.extra.elected = False
-            membership.extra.save()
+            membership.elected = False
+            membership.save()
 
 
 class ResultSetForm(forms.ModelForm):
@@ -83,22 +83,22 @@ class ResultSetForm(forms.ModelForm):
 
         existing_fields = self.fields
         fields = OrderedDict()
-        memberships = post_election.membershipextra_set.all()
+        memberships = post_election.membership_set.all()
         memberships = sorted(
             memberships,
-            key=lambda member: member.base.person.name.split(' ')[-1]
+            key=lambda member: member.person.name.split(' ')[-1]
         )
 
         for membership in memberships:
-            name = 'memberships_%d' % membership.base.person.pk
+            name = 'memberships_%d' % membership.person.pk
             try:
-                initial = membership.base.result.num_ballots
+                initial = membership.result.num_ballots
             except:
                 initial = None
             fields[name] = forms.IntegerField(
                 label="{} ({})".format(
-                    membership.base.person.name,
-                    membership.base.on_behalf_of.name,
+                    membership.person.name,
+                    membership.on_behalf_of.name,
                 ),
                 initial=initial,
             )
@@ -124,7 +124,7 @@ class ResultSetForm(forms.ModelForm):
             winner_count = self.post_election.winner_count
             if winner_count:
                 winners = dict(sorted(
-                    [("{}-{}".format(self[y].value(), x.base.person.id), x)
+                    [("{}-{}".format(self[y].value(), x.person.id), x)
                         for x, y in self.memberships],
                     reverse=True,
                     key=lambda votes: int(votes[0].split('-')[0])
@@ -132,12 +132,12 @@ class ResultSetForm(forms.ModelForm):
             else:
                 winners = {}
 
-            for membership_extra, field_name in self.memberships:
+            for membership, field_name in self.memberships:
                 instance.candidate_results.update_or_create(
-                    membership=membership_extra.base,
+                    membership=membership,
                     defaults={
                         'is_winner':
-                            bool(membership_extra in winners.values()),
+                            bool(membership in winners.values()),
                         'num_ballots': self[field_name].value(),
                     }
                 )

@@ -1,6 +1,8 @@
 from __future__ import print_function, unicode_literals
 
 from django.test import TestCase
+from django.core.urlresolvers import reverse
+from django_webtest import WebTest
 
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import (MembershipFactory,
@@ -9,7 +11,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from uk_results.models import CandidateResult, ResultSet
 
 
-class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
+class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
 
     def setUp(self):
         super(TestUKResults, self).setUp()
@@ -87,30 +89,16 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
             'user': 'john'
         }
 
-    def test_as_dict(self):
-        self.maxDiff = None
-        self.assertEqual(self.result_set.as_dict(), self.expected)
-
-    def test_record_version(self):
-        self.assertEqual(self.result_set.versions, [])
-        self.result_set.record_version()
-        self.assertEqual(self.result_set.versions, [self.expected])
-
-        # Make sure we don't create duplicate versons
-        self.result_set.record_version()
-        self.result_set.record_version()
-        self.assertEqual(self.result_set.versions, [self.expected])
-
-        # Make sure we can force a duplicate though
-        self.result_set.record_version(force=True)
-        self.assertEqual(len(self.result_set.versions), 2)
-        self.assertEqual(
-            self.result_set.versions,
-            [self.expected, self.expected]
+    def test_form_view(self):
+        url = reverse(
+            'ballot_paper_results_form',
+            kwargs={
+                'ballot_paper_id': 'local.maidstone.DIW:E05005004.2016-05-05'
+            }
         )
-
-        self.result_set.num_turnout_reported = 300
-        self.result_set.save()
-        self.result_set.record_version()
-
+        resp = self.app.get(url, user=self.user_who_can_record_results)
+        self.assertEqual(resp.status_code, 200)
+        form = resp.forms[1]
+        form['memberships_13'] = 345
+        form.submit()
 
