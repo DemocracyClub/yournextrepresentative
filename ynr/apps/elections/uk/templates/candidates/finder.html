@@ -5,27 +5,28 @@
 {% load home_page_tags %}
 
 {% block extra_head %}
-    <!-- Open Graph and Twitter card data -->
-    <meta property="og:url" name="twitter:url" content="{{ request.build_absolute_uri }}" />
-    <meta property="og:title" name="twitter:title" content="{{ site.name }}" />
-    <meta property="og:description" name="twitter:description" content="{% blocktrans with election_name=election_data.name site_name=site.name %}{{ site_name }} - {{ election_name }} candidates{% endblocktrans %}">
+  <!-- Open Graph and Twitter card data -->
+  <meta property="og:url" name="twitter:url" content="{{ request.build_absolute_uri }}"/>
+  <meta property="og:title" name="twitter:title" content="{{ site.name }}"/>
+  <meta property="og:description" name="twitter:description" content="
+      {% blocktrans with election_name=election_data.name site_name=site.name %}{{ site_name }} - {{ election_name }} candidates{% endblocktrans %}">
 
-    <!-- Open Graph data -->
-    <meta property="og:type" content="article" />
-    <meta property="og:image" content="{{ 'img/logo.png'|static_image_path:request }}" />
-    <meta property="og:image:height" content="80" />
-    <meta property="og:image:width" content="80" />
-    <meta property="og:site_name" content="{{ site.name }}" />
-    <meta property="og:locale" content="{{ LOCALE }}" />
+  <!-- Open Graph data -->
+  <meta property="og:type" content="article"/>
+  <meta property="og:image" content="{{ 'img/logo.png'|static_image_path:request }}"/>
+  <meta property="og:image:height" content="80"/>
+  <meta property="og:image:width" content="80"/>
+  <meta property="og:site_name" content="{{ site.name }}"/>
+  <meta property="og:locale" content="{{ LOCALE }}"/>
 
-    <!-- Twitter card data -->
-    <meta name="twitter:card" content="summary" />
-    {% if settings.TWITTER_USERNAME %}
-      <meta name="twitter:site" content="@{{ settings.TWITTER_USERNAME }}" />
-    {% endif %}
-    <meta property="twitter:image" content="{{ 'img/logo.png'|static_image_path:request }}" />
-    <meta property="twitter:image:height" content="120" />
-    <meta property="twitter:image:width" content="120" />
+  <!-- Twitter card data -->
+  <meta name="twitter:card" content="summary"/>
+  {% if settings.TWITTER_USERNAME %}
+    <meta name="twitter:site" content="@{{ settings.TWITTER_USERNAME }}"/>
+  {% endif %}
+  <meta property="twitter:image" content="{{ 'img/logo.png'|static_image_path:request }}"/>
+  <meta property="twitter:image:height" content="120"/>
+  <meta property="twitter:image:width" content="120"/>
 {% endblock %}
 
 {% block body_class %}finder{% endblock %}
@@ -39,96 +40,116 @@
 
 {% block content %}
 
-</div><!-- close .container so we can go full width with .finder__description -->
+  </div><!-- close .container so we can go full width with .finder__description -->
 
-{% if front_page_cta %}
+  {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}
     <div class="finder__forms">
       <div class="finder__forms__container">
         {% sopn_import_progress %}
         {% current_election_stats %}
         {% results_progress %}
-        {% by_election_ctas %}
       </div>
     </div>
-{% endif %}
+  {% endif %}
 
 
-<div class="finder__forms" style="margin-top:-2em">
-  <div class="finder__forms__container" style="top:0">
+  <div class="finder__forms" style="margin-top:-2em">
+    <div class="finder__forms__container" style="top:-1em">
 
-    {% person_tasks %}
-    <h4>or</h4>
-    <form id="form-postcode" action="{% url 'person-search' %}" method="get" {% if show_name_form %}style="display: none"{% endif %}>
-      {{ postcode_form.as_p }}
-      <input type="submit" class="button" value="Help get data!" />
-    </form>
+      {% person_tasks %}
+      <h4>or</h4>
+      <form id="form-postcode" action="{% url 'person-search' %}" method="get"
+            {% if show_name_form %}style="display: none"{% endif %}>
+        {{ postcode_form.as_p }}
+        <input type="submit" class="button" value="Help get data!"/>
+      </form>
+    </div>
+    {% if front_page_cta == "BY_ELECTIONS" %}
+      <div class="finder__forms__container" style="margin-top:3em">
+        {% by_election_ctas %}
+      </div>
+    {% endif %}
+
   </div>
 
-</div>
-
-<div class="container"><!-- reopen new .container -->
 
 
-<div class="finder__activity">
-  <div class="finder__activity__changes">
-    <h2><a href="{% url 'recent-changes' %}">Recent changes</a></h2>
-    <ol>
-      {% for action in recent_actions %}
-        <li>User <strong>{{ action.user.username }}</strong>
-          {% if action.action_type == 'person-create' %}
-            {% if action.person.id %}
-              created <a href="{% url 'person-view' person_id=action.person.id %}">a new candidate</a>
+  <div class="container"><!-- reopen new .container -->
+
+
+  <div class="finder__activity">
+    <div class="finder__activity__changes">
+      <h2><a href="{% url 'recent-changes' %}">Recent changes</a></h2>
+      <ol>
+        {% for action in recent_actions %}
+          <li>User <strong>{{ action.user.username }}</strong>
+            {% if action.action_type == 'person-create' %}
+              {% if action.person.id %}
+                created <a href="{% url 'person-view' person_id=action.person.id %}">a new candidate</a>
+              {% else %}
+                is creating a new candidate
+              {% endif %}
+            {% elif action.action_type == 'person-merge' %}
+              merged another candidate into
+              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
+            {% elif action.action_type == 'photo-upload' %}
+              uploaded a photo of
+              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a> for
+              moderation
+            {% elif action.action_type == 'photo-approve' %}
+              approved an uploaded photo of
+              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
+            {% elif action.action_type == 'photo-reject' %}
+              rejected an uploaded photo of
+              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
+            {% elif action.action_type == 'person-revert' %}
+              reverted to an earlier version of
+              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
+            {% elif action.action_type == 'candidacy-create' %}
+              confirmed candidacy for
+              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
+            {% elif action.action_type == 'candidacy-delete' %}
+              removed candidacy for
+              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
+            {% elif action.action_type == 'constituency-lock' %}
+              locked a constituency
+            {% elif action.action_type == 'constituency-unlock' %}
+              unlocked a constituency
+            {% elif action.action_type == 'record-council-result' %}
+              recorded a result for
+              <a href="{% url 'post-results-view' post_election_id=action.post_election_guess.id %}">{{ action.post.label }}</a>
+            {% elif action.action_type == 'record-council-control' %}
+              recorded overall control for a council
+            {% elif action.action_type == 'confirm-council-result' %}
+              reviewed a result for
+              <a href="{% url 'post-results-view' post_election_id=action.post_election_guess.id %}">{{ action.post.label }}</a>
+            {% elif action.action_type == 'confirm-council-control' %}
+              reviewed overall control for a council
+            {% elif action.action_type == 'set-candidate-elected' %}
+              marked <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
+              as the winner
+            {% elif action.action_type == 'entered-results-data' %}
+              entered results data for
+              <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.postextra.base.label }}</a>
             {% else %}
-              is creating a new candidate
+              updated <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
             {% endif %}
-          {% elif action.action_type == 'person-merge' %}
-            merged another candidate into <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-          {% elif action.action_type == 'photo-upload' %}
-            uploaded a photo of <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a> for moderation
-          {% elif action.action_type == 'photo-approve' %}
-            approved an uploaded photo of <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-          {% elif action.action_type == 'photo-reject' %}
-            rejected an uploaded photo of <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-          {% elif action.action_type == 'person-revert' %}
-            reverted to an earlier version of <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-          {% elif action.action_type == 'candidacy-create' %}
-            confirmed candidacy for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-          {% elif action.action_type == 'candidacy-delete' %}
-            removed candidacy for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-          {% elif action.action_type == 'constituency-lock' %}
-            locked a constituency
-          {% elif action.action_type == 'constituency-unlock' %}
-            unlocked a constituency
-          {% elif action.action_type == 'record-council-result' %}
-            recorded a result for <a href="{% url 'post-results-view' post_election_id=action.post_election_guess.id %}">{{ action.post.label }}</a>
-          {% elif action.action_type == 'record-council-control' %}
-            recorded overall control for a council
-          {% elif action.action_type == 'confirm-council-result' %}
-            reviewed a result for <a href="{% url 'post-results-view' post_election_id=action.post_election_guess.id %}">{{ action.post.label }}</a>
-          {% elif action.action_type == 'confirm-council-control' %}
-            reviewed overall control for a council
-          {% elif action.action_type == 'set-candidate-elected' %}
-            marked <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a> as the winner
-          {% elif action.action_type == 'entered-results-data' %}
-            entered results data for <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.postextra.base.label }}</a>
-          {% else %}
-            updated <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-          {% endif %}
-        <span class="when">{{ action.created|timesince }} ago</span></li>
-      {% endfor %}
-    </ol>
-    <p class="more"><a href="{% url 'recent-changes' %}">Show more changes…</a></p>
+            <span class="when">{{ action.created|timesince }} ago</span></li>
+        {% endfor %}
+      </ol>
+      <p class="more"><a href="{% url 'recent-changes' %}">Show more changes…</a></p>
+    </div>
+    <div class="finder__activity__leaderboard">
+      <h2><a href="{% url 'leaderboard' %}">Democracy Heroes</a></h2>
+      <h3 style="text-align:center;font-size:0.9rem"><a href="{% url 'leaderboard' %}">This week</a></h3>
+      <ol>
+        {% for row in top_users %}
+          <li><strong>{{ row.username }}</strong> <span
+              class="edits">{{ row.edit_count }} edit{{ row.edit_count|pluralize }}</span></li>
+        {% endfor %}
+      </ol>
+      <p class="more"><a href="{% url 'leaderboard' %}">Show full leaderboard…</a></p>
+    </div>
   </div>
-  <div class="finder__activity__leaderboard">
-    <h2><a href="{% url 'leaderboard' %}">Democracy Heroes</a></h2>
-    <h3 style="text-align:center;font-size:0.9rem"><a href="{% url 'leaderboard' %}">This week</a></h3>
-    <ol>
-      {% for row in top_users %}
-        <li><strong>{{ row.username }}</strong> <span class="edits">{{ row.edit_count }} edit{{ row.edit_count|pluralize }}</span></li>
-      {% endfor %}
-    </ol>
-    <p class="more"><a href="{% url 'leaderboard' %}">Show full leaderboard…</a></p>
-  </div>
-</div>
 
 {% endblock %}
