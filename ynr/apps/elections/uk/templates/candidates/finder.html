@@ -41,15 +41,16 @@
 
 </div><!-- close .container so we can go full width with .finder__description -->
 
-<div class="finder__forms">
-  <div class="finder__forms__container">
-    {% sopn_import_progress %}
-    {% current_election_stats %}
-    {% results_progress %}
-    {% by_election_ctas %}
-  </div>
-
-</div>
+{% if front_page_cta %}
+    <div class="finder__forms">
+      <div class="finder__forms__container">
+        {% sopn_import_progress %}
+        {% current_election_stats %}
+        {% results_progress %}
+        {% by_election_ctas %}
+      </div>
+    </div>
+{% endif %}
 
 
 <div class="finder__forms" style="margin-top:-2em">

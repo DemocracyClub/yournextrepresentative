@@ -41,3 +41,10 @@ ADMINS = ()
 
 # To disable new accounts
 # ACCOUNT_ADAPTER = 'ynr.account_adapter.NoNewUsersAccountAdapter'
+
+# This should be one of:
+# ELECTION_STATS
+# SOPN_TRACKER
+# RESULTS_PROGRESS
+# BY_ELECTIONS
+# FRONT_PAGE_CTA = 'BY_ELECTIONS'
