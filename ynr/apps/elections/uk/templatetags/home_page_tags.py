@@ -69,7 +69,7 @@ def election_night_countil_control_progress(context):
 def sopn_import_progress(context):
 
     context['SHOW_SOPN_TRACKER'] = getattr(
-        settings, 'SHOW_SOPN_TRACKER', False)
+        settings, 'FRONT_PAGE_CTA', False) == "SOPN_TRACKER"
     if context['SHOW_SOPN_TRACKER']:
         context['sopn_tracker_election_name'] \
             = settings.SOPN_TRACKER_INFO['election_name']
@@ -96,7 +96,7 @@ def person_tasks(context):
                         takes_context=True)
 def current_election_stats(context):
     context['SHOW_ELECTION_STATS'] = getattr(
-        settings, 'SHOW_ELECTION_STATS', False)
+        settings, 'FRONT_PAGE_CTA', False) == "ELECTION_STATS"
 
     if context['SHOW_ELECTION_STATS']:
         context['election_name'] \
@@ -122,7 +122,7 @@ def current_election_stats(context):
                         takes_context=True)
 def results_progress(context):
     context['SHOW_RESULTS_PROGRESS'] = getattr(
-        settings, 'SHOW_RESULTS_PROGRESS', False)
+        settings, 'FRONT_PAGE_CTA', False) == "RESULTS_PROGRESS"
 
     if context['SHOW_RESULTS_PROGRESS']:
         election_date = settings.SOPN_TRACKER_INFO['election_date']
@@ -140,4 +140,28 @@ def results_progress(context):
             * 100)
 
 
+    return context
+
+
+@register.inclusion_tag('includes/by-election-ctas.html',
+                        takes_context=True)
+def by_election_ctas(context):
+    context['SHOW_BY_ELECTION_CTA'] = getattr(
+        settings, 'FRONT_PAGE_CTA', False) == "BY_ELECTIONS"
+
+    if context['SHOW_BY_ELECTION_CTA']:
+        all_pees = PostExtraElection.objects.filter(
+            election__current=True).order_by(
+                'election__election_date',
+                'election'
+            ).select_related(
+                'election',
+                'postextra__base',
+            ).prefetch_related(
+                'election__candidacies',
+            )
+        context['upcoming_pees'] = [
+            pee for pee in all_pees if not pee.election.in_past]
+        context['past_pees'] = [
+            pee for pee in all_pees if pee.election.in_past]
     return context

@@ -1,0 +1,84 @@
+{% if SHOW_BY_ELECTION_CTA %}
+    <h2>By-elections</h2>
+
+    {% if upcoming_pees %}
+    <h3>Upcoming elections</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Election</th>
+            <th>Area</th>
+            {% if request.user.is_authenticated %}
+                <th>Candidates known</th>
+                <th>Locked?</th>
+            {% endif %}
+        </tr>
+        </thead>
+        <tbody>
+            {% for pee in upcoming_pees %}
+                {% ifchanged pee.election.election_date %}
+                    <tr>
+                        <th colspan="2">{{ pee.election.election_date }}</th>
+                    </tr>
+                {% endifchanged %}
+
+                <tr>
+                    <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.election }}</a></td>
+                    <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.postextra.base.label }}</a></td>
+                    {% if request.user.is_authenticated %}
+                    <td>
+                        {{ pee.election.candidacies.count|default:"0" }}
+                    </td>
+                    <td>
+                        {% if pee.candidates_locked %}
+                            <abbr title="Candidates verified and post locked">🔒</abbr>
+                        {% elif pee.postextra.suggestedpostlock_set.exists %}
+                            <abbr title="Someone suggested locking this post">🔓</abbr>
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if past_pees %}
+    <h3>Recently past elections</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Election</th>
+            <th>Area</th>
+            {% if request.user.is_authenticated %}
+            <th>Results?</th>
+            {% endif %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for pee in past_pees %}
+        {% ifchanged pee.election.election_date %}
+            <tr>
+                <th colspan="2">{{ pee.election.election_date }}</th>
+            </tr>
+        {% endifchanged %}
+            <tr>
+                <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.election }}</a></td>
+                <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.postextra.base.label }}</a></td>
+                {% if request.user.is_authenticated %}
+                <td>
+                    <a href="{% url "ballot_paper_results_form" pee.ballot_paper_id %}">
+                    {{ pee.resultset|yesno|title }}
+                    </a>
+                </td>
+                {% endif %}
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+{% endif %}
