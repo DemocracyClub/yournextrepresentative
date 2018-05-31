@@ -46,7 +46,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                     base__id=str(7000 + i),
                     base__name='Test Candidate {0}'.format(i)
                 )
-                party = parties_extra[n%5]
+                party = parties_extra[n % 5]
                 factories.MembershipFactory.create(
                     person=person_extra.base,
                     post=post_extra.base,
@@ -113,7 +113,8 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                                 "role": "Member of Parliament"
                             }
                         ],
-                        text_type(self.local_election.election_date.isoformat()): [
+                        text_type(
+                            self.local_election.election_date.isoformat()): [
                             {
                                 "elections": [
                                     {
@@ -131,7 +132,8 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                 {
                     "current": False,
                     "dates": {
-                        text_type(self.earlier_election.election_date.isoformat()): [
+                        text_type(
+                            self.earlier_election.election_date.isoformat()): [
                             {
                                 "elections": [
                                     {
@@ -155,23 +157,24 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             tuple(td.decode() for td in row.find_all('td'))
             for row in response.html.find_all('tr')
         ]
+
         self.assertEqual(
             rows,
             [
                 ('<td>2015 General Election</td>',
-                 '<td><a href="/election/2015/post/65913/camberwell-and-peckham">Member of Parliament for Camberwell and Peckham</a></td>',
+                 '<td><a href="/election/2015/post/65913/camberwell-and-peckham">Camberwell and Peckham</a></td>',
                  '<td>0</td>'),
                 ('<td>Maidstone local election</td>',
                  '<td><a href="/election/local.maidstone.2016-05-05/post/DIW:E05005004/shepway-south-ward">Shepway South Ward</a></td>',
                  '<td>0</td>'),
                 ('<td>2015 General Election</td>',
-                 '<td><a href="/election/2015/post/14420/edinburgh-north-and-leith">Member of Parliament for Edinburgh North and Leith</a></td>',
+                 '<td><a href="/election/2015/post/14420/edinburgh-north-and-leith">Edinburgh North and Leith</a></td>',
                  '<td>3</td>'),
                 ('<td>2015 General Election</td>',
-                 '<td><a href="/election/2015/post/65808/dulwich-and-west-norwood">Member of Parliament for Dulwich and West Norwood</a></td>',
+                 '<td><a href="/election/2015/post/65808/dulwich-and-west-norwood">Dulwich and West Norwood</a></td>',
                  '<td>5</td>'),
                 ('<td>2015 General Election</td>',
-                 '<td><a href="/election/2015/post/14419/edinburgh-east">Member of Parliament for Edinburgh East</a></td>',
+                 '<td><a href="/election/2015/post/14419/edinburgh-east">Edinburgh East</a></td>',
                  '<td>10</td>')
             ]
         )
@@ -186,14 +189,18 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             rows,
             [
-                ('<td><a href="/election/2015/post/14419/edinburgh-east">Member of Parliament for Edinburgh East</a></td>',
-                 '<td>10</td>'),
-                ('<td><a href="/election/2015/post/65808/dulwich-and-west-norwood">Member of Parliament for Dulwich and West Norwood</a></td>',
-                 '<td>5</td>'),
-                ('<td><a href="/election/2015/post/14420/edinburgh-north-and-leith">Member of Parliament for Edinburgh North and Leith</a></td>',
-                 '<td>3</td>'),
-                ('<td><a href="/election/2015/post/65913/camberwell-and-peckham">Member of Parliament for Camberwell and Peckham</a></td>',
-                 '<td>0</td>'),
+                (
+                '<td><a href="/election/2015/post/14419/edinburgh-east">Member of Parliament for Edinburgh East</a></td>',
+                '<td>10</td>'),
+                (
+                '<td><a href="/election/2015/post/65808/dulwich-and-west-norwood">Member of Parliament for Dulwich and West Norwood</a></td>',
+                '<td>5</td>'),
+                (
+                '<td><a href="/election/2015/post/14420/edinburgh-north-and-leith">Member of Parliament for Edinburgh North and Leith</a></td>',
+                '<td>3</td>'),
+                (
+                '<td><a href="/election/2015/post/65913/camberwell-and-peckham">Member of Parliament for Camberwell and Peckham</a></td>',
+                '<td>0</td>'),
             ]
         )
 
@@ -207,15 +214,20 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             rows,
             [
-                ('<td><a href="/election/2015/party/party:63/green-party">Green Party</a></td>',
-                 '<td>4</td>'),
-                ('<td><a href="/election/2015/party/party:53/labour-party">Labour Party</a></td>',
-                 '<td>4</td>'),
-                ('<td><a href="/election/2015/party/party:90/liberal-democrats">Liberal Democrats</a></td>',
-                 '<td>4</td>'),
-                ('<td><a href="/election/2015/party/party:52/conservative-party">Conservative Party</a></td>',
-                 '<td>3</td>'),
-                ('<td><a href="/election/2015/party/party:39/sinn-fein">Sinn F\xe9in</a></td>',
-                 '<td>3</td>'),
+                (
+                '<td><a href="/election/2015/party/party:63/green-party">Green Party</a></td>',
+                '<td>4</td>'),
+                (
+                '<td><a href="/election/2015/party/party:53/labour-party">Labour Party</a></td>',
+                '<td>4</td>'),
+                (
+                '<td><a href="/election/2015/party/party:90/liberal-democrats">Liberal Democrats</a></td>',
+                '<td>4</td>'),
+                (
+                '<td><a href="/election/2015/party/party:52/conservative-party">Conservative Party</a></td>',
+                '<td>3</td>'),
+                (
+                '<td><a href="/election/2015/party/party:39/sinn-fein">Sinn F\xe9in</a></td>',
+                '<td>3</td>'),
             ]
         )
