@@ -12,6 +12,11 @@
     {{ post_election.resultset.source|urlize }}
   </blockquote>
   {% include "uk_results/includes/vote_results_table.html" with post_election=post_election %}
+    <p>
+      <a class="button tiny" href="{% url "ballot_paper_results_form" post_election.ballot_paper_id %}">
+        Edit results
+      </a>
+    </p>
   {% else %}
   <p>
     <a class="button" href="{% url "ballot_paper_results_form" post_election.ballot_paper_id %}">
