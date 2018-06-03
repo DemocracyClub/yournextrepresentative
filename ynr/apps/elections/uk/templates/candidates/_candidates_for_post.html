@@ -71,13 +71,17 @@
           Someone else will double check it soon.
         </p>
       {% else %}
-        <button type="submit" class="button small">
           {% if candidates_locked %}
-            {% trans "Unlock candidate list" %}
+            <button type="submit" class="button small">
+              {% trans "Unlock candidate list" %}
+            </button>
           {% else %}
-            {% trans "Lock candidate list" %}
+            {% if has_lock_suggestion and some_official_documents %}
+              <button type="submit" class="button small">
+                {% trans "Lock candidate list" %}
+              </button>
+            {% endif %}
           {% endif %}
-        </button>
       {% endif %}
       <p>
       {% if candidates_locked %}
