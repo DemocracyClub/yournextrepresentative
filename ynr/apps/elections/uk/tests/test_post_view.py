@@ -203,3 +203,56 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response,
             "Lock candidate list"
         )
+
+    def test_no_lock_button_if_no_sopn(self):
+        group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
+        self.user.groups.add(group)
+        self.user.save()
+
+        pee = PostExtraElection.objects.get(
+            election__slug='2015',
+            postextra__slug='14419',
+        )
+
+        SuggestedPostLock.objects.create(
+            postextraelection=pee,
+            user=self.users_to_delete[-1],
+            justification='I liked totally reviewed the SOPN',
+        )
+
+        response = self.app.get(
+            '/election/2015/post/14419/edinburgh-east',
+            user=self.user,
+        )
+        self.assertNotContains(
+            response,
+            "Lock candidate list"
+        )
+
+    def test_no_lock_button_if_no_lock_suggestion(self):
+        group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
+        self.user.groups.add(group)
+        self.user.save()
+
+        OfficialDocument.objects.create(
+            election=self.election,
+            post=self.edinburgh_east_post_extra.base,
+            source_url='http://example.com',
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.edinburgh_east_post_extra_pee,
+            uploaded_file="sopn.pdf"
+        )
+
+        pee = PostExtraElection.objects.get(
+            election__slug='2015',
+            postextra__slug='14419',
+        )
+
+        response = self.app.get(
+            '/election/2015/post/14419/edinburgh-east',
+            user=self.user,
+        )
+        self.assertNotContains(
+            response,
+            "Lock candidate list"
+        )
