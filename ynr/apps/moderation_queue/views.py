@@ -594,8 +594,7 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
             election__current=True,
             candidates_locked=False,
         ).exclude(
-            suggestedpostlock=None,
-            officialdocument=None
+            models.Q(suggestedpostlock=None) | models.Q(officialdocument=None)
         ).select_related(
             'election',
             'postextra',

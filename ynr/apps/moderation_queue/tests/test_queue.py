@@ -503,6 +503,13 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
             user=self.user,
             justification='test data'
         )
+        OfficialDocument.objects.create(
+            election=self.election,
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            post=self.dulwich_post_extra.base,
+            post_election=pee,
+            source_url="http://example.com"
+        )
         url = reverse('suggestions-to-lock-review-list')
         response = self.app.get(url, user=self.user)
         self.assertEqual(response.status_code, 200)
