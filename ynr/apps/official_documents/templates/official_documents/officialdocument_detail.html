@@ -21,7 +21,7 @@ The source URL for this document was: <a href="{{ source_url }}">{{ source_url }
 {% endblocktrans %}
 </p>
 
-{% if documents_with_same_source.exists %}
+{% if documents_with_same_source.exists and documents_with_same_source.count > 1 %}
 <p>
   <strong>
   Watch out! This document contains candidate info for {{ documents_with_same_source.count }}
