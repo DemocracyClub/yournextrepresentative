@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     'parties',
     'candidatebot',
     'resultsbot',
+    'storages',
 )
 
 MIDDLEWARE_CLASSES = (

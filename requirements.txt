@@ -1,6 +1,7 @@
 aenum==1.4.5
 beautifulsoup4==4.4.1
 bleach==1.4.1
+boto3==1.7.46
 celery[redis]==4.1.0
 celery-haystack==0.10
 certifi>=2017.4.17
@@ -24,6 +25,7 @@ django-model-utils==2.3.1
 django-notifications-hq==1.0.0
 django-pipeline==1.6.8
 django-statici18n==1.1.5
+django-storages==1.6.6
 django-webtest==1.7.8
 Django>=1.9,<1.10
 djangorestframework-jsonp==1.0.2
