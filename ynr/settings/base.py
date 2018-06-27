@@ -219,7 +219,10 @@ STATIC_ROOT = root('static')
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.CachedFileFinder',
     'pipeline.finders.PipelineFinder',
+    'pipeline.finders.ManifestFinder',
+
 )
 
 PIPELINE = {
