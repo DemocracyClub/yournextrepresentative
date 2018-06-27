@@ -49,21 +49,6 @@ def sopn_progress_by_election(election_qs):
     return context
 
 
-@register.inclusion_tag('link.html', takes_context=True)
-def election_night_countil_control_progress(context):
-    context['council_total'] = CouncilElection.objects.all().count()
-    context['council_confirmed'] = CouncilElection.objects.filter(
-        confirmed=True).count()
-
-    if context['council_total']:
-        context['council_election_percent'] = round(
-            float(context['council_confirmed']) /
-            float(context['council_total'])
-            * 100)
-    else:
-        context['council_election_percent'] = 0
-
-
 @register.inclusion_tag('includes/sopn_import_progress.html',
                         takes_context=True)
 def sopn_import_progress(context):
