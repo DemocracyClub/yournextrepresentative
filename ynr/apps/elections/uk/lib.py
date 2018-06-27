@@ -42,15 +42,9 @@ def get_extra_csv_values(person, election, post):
                 m.group(1)
             )
     for m in person.memberships.all():
-        try:
-            m_extra = m.extra
-        except ObjectDoesNotExist:
+        if m.post_election.election != election:
             continue
-        if not m_extra.election:
-            continue
-        if m_extra.election != election:
-            continue
-        expected_role = m_extra.election.candidate_membership_role
+        expected_role = m.post_election.election.candidate_membership_role
         if expected_role != m.role:
             continue
         if m.post != post:
@@ -99,7 +93,7 @@ def additional_merge_actions(primary_person, secondary_person):
             {
                 'post': cr.membership.post,
                 'role': cr.membership.role,
-                'extra__election': cr.membership.extra.election,
+                'post_election__election': cr.membership.post_election.election,
                 'organization': cr.membership.organization,
                 'on_behalf_of': cr.membership.on_behalf_of,
             }

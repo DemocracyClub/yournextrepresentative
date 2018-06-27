@@ -30,8 +30,8 @@ from ..csv_helpers import list_to_csv
 from ..forms import NewPersonForm, ToggleLockForm, ConstituencyRecordWinnerForm
 from ..models import (
     TRUSTED_TO_LOCK_GROUP_NAME, get_edits_allowed, is_post_locked,
-    RESULT_RECORDERS_GROUP_NAME, LoggedAction, PostExtra, OrganizationExtra,
-    MembershipExtra, PartySet, SimplePopoloField, ExtraField, PostExtraElection,
+    RESULT_RECORDERS_GROUP_NAME, LoggedAction,
+    PartySet, PostExtraElection,
     PersonRedirect
 )
 from official_documents.models import OfficialDocument
@@ -153,13 +153,12 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
         context['candidate_list_edits_allowed'] = \
             get_edits_allowed(self.request.user, context['candidates_locked'])
 
-        extra_qs = MembershipExtra.objects.select_related('election')
+        extra_qs = Membership.objects.select_related(
+            'post_election__election')
         current_candidacies, past_candidacies = \
             split_candidacies(
                 self.election_data,
-                mp_post.memberships.prefetch_related(
-                    Prefetch('extra', queryset=extra_qs)
-                ).select_related(
+                mp_post.memberships.select_related(
                     'person', 'person__extra', 'on_behalf_of',
                     'on_behalf_of__extra', 'organization'
                 ).all()
@@ -175,12 +174,10 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
             current_candidacies_2015, past_candidacies_2015 = \
                 split_candidacies(
                     self.election_data,
-                    other_post.memberships.prefetch_related(
-                        Prefetch('extra', queryset=extra_qs)
-                    ).select_related(
+                    other_post.memberships.select_related(
                         'person', 'person__extra', 'on_behalf_of',
                         'on_behalf_of__extra', 'organization'
-                    ).filter(extra__election__slug='2015')
+                    ).filter(post_election__election__slug='2015')
                 )
 
         # HACK
@@ -245,9 +242,9 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
         context['show_retract_result'] = False
         number_of_winners = 0
         for c in current_candidacies:
-            if c.extra.elected:
+            if c.elected:
                 number_of_winners += 1
-            if c.extra.elected is not None:
+            if c.elected is not None:
                 context['show_retract_result'] = True
 
         max_winners = get_max_winners(mp_post, self.election_data)
@@ -280,14 +277,14 @@ class ConstituencyDetailCSVView(ElectionMixin, View):
             .select_related('extra') \
             .get(extra__slug=kwargs['post_id'])
         all_people = []
-        for me in MembershipExtra.objects \
+        for me in Membership.objects \
                 .filter(
-                    election=self.election_data,
-                    base__post=post
+                    post_election__election=self.election_data,
+                    post=post
                 ) \
-                .select_related('base__person') \
-                .prefetch_related('base__person__extra'):
-            for d in me.base.person.extra.as_list_of_dicts(
+                .select_related('person') \
+                .prefetch_related('person__extra'):
+            for d in me.person.extra.as_list_of_dicts(
                     self.election_data, redirects=redirects):
                 all_people.append(d)
 
@@ -312,12 +309,14 @@ class ConstituencyListView(ElectionMixin, TemplateView):
             ).order_by('postextra__base__label') \
             .select_related('postextra__base') \
             .select_related('election') \
+            .select_related('resultset') \
             .prefetch_related('suggestedpostlock_set')\
             .prefetch_related(
                 Prefetch(
-                    'membershipextra_set',
-                    MembershipExtra.objects.select_related(
-                        'base__person__extra',
+                    'membership_set',
+                    Membership.objects.select_related(
+                        'on_behalf_of',
+                        'person__extra'
                     )
                 )
             )
@@ -453,8 +452,8 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
 
         with transaction.atomic():
             number_of_existing_winners = self.post_data.memberships.filter(
-                extra__elected=True,
-                extra__election=self.election_data
+                elected=True,
+                post_election__election=self.election_data
             ).count()
             max_winners = get_max_winners(self.post_data, self.election_data)
             if max_winners >= 0 and number_of_existing_winners >= max_winners:
@@ -472,10 +471,10 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 role=candidate_role,
                 post=self.post_data,
                 person=self.person,
-                extra__election=self.election_data,
+                post_election__election=self.election_data,
             )
-            membership_new_winner.extra.elected = True
-            membership_new_winner.extra.save()
+            membership_new_winner.elected = True
+            membership_new_winner.save()
 
             ResultEvent.objects.create(
                 election=self.election_data,
@@ -509,12 +508,12 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 max_reached = (max_winners == (number_of_existing_winners + 1))
                 if max_reached:
                     losing_candidacies = self.post_data.memberships.filter(
-                        extra__election=self.election_data,
-                    ).exclude(extra__elected=True)
+                        post_election__election=self.election_data,
+                    ).exclude(elected=True)
                     for candidacy in losing_candidacies:
-                        if candidacy.extra.elected != False:
-                            candidacy.extra.elected = False
-                            candidacy.extra.save()
+                        if candidacy.elected != False:
+                            candidacy.elected = False
+                            candidacy.save()
                             candidate = candidacy.person
                             change_metadata = get_change_metadata(
                                 self.request,
@@ -542,11 +541,11 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
 
             all_candidacies = post.memberships.filter(
                 role=self.election_data.candidate_membership_role,
-                extra__election=self.election_data,
+                post_election__election=self.election_data,
             )
             source = _('Result recorded in error, retracting')
             for candidacy in all_candidacies.all():
-                if candidacy.extra.elected:
+                if candidacy.elected:
                     # If elected is True then a ResultEvent will have
                     # been created and been included in the feed, so
                     # we need to create a corresponding retraction
@@ -564,9 +563,9 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
                             'uk.org.publicwhip'),
                         retraction=True,
                     )
-                if candidacy.extra.elected is not None:
-                    candidacy.extra.elected = None
-                    candidacy.extra.save()
+                if candidacy.elected is not None:
+                    candidacy.elected = None
+                    candidacy.save()
                     candidate = candidacy.person
                     change_metadata = get_change_metadata(self.request, source)
                     candidate.extra.record_version(change_metadata)
@@ -597,18 +596,22 @@ class ConstituenciesDeclaredListView(ElectionMixin, TemplateView):
         total_constituencies = Post.objects.filter(
             extra__elections=self.election_data
         ).count()
-        for membership in Membership.objects.select_related('post', 'post__area', 'post__extra').filter(
+        for membership in Membership.objects.select_related(
+                'post', 'post__extra'
+        ).filter(
             post__isnull=False,
-            extra__election_id=self.election_data.id,
+            post_election__election_id=self.election_data.id,
             role=self.election_data.candidate_membership_role,
-            extra__elected=True
+            elected=True
         ):
             constituency_declared.append(membership.post.id)
             total_declared += 1
             constituencies.append((membership.post, True))
-        for membership in Membership.objects.select_related('post', 'post__extra').filter(
+        for membership in Membership.objects.select_related(
+                'post', 'post__extra'
+        ).filter(
             post__isnull=False,
-            extra__election=self.election_data,
+            post_election__election=self.election_data,
             role=self.election_data.candidate_membership_role
         ).exclude(post_id__in=constituency_declared):
             if constituency_seen.get(membership.post.id, False):

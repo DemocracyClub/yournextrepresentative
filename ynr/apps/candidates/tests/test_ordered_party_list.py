@@ -5,7 +5,7 @@ from django_webtest import WebTest
 
 from .auth import TestUserMixin
 from .factories import (
-    CandidacyExtraFactory, MembershipFactory, PersonExtraFactory
+    MembershipFactory, MembershipFactory, PersonExtraFactory
 )
 from .uk_examples import UK2015ExamplesMixin
 
@@ -19,51 +19,36 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__id='2009',
             base__name='Tessa Jowell'
         )
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=tessa_jowell.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
-            party_list_position=1,
-            post_election=self.dulwich_post_extra_pee,
-        )
         MembershipFactory.create(
             person=tessa_jowell.base,
-            organization=self.labour_party_extra.base
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
+            party_list_position=1,
+            post_election=self.dulwich_post_extra_pee,
         )
 
         winner = PersonExtraFactory.create(
             base__id='4322',
             base__name='Helen Hayes'
         )
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=winner.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
-            party_list_position=2,
-            post_election=self.dulwich_post_extra_pee,
-        )
         MembershipFactory.create(
             person=winner.base,
-            organization=self.labour_party_extra.base
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
+            party_list_position=2,
+            post_election=self.dulwich_post_extra_pee,
         )
 
         james_smith = PersonExtraFactory.create(
             base__id='2010',
             base__name='James Smith'
         )
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=james_smith.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
-            party_list_position=3,
-            post_election=self.dulwich_post_extra_pee,
-        )
         MembershipFactory.create(
             person=james_smith.base,
-            organization=self.labour_party_extra.base
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
+            party_list_position=3,
+            post_election=self.dulwich_post_extra_pee,
         )
 
     def test_party_list_page(self):

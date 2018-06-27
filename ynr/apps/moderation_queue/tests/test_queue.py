@@ -26,7 +26,7 @@ from official_documents.models import OfficialDocument
 from ynr.helpers import mkdir_p
 
 from candidates.tests.factories import (
-    PersonExtraFactory, CandidacyExtraFactory,
+    PersonExtraFactory, MembershipFactory,
 )
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.tests.auth import TestUserMixin
@@ -73,18 +73,16 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             base__id='2007',
             base__name='Tessa Jowell'
         )
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=person_2009.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        MembershipFactory.create(
+            person=person_2009.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=person_2007.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        MembershipFactory.create(
+            person=person_2007.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
 
@@ -464,18 +462,16 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
             base__id='2007',
             base__name='Tessa Jowell'
         )
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=person_2009.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        MembershipFactory.create(
+            person=person_2009.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=person_2007.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        MembershipFactory.create(
+            person=person_2007.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
 

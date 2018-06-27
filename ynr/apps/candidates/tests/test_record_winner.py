@@ -9,7 +9,7 @@ from popolo.models import Person
 from candidates.models import PostExtraElection
 from .auth import TestUserMixin
 from .factories import (
-    CandidacyExtraFactory, MembershipFactory, PersonExtraFactory,
+    MembershipFactory, MembershipFactory, PersonExtraFactory,
 )
 from .dates import templates_after
 from .uk_examples import UK2015ExamplesMixin
@@ -24,16 +24,11 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__id='2009',
             base__name='Tessa Jowell'
         )
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
-        )
         MembershipFactory.create(
             person=person_extra.base,
-            organization=self.labour_party_extra.base
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
         )
 
         self.winner = PersonExtraFactory.create(
@@ -41,17 +36,11 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='Helen Hayes'
         )
 
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=self.winner.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
-        )
-
         MembershipFactory.create(
             person=self.winner.base,
-            organization=self.labour_party_extra.base
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
         )
 
     @override_settings(TEMPLATES=templates_after)
@@ -303,16 +292,11 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__id='2009',
             base__name='Tessa Jowell'
         )
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
-        )
         MembershipFactory.create(
             person=person_extra.base,
-            organization=self.labour_party_extra.base
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
+            post_election=self.dulwich_post_extra_pee,
         )
 
         self.winner = PersonExtraFactory.create(
@@ -320,19 +304,14 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='Helen Hayes'
         )
 
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=self.winner.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        MembershipFactory.create(
+            person=self.winner.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             elected=True,
             post_election=self.dulwich_post_extra_pee,
         )
 
-        MembershipFactory.create(
-            person=self.winner.base,
-            organization=self.labour_party_extra.base
-        )
 
     def test_retract_winner_link_present(self):
         response = self.app.get(

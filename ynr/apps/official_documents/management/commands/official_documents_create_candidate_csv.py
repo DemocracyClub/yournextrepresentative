@@ -6,12 +6,11 @@ from compat import BufferDictWriter
 from django.core.management.base import BaseCommand
 
 from official_documents.models import OfficialDocument
-from candidates.models import MembershipExtra
+from popolo.models import Membership
 from popolo.models import Identifier
 
 
 class Command(BaseCommand):
-
     help = "Create a CSV with candidate info form the SOPNs"
 
     def handle(self, *args, **options):
@@ -32,15 +31,15 @@ class Command(BaseCommand):
         out_csv.writeheader()
         documents = OfficialDocument.objects.all().order_by('election', 'post')
         for document in documents:
-            document_memberships = MembershipExtra.objects.filter(
-                base__post=document.post,
+            document_memberships = Membership.objects.filter(
+                post=document.post,
                 election=document.election
             ).select_related(
                 'base',
-                'base__on_behalf_of',
-                'base__post__extra',
-                'base__post',
-                'base__person',
+                'on_behalf_of',
+                'post__extra',
+                'post',
+                'person',
             )
 
             out_dict = {

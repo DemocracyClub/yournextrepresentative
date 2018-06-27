@@ -4,9 +4,10 @@ from collections import defaultdict
 from datetime import datetime
 import re
 
-from .fields import ExtraField, SimplePopoloField, ComplexPopoloField
+from .fields import ExtraField, ComplexPopoloField
 
 from django.db.models import F
+from django.conf import settings
 
 from ..twitter_api import update_twitter_user_id, TwitterAPITokenMissing
 
@@ -23,7 +24,7 @@ def get_person_as_version_data(person, new_person=False):
     person_extra = person.extra
     result['id'] = str(person.id)
 
-    for field in SimplePopoloField.objects.all():
+    for field in settings.SIMPLE_POPOLO_FIELDS:
         result[field.name] = getattr(person, field.name) or ''
     for field in ComplexPopoloField.objects.all():
         if new_person:
@@ -62,25 +63,21 @@ def get_person_as_version_data(person, new_person=False):
         result['image'] = person.image
 
         for membership in person.memberships.filter(post__isnull=False):
-            from candidates.models import MembershipExtra
             post = membership.post
-            try:
-                membership_extra = membership.extra
-            except MembershipExtra.DoesNotExist:
-                continue
-            election = membership_extra.election
-            standing_in[election.slug] = {
+            post_election = membership.post_election
+            election = post_election.election
+            standing_in[post_election.election.slug] = {
                 'post_id': post.extra.slug,
                 'name': shorten_post_label(post.label)
             }
-            if membership_extra.elected is not None:
+            if membership.elected is not None:
                 standing_in[election.slug]['elected'] = \
-                    membership_extra.elected
-            if membership_extra.party_list_position is not None:
+                    membership.elected
+            if membership.party_list_position is not None:
                 standing_in[election.slug]['party_list_position'] = \
-                    membership_extra.party_list_position
+                    membership.party_list_position
             party = membership.on_behalf_of
-            party_memberships[election.slug] = {
+            party_memberships[post_election.election.slug] = {
                 'id': party.extra.slug,
                 'name': party.name,
             }
@@ -106,11 +103,11 @@ def get_person_as_version_data(person, new_person=False):
 def revert_person_from_version_data(person, person_extra, version_data, part_of_merge=False):
 
     from popolo.models import Membership, Organization, Post
-    from candidates.models import MembershipExtra, raise_if_unsafe_to_delete
+    from candidates.models import raise_if_unsafe_to_delete
 
     from elections.models import Election
 
-    for field in SimplePopoloField.objects.all():
+    for field in settings.SIMPLE_POPOLO_FIELDS:
         new_value = version_data.get(field.name)
         if new_value:
             setattr(person, field.name, new_value)
@@ -164,7 +161,7 @@ def revert_person_from_version_data(person, person_extra, version_data, part_of_
     # Remove all candidacies, and recreate:
     for membership in Membership.objects.filter(
         person=person_extra.base,
-        role=F('extra__election__candidate_membership_role')
+        role=F('post_election__election__candidate_membership_role')
     ):
         # At the moment the merge code has its own way of preserving
         # the uk_results CandidateResult data (see
@@ -191,21 +188,18 @@ def revert_person_from_version_data(person, person_extra, version_data, part_of_
                 extra__slug=version_data['party_memberships'][election_slug]['id']
             )
             post = Post.objects.get(extra__slug=standing_in['post_id'])
-            membership = Membership.objects.create(
+            Membership.objects.create(
                 on_behalf_of=party,
                 person=person,
                 post=post,
                 role=election.candidate_membership_role,
-            )
-            MembershipExtra.objects.create(
-                base=membership,
-                election=election,
                 elected=standing_in.get('elected'),
                 party_list_position=standing_in.get('party_list_position'),
                 post_election=election.postextraelection_set.get(
                     postextra=post.extra
                 )
             )
+
     person.save()
     person_extra.save()
     try:

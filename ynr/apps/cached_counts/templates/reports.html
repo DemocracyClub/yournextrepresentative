@@ -2,9 +2,9 @@
 {% load humanize i18n %}
 
 {% block hero %}
-<div class="person__hero">
-  <h1>{% trans "Reports" %}</h1>
-</div>
+  <div class="person__hero">
+    <h1>{% trans "Reports" %}</h1>
+  </div>
 {% endblock hero %}
 
 {% block content %}
@@ -12,11 +12,11 @@
   <h2>{% trans 'Which posts have fewest candidates so far?' %}</h2>
 
   <p>{% url 'attention_needed' as url %}
-     {% blocktrans trimmed %}
-        You can see a list of all the posts in current elections
-        <a href="{{ url }}">ordered starting with those with the fewest
+    {% blocktrans trimmed %}
+      You can see a list of all the posts in current elections
+      <a href="{{ url }}">ordered starting with those with the fewest
         candidates</a>.
-     {% endblocktrans %}
+    {% endblocktrans %}
   </p>
 
   {% for era in all_elections %}
@@ -38,8 +38,14 @@
                 <ul>
                   <li>{% blocktrans %}Total candidates:{% endblocktrans %} {{ election.total }}</li>
                   <li><a href="{% url "posts_counts" election=election.id %}">{% trans "Candidates per post" %}</a></li>
-                  <li><a href="{% url "parties_counts" election=election.id %}">{% trans "Candidates per party" %}</a></li>
-                  <li><a href="{% url "constituencies-unlocked" election=election.id %}">{% trans "See progress towards locking all posts" %}</a></li>
+                  <li>
+                    <a href="{% url "parties_counts" election=election.id %}">{% trans "Candidates per party" %}</a>
+                  </li>
+                  <li>
+                    <a href="{% url "constituencies-unlocked" election=election.id %}">
+                      {% trans "See progress towards locking all posts" %}
+                    </a>
+                  </li>
                 </ul>
               {% endwith %}
             </div>

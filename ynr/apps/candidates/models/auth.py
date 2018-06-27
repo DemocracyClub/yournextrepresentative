@@ -56,7 +56,7 @@ def get_constituency_lock(user, post, election):
 def check_creation_allowed(user, new_candidacies):
     for candidacy in new_candidacies:
         post = candidacy.post
-        election = candidacy.extra.election
+        election = candidacy.post_election.election
         dummy, edits_allowed = get_constituency_lock(user, post, election)
         if not edits_allowed:
             raise ChangeToLockedConstituencyDisallowedException(
@@ -76,8 +76,10 @@ def check_update_allowed(user, old_name, old_candidacies, new_name, new_candidac
             ))
     # Check that none of the posts that the person's leaving or
     # joining were locked:
-    old_posts = set((c.post, c.extra.election) for c in old_candidacies)
-    new_posts = set((c.post, c.extra.election) for c in new_candidacies)
+    old_posts = set((
+        c.post, c.post_election.election) for c in old_candidacies)
+    new_posts = set((
+        c.post, c.post_election.election) for c in new_candidacies)
     for post, election in old_posts ^ new_posts:
         dummy, edits_allowed = get_constituency_lock(user, post, election)
         if not edits_allowed:

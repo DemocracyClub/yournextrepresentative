@@ -10,7 +10,7 @@ from .dates import (
     templates_after,
 )
 from .uk_examples import UK2015ExamplesMixin
-from .factories import CandidacyExtraFactory, PersonExtraFactory
+from .factories import MembershipFactory, PersonExtraFactory
 
 
 class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -21,11 +21,10 @@ class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__id='2009',
             base__name='Tessa Jowell'
         )
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
 

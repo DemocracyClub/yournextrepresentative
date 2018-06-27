@@ -130,8 +130,8 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
         )
         for pee in pees:
             candidates = []
-            for membership in pee.postextra.base.memberships.filter(
-                    extra__election=pee.election,
+            for membership in pee.membership_set.filter(
+                    post_election__election=pee.election,
                     role=pee.election.candidate_membership_role) \
                     .prefetch_related(
                         Prefetch(
@@ -140,7 +140,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                                 'on_behalf_of__extra',
                                 'organization__extra',
                                 'post__extra',
-                                'extra__election',
+                                'post_election__election',
                             )
                         ),
                         Prefetch(
@@ -307,10 +307,9 @@ class PersonViewSet(viewsets.ModelViewSet):
                         'on_behalf_of__extra',
                         'organization__extra',
                         'post__extra',
-                        'extra',
                     )
                 ),
-                'memberships__extra__election',
+                'memberships__post_election__election',
                 'memberships__organization__extra',
                 'extra__images',
                 'other_names',
@@ -373,7 +372,7 @@ class PostViewSet(viewsets.ModelViewSet):
                     'on_behalf_of__extra',
                     'organization__extra',
                     'post__extra',
-                    'extra__election',
+                    'post_election__election',
                 )
             )
         ) \
@@ -427,12 +426,6 @@ class LoggedActionViewSet(viewsets.ModelViewSet):
 class ExtraFieldViewSet(viewsets.ModelViewSet):
     queryset = extra_models.ExtraField.objects.order_by('id')
     serializer_class = serializers.ExtraFieldSerializer
-    pagination_class = ResultsSetPagination
-
-
-class SimplePopoloFieldViewSet(viewsets.ModelViewSet):
-    queryset = extra_models.SimplePopoloField.objects.order_by('id')
-    serializer_class = serializers.SimplePopoloFieldSerializer
     pagination_class = ResultsSetPagination
 
 

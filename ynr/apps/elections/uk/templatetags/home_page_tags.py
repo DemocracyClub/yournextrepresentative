@@ -1,13 +1,13 @@
 import random
 
 from django import template
-from django.db.models import F, Sum
 from django.conf import settings
+from django.db.models import Sum
 
-from candidates.models import PostExtraElection, MembershipExtra
+from candidates.models import PostExtraElection
 from elections.models import Election
+from popolo.models import Membership
 from tasks.models import PersonTask
-
 
 register = template.Library()
 
@@ -111,7 +111,7 @@ def current_election_stats(context):
             ).aggregate(
                 count=Sum('winner_count')
             )['count'],
-            'candidates': MembershipExtra.objects.filter(
+            'candidates': Membership.objects.filter(
                 post_election__election__in=election_qs).count(),
         }
         context['elction_stats'] = stats

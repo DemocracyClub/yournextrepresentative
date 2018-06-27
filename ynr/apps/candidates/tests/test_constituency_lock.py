@@ -6,7 +6,7 @@ from popolo.models import Person
 from candidates.models import PostExtra
 
 from .auth import TestUserMixin
-from .factories import CandidacyExtraFactory, PersonExtraFactory
+from .factories import MembershipFactory, PersonExtraFactory
 from .uk_examples import UK2015ExamplesMixin
 
 
@@ -140,11 +140,10 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='Naomi Newstead'
         )
 
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=person_extra.base,
-            base__post=post_extra_locked.base,
-            base__on_behalf_of=self.green_party_extra.base,
+        MembershipFactory.create(
+            person=person_extra.base,
+            post=post_extra_locked.base,
+            on_behalf_of=self.green_party_extra.base,
             post_election=post_extra_locked.postextraelection_set.get(
                 election=self.election
             ),
@@ -155,11 +154,10 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__name='Helen Hayes'
         )
 
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.green_party_extra.base,
+        MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.green_party_extra.base,
             post_election=self.dulwich_post_extra.postextraelection_set.get(
                 election=self.election
             ),

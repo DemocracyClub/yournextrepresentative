@@ -248,9 +248,8 @@ class MembershipSerializer(serializers.HyperlinkedModelSerializer):
             'election',
         )
 
-    elected = serializers.ReadOnlyField(source='extra.elected')
-    party_list_position = serializers.ReadOnlyField(
-        source='extra.party_list_position')
+    elected = serializers.ReadOnlyField()
+    party_list_position = serializers.ReadOnlyField()
     person = MinimalPersonSerializer(read_only=True)
     organization = MinimalOrganizationExtraSerializer(
         read_only=True, source='organization.extra')
@@ -259,7 +258,7 @@ class MembershipSerializer(serializers.HyperlinkedModelSerializer):
     post = MinimalPostExtraSerializer(
         read_only=True, source='post.extra')
 
-    election = MinimalElectionSerializer(source='extra.election')
+    election = MinimalElectionSerializer(source='post_election.election')
 
 
 class PostElectionSerializer(serializers.HyperlinkedModelSerializer):
@@ -432,14 +431,6 @@ class ExtraFieldSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = candidates_models.ExtraField
         fields = ('id', 'url', 'key', 'type', 'label', 'order')
-
-
-class SimplePopoloFieldSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = candidates_models.SimplePopoloField
-        fields = (
-            'id', 'url', 'name', 'label', 'required', 'info_type_key', 'order'
-        )
 
 
 class ComplexPopoloFieldSerializer(serializers. HyperlinkedModelSerializer):

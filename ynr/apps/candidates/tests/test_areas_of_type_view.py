@@ -7,7 +7,7 @@ from django_webtest import WebTest
 from .auth import TestUserMixin
 
 from .factories import (
-    CandidacyExtraFactory, PersonExtraFactory, PostExtraFactory
+    MembershipFactory, PersonExtraFactory, PostExtraFactory
 )
 from .uk_examples import UK2015ExamplesMixin
 
@@ -20,11 +20,10 @@ class TestAreasOfTypeView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__id='2009',
             base__name='Tessa Jowell'
         )
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
 

@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 
 from candidates.tests.factories import (
-    ElectionFactory, CandidacyExtraFactory,
+    ElectionFactory, MembershipFactory,
     ParliamentaryChamberFactory, PartyFactory, PartyExtraFactory,
     PersonExtraFactory, PostExtraFactory
 )
@@ -20,11 +20,10 @@ class TestFieldView(UK2015ExamplesMixin, TestCase):
             base__name='Tessa Jowell'
         )
 
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.green_party_extra.base,
+        MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.green_party_extra.base,
             post_election=self.dulwich_post_extra_pee
         )
 
@@ -34,11 +33,10 @@ class TestFieldView(UK2015ExamplesMixin, TestCase):
             base__email='andrew@example.com',
         )
 
-        CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.green_party_extra.base,
+        MembershipFactory.create(
+            person=person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.green_party_extra.base,
             post_election=self.dulwich_post_extra_pee
         )
 

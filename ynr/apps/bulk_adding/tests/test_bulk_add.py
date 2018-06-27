@@ -99,7 +99,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting biggier.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(71):
+        with self.assertNumQueries(64):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -127,15 +127,14 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__id='1234567',
             base__name='Bart Simpson'
         ).base
-        existing_membership = factories.CandidacyExtraFactory.create(
-            election=self.local_election,
-            base__person=existing_person,
-            base__post=self.local_post.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        existing_membership = factories.MembershipFactory.create(
+            person=existing_person,
+            post=self.local_post.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.local_election.postextraelection_set.get(
                 postextra=self.local_post
             )
-        ).base
+        )
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:
         OfficialDocument.objects.create(
@@ -195,16 +194,15 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             base__id='1234567',
             base__name='Bart Simpson'
         ).base
-        existing_membership = factories.CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=existing_person,
+        existing_membership = factories.MembershipFactory.create(
+            person=existing_person,
             # !!! This is the line that differs from the previous test:
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.election.postextraelection_set.get(
                 postextra=self.dulwich_post_extra
             )
-        ).base
+        )
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:
         OfficialDocument.objects.create(

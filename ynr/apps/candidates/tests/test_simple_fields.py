@@ -2,14 +2,17 @@
 
 import re
 from django.utils.six.moves.urllib_parse import urlsplit
+from django.conf import settings
 
 from django_webtest import WebTest
 from popolo.models import Person
 
-from candidates.models import PersonExtra, SimplePopoloField
+from candidates.models import PersonExtra
 
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
+
+from ynr_refactoring.helpers.popolo_fields import SimplePopoloField
 
 
 def get_next_dd(start):
@@ -20,13 +23,17 @@ class SimpleFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super(SimpleFieldsTests, self).setUp()
+        field = SimplePopoloField(
+                name='additional_name',
+                label='Additional Name',
+                info_type_key='text',
+                order=4,
+            )
+        if field not in settings.SIMPLE_POPOLO_FIELDS:
+            settings.SIMPLE_POPOLO_FIELDS.append(
+                field
+            )
 
-        SimplePopoloField.objects.create(
-            name='additional_name',
-            label='Additional Name',
-            info_type_key='text',
-            order=4,
-        )
 
         # Create one person with these fields already present:
         self.person = Person.objects.create(

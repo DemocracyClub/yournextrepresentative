@@ -21,18 +21,16 @@ class CSVTests(UK2015ExamplesMixin, TestCase):
             base__email='jowell@example.com',
             base__gender='female',
         )
-        factories.CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=self.gb_person_extra.base,
-            base__post=self.camberwell_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        factories.MembershipFactory.create(
+            person=self.gb_person_extra.base,
+            post=self.camberwell_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.camberwell_post_extra_pee,
         )
-        factories.CandidacyExtraFactory.create(
-            election=self.earlier_election,
-            base__person=self.gb_person_extra.base,
-            base__post=self.dulwich_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        factories.MembershipFactory.create(
+            person=self.gb_person_extra.base,
+            post=self.dulwich_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.camberwell_post_extra_pee_earlier,
 
         )

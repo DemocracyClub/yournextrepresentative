@@ -1,0 +1,104 @@
+from __future__ import print_function, unicode_literals
+
+from django.test import TestCase
+from django.core.urlresolvers import reverse
+from django_webtest import WebTest
+
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.factories import (MembershipFactory,
+                                        PersonExtraFactory)
+from candidates.tests.uk_examples import UK2015ExamplesMixin
+from uk_results.models import CandidateResult, ResultSet
+
+
+class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
+
+    def setUp(self):
+        super(TestUKResults, self).setUp()
+        pee = self.local_post.postextraelection_set.get()
+        self.result_set = ResultSet.objects.create(
+            post_election=pee,
+            num_turnout_reported=10000,
+            num_spoilt_ballots=30,
+            user=self.user,
+            ip_address='127.0.0.1',
+            source='Example ResultSet for testing',
+        )
+        # Create three people:
+        self.persons_extra = [
+            PersonExtraFactory.create(base__id='13', base__name='Alice'),
+            PersonExtraFactory.create(base__id='14', base__name='Bob'),
+            PersonExtraFactory.create(base__id='15', base__name='Carol'),
+        ]
+
+        parties_extra = [
+            self.labour_party_extra,
+            self.conservative_party_extra,
+            self.ld_party_extra
+        ]
+        # Create their candidacies:
+        candidacies = [
+            MembershipFactory.create(
+                post_election=pee,
+                person=person_extra.base,
+                post=self.local_post.base,
+                on_behalf_of=party_extra.base,
+            )
+            for person_extra, party_extra
+            in zip(self.persons_extra, parties_extra)
+        ]
+        # Create their CandidateResult objects:
+        votes = [2000, 5000, 3000]
+        winner = [False, True, False]
+        self.candidate_results = [
+            CandidateResult.objects.create(
+                result_set=self.result_set,
+                membership=c,
+                num_ballots=v,
+                is_winner=w)
+            for c, v, w in zip(candidacies, votes, winner)
+        ]
+
+        self.expected = {
+            'ballot_paper_id': 'local.maidstone.DIW:E05005004.2016-05-05',
+            'created': self.result_set.created.isoformat(),
+            'candidate_results': [
+                {
+                    'is_winner': True,
+                    'num_ballots': 5000,
+                    'person_id': 14,
+                    'person_name': 'Bob',
+                },
+                {
+                    'is_winner': False,
+                    'num_ballots': 3000,
+                    'person_id': 15,
+                    'person_name': 'Carol',
+                },
+                {
+                    'is_winner': False,
+                    'num_ballots': 2000,
+                    'person_id': 13,
+                    'person_name': 'Alice',
+
+                }
+            ],
+            'source': 'Example ResultSet for testing',
+            'spoilt_ballots': 30,
+            'turnout': 10000,
+            'user': 'john'
+        }
+
+    def test_form_view(self):
+        url = reverse(
+            'ballot_paper_results_form',
+            kwargs={
+                'ballot_paper_id': 'local.maidstone.DIW:E05005004.2016-05-05'
+            }
+        )
+        resp = self.app.get(url, user=self.user_who_can_record_results)
+        self.assertEqual(resp.status_code, 200)
+        form = resp.forms[1]
+        form['memberships_13'] = 345
+        form.submit()
+

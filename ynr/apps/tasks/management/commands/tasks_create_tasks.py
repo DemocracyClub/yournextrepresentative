@@ -47,7 +47,7 @@ class Command(BaseCommand):
     @transaction.atomic
     def add_tasks_for_field(self, field, field_weight):
         qs = PersonExtra.objects.filter(
-            base__memberships__extra__election__current=True)
+            base__memberships__post_election__election__current=True)
         qs = qs.select_related('base')
         qs = qs.prefetch_related('base__memberships')
         qs = qs.missing(field)

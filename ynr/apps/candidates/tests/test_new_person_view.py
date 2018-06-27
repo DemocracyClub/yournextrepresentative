@@ -102,7 +102,8 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(candidacy.post.extra.slug, '65808')
         self.assertEqual(candidacy.role, 'Candidate')
         self.assertEqual(candidacy.on_behalf_of.extra.slug, 'party:53')
-        self.assertEqual(candidacy.extra.election_id, self.election.id)
+        self.assertEqual(
+            candidacy.post_election.election_id, self.election.id)
 
         links = person.links.all()
         self.assertEqual(links.count(), 1)

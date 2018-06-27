@@ -10,10 +10,7 @@ from elections.models import Election
 
 from slugify import slugify
 
-from ..models import (
-    MembershipExtra, PartySet, SimplePopoloField, ExtraField,
-    ComplexPopoloField, PostExtraElection
-)
+from ..models import PartySet, ExtraField, ComplexPopoloField
 
 
 def get_field_groupings():
@@ -72,7 +69,7 @@ def get_person_form_fields(context, form):
     personal_fields, demographic_fields = get_field_groupings()
     context['personal_fields'] = []
     context['demographic_fields'] = []
-    simple_fields = SimplePopoloField.objects.all()
+    simple_fields = settings.SIMPLE_POPOLO_FIELDS
     for field in simple_fields:
         if field.name in personal_fields:
             context['personal_fields'].append(
@@ -129,23 +126,20 @@ def get_candidacy_fields_for_person_form(form):
     return fields
 
 
-def get_party_people_for_election_from_memberships(
-        election,
-        party_id,
-        memberships
-):
+def get_party_people_for_election_from_memberships(election, party_id,
+                                                   memberships):
     election_data = Election.objects.get_by_slug(election)
-    memberships = memberships.select_related('extra', 'person').filter(
+    memberships = memberships.select_related('person').filter(
         role=election_data.candidate_membership_role,
-        extra__election=election_data,
+        post_election__election=election_data,
         on_behalf_of_id=party_id
-    ).order_by('extra__party_list_position').all()
+    ).order_by('party_list_position').all()
 
     people = []
     for membership in memberships.all():
         people.append((
-            membership.extra.party_list_position, membership.person,
-            membership.extra.elected
+            membership.party_list_position, membership.person,
+            membership.elected
         ))
 
     return people
@@ -159,15 +153,11 @@ def split_candidacies(election_data, memberships):
     current_candidadacies = set()
     past_candidadacies = set()
     for membership in memberships:
-        try:
-            membership_extra = membership.extra
-        except MembershipExtra.DoesNotExist:
-            continue
-        if membership_extra.election == election_data:
+        if membership.post_election.election == election_data:
             if not membership.role == election_data.candidate_membership_role:
                 continue
             current_candidadacies.add(membership)
-        elif membership_extra.election:
+        elif membership.post_election.election:
             past_candidadacies.add(membership)
 
     return current_candidadacies, past_candidadacies
@@ -176,7 +166,7 @@ def split_by_elected(election_data, memberships):
     elected_candidates = set()
     unelected_candidates = set()
     for membership in memberships:
-        if membership.extra.elected:
+        if membership.elected:
             elected_candidates.add(membership)
             if not settings.HOIST_ELECTED_CANDIDATES:
                 unelected_candidates.add(membership)
@@ -195,7 +185,7 @@ def order_candidates_by_name_no_grouping(election_data, candidacies):
                 'truncated': False,
                 'total_count': 1,
             },
-            [(None, candidacy.person, candidacy.extra.elected)],
+            [(None, candidacy.person, candidacy.elected)],
         )
         for candidacy in candidacies
     ]
@@ -243,9 +233,9 @@ def group_candidates_by_party(election_data, candidacies, show_all=False):
     for candidacy in candidacies:
         party = candidacy.on_behalf_of
         party_id_to_name[party.extra.slug] = party.name
-        position = candidacy.extra.party_list_position
+        position = candidacy.party_list_position
         party_id_to_people[party.extra.slug].append(
-            (position, candidacy.person, candidacy.extra.elected)
+            (position, candidacy.person, candidacy.elected)
         )
     for party_id, people_list in party_id_to_people.items():
         truncated = False

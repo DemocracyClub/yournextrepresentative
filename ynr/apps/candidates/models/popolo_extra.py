@@ -32,7 +32,7 @@ from images.models import Image, HasImageMixin
 
 from compat import python_2_unicode_compatible
 from .fields import (
-    ExtraField, PersonExtraFieldValue, SimplePopoloField, ComplexPopoloField,
+    ExtraField, PersonExtraFieldValue, ComplexPopoloField,
     get_complex_popolo_fields,
 )
 from ..diffs import get_version_diffs
@@ -59,7 +59,7 @@ def update_person_from_form(person, person_extra, form):
         form_data['birth_date'] = repr(birth_date_date).replace("-00-00", "")
     else:
         form_data['birth_date'] = ''
-    for field in SimplePopoloField.objects.all():
+    for field in settings.SIMPLE_POPOLO_FIELDS:
         setattr(person, field.name, form_data[field.name])
     for field in ComplexPopoloField.objects.all():
         person_extra.update_complex_field(field, form_data[field.name])
@@ -114,7 +114,7 @@ def mark_as_standing(person_extra, election_data, post, party, party_list_positi
     # which would be lost if we deleted and recreated the membership.
     # Go through the person's existing candidacies for this election:
     for existing_membership in Membership.objects.filter(
-        extra__election=election_data,
+        post_election__election=election_data,
         role=election_data.candidate_membership_role,
         person__extra=person_extra,
     ):
@@ -128,17 +128,12 @@ def mark_as_standing(person_extra, election_data, post, party, party_list_positi
             post=post,
             person=person_extra.base,
             role=election_data.candidate_membership_role,
-        )
-        MembershipExtra.objects.create(
-            base=membership,
-            election=election_data,
             post_election=election_data.postextraelection_set.get(
                 postextra=post.extra)
         )
     # Update the party list position in case it's changed:
-    membership_extra = membership.extra
-    membership_extra.party_list_position = party_list_position
-    membership_extra.save()
+    membership.party_list_position = party_list_position
+    membership.save()
     # Update the party, in case it's changed:
     membership.on_behalf_of = party
     membership.save()
@@ -152,7 +147,7 @@ def mark_as_standing(person_extra, election_data, post, party, party_list_positi
 def mark_as_not_standing(person_extra, election_data, post):
     # Remove any existing candidacy:
     for membership in Membership.objects.filter(
-        extra__election=election_data,
+        post_election__election=election_data,
         role=election_data.candidate_membership_role,
         person__extra=person_extra,
         # n.b. we are planning to make "not standing" post
@@ -201,6 +196,8 @@ def paired_object_safe_to_delete(base_object):
     if len(collected) > 2:
         return False
     assert collected[0] == base_object
+    if len(collected) == 1:
+        return True
     if len(collected[1]) != 1:
         return False
     assert collected[1][0] == base_object.extra
@@ -276,10 +273,13 @@ class PersonExtraQuerySet(models.QuerySet):
 
     def missing(self, field):
         people_in_current_elections = self.filter(
-            base__memberships__extra__election__current=True
+            base__memberships__post_election__election__current=True
         )
         # The field can be one of several types:
-        simple_field = SimplePopoloField.objects.filter(name=field).first()
+        simple_field = [
+            f for f in settings.SIMPLE_POPOLO_FIELDS
+            if f.name == field
+        ]
         if simple_field:
             return people_in_current_elections.filter(**{'base__' + field: ''})
         complex_field = ComplexPopoloField.objects.filter(name=field).first()
@@ -311,8 +311,7 @@ class PersonExtraQuerySet(models.QuerySet):
                 models.Prefetch(
                     'base__memberships',
                     Membership.objects.select_related(
-                        'extra',
-                        'extra__election',
+                        'post_election__election',
                         'on_behalf_of__extra',
                         'post__area',
                         'post__extra',
@@ -410,17 +409,21 @@ class PersonExtra(HasImageMixin, models.Model):
     @property
     def current_candidacies(self):
         result = self.base.memberships.filter(
-            extra__election__current=True,
-            role=models.F('extra__election__candidate_membership_role')
-        ).select_related('person', 'on_behalf_of', 'post', 'extra') \
+            post_election__election__current=True,
+            role=models.F('post_election__election__candidate_membership_role')
+        ).select_related('person', 'on_behalf_of', 'post') \
             .prefetch_related('post__extra')
         return list(result)
 
     @property
     def last_candidacy(self):
         ordered_candidacies = Membership.objects. \
-            filter(person=self.base, extra__election__isnull=False). \
-            order_by('extra__election__current', 'extra__election__election_date')
+            filter(
+                person=self.base,
+                post_election__election__isnull=False,
+            ).order_by('post_election__election__current',
+                 'post_election__election__election_date'
+            )
         return ordered_candidacies.last()
 
     def last_party(self):
@@ -498,15 +501,14 @@ class PersonExtra(HasImageMixin, models.Model):
         if role is None:
             role = ''
         membership = self.base.memberships \
-            .select_related('extra') \
             .filter(
                 role=role,
-                extra__election=election,
+                post_election__election=election,
             )
 
         result = membership.first()
         if result:
-            return result.extra.elected
+            return result.elected
 
         return None
 
@@ -589,7 +591,7 @@ class PersonExtra(HasImageMixin, models.Model):
 
     def get_initial_form_data(self):
         initial_data = {}
-        for field in SimplePopoloField.objects.all():
+        for field in settings.SIMPLE_POPOLO_FIELDS:
             initial_data[field.name] = getattr(self.base, field.name)
         for field in ComplexPopoloField.objects.all():
             initial_data[field.name] = getattr(self, field.name)
@@ -600,25 +602,25 @@ class PersonExtra(HasImageMixin, models.Model):
         not_standing_elections = list(self.not_standing.all())
 
         for election_data in Election.objects.current().filter(
-                candidacies__base__person=self.base
+                postextraelection__membership__person=self.base
             ).by_date():
             constituency_key = 'constituency_' + election_data.slug
             standing_key = 'standing_' + election_data.slug
             try:
-                candidacy = MembershipExtra.objects.get(
-                    election=election_data,
-                    base__person__extra=self
+                candidacy = Membership.objects.get(
+                    post_election__election=election_data,
+                    person__extra=self
                 )
-            except MembershipExtra.DoesNotExist:
+            except Membership.DoesNotExist:
                 candidacy = None
             if election_data in not_standing_elections:
                 initial_data[standing_key] = 'not-standing'
             elif candidacy:
                 initial_data[standing_key] = 'standing'
-                post_id = candidacy.base.post.extra.slug
+                post_id = candidacy.post.extra.slug
                 initial_data[constituency_key] = post_id
                 party_set = PartySet.objects.get(postextra__slug=post_id)
-                party = candidacy.base.on_behalf_of
+                party = candidacy.on_behalf_of
                 party_key = 'party_' + party_set.slug + '_' + election_data.slug
                 initial_data[party_key] = party.id
                 position = candidacy.party_list_position
@@ -655,24 +657,19 @@ class PersonExtra(HasImageMixin, models.Model):
         # all objects:
         candidacies = []
         for m in self.base.memberships.all():
-            try:
-                m_extra = m.extra
-            except ObjectDoesNotExist:
+            if not m.post_election.election:
                 continue
-            if not m_extra.election:
-                continue
-            expected_role = m.extra.election.candidate_membership_role
+            expected_role = m.post_election.election.candidate_membership_role
             if election is None:
                 if expected_role == m.role:
                     candidacies.append(m)
             else:
-                if m_extra.election == election and expected_role == m.role:
+                if m.post_election.election == election and expected_role == m.role:
                     candidacies.append(m)
         for candidacy in candidacies:
-            candidacy_extra = candidacy.extra
             party = candidacy.on_behalf_of
             post = candidacy.post
-            elected = candidacy_extra.elected
+            elected = candidacy.elected
             elected_for_csv = ''
             image_copyright = ''
             image_uploading_user = ''
@@ -715,12 +712,12 @@ class PersonExtra(HasImageMixin, models.Model):
                 'honorific_suffix': self.base.honorific_suffix,
                 'gender': self.base.gender,
                 'birth_date': self.base.birth_date,
-                'election': candidacy_extra.election.slug,
-                'election_date': candidacy_extra.election.election_date,
-                'election_current': candidacy_extra.election.current,
+                'election': candidacy.post_election.election.slug,
+                'election_date': candidacy.post_election.election.election_date,
+                'election_current': candidacy.post_election.election.current,
                 'party_id': party.extra.slug,
-                'party_lists_in_use': candidacy_extra.election.party_lists_in_use,
-                'party_list_position': candidacy_extra.party_list_position,
+                'party_lists_in_use': candidacy.post_election.election.party_lists_in_use,
+                'party_list_position': candidacy.party_list_position,
                 'party_name': party.name,
                 'post_id': post.extra.slug,
                 'post_label': post.extra.short_label,
@@ -834,38 +831,8 @@ class PostExtraElection(models.Model):
         return reverse('constituency', args=[
             self.election.slug,
             self.postextra.slug,
-            slugify(self.postextra.base.label)
+            slugify(self.postextra.short_label)
         ])
-
-
-class MembershipExtra(models.Model):
-    base = models.OneToOneField(Membership, related_name='extra')
-
-    elected = models.NullBooleanField()
-    party_list_position = models.IntegerField(null=True)
-    election = models.ForeignKey(
-        Election, blank=True, null=True, related_name='candidacies'
-    )
-    post_election = models.ForeignKey('candidates.PostExtraElection')
-
-    def save(self, *args, **kwargs):
-        if self.election and getattr(self, 'check_for_broken', True):
-            required = {
-                'postextra': self.base.post.extra,
-                'election': self.election}
-            if not PostExtraElection.objects.filter(**required).exists():
-                msg = 'Trying to create a candidacy for post {postextra} ' \
-                      'and election {election} that aren\'t linked'
-                raise Exception(msg.format(**required))
-            if self.election in self.base.person.extra.not_standing.all():
-                msg = 'Trying to add a MembershipExtra with an election ' \
-                      '"{election}", but that\'s in {person} ' \
-                      '({person_id})\'s not_standing list.'
-                raise Exception(msg.format(
-                    election=self.election,
-                    person=self.base.person.name,
-                    person_id=self.base.person.id))
-        super(MembershipExtra, self).save(*args, **kwargs)
 
 
 @python_2_unicode_compatible
@@ -911,7 +878,7 @@ class PartySet(models.Model):
             ).order_by('-membership_count', 'name').only('end_date', 'name')
 
         parties_current_qs = self.parties.filter(
-            memberships_on_behalf_of__extra__election__current=True
+            memberships_on_behalf_of__post_election__election__current=True
             ).annotate(
                 membership_count=models.Count('memberships_on_behalf_of__pk')
             ).order_by('-membership_count', 'name').only('end_date', 'name')
@@ -921,7 +888,7 @@ class PartySet(models.Model):
 
         parties_notcurrent_qs = self.parties.filter(
                 ~models.Q(
-                    memberships_on_behalf_of__extra__election__current=True)
+                    memberships_on_behalf_of__post_election__election__current=True)
             ).annotate(
                 membership_count=models.Value(0, models.IntegerField()),
             ).order_by('-membership_count', 'name').only('end_date', 'name')
@@ -929,8 +896,8 @@ class PartySet(models.Model):
 
         minimum_count = settings.CANDIDATES_REQUIRED_FOR_WEIGHTED_PARTY_LIST
 
-        total_memberships = MembershipExtra.objects.all()
-        current_memberships = total_memberships.filter(election__current=True)
+        total_memberships = Membership.objects.all()
+        current_memberships = total_memberships.filter(post_election__election__current=True)
 
         queries = []
         if current_memberships.count() > minimum_count:

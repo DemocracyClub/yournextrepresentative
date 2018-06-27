@@ -26,7 +26,7 @@ class IncompleteFieldView(TemplateView):
             .select_related('person', 'post', 'person__extra', 'post__extra', 'on_behalf_of') \
             .filter(
                 role='Candidate',
-                extra__election__current=True,
+                post_election__election__current=True,
             )
 
         filtered_results = self.get_results(all_results)

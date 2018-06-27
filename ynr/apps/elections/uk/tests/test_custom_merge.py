@@ -23,44 +23,38 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         ).base
 
     def test_uk_results_for_secondary_preserved(self):
-        factories.CandidacyExtraFactory.create(
-            election=self.earlier_election,
-            base__person=self.primary_person,
-            base__post=self.camberwell_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        factories.MembershipFactory.create(
+            person=self.primary_person,
+            post=self.camberwell_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.camberwell_post_extra_pee_earlier,
         )
-        factories.CandidacyExtraFactory.create(
-            election=self.local_election,
-            base__person=self.secondary_person,
-            base__post=self.local_post.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        factories.MembershipFactory.create(
+            person=self.secondary_person,
+            post=self.local_post.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.local_election.postextraelection_set.get(
                 postextra=self.local_post
             ),
         )
-        secondary_membership_extra = factories.CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=self.secondary_person,
-            base__post=self.camberwell_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        secondary_membership = factories.MembershipFactory.create(
+            person=self.secondary_person,
+            post=self.camberwell_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.camberwell_post_extra_pee
         )
 
         # Now attach a vote count to the secondary person's candidacy:
-        pee = PostExtraElection.objects.get(
-            postextra=secondary_membership_extra.base.post.extra,
-            election=secondary_membership_extra.election
-        )
+
         result_set = ResultSet.objects.create(
-            post_election=pee,
+            post_election=self.camberwell_post_extra_pee,
             num_turnout_reported=51561,
             num_spoilt_ballots=42,
             ip_address='127.0.0.1',
         )
         CandidateResult.objects.create(
             result_set=result_set,
-            membership=secondary_membership_extra.base,
+            membership=secondary_membership,
             num_ballots=32614,
             is_winner=True,
         )
@@ -78,49 +72,42 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # has a result attached.
         after_merging = Person.objects.get(pk=3885)
         membership = after_merging.memberships.get(
-            extra__election=self.election)
+            post_election__election=self.election)
         candidate_result = membership.result
         self.assertEqual(candidate_result.num_ballots, 32614)
 
     def test_uk_results_for_primary_preserved(self):
-        primary_membership_extra = factories.CandidacyExtraFactory.create(
-            election=self.earlier_election,
-            base__person=self.primary_person,
-            base__post=self.camberwell_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        primary_membership = factories.MembershipFactory.create(
+            person=self.primary_person,
+            post=self.camberwell_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.camberwell_post_extra_pee_earlier,
         )
-        factories.CandidacyExtraFactory.create(
-            election=self.local_election,
-            base__person=self.secondary_person,
-            base__post=self.local_post.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        factories.MembershipFactory.create(
+            person=self.secondary_person,
+            post=self.local_post.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.local_election.postextraelection_set.get(
                 postextra=self.local_post
             )
         )
-        factories.CandidacyExtraFactory.create(
-            election=self.election,
-            base__person=self.secondary_person,
-            base__post=self.camberwell_post_extra.base,
-            base__on_behalf_of=self.labour_party_extra.base,
+        factories.MembershipFactory.create(
+            person=self.secondary_person,
+            post=self.camberwell_post_extra.base,
+            on_behalf_of=self.labour_party_extra.base,
             post_election=self.camberwell_post_extra_pee,
         )
 
         # Now attach a vote count to the primary person's candidacy:
-        pee = PostExtraElection.objects.get(
-            postextra=primary_membership_extra.base.post.extra,
-            election=primary_membership_extra.election
-        )
         result_set = ResultSet.objects.create(
-            post_election=pee,
+            post_election=self.camberwell_post_extra_pee_earlier,
             num_turnout_reported=46659,
             num_spoilt_ballots=42,
             ip_address='127.0.0.1',
         )
         CandidateResult.objects.create(
             result_set=result_set,
-            membership=primary_membership_extra.base,
+            membership=primary_membership,
             num_ballots=27619,
             is_winner=True,
         )
@@ -138,6 +125,6 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # has a result attached.
         after_merging = Person.objects.get(pk=3885)
         membership = after_merging.memberships.get(
-            extra__election=self.earlier_election)
+            post_election__election=self.earlier_election)
         candidate_result = membership.result
         self.assertEqual(candidate_result.num_ballots, 27619)

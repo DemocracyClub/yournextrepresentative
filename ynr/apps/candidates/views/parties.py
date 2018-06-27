@@ -18,7 +18,7 @@ class PartyListView(ElectionMixin, TemplateView):
         context = super(PartyListView, self).get_context_data(**kwargs)
         context['parties_extra'] = OrganizationExtra.objects \
             .filter(
-                base__memberships_on_behalf_of__extra__election=self.election_data,
+                base__memberships_on_behalf_of__post_election__election=self.election_data,
                 base__classification='Party'
             ).distinct().select_related('base').order_by('base__name')
         return context
@@ -66,7 +66,7 @@ class PartyDetailView(ElectionMixin, TemplateView):
         }
         for membership in Membership.objects.filter(
             on_behalf_of=party,
-            extra__election=self.election_data,
+            post_election__election=self.election_data,
             role=self.election_data.candidate_membership_role
         ).select_related().prefetch_related('post__extra', 'person__extra'):
             person = membership.person

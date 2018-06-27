@@ -38,9 +38,9 @@ class CandidateMatcher(object):
         parties = self.get_parties()
 
         candidates_for_party = \
-            self.ballot_paper.local_area.membershipextra_set.filter(
-                base__on_behalf_of__in=parties
-            ).select_related('base__person').order_by('pk')
+            self.ballot_paper.local_area.membership_set.filter(
+                on_behalf_of__in=parties
+            ).select_related('person').order_by('pk')
         self._memberships = candidates_for_party
         return self._memberships
 
@@ -55,7 +55,7 @@ class CandidateMatcher(object):
             import ipdb; ipdb.set_trace()
         value = self.membership_map.get(key, None)
         if value:
-            return self.ballot_paper.local_area.membershipextra_set.get(
+            return self.ballot_paper.local_area.membership_set.get(
                 pk=value)
 
 
@@ -134,8 +134,8 @@ class CandidateMatcher(object):
         return self._manual_matcher(candidates_for_party)
 
     def match_from_all_manually(self):
-        qs = self.ballot_paper.local_area.membershipextra_set.all()
-        match = match_party_and_name(qs=qs)
+        qs = self.ballot_paper.local_area.membership_set.all()
+        match = self.match_party_and_name(qs=qs)
         if match:
             return match
         return self._manual_matcher(
