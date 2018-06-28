@@ -19,7 +19,9 @@ def queryset_iterator(qs, complex_popolo_fields):
     reset_queries()
     start_index = 0
     while True:
-        chunk_qs = qs.order_by('pk')[start_index:start_index + FETCH_AT_A_TIME]
+        chunk_qs = qs.order_by("pk")[
+            start_index : start_index + FETCH_AT_A_TIME
+        ]
         empty = True
         for person_extra in chunk_qs.joins_for_csv_output():
             empty = False
@@ -69,26 +71,26 @@ class Command(BaseCommand):
     def get_people(self, election, qs):
         all_people = []
         elected_people = []
-        for person_extra in queryset_iterator(
-                qs, self.complex_popolo_fields
-        ):
+        for person_extra in queryset_iterator(qs, self.complex_popolo_fields):
             for d in person_extra.as_list_of_dicts(
                 election,
-                base_url=self.options['site_base_url'],
+                base_url=self.options["site_base_url"],
                 redirects=self.redirects,
             ):
                 all_people.append(d)
-                if d['elected'] == 'True':
+                if d["elected"] == "True":
                     elected_people.append(d)
         return all_people, elected_people
 
     def handle(self, **options):
-        if options['election']:
+        if options["election"]:
             try:
-                all_elections = [Election.objects.get(slug=options['election'])]
+                all_elections = [Election.objects.get(slug=options["election"])]
             except Election.DoesNotExist:
                 message = "Couldn't find an election with slug {election_slug}"
-                raise CommandError(message.format(election_slug=options['election']))
+                raise CommandError(
+                    message.format(election_slug=options["election"])
+                )
         else:
             all_elections = list(Election.objects.all()) + [None]
 
@@ -124,13 +126,7 @@ class Command(BaseCommand):
                     + ".csv",
                 }
             group_by_post = election is not None
+            safely_write(output_filenames["all"], all_people, group_by_post)
             safely_write(
-                output_filenames['all'],
-                all_people,
-                group_by_post,
-            )
-            safely_write(
-                output_filenames['elected'],
-                elected_people,
-                group_by_post,
+                output_filenames["elected"], elected_people, group_by_post
             )
