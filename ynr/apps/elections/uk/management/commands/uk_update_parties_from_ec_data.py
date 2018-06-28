@@ -8,7 +8,6 @@ from shutil import move
 from tempfile import NamedTemporaryFile
 
 from django.contrib.contenttypes.models import ContentType
-from django.core.files.storage import FileSystemStorage
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.db import transaction

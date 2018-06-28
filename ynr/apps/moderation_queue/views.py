@@ -303,8 +303,8 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             fail_silently=False,
         )
 
-    def crop_and_upload_image_to_popit(self, image_filename, crop_bounds, moderator_why_allowed, make_primary):
-        original = PillowImage.open(image_filename)
+    def crop_and_upload_image_to_popit(self, image_file, crop_bounds, moderator_why_allowed, make_primary):
+        original = PillowImage.open(image_file)
         # Some uploaded images are CYMK, which gives you an error when
         # you try to write them as PNG, so convert to RGBA (this is
         # RGBA rather than RGB so that any alpha channel (transparency)
@@ -376,7 +376,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             # Crop the image...
             crop_fields = ('x_min', 'y_min', 'x_max', 'y_max')
             self.crop_and_upload_image_to_popit(
-                self.queued_image.image.path,
+                self.queued_image.image.file,
                 [form.cleaned_data[e] for e in crop_fields],
                 form.cleaned_data['moderator_why_allowed'],
                 form.cleaned_data['make_primary'],

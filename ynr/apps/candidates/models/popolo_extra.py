@@ -10,7 +10,7 @@ from django.contrib.admin.utils import NestedObjects
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import DefaultStorage
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.template import loader, Context
@@ -964,7 +964,7 @@ class ImageExtraManager(models.Manager):
     ):
         # Import the file to media root and create the ORM
         # objects.
-        storage = FileSystemStorage()
+        storage = DefaultStorage()
         desired_storage_path = join('images', ideal_relative_name)
         with open(image_filename, 'rb') as f:
             storage_filename = storage.save(desired_storage_path, f)
