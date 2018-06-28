@@ -1,11 +1,7 @@
 from __future__ import unicode_literals
 
-from collections import defaultdict
-from os import chmod, rename
-from os.path import dirname
-from tempfile import NamedTemporaryFile
-
 from django.core.management.base import BaseCommand, CommandError
+from django.core.files.storage import DefaultStorage
 from django.db import reset_queries
 
 from candidates.csv_helpers import list_to_csv
@@ -35,15 +31,24 @@ def queryset_iterator(qs, complex_popolo_fields):
 
 
 def safely_write(output_filename, people, group_by_post):
+    """
+    Use Django's storage backend to write the CSV file to the MEDIA_ROOT.
+
+    If using S3 (via Django Storages) the file is atomically written when the
+    file is closed (when the context manager closes).
+
+    That is, the file can be opened and written to but nothing changes at
+    the public S3 URL until the object is closed. Meaning it's not possible to
+    have a half written file.
+
+    If not using S3, there will be a short time where the file is empty
+    during write.
+    """
+
     csv = list_to_csv(people, group_by_post)
-    # Write to a temporary file and atomically rename into place:
-    ntf = NamedTemporaryFile(
-        delete=False,
-        dir=dirname(output_filename)
-    )
-    ntf.write(csv.encode('utf-8'))
-    chmod(ntf.name, 0o644)
-    rename(ntf.name, output_filename)
+    file_store = DefaultStorage()
+    with file_store.open(output_filename, "w") as out_file:
+        out_file.write(csv.encode("utf-8"))
 
 
 class Command(BaseCommand):
@@ -52,17 +57,13 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            'OUTPUT-PREFIX',
-            help='The prefix for output filenames'
+            "--site-base-url",
+            help="The base URL of the site (for full image URLs)",
         )
         parser.add_argument(
-            '--site-base-url',
-            help='The base URL of the site (for full image URLs)'
-        )
-        parser.add_argument(
-            '--election',
-            metavar='ELECTION-SLUG',
-            help='Only output CSV for the election with this slug'
+            "--election",
+            metavar="ELECTION-SLUG",
+            help="Only output CSV for the election with this slug",
         )
 
     def get_people(self, election, qs):
@@ -94,6 +95,7 @@ class Command(BaseCommand):
         self.options = options
         self.complex_popolo_fields = get_complex_popolo_fields()
         self.redirects = PersonRedirect.all_redirects_dict()
+        self.output_prefix = "candidates"
 
         for election in all_elections:
             if election is None:
@@ -102,8 +104,8 @@ class Command(BaseCommand):
                 qs = PersonExtra.objects.all()
                 all_people, elected_people = self.get_people(election, qs)
                 output_filenames = {
-                    'all': options['OUTPUT-PREFIX'] + '-all.csv',
-                    'elected': options['OUTPUT-PREFIX'] + '-elected-all.csv'
+                    "all": self.output_prefix + "-all.csv",
+                    "elected": self.output_prefix + "-elected-all.csv",
                 }
             else:
                 # Only get the candidates standing in that particular
@@ -115,10 +117,11 @@ class Command(BaseCommand):
                 )
                 all_people, elected_people = self.get_people(election, qs)
                 output_filenames = {
-                    'all': options['OUTPUT-PREFIX'] + \
-                        '-' + election.slug + '.csv',
-                    'elected': options['OUTPUT-PREFIX'] +
-                        '-elected-' + election.slug + '.csv',
+                    "all": self.output_prefix + "-" + election.slug + ".csv",
+                    "elected": self.output_prefix
+                    + "-elected-"
+                    + election.slug
+                    + ".csv",
                 }
             group_by_post = election is not None
             safely_write(
