@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import json
 from datetime import datetime, timedelta
 import os

@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from django_webtest import WebTest
 
 from popolo.models import OtherName

@@ -10,7 +10,7 @@
 # this job from cron - if you get an email from cron, you'll need to
 # run the script manually to make those decisions.
 
-from __future__ import print_function
+
 
 from optparse import make_option
 import os

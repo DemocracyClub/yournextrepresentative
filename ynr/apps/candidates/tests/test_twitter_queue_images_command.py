@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from mock import Mock, call, patch
 from os.path import dirname, join
 import re

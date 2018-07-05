@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from contextlib import contextmanager
 import json
 import sys

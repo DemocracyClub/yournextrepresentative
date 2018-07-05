@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from datetime import datetime
 from random import randint
 import sys

@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from mock import Mock, patch
 
 from django.core.management import call_command

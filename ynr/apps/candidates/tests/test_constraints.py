@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from mock import patch
 
 from django.test import TestCase
