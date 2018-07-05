@@ -15,7 +15,7 @@ class TestGetFlashMessage(UK2015ExamplesMixin, TestCase):
     maxDiff = None
 
     def setUp(self):
-        super(TestGetFlashMessage, self).setUp()
+        super().setUp()
         self.fake_person_extra = factories.PersonExtraFactory.create(
             base__name='Wreck-it-Ralph',
             base__id=42,

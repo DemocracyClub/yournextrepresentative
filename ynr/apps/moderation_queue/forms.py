@@ -28,7 +28,7 @@ class UploadPersonPhotoImageForm(forms.ModelForm):
         }
 
     def clean(self):
-        cleaned_data = super(UploadPersonPhotoImageForm, self).clean()
+        cleaned_data = super().clean()
         justification_for_use = cleaned_data.get(
             'justification_for_use', ''
         ).strip()

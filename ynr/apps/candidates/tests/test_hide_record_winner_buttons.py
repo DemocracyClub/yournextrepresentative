@@ -14,7 +14,7 @@ from .factories import MembershipFactory, PersonExtraFactory
 class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestWasElectedButtons, self).setUp()
+        super().setUp()
         person_extra = PersonExtraFactory.create(
             base__id='2009',
             base__name='Tessa Jowell'

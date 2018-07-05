@@ -71,7 +71,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
     template_name = "bulk_add/sopns/add_form.html"
 
     def get_context_data(self, **kwargs):
-        context = super(BulkAddSOPNView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context.update(self.add_election_and_post_to_context(context))
 
         form_kwargs = {
@@ -122,7 +122,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
     template_name = "bulk_add/sopns/add_review_form.html"
 
     def get_context_data(self, **kwargs):
-        context = super(BulkAddSOPNReviewView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context.update(self.add_election_and_post_to_context(context))
 
         initial = []

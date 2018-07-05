@@ -10,7 +10,7 @@ class HelpApiView(TemplateView):
     template_name = 'candidates/api.html'
 
     def get_context_data(self, **kwargs):
-        context = super(HelpApiView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         context['grouped_elections'] = Election.group_and_order_elections()
         context['help_results_url'] = reverse('help-results')
@@ -40,7 +40,7 @@ class HelpResultsView(TemplateView):
         return exists(expected_file_location)
 
     def get_context_data(self, **kwargs):
-        context = super(HelpResultsView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         context['all_results_exists'] = self.results_file_exists(None)
 

@@ -15,7 +15,7 @@ from .uk_examples import UK2015ExamplesMixin
 class ExtraFieldTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(ExtraFieldTests, self).setUp()
+        super().setUp()
         # Create the extra fields:
         p_field = ExtraField.objects.create(
             key='profession',

@@ -7,7 +7,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestCaching(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestCaching, self).setUp()
+        super().setUp()
 
     def test_unauth_user_cache_headers(self):
         response = self.app.get(

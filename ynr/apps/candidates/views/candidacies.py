@@ -78,7 +78,7 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
         return get_redirect_to_post(self.election, post)
 
     def get_context_data(self, **kwargs):
-        context = super(CandidacyView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['person'] = get_object_or_404(Person, id=self.request.POST.get('person_id'))
         post = get_object_or_404(Post, extra__slug=self.request.POST.get('post_id'))
         context['post_label'] = post.label
@@ -140,7 +140,7 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
         return result
 
     def get_context_data(self, **kwargs):
-        context = super(CandidacyDeleteView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['person'] = get_object_or_404(Person, id=self.request.POST.get('person_id'))
         post = get_object_or_404(Post, extra__slug=self.request.POST.get('post_id'))
         context['post_label'] = post.label

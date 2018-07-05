@@ -50,7 +50,7 @@ def fake_requests_for_every_election(url, *args, **kwargs):
 @patch('elections.uk.geo_helpers.requests')
 class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
     def setUp(self):
-        super(TestUpcomingElectionsAPI, self).setUp()
+        super().setUp()
 
     def test_empty_results(self, mock_requests):
         mock_requests.get.side_effect = fake_requests_for_every_election

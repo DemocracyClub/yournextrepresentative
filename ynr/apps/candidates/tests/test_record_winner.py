@@ -17,7 +17,7 @@ from results.models import ResultEvent
 class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestRecordWinner, self).setUp()
+        super().setUp()
         person_extra = PersonExtraFactory.create(
             base__id='2009',
             base__name='Tessa Jowell'
@@ -285,7 +285,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestRetractWinner, self).setUp()
+        super().setUp()
         person_extra = PersonExtraFactory.create(
             base__id='2009',
             base__name='Tessa Jowell'

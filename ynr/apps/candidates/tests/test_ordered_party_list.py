@@ -11,7 +11,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestRecordWinner, self).setUp()
+        super().setUp()
 
         tessa_jowell = PersonExtraFactory.create(
             base__id='2009',

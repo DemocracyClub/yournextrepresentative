@@ -77,7 +77,7 @@ class BasicResultEventsFeed(Feed):
 class ResultEventsAtomFeedGenerator(Atom1Feed):
 
     def add_item_elements(self, handler, item):
-        super(ResultEventsAtomFeedGenerator, self). \
+        super(). \
             add_item_elements(handler, item)
         keys = [
             'retraction',

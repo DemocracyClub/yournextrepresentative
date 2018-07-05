@@ -8,7 +8,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 class CSVTests(UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
-        super(CSVTests, self).setUp()
+        super().setUp()
         # The second person's name (and party name) have diacritics in
         # them to test handling of Unicode when outputting to CSV.
         self.gb_person_extra = factories.PersonExtraFactory.create(

@@ -9,7 +9,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestCopyrightAssignment(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestCopyrightAssignment, self).setUp()
+        super().setUp()
 
     def test_new_person_submission_refused_copyright(self):
         response = self.app.get(

@@ -270,7 +270,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
                     election=self.post_election.election,
                     person=self.person.name,
                     person_id=self.person.id))
-        super(Membership, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 

@@ -42,7 +42,7 @@ class PersonSearchForm(SearchForm):
         return escape(self.cleaned_data['q'])
 
     def search(self):
-        sqs = super(PersonSearchForm, self).search()
+        sqs = super().search()
         return search_person_by_name(self.cleaned_data['q'], sqs)
 
 
@@ -54,7 +54,7 @@ class PersonSearch(SearchView):
     form_class = PersonSearchForm
 
     def get(self, request, *args, **kwargs):
-        ret = super(PersonSearch, self).get(request, *args, **kwargs)
+        ret = super().get(request, *args, **kwargs)
         context = ret.context_data
 
         if context['looks_like_postcode']:
@@ -70,7 +70,7 @@ class PersonSearch(SearchView):
         return ret
 
     def get_context_data(self, **kwargs):
-        context = super(PersonSearch, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['looks_like_postcode'] = is_valid_postcode(context['query'])
         object_list = context['object_list']
         actual_pks = Person.objects.filter(

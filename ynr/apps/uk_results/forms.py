@@ -73,7 +73,7 @@ class ResultSetForm(forms.ModelForm):
         self.post_election = post_election
         self.memberships = []
 
-        super(ResultSetForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields['num_spoilt_ballots'].required = False
         self.fields['num_spoilt_ballots'].label += " (Not required)"
@@ -113,7 +113,7 @@ class ResultSetForm(forms.ModelForm):
 
     def save(self, request):
         with transaction.atomic():
-            instance = super(ResultSetForm, self).save(commit=False)
+            instance = super().save(commit=False)
             instance.post_election = self.post_election
             instance.user = request.user if \
                 request.user.is_authenticated() else None

@@ -40,12 +40,12 @@ class SelectPartyForm(BasePartyBulkAddView, FormView):
     form_class = forms.SelectPartyForm
 
     def get_context_data(self, **kwargs):
-        context = super(SelectPartyForm, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['election_obj'] = self.get_election()
         return context
 
     def get_form_kwargs(self):
-        kwargs = super(SelectPartyForm, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['election'] = self.get_election()
         return kwargs
 
@@ -73,7 +73,7 @@ class BulkAddPartyView(BasePartyBulkAddView):
     template_name = "bulk_add/parties/add_form.html"
 
     def get_context_data(self, **kwargs):
-        context = super(BulkAddPartyView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['election_obj'] = self.get_election()
         context['party'] = self.get_party()
         context['form'] = kwargs.get('form', forms.AddByPartyForm(
@@ -152,8 +152,7 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
     template_name = "bulk_add/parties/add_review_form.html"
 
     def get_context_data(self, **kwargs):
-        context = super(
-            BulkAddPartyReviewView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         post_data = self.request.session['bulk_add_by_party_data'].get(
             'post_data'

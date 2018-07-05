@@ -357,7 +357,7 @@ class PersonExtra(HasImageMixin, models.Model):
         # complex_popolo_fields property just because Django is
         # checking whether the prefetch objects cache is there:
         if name == '_prefetched_objects_cache':
-            return super(PersonExtra, self).__getattr__(self, name)
+            return super().__getattr__(self, name)
         field = self.complex_popolo_fields.get(name)
         if field:
             # Iterate rather than using filter because that would

@@ -12,7 +12,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestSearchView, self).setUp()
+        super().setUp()
         call_command('rebuild_index', verbosity=0, interactive=False)
 
     def test_search_page(self):

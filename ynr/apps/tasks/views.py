@@ -97,5 +97,5 @@ class CouldntFindFieldView(UpdateView):
     def form_valid(self, form):
         task = form.save()
         task.log_not_found()
-        return super(CouldntFindFieldView, self).form_valid(form)
+        return super().form_valid(form)
 

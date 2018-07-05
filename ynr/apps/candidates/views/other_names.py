@@ -25,7 +25,7 @@ class PersonMixin(object):
         )
 
     def get_context_data(self, **kwargs):
-        context = super(PersonMixin, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['person'] = self.person
         return context
 
@@ -36,7 +36,7 @@ class PersonOtherNamesView(PersonMixin, ListView):
     template_name = 'candidates/othername_list.html'
 
     def get_queryset(self):
-        qs = super(PersonOtherNamesView, self).get_queryset()
+        qs = super().get_queryset()
         ct = ContentType.objects.get_for_model(Person)
         return qs.filter(
             content_type=ct,
@@ -71,7 +71,7 @@ class PersonOtherNameCreateView(LoginRequiredMixin, PersonMixin, CreateView):
             alternative names as a confirmation it's all worked
             """
             if self.request.is_ajax():
-                qs = super(PersonOtherNameCreateView, self).get_queryset()
+                qs = super().get_queryset()
                 ct = ContentType.objects.get_for_model(Person)
                 qs = qs.filter(
                     content_type=ct,
@@ -106,7 +106,7 @@ class PersonOtherNameDeleteView(LoginRequiredMixin, PersonMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         with transaction.atomic():
-            result_redirect = super(PersonOtherNameDeleteView, self) \
+            result_redirect = super() \
                 .delete(request, *args, **kwargs)
             change_metadata = get_change_metadata(
                 self.request, self.request.POST['source']

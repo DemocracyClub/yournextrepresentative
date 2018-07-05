@@ -59,13 +59,13 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
 
     @method_decorator(cache_control(max_age=(60 * 20)))
     def dispatch(self, *args, **kwargs):
-        return super(ConstituencyDetailView, self).dispatch(
+        return super().dispatch(
             *args, **kwargs
         )
 
     def get_context_data(self, **kwargs):
         from ..election_specific import shorten_post_label
-        context = super(ConstituencyDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         context['post_election'] = get_object_or_404(
             PostExtraElection.objects.all().select_related(
@@ -300,7 +300,7 @@ class ConstituencyListView(ElectionMixin, TemplateView):
     template_name = 'candidates/constituencies.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ConstituencyListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['all_constituencies'] = \
             PostExtraElection.objects.filter(
                 election=self.election_data
@@ -378,7 +378,7 @@ class ConstituenciesUnlockedListView(ElectionMixin, TemplateView):
     template_name = 'candidates/constituencies-unlocked.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ConstituenciesUnlockedListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         total_constituencies = 0
         total_locked = 0
         keys = ('locked', 'unlocked')
@@ -425,17 +425,17 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
         self.person = get_object_or_404(Person, id=person_id)
         self.post_data = get_object_or_404(Post, extra__slug=self.kwargs['post_id'])
 
-        return super(ConstituencyRecordWinnerView, self). \
+        return super(). \
             dispatch(request, *args, **kwargs)
 
     def get_initial(self):
-        initial = super(ConstituencyRecordWinnerView, self). \
+        initial = super(). \
             get_initial()
         initial['person_id'] = self.person.id
         return initial
 
     def get_context_data(self, **kwargs):
-        context = super(ConstituencyRecordWinnerView, self). \
+        context = super(). \
             get_context_data(**kwargs)
         context['post_id'] = self.kwargs['post_id']
         context['constituency_name'] = self.post_data.label
@@ -585,7 +585,7 @@ class ConstituenciesDeclaredListView(ElectionMixin, TemplateView):
     template_name = 'candidates/constituencies-declared.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ConstituenciesDeclaredListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         total_constituencies = 0
         total_declared = 0
         constituency_declared = []
@@ -631,13 +631,13 @@ class OrderedPartyListView(ElectionMixin, TemplateView):
 
     @method_decorator(cache_control(max_age=(60 * 20)))
     def dispatch(self, *args, **kwargs):
-        return super(OrderedPartyListView, self).dispatch(
+        return super().dispatch(
             *args, **kwargs
         )
 
     def get_context_data(self, **kwargs):
         from ..election_specific import shorten_post_label
-        context = super(OrderedPartyListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         context['post_id'] = post_id = kwargs['post_id']
         post_qs = Post.objects.select_related('extra')

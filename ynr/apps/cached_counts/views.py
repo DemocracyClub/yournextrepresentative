@@ -44,7 +44,7 @@ class ReportsHomeView(TemplateView):
     template_name = "reports.html"
 
     def get_context_data(self, **kwargs):
-        context = super(ReportsHomeView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['all_elections'] = get_counts()
         return context
 
@@ -54,14 +54,14 @@ class ReportsHomeView(TemplateView):
                 json.dumps(get_counts(for_json=True)),
                 content_type="application/json"
             )
-        return super(ReportsHomeView, self).get(*args, **kwargs)
+        return super().get(*args, **kwargs)
 
 
 class PartyCountsView(ElectionMixin, TemplateView):
     template_name = "party_counts.html"
 
     def get_context_data(self, **kwargs):
-        context = super(PartyCountsView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         qs = Organization.objects.filter(
             classification='Party',
             memberships_on_behalf_of__post_election__election=self.election_data
@@ -78,7 +78,7 @@ class ConstituencyCountsView(ElectionMixin, TemplateView):
     template_name = "constituency_counts.html"
 
     def get_context_data(self, **kwargs):
-        context = super(ConstituencyCountsView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         qs = PostExtraElection.objects.filter(
             election=self.election_data
         ).annotate(count=Count('membership'))
@@ -96,6 +96,6 @@ class AttentionNeededView(TemplateView):
     template_name = "attention_needed.html"
 
     def get_context_data(self, **kwargs):
-        context = super(AttentionNeededView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['post_counts'] = get_attention_needed_posts()
         return context

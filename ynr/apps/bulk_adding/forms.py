@@ -20,10 +20,10 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
         if 'source' in kwargs:
             self.source = kwargs['source']
             del kwargs['source']
-        super(BaseBulkAddFormSet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def add_fields(self, form, index):
-        super(BaseBulkAddFormSet, self).add_fields(form, index)
+        super().add_fields(form, index)
         if hasattr(self, 'parties'):
             form.fields["party"] = forms.ChoiceField(
                 choices=self.parties,
@@ -78,7 +78,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         return [suggestion.pk, name]
 
     def add_fields(self, form, index):
-        super(BaseBulkAddReviewFormSet, self).add_fields(form, index)
+        super().add_fields(form, index)
         if not form['name'].value():
             return
         suggestions = self.suggested_people(form['name'].value())
@@ -151,7 +151,7 @@ class SelectPartyForm(forms.Form):
     def __init__(self, *args, **kwargs):
 
         election = kwargs.pop('election')
-        super(SelectPartyForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.election = election
         party_set_ids = election.postextraelection_set.all().order_by(

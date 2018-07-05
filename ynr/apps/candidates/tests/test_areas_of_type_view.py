@@ -11,7 +11,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestAreasOfTypeView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUpAll(self):
-        super(TestAreasOfTypeView, self).setUp()
+        super().setUp()
         person_extra = PersonExtraFactory.create(
             base__id='2009',
             base__name='Tessa Jowell'

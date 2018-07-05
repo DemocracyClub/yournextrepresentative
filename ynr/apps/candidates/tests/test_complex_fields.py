@@ -18,7 +18,7 @@ def get_next_dd(start):
 class ComplexFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(ComplexFieldsTests, self).setUp()
+        super().setUp()
 
         an_field = ComplexPopoloField.objects.create(
             name='additional_link',

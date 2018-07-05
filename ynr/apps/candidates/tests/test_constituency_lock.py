@@ -21,7 +21,7 @@ def update_lock(post_extra, election, lock_status):
 class TestConstituencyLockAndUnlock(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestConstituencyLockAndUnlock, self).setUp()
+        super().setUp()
         update_lock(
             self.camberwell_post_extra, self.election, True
         )
@@ -129,7 +129,7 @@ class TestConstituencyLockAndUnlock(TestUserMixin, UK2015ExamplesMixin, WebTest)
 class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestConstituencyLockWorks, self).setUp()
+        super().setUp()
         update_lock(self.camberwell_post_extra, self.election, True)
         post_extra_locked = self.camberwell_post_extra
         self.post_extra_id = self.dulwich_post_extra.id

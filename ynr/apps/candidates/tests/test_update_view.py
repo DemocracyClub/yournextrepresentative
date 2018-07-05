@@ -21,7 +21,7 @@ def membership_id_set(person):
 class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestUpdatePersonView, self).setUp()
+        super().setUp()
         person_extra = PersonExtraFactory.create(
             base__id='2009',
             base__name='Tessa Jowell'

@@ -24,7 +24,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
     maxDiff = None
 
     def setUp(self):
-        super(TestVersionDiffs, self).setUp()
+        super().setUp()
 
     def test_get_version_diffs(self):
         versions = [
@@ -1387,7 +1387,7 @@ class TestSingleVersionRendering(UK2015ExamplesMixin, TestCase):
     maxDiff = None
 
     def setUp(self):
-        super(TestSingleVersionRendering, self).setUp()
+        super().setUp()
         self.example_person_extra = factories.PersonExtraFactory.create(
             base__name='Sarah Jones',
             versions='''[{

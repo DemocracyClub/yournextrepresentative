@@ -10,7 +10,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestPartyPages(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestPartyPages, self).setUp()
+        super().setUp()
         constituencies = {}
         for slug, cons_name, country in [
                 ('66090', 'Cardiff Central', 'Wales'),

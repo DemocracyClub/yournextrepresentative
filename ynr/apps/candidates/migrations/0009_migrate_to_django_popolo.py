@@ -161,7 +161,7 @@ class YNRPopItImporter(PopItImporter):
         )
         self.create_identifier('person', person_data['id'], minimal_person)
         # Now the superclass method should find and update that person.
-        person_id, person = super(YNRPopItImporter, self).update_person(
+        person_id, person = super().update_person(
             new_person_data
         )
 
@@ -186,7 +186,7 @@ class YNRPopItImporter(PopItImporter):
         return person_id, person
 
     def update_organization(self, org_data, area):
-        org_id, org = super(YNRPopItImporter, self).update_organization(
+        org_id, org = super().update_organization(
             org_data, area
         )
 
@@ -235,7 +235,7 @@ class YNRPopItImporter(PopItImporter):
                     message = "The format of the St Paul area ID was unexpected: {0}"
                     raise Exception(message.format(old_identifier))
 
-        area_id, area = super(YNRPopItImporter, self).update_area(new_area_data)
+        area_id, area = super().update_area(new_area_data)
 
         if settings.ELECTION_APP == 'uk_general_election_2015':
             ContentType = self.get_model_class('contenttypes', 'ContentType')
@@ -268,7 +268,7 @@ class YNRPopItImporter(PopItImporter):
         return area_id, area
 
     def update_post(self, post_data, area, org_id_to_django_object):
-        post_id, post = super(YNRPopItImporter, self).update_post(post_data, area, org_id_to_django_object)
+        post_id, post = super().update_post(post_data, area, org_id_to_django_object)
 
         PostExtra = self.get_model_class('candidates', 'PostExtra')
         post_extra, created = PostExtra.objects.get_or_create(base=post, slug=post_data['id'])
@@ -335,7 +335,7 @@ class YNRPopItImporter(PopItImporter):
             if new_membership_data.get('organization_id') == 'commons':
                 new_membership_data['organization_id'] = 'saint-paul-city-council'
 
-        membership_id, membership = super(YNRPopItImporter, self).update_membership(
+        membership_id, membership = super().update_membership(
             new_membership_data,
             area,
             org_id_to_django_object,
@@ -419,14 +419,14 @@ class YNRPopItImporter(PopItImporter):
         # There are some contact types that are used in PopIt that are
         # longer than 12 characters...
         new_contact_detail_data['type'] = contact_detail_data['type'][:12]
-        return super(YNRPopItImporter, self).make_contact_detail_dict(new_contact_detail_data)
+        return super().make_contact_detail_dict(new_contact_detail_data)
 
     def make_link_dict(self, link_data):
         new_link_data = link_data.copy()
         # There are some really long URLs in PopIt, which exceed the
         # 200 character limit in django-popolo.
         new_link_data['url'] = new_link_data['url'][:200]
-        return super(YNRPopItImporter, self).make_link_dict(new_link_data)
+        return super().make_link_dict(new_link_data)
 
 
 PARTY_SETS_BY_ELECTION_APP = {

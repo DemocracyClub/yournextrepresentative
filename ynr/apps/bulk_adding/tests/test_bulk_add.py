@@ -14,7 +14,7 @@ from official_documents.models import OfficialDocument
 class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestBulkAdding, self).setUp()
+        super().setUp()
         call_command('rebuild_index', verbosity=0, interactive=False)
 
     def testNoFormIfNoSopn(self):

@@ -8,8 +8,7 @@ from elections.models import Election
 class CandidatesByElectionForPartyView(TemplateView):
     template_name = "parties/party_by_election_table.html"
     def get_context_data(self, **kwargs):
-        context = super(
-            CandidatesByElectionForPartyView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         party = Identifier.objects.get(
             identifier=kwargs['party_id']).content_object

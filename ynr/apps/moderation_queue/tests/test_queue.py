@@ -60,7 +60,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         super(PhotoReviewTests, cls).tearDownClass()
 
     def setUp(self):
-        super(PhotoReviewTests, self).setUp()
+        super().setUp()
         person_2009 = PersonExtraFactory.create(
             base__id='2009',
             base__name='Tessa Jowell'
@@ -138,7 +138,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         self.q3.delete()
         self.test_upload_user.delete()
         self.test_reviewer.delete()
-        super(PhotoReviewTests, self).tearDown()
+        super().tearDown()
 
     def test_photo_review_queue_view_not_logged_in(self):
         queue_url = reverse('photo-review-list')
@@ -449,7 +449,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 
 class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
     def setUp(self):
-        super(SuggestedLockReviewTests, self).setUp()
+        super().setUp()
         person_2009 = PersonExtraFactory.create(
             base__id='2009',
             base__name='Tessa Jowell'

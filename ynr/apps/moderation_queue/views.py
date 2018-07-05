@@ -158,7 +158,7 @@ class PhotoUploadSuccess(TemplateView):
     template_name = 'moderation_queue/photo-upload-success.html'
 
     def get_context_data(self, **kwargs):
-        context = super(PhotoUploadSuccess, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['person'] = Person.objects.get(
             id=kwargs['person_id']
         )
@@ -223,7 +223,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         return url + urlquote(absolute_image_url)
 
     def get_context_data(self, **kwargs):
-        context = super(PhotoReview, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         self.queued_image = get_object_or_404(
             QueuedImage,
             pk=kwargs['queued_image_id']
@@ -565,7 +565,7 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
             message="Thanks for suggesting we lock an area!"
         )
 
-        return super(SuggestLockView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse('constituency', kwargs={
@@ -616,8 +616,7 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
         return qs[:10]
 
     def get_context_data(self, **kwargs):
-        context = super(
-            SuggestLockReviewListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['my_suggestions'] = self.get_lock_suggestions(mine=True)
         context['other_suggestions'] = self.get_lock_suggestions(mine=False)
         context['test_pdf_view'] = bool(self.request.GET.get('pdfembed'))
@@ -646,7 +645,7 @@ class SOPNReviewRequiredView(ListView):
 
                 )
                 return HttpResponseRedirect(url)
-        return super(SOPNReviewRequiredView, self).get(*args, **kwargs)
+        return super().get(*args, **kwargs)
 
 
     def get_queryset(self):
@@ -675,8 +674,7 @@ class PersonNameCleanupView(TemplateView):
     template_name = "moderation_queue/person_name_cleanup.html"
 
     def get_context_data(self, **kwargs):
-        context = super(
-            PersonNameCleanupView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         people = Person.objects.all().only('name')
 

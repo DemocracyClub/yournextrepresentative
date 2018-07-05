@@ -23,7 +23,7 @@ from candidates.models import LoggedAction, PersonRedirect
 class TestAPI(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestAPI, self).setUp()
+        super().setUp()
 
         person_extra = PersonExtraFactory.create(
             base__id='2009',

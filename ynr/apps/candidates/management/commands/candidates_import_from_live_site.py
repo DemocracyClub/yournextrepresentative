@@ -62,7 +62,7 @@ class Command(BaseCommand):
     help = 'Import all data from a live YNR site'
 
     def __init__(self, *args, **kwargs):
-        super(Command, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.image_storage = FileSystemStorage()
 
     def add_arguments(self, parser):

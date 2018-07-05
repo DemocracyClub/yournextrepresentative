@@ -10,7 +10,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestOtherNamesViews, self).setUp()
+        super().setUp()
         self.pe_no_other = PersonExtraFactory.create(
             base__id=1234,
             base__name='John Smith',

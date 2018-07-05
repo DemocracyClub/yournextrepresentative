@@ -15,7 +15,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestNewPersonView, self).setUp()
+        super().setUp()
 
     def test_new_person_submission_refused_copyright(self):
         # Just a smoke test for the moment:

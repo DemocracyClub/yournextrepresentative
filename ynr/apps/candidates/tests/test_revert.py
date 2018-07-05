@@ -123,7 +123,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     ''')
 
     def setUp(self):
-        super(TestRevertPersonView, self).setUp()
+        super().setUp()
         person_extra = factories.PersonExtraFactory.create(
             base__id=2009,
             base__name='Tessa Jowell',

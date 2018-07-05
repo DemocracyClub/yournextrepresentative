@@ -14,7 +14,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
     maxDiff = None
 
     def setUp(self):
-        super(CachedCountTestCase, self).setUp()
+        super().setUp()
         posts_extra = [
             self.edinburgh_east_post_extra,
             self.edinburgh_north_post_extra,

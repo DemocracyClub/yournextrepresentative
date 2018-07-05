@@ -24,6 +24,6 @@ class GroupRequiredMixin(object):
     def dispatch(self, request, *args, **kwargs):
         if not user_in_group(request.user, self.required_group_name):
             return render(request, self.permission_denied_template, status=403)
-        return super(GroupRequiredMixin, self).dispatch(
+        return super().dispatch(
             request, *args, **kwargs
         )

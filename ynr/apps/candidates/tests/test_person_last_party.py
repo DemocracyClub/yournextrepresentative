@@ -6,7 +6,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
-        super(TestPersonLastParty, self).setUp()
+        super().setUp()
 
     def test_both_elections(self):
         person_extra = factories.PersonExtraFactory.create(

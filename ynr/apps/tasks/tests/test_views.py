@@ -11,7 +11,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 class TestFieldView(UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
-        super(TestFieldView, self).setUp()
+        super().setUp()
 
         person_extra = PersonExtraFactory.create(
             base__id='2009',

@@ -29,11 +29,11 @@ if django_version[:2] < (1, 9):
         def __init__(self, max_length=None, min_length=None, strip=True,
                      *args, **kwargs):
             self.strip = strip
-            super(StrippedCharField, self).__init__(max_length, min_length,
+            super().__init__(max_length, min_length,
                                                     *args, **kwargs)
 
         def to_python(self, value):
-            value = super(StrippedCharField, self).to_python(value)
+            value = super().to_python(value)
             if self.strip:
                 value = value.strip()
             return value
@@ -48,7 +48,7 @@ class AddressForm(forms.Form):
     )
 
     def __init__(self, country, *args, **kwargs):
-        super(AddressForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.country = country
 
     def clean_address(self):
@@ -89,7 +89,7 @@ class CandidacyDeleteForm(BaseCandidacyForm):
 class BasePersonForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
-        super(BasePersonForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Add any extra fields to the person form:
         for field in ExtraField.objects.all():
@@ -274,7 +274,7 @@ class NewPersonForm(BasePersonForm):
         from .election_specific import shorten_post_label
         election = kwargs.pop('election', None)
         hidden_post_widget = kwargs.pop('hidden_post_widget', None)
-        super(NewPersonForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         election_data = Election.objects.get_by_slug(election)
 
@@ -387,7 +387,7 @@ class NewPersonForm(BasePersonForm):
     )
 
     def clean(self):
-        cleaned_data = super(NewPersonForm, self).clean()
+        cleaned_data = super().clean()
         return self.check_party_and_constituency_are_selected(cleaned_data)
 
 
@@ -467,7 +467,7 @@ class AddElectionFieldsMixin(object):
 class UpdatePersonForm(AddElectionFieldsMixin, BasePersonForm):
 
     def __init__(self, *args, **kwargs):
-        super(UpdatePersonForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.elections_with_fields = list(Election.objects.filter(
                 postextraelection__membership__person=self.initial['person'],
                 current=True
@@ -509,7 +509,7 @@ class UpdatePersonForm(AddElectionFieldsMixin, BasePersonForm):
             # Now we need to re-clean the data, with the new election in it
             self._clean_fields()
 
-        cleaned_data = super(UpdatePersonForm, self).clean()
+        cleaned_data = super().clean()
         return self.check_party_and_constituency_are_selected(cleaned_data)
 
 
@@ -557,7 +557,7 @@ class ConstituencyRecordWinnerForm(forms.Form):
 
 class SingleElectionForm(AddElectionFieldsMixin, forms.Form):
     def __init__(self, *args, **kwargs):
-        super(SingleElectionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         election_data = kwargs['initial']['election']
 

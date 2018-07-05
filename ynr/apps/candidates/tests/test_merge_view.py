@@ -31,7 +31,7 @@ TEST_MEDIA_ROOT = realpath(join(dirname(__file__), 'media'))
 class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestMergePeopleView, self).setUp()
+        super().setUp()
         mkdir_p(TEST_MEDIA_ROOT)
         # Create Tessa Jowell (the primary person)
         person_extra = factories.PersonExtraFactory.create(

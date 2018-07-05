@@ -12,7 +12,7 @@ class RecentChangesView(ContributorsMixin, TemplateView):
     template_name = 'candidates/recent-changes.html'
 
     def get_context_data(self, **kwargs):
-        context = super(RecentChangesView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         actions = self.get_recent_changes_queryset()
         paginator = Paginator(actions, 50)
         page = self.request.GET.get('page')
@@ -28,7 +28,7 @@ class LeaderboardView(ContributorsMixin, TemplateView):
     template_name = 'candidates/leaderboard.html'
 
     def get_context_data(self, **kwargs):
-        context = super(LeaderboardView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['leaderboards'] = self.get_leaderboards()
         return context
 

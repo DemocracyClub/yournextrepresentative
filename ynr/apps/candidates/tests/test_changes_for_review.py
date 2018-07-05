@@ -56,7 +56,7 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
     csrf_checks = False
 
     def setUp(self):
-        super(TestNeedsReview, self).setUp()
+        super().setUp()
         self.current_datetime = make_aware(datetime(2017, 5, 2, 18, 10, 5, 0))
         # Reuse existing users created in TestUserMixin:
         for username, u in (

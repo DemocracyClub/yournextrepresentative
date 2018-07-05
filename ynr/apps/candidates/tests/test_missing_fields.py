@@ -9,7 +9,7 @@ from . import factories
 class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
-        super(TestMissingFields, self).setUp()
+        super().setUp()
         slogan_field = ExtraField.objects.create(
             key='slogan',
             type='line',

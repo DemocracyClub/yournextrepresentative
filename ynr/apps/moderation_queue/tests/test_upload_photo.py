@@ -48,7 +48,7 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         super(PhotoUploadImageTests, cls).tearDownClass()
 
     def setUp(self):
-        super(PhotoUploadImageTests, self).setUp()
+        super().setUp()
         PersonExtraFactory.create(
             base__id='2009',
             base__name='Tessa Jowell'
@@ -62,7 +62,7 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         self.test_upload_user.terms_agreement.save()
 
     def tearDown(self):
-        super(PhotoUploadImageTests, self).tearDown()
+        super().tearDown()
         self.test_upload_user.delete()
 
     def test_photo_upload_through_image_field(self):
@@ -134,7 +134,7 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
         super(PhotoUploadURLTests, cls).tearDownClass()
 
     def setUp(self):
-        super(PhotoUploadURLTests, self).setUp()
+        super().setUp()
         PersonExtraFactory.create(
             base__id='2009',
             base__name='Tessa Jowell'
