@@ -1,6 +1,6 @@
 $include-html-classes: false;
 
-@import "../../foundation/scss/foundation";
+@import "foundation";
 
 /* This removes all size-related styles from the image for review; if
    we don't do this then Jcrop gets confused about the true size of

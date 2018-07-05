@@ -10,7 +10,7 @@ from os.path import dirname, join, exists
 import requests
 
 from django.core.management.base import BaseCommand, CommandError
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import DefaultStorage
 
 from official_documents.models import OfficialDocument
 from candidates.models import PostExtraElection
@@ -73,7 +73,7 @@ class Command(BaseCommand):
         csv_url, = args
 
         mime_type_magic = magic.Magic(mime=True)
-        storage = FileSystemStorage()
+        storage = DefaultStorage()
 
         r = requests.get(csv_url)
         r.encoding = 'utf-8'

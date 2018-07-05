@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     'parties',
     'candidatebot',
     'resultsbot',
+    'storages',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -218,7 +219,10 @@ STATIC_ROOT = root('static')
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.CachedFileFinder',
     'pipeline.finders.PipelineFinder',
+    'pipeline.finders.ManifestFinder',
+
 )
 
 PIPELINE = {
@@ -304,12 +308,18 @@ PIPELINE = {
         'pipeline.compilers.sass.SASSCompiler',
     ),
     'SASS_BINARY': 'sassc',
-    'CSS_COMPRESSOR': 'pipeline.compressors.yui.YUICompressor',
+    'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     'JS_COMPRESSOR': 'pipeline.compressors.yui.YUICompressor',
     # On some platforms this might be called "yuicompressor", so it may be
     # necessary to symlink it into your PATH as "yui-compressor".
     'YUI_BINARY': '/usr/bin/env yui-compressor',
 }
+
+SASS_INCLUDE_PATHS = (root('apps/candidates/static/foundation/scss'), )
+SASS_ARGUMENT_LIST = ["-I " + p for p in SASS_INCLUDE_PATHS]
+SASS_ARGUMENT_LIST.append("--style compressed")
+SASS_ARGUMENT_LIST.append("--sourcemap")
+PIPELINE['SASS_ARGUMENTS'] = ' '.join(SASS_ARGUMENT_LIST)
 
 
 SOURCE_HINTS = u"""

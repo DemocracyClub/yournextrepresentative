@@ -27,7 +27,7 @@
                     <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.postextra.base.label }}</a></td>
                     {% if request.user.is_authenticated %}
                     <td>
-                        {{ pee.election.candidacies.count|default:"0" }}
+                        {{ pee.membership_set.count|default:"0" }}
                     </td>
                     <td>
                         {% if pee.candidates_locked %}
