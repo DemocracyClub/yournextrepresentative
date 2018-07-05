@@ -1,7 +1,7 @@
 <h1>Thanks!</h1>
 
 <p>…and while you're here…</p>
-{% if remaining_posts.exists %}
+{% if remaining_posts.exists and remaining_posts.count > 1 %}
 <p>The document you have open has information on
     <strong>{{ remaining_posts.count }}
     more ward{{ remaining_posts.count|pluralize }}</strong>.</p>
