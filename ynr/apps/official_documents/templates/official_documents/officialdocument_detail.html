@@ -31,7 +31,7 @@ The source URL for this document was: <a href="{{ source_url }}">{{ source_url }
 {% endif %}
 
 <iframe
-  src="http{% if request.is_secure %}s{% endif %}://docs.google.com/viewer?url=http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}{{ object.uploaded_file.url | urlencode}}&amp;embedded=true"
+  src="https://docs.google.com/viewer?url={% if object.uploaded_file.url|slice:":4" != "http" %}http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}{% endif %}{{ object.uploaded_file.url | urlencode}}&amp;embedded=true"
   frameborder="0"
   allowfullscreen
   class="document_viewer"></iframe>
