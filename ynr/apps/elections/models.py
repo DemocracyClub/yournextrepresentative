@@ -10,7 +10,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from popolo.models import Organization
 
-from compat import python_2_unicode_compatible
 
 
 class ElectionQuerySet(models.QuerySet):
@@ -43,7 +42,6 @@ class ElectionManager(models.Manager):
 # FIXME: shouldn't AreaType also have the MapIt generation?
 # FIXME: at the moment name is a code (like WMC); ideally that would
 # be a code field and the name field would be "Westminster Consituency"
-@python_2_unicode_compatible
 class AreaType(models.Model):
     name = models.CharField(max_length=128)
     source = models.CharField(max_length=128, blank=True,
@@ -58,7 +56,6 @@ class AreaType(models.Model):
             .values_list('id', 'base__name')
 
 
-@python_2_unicode_compatible
 class Election(models.Model):
     slug = models.CharField(max_length=128, unique=True)
     for_post_role = models.CharField(max_length=128)

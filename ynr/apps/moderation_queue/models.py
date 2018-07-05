@@ -9,8 +9,6 @@ from popolo.models import Person
 
 from candidates.models import PostExtraElection
 
-from compat import python_2_unicode_compatible
-
 PHOTO_REVIEWERS_GROUP_NAME = 'Photo Reviewers'
 
 
@@ -36,7 +34,6 @@ class CopyrightOptions:
     )
 
 
-@python_2_unicode_compatible
 class QueuedImage(models.Model):
 
     APPROVED = 'approved'

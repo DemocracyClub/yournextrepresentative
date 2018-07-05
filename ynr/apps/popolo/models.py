@@ -15,7 +15,6 @@ except ImportError:
 from django.core.validators import RegexValidator
 from django.db import models
 from model_utils import Choices
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
@@ -24,7 +23,6 @@ from .behaviors.models import Timestampable, Dateframeable, GenericRelatable
 from .querysets import PostQuerySet, OtherNameQuerySet, ContactDetailQuerySet, MembershipQuerySet, OrganizationQuerySet, PersonQuerySet
 
 
-@python_2_unicode_compatible
 class Person(Dateframeable, Timestampable, models.Model):
     """
     A real person, alive or dead
@@ -99,7 +97,7 @@ class Person(Dateframeable, Timestampable, models.Model):
     def __str__(self):
         return self.name
 
-@python_2_unicode_compatible
+
 class Organization(Dateframeable, Timestampable, models.Model):
     """
     A group with a common purpose or reason for existence that goes beyond the set of people belonging to it
@@ -175,7 +173,7 @@ class Organization(Dateframeable, Timestampable, models.Model):
     def __str__(self):
         return self.name
 
-@python_2_unicode_compatible
+
 class Post(Dateframeable, Timestampable, models.Model):
     """
     A position that exists independent of the person holding it
@@ -217,7 +215,7 @@ class Post(Dateframeable, Timestampable, models.Model):
     def __str__(self):
         return self.label
 
-@python_2_unicode_compatible
+
 class Membership(Dateframeable, Timestampable, models.Model):
     """
     A relationship between a person and an organization
@@ -288,7 +286,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
     class Meta:
         unique_together = ('person', 'post_election')
 
-@python_2_unicode_compatible
+
 class ContactDetail(Timestampable, Dateframeable, GenericRelatable,  models.Model):
     """
     A means of contacting an entity
@@ -331,7 +329,6 @@ class ContactDetail(Timestampable, Dateframeable, GenericRelatable,  models.Mode
         return u"{} - {}".format(self.value, self.contact_type)
 
 
-@python_2_unicode_compatible
 class OtherName(Dateframeable, GenericRelatable, models.Model):
     """
     An alternate or former name
@@ -350,7 +347,6 @@ class OtherName(Dateframeable, GenericRelatable, models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
 class Identifier(GenericRelatable, models.Model):
     """
     An issued identifier
@@ -363,7 +359,6 @@ class Identifier(GenericRelatable, models.Model):
         return "{}: {}".format(self.scheme, self.identifier)
 
 
-@python_2_unicode_compatible
 class Link(GenericRelatable, models.Model):
     """
     A URL
@@ -376,7 +371,6 @@ class Link(GenericRelatable, models.Model):
         return self.url
 
 
-@python_2_unicode_compatible
 class Source(GenericRelatable, models.Model):
     """
     A URL for referring to sources of information
@@ -389,8 +383,6 @@ class Source(GenericRelatable, models.Model):
         return self.url
 
 
-
-@python_2_unicode_compatible
 class Language(models.Model):
     """
     Maps languages, with names and 2-char iso 639-1 codes.
@@ -405,7 +397,7 @@ class Language(models.Model):
     def __str__(self):
         return u"{} ({})".format(self.name, self.iso639_1_code)
 
-@python_2_unicode_compatible
+
 class Area(GenericRelatable, Dateframeable, Timestampable, models.Model):
     """
     An area is a geographic area whose geometry may change over time.
@@ -435,7 +427,7 @@ class Area(GenericRelatable, Dateframeable, Timestampable, models.Model):
     def __str__(self):
         return self.name
 
-@python_2_unicode_compatible
+
 class AreaI18Name(models.Model):
     """
     Internationalized name for an Area.

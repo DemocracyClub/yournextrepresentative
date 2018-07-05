@@ -10,8 +10,6 @@ from elections.models import Election
 
 from django_extensions.db.models import TimeStampedModel
 
-from compat import python_2_unicode_compatible
-
 DOCUMENT_UPLOADERS_GROUP_NAME = "Document Uploaders"
 
 
@@ -23,7 +21,6 @@ def document_file_name(instance, filename):
     )
 
 
-@python_2_unicode_compatible
 class OfficialDocument(TimeStampedModel):
     # TODO FK to post_election and remove the Election and Post FKs
     NOMINATION_PAPER = 'Nomination paper'

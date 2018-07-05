@@ -2,7 +2,6 @@
 
 from __future__ import unicode_literals
 
-from django.utils.encoding import python_2_unicode_compatible
 import six
 from six import text_type
 from six.moves import input

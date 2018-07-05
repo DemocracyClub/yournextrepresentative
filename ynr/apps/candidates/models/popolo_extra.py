@@ -30,7 +30,6 @@ from popolo.models import (
 )
 from images.models import Image, HasImageMixin
 
-from compat import python_2_unicode_compatible
 from .fields import (
     ExtraField, PersonExtraFieldValue, ComplexPopoloField,
     get_complex_popolo_fields,
@@ -340,7 +339,6 @@ class VersionNotFound(Exception):
     pass
 
 
-@python_2_unicode_compatible
 class PersonExtra(HasImageMixin, models.Model):
     base = models.OneToOneField(Person, related_name='extra')
 
@@ -757,7 +755,6 @@ class PersonExtra(HasImageMixin, models.Model):
         return self.base.name
 
 
-@python_2_unicode_compatible
 class OrganizationExtra(HasImageMixin, models.Model):
     base = models.OneToOneField(Organization, related_name='extra')
     slug = models.CharField(max_length=256, blank=True, unique=True)
@@ -783,7 +780,6 @@ class OrganizationExtra(HasImageMixin, models.Model):
 
 
 
-@python_2_unicode_compatible
 class PostExtra(HasImageMixin, models.Model):
     base = models.OneToOneField(Post, related_name='extra')
     slug = models.CharField(max_length=256, blank=True, unique=True)
@@ -835,7 +831,6 @@ class PostExtraElection(models.Model):
         ])
 
 
-@python_2_unicode_compatible
 class AreaExtra(models.Model):
     base = models.OneToOneField(Area, related_name='extra')
 
@@ -848,7 +843,6 @@ class AreaExtra(models.Model):
         return self.base.name
 
 
-@python_2_unicode_compatible
 class PartySet(models.Model):
     slug = models.CharField(max_length=256, unique=True)
     name = models.CharField(max_length=1024)
