@@ -178,7 +178,7 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
                 '  Adding that person\'s Twitter avatar to the moderation ' \
                 'queue',
                 'WARNING: Multiple Twitter user IDs found for Person ' \
-                'With No Existing Images ({0}), skipping'.format(
+                'With No Existing Images ({}), skipping'.format(
                     self.p_no_images.id),
                 'Considering adding a photo for Person With Only Rejected ' \
                 'Images In The Queue with Twitter user ID: 1003',

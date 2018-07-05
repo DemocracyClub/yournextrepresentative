@@ -98,7 +98,7 @@ class CandidateResult(TimeStampedModel):
         )
 
     def __unicode__(self):
-        return u"{} ({} votes)".format(
+        return "{} ({} votes)".format(
             self.membership.person,
             self.num_ballots
         )

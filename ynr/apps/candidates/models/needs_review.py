@@ -25,7 +25,7 @@ def needs_review_due_to_first_edits(logged_action_qs):
         u.id: u for u in User.objects.filter(pk__in=user_ids)}
     needs_review_la_ids = set()
     for user_id in user_ids:
-        cache_key = 'earliest_edits_for_user_id:{0}'.format(user_id)
+        cache_key = 'earliest_edits_for_user_id:{}'.format(user_id)
         earliest_edits = cache.get(cache_key)
         if earliest_edits is None or len(earliest_edits) < NEEDS_REVIEW_FIRST_EDITS:
             earliest_edits = LoggedAction.objects \
@@ -44,7 +44,7 @@ def needs_review_due_to_first_edits(logged_action_qs):
 
 def needs_review_due_to_subject_having_died(logged_action_qs):
     person_ids = logged_action_qs.values_list('person', flat=True)
-    person_ids = set(p for p in person_ids if p is not None)
+    person_ids = {p for p in person_ids if p is not None}
     dead_people_ids = set(
         Person.objects \
         .filter(pk__in=person_ids) \

@@ -38,7 +38,7 @@ def get_extra_csv_values(person, election, post):
             if not m:
                 message = "Malformed parlparse ID found {0}"
                 raise Exception(message.format(parlparse_id))
-            theyworkforyou_url = 'http://www.theyworkforyou.com/mp/{0}'.format(
+            theyworkforyou_url = 'http://www.theyworkforyou.com/mp/{}'.format(
                 m.group(1)
             )
     for m in person.memberships.all():
@@ -71,7 +71,7 @@ def get_extra_csv_values(person, election, post):
 def is_valid_postcode(postcode):
     outcode_pattern = '[A-PR-UWYZ]([0-9]{1,2}|([A-HIK-Y][0-9](|[0-9]|[ABEHMNPRVWXY]))|[0-9][A-HJKSTUW])'
     incode_pattern = '[0-9][ABD-HJLNP-UW-Z]{2}'
-    postcode_regex = re.compile(r'^(GIR 0AA|%s %s)$' % (outcode_pattern, incode_pattern))
+    postcode_regex = re.compile(r'^(GIR 0AA|{} {})$'.format(outcode_pattern, incode_pattern))
     space_regex = re.compile(r' *(%s)$' % incode_pattern)
 
     postcode = postcode.upper().strip()

@@ -47,7 +47,7 @@ class OfficialDocument(TimeStampedModel):
     )
 
     def __str__(self):
-        return "{0} ({1})".format(
+        return "{} ({})".format(
             self.post.extra.slug,
             self.source_url,
         )

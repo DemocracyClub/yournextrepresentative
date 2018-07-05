@@ -50,4 +50,4 @@ class Command(BaseCommand):
         person.extra.record_version(change_metadata)
         person.extra.save()
 
-        print("Successfully updated {0}".format(person.name))
+        print("Successfully updated {}".format(person.name))

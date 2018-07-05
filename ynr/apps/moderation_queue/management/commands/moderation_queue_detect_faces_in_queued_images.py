@@ -28,11 +28,11 @@ class Command(BaseCommand):
                 qi.crop_min_x, qi.crop_min_y, qi.crop_max_x, qi.crop_max_y = \
                                                                              guessed_crop_bounds
                 if int(options['verbosity']) > 1:
-                    self.stdout.write("Set bounds of {0} to {1}".format(
+                    self.stdout.write("Set bounds of {} to {}".format(
                         qi, guessed_crop_bounds
                     ))
             else:
-                self.stdout.write("Couldn't find a face in {0}".format(qi))
+                self.stdout.write("Couldn't find a face in {}".format(qi))
             qi.face_detection_tried = True
             qi.save()
         if any_failed:

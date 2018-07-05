@@ -38,7 +38,7 @@ def fake_post_for_username_updater(*args, **kwargs):
                 }
             ]
             return mock_result
-    raise Exception("No Twitter API stub for {0} {1}".format(args, kwargs))
+    raise Exception("No Twitter API stub for {} {}".format(args, kwargs))
 
 
 @patch('candidates.management.twitter.requests')
@@ -96,7 +96,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
 
         self.assertIn(
             'WARNING: Multiple Twitter screen names found for Person with ' \
-            'just a Twitter screen name ({0}), skipping'.format(
+            'just a Twitter screen name ({}), skipping'.format(
                 self.just_screen_name.id),
             split_output(out))
 
@@ -115,7 +115,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
 
         self.assertIn(
             'WARNING: Multiple Twitter user IDs found for Person with ' \
-            'just a Twitter user ID ({0}), skipping'.format(
+            'just a Twitter user ID ({}), skipping'.format(
                 self.just_userid.id),
             split_output(out))
 
@@ -208,7 +208,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
                         },
                     ]
                     return mock_result
-            raise Exception("No Twitter API stub for {0} {1}".format(args, kwargs))
+            raise Exception("No Twitter API stub for {} {}".format(args, kwargs))
 
         mock_requests.post.side_effect = fake_post_screen_name_wrong
 
@@ -254,7 +254,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
                         }
                     ]
                     return mock_result
-            raise Exception("No Twitter API stub for {0} {1}".format(args, kwargs))
+            raise Exception("No Twitter API stub for {} {}".format(args, kwargs))
 
         mock_requests.post.side_effect = fake_post_screen_name_disappeared
 
@@ -274,7 +274,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
                 'Removing screen name notreallyatwitteraccount for Person ' \
                 'with just a Twitter screen name as it is not a valid ' \
                 'Twitter screen name. ' \
-                '/person/{0}/person-with-just-a-twitter-screen-name'.format(
+                '/person/{}/person-with-just-a-twitter-screen-name'.format(
                     self.just_screen_name.id),
                 'Correcting the screen name from None to ascreennamewewereunawareof',
             ]
@@ -307,7 +307,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
                         ]
                     }
                     return mock_result
-            raise Exception("No Twitter API stub for {0} {1}".format(args, kwargs))
+            raise Exception("No Twitter API stub for {} {}".format(args, kwargs))
 
         mock_requests.post.side_effect = fake_post_user_id_disappeared
 
@@ -334,11 +334,11 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
                 'Adding the user ID 321',
                 'Removing user ID 987 for Person with just a Twitter user ID ' \
                 'as it is not a valid Twitter user ID. '
-                '/person/{0}/person-with-just-a-twitter-user-id'.format(
+                '/person/{}/person-with-just-a-twitter-user-id'.format(
                     self.just_userid.id),
                 'Removing user ID 765 for Someone with a Twitter screen name ' \
                 'and user ID as it is not a valid Twitter user ID. ' \
-                '/person/{0}/someone-with-a-twitter-screen-name-and-user-id'.format(
+                '/person/{}/someone-with-a-twitter-screen-name-and-user-id'.format(
                     self.screen_name_and_user_id.id),
             ]
         )

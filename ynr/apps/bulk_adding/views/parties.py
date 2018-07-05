@@ -189,11 +189,11 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
     def post(self, request, *args, **kwargs):
         qs = self.get_pee_qs(self.get_election())
         formsets = []
-        pee_ids = set([
+        pee_ids = {
             int(k.split('-')[0])
             for k in request.POST.keys()
             if k.endswith('INITIAL_FORMS')
-        ])
+        }
         for pee in qs.filter(pk__in=pee_ids):
             factory = django_forms.formset_factory(
                 forms.ReviewSinglePersonNameOnlyForm,

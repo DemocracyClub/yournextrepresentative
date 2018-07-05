@@ -486,7 +486,7 @@ class PopItImporter(object):
                 new_objects.append(
                     django_related_model.objects.create(**wanted_attributes)
                 )
-        object_ids_to_preserve = set(c.id for c in new_objects)
+        object_ids_to_preserve = {c.id for c in new_objects}
         object_ids_to_preserve.update(c.id for c in old_objects_to_preserve)
         django_related_model.objects.filter(
             content_type_id=main_content_type.id,

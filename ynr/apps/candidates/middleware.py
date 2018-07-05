@@ -86,7 +86,7 @@ class CopyrightAssignmentMiddleware(object):
             # Then redirect to a view that asks you to assign
             # copyright:
             assign_copyright_url = reverse('ask-for-copyright-assignment')
-            assign_copyright_url += "?next={0}".format(
+            assign_copyright_url += "?next={}".format(
                 urlquote(request.path)
             )
             return HttpResponseRedirect(assign_copyright_url)

@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='candidateresult',
-            unique_together=set([('result_set', 'membership')]),
+            unique_together={('result_set', 'membership')},
         ),
         migrations.RemoveField(
             model_name='candidateresult',

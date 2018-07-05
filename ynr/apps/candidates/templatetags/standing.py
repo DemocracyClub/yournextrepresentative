@@ -51,14 +51,14 @@ def get_known_candidacy_prefix_and_suffix(candidacy):
                 suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-elected">Elected!</span>'
             else:
                 suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-not-elected">Not elected</span>'
-            suffix += ' <span class="vote-count">({0} votes)</span>'.format(
+            suffix += ' <span class="vote-count">({} votes)</span>'.format(
                  candidate_result.num_ballots
             )
             suffix += '<br>'
 
     elif candidacy.extra.party_list_position:
-        prefix += u'<div title="{0}" aria-label="{0}" class="person-position">{1}</div>'.format(
-            _(u'Party list position'),
+        prefix += '<div title="{0}" aria-label="{0}" class="person-position">{1}</div>'.format(
+            _('Party list position'),
             candidacy.extra.party_list_position,
         )
     return prefix, suffix
@@ -81,10 +81,10 @@ def post_in_election(person, election):
             ),
             cons_name=candidacy.post.extra.short_label
         )
-        result = '<span class="constituency-value-standing-link">{0}</span>'.format(
+        result = '<span class="constituency-value-standing-link">{}</span>'.format(
             link
         )
-        result += ' <span class="party">{0}</span>'.format(
+        result += ' <span class="party">{}</span>'.format(
             candidacy.on_behalf_of.name
         )
         prefix, suffix = get_known_candidacy_prefix_and_suffix(candidacy)

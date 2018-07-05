@@ -89,7 +89,7 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            '/person/{0}'.format(person.id)
+            '/person/{}'.format(person.id)
         )
 
         self.assertEqual(person.name, 'Elizabeth Bennet')

@@ -40,7 +40,7 @@ def get_url_cached(url):
     if exists(filename):
         return filename
     else:
-        print("\nDownloading {0} ...".format(url))
+        print("\nDownloading {} ...".format(url))
         with open(filename, 'wb') as f:
             r = requests.get(url, stream=True)
             r.raise_for_status()
@@ -94,7 +94,7 @@ class YNRPopItImporter(PopItImporter):
                         pillow_image = PillowImage.open(f)
                     except IOError as e:
                         if 'cannot identify image file' in e.args[0]:
-                            print("Ignoring a non-image file {0}".format(
+                            print("Ignoring a non-image file {}".format(
                                 image_filename
                             ))
                             continue
@@ -316,7 +316,7 @@ class YNRPopItImporter(PopItImporter):
             if party_set_name:
                 post_extra.party_set = PartySet.objects.get(name=party_set_name)
             else:
-                print("Couldn't find party set from name {0}".format(area.name))
+                print("Couldn't find party set from name {}".format(area.name))
                 post_extra.party_set = PartySet.objects.get(slug='nacional')
         post_extra.save()
 

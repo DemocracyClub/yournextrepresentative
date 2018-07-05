@@ -296,7 +296,7 @@ class TestMergePeople(TestCase):
         merged = merge_popit_people(primary, secondary)
         self.assertEqual(
             set(merged.keys()),
-            set(['name', 'other_names'])
+            {'name', 'other_names'}
         )
         self.assertEqual(merged['name'], 'Dave Cameron')
         sorted_other_names = sorted(

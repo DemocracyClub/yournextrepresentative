@@ -32,7 +32,7 @@ def page_from_url(url):
 
 
 def page_filename(endpoint, page_number):
-    return '{0}-{1:06d}.json'.format(endpoint, page_number)
+    return '{}-{:06d}.json'.format(endpoint, page_number)
 
 
 def update_latest_symlink(output_directory, subdirectory):
@@ -62,9 +62,9 @@ def prune(output_directory):
             current_timestamped_directory)
     # Don't remove any directory dated in the last 12 hours:
     remove_before = datetime.now() - timedelta(hours=12)
-    too_recent = set(
+    too_recent = {
         e for e in timestamped_directories_to_remove
-        if datetime.strptime(e, '%Y-%m-%dT%H:%M:%S') >= remove_before)
+        if datetime.strptime(e, '%Y-%m-%dT%H:%M:%S') >= remove_before}
     for e in too_recent:
         timestamped_directories_to_remove.remove(e)
     # Now remove any of those directories that are left:
@@ -103,7 +103,7 @@ class Command(BaseCommand):
             return None
         page = page_from_url(url)
         filename = page_filename(endpoint, page)
-        return '{0}{1}/{2}'.format(self.directory_url, self.timestamp, filename)
+        return '{}{}/{}'.format(self.directory_url, self.timestamp, filename)
 
     def get(self, url):
         kwargs = {'SERVER_NAME': self.hostname}

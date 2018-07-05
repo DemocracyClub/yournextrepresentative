@@ -175,7 +175,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         link_text = re.sub(r'\s+', ' ', a.text).strip()
         link_url = a['href']
         self.assertEqual(link_text, 'Review')
-        self.assertEqual(link_url, '/moderation/photo/review/{0}'.format(self.q1.id))
+        self.assertEqual(link_url, '/moderation/photo/review/{}'.format(self.q1.id))
 
     def test_photo_review_view_unprivileged(self):
         review_url = reverse(
@@ -294,7 +294,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 
             mock_send_mail.assert_called_once_with(
                 'example.com image moderation results',
-                "Thank-you for uploading a photo of Tessa Jowell to example.com,\nbut unfortunately we can't use that image because:\n\n  There\'s no clear source or copyright statement\n\nYou can just reply to this email if you want to discuss that\nfurther, or you can try uploading a photo with a different\nreason or justification for its use using this link:\n\n  http://localhost:80/moderation/photo/upload/2009\n\nMany thanks from the example.com volunteers\n\n-- \nFor administrators' use: http://localhost:80/moderation/photo/review/{0}\n".format(self.q1.id),
+                "Thank-you for uploading a photo of Tessa Jowell to example.com,\nbut unfortunately we can't use that image because:\n\n  There\'s no clear source or copyright statement\n\nYou can just reply to this email if you want to discuss that\nfurther, or you can try uploading a photo with a different\nreason or justification for its use using this link:\n\n  http://localhost:80/moderation/photo/upload/2009\n\nMany thanks from the example.com volunteers\n\n-- \nFor administrators' use: http://localhost:80/moderation/photo/review/{}\n".format(self.q1.id),
                 'admins@example.com',
                 ['john@example.com', 'support@example.com'],
                 fail_silently=False

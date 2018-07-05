@@ -110,7 +110,7 @@ class UK2015ExamplesMixin(object):
             },
         ]
         for cons in EXAMPLE_CONSTITUENCIES:
-            label = 'Member of Parliament for {0}'.format(cons['name'])
+            label = 'Member of Parliament for {}'.format(cons['name'])
             pe = factories.PostExtraFactory.create(
                 elections=(cls.election, cls.earlier_election),
                 base__organization=cls.commons,

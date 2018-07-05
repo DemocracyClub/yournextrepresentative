@@ -32,6 +32,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='personextrafieldvalue',
-            unique_together=set([('person', 'field')]),
+            unique_together={('person', 'field')},
         ),
     ]

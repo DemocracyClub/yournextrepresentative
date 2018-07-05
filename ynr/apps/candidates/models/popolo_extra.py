@@ -266,7 +266,7 @@ def parse_approximate_date(s):
             dayfirst=settings.DD_MM_DATE_FORMAT_PREFERRED
         )
         return ApproximateDate(dt.year, dt.month, dt.day)
-    raise ValueError("Couldn't parse '{0}' as an ApproximateDate".format(s))
+    raise ValueError("Couldn't parse '{}' as an ApproximateDate".format(s))
 
 
 class PersonExtraQuerySet(models.QuerySet):
@@ -303,7 +303,7 @@ class PersonExtraQuerySet(models.QuerySet):
                 base__id__in=[pefv.person_id for pefv in pefv_completed]
             )
         # If we get to this point, it's a non-existent field on the person:
-        raise ValueError("Unknown field '{0}'".format(field))
+        raise ValueError("Unknown field '{}'".format(field))
 
     def joins_for_csv_output(self):
         return self.select_related('base') \
@@ -560,7 +560,7 @@ class PersonExtra(HasImageMixin, models.Model):
             'diffs_against_all_parents': right_version_diff['diffs'],
             'inline_style': inline_style,
         })
-        return squash_whitespace('<dl>{0}</dl>'.format(rendered))
+        return squash_whitespace('<dl>{}</dl>'.format(rendered))
 
     def record_version(self, change_metadata, new_person=False):
         versions = []
@@ -824,7 +824,7 @@ class PostExtraElection(models.Model):
         return fmt.format(
             e=self.ballot_paper_id,
             l=(' candidates_locked=True' if self.candidates_locked else ''),
-            w=(' winner_count={0}'.format(self.winner_count)
+            w=(' winner_count={}'.format(self.winner_count)
                if (self.winner_count is not None) else ''))
 
     def get_absolute_url(self):

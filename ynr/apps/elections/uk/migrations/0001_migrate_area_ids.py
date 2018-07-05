@@ -46,7 +46,7 @@ def gss_to_old_mapit_ids(apps, schema_editor):
 
     for old_mapit_id, area_data in old_mapit_data.items():
         for code_type, code_id in area_data.get('codes', {}).items():
-            key = '{0}:{1}'.format(code_type, code_id)
+            key = '{}:{}'.format(code_type, code_id)
             code_to_old_mapit_area_id[key] = old_mapit_id
 
     for area in Area.objects.all():

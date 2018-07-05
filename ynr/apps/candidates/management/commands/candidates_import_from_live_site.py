@@ -137,7 +137,7 @@ class Command(BaseCommand):
         if exists(filename):
             return filename
         else:
-            print("\nDownloading {0} ...".format(url))
+            print("\nDownloading {} ...".format(url))
             with open(filename, 'wb') as f:
                 r = requests.get(url, stream=True)
                 r.raise_for_status()

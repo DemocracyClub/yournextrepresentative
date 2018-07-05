@@ -110,7 +110,7 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         person = Person.objects.get(name='Elizabeth Jones')
         response = self.app.get(
-            '/person/{0}/update'.format(person.id),
+            '/person/{}/update'.format(person.id),
             user=self.user,
         )
         form = response.forms['person-details']

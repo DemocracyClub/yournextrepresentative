@@ -134,7 +134,7 @@ class BasePersonForm(forms.Form):
                     )
             else:
                 raise Exception(
-                    "Unknown field type: {0}".format(field.type)
+                    "Unknown field type: {}".format(field.type)
                 )
 
         for field in settings.SIMPLE_POPOLO_FIELDS:

@@ -75,7 +75,7 @@ class Command(BaseCommand):
         try:
             user_id, screen_name = person.extra.twitter_identifiers
         except MultipleTwitterIdentifiers as e:
-            print(u"WARNING: {message}, skipping".format(message=e))
+            print("WARNING: {message}, skipping".format(message=e))
             return
         if user_id and user_id in self.twitter_data.user_id_to_photo_url:
             msg = "Considering adding a photo for {person} with Twitter " \

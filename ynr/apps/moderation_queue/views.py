@@ -205,18 +205,18 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
     required_group_name = PHOTO_REVIEWERS_GROUP_NAME
 
     def get_google_image_search_url(self, person):
-        image_search_query = '"{0}"'.format(person.name)
+        image_search_query = '"{}"'.format(person.name)
         last_candidacy = person.extra.last_candidacy
         if last_candidacy:
             party = last_candidacy.on_behalf_of
             if party:
-                image_search_query += ' "{0}"'.format(
+                image_search_query += ' "{}"'.format(
                     tidy_party_name(party.name)
                 )
             post = last_candidacy.post
             if post is not None:
-                image_search_query += ' "{0}"'.format(post.label)
-        return 'https://www.google.co.uk/search?tbm=isch&q={0}'.format(
+                image_search_query += ' "{}"'.format(post.label)
+        return 'https://www.google.co.uk/search?tbm=isch&q={}'.format(
             urlquote(image_search_query)
         )
 
@@ -531,7 +531,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 )
             )
         else:
-            raise Exception("BUG: unexpected decision {0}".format(decision))
+            raise Exception("BUG: unexpected decision {}".format(decision))
         return HttpResponseRedirect(reverse('photo-review-list'))
 
     def form_invalid(self, form):

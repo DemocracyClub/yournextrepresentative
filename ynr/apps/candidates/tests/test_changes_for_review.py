@@ -44,7 +44,7 @@ def canonicalize_xml(xml_bytes):
 
 
 def fake_diff_html(self, version_id, inline_style=False):
-    return '<div{0}>Fake diff</div>'.format(
+    return '<div{}>Fake diff</div>'.format(
         ' style="color: red"' if inline_style else ''
     )
 
@@ -262,9 +262,9 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
              ('lapsed_experienced',
               'person-update',
               ['Edit of a candidate whose record may be particularly liable to vandalism']),
-             (u'morbid_vandal',
-              u'constituency-lock',
-              [u'One of the first 3 edits of user morbid_vandal']),
+             ('morbid_vandal',
+              'constituency-lock',
+              ['One of the first 3 edits of user morbid_vandal']),
              ('morbid_vandal',
               'person-update',
               ['One of the first 3 edits of user morbid_vandal',

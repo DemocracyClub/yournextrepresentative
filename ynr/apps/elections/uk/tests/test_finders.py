@@ -136,7 +136,7 @@ class TestHomePageView(WebTest):
         self.assertEqual(
             response.context['postcode_form'].errors,
             {'q': [
-                u'The postcode \u201cSE24 0XX\u201d couldn\u2019t be found'
+                'The postcode \u201cSE24 0XX\u201d couldn\u2019t be found'
             ]}
         )
 

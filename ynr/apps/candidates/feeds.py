@@ -18,13 +18,13 @@ lock_re = re.compile(r'^(?:Unl|L)ocked\s*constituency (.*) \((\d+)\)$')
 class ChangesMixin(object):
     def get_title(self, logged_action):
         if logged_action.person:
-            return "{0} ({1}) - {2}".format(
+            return "{} ({}) - {}".format(
                 logged_action.person.name,
                 logged_action.person_id,
                 logged_action.action_type,
             )
         elif logged_action.post:
-            return "{0} ({1}) - {2}".format(
+            return "{} ({}) - {}".format(
                 logged_action.post.label,
                 logged_action.post.extra.slug,
                 logged_action.action_type,
@@ -66,7 +66,7 @@ class RecentChangesFeed(ChangesMixin, Feed):
 
     def item_description(self, item):
         updated = _("Updated at {0}").format(str(item.updated))
-        description = "{0}\n\n{1}\n".format(item.source, updated)
+        description = "{}\n\n{}\n".format(item.source, updated)
 
         return description
 
@@ -131,7 +131,7 @@ class NeedsReviewFeed(ChangesMixin, Feed):
             user=la.user.username,
             source=la.source,
             reasons_review_needed='\n'.join(
-                '<li>{0}</li>'.format(i) for i in item[1]),
+                '<li>{}</li>'.format(i) for i in item[1]),
             timestamp=la.updated,
             diff=la.diff_html)
 

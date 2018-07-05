@@ -40,7 +40,7 @@ class ResultEventAdmin(admin.ModelAdmin):
                 'ignored_slug': slugify(o.winner.name),
             }
         )
-        return '<a href="{0}">{1}</a>'.format(
+        return '<a href="{}">{}</a>'.format(
             url,
             o.winner.name,
         )
@@ -56,7 +56,7 @@ class ResultEventAdmin(admin.ModelAdmin):
                     'ignored_slug': slugify(o.post.extra.short_label),
                 }
             )
-            return '<a href="{0}">{1}</a>'.format(
+            return '<a href="{}">{}</a>'.format(
                 url,
                 o.post.extra.short_label,
             )

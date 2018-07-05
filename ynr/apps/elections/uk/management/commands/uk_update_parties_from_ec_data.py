@@ -134,7 +134,7 @@ class Command(BaseCommand):
                 party_extra = OrganizationExtra.objects.create(
                     base=party, slug=party_id
                 )
-                print(u"Couldn't find {0}, creating a new party {1}".format(
+                print("Couldn't find {}, creating a new party {}".format(
                     party_id, party_name
                 ).encode('utf-8'))
 
@@ -156,7 +156,7 @@ class Command(BaseCommand):
                 value = d['description']
                 translation = d['translation']
                 if translation:
-                    value = "{0} | {1}".format(value, translation)
+                    value = "{} | {}".format(value, translation)
                 party.other_names.create(
                     name=value, note='registered-description')
             self.upload_images(ec_party['PartyEmblems'], party_extra)
@@ -196,7 +196,7 @@ class Command(BaseCommand):
                 f.write(r.content)
             mime_type = self.mime_type_magic.from_file(ntf.name)
             extension = mimetypes.guess_extension(mime_type)
-            leafname = 'Emblem_{0}{1}'.format(emblem_id, extension)
+            leafname = 'Emblem_{}{}'.format(emblem_id, extension)
             desired_storage_path = join('images', leafname)
             fname = join(emblem_directory, leafname)
             move(ntf.name, fname)
@@ -225,4 +225,4 @@ class Command(BaseCommand):
 
     def clean_id(self, party_id):
         party_id = re.sub(r'^PPm?\s*', '', party_id).strip()
-        return "party:{0}".format(party_id)
+        return "party:{}".format(party_id)

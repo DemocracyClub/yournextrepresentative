@@ -108,7 +108,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response.mustcontain(no='James Smith')
 
         response.mustcontain(
-            '<a href="/election/2015/party-list/65808/{0}">See all 3 members on the party list'
+            '<a href="/election/2015/party-list/65808/{}">See all 3 members on the party list'
             .format(self.labour_party_extra.slug)
         )
 

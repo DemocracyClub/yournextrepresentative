@@ -62,7 +62,7 @@ class BasicResultEventsFeed(Feed):
     def item_link(self, item):
         # Assuming we're only going to show these events on the front
         # page for the moment:
-        return '/#{0}'.format(item.id)
+        return '/#{}'.format(item.id)
 
     def item_updateddate(self, item):
         return item.created

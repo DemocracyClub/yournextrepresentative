@@ -53,7 +53,7 @@ class TestCaching(TestUserMixin, UK2015ExamplesMixin, WebTest):
         #   File "/var/www/ynr/code/candidates/middleware.py", line 97, in process_response
         #     if request.user.is_authenticated():
         # AttributeError: 'WSGIRequest' object has no attribute 'user'
-        without_slash = '/api/v0.9/posts/{0}'.format(
+        without_slash = '/api/v0.9/posts/{}'.format(
             self.edinburgh_east_post_extra.slug)
         with_slash = without_slash + '/'
         response = self.app.get(without_slash)

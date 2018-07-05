@@ -37,7 +37,7 @@ class HelpResultsView(TemplateView):
             suffix = election_slug
         expected_file_location = join(
             settings.MEDIA_ROOT,
-            'candidates-elected-{0}.csv'.format(suffix),
+            'candidates-elected-{}.csv'.format(suffix),
         )
         return exists(expected_file_location)
 

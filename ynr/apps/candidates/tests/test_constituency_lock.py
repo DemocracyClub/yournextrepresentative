@@ -201,7 +201,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         expected_person = Person.objects.get(name='Imaginary Candidate')
         self.assertEqual(
             submission_response.location,
-            '/person/{0}'.format(expected_person.id)
+            '/person/{}'.format(expected_person.id)
         )
 
     def test_move_into_locked_unprivileged_disallowed(self):

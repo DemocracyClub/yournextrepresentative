@@ -264,6 +264,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='areai18name',
-            unique_together=set([('area', 'language', 'name')]),
+            unique_together={('area', 'language', 'name')},
         ),
     ]

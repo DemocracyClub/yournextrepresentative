@@ -23,7 +23,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
                 elections=(self.election, self.earlier_election,),
                 base__organization=self.commons,
                 slug=slug,
-                base__label='Member of Parliament for {0}'.format(cons_name),
+                base__label='Member of Parliament for {}'.format(cons_name),
                 group=country,
             )
         person_extra = PersonExtraFactory.create(
