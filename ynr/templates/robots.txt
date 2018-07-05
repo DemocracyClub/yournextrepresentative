@@ -1,4 +1,2 @@
 User-Agent: *
-Disallow: /person/*
-Disallow: /election/*
-Disallow: /media/official_documents/
+Disallow: *
