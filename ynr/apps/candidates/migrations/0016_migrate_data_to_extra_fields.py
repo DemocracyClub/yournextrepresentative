@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-
 from django.db import models, migrations
 from django.conf import settings
 

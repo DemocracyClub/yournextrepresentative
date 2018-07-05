@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # This module exists just to list strings for translation to be picked
 # up by makemessages.
 

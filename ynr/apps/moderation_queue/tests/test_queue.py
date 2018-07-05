@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from os.path import join, realpath, dirname
 import re
 from shutil import rmtree

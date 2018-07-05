@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-
 from compat import BufferDictWriter
 import requests
 import hashlib

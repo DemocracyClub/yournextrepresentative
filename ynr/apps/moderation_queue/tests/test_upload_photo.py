@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from mock import Mock, patch
 
 from os.path import join, realpath, dirname

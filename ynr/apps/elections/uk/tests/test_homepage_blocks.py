@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django_webtest import WebTest
 
 from django.conf import settings

@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from django import forms
 from django.db.models import Count
 from django.utils.safestring import SafeText

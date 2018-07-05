@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from django.db import migrations
 
 # This migration should only need to run by original YourNextMP

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 A helper to move away from SimplePopoloField and ComplexPopoloField
 models.

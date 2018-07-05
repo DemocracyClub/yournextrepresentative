@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from mock import patch, Mock
 import re
 

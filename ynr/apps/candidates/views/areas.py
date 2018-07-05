@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 NOTE: Both views in this file are deprecated and redirects should be found
       for them. It's not obvious where the area view should redirect to

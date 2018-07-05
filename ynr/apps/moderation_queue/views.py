@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 import bleach
 import os
 import re

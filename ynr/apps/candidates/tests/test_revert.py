@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import json
 from mock import patch
 from string import Template

@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import re
 
 from django.utils.six.moves.urllib_parse import urlsplit

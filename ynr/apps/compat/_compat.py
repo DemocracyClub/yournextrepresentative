@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import six
 from six import text_type
 from six.moves import input

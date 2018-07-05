@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from datetime import datetime
 from io import BytesIO
 from os.path import join

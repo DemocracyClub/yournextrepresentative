@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from django.db import models, migrations
 
 def popit_to_db(apps, schema_editor):

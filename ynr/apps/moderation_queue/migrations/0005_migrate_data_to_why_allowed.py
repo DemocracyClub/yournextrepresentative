@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from django.db import models, migrations
 
 def forward_to_why_allowed(apps, schema_editor):

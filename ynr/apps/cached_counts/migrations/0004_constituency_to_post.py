@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from django.db import migrations
 
 def change_constituency_to_post(apps, schema_editor):

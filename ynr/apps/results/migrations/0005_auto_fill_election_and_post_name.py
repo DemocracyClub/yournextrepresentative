@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from django.db import migrations
 
 # At the time this will be run, the only ResultEvent objects in any

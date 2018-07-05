@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from datetime import date
 
 from django.conf import settings

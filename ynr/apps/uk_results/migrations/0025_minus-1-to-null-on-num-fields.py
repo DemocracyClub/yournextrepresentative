@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from django.db import migrations
 
 def move_minus_one_to_null(apps, schema_editor):
