@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.utils.six.moves.urllib_parse import urlsplit
 
 from django_webtest import WebTest

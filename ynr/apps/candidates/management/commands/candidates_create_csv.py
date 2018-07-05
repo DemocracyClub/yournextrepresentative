@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import DefaultStorage
 from django.db import reset_queries

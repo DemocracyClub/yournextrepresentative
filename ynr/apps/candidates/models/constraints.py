@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from . import popolo_extra as models
 
 def check_constraints():

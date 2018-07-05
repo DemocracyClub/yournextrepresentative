@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.views.generic import CreateView, DetailView, TemplateView
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404

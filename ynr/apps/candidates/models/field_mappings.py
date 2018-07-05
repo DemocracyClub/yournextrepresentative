@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 CSV_ROW_FIELDS = [
     'id',
     'name',

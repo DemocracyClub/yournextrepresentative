@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from os.path import join, realpath, dirname
 
 from django_webtest import WebTest

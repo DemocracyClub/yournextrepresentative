@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.contrib.auth.management import create_permissions
 
 

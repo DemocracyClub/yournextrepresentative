@@ -1,4 +1,4 @@
-from __future__ import print_function, unicode_literals
+from __future__ import print_function
 
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files import File

@@ -2,7 +2,7 @@
 Basic smoke tests for OfficialDocument model
 """
 
-from __future__ import unicode_literals
+
 
 from django.test import TestCase
 

@@ -6,7 +6,7 @@ NOTE: Both views in this file are deprecated and redirects should be found
       at the moment
 """
 
-from __future__ import unicode_literals
+
 
 from django.db.models import Prefetch
 from django.http import Http404, HttpResponseBadRequest

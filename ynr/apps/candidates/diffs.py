@@ -1,7 +1,7 @@
 # The functions in this file are to help produce human readable diffs
 # between our JSON representation of candidates.
 
-from __future__ import unicode_literals
+
 
 import re
 

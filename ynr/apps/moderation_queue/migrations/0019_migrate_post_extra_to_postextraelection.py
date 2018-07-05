@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from collections import defaultdict
 import os
@@ -35,7 +35,7 @@ def migrate_post_extra_to_postextraelection(apps, schema_editor):
                 user=spl.user,
                 justification=spl.justification
             )
-    
+
 def migrate_postextraelection_to_post_extra(apps, schema_editor):
     # The reverse migration here will probably lose data, since we're
     # moving from the more expressive model (you can have a suggested
@@ -53,7 +53,7 @@ def migrate_postextraelection_to_post_extra(apps, schema_editor):
             'Cannot reverse the 0019_migrate_post_extra_to_postextraelection ' \
             'migration as it will lose data. See the migration file for ' \
             'details on how to do this anyway.'
-        )    
+        )
     SuggestedPostLock = apps.get_model('moderation_queue', 'SuggestedPostLock')
     # Group these by postextra, user and justification:
     grouped = defaultdict(list)

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import re
 
 from candidates.utils import strip_accents

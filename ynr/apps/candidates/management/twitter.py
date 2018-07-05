@@ -1,4 +1,4 @@
-from __future__ import print_function, unicode_literals
+from __future__ import print_function
 
 from django.conf import settings
 from django.utils.six import text_type

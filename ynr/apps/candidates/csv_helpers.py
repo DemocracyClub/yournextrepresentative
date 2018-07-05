@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from compat import BufferDictWriter
 from .models import CSV_ROW_FIELDS
 
