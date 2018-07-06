@@ -32,7 +32,7 @@ class TestPartyDropDownOrdering(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 person_id = int("{}00{}".format(election.pk, created + 1))
                 pe = factories.PersonExtraFactory.create(
                     base__id=person_id,
-                    base__name='John Doe {0}'.format(person_id),
+                    base__name='John Doe {}'.format(person_id),
                 )
                 factories.MembershipFactory.create(
                     person=pe.base,

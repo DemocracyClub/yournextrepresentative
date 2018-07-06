@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals
-
 from datetime import datetime
 from random import randint
 import sys
@@ -39,7 +37,7 @@ class Command(BaseCommand):
                 person_extra.record_version(
                     {
                         'information_source': source,
-                        'version_id': "{0:016x}".format(randint(0, sys.maxsize)),
+                        'version_id': "{:016x}".format(randint(0, sys.maxsize)),
                         'timestamp': datetime.utcnow().isoformat(),
                     }
                 )

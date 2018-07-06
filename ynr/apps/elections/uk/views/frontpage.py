@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import random
 
 from django.conf import settings
@@ -31,7 +29,7 @@ class HomePageView(ContributorsMixin, FormView):
     @method_decorator(cache_control(max_age=(60 * 10)))
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
-        return super(HomePageView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get_form_kwargs(self):
         if self.request.method == 'GET' and 'q' in self.request.GET:
@@ -41,7 +39,7 @@ class HomePageView(ContributorsMixin, FormView):
                 'prefix': self.get_prefix(),
             }
         else:
-            return super(HomePageView, self).get_form_kwargs()
+            return super().get_form_kwargs()
 
     def get(self, request, *args, **kwargs):
         if 'q' in request.GET:
@@ -50,7 +48,7 @@ class HomePageView(ContributorsMixin, FormView):
             # for the form in this case.
             return self.post(request, *args, **kwargs)
         else:
-            return super(HomePageView, self).get(request, *args, **kwargs)
+            return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         postcode = form.cleaned_data['q']
@@ -61,7 +59,7 @@ class HomePageView(ContributorsMixin, FormView):
         )
 
     def get_context_data(self, **kwargs):
-        context = super(HomePageView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['front_page_cta'] = getattr(settings, 'FRONT_PAGE_CTA', None)
         context['postcode_form'] = kwargs.get('form') or PostcodeForm()
         context['show_postcode_form'] = True
@@ -78,7 +76,7 @@ class PostcodeView(TemplateView):
     template_name = "candidates/postcode_view.html"
 
     def get_context_data(self, **kwargs):
-        context = super(PostcodeView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['pees'] = get_post_elections_from_postcode(kwargs['postcode'])
         return context
 
@@ -87,7 +85,7 @@ class GeoLocatorView(TemplateView):
     template_name = "candidates/postcode_view.html"
 
     def get_context_data(self, **kwargs):
-        context = super(GeoLocatorView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         latitude = kwargs['latitude']
         longitude = kwargs['longitude']

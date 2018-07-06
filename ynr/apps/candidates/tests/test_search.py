@@ -12,7 +12,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestSearchView, self).setUp()
+        super().setUp()
         call_command('rebuild_index', verbosity=0, interactive=False)
 
     def test_search_page(self):
@@ -110,7 +110,7 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         person = Person.objects.get(name='Elizabeth Jones')
         response = self.app.get(
-            '/person/{0}/update'.format(person.id),
+            '/person/{}/update'.format(person.id),
             user=self.user,
         )
         form = response.forms['person-details']

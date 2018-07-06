@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 from mock import patch, Mock
 
 from datetime import date, timedelta
@@ -54,7 +50,7 @@ def fake_requests_for_every_election(url, *args, **kwargs):
 @patch('elections.uk.geo_helpers.requests')
 class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
     def setUp(self):
-        super(TestUpcomingElectionsAPI, self).setUp()
+        super().setUp()
 
     def test_empty_results(self, mock_requests):
         mock_requests.get.side_effect = fake_requests_for_every_election
@@ -159,78 +155,78 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
         output = response.json
         self.assertEqual(len(output), 2)
         expected = [{
-            u'candidates': [],
-            u'election_date': text_type(self.future_date.isoformat()),
-            u'election_id': u'gla.c.2016-05-05',
-            u'election_name':
-                u'2016 London Assembly Election (Constituencies)',
-            u'organization': u'London Assembly',
-            u'post': {
-                u'post_candidates': None,
-                u'post_name': u'Assembly Member for Lambeth and Southwark',
-                u'post_slug': u'lambeth-and-southwark'
+            'candidates': [],
+            'election_date': text_type(self.future_date.isoformat()),
+            'election_id': 'gla.c.2016-05-05',
+            'election_name':
+                '2016 London Assembly Election (Constituencies)',
+            'organization': 'London Assembly',
+            'post': {
+                'post_candidates': None,
+                'post_name': 'Assembly Member for Lambeth and Southwark',
+                'post_slug': 'lambeth-and-southwark'
             }},
-            {u'candidates': [
+            {'candidates': [
                 {
-                    u'birth_date': u'',
-                    u'contact_details': [],
-                    u'death_date': u'',
-                    u'email': None,
-                    u'extra_fields': [],
-                    u'gender': u'',
-                    u'honorific_prefix': u'',
-                    u'honorific_suffix': u'',
-                    u'id': 2009,
-                    u'identifiers': [],
-                    u'images': [],
-                    u'links': [],
-                    u'memberships': [{
-                        u'elected': None,
-                        u'election': {
-                            u'id': u'gla.a.2016-05-05',
-                            u'name': u'2016 London Assembly Election (Additional)',
-                            u'url': u'http://localhost:80/api/v0.9/elections/gla.a.2016-05-05/'
+                    'birth_date': '',
+                    'contact_details': [],
+                    'death_date': '',
+                    'email': None,
+                    'extra_fields': [],
+                    'gender': '',
+                    'honorific_prefix': '',
+                    'honorific_suffix': '',
+                    'id': 2009,
+                    'identifiers': [],
+                    'images': [],
+                    'links': [],
+                    'memberships': [{
+                        'elected': None,
+                        'election': {
+                            'id': 'gla.a.2016-05-05',
+                            'name': '2016 London Assembly Election (Additional)',
+                            'url': 'http://localhost:80/api/v0.9/elections/gla.a.2016-05-05/'
                         },
-                        u'end_date': None,
-                        u'id': membership_pk,
-                        u'label': u'',
-                        u'on_behalf_of': {
-                            u'id': u'party:53',
-                            u'name': u'Labour Party',
-                            u'url': u'http://localhost:80/api/v0.9/organizations/party:53/'
+                        'end_date': None,
+                        'id': membership_pk,
+                        'label': '',
+                        'on_behalf_of': {
+                            'id': 'party:53',
+                            'name': 'Labour Party',
+                            'url': 'http://localhost:80/api/v0.9/organizations/party:53/'
                         },
-                        u'organization': None,
-                        u'party_list_position': None,
-                        u'person': {
-                            u'id': 2009,
-                            u'name': u'Tessa Jowell',
-                            u'url': u'http://localhost:80/api/v0.9/persons/2009/'
+                        'organization': None,
+                        'party_list_position': None,
+                        'person': {
+                            'id': 2009,
+                            'name': 'Tessa Jowell',
+                            'url': 'http://localhost:80/api/v0.9/persons/2009/'
                         },
-                        u'post': {
-                            u'id': u'london',
-                            u'label': u'Assembly Member',
-                            u'slug': u'london',
-                            u'url': u'http://localhost:80/api/v0.9/posts/london/'
+                        'post': {
+                            'id': 'london',
+                            'label': 'Assembly Member',
+                            'slug': 'london',
+                            'url': 'http://localhost:80/api/v0.9/posts/london/'
                         },
-                        u'role': u'Candidate',
-                        u'start_date': None,
-                        u'url': u'http://localhost:80/api/v0.9/memberships/{}/'.format(membership_pk)
+                        'role': 'Candidate',
+                        'start_date': None,
+                        'url': 'http://localhost:80/api/v0.9/memberships/{}/'.format(membership_pk)
                     }],
-                    u'name': u'Tessa Jowell',
-                    u'other_names': [],
-                    u'sort_name': u'',
-                    u'thumbnail': None,
-                    u'url': u'http://localhost:80/api/v0.9/persons/2009/',
+                    'name': 'Tessa Jowell',
+                    'other_names': [],
+                    'sort_name': '',
+                    'thumbnail': None,
+                    'url': 'http://localhost:80/api/v0.9/persons/2009/',
                 }
             ],
-            u'election_date': text_type(self.future_date.isoformat()),
-            u'election_id': u'gla.a.2016-05-05',
-            u'election_name': u'2016 London Assembly Election (Additional)',
-            u'organization': u'London Assembly',
-            u'post': {
-                u'post_candidates': None,
-                u'post_name': u'Assembly Member',
-                u'post_slug': u'london'
+            'election_date': text_type(self.future_date.isoformat()),
+            'election_id': 'gla.a.2016-05-05',
+            'election_name': '2016 London Assembly Election (Additional)',
+            'organization': 'London Assembly',
+            'post': {
+                'post_candidates': None,
+                'post_name': 'Assembly Member',
+                'post_slug': 'london'
             }
         }]
 

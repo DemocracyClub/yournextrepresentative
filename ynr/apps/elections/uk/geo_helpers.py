@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from __future__ import unicode_literals
+
 
 import re
 import logging
@@ -78,7 +78,7 @@ def get_post_elections_from_postcode(original_postcode):
     if cached_result:
         return cached_result
 
-    url = urljoin(EE_BASE_URL, "/api/elections/?postcode={0}".format(
+    url = urljoin(EE_BASE_URL, "/api/elections/?postcode={}".format(
         urlquote(postcode)))
     try:
         areas = get_post_elections(url, cache_key, BadPostcodeException)
@@ -90,7 +90,7 @@ def get_post_elections_from_postcode(original_postcode):
 
 
 def get_post_elections_from_coords(coords):
-    url = urljoin(EE_BASE_URL, "/api/elections/?coords={0}".format(
+    url = urljoin(EE_BASE_URL, "/api/elections/?coords={}".format(
         urlquote(coords)))
 
     cache_key = 'geolookup-coords:' + coords

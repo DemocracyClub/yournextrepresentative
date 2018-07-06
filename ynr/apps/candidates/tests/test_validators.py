@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from unittest import skip
 
 from django.test import TestCase
@@ -15,7 +13,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestValidators(UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
-        super(TestValidators, self).setUp()
+        super().setUp()
         self.person = PersonExtraFactory.create(base__name='John Doe').base
 
     def test_twitter_bad_url(self):

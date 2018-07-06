@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.test import TestCase
 
 from candidates.models import PersonExtra, ExtraField
@@ -11,7 +9,7 @@ from . import factories
 class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
-        super(TestMissingFields, self).setUp()
+        super().setUp()
         slogan_field = ExtraField.objects.create(
             key='slogan',
             type='line',

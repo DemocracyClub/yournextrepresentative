@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
@@ -62,7 +60,7 @@ class BasicResultEventsFeed(Feed):
     def item_link(self, item):
         # Assuming we're only going to show these events on the front
         # page for the moment:
-        return '/#{0}'.format(item.id)
+        return '/#{}'.format(item.id)
 
     def item_updateddate(self, item):
         return item.created
@@ -79,7 +77,7 @@ class BasicResultEventsFeed(Feed):
 class ResultEventsAtomFeedGenerator(Atom1Feed):
 
     def add_item_elements(self, handler, item):
-        super(ResultEventsAtomFeedGenerator, self). \
+        super(). \
             add_item_elements(handler, item)
         keys = [
             'retraction',

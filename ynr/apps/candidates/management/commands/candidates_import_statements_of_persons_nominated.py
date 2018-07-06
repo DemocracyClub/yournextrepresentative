@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals
-
 import errno
 import re
 import hashlib
@@ -17,11 +15,11 @@ from candidates.models import PostExtraElection
 
 from compat import BufferDictReader
 
-allowed_mime_types = set([
+allowed_mime_types = {
     b'application/pdf',
     b'application/msword',
     b'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-])
+}
 
 headers = {
     'User-Agent': 'DemocracyClub Candidates'
@@ -101,13 +99,13 @@ class Command(BaseCommand):
             try:
                 downloaded_filename = download_file_cached(document_url)
             except requests.exceptions.ConnectionError:
-                print("Connection failed for {0}".format(name))
+                print("Connection failed for {}".format(name))
                 print("The URL was:", document_url)
                 continue
             except requests.exceptions.MissingSchema:
                 # This is probably someone putting notes in the URL
                 # column, so ignore:
-                print("Probably not a document URL for {0}: {1}".format(
+                print("Probably not a document URL for {}: {}".format(
                     name, document_url
                 ))
                 continue
@@ -147,7 +145,7 @@ class Command(BaseCommand):
                         print(e)
 
                 else:
-                    print("Ignoring unknown MIME type {0} for {1}".format(
+                    print("Ignoring unknown MIME type {} for {}".format(
                         mime_type,
                         pee.ballot_paper_id,
                     ))

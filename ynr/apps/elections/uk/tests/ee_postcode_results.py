@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 ee_sw1a1aa_result = {
     "previous": None,
     "next": None,

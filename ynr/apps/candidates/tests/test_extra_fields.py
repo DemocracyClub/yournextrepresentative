@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 import re
 
 from django.utils.six.moves.urllib_parse import urlsplit
@@ -19,7 +15,7 @@ from .uk_examples import UK2015ExamplesMixin
 class ExtraFieldTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(ExtraFieldTests, self).setUp()
+        super().setUp()
         # Create the extra fields:
         p_field = ExtraField.objects.create(
             key='profession',

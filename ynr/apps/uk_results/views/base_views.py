@@ -11,7 +11,7 @@ class ResultsHomeView(TemplateView):
     template_name = "uk_results/home.html"
 
     def get_context_data(self, **kwargs):
-        context = super(ResultsHomeView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         return context
 
@@ -24,7 +24,7 @@ class BallotPaperResultsUpdateView(LoginRequiredMixin, FormView):
     form_class = ResultSetForm
 
     def get_form_kwargs(self):
-        kwargs = super(BallotPaperResultsUpdateView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         self.pee = PostExtraElection.objects.get(
             ballot_paper_id=self.kwargs['ballot_paper_id']
         )
@@ -36,8 +36,7 @@ class BallotPaperResultsUpdateView(LoginRequiredMixin, FormView):
         return kwargs
 
     def get_context_data(self, **kwargs):
-        context = super(
-            BallotPaperResultsUpdateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         context['post_election'] = self.pee
         context['resultset'] = getattr(self.pee, 'resultset', None)
@@ -45,7 +44,7 @@ class BallotPaperResultsUpdateView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         self.resultset = form.save(self.request)
-        return super(BallotPaperResultsUpdateView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_success_url(self):
         url = self.pee.get_absolute_url()
@@ -55,8 +54,7 @@ class CurrentElectionsWithNoResuts(TemplateView):
     template_name = "uk_results/current_elections_with_no_resuts.html"
 
     def get_context_data(self, **kwargs):
-        context = super(
-            CurrentElectionsWithNoResuts, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         context['elections'] = PostExtraElection.objects.filter(
             election__current=True,

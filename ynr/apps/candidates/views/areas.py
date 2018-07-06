@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
-
 """
 NOTE: Both views in this file are deprecated and redirects should be found
       for them. It's not obvious where the area view should redirect to
       at the moment
 """
 
-from __future__ import unicode_literals
+
 
 from django.db.models import Prefetch
 from django.http import Http404, HttpResponseBadRequest
@@ -71,7 +69,7 @@ class PostsOfTypeView(TemplateView):
     template_name = 'candidates/posts-of-type.html'
 
     def get_context_data(self, **kwargs):
-        context = super(PostsOfTypeView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         post_type = context['post_type']
 
         posts_qs = PostExtra.objects.filter(slug__startswith=post_type)

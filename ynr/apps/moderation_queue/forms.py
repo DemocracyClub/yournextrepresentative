@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
@@ -30,7 +28,7 @@ class UploadPersonPhotoImageForm(forms.ModelForm):
         }
 
     def clean(self):
-        cleaned_data = super(UploadPersonPhotoImageForm, self).clean()
+        cleaned_data = super().clean()
         justification_for_use = cleaned_data.get(
             'justification_for_use', ''
         ).strip()

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from collections import defaultdict
 
 from django.conf import settings
@@ -41,7 +39,7 @@ def check_address(address_string, country=None):
                                        lat=lat,
                                        ))
         mapit_lookup_url += '?type=' + ','.join(area_types)
-        mapit_lookup_url += '&generation={0}'.format(election.area_generation)
+        mapit_lookup_url += '&generation={}'.format(election.area_generation)
         mapit_result = requests.get(mapit_lookup_url, headers={'User-Agent': 'scraper/sym', })
         mapit_json = mapit_result.json()
         if 'error' in mapit_json:

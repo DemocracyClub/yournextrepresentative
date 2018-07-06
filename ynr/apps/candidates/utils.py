@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import unicodedata
 
 from compat import bytes_to_unicode

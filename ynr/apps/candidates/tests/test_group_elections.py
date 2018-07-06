@@ -20,7 +20,7 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
     maxDiff = None
 
     def setUp(self):
-        super(TestElectionGrouping, self).setUp()
+        super().setUp()
         self.sp_c_election = ElectionFactory(
             slug='sp.c.2016-05-05',
             name='2016 Scottish Parliament Election (Constituencies)',

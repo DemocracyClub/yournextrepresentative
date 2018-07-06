@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import hashlib
 from os.path import dirname, join
 

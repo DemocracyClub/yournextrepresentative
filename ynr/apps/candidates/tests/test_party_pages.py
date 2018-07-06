@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import re
 
 from django_webtest import WebTest
@@ -12,7 +10,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestPartyPages(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestPartyPages, self).setUp()
+        super().setUp()
         constituencies = {}
         for slug, cons_name, country in [
                 ('66090', 'Cardiff Central', 'Wales'),
@@ -23,7 +21,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
                 elections=(self.election, self.earlier_election,),
                 base__organization=self.commons,
                 slug=slug,
-                base__label='Member of Parliament for {0}'.format(cons_name),
+                base__label='Member of Parliament for {}'.format(cons_name),
                 group=country,
             )
         person_extra = PersonExtraFactory.create(

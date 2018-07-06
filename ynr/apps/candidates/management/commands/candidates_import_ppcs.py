@@ -10,7 +10,7 @@
 # this job from cron - if you get an email from cron, you'll need to
 # run the script manually to make those decisions.
 
-from __future__ import print_function, unicode_literals
+
 
 from optparse import make_option
 import os
@@ -92,7 +92,7 @@ def get_constituency_from_name(constituency_name, constituency_lookup):
     return {
         'post_id': post_id,
         'name': mapit_data['name'],
-        'mapit_url': 'http://mapit.mysociety.org/area/{0}'.format(post_id),
+        'mapit_url': 'http://mapit.mysociety.org/area/{}'.format(post_id),
     }
 
 ppc_data_directory = join(
@@ -203,10 +203,10 @@ class Command(BaseCommand):
     def upload_person_image(self, person_id, image_filename, original_url):
         # Find the md5sum of the image filename, to use as an ID:
         md5sum = get_file_md5sum(image_filename)
-        image_upload_url = "{0}/{1}/persons/{2}/image".format(
+        image_upload_url = "{}/{}/persons/{}/image".format(
             self.api.get_url(), self.api.get_api_version(), person_id
         )
-        source = 'Via the official party PPC page, based on {0}'.format(original_url)
+        source = 'Via the official party PPC page, based on {}'.format(original_url)
         with open(image_filename, 'rb') as f:
             requests.post(
                 image_upload_url,
@@ -258,10 +258,10 @@ class Command(BaseCommand):
                         ))
                         del new_person_data[key]
                     else:
-                        warnings.append("[{0}] replacing      {1}".format(key, person_data_value))
-                        warnings.append("[{0}] with new value {1}".format(key, new_person_data_value))
+                        warnings.append("[{}] replacing      {}".format(key, person_data_value))
+                        warnings.append("[{}] with new value {}".format(key, new_person_data_value))
         if warnings:
-            print("Warnings for person/{0} {1}".format(
+            print("Warnings for person/{} {}".format(
                 popit_person_id, person_data['name']
             ).encode('utf-8'))
             for warning in warnings:
@@ -269,7 +269,7 @@ class Command(BaseCommand):
         merged_person_data = merge_person_data(person_data, new_person_data)
         change_metadata = get_change_metadata(
             None,
-            'Updated candidate from official PPC data ({0})'.format(ppc_data['party_slug']),
+            'Updated candidate from official PPC data ({})'.format(ppc_data['party_slug']),
         )
         person = PopItPerson.create_from_reduced_json(merged_person_data)
         person.record_version(change_metadata)
@@ -287,7 +287,7 @@ class Command(BaseCommand):
         from candidates.models import PopItPerson
         change_metadata = get_change_metadata(
             None,
-            'Created new candidate from official PPC data ({0})'.format(ppc_data['party_slug']),
+            'Created new candidate from official PPC data ({})'.format(ppc_data['party_slug']),
         )
         person_data = self.get_person_data_from_ppc(ppc_data)
         person = PopItPerson.create_from_reduced_json(person_data)
@@ -351,11 +351,11 @@ class Command(BaseCommand):
         if 'email' in popit_result:
             print("        Email:", popit_result['email'])
         for year in popit_result['party_memberships']:
-            print("        Party in {0}: {1}".format(
+            print("        Party in {}: {}".format(
                 year, popit_result['party_memberships'][year]['name']
             ))
         for year in popit_result['standing_in']:
-            print("        Constituency in {0}: {1}".format(
+            print("        Constituency in {}: {}".format(
                 year, popit_result['standing_in'][year]['name']
             ))
         response = ''
@@ -436,7 +436,7 @@ class Command(BaseCommand):
                         break
         if add_new_person:
             new_person_id = self.add_popit_person(ppc_data, image_filename)
-            print("  Added them as a new person ({0})".format(new_person_id))
+            print("  Added them as a new person ({})".format(new_person_id))
 
     def handle(self, **options):
         from candidates.election_specific import AREA_DATA

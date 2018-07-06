@@ -1,7 +1,7 @@
 # The functions in this file are to help produce human readable diffs
 # between our JSON representation of candidates.
 
-from __future__ import unicode_literals
+
 
 import re
 
@@ -33,7 +33,7 @@ def get_descriptive_value(election, attribute, value, leaf):
         # Assume this is an older election
         current_election = False
         # Use the raw ID here, as it's more useful than nothing.
-        election_name = "{0} election".format(election)
+        election_name = "{} election".format(election)
 
 
     if attribute == 'party_memberships':

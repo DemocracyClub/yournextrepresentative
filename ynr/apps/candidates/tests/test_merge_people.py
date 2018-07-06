@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.test import TestCase
 
 from candidates.models import merge_popit_people
@@ -296,7 +294,7 @@ class TestMergePeople(TestCase):
         merged = merge_popit_people(primary, secondary)
         self.assertEqual(
             set(merged.keys()),
-            set(['name', 'other_names'])
+            {'name', 'other_names'}
         )
         self.assertEqual(merged['name'], 'Dave Cameron')
         sorted_other_names = sorted(

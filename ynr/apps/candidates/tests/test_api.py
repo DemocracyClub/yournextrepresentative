@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from datetime import datetime
 import json
 from mock import call, patch
@@ -25,7 +23,7 @@ from candidates.models import LoggedAction, PersonRedirect
 class TestAPI(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestAPI, self).setUp()
+        super().setUp()
 
         person_extra = PersonExtraFactory.create(
             base__id='2009',
@@ -366,23 +364,23 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
             # Check the previous and next links are as we expect:
             self.assertEqual(
                 persons_1_data['next'],
-                'https://example.com/media/api-cache-for-wcivf/{0}/{1}'.format(
+                'https://example.com/media/api-cache-for-wcivf/{}/{}'.format(
                     expected_leafname, persons_2_leafname))
             self.assertEqual(persons_1_data['previous'], None)
             self.assertEqual(persons_2_data['next'], None)
             self.assertEqual(
                 persons_2_data['previous'],
-                'https://example.com/media/api-cache-for-wcivf/{0}/{1}'.format(
+                'https://example.com/media/api-cache-for-wcivf/{}/{}'.format(
                     expected_leafname, persons_1_leafname))
             self.assertEqual(
                 posts_1_data['next'],
-                'https://example.com/media/api-cache-for-wcivf/{0}/{1}'.format(
+                'https://example.com/media/api-cache-for-wcivf/{}/{}'.format(
                     expected_leafname, posts_2_leafname))
             self.assertEqual(posts_1_data['previous'], None)
             self.assertEqual(posts_2_data['next'], None)
             self.assertEqual(
                 posts_2_data['previous'],
-                'https://example.com/media/api-cache-for-wcivf/{0}/{1}'.format(
+                'https://example.com/media/api-cache-for-wcivf/{}/{}'.format(
                     expected_leafname, posts_1_leafname))
             # Check that the URL of the first person is as expected,
             # as well as it being the right person:

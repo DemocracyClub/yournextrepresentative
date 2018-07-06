@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import re
 from django_webtest import WebTest
 
@@ -13,7 +11,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestRecordWinner, self).setUp()
+        super().setUp()
 
         tessa_jowell = PersonExtraFactory.create(
             base__id='2009',
@@ -108,7 +106,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response.mustcontain(no='James Smith')
 
         response.mustcontain(
-            '<a href="/election/2015/party-list/65808/{0}">See all 3 members on the party list'
+            '<a href="/election/2015/party-list/65808/{}">See all 3 members on the party list'
             .format(self.labour_party_extra.slug)
         )
 

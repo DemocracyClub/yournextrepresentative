@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django_webtest import WebTest
 from popolo.models import Person
 
@@ -23,7 +21,7 @@ def update_lock(post_extra, election, lock_status):
 class TestConstituencyLockAndUnlock(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestConstituencyLockAndUnlock, self).setUp()
+        super().setUp()
         update_lock(
             self.camberwell_post_extra, self.election, True
         )
@@ -131,7 +129,7 @@ class TestConstituencyLockAndUnlock(TestUserMixin, UK2015ExamplesMixin, WebTest)
 class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestConstituencyLockWorks, self).setUp()
+        super().setUp()
         update_lock(self.camberwell_post_extra, self.election, True)
         post_extra_locked = self.camberwell_post_extra
         self.post_extra_id = self.dulwich_post_extra.id
@@ -201,7 +199,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         expected_person = Person.objects.get(name='Imaginary Candidate')
         self.assertEqual(
             submission_response.location,
-            '/person/{0}'.format(expected_person.id)
+            '/person/{}'.format(expected_person.id)
         )
 
     def test_move_into_locked_unprivileged_disallowed(self):

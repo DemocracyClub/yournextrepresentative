@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 from mock import patch, Mock
 
 from django.utils.six.moves.urllib_parse import urljoin

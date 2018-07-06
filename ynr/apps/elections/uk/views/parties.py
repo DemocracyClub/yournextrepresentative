@@ -1,12 +1,10 @@
-from __future__ import unicode_literals
-
 from candidates.views import PartyDetailView
 from popolo.models import Identifier
 
 class UKPartyDetailView(PartyDetailView):
 
     def get_context_data(self, **kwargs):
-        context = super(UKPartyDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         context['ec_url'] = ''
         context['register'] = ''

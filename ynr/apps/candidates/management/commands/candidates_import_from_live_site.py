@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals
-
 from contextlib import contextmanager
 import errno
 import hashlib
@@ -64,7 +62,7 @@ class Command(BaseCommand):
     help = 'Import all data from a live YNR site'
 
     def __init__(self, *args, **kwargs):
-        super(Command, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.image_storage = FileSystemStorage()
 
     def add_arguments(self, parser):
@@ -137,7 +135,7 @@ class Command(BaseCommand):
         if exists(filename):
             return filename
         else:
-            print("\nDownloading {0} ...".format(url))
+            print("\nDownloading {} ...".format(url))
             with open(filename, 'wb') as f:
                 r = requests.get(url, stream=True)
                 r.raise_for_status()

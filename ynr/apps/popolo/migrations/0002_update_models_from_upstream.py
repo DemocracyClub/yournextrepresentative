@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.db import migrations, models
 import django.utils.timezone
 import model_utils.fields
@@ -264,6 +261,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='areai18name',
-            unique_together=set([('area', 'language', 'name')]),
+            unique_together={('area', 'language', 'name')},
         ),
     ]

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from datetime import date
 import json
 from os.path import join
@@ -30,7 +28,6 @@ from popolo.models import (
 )
 from images.models import Image, HasImageMixin
 
-from compat import python_2_unicode_compatible
 from .fields import (
     ExtraField, PersonExtraFieldValue, ComplexPopoloField,
     get_complex_popolo_fields,
@@ -266,7 +263,7 @@ def parse_approximate_date(s):
             dayfirst=settings.DD_MM_DATE_FORMAT_PREFERRED
         )
         return ApproximateDate(dt.year, dt.month, dt.day)
-    raise ValueError("Couldn't parse '{0}' as an ApproximateDate".format(s))
+    raise ValueError("Couldn't parse '{}' as an ApproximateDate".format(s))
 
 
 class PersonExtraQuerySet(models.QuerySet):
@@ -303,7 +300,7 @@ class PersonExtraQuerySet(models.QuerySet):
                 base__id__in=[pefv.person_id for pefv in pefv_completed]
             )
         # If we get to this point, it's a non-existent field on the person:
-        raise ValueError("Unknown field '{0}'".format(field))
+        raise ValueError("Unknown field '{}'".format(field))
 
     def joins_for_csv_output(self):
         return self.select_related('base') \
@@ -340,7 +337,6 @@ class VersionNotFound(Exception):
     pass
 
 
-@python_2_unicode_compatible
 class PersonExtra(HasImageMixin, models.Model):
     base = models.OneToOneField(Person, related_name='extra')
 
@@ -361,7 +357,7 @@ class PersonExtra(HasImageMixin, models.Model):
         # complex_popolo_fields property just because Django is
         # checking whether the prefetch objects cache is there:
         if name == '_prefetched_objects_cache':
-            return super(PersonExtra, self).__getattr__(self, name)
+            return super().__getattr__(self, name)
         field = self.complex_popolo_fields.get(name)
         if field:
             # Iterate rather than using filter because that would
@@ -560,7 +556,7 @@ class PersonExtra(HasImageMixin, models.Model):
             'diffs_against_all_parents': right_version_diff['diffs'],
             'inline_style': inline_style,
         })
-        return squash_whitespace('<dl>{0}</dl>'.format(rendered))
+        return squash_whitespace('<dl>{}</dl>'.format(rendered))
 
     def record_version(self, change_metadata, new_person=False):
         versions = []
@@ -757,7 +753,6 @@ class PersonExtra(HasImageMixin, models.Model):
         return self.base.name
 
 
-@python_2_unicode_compatible
 class OrganizationExtra(HasImageMixin, models.Model):
     base = models.OneToOneField(Organization, related_name='extra')
     slug = models.CharField(max_length=256, blank=True, unique=True)
@@ -783,7 +778,6 @@ class OrganizationExtra(HasImageMixin, models.Model):
 
 
 
-@python_2_unicode_compatible
 class PostExtra(HasImageMixin, models.Model):
     base = models.OneToOneField(Post, related_name='extra')
     slug = models.CharField(max_length=256, blank=True, unique=True)
@@ -824,7 +818,7 @@ class PostExtraElection(models.Model):
         return fmt.format(
             e=self.ballot_paper_id,
             l=(' candidates_locked=True' if self.candidates_locked else ''),
-            w=(' winner_count={0}'.format(self.winner_count)
+            w=(' winner_count={}'.format(self.winner_count)
                if (self.winner_count is not None) else ''))
 
     def get_absolute_url(self):
@@ -835,7 +829,6 @@ class PostExtraElection(models.Model):
         ])
 
 
-@python_2_unicode_compatible
 class AreaExtra(models.Model):
     base = models.OneToOneField(Area, related_name='extra')
 
@@ -848,7 +841,6 @@ class AreaExtra(models.Model):
         return self.base.name
 
 
-@python_2_unicode_compatible
 class PartySet(models.Model):
     slug = models.CharField(max_length=256, unique=True)
     name = models.CharField(max_length=1024)

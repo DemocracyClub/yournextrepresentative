@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.db import migrations, models
 
 
@@ -24,7 +21,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='candidateresult',
-            unique_together=set([('result_set', 'membership')]),
+            unique_together={('result_set', 'membership')},
         ),
         migrations.RemoveField(
             model_name='candidateresult',

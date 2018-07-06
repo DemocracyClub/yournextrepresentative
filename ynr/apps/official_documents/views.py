@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.views.generic import CreateView, DetailView, TemplateView
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
@@ -19,7 +17,7 @@ class DocumentView(DetailView):
     model = OfficialDocument
 
     def get_context_data(self, **kwargs):
-        context = super(DocumentView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         post = get_object_or_404(Post, id=self.object.post_id)
         context['post_label'] = post.label
         context['documents_with_same_source'] = \
@@ -50,7 +48,7 @@ class CreateDocumentView(ElectionMixin, GroupRequiredMixin, CreateView):
         }
 
     def get_context_data(self, **kwargs):
-        context = super(CreateDocumentView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         post = get_object_or_404(Post, extra__slug=self.kwargs['post_id'])
         context['post_label'] = post.label
         return context
@@ -61,7 +59,7 @@ class PostsForDocumentView(DetailView):
     template_name = "official_documents/posts_for_document.html"
 
     def get_context_data(self, **kwargs):
-        context = super(PostsForDocumentView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         documents = OfficialDocument.objects.filter(
             source_url=self.object.source_url
         ).select_related(
@@ -93,8 +91,7 @@ class UnlockedWithDocumentsView(TemplateView):
     template_name = "official_documents/unlocked_with_documents.html"
 
     def get_context_data(self, **kwargs):
-        context = super(
-            UnlockedWithDocumentsView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         SOPNs_qs = OfficialDocument.objects.filter(
             election__current=True).select_related(

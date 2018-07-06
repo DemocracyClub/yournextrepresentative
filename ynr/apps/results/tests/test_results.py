@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 from datetime import datetime
 from io import BytesIO
 from os.path import join
@@ -52,7 +48,7 @@ class TestResultsFeed(
         XMLEqualityMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestResultsFeed, self).setUp()
+        super().setUp()
         person_extra = factories.PersonExtraFactory.create(
             base__id='4322',
             base__name='Tessa Jowell'
@@ -166,7 +162,7 @@ class TestResultsFeedWithRetraction(
         XMLEqualityMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestResultsFeedWithRetraction, self).setUp()
+        super().setUp()
         accidental_winner = factories.PersonExtraFactory.create(
             base__id='4322',
             base__name='Tessa Jowell',

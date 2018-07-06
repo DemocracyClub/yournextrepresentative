@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import re
 from django.utils.six.moves.urllib_parse import urlsplit
 from django.conf import settings
@@ -22,7 +20,7 @@ def get_next_dd(start):
 class SimpleFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(SimpleFieldsTests, self).setUp()
+        super().setUp()
         field = SimplePopoloField(
                 name='additional_name',
                 label='Additional Name',

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import json
 import re
 
@@ -104,12 +102,12 @@ class PersonView(TemplateView):
 
     @method_decorator(cache_control(max_age=(60 * 20)))
     def dispatch(self, *args, **kwargs):
-        return super(PersonView, self).dispatch(
+        return super().dispatch(
             *args, **kwargs
         )
 
     def get_context_data(self, **kwargs):
-        context = super(PersonView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         path = self.person.extra.get_absolute_url()
         context['redirect_after_login'] = urlquote(path)
         context['canonical_url'] = self.request.build_absolute_uri(path)
@@ -157,7 +155,7 @@ class PersonView(TemplateView):
                 raise Http404(_("No person found with ID {person_id}").format(
                     person_id=person_id
                 ))
-        return super(PersonView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def get_person_redirect(self, person_id):
         # If there's a PersonRedirect for this person ID, do the
@@ -323,7 +321,7 @@ class UpdatePersonView(LoginRequiredMixin, FormView):
     form_class = UpdatePersonForm
 
     def get_initial(self):
-        initial_data = super(UpdatePersonView, self).get_initial()
+        initial_data = super().get_initial()
         person = get_object_or_404(
             Person.objects.select_related('extra'),
             pk=self.kwargs['person_id']
@@ -333,7 +331,7 @@ class UpdatePersonView(LoginRequiredMixin, FormView):
         return initial_data
 
     def get_context_data(self, **kwargs):
-        context = super(UpdatePersonView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         person = get_object_or_404(
             Person.objects.select_related('extra'),
@@ -442,18 +440,18 @@ class NewPersonView(ElectionMixin, LoginRequiredMixin, FormView):
     form_class = NewPersonForm
 
     def get_form_kwargs(self):
-        kwargs = super(NewPersonView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['election'] = self.election
         return kwargs
 
     def get_initial(self):
-        result = super(NewPersonView, self).get_initial()
+        result = super().get_initial()
         result['standing_' + self.election] = 'standing'
         result['name'] = self.request.GET.get('name')
         return result
 
     def get_context_data(self, **kwargs):
-        context = super(NewPersonView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         context['add_candidate_form'] = context['form']
 
@@ -510,7 +508,7 @@ class SingleElectionFormView(LoginRequiredMixin, FormView):
     form_class = SingleElectionForm
 
     def get_initial(self):
-        initial_data = super(SingleElectionFormView, self).get_initial()
+        initial_data = super().get_initial()
         election = get_object_or_404(
             Election.objects.all(),
             slug=self.kwargs['election']

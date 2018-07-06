@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 import random
 
 from django.views.generic import RedirectView

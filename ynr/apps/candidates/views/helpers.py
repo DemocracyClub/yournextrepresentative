@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from collections import defaultdict
 
 from django.conf import settings
@@ -264,7 +262,7 @@ def group_candidates_by_party(election_data, candidacies, show_all=False):
             for k, v in party_id_to_people.items()
         ]
     except KeyError as ke:
-        raise Exception("Unknown party: {0}".format(ke))
+        raise Exception("Unknown party: {}".format(ke))
     if party_list:
         result.sort(key=lambda t: t[0]['name'])
     else:

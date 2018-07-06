@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import re
 
 from candidates.utils import strip_accents
@@ -33,7 +31,7 @@ class UKConstituencyDetailView(ConstituencyDetailView):
     template_name = 'uk/constituency.html'
 
     def get_context_data(self, **kwargs):
-        context = super(UKConstituencyDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         context['electionleaflets_url'] = \
             get_electionleaflets_url(

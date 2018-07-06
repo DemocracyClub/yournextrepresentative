@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -8,8 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 from popolo.models import Person
 
 from candidates.models import PostExtraElection
-
-from compat import python_2_unicode_compatible
 
 PHOTO_REVIEWERS_GROUP_NAME = 'Photo Reviewers'
 
@@ -36,7 +32,6 @@ class CopyrightOptions:
     )
 
 
-@python_2_unicode_compatible
 class QueuedImage(models.Model):
 
     APPROVED = 'approved'

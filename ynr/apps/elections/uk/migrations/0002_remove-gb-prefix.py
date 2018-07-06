@@ -25,7 +25,7 @@ def remove_gb_prefix(apps, schema_editor):
 
 def add_gb_prefix(apps, schema_editor):
     Election = apps.get_model("elections", "Election")
-    reversed_ids_to_alter = dict((v, k) for k, v in IDS_TO_ALTER.iteritems())
+    reversed_ids_to_alter = {v: k for k, v in IDS_TO_ALTER.iteritems()}
 
     for election in Election.objects.filter(
             slug__in=reversed_ids_to_alter.keys()):

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.views.generic import TemplateView, UpdateView
 
 from popolo.models import Membership, ContactDetail
@@ -78,7 +76,7 @@ class IncompleteFieldView(TemplateView):
         if field == "twitter" or field == 'facebook' or field == 'phone':
             filtered_results = results.exclude(person__contact_details__contact_type=field)
         else:
-            field_spec = "person__{0}__isnull".format(field)
+            field_spec = "person__{}__isnull".format(field)
             args = {field_spec: True}
             filtered_results = results.filter(**args)
 
@@ -99,5 +97,5 @@ class CouldntFindFieldView(UpdateView):
     def form_valid(self, form):
         task = form.save()
         task.log_not_found()
-        return super(CouldntFindFieldView, self).form_valid(form)
+        return super().form_valid(form)
 

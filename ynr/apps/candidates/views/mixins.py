@@ -1,11 +1,12 @@
-from __future__ import unicode_literals
-
 from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.db.models import Count, F
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+
+
+from dateutil.parser import parse
 
 from ..models import LoggedAction
 
@@ -22,8 +23,8 @@ class ContributorsMixin(object):
             ),
             (
                 _('2018 local elections'),
-                "2018-03-01",
-                "2018-05-03",
+                timezone.make_aware(parse("2018-03-01")),
+                timezone.make_aware(parse("2018-05-03")),
             )
         ]
         if all_time:

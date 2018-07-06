@@ -1,5 +1,3 @@
-from __future__ import unicode_literals, print_function
-
 from mock import patch
 
 from django.test import TestCase
@@ -70,7 +68,7 @@ class PreventCreatingBadMemberships(UK2015ExamplesMixin, TestCase):
                 Exception,
                 r'Trying to add a Membership with an election "2015 '
                 r'General Election", but that\'s in John Doe '
-                r'\({0}\)\'s not_standing list'.format(new_candidate.base.id)):
+                r'\({}\)\'s not_standing list'.format(new_candidate.base.id)):
             Membership.objects.create(
                 role='Candidate',
                 person=new_candidate.base,

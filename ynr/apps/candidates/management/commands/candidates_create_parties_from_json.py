@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import json
 
 from django.core.management.base import BaseCommand
@@ -73,7 +71,7 @@ class Command(BaseCommand):
         try:
             return PartySet.objects.get(slug=requested_party_set_slug)
         except PartySet.DoesNotExist:
-            self.stdout.write("Couldn't find the party set '{0}'".format(
+            self.stdout.write("Couldn't find the party set '{}'".format(
                 requested_party_set_slug
             ))
             all_party_sets = PartySet.objects.values_list('slug', flat=True)
@@ -82,7 +80,7 @@ class Command(BaseCommand):
                 for other_party_set_slug in all_party_sets:
                     self.stdout.write("  " + other_party_set_slug)
             self.stdout.write(
-                "Create the party set '{0}'? (y/n) ".format(
+                "Create the party set '{}'? (y/n) ".format(
                     requested_party_set_slug
                 ),
                 ending=''

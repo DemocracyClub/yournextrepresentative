@@ -48,7 +48,7 @@ class ModGovDivision(BaseDivision):
         """
         self.soup = soup
         title = soup.title.get_text(strip=True)
-        super(ModGovDivision, self).__init__(election, title)
+        super().__init__(election, title)
         ATTRS = [
             'electionareaid',
             'title',
@@ -83,7 +83,7 @@ class ModGovDivision(BaseDivision):
 class ModGovImporter(BaseImporter):
     def __init__(self, *args, **kwargs):
         self.url = kwargs.pop('url')
-        super(ModGovImporter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.get_data()
         self.saved_numseats = SavedMapping('num_seats.json')
 

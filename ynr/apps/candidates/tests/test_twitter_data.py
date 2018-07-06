@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals
-
 from mock import Mock, PropertyMock,call, patch
 
 from django.test import TestCase, override_settings
@@ -50,7 +48,7 @@ def fake_twitter_api_post(*args, **kwargs):
                 ]
             }
             return mock_result
-    raise Exception("No Twitter API stub for {0} {1}".format(args, kwargs))
+    raise Exception("No Twitter API stub for {} {}".format(args, kwargs))
 
 
 class TestTwitterData(TestCase):
@@ -76,12 +74,12 @@ class TestTwitterData(TestCase):
             [
                 call(
                     'https://api.twitter.com/1.1/users/lookup.json',
-                    headers={u'Authorization': u'Bearer madeuptoken'},
-                    data={u'screen_name': u'mhl20,struan'}),
+                    headers={'Authorization': 'Bearer madeuptoken'},
+                    data={'screen_name': 'mhl20,struan'}),
                 call(
                     'https://api.twitter.com/1.1/users/lookup.json',
-                    headers={u'Authorization': u'Bearer madeuptoken'},
-                    data={u'screen_name': u'symroe'}),
+                    headers={'Authorization': 'Bearer madeuptoken'},
+                    data={'screen_name': 'symroe'}),
             ]
         )
         self.assertEqual(

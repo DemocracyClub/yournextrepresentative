@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import re
 from django_webtest import WebTest
 
@@ -15,7 +13,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestConstituenciesDeclared(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestConstituenciesDeclared, self).setUp()
+        super().setUp()
 
         tessa_jowell = PersonExtraFactory.create(
             base__id='2009',

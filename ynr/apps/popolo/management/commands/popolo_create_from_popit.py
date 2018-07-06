@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import re
 
 from django.core.management.base import BaseCommand, CommandError
@@ -43,18 +41,18 @@ class Command(PopItImporter, BaseCommand):
         if email:
             email = re.sub(r'\s*', '', email)
         new_person_data['email'] = email
-        return super(Command, self).update_person(new_person_data)
+        return super().update_person(new_person_data)
 
     def make_contact_detail_dict(self, contact_detail_data):
         new_contact_detail_data = contact_detail_data.copy()
         # There are some contact types that are used in PopIt that are
         # longer than 12 characters...
         new_contact_detail_data['type'] = contact_detail_data['type'][:12]
-        return super(Command, self).make_contact_detail_dict(new_contact_detail_data)
+        return super().make_contact_detail_dict(new_contact_detail_data)
 
     def make_link_dict(self, link_data):
         new_link_data = link_data.copy()
         # There are some really long URLs in PopIt, which exceed the
         # 200 character limit in django-popolo.
         new_link_data['url'] = new_link_data['url'][:200]
-        return super(Command, self).make_link_dict(new_link_data)
+        return super().make_link_dict(new_link_data)

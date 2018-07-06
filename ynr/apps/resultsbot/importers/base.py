@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from elections.models import Election
 from resultsbot.matchers.mappings import SavedMapping
 

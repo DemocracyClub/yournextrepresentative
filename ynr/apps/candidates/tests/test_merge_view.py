@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from os.path import join, dirname, realpath
 from shutil import rmtree
 
@@ -33,7 +31,7 @@ TEST_MEDIA_ROOT = realpath(join(dirname(__file__), 'media'))
 class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestMergePeopleView, self).setUp()
+        super().setUp()
         mkdir_p(TEST_MEDIA_ROOT)
         # Create Tessa Jowell (the primary person)
         person_extra = factories.PersonExtraFactory.create(
@@ -539,9 +537,9 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             list(candidacies),
             [
-                (u'2010', u'65936', u'party:63'),
-                (u'2015', u'65878', u'party:63'),
-                (u'local.maidstone.2016-05-05', u'DIW:E05005004', u'party:63')
+                ('2010', '65936', 'party:63'),
+                ('2015', '65878', 'party:63'),
+                ('local.maidstone.2016-05-05', 'DIW:E05005004', 'party:63')
             ]
         )
 

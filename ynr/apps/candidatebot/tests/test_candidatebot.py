@@ -12,7 +12,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 class TestCandidateBot(UK2015ExamplesMixin, TestCase):
     def setUp(self):
-        super(TestCandidateBot, self).setUp()
+        super().setUp()
         User.objects.create(username=settings.CANDIDATE_BOT_USERNAME)
         self.person_extra = PersonExtraFactory.create(
             base__id='2009',

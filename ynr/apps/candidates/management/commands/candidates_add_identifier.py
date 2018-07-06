@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals
-
 from django.core.management.base import BaseCommand
 
 from popolo.models import Person
@@ -43,4 +41,4 @@ class Command(BaseCommand):
         person.extra.record_version(change_metadata)
         person.extra.save()
 
-        print("Successfully updated {0}".format(person.name))
+        print("Successfully updated {}".format(person.name))

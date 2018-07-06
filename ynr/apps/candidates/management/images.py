@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import hashlib
 from tempfile import NamedTemporaryFile
 
@@ -29,7 +27,7 @@ def get_image_extension(image_filename):
             pillow_image = PillowImage.open(f)
         except IOError as e:
             if 'cannot identify image file' in e.args[0]:
-                print("Ignoring a non-image file {0}".format(
+                print("Ignoring a non-image file {}".format(
                     image_filename
                 ))
                 return None

@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals
-
 from collections import defaultdict
 from datetime import date
 import re
@@ -28,7 +26,7 @@ def create_or_update_party(joint_party_name, sub_parties):
         extract_number_from_id(p.extra.slug)
         for p in sub_parties
     )
-    registers = set(p.extra.register for p in sub_parties)
+    registers = {p.extra.register for p in sub_parties}
     if len(registers) > 1:
         raise Exception("Multiple registers found " + repr(registers))
     joint_party_id = 'joint-party:' + '-'.join(str(i) for i in party_ids)

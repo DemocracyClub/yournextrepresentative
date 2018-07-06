@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django_webtest import WebTest
 
 from .auth import TestUserMixin
@@ -9,7 +7,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestCaching(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestCaching, self).setUp()
+        super().setUp()
 
     def test_unauth_user_cache_headers(self):
         response = self.app.get(
@@ -53,7 +51,7 @@ class TestCaching(TestUserMixin, UK2015ExamplesMixin, WebTest):
         #   File "/var/www/ynr/code/candidates/middleware.py", line 97, in process_response
         #     if request.user.is_authenticated():
         # AttributeError: 'WSGIRequest' object has no attribute 'user'
-        without_slash = '/api/v0.9/posts/{0}'.format(
+        without_slash = '/api/v0.9/posts/{}'.format(
             self.edinburgh_east_post_extra.slug)
         with_slash = without_slash + '/'
         response = self.app.get(without_slash)

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import json
 
 from django.utils.six.moves.urllib_parse import urlsplit
@@ -17,7 +15,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestNewPersonView, self).setUp()
+        super().setUp()
 
     def test_new_person_submission_refused_copyright(self):
         # Just a smoke test for the moment:
@@ -89,7 +87,7 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            '/person/{0}'.format(person.id)
+            '/person/{}'.format(person.id)
         )
 
         self.assertEqual(person.name, 'Elizabeth Bennet')

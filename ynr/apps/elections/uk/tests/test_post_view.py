@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django_webtest import WebTest
 from django.contrib.auth.models import Group
 

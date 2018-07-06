@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.db import migrations
 
 
@@ -39,7 +36,7 @@ def create_simple_fields(apps, schema_editor):
         ),
         SimpleField(
             name='gender',
-            label=u"Gender (e.g. “male”, “female”)",
+            label="Gender (e.g. “male”, “female”)",
             required=False,
             info_type_key='text',
             order=5,

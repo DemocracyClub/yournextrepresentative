@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from collections import defaultdict
 from datetime import datetime, timedelta
 from functools import reduce
@@ -121,7 +119,7 @@ class LoggedAction(models.Model):
             return self.person.extra.diff_for_version(
                 self.popit_person_new_version, inline_style=True)
         except VersionNotFound as e:
-            return '<p>{0}</p>'.format(escape(text_type(e)))
+            return '<p>{}</p>'.format(escape(text_type(e)))
 
 
 class PersonRedirect(models.Model):

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import codecs
 from io import BytesIO
 from mock import patch
@@ -44,7 +42,7 @@ def canonicalize_xml(xml_bytes):
 
 
 def fake_diff_html(self, version_id, inline_style=False):
-    return '<div{0}>Fake diff</div>'.format(
+    return '<div{}>Fake diff</div>'.format(
         ' style="color: red"' if inline_style else ''
     )
 
@@ -58,7 +56,7 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
     csrf_checks = False
 
     def setUp(self):
-        super(TestNeedsReview, self).setUp()
+        super().setUp()
         self.current_datetime = make_aware(datetime(2017, 5, 2, 18, 10, 5, 0))
         # Reuse existing users created in TestUserMixin:
         for username, u in (
@@ -262,9 +260,9 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
              ('lapsed_experienced',
               'person-update',
               ['Edit of a candidate whose record may be particularly liable to vandalism']),
-             (u'morbid_vandal',
-              u'constituency-lock',
-              [u'One of the first 3 edits of user morbid_vandal']),
+             ('morbid_vandal',
+              'constituency-lock',
+              ['One of the first 3 edits of user morbid_vandal']),
              ('morbid_vandal',
               'person-update',
               ['One of the first 3 edits of user morbid_vandal',

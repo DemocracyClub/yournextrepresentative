@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import re
 
 from django_webtest import WebTest
@@ -9,7 +7,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestConstituencyDetailView(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestConstituencyDetailView, self).setUp()
+        super().setUp()
 
     def test_constituencies_page(self):
         # Just a smoke test to check that the page loads:

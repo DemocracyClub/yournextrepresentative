@@ -12,7 +12,7 @@ from uk_results.models import CandidateResult, ResultSet
 class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
-        super(TestUKResultsPreserved, self).setUp()
+        super().setUp()
         self.primary_person = factories.PersonExtraFactory.create(
             base__id='3885',
             base__name='Harriet Harman'

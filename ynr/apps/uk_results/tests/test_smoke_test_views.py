@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals
-
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django_webtest import WebTest
@@ -14,7 +12,7 @@ from uk_results.models import CandidateResult, ResultSet
 class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
 
     def setUp(self):
-        super(TestUKResults, self).setUp()
+        super().setUp()
         pee = self.local_post.postextraelection_set.get()
         self.result_set = ResultSet.objects.create(
             post_election=pee,

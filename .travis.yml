@@ -5,7 +5,6 @@ notifications:
 
 language: python
 python:
-  - '2.7'
   - '3.5'
   - '3.6'
 addons:
@@ -29,7 +28,6 @@ script:
 after_success:
   - coveralls
 before_cache:
-    - rm -f .tox/py27-django19/log/*.log
     - rm -f .tox/py35-django19/log/*.log
     - rm -f .tox/py36-django19/log/*.log
     - rm -f .cache/pip/log/*.log

@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 import json
 
 from django_webtest import WebTest
@@ -18,7 +14,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
     maxDiff = None
 
     def setUp(self):
-        super(CachedCountTestCase, self).setUp()
+        super().setUp()
         posts_extra = [
             self.edinburgh_east_post_extra,
             self.edinburgh_north_post_extra,
@@ -44,7 +40,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             for n in range(candidacy_count):
                 person_extra = factories.PersonExtraFactory.create(
                     base__id=str(7000 + i),
-                    base__name='Test Candidate {0}'.format(i)
+                    base__name='Test Candidate {}'.format(i)
                 )
                 party = parties_extra[n % 5]
                 factories.MembershipFactory.create(

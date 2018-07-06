@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 from datetime import timedelta
 from os.path import join
 
@@ -25,7 +21,7 @@ def get_person_extra_with_joins(person_id):
 class CSVTests(TestUserMixin, UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
-        super(CSVTests, self).setUp()
+        super().setUp()
         # The second person's name (and party name) have diacritics in
         # them to test handling of Unicode when outputting to CSV.
         self.gb_person_extra = factories.PersonExtraFactory.create(

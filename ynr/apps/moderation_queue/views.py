@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import bleach
 import os
 import re
@@ -161,7 +158,7 @@ class PhotoUploadSuccess(TemplateView):
     template_name = 'moderation_queue/photo-upload-success.html'
 
     def get_context_data(self, **kwargs):
-        context = super(PhotoUploadSuccess, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['person'] = Person.objects.get(
             id=kwargs['person_id']
         )
@@ -205,18 +202,18 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
     required_group_name = PHOTO_REVIEWERS_GROUP_NAME
 
     def get_google_image_search_url(self, person):
-        image_search_query = '"{0}"'.format(person.name)
+        image_search_query = '"{}"'.format(person.name)
         last_candidacy = person.extra.last_candidacy
         if last_candidacy:
             party = last_candidacy.on_behalf_of
             if party:
-                image_search_query += ' "{0}"'.format(
+                image_search_query += ' "{}"'.format(
                     tidy_party_name(party.name)
                 )
             post = last_candidacy.post
             if post is not None:
-                image_search_query += ' "{0}"'.format(post.label)
-        return 'https://www.google.co.uk/search?tbm=isch&q={0}'.format(
+                image_search_query += ' "{}"'.format(post.label)
+        return 'https://www.google.co.uk/search?tbm=isch&q={}'.format(
             urlquote(image_search_query)
         )
 
@@ -226,7 +223,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         return url + urlquote(absolute_image_url)
 
     def get_context_data(self, **kwargs):
-        context = super(PhotoReview, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         self.queued_image = get_object_or_404(
             QueuedImage,
             pk=kwargs['queued_image_id']
@@ -531,7 +528,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 )
             )
         else:
-            raise Exception("BUG: unexpected decision {0}".format(decision))
+            raise Exception("BUG: unexpected decision {}".format(decision))
         return HttpResponseRedirect(reverse('photo-review-list'))
 
     def form_invalid(self, form):
@@ -568,7 +565,7 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
             message="Thanks for suggesting we lock an area!"
         )
 
-        return super(SuggestLockView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse('constituency', kwargs={
@@ -619,8 +616,7 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
         return qs[:10]
 
     def get_context_data(self, **kwargs):
-        context = super(
-            SuggestLockReviewListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['my_suggestions'] = self.get_lock_suggestions(mine=True)
         context['other_suggestions'] = self.get_lock_suggestions(mine=False)
         context['test_pdf_view'] = bool(self.request.GET.get('pdfembed'))
@@ -649,7 +645,7 @@ class SOPNReviewRequiredView(ListView):
 
                 )
                 return HttpResponseRedirect(url)
-        return super(SOPNReviewRequiredView, self).get(*args, **kwargs)
+        return super().get(*args, **kwargs)
 
 
     def get_queryset(self):
@@ -678,8 +674,7 @@ class PersonNameCleanupView(TemplateView):
     template_name = "moderation_queue/person_name_cleanup.html"
 
     def get_context_data(self, **kwargs):
-        context = super(
-            PersonNameCleanupView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         people = Person.objects.all().only('name')
 

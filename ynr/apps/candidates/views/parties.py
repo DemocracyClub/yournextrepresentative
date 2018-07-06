@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from collections import defaultdict
 
 from django.views.generic import TemplateView
@@ -15,7 +13,7 @@ class PartyListView(ElectionMixin, TemplateView):
     template_name = 'candidates/party-list.html'
 
     def get_context_data(self, **kwargs):
-        context = super(PartyListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['parties_extra'] = OrganizationExtra.objects \
             .filter(
                 base__memberships_on_behalf_of__post_election__election=self.election_data,
@@ -46,7 +44,7 @@ class PartyDetailView(ElectionMixin, TemplateView):
     template_name = 'candidates/party.html'
 
     def get_context_data(self, **kwargs):
-        context = super(PartyDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         party_id = kwargs['organization_id']
         party = get_object_or_404(Organization, extra__slug=party_id)
 

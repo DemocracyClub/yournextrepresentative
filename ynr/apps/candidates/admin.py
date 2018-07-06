@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.contrib import admin
 
 from django.core.urlresolvers import reverse
@@ -30,7 +28,7 @@ class LoggedActionAdmin(admin.ModelAdmin):
         if not o.person:
             return ''
         url = reverse('person-view', kwargs={'person_id': o.person.id})
-        return '<a href="{0}">{1}</a>'.format(
+        return '<a href="{}">{}</a>'.format(
             url,
             o.person.name,
         )

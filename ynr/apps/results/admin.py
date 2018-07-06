@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.utils.text import slugify
@@ -29,7 +27,7 @@ class ResultEventAdmin(admin.ModelAdmin):
     ordering = ('-created',)
 
     def get_queryset(self, request):
-        qs = super(ResultEventAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         return qs.select_related('user', 'winner', 'post__extra', 'winner_party__extra', 'election')
 
     def winner_link(self, o):
@@ -40,7 +38,7 @@ class ResultEventAdmin(admin.ModelAdmin):
                 'ignored_slug': slugify(o.winner.name),
             }
         )
-        return '<a href="{0}">{1}</a>'.format(
+        return '<a href="{}">{}</a>'.format(
             url,
             o.winner.name,
         )
@@ -56,7 +54,7 @@ class ResultEventAdmin(admin.ModelAdmin):
                     'ignored_slug': slugify(o.post.extra.short_label),
                 }
             )
-            return '<a href="{0}">{1}</a>'.format(
+            return '<a href="{}">{}</a>'.format(
                 url,
                 o.post.extra.short_label,
             )

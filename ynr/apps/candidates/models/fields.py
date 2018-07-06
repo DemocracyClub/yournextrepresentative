@@ -1,10 +1,6 @@
-from __future__ import unicode_literals
-
 from django.db import models
 
 from popolo.models import Person
-
-from compat import python_2_unicode_compatible
 
 
 def get_complex_popolo_fields():
@@ -17,7 +13,6 @@ def get_complex_popolo_fields():
     return {cf.name: cf for cf in ComplexPopoloField.objects.all()}
 
 
-@python_2_unicode_compatible
 class ComplexPopoloField(models.Model):
     """
     This model stores the name of the underlying relation, some details about
@@ -90,7 +85,6 @@ class ComplexPopoloField(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
 class ExtraField(models.Model):
 
     class Meta:

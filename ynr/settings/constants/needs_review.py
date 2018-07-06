@@ -1,6 +1,3 @@
-from __future__ import unicode_literals
-
-
 PEOPLE_LIABLE_TO_VANDALISM = {
     2811, # Theresa May
     1120, # Jeremy Corbyn
