@@ -20,3 +20,14 @@ class MediaStorage(S3Boto3Storage):
     """
 
     location = settings.MEDIAFILES_LOCATION
+
+    @property
+    def base_url(self):
+        """
+        This is a small hack around the fact that Django Storages dosn't
+        provide the same methods as FileSystemStorage.
+
+        `base_url` is missing from their implementation of the storage class,
+        so we emulate it here by calling URL with an empty key name.
+        """
+        return self.url('')
