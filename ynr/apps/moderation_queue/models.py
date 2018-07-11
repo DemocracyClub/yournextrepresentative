@@ -69,6 +69,8 @@ class QueuedImage(models.Model):
     crop_max_x = models.IntegerField(blank=True, null=True)
     crop_max_y = models.IntegerField(blank=True, null=True)
 
+    detection_metadata = models.TextField(blank=True)
+
     face_detection_tried = models.BooleanField(default=False)
 
     created = models.DateTimeField(auto_now_add=True)
