@@ -7,6 +7,13 @@ from django.core.management.base import BaseCommand, CommandError
 from moderation_queue.models import QueuedImage
 
 
+# These magic values are because the AWS API crops faces quite tightly by
+# default, meaning we literally just get the face. These values are about
+# right or, they are more right than the default crop.
+MIN_SCALING_FACTOR = 0.3
+MAX_SCALING_FACTOR = 2
+
+
 class Command(BaseCommand):
     def handle(self, **options):
 
@@ -40,10 +47,14 @@ class Command(BaseCommand):
             im_width = qi.image.width
             im_height = qi.image.height
             bounding_box = detected["FaceDetails"][0]["BoundingBox"]
-            qi.crop_min_x = bounding_box["Left"] * im_width * 0.3
-            qi.crop_min_y = bounding_box["Top"] * im_height * 0.3
-            qi.crop_max_x = bounding_box["Width"] * im_width * 2
-            qi.crop_max_y = bounding_box["Height"] * im_height * 2
+            qi.crop_min_x = bounding_box["Left"] * im_width * MIN_SCALING_FACTOR
+            qi.crop_min_y = bounding_box["Top"] * im_height * MIN_SCALING_FACTOR
+            qi.crop_max_x = (
+                bounding_box["Width"] * im_width * MAX_SCALING_FACTOR
+            )
+            qi.crop_max_y = (
+                bounding_box["Height"] * im_height * MAX_SCALING_FACTOR
+            )
             qi.detection_metadata = json.dumps(detected, indent=4)
 
             if int(verbosity) > 1:
