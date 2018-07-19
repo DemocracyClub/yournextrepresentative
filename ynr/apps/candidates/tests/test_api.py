@@ -297,11 +297,11 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         expected_timestamped_directory = join(
             settings.MEDIA_ROOT, "cached-api", expected_leafname
         )
-        expected_symlink = join(settings.MEDIA_ROOT, "cached-api", "latest")
-        self.assertTrue(exists(expected_timestamped_directory))
-        self.assertTrue(exists(expected_symlink))
+        expected_path = join("cached-api", "latest")
+        self.assertTrue(self.storage.exists(expected_timestamped_directory))
+        self.assertTrue(self.storage.exists(expected_path))
         # Check that the files in that directory are as expected:
-        entries = os.listdir(expected_timestamped_directory)
+        entries = self.storage.listdir(expected_timestamped_directory)[1]
         persons_1_leafname = "persons-000001.json"
         persons_2_leafname = "persons-000002.json"
         posts_1_leafname = "posts-000001.json"
@@ -316,17 +316,17 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
             },
         )
         # Get the data from those pages:
-        with open(
+        with self.storage.open(
             join(expected_timestamped_directory, persons_1_leafname)
         ) as f:
             persons_1_data = json.load(f)
-        with open(
+        with self.storage.open(
             join(expected_timestamped_directory, persons_2_leafname)
         ) as f:
             persons_2_data = json.load(f)
-        with open(join(expected_timestamped_directory, posts_1_leafname)) as f:
+        with self.storage.open(join(expected_timestamped_directory, posts_1_leafname)) as f:
             posts_1_data = json.load(f)
-        with open(join(expected_timestamped_directory, posts_2_leafname)) as f:
+        with self.storage.open(join(expected_timestamped_directory, posts_2_leafname)) as f:
             posts_2_data = json.load(f)
         # Check the previous and next links are as we expect:
         self.assertEqual(
