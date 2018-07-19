@@ -319,15 +319,15 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         with self.storage.open(
             join(expected_timestamped_directory, persons_1_leafname)
         ) as f:
-            persons_1_data = json.load(f)
+            persons_1_data = json.loads(f.read().decode('utf8'))
         with self.storage.open(
             join(expected_timestamped_directory, persons_2_leafname)
         ) as f:
-            persons_2_data = json.load(f)
+            persons_2_data = json.loads(f.read().decode('utf8'))
         with self.storage.open(join(expected_timestamped_directory, posts_1_leafname)) as f:
-            posts_1_data = json.load(f)
+            posts_1_data = json.loads(f.read().decode('utf8'))
         with self.storage.open(join(expected_timestamped_directory, posts_2_leafname)) as f:
-            posts_2_data = json.load(f)
+            posts_2_data = json.loads(f.read().decode('utf8'))
         # Check the previous and next links are as we expect:
         self.assertEqual(
             persons_1_data["next"],
