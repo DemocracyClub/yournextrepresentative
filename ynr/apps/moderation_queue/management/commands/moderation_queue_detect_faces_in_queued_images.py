@@ -1,37 +1,63 @@
-from PIL import Image
+import json
+
+import boto3
 
 from django.core.management.base import BaseCommand, CommandError
 
 from moderation_queue.models import QueuedImage
-from moderation_queue.faces import face_crop_bounds
+
+
+# These magic values are because the AWS API crops faces quite tightly by
+# default, meaning we literally just get the face. These values are about
+# right or, they are more right than the default crop.
+MIN_SCALING_FACTOR = 0.3
+MAX_SCALING_FACTOR = 2
+
 
 class Command(BaseCommand):
-
     def handle(self, **options):
 
+        rekognition = boto3.client("rekognition", "eu-west-1")
+        attributes = ["ALL"]
+
         any_failed = False
-        for qi in QueuedImage.objects.filter(decision='undecided'):
-            if qi.face_detection_tried:
-                continue
+        qs = QueuedImage.objects.filter(decision="undecided").exclude(
+            face_detection_tried=True
+        )
+
+        for qi in qs:
+
             try:
-                im = Image.open(qi.image.path)
-            except IOError as e:
-                msg = 'Skipping QueuedImage{id}: {error}'
+                detected = rekognition.detect_faces(
+                    Image={"Bytes": qi.image.file.read()}, Attributes=attributes
+                )
+                self.set_x_y_from_response(qi, detected, options["verbosity"])
+            except Exception as e:
+                msg = "Skipping QueuedImage{id}: {error}"
                 self.stdout.write(msg.format(id=qi.id, error=e))
                 any_failed = True
-                continue
-            guessed_crop_bounds = face_crop_bounds(im)
-            im.close()
-            if guessed_crop_bounds:
-                qi.crop_min_x, qi.crop_min_y, qi.crop_max_x, qi.crop_max_y = \
-                                                                             guessed_crop_bounds
-                if int(options['verbosity']) > 1:
-                    self.stdout.write("Set bounds of {} to {}".format(
-                        qi, guessed_crop_bounds
-                    ))
-            else:
-                self.stdout.write("Couldn't find a face in {}".format(qi))
+
             qi.face_detection_tried = True
             qi.save()
         if any_failed:
             raise CommandError("Broken images found (see above)")
+
+    def set_x_y_from_response(self, qi, detected, verbosity=0):
+        if detected and detected["FaceDetails"]:
+            im_width = qi.image.width
+            im_height = qi.image.height
+            bounding_box = detected["FaceDetails"][0]["BoundingBox"]
+            qi.crop_min_x = bounding_box["Left"] * im_width * MIN_SCALING_FACTOR
+            qi.crop_min_y = bounding_box["Top"] * im_height * MIN_SCALING_FACTOR
+            qi.crop_max_x = (
+                bounding_box["Width"] * im_width * MAX_SCALING_FACTOR
+            )
+            qi.crop_max_y = (
+                bounding_box["Height"] * im_height * MAX_SCALING_FACTOR
+            )
+            qi.detection_metadata = json.dumps(detected, indent=4)
+
+            if int(verbosity) > 1:
+                self.stdout.write("Set bounds of {}".format(qi))
+        else:
+            self.stdout.write("Couldn't find a face in {}".format(qi))
