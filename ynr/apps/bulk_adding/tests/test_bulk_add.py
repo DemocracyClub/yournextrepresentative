@@ -94,12 +94,12 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # As Chris points out[1], this is quite a large number, and also quite
         # arbitrary.
         #
-        # The reason for the large numer is explained in the GutHub thread
-        # linked to below. The arbitrarness isn't amazing, but the idea is to
-        # make it lower and at least make sure it's not getting biggier.
+        # The reason for the large number is explained in the GitHub thread
+        # linked to below. The arbitrariness isn't amazing, but the idea is to
+        # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(64):
+        with self.assertNumQueries(58):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
