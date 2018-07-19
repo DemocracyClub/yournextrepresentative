@@ -46,7 +46,8 @@ class Command(BaseCommand):
             help="Optional hostname if files are stored at a relative path",
         )
         parser.add_argument(
-            "--base-url", help="Optional url_prefix for next and previous links"
+            "--url-prefix",
+            help="Optional url_prefix for next and previous links",
         )
         parser.add_argument(
             "--http",
