@@ -118,7 +118,8 @@ class Command(BaseCommand):
             return None
         page = page_from_url(url)
         filename = page_filename(endpoint, page)
-        return "{}{}/{}".format(self.url_prefix, self.timestamp, filename)
+        url = "/".join([self.url_prefix, self.timestamp, filename])
+        return url
 
     def get(self, url):
         kwargs = {"SERVER_NAME": self.hostname}
