@@ -43,5 +43,4 @@ class ResultSetViewSet(viewsets.ModelViewSet):
     serializer_class = ResultSetSerializer
     pagination_class = ResultsSetPagination
 
-    filter_backends = (rf_filters.DjangoFilterBackend,)
     filter_class = ProductFilter
