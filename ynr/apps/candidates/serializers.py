@@ -150,7 +150,10 @@ class OrganizationExtraSerializer(MinimalOrganizationExtraSerializer):
     founding_date = serializers.ReadOnlyField(source='base.founding_date')
     dissolution_date = serializers.ReadOnlyField(source='base.dissolution_date')
 
-    parent = MinimalOrganizationExtraSerializer(source='base.parent.extra')
+    parent = MinimalOrganizationExtraSerializer(
+        source='base.parent.extra',
+        allow_null=True
+    )
 
     contact_details = ContactDetailSerializer(
         many=True, read_only=True, source='base.contact_details')
@@ -250,7 +253,7 @@ class MembershipSerializer(serializers.HyperlinkedModelSerializer):
     party_list_position = serializers.ReadOnlyField()
     person = MinimalPersonSerializer(read_only=True)
     organization = MinimalOrganizationExtraSerializer(
-        read_only=True, source='organization.extra')
+        read_only=True, source='organization.extra', default=None)
     on_behalf_of = MinimalOrganizationExtraSerializer(
         read_only=True, source='on_behalf_of.extra')
     post = MinimalPostExtraSerializer(

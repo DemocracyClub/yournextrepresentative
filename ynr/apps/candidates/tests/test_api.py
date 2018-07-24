@@ -291,7 +291,7 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         call_command(
             "candidates_cache_api_to_directory",
             page_size="3",
-            url_prefix="https://example.com/media/api-cache-for-wcivf/",
+            url_prefix="https://example.com/media/api-cache-for-wcivf",
         )
         expected_leafname = "2017-05-14T12:33:05"
         expected_timestamped_directory = join(

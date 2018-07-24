@@ -25,12 +25,14 @@ class UK2015ExamplesMixin(object):
             slug='2015',
             name='2015 General Election',
             for_post_role='Member of Parliament',
+            organization=commons_extra.base,
         )
         cls.earlier_election = factories.EarlierElectionFactory.create(
             slug='2010',
             name='2010 General Election',
             for_post_role='Member of Parliament',
             current=False,
+            organization=commons_extra.base,
         )
         # Create some example parties:
         factories.PartyFactory.reset_sequence()

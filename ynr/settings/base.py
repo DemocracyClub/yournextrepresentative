@@ -121,7 +121,6 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.twitter',
     'corsheaders',
-    'crispy_forms',
     'markdown_deux',
     'raven.contrib.django.raven_compat',
     'uk_results',
@@ -377,13 +376,14 @@ TWITTER_APP_ONLY_BEARER_TOKEN = None
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('candidates.api_permissions.ReadOnly',),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework_jsonp.renderers.JSONPRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'PAGE_SIZE': 10,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
 }
 
 # allow attaching extra data to notifications:
