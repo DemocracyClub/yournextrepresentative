@@ -1,4 +1,5 @@
 from django.core.files.temp import NamedTemporaryFile
+from django.core.files.base import ContentFile
 from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.db import transaction
@@ -66,7 +67,7 @@ class Command(BaseCommand):
             person=person
         )
         qi.save()
-        qi.image.save(image_url, File(img_temp))
+        qi.image.save(image_url, ContentFileFile(r.content))
         qi.save()
 
     def handle_person(self, person):
