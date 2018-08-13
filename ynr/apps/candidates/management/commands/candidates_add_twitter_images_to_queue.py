@@ -67,7 +67,7 @@ class Command(BaseCommand):
             person=person
         )
         qi.save()
-        qi.image.save(image_url, ContentFileFile(r.content))
+        qi.image.save(image_url, ContentFile(r.content))
         qi.save()
 
     def handle_person(self, person):

@@ -11,7 +11,6 @@ from django.conf import settings
 from django.db import transaction
 from urllib.parse import urlencode, urljoin
 
-from images.models import Image
 import magic
 import mimetypes
 from popolo.models import Organization
@@ -20,12 +19,16 @@ import dateutil.parser
 
 from candidates.models import OrganizationExtra, PartySet, ImageExtra
 
-emblem_directory = join(settings.BASE_DIR, 'data', 'party-emblems')
-base_emblem_url = 'http://search.electoralcommission.org.uk/Api/Registrations/Emblems/'
+emblem_directory = join(settings.BASE_DIR, "data", "party-emblems")
+base_emblem_url = (
+    "http://search.electoralcommission.org.uk/Api/Registrations/Emblems/"
+)
+
 
 def get_file_md5sum(filename):
-    with open(filename, 'rb') as f:
+    with open(filename, "rb") as f:
         return hashlib.md5(f.read()).hexdigest()
+
 
 def find_index(l, predicate):
     for i, e in enumerate(l):
@@ -33,98 +36,128 @@ def find_index(l, predicate):
             return i
     return -1
 
+
 IMAGES_TO_USE = {
     # Labour Party
-    'party:53': 'Rose with the word Labour underneath',
+    "party:53": "Rose with the word Labour underneath",
     # Green Party
-    'party:63': 'World with petals and Green Party name English',
+    "party:63": "World with petals and Green Party name English",
     # Another Green Party
-    'party:305': 'Emblem 1',
+    "party:305": "Emblem 1",
     # Plaid Cymru
-    'party:77': 'emblem 3',
+    "party:77": "emblem 3",
     # Ulster Unionist Party
-    'party:83': 'Emblem 1',
+    "party:83": "Emblem 1",
     # Trade Unionist and Socialist Coalition
-    'party:804': 'Emblem 3',
+    "party:804": "Emblem 3",
     # Socialist Labour Party
-    'party:73': 'Globe with map of Earth with wordsletters Socialist Labour PartySLP',
+    "party:73": "Globe with map of Earth with wordsletters Socialist Labour PartySLP",
     # National Front
-    'party:2707': 'Emblem 2',
+    "party:2707": "Emblem 2",
     # Christian Party
-    'party:2893': 'Christian Party',
+    "party:2893": "Christian Party",
 }
+
 
 def sort_emblems(emblems, party_id):
     if party_id in IMAGES_TO_USE:
         generic_image_index = find_index(
             emblems,
-            lambda e: e['MonochromeDescription'] == IMAGES_TO_USE[party_id]
+            lambda e: e["MonochromeDescription"] == IMAGES_TO_USE[party_id],
         )
         if generic_image_index < 0:
             raise Exception("Couldn't find the generic logo for " + party_id)
         emblems.insert(0, emblems.pop(generic_image_index))
 
+
 def get_descriptions(party):
     return [
-        {'description': d['Description'],
-         'translation': d['Translation']}
-        for d in party['PartyDescriptions']
+        {"description": d["Description"], "translation": d["Translation"]}
+        for d in party["PartyDescriptions"]
     ]
+
 
 class Command(BaseCommand):
     help = "Update parties from a CSV of party data"
 
     def handle(self, **options):
         self.mime_type_magic = magic.Magic(mime=True)
-        self.gb_parties, _ = PartySet.objects.get_or_create(slug='gb')
-        self.ni_parties, _ = PartySet.objects.get_or_create(slug='ni')
+        self.gb_parties, _ = PartySet.objects.get_or_create(slug="gb")
+        self.ni_parties, _ = PartySet.objects.get_or_create(slug="ni")
         start = 0
         per_page = 30
-        url = 'http://search.electoralcommission.org.uk/api/search/Registrations'
+        url = (
+            "http://search.electoralcommission.org.uk/api/search/Registrations"
+        )
         params = {
-            'rows': per_page,
-            'et': ["pp", "ppm"],
-            'register': ["gb", "ni", 'none'],
-            'regStatus': ["registered", "deregistered", "lapsed"],
-            'period': [
-                '127', '135', '136', '205', '207', '217', '2508', '2510',
-                '2512', '2514', '281', '289', '301', '303', '305', '3560',
-                '37', '38', '4', '404', '410', '445', '49', '60', '62',
-                '68', '74',
-            ]
+            "rows": per_page,
+            "et": ["pp", "ppm"],
+            "register": ["gb", "ni", "none"],
+            "regStatus": ["registered", "deregistered", "lapsed"],
+            "period": [
+                "127",
+                "135",
+                "136",
+                "205",
+                "207",
+                "217",
+                "2508",
+                "2510",
+                "2512",
+                "2514",
+                "281",
+                "289",
+                "301",
+                "303",
+                "305",
+                "3560",
+                "37",
+                "38",
+                "4",
+                "404",
+                "410",
+                "445",
+                "49",
+                "60",
+                "62",
+                "68",
+                "74",
+            ],
         }
         with transaction.atomic():
             total = None
             while total is None or start <= total:
-                params['start'] = start
+                params["start"] = start
                 resp = requests.get(
-                    url + '?' + urlencode(params, doseq=True)).json()
+                    url + "?" + urlencode(params, doseq=True)
+                ).json()
                 if total is None:
-                    total = resp['Total']
-                self.parse_data(resp['Result'])
+                    total = resp["Total"]
+                self.parse_data(resp["Result"])
                 start += per_page
 
     def parse_data(self, ec_parties_data):
         for ec_party in ec_parties_data:
-            ec_party_id = ec_party['ECRef'].strip()
+            ec_party_id = ec_party["ECRef"].strip()
             # We're only interested in political parties:
-            if not ec_party_id.startswith('PP'):
+            if not ec_party_id.startswith("PP"):
                 continue
             party_id = self.clean_id(ec_party_id)
-            if ec_party['RegulatedEntityTypeName'] == 'Minor Party':
-                register = ec_party['RegisterNameMinorParty'].replace(
-                    ' (minor party)', ''
+            if ec_party["RegulatedEntityTypeName"] == "Minor Party":
+                register = ec_party["RegisterNameMinorParty"].replace(
+                    " (minor party)", ""
                 )
             else:
-                register = ec_party['RegisterName']
+                register = ec_party["RegisterName"]
             party_name, party_dissolved = self.clean_name(
-                ec_party['RegulatedEntityName'])
-            party_founded = self.clean_date(ec_party['ApprovedDate'])
+                ec_party["RegulatedEntityName"]
+            )
+            party_founded = self.clean_date(ec_party["ApprovedDate"])
             # Does this party already exist?  If not, create a new one.
             try:
-                party_extra = OrganizationExtra.objects \
-                    .select_related('base') \
-                    .get(slug=party_id)
+                party_extra = OrganizationExtra.objects.select_related(
+                    "base"
+                ).get(slug=party_id)
                 party = party_extra.base
                 print("Got the existing party:", party.name)
             except OrganizationExtra.DoesNotExist:
@@ -132,52 +165,54 @@ class Command(BaseCommand):
                 party_extra = OrganizationExtra.objects.create(
                     base=party, slug=party_id
                 )
-                print("Couldn't find {}, creating a new party {}".format(
-                    party_id, party_name
-                ))
+                print(
+                    "Couldn't find {}, creating a new party {}".format(
+                        party_id, party_name
+                    )
+                )
 
             party.name = party_name
-            party.classification = 'Party'
+            party.classification = "Party"
             party.founding_date = party_founded
             party.end_date = party_dissolved
             party_extra.register = register
             {
-                'Great Britain': self.gb_parties,
-                'Northern Ireland': self.ni_parties,
+                "Great Britain": self.gb_parties,
+                "Northern Ireland": self.ni_parties,
             }[register].parties.add(party)
             party.identifiers.update_or_create(
-                scheme='electoral-commission',
-                defaults={'identifier': ec_party_id}
+                scheme="electoral-commission",
+                defaults={"identifier": ec_party_id},
             )
-            party.other_names.filter(note='registered-description').delete()
+            party.other_names.filter(note="registered-description").delete()
             for d in get_descriptions(ec_party):
-                value = d['description']
-                translation = d['translation']
+                value = d["description"]
+                translation = d["translation"]
                 if translation:
                     value = "{} | {}".format(value, translation)
                 party.other_names.create(
-                    name=value, note='registered-description')
-            self.upload_images(ec_party['PartyEmblems'], party_extra)
+                    name=value, note="registered-description"
+                )
+            self.upload_images(ec_party["PartyEmblems"], party_extra)
             party.save()
             party_extra.save()
 
     def clean_date(self, date):
-        timestamp = re.match(
-            r'\/Date\((\d+)\)\/', date).group(1)
+        timestamp = re.match(r"\/Date\((\d+)\)\/", date).group(1)
         dt = datetime.fromtimestamp(int(timestamp) / 1000.)
         return dt.strftime("%Y-%m-%d")
 
     def clean_name(self, name):
         name = name.strip()
-        if not 'de-registered' in name.lower():
-            return name, '9999-12-31'
+        if not "de-registered" in name.lower():
+            return name, "9999-12-31"
 
-        match = re.match(
-            r'(.+)\[De-registered ([0-9]+/[0-9]+/[0-9]+)\]', name)
+        match = re.match(r"(.+)\[De-registered ([0-9]+/[0-9]+/[0-9]+)\]", name)
         name, deregistered_date = match.groups()
-        name = re.sub(r'\([Dd]e-?registered [^\)]+\)', '', name)
+        name = re.sub(r"\([Dd]e-?registered [^\)]+\)", "", name)
         deregistered_date = dateutil.parser.parse(
-            deregistered_date, dayfirst=True).strftime("%Y-%m-%d")
+            deregistered_date, dayfirst=True
+        ).strftime("%Y-%m-%d")
 
         return name.strip(), deregistered_date
 
@@ -186,16 +221,16 @@ class Command(BaseCommand):
         sort_emblems(emblems, party_extra.slug)
         primary = True
         for emblem in emblems:
-            emblem_id = str(emblem['Id'])
+            emblem_id = str(emblem["Id"])
             ntf = NamedTemporaryFile(delete=False)
             image_url = urljoin(base_emblem_url, emblem_id)
             r = requests.get(image_url)
-            with open(ntf.name, 'wb') as f:
+            with open(ntf.name, "wb") as f:
                 f.write(r.content)
             mime_type = self.mime_type_magic.from_file(ntf.name)
             extension = mimetypes.guess_extension(mime_type)
-            leafname = 'Emblem_{}{}'.format(emblem_id, extension)
-            desired_storage_path = join('images', leafname)
+            leafname = "Emblem_{}{}".format(emblem_id, extension)
+            desired_storage_path = join("images", leafname)
             fname = join(emblem_directory, leafname)
             move(ntf.name, fname)
             md5sum = get_file_md5sum(fname)
@@ -213,14 +248,14 @@ class Command(BaseCommand):
                 base__object_id=party_extra.id,
                 base__content_type_id=content_type.id,
                 defaults={
-                    'uploading_user':None,
-                    'notes': emblem['MonochromeDescription'],
-                    'base__source': 'The Electoral Commission',
-                    'base__is_primary': primary,
-                }
+                    "uploading_user": None,
+                    "notes": emblem["MonochromeDescription"],
+                    "base__source": "The Electoral Commission",
+                    "base__is_primary": primary,
+                },
             )
             primary = False
 
     def clean_id(self, party_id):
-        party_id = re.sub(r'^PPm?\s*', '', party_id).strip()
+        party_id = re.sub(r"^PPm?\s*", "", party_id).strip()
         return "party:{}".format(party_id)
