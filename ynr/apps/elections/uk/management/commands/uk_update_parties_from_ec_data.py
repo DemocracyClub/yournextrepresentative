@@ -190,7 +190,7 @@ class Command(BaseCommand):
             ntf = NamedTemporaryFile(delete=False)
             image_url = urljoin(base_emblem_url, emblem_id)
             r = requests.get(image_url)
-            with open(ntf.name, 'w') as f:
+            with open(ntf.name, 'wb') as f:
                 f.write(r.content)
             mime_type = self.mime_type_magic.from_file(ntf.name)
             extension = mimetypes.guess_extension(mime_type)
