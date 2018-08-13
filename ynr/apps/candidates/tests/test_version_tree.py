@@ -58,7 +58,7 @@ class TestVersionTree(TestCase):
                 "data": {
                     "id": "4",
                 },
-                "information_source": "Updated by the automated Twitter account checker (candidates_update_twitter_usernames)",
+                "information_source": "Updated by the automated Twitter account checker (twitterbot_update_usernames)",
                 "timestamp": "2016-04-28T08:46:05.352089",
                 "version_id": "016b59341d65b9dc"
             },
@@ -246,7 +246,7 @@ class TestVersionTree(TestCase):
                 "information_source": "Spotted on the interwebs!",
                 "timestamp": "2014-10-02T19:03:10.236114",
                 "version_id": "3787faf978dee092"
-            },            
+            },
         ]
         self.assertEqual(
             get_versions_parent_map(versions),
@@ -317,7 +317,7 @@ class TestVersionTree(TestCase):
                 "timestamp": "2014-10-02T19:03:10.236114",
                 "version_id": "3787faf978dee092"
             },
-            
+
         ]
         with self.assertRaisesRegexp(
                 Exception,

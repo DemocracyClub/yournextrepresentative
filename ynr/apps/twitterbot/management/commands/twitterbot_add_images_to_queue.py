@@ -11,7 +11,7 @@ from popolo.models import Person
 
 import requests
 
-from ..images import get_image_extension
+from candidates.management.images import get_image_extension
 from ..twitter import TwitterAPIData
 
 

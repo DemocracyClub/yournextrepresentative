@@ -3,9 +3,9 @@ from mock import Mock, patch
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 
-from .auth import TestUserMixin
-from .factories import PersonExtraFactory
-from .output import capture_output, split_output
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.factories import PersonExtraFactory
+from candidates.tests.output import capture_output, split_output
 
 
 def fake_post_for_username_updater(*args, **kwargs):
@@ -39,7 +39,7 @@ def fake_post_for_username_updater(*args, **kwargs):
     raise Exception("No Twitter API stub for {} {}".format(args, kwargs))
 
 
-@patch('candidates.management.twitter.requests')
+@patch('twitterbot.management.twitter.requests')
 class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
 
     def setUp(self):
@@ -90,7 +90,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         mock_requests.post.side_effect = fake_post_for_username_updater
 
         with capture_output() as (out, err):
-            call_command('candidates_update_twitter_usernames')
+            call_command('twitterbot_update_usernames')
 
         self.assertIn(
             'WARNING: Multiple Twitter screen names found for Person with ' \
@@ -109,7 +109,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         mock_requests.post.side_effect = fake_post_for_username_updater
 
         with capture_output() as (out, err):
-            call_command('candidates_update_twitter_usernames')
+            call_command('twitterbot_update_usernames')
 
         self.assertIn(
             'WARNING: Multiple Twitter user IDs found for Person with ' \
@@ -123,7 +123,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         mock_requests.post.side_effect = fake_post_for_username_updater
 
         with capture_output() as (out, err):
-            call_command('candidates_update_twitter_usernames', verbosity=3)
+            call_command('twitterbot_update_usernames', verbosity=3)
 
         self.assertEqual(
             split_output(out),
@@ -141,7 +141,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         mock_requests.post.side_effect = fake_post_for_username_updater
 
         with capture_output() as (out, err):
-            call_command('candidates_update_twitter_usernames')
+            call_command('twitterbot_update_usernames')
 
         self.assertEqual(
             self.just_userid.contact_details.get(contact_type='twitter').value,
@@ -161,7 +161,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         mock_requests.post.side_effect = fake_post_for_username_updater
 
         with capture_output() as (out, err):
-            call_command('candidates_update_twitter_usernames')
+            call_command('twitterbot_update_usernames')
 
         self.assertEqual(
             self.just_screen_name.identifiers.get(scheme='twitter').identifier,
@@ -211,7 +211,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         mock_requests.post.side_effect = fake_post_screen_name_wrong
 
         with capture_output() as (out, err):
-            call_command('candidates_update_twitter_usernames')
+            call_command('twitterbot_update_usernames')
 
         self.assertEqual(
             self.screen_name_and_user_id.contact_details.get(contact_type='twitter').value,
@@ -257,7 +257,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         mock_requests.post.side_effect = fake_post_screen_name_disappeared
 
         with capture_output() as (out, err):
-            call_command('candidates_update_twitter_usernames')
+            call_command('twitterbot_update_usernames')
 
         self.assertEqual(
             self.just_screen_name.contact_details.filter(contact_type='twitter').count(),
@@ -310,7 +310,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         mock_requests.post.side_effect = fake_post_user_id_disappeared
 
         with capture_output() as (out, err):
-            call_command('candidates_update_twitter_usernames')
+            call_command('twitterbot_update_usernames')
 
         self.assertEqual(
             self.just_userid.contact_details.filter(contact_type='twitter').count(),
