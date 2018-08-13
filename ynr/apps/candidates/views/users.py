@@ -43,9 +43,16 @@ class UserContributions(View):
         headers = ['rank', 'username', 'contributions']
         writer = csv.DictWriter(response, fieldnames=headers)
         writer.writerow({k: k for k in headers})
-        for i, user in enumerate(User.objects.annotate(
-                edit_count=Count('loggedaction')
-        ).order_by('-edit_count', 'username')):
+
+        qs = User.objects.extra(
+            select = {'case_insensitive_username': 'lower(username)'}
+        ).annotate(
+            edit_count=Count('loggedaction')
+        ).order_by(
+            '-edit_count', 'case_insensitive_username'
+        )
+
+        for i, user in enumerate(qs):
             writer.writerow({
                 'rank': str(i),
                 'username': user.username,
