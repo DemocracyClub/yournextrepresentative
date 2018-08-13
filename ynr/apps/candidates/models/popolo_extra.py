@@ -197,7 +197,6 @@ def paired_object_safe_to_delete(base_object):
         return True
     if len(collected[1]) != 1:
         return False
-    assert collected[1][0] == base_object.extra
     return True
 
 
