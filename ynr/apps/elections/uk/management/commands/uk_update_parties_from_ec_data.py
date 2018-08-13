@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.db import transaction
-from django.utils.six.moves.urllib_parse import urlencode, urljoin
+from urllib.parse import urlencode, urljoin
 
 from images.models import Image
 import magic
@@ -126,7 +126,7 @@ class Command(BaseCommand):
                     .select_related('base') \
                     .get(slug=party_id)
                 party = party_extra.base
-                print("Got the existing party:", party.name.encode('utf-8'))
+                print("Got the existing party:", party.name)
             except OrganizationExtra.DoesNotExist:
                 party = Organization.objects.create(name=party_name)
                 party_extra = OrganizationExtra.objects.create(
@@ -134,7 +134,7 @@ class Command(BaseCommand):
                 )
                 print("Couldn't find {}, creating a new party {}".format(
                     party_id, party_name
-                ).encode('utf-8'))
+                ))
 
             party.name = party_name
             party.classification = 'Party'
