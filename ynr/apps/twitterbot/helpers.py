@@ -1,7 +1,3 @@
-from datetime import datetime
-from random import randint
-import sys
-
 from django.conf import settings
 from django.contrib.auth.models import User
 
@@ -21,6 +17,7 @@ class TwitterBot(object):
     def get_change_metadata_for_bot(self, source):
         """
         Wraps get_change_metadata without requiring a request object
+
         """
         metadata = get_change_metadata(None, source)
         metadata["username"] = self.user.username
