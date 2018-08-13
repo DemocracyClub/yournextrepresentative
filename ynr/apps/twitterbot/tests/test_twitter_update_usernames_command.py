@@ -2,8 +2,6 @@ from mock import Mock, patch
 
 from django.core.management import call_command
 from django.test import TestCase, override_settings
-from django.conf import settings
-from django.contrib.auth.models import User
 
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import PersonExtraFactory
@@ -45,7 +43,6 @@ def fake_post_for_username_updater(*args, **kwargs):
 class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
 
     def setUp(self):
-        User.objects.create(username=settings.TWITTER_BOT_USERNAME)
         for person_details in [
             {
                 'attr': 'just_screen_name',
