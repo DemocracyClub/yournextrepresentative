@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     'candidatebot',
     'resultsbot',
     'storages',
+    'twitterbot',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -464,6 +465,7 @@ LOGGING = {
 
 CANDIDATE_BOT_USERNAME = 'CandidateBot'
 RESULTS_BOT_USERNAME = 'ResultsBot'
+TWITTER_BOT_USERNAME = 'TwitterBot'
 
 # import application constants
 from .constants.needs_review import * # noqa

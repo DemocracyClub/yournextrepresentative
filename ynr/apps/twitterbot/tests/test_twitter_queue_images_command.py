@@ -3,7 +3,9 @@ from os.path import dirname, join
 import re
 
 from django.core.management import call_command
+from django.conf import settings
 from django.test import TestCase
+from django.contrib.auth.models import User
 
 from candidates.models import ImageExtra
 from moderation_queue.models import QueuedImage
@@ -20,6 +22,7 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
     maxDiff = None
 
     def setUp(self):
+        User.objects.create(username=settings.TWITTER_BOT_USERNAME)
         self.image_filename = EXAMPLE_IMAGE_FILENAME
         with open(self.image_filename, 'rb') as f:
             self.example_image_binary_data = f.read()

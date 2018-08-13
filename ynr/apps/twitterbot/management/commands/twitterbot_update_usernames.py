@@ -1,7 +1,3 @@
-from datetime import datetime
-from random import randint
-import sys
-
 from django.db import transaction
 from django.core.management.base import BaseCommand
 from django.utils.translation import ugettext as _
@@ -10,6 +6,7 @@ from candidates.models import MultipleTwitterIdentifiers
 from popolo.models import Person
 
 from ..twitter import TwitterAPIData
+from twitterbot.helpers import TwitterBot
 
 
 VERBOSE = False
@@ -24,28 +21,14 @@ class Command(BaseCommand):
 
     help = "Use the Twitter API to check / fix Twitter screen names and user IDs"
 
-    def record_new_version(self, person, msg=None):
-        if msg is None:
-            msg = 'Updated by the automated Twitter account checker ' \
-                  '(candidates_update_twitter_usernames)'
-        person.extra.record_version(
-            {
-                'information_source': msg,
-                'version_id': "{:016x}".format(randint(0, sys.maxsize)),
-                'timestamp': datetime.utcnow().isoformat()
-            }
-        )
-        person.extra.save()
-
     def remove_twitter_screen_name(self, person, twitter_screen_name):
         person.contact_details.get(
             contact_type='twitter',
             value=twitter_screen_name,
         ).delete()
-        self.record_new_version(
+        self.twitterbot.save(
             person,
-            msg="This Twitter screen name no longer exists; removing it " \
-            "(candidates_update_twitter_usernames)"
+            msg="This Twitter screen name no longer exists; removing it "
         )
 
     def remove_twitter_user_id(self, person, twitter_user_id):
@@ -53,10 +36,9 @@ class Command(BaseCommand):
             scheme='twitter',
             identifier=twitter_user_id,
         ).delete()
-        self.record_new_version(
+        self.twitterbot.save(
             person,
-            msg="This Twitter user ID no longer exists; removing it " \
-            "(candidates_update_twitter_usernames)",
+            msg="This Twitter user ID no longer exists; removing it "
         )
 
     def handle_person(self, person):
@@ -88,15 +70,16 @@ class Command(BaseCommand):
                 return
             correct_screen_name = self.twitter_data.user_id_to_screen_name[user_id]
             if (screen_name is None) or (screen_name != correct_screen_name):
-                print(_("Correcting the screen name from {old_screen_name} to {correct_screen_name}").format(
+                msg = "Correcting the screen name from {old_screen_name} to {correct_screen_name}".format(
                     old_screen_name=screen_name,
                     correct_screen_name=correct_screen_name
-                ))
+                )
+                print(msg)
                 person.contact_details.update_or_create(
                     contact_type='twitter',
                     defaults={'value': correct_screen_name},
                 )
-                self.record_new_version(person)
+                self.twitterbot.save(person, msg)
             else:
                 verbose(_("The screen name ({screen_name}) was already correct").format(
                     screen_name=screen_name
@@ -126,7 +109,7 @@ class Command(BaseCommand):
                 scheme='twitter',
                 identifier=self.twitter_data.screen_name_to_user_id[screen_name.lower()]
             )
-            self.record_new_version(person)
+            self.twitterbot.save(person)
         else:
             verbose(_("{person} had no Twitter account information").format(
                 person=person
@@ -135,6 +118,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         global VERBOSE
         VERBOSE = int(options['verbosity']) > 1
+        self.twitterbot = TwitterBot()
         self.twitter_data = TwitterAPIData()
         self.twitter_data.update_from_api()
         # Now go through every person in the database and check their
