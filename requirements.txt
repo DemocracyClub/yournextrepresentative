@@ -7,7 +7,7 @@ celery-haystack==0.10
 certifi>=2017.4.17
 cffi>=1.7
 coverage>=3.6
-cryptography==2.2.2
+cryptography==2.3
 decorator==4.0.4
 django-allauth==0.31.0
 django-appconf==1.0.1
