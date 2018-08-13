@@ -7,14 +7,14 @@ from django.test import TestCase
 
 from candidates.models import ImageExtra
 from moderation_queue.models import QueuedImage
-from .auth import TestUserMixin
-from .factories import PersonExtraFactory
-from .output import capture_output, split_output
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.factories import PersonExtraFactory
+from candidates.tests.output import capture_output, split_output
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 
-@patch('candidates.management.commands.candidates_add_twitter_images_to_queue.requests')
-@patch('candidates.management.commands.candidates_add_twitter_images_to_queue.TwitterAPIData')
+@patch('twitterbot.management.commands.twitterbot_add_images_to_queue.requests')
+@patch('twitterbot.management.commands.twitterbot_add_images_to_queue.TwitterAPIData')
 class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
 
     maxDiff = None
@@ -120,7 +120,7 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         mock_requests.get.return_value = \
             Mock(content=self.example_image_binary_data, status_code=200)
 
-        call_command('candidates_add_twitter_images_to_queue')
+        call_command('twitterbot_add_images_to_queue')
 
         new_queued_images = QueuedImage.objects.exclude(
             id__in=self.existing_queued_image_ids)
@@ -160,7 +160,7 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
             Mock(content=self.example_image_binary_data, status_code=200)
 
         with capture_output() as (out, err):
-            call_command('candidates_add_twitter_images_to_queue', verbosity=3)
+            call_command('twitterbot_add_images_to_queue', verbosity=3)
 
         self.assertEqual(
             split_output(out),
@@ -220,7 +220,7 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
 
         mock_requests.get.side_effect = fake_get
 
-        call_command('candidates_add_twitter_images_to_queue')
+        call_command('twitterbot_add_images_to_queue')
 
         new_queued_images = QueuedImage.objects.exclude(
             id__in=self.existing_queued_image_ids)
@@ -262,7 +262,7 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         mock_requests.get.side_effect = fake_get
 
         with capture_output() as (out, err):
-            call_command('candidates_add_twitter_images_to_queue')
+            call_command('twitterbot_add_images_to_queue')
 
         output_lines = split_output(out)
         self.assertEqual(len(output_lines), 1)

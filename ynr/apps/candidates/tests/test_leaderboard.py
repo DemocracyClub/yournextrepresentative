@@ -79,4 +79,5 @@ class TestLeaderboardView(TestUserMixin, WebTest):
             '5,ermintrude,0\r\n'
             '6,frankie,0\r\n'
             '7,johnrefused,0\r\n'
+            '8,TwitterBot,0\r\n'
         )

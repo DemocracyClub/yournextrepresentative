@@ -16,7 +16,7 @@ django-cors-headers==2.4.0
 django-date-extensions==2.0
 django-debug-toolbar-template-timings
 django-debug-toolbar==1.9.1
-django-extensions==1.6.1
+django-extensions==2.1.0
 django-filter==1.1.0
 django-haystack==2.6.0
 django-markdown-deux==1.0.5
