@@ -38,7 +38,7 @@ html5lib==0.999
 idna<2.7,>=2.5
 ipaddress==1.0.16
 ipdb==0.8
-ipython-genutils==0.1.0
+ipython-genutils==0.2.0
 ipython==4.0.0
 jsonfield==1.0.3
 jsonpatch==1.15
