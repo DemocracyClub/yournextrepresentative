@@ -10,14 +10,6 @@ python:
 addons:
   postgresql: "9.5"
 
-cache:
-  pip: true
-  directories:
-    - /home/travis/virtualenv
-    - $HOME/.pip-cache/
-    - $HOME/.tox/
-    - .tox
-
 install:
   - pip install tox coveralls tox-travis
   # Make sure pip is at the latest version:
@@ -27,7 +19,3 @@ script:
   - tox
 after_success:
   - coveralls
-before_cache:
-    - rm -f .tox/py35-django19/log/*.log
-    - rm -f .tox/py36-django19/log/*.log
-    - rm -f .cache/pip/log/*.log
