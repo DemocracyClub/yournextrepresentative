@@ -1,5 +1,5 @@
 aenum==1.4.5
-beautifulsoup4==4.4.1
+beautifulsoup4==4.6.3
 bleach==1.4.1
 boto3==1.7.46
 celery[redis]==4.1.0
