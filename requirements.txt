@@ -50,7 +50,7 @@ mysociety-django-images==0.0.5
 ndg-httpsclient==0.4.0
 numpy==1.15.0
 oauthlib==0.7.2
-path.py==8.1.1
+path.py==11.0.1
 pexpect==3.3
 pickleshare==0.5
 Pillow==3.2.0
