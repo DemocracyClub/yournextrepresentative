@@ -2,7 +2,7 @@ aenum==1.4.5
 beautifulsoup4==4.6.3
 bleach==2.1.3
 boto3==1.7.46
-celery[redis]==4.1.0
+celery[redis]==4.2.1
 celery-haystack==0.10
 certifi>=2017.4.17
 cffi>=1.7
