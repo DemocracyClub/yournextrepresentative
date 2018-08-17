@@ -5,7 +5,9 @@ from django_webtest import WebTest
 from unittest import skip
 from popolo.models import Person
 
-from candidates.models import PersonExtra, ComplexPopoloField
+from candidates.models import ComplexPopoloField
+
+from popolo.models import Person
 
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
@@ -34,9 +36,12 @@ class ComplexFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Create one person with these fields already present:
         self.person = Person.objects.create(
             name="John the Well-Described",
+            versions='[]'
         )
-        self.person_extra = PersonExtra.objects.create(base=self.person, versions='[]')
-        self.person_extra.update_complex_field(an_field, 'http://example.com/additional')
+        self.person.update_complex_field(
+            an_field,
+            'http://example.com/additional'
+        )
 
     @skip("We're not auto adding fields to the form any more / yet")
     def test_create_form_has_fields(self):
@@ -46,7 +51,6 @@ class ComplexFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertEqual(response.status_code, 200)
         an_label = response.html.find('label', {'for': 'id_additional_link'})
-        import ipdb; ipdb.set_trace()
         self.assertIsNotNone(an_label)
         an_input = response.html.find('input', {'id': 'id_additional_link'})
         self.assertIsNotNone(an_input)
@@ -82,7 +86,7 @@ class ComplexFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         person = Person.objects.get(id=self.person.id)
-        self.assertEqual(person.extra.additional_link, 'http://example.com/anotherlink')
+        self.assertEqual(person.additional_link, 'http://example.com/anotherlink')
 
     @skip("We're not auto adding fields to the form any more / yet")
     def test_fields_are_saved_when_creating(self):
@@ -103,7 +107,7 @@ class ComplexFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertTrue(m)
 
         person = Person.objects.get(id=m.group(1))
-        self.assertEqual(person.extra.additional_link, 'http://example.com/morelink')
+        self.assertEqual(person.additional_link, 'http://example.com/morelink')
 
     @skip("We're not auto adding fields to the form any more / yet")
     def test_view_additional_fields(self):

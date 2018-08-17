@@ -4,9 +4,6 @@ from django.utils.six import text_type
 
 import requests
 
-from popolo.models import ContactDetail
-
-
 class TwitterAPITokenMissing(Exception):
     pass
 
@@ -49,6 +46,7 @@ def get_twitter_user_id(twitter_screen_name):
     return result
 
 def update_twitter_user_id(person):
+    from popolo.models import ContactDetail
     try:
         screen_name = person.contact_details \
             .get(contact_type='twitter').value

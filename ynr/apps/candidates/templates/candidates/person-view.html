@@ -18,8 +18,8 @@
 
     <!-- Just Open Graph metadata -->
     <meta property="og:type" content="article" />
-    {% if person.extra.primary_image %}
-      {% thumbnail person.extra.primary_image "x80" as im %}
+    {% if person.primary_image %}
+      {% thumbnail person.primary_image "x80" as im %}
         <meta property="og:image" content="https://candidates.democracyclub.org.uk{{ im.url }}" />
       {% endthumbnail %}
     {% elif person.gender|lower == 'female' %}
@@ -37,8 +37,8 @@
     {% if settings.TWITTER_USERNAME %}
       <meta name="twitter:site" content="@{{ settings.TWITTER_USERNAME }}" />
     {% endif %}
-    {% if person.extra.primary_image %}
-      <meta property="twitter:image" content="{{ person.extra.primary_image.url }}" />
+    {% if person.primary_image %}
+      <meta property="twitter:image" content="{{ person.primary_image.url }}" />
     {% elif person.gender|lower == 'female' %}
       <meta property="twitter:image" content="{{ 'candidates/img/blank-woman-160.png'|static_image_path:request }}"/>
     {% else %}
@@ -61,8 +61,8 @@
 {% block hero %}
 <div class="person__hero">
   <div class="person__photo">
-    {% if person.extra.primary_image %}
-      {% thumbnail person.extra.primary_image "x80" as im %}
+    {% if person.primary_image %}
+      {% thumbnail person.primary_image "x80" as im %}
         <img class="person-avatar" src="{{ im.url }}"/>
       {% endthumbnail %}
     {% else %}
@@ -120,7 +120,7 @@
 
   <dl>
     <dt>{% trans "Name" %}</dt>
-    <dd>{{ person.extra.name_with_honorifics }}</dd>
+    <dd>{{ person.name_with_honorifics }}</dd>
     {% if person.other_names.exists or 'additional_name' in simple_fields and person.additional_name %}
       <dt>{% trans "Also known as" %}</dt>
     {% endif %}
@@ -189,16 +189,16 @@
         {% with dob=person.birth_date %}
           {% if dob %}
             {% if dob|length_is:"4" %}
-              <dd>{{ person.extra.age }}
+              <dd>{{ person.age }}
                 <small class="dob">({% blocktrans %}Year of birth: {{ dob }}{% endblocktrans %})</small>
             {% else %}
-              <dd>{{ person.extra.age }}
+              <dd>{{ person.age }}
                 <small class="dob">
                   {% comment %}
                     The 'S' format only gives an English ordinal suffix, so only
                     use it if the LANGUAGE is English.
                   {% endcomment %}
-                  ({% blocktrans trimmed with dob=person.extra.dob_as_date|date:"jS E Y" %}Date of birth: {{ dob }}{% endblocktrans %})
+                  ({% blocktrans trimmed with dob=person.dob_as_date|date:"jS E Y" %}Date of birth: {{ dob }}{% endblocktrans %})
                 </small>
             {% endif %}
           {% else %}
@@ -223,10 +223,10 @@
     </dl>
   {% endif %}
 
-  {% if person.extra.primary_image %}
+  {% if person.primary_image %}
   <h2>{% trans "Photo Credit:" %}</h2>
   <p class="person__photo-credit">
-    {% include 'candidates/_photo-credit.html' with image=person.extra.primary_image_model %}
+    {% include 'candidates/_photo-credit.html' with image=person.primary_image_model %}
   </p>
   {% endif %}
 

@@ -4,10 +4,10 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.views.generic import FormView, TemplateView
-from popolo.models import Identifier, Membership
+from popolo.models import Identifier, Membership, Person
 
 from bulk_adding import forms, helpers
-from candidates.models import OrganizationExtra, PersonExtra
+from candidates.models import OrganizationExtra
 from elections.models import Election
 
 # Assume 5 winners if we have no other info.
@@ -227,15 +227,15 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                     data['source'] = source
                     if data.get('select_person') == "_new":
                         # Add a new person
-                        person_extra = helpers.add_person(self.request, data)
+                        person = helpers.add_person(self.request, data)
                     else:
-                        person_extra = PersonExtra.objects.get(
-                            base__pk=int(data['select_person']))
+                        person = Person.objects.get(
+                            pk=int(data['select_person']))
 
                     # Update the person's candacies
                     helpers.update_person(
                         self.request,
-                        person_extra,
+                        person,
                         self.get_party(),
                         formset.pee,
                         source

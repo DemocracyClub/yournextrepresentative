@@ -1,8 +1,10 @@
 from django.test import TestCase
 
-from candidates.models import PersonExtra, PersonRedirect
+from candidates.models import PersonRedirect
 from candidates.tests import factories
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+
+from popolo.models import Person
 
 
 class CSVTests(UK2015ExamplesMixin, TestCase):
@@ -11,28 +13,28 @@ class CSVTests(UK2015ExamplesMixin, TestCase):
         super().setUp()
         # The second person's name (and party name) have diacritics in
         # them to test handling of Unicode when outputting to CSV.
-        self.gb_person_extra = factories.PersonExtraFactory.create(
-            base__id=2009,
-            base__name='Tessa Jowell',
-            base__honorific_suffix='DBE',
-            base__honorific_prefix='Ms',
-            base__email='jowell@example.com',
-            base__gender='female',
+        self.gb_person = factories.PersonFactory.create(
+            id=2009,
+            name='Tessa Jowell',
+            honorific_suffix='DBE',
+            honorific_prefix='Ms',
+            email='jowell@example.com',
+            gender='female',
         )
         factories.MembershipFactory.create(
-            person=self.gb_person_extra.base,
+            person=self.gb_person,
             post=self.camberwell_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.camberwell_post_extra_pee,
         )
         factories.MembershipFactory.create(
-            person=self.gb_person_extra.base,
+            person=self.gb_person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.camberwell_post_extra_pee_earlier,
 
         )
-        self.gb_person_extra.base.identifiers.create(
+        self.gb_person.identifiers.create(
             identifier='uk.org.publicwhip/person/10326',
             scheme='uk.org.publicwhip',
         )
@@ -44,14 +46,14 @@ class CSVTests(UK2015ExamplesMixin, TestCase):
     def test_as_list_single_dict(self):
         PersonRedirect.objects.create(old_person_id=33, new_person_id=2009)
         PersonRedirect.objects.create(old_person_id=44, new_person_id=2009)
-        person_extra = PersonExtra.objects \
-            .joins_for_csv_output().get(pk=self.gb_person_extra.id)
+        person = Person.objects.joins_for_csv_output().get(
+            pk=self.gb_person.id)
         # After the select_related and prefetch_related calls
         # PersonExtra there should only be one more query - that to
         # find the complex fields mapping:
         redirects = PersonRedirect.all_redirects_dict()
-        with self.assertNumQueries(1):
-            person_dict_list = person_extra.as_list_of_dicts(
+        with self.assertNumQueries(0):
+            person_dict_list = person.as_list_of_dicts(
                 self.election, redirects=redirects)
         self.assertEqual(len(person_dict_list), 1)
         person_dict = person_dict_list[0]

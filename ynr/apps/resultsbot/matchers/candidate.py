@@ -52,7 +52,7 @@ class CandidateMatcher(object):
                 self.candidate.name.encode('utf8'),
             )
         except:
-            import ipdb; ipdb.set_trace()
+            raise
         value = self.membership_map.get(key, None)
         if value:
             return self.ballot_paper.local_area.membership_set.get(

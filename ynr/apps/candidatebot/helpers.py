@@ -56,8 +56,7 @@ class CandidateBot(object):
     def save(self, source):
         with transaction.atomic():
             metadata = self.get_change_metadata_for_bot(source)
-            self.person.extra.record_version(metadata)
-            self.person.extra.save()
+            self.person.record_version(metadata)
             self.person.save()
 
             LoggedAction.objects.create(

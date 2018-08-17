@@ -9,7 +9,7 @@
 
 {% block content %}
 
-  <h1>{% blocktrans trimmed with name=person.name person_url=person.extra.get_absolute_url %}
+  <h1>{% blocktrans trimmed with name=person.name person_url=person.get_absolute_url %}
     Other names for <a href="{{ person_url }}">{{ name }}</a>
   {% endblocktrans %}</h1>
 

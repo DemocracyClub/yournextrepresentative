@@ -16,19 +16,19 @@ class TestGetFlashMessage(UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
         super().setUp()
-        self.fake_person_extra = factories.PersonExtraFactory.create(
-            base__name='Wreck-it-Ralph',
-            base__id=42,
+        self.fake_person = factories.PersonFactory.create(
+            name='Wreck-it-Ralph',
+            id=42,
         )
         post_extra_in_2010 = self.edinburgh_east_post_extra
         post_extra_in_2015 = self.edinburgh_north_post_extra
         factories.MembershipFactory.create(
-            person=self.fake_person_extra.base,
+            person=self.fake_person,
             post=post_extra_in_2010.base,
             post_election=self.edinburgh_east_post_extra_pee
         )
         factories.MembershipFactory.create(
-            person=self.fake_person_extra.base,
+            person=self.fake_person,
             post=post_extra_in_2015.base,
             post_election=self.edinburgh_north_post_extra_pee
         )
@@ -44,7 +44,7 @@ class TestGetFlashMessage(UK2015ExamplesMixin, TestCase):
             'candidate in the 2015 General Election</a> </li> </ul> ',
             normalize_whitespace(
                 get_call_to_action_flash_message(
-                    self.fake_person_extra.base,
+                    self.fake_person,
                     new_person=True
                 )
             )
@@ -61,7 +61,7 @@ class TestGetFlashMessage(UK2015ExamplesMixin, TestCase):
             'candidate in the 2015 General Election</a> </li> </ul> ',
             normalize_whitespace(
                 get_call_to_action_flash_message(
-                    self.fake_person_extra.base,
+                    self.fake_person,
                     new_person=False
                 )
             )

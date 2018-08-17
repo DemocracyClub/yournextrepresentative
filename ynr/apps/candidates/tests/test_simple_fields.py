@@ -5,7 +5,7 @@ from django.conf import settings
 from django_webtest import WebTest
 from popolo.models import Person
 
-from candidates.models import PersonExtra
+from popolo.models import Person
 
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
@@ -36,9 +36,9 @@ class SimpleFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Create one person with these fields already present:
         self.person = Person.objects.create(
             name="John the Well-Described",
-            additional_name="Very Well-Described"
+            additional_name="Very Well-Described",
+            versions='[]'
         )
-        PersonExtra.objects.create(base=self.person, versions='[]')
 
     def test_create_form_has_fields(self):
         response = self.app.get(

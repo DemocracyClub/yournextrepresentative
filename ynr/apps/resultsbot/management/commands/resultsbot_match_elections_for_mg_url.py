@@ -180,4 +180,3 @@ class Command(BaseCommand):
                 print("\tTry the following for debugging:")
                 print("\t"+matcher.format_elections_html_url())
                 print("\t"+matcher.format_elections_api_url())
-            # import ipdb; ipdb.set_trace()

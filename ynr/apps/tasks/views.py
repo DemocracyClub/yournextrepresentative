@@ -21,7 +21,7 @@ class IncompleteFieldView(TemplateView):
         context = super(IncompleteFieldView,
             self).get_context_data(**kwargs)
         all_results = Membership.objects \
-            .select_related('person', 'post', 'person__extra', 'post__extra', 'on_behalf_of') \
+            .select_related('person', 'post', 'person', 'post__extra', 'on_behalf_of') \
             .filter(
                 role='Candidate',
                 post_election__election__current=True,

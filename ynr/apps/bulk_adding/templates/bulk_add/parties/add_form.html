@@ -16,7 +16,7 @@
       <h5>Existing {{ party.name }} candidates</h5>
       <ul>
       {% for me in post_info.existing %}
-        <li><a href="{{ me.base.person.extra.get_absolute_url }}">{{ me.base.person.name }}</a></li>
+        <li><a href="{{ me.base.person.get_absolute_url }}">{{ me.base.person.name }}</a></li>
       {% endfor %}
       </ul>
       {% else %}

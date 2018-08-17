@@ -3,7 +3,7 @@ import re
 from django_webtest import WebTest
 
 from .factories import (
-    MembershipFactory, PersonExtraFactory, PostExtraFactory
+    MembershipFactory, PersonFactory, PostExtraFactory
 )
 from .uk_examples import UK2015ExamplesMixin
 
@@ -24,24 +24,24 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
                 base__label='Member of Parliament for {}'.format(cons_name),
                 group=country,
             )
-        person_extra = PersonExtraFactory.create(
-            base__id='3056',
-            base__name='Ed Miliband'
+        person = PersonFactory.create(
+            id='3056',
+            name='Ed Miliband'
         )
         MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=constituencies['Doncaster North'].base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.election.postextraelection_set.get(
                 postextra=constituencies['Doncaster North']
             ),
         )
-        person_extra = PersonExtraFactory.create(
-            base__id='3814',
-            base__name='David Miliband'
+        person = PersonFactory.create(
+            id='3814',
+            name='David Miliband'
         )
         MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=constituencies['South Shields'].base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.earlier_election.postextraelection_set.get(
@@ -49,12 +49,12 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
             ),
 
         )
-        conservative_opponent_extra = PersonExtraFactory.create(
-            base__id='6648',
-            base__name='Mark Fletcher'
+        conservative_opponent = PersonFactory.create(
+            id='6648',
+            name='Mark Fletcher'
         )
         MembershipFactory.create(
-            person=conservative_opponent_extra.base,
+            person=conservative_opponent,
             post=constituencies['South Shields'].base,
             on_behalf_of=self.conservative_party_extra.base,
             post_election=self.election.postextraelection_set.get(

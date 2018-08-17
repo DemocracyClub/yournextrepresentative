@@ -1388,8 +1388,8 @@ class TestSingleVersionRendering(UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
         super().setUp()
-        self.example_person_extra = factories.PersonExtraFactory.create(
-            base__name='Sarah Jones',
+        self.example_person = factories.PersonFactory.create(
+            name='Sarah Jones',
             versions='''[{
                 "data": {
                     "honorific_prefix": "Mrs",
@@ -1447,7 +1447,7 @@ class TestSingleVersionRendering(UK2015ExamplesMixin, TestCase):
     def test_get_single_parent_diff(self):
         self.assertEqual(
             tidy_html_whitespace(
-                self.example_person_extra.diff_for_version('3fc494d54f61a157')),
+                self.example_person.diff_for_version('3fc494d54f61a157')),
             '<dl>'
             '<dt>Changes made compared to parent 2f07734529a83242</dt>'
             '<dd><p class="version-diff"><span class="version-op-add">Added: other_names/0/note =&gt; &quot;Maiden name&quot;</span><br/></p></dd>'
@@ -1456,13 +1456,13 @@ class TestSingleVersionRendering(UK2015ExamplesMixin, TestCase):
     def test_get_zero_parent_diff(self):
         self.assertEqual(
             tidy_html_whitespace(
-                self.example_person_extra.diff_for_version('2f07734529a83242')),
+                self.example_person.diff_for_version('2f07734529a83242')),
             '''<dl><dt>Changes made in initial version</dt><dd><p class="version-diff"><span class="version-op-add">Added: honorific_prefix =&gt; &quot;Mrs&quot;</span><br/><span class="version-op-add">Added: id =&gt; &quot;6704&quot;</span><br/><span class="version-op-add">Added: identifiers =&gt; [ { &quot;identifier&quot;: &quot;13445&quot;, &quot;scheme&quot;: &quot;yournextmp-candidate&quot; } ]</span><br/><span class="version-op-add">Added: name =&gt; &quot;Sarah Jones&quot;</span><br/><span class="version-op-add">Added: other_names =&gt; [ { &quot;name&quot;: &quot;Sarah Smith&quot; } ]</span><br/></p></dd></dl>''')
 
     def test_include_inline_style_colouring(self):
         self.assertEqual(
             tidy_html_whitespace(
-                self.example_person_extra.diff_for_version(
+                self.example_person.diff_for_version(
                     '3fc494d54f61a157', inline_style=True)),
             '<dl>'
             '<dt>Changes made compared to parent 2f07734529a83242</dt>'

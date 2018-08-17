@@ -10,7 +10,7 @@ from .auth import TestUserMixin
 from popolo.models import Person, Membership
 
 from candidates.models import ExtraField
-from .factories import MembershipFactory, PersonExtraFactory
+from .factories import MembershipFactory, PersonFactory
 from .uk_examples import UK2015ExamplesMixin
 
 
@@ -22,13 +22,13 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        person_extra = PersonExtraFactory.create(
-            base__id='2009',
-            base__name='Tessa Jowell'
+        person = PersonFactory.create(
+            id='2009',
+            name='Tessa Jowell'
         )
 
         MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.green_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
@@ -37,12 +37,12 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_update_person_should_not_lose_existing_not_standing(self):
         # Pretend that we know she wasn't standing in the earlier election:
         tessa = Person.objects.get(pk=2009)
-        tessa.extra.not_standing.add(self.earlier_election)
+        tessa.not_standing.add(self.earlier_election)
         response = self.app.get('/person/2009/update', user=self.user)
         form = response.forms['person-details']
         form.submit()
         self.assertEqual(
-            list(tessa.extra.not_standing.all()),
+            list(tessa.not_standing.all()),
             [self.earlier_election])
 
     def test_update_person_view_get_without_login(self):
@@ -157,7 +157,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         person = Person.objects.get(id='2009')
         self.assertEqual(person.birth_date, '1875-04-01')
-        versions_data = json.loads(person.extra.versions)
+        versions_data = json.loads(person.versions)
         self.assertEqual(
             versions_data[0]['data']['extra_fields'],
             {

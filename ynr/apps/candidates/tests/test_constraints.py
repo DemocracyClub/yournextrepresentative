@@ -10,7 +10,7 @@ from candidates.models import (
     check_paired_models, check_membership_elections_consistent)
 from candidates.models.constraints import check_no_candidancy_for_election
 from .factories import (
-    ElectionFactory, MembershipFactory, PersonExtraFactory)
+    ElectionFactory, MembershipFactory, PersonFactory)
 from .uk_examples import UK2015ExamplesMixin
 
 
@@ -37,14 +37,14 @@ class PairedConstraintCheckTests(UK2015ExamplesMixin, TestCase):
 class PostElectionCombinationTests(UK2015ExamplesMixin, TestCase):
 
     def test_relationship_ok(self):
-        new_candidate = PersonExtraFactory.create(
-            base__name='John Doe'
+        new_candidate = PersonFactory.create(
+            name='John Doe'
         )
         post_extra = PostExtra.objects.get(slug='14419')
         election = Election.objects.get(slug='2015')
         # Create a new candidacy:
         MembershipFactory.create(
-            person=new_candidate.base,
+            person=new_candidate,
             post=post_extra.base,
             organization=election.organization,
             post_election=election.postextraelection_set.get(
@@ -59,8 +59,8 @@ class PostElectionCombinationTests(UK2015ExamplesMixin, TestCase):
 class PreventCreatingBadMemberships(UK2015ExamplesMixin, TestCase):
 
     def test_prevent_creating_conflicts_with_not_standing(self):
-        new_candidate = PersonExtraFactory.create(
-            base__name='John Doe'
+        new_candidate = PersonFactory.create(
+            name='John Doe'
         )
         new_candidate.not_standing.add(self.election)
 
@@ -68,23 +68,23 @@ class PreventCreatingBadMemberships(UK2015ExamplesMixin, TestCase):
                 Exception,
                 r'Trying to add a Membership with an election "2015 '
                 r'General Election", but that\'s in John Doe '
-                r'\({}\)\'s not_standing list'.format(new_candidate.base.id)):
+                r'\({}\)\'s not_standing list'.format(new_candidate.id)):
             Membership.objects.create(
                 role='Candidate',
-                person=new_candidate.base,
+                person=new_candidate,
                 on_behalf_of=self.green_party_extra.base,
                 post=self.camberwell_post_extra.base,
                 post_election=self.camberwell_post_extra_pee
             )
 
     def test_raise_if_candidacy_exists(self):
-        new_candidate = PersonExtraFactory.create(
-            base__name='John Doe'
+        new_candidate = PersonFactory.create(
+            name='John Doe'
         )
         post_extra = PostExtra.objects.get(slug='14419')
         # Create a new candidacy:
         MembershipFactory.create(
-            person=new_candidate.base,
+            person=new_candidate,
             post=post_extra.base,
             role=self.election.candidate_membership_role,
             post_election=self.election.postextraelection_set.get(
@@ -95,5 +95,5 @@ class PreventCreatingBadMemberships(UK2015ExamplesMixin, TestCase):
                 Exception,
                 (r'There was an existing candidacy for John Doe ' \
                  r'\({person_id}\) in the election "2015 General ' \
-                 r'Election"').format(person_id=new_candidate.base.id)):
-            check_no_candidancy_for_election(new_candidate.base, self.election)
+                 r'Election"').format(person_id=new_candidate.id)):
+            check_no_candidancy_for_election(new_candidate, self.election)

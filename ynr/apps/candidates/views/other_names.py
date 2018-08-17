@@ -62,8 +62,8 @@ class PersonOtherNameCreateView(LoginRequiredMixin, PersonMixin, CreateView):
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data['source']
             )
-            self.person.extra.record_version(change_metadata)
-            self.person.extra.save()
+            self.person.record_version(change_metadata)
+            self.person.save()
             """
             On the bulk edit page this view is inlined and the data
             sent over ajax so we have to return an ajax response, and
@@ -111,8 +111,8 @@ class PersonOtherNameDeleteView(LoginRequiredMixin, PersonMixin, DeleteView):
             change_metadata = get_change_metadata(
                 self.request, self.request.POST['source']
             )
-            self.person.extra.record_version(change_metadata)
-            self.person.extra.save()
+            self.person.record_version(change_metadata)
+            self.person.save()
             return result_redirect
 
 
@@ -131,6 +131,6 @@ class PersonOtherNameUpdateView(LoginRequiredMixin, PersonMixin, UpdateView):
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data['source']
             )
-            self.person.extra.record_version(change_metadata)
-            self.person.extra.save()
+            self.person.record_version(change_metadata)
+            self.person.save()
             return result

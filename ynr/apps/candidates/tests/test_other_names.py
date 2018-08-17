@@ -3,7 +3,7 @@ from django_webtest import WebTest
 from popolo.models import OtherName
 
 from .auth import TestUserMixin
-from .factories import PersonExtraFactory
+from .factories import PersonFactory
 from .uk_examples import UK2015ExamplesMixin
 
 
@@ -11,21 +11,21 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        self.pe_no_other = PersonExtraFactory.create(
-            base__id=1234,
-            base__name='John Smith',
+        self.pe_no_other = PersonFactory.create(
+            id=1234,
+            name='John Smith',
         )
-        self.pe_other_names = PersonExtraFactory.create(
-            base__id=5678,
-            base__name='Fozzie',
+        self.pe_other_names = PersonFactory.create(
+            id=5678,
+            name='Fozzie',
         )
         self.fozziewig = OtherName.objects.create(
-            content_object=self.pe_other_names.base,
+            content_object=self.pe_other_names,
             name='Mr Fozziewig',
             note='In a Muppet Christmas Carol',
         )
         self.fozzie_bear = OtherName.objects.create(
-            content_object=self.pe_other_names.base,
+            content_object=self.pe_other_names,
             name='Fozzie Bear',
             note='Full name',
         )
@@ -89,10 +89,10 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertEqual(
             1,
-            self.pe_other_names.base.other_names.count(),
+            self.pe_other_names.other_names.count(),
         )
         self.assertEqual(
-            self.pe_other_names.base.other_names.get().name,
+            self.pe_other_names.other_names.get().name,
             'Mr Fozziewig',
         )
 
@@ -153,7 +153,7 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertEqual(
             3,
-            self.pe_other_names.base.other_names.count(),
+            self.pe_other_names.other_names.count(),
         )
 
     # Editing
@@ -221,5 +221,5 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertEqual(
             2,
-            self.pe_other_names.base.other_names.count(),
+            self.pe_other_names.other_names.count(),
         )

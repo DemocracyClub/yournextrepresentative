@@ -22,7 +22,7 @@ from candidates.models import LoggedAction
 from candidates.management.images import (
     ImageDownloadException, download_image_from_url)
 
-from candidates.tests.factories import PersonExtraFactory
+from candidates.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
@@ -49,9 +49,9 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        PersonExtraFactory.create(
-            base__id='2009',
-            base__name='Tessa Jowell'
+        PersonFactory.create(
+            id='2009',
+            name='Tessa Jowell'
         )
         self.test_upload_user = User.objects.create_user(
             'john',
@@ -135,9 +135,9 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        PersonExtraFactory.create(
-            base__id='2009',
-            base__name='Tessa Jowell'
+        PersonFactory.create(
+            id='2009',
+            name='Tessa Jowell'
         )
         self.test_upload_user = User.objects.create_user(
             'john',

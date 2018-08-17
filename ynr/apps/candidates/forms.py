@@ -13,9 +13,10 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from candidates.models import (
-    PartySet, parse_approximate_date, ExtraField, ComplexPopoloField
+    PartySet, ExtraField, ComplexPopoloField
 )
 from popolo.models import Organization, OtherName, Post
+from popolo.person_helpers import parse_approximate_date
 from .twitter_api import get_twitter_user_id, TwitterAPITokenMissing
 
 if django_version[:2] < (1, 9):

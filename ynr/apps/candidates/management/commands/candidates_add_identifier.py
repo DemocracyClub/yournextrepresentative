@@ -38,7 +38,7 @@ class Command(BaseCommand):
             source = "Added from the command-line with no source supplied"
 
         change_metadata = get_change_metadata(None, source)
-        person.extra.record_version(change_metadata)
-        person.extra.save()
+        person.record_version(change_metadata)
+        person.save()
 
         print("Successfully updated {}".format(person.name))

@@ -2,7 +2,7 @@ from django_webtest import WebTest
 from django.test.utils import override_settings
 
 from .auth import TestUserMixin
-from .factories import PersonExtraFactory
+from .factories import PersonFactory
 
 # FIXME: these pass individually but fail together because of
 # https://github.com/django-compressor/django-appconf/issues/30
@@ -10,10 +10,10 @@ from .factories import PersonExtraFactory
 class TestRenameRestriction(TestUserMixin, WebTest):
 
     def setUp(self):
-        PersonExtraFactory.create(
-            base__id=4322,
-            base__name='Helen Hayes',
-            base__email='hayes@example.com',
+        PersonFactory.create(
+            id=4322,
+            name='Helen Hayes',
+            email='hayes@example.com',
         )
 
     @override_settings(RESTRICT_RENAMES=True)

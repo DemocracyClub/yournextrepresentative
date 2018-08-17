@@ -1,8 +1,7 @@
 from django.test import TestCase
 
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import (MembershipFactory,
-                                        PersonExtraFactory)
+from candidates.tests.factories import MembershipFactory, PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from uk_results.models import CandidateResult, ResultSet
 
@@ -21,10 +20,10 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
             source='Example ResultSet for testing',
         )
         # Create three people:
-        self.persons_extra = [
-            PersonExtraFactory.create(base__id='13', base__name='Alice'),
-            PersonExtraFactory.create(base__id='14', base__name='Bob'),
-            PersonExtraFactory.create(base__id='15', base__name='Carol'),
+        self.persons = [
+            PersonFactory.create(id='13', name='Alice'),
+            PersonFactory.create(id='14', name='Bob'),
+            PersonFactory.create(id='15', name='Carol'),
         ]
 
         parties_extra = [
@@ -36,12 +35,12 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         candidacies = [
             MembershipFactory.create(
                 post_election=pee,
-                person=person_extra.base,
+                person=person,
                 post=self.local_post.base,
                 on_behalf_of=party_extra.base,
             )
-            for person_extra, party_extra
-            in zip(self.persons_extra, parties_extra)
+            for person, party_extra
+            in zip(self.persons, parties_extra)
         ]
         # Create their CandidateResult objects:
         votes = [2000, 5000, 3000]

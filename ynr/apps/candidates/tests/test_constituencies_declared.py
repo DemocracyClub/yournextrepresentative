@@ -5,7 +5,7 @@ from popolo.models import Membership
 
 from .auth import TestUserMixin
 from .factories import (
-    MembershipFactory, MembershipFactory, PersonExtraFactory,
+    MembershipFactory, MembershipFactory, PersonFactory,
 )
 from .uk_examples import UK2015ExamplesMixin
 
@@ -15,35 +15,35 @@ class TestConstituenciesDeclared(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
 
-        tessa_jowell = PersonExtraFactory.create(
-            base__id='2009',
-            base__name='Tessa Jowell'
+        tessa_jowell = PersonFactory.create(
+            id='2009',
+            name='Tessa Jowell'
         )
         MembershipFactory.create(
-            person=tessa_jowell.base,
+            person=tessa_jowell,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
 
-        winner = PersonExtraFactory.create(
-            base__id='4322',
-            base__name='Helen Hayes'
+        winner = PersonFactory.create(
+            id='4322',
+            name='Helen Hayes'
         )
         MembershipFactory.create(
-            person=winner.base,
+            person=winner,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             elected=True,
             post_election=self.dulwich_post_extra_pee,
         )
 
-        james_smith = PersonExtraFactory.create(
-            base__id='2010',
-            base__name='James Smith'
+        james_smith = PersonFactory.create(
+            id='2010',
+            name='James Smith'
         )
         MembershipFactory.create(
-            person=james_smith.base,
+            person=james_smith,
             post=self.camberwell_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.camberwell_post_extra_pee,

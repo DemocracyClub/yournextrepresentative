@@ -2,8 +2,7 @@ from django.db import transaction
 from django.core.management.base import BaseCommand
 from django.utils.translation import ugettext as _
 
-from candidates.models import MultipleTwitterIdentifiers
-from popolo.models import Person
+from popolo.models import Person, MultipleTwitterIdentifiers
 
 from ..twitter import TwitterAPIData
 from twitterbot.helpers import TwitterBot
@@ -42,7 +41,7 @@ class Command(BaseCommand):
 
     def handle_person(self, person):
         try:
-            user_id, screen_name = person.extra.twitter_identifiers
+            user_id, screen_name = person.twitter_identifiers
         except MultipleTwitterIdentifiers as e:
             print("WARNING: {message}, skipping".format(message=e))
             return
@@ -66,7 +65,7 @@ class Command(BaseCommand):
                     ).format(
                         user_id=user_id,
                         person_name=person.name,
-                        person_url=person.extra.get_absolute_url(),
+                        person_url=person.get_absolute_url(),
                     )
                 )
                 self.remove_twitter_user_id(person, user_id)
@@ -115,7 +114,7 @@ class Command(BaseCommand):
                     ).format(
                         screen_name=screen_name,
                         person_name=person.name,
-                        person_url=person.extra.get_absolute_url(),
+                        person_url=person.get_absolute_url(),
                     )
                 )
                 self.remove_twitter_screen_name(person, screen_name)
@@ -159,9 +158,9 @@ class Command(BaseCommand):
                 # within the transaction because the loop we're in
                 # takes a long time, other otherwise we might end up
                 # with out of date information (e.g. this has happened
-                # with the person.extra.versions field, with confusing
+                # with the person.versions field, with confusing
                 # results...)
-                person = Person.objects.select_related("extra").get(
+                person = Person.objects.get(
                     pk=person_id
                 )
                 self.handle_person(person)

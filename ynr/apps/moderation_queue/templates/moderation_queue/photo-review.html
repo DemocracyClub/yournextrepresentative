@@ -29,7 +29,7 @@
   {% include 'moderation_queue/_photo-policy.html' %}
 
   {% url 'person-view' person.id person.name|slugify as url %}
-  <p>{% blocktrans trimmed with name=person.name party=person.extra.last_party.name %}
+  <p>{% blocktrans trimmed with name=person.name party=person.last_party.name %}
   Please check that this is really <a href="{{ url }}">{{ name }}</a>
   ({{ party }}) before approving the upload. This
   <a href="{{ google_image_search_url }}">Google Image search for candidate
@@ -180,7 +180,7 @@
 
   <h4>{% trans "Existing candidate images" %}</h4>
 
-  {% with images=person.extra.images.all %}
+  {% with images=person.images.all %}
 
     {% if images %}
       {% for image in images %}

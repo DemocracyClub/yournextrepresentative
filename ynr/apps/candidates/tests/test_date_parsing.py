@@ -5,7 +5,8 @@ from django.utils.translation import override
 
 from django_date_extensions.fields import ApproximateDate
 
-from candidates.models import parse_approximate_date
+from popolo.person_helpers import parse_approximate_date
+
 
 # These tests supplement the doctests; they're not done as
 # doctests because we need to override settings to pick

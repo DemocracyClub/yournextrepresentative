@@ -21,5 +21,5 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             'source': 'example.com'
         }
 
-        with self.assertNumQueries(8):
+        with self.assertNumQueries(9):
             helpers.add_person(request, person_data)

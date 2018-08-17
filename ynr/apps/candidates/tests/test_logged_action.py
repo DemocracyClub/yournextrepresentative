@@ -9,10 +9,10 @@ from . import factories
 class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
 
     def test_logged_action_repr(self):
-        person = factories.PersonExtraFactory.create(
-            base__id='9876',
-            base__name='Test Candidate',
-        ).base
+        person = factories.PersonFactory.create(
+            id='9876',
+            name='Test Candidate',
+        )
         action = LoggedAction.objects.create(
             user=self.user,
             action_type='person-create',
@@ -27,10 +27,10 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
 
     def test_subject_person(self):
-        person = factories.PersonExtraFactory.create(
-            base__id='9876',
-            base__name='Test Candidate',
-        ).base
+        person = factories.PersonFactory.create(
+            id='9876',
+            name='Test Candidate',
+        )
         action = LoggedAction.objects.create(
             user=self.user,
             action_type='person-create',

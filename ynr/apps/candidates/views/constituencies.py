@@ -157,7 +157,7 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
             split_candidacies(
                 self.election_data,
                 mp_post.memberships.select_related(
-                    'person', 'person__extra', 'on_behalf_of',
+                    'person', 'on_behalf_of',
                     'on_behalf_of__extra', 'organization'
                 ).all()
             )
@@ -173,7 +173,7 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
                 split_candidacies(
                     self.election_data,
                     other_post.memberships.select_related(
-                        'person', 'person__extra', 'on_behalf_of',
+                        'person', 'on_behalf_of',
                         'on_behalf_of__extra', 'organization'
                     ).filter(post_election__election__slug='2015')
                 )
@@ -199,11 +199,11 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
         # standing again, and those that we just don't know about.
         not_standing_candidates = {
             p for p in other_candidates
-            if self.election_data in p.extra.not_standing.all()
+            if self.election_data in p.not_standing.all()
         }
         might_stand_candidates = {
             p for p in other_candidates
-            if self.election_data not in p.extra.not_standing.all()
+            if self.election_data not in p.not_standing.all()
         }
 
         not_standing_candidacies = [c for c in past_candidacies
@@ -275,14 +275,11 @@ class ConstituencyDetailCSVView(ElectionMixin, View):
             .select_related('extra') \
             .get(extra__slug=kwargs['post_id'])
         all_people = []
-        for me in Membership.objects \
-                .filter(
+        for me in Membership.objects.filter(
                     post_election__election=self.election_data,
                     post=post
-                ) \
-                .select_related('person') \
-                .prefetch_related('person__extra'):
-            for d in me.person.extra.as_list_of_dicts(
+                ).select_related('person'):
+            for d in me.person.as_list_of_dicts(
                     self.election_data, redirects=redirects):
                 all_people.append(d)
 
@@ -314,7 +311,7 @@ class ConstituencyListView(ElectionMixin, TemplateView):
                     'membership_set',
                     Membership.objects.select_related(
                         'on_behalf_of',
-                        'person__extra'
+                        'person'
                     )
                 )
             )
@@ -483,11 +480,11 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 winner_party=membership_new_winner.on_behalf_of,
                 source=form.cleaned_data['source'],
                 user=self.request.user,
-                parlparse_id=self.person.extra.get_identifier(
+                parlparse_id=self.person.get_identifier(
                     'uk.org.publicwhip'),
             )
 
-            self.person.extra.record_version(change_metadata)
+            self.person.record_version(change_metadata)
             self.person.save()
 
             LoggedAction.objects.create(
@@ -517,7 +514,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                                 self.request,
                                 _('Setting as "not elected" by implication')
                             )
-                            candidate.extra.record_version(change_metadata)
+                            candidate.record_version(change_metadata)
                             candidate.save()
 
         return get_redirect_to_post(
@@ -557,7 +554,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
                         winner_party=candidacy.on_behalf_of,
                         source=source,
                         user=self.request.user,
-                        parlparse_id=candidacy.person.extra.get_identifier(
+                        parlparse_id=candidacy.person.get_identifier(
                             'uk.org.publicwhip'),
                         retraction=True,
                     )
@@ -566,7 +563,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
                     candidacy.save()
                     candidate = candidacy.person
                     change_metadata = get_change_metadata(self.request, source)
-                    candidate.extra.record_version(change_metadata)
+                    candidate.record_version(change_metadata)
                     candidate.save()
 
         return HttpResponseRedirect(

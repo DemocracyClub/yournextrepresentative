@@ -30,7 +30,6 @@ class CandidatesByElectionForPartyView(TemplateView):
         ).select_related(
             'post_election',
             'person',
-            'person__extra',
         ).order_by('post_election__postextra__base__label')
 
         context['party'] = party

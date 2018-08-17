@@ -66,7 +66,7 @@ class PartyDetailView(ElectionMixin, TemplateView):
             on_behalf_of=party,
             post_election__election=self.election_data,
             role=self.election_data.candidate_membership_role
-        ).select_related().prefetch_related('post__extra', 'person__extra'):
+        ).select_related().prefetch_related('post__extra', 'person'):
             person = membership.person
             post = membership.post
             post_group = post.extra.group

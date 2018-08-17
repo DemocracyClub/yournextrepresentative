@@ -88,7 +88,7 @@ def post_in_election(person, election):
         prefix, suffix = get_known_candidacy_prefix_and_suffix(candidacy)
         result = prefix + result + suffix
     else:
-        if election in person.extra.not_standing.all():
+        if election in person.not_standing.all():
             if election.current:
                 result = '<span class="constituency-value-not-standing">%s</span>' % _('Not standing')
             else:
@@ -102,8 +102,8 @@ def post_in_election(person, election):
 
 @register.filter
 def election_decision_known(person, election):
-    return person.extra.get_elected(election) is not None
+    return person.get_elected(election) is not None
 
 @register.filter
 def was_elected(person, election):
-    return bool(person.extra.get_elected(election))
+    return bool(person.get_elected(election))

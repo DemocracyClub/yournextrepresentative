@@ -5,30 +5,29 @@ from .auth import TestUserMixin
 from .dates import date_in_near_future
 from .factories import (
     MembershipFactory, ElectionFactory, MembershipFactory,
-    OrganizationExtraFactory, PersonExtraFactory, PostExtraFactory,
+    OrganizationExtraFactory, PersonFactory, PostExtraFactory,
 )
 from .uk_examples import UK2015ExamplesMixin
 
 from compat import BufferDictReader
 
-from candidates.models import PersonExtra
-from popolo.models import Membership
+from popolo.models import Membership, Person
 
 
 class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        person_extra = PersonExtraFactory.create(
-            base__id='2009',
-            base__name='Tessa Jowell'
+        person = PersonFactory.create(
+            id='2009',
+            name='Tessa Jowell'
         )
-        dulwich_not_stand = PersonExtraFactory.create(
-            base__id='4322',
-            base__name='Helen Hayes'
+        dulwich_not_stand = PersonFactory.create(
+            id='4322',
+            name='Helen Hayes'
         )
         MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
@@ -36,21 +35,21 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         winner_post_extra = self.edinburgh_east_post_extra
 
-        edinburgh_candidate = PersonExtraFactory.create(
-            base__id='818',
-            base__name='Sheila Gilmore'
+        edinburgh_candidate = PersonFactory.create(
+            id='818',
+            name='Sheila Gilmore'
         )
-        edinburgh_winner = PersonExtraFactory.create(
-            base__id='5795',
-            base__name='Tommy Sheppard'
+        edinburgh_winner = PersonFactory.create(
+            id='5795',
+            name='Tommy Sheppard'
         )
-        edinburgh_may_stand = PersonExtraFactory.create(
-            base__id='5163',
-            base__name='Peter McColl'
+        edinburgh_may_stand = PersonFactory.create(
+            id='5163',
+            name='Peter McColl'
         )
 
         MembershipFactory.create(
-            person=dulwich_not_stand.base,
+            person=dulwich_not_stand,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee_earlier
@@ -58,7 +57,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         dulwich_not_stand.not_standing.add(self.election)
 
         MembershipFactory.create(
-            person=edinburgh_winner.base,
+            person=edinburgh_winner,
             post=winner_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             elected=True,
@@ -68,14 +67,14 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         MembershipFactory.create(
-            person=edinburgh_candidate.base,
+            person=edinburgh_candidate,
             post=winner_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
 
         MembershipFactory.create(
-            person=edinburgh_may_stand.base,
+            person=edinburgh_may_stand,
             post=winner_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.earlier_election.postextraelection_set.get(
@@ -290,10 +289,10 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertFalse(membership.exists())
 
-        person_extra = PersonExtra.objects.get(
-            base__id=818
+        person = Person.objects.get(
+            id=818
         )
-        not_standing = person_extra.not_standing.all()
+        not_standing = person.not_standing.all()
         self.assertTrue(self.election in not_standing)
 
         self.assertEqual(response.status_code, 302)
@@ -359,10 +358,10 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertFalse(membership.exists())
 
-        person_extra = PersonExtra.objects.get(
-            base__id=5163
+        person = Person.objects.get(
+            id=5163
         )
-        not_standing = person_extra.not_standing.all()
+        not_standing = person.not_standing.all()
         self.assertTrue(self.election in not_standing)
 
         self.assertEqual(response.status_code, 302)
@@ -397,10 +396,10 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertTrue(membership.exists())
 
-        person_extra = PersonExtra.objects.get(
-            base__id=4322
+        person = Person.objects.get(
+            id=4322
         )
-        not_standing = person_extra.not_standing.all()
+        not_standing = person.not_standing.all()
         self.assertFalse(self.election in not_standing)
 
         self.assertEqual(response.status_code, 302)

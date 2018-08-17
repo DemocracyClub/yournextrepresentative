@@ -8,19 +8,19 @@ from .dates import (
     templates_after,
 )
 from .uk_examples import UK2015ExamplesMixin
-from .factories import MembershipFactory, PersonExtraFactory
+from .factories import MembershipFactory, PersonFactory
 
 
 class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        person_extra = PersonExtraFactory.create(
-            base__id='2009',
-            base__name='Tessa Jowell'
+        person = PersonFactory.create(
+            id='2009',
+            name='Tessa Jowell'
         )
         MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,

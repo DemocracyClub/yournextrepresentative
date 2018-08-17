@@ -5,7 +5,7 @@ from django.test.utils import override_settings
 
 from candidates.forms import BasePersonForm, UpdatePersonForm
 
-from .factories import PersonExtraFactory
+from .factories import PersonFactory
 from .uk_examples import UK2015ExamplesMixin
 
 
@@ -14,7 +14,7 @@ class TestValidators(UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
         super().setUp()
-        self.person = PersonExtraFactory.create(base__name='John Doe').base
+        self.person = PersonFactory.create(name='John Doe')
 
     def test_twitter_bad_url(self):
         form = BasePersonForm({

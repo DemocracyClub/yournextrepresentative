@@ -38,13 +38,13 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
         for post_extra in posts_extra:
             candidacy_count = candidacy_counts[post_extra.slug]
             for n in range(candidacy_count):
-                person_extra = factories.PersonExtraFactory.create(
-                    base__id=str(7000 + i),
-                    base__name='Test Candidate {}'.format(i)
+                person = factories.PersonFactory.create(
+                    id=str(7000 + i),
+                    name='Test Candidate {}'.format(i)
                 )
                 party = parties_extra[n % 5]
                 factories.MembershipFactory.create(
-                    person=person_extra.base,
+                    person=person,
                     post=post_extra.base,
                     on_behalf_of=party.base,
                     post_election=self.election.postextraelection_set.get(

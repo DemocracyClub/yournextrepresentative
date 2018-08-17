@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils.translation import ugettext as _
 
-from candidates.models import MultipleTwitterIdentifiers
+from popolo.models import MultipleTwitterIdentifiers
 from moderation_queue.models import QueuedImage, CopyrightOptions
 from popolo.models import Person
 
@@ -83,7 +83,7 @@ class Command(BaseCommand):
 
     def handle_person(self, person):
         try:
-            user_id, screen_name = person.extra.twitter_identifiers
+            user_id, screen_name = person.twitter_identifiers
         except MultipleTwitterIdentifiers as e:
             print("WARNING: {message}, skipping".format(message=e))
             return
@@ -102,5 +102,5 @@ class Command(BaseCommand):
         # Now go through every person in the database and see if we
         # should add their Twitter avatar to the image moderation
         # queue:
-        for person in Person.objects.select_related("extra").order_by("name"):
+        for person in Person.objects.order_by("name"):
             self.handle_person(person)

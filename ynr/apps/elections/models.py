@@ -6,9 +6,6 @@ from django.db import models
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
-from popolo.models import Organization
-
-
 
 class ElectionQuerySet(models.QuerySet):
     def current(self, current=True):
@@ -66,7 +63,7 @@ class Election(models.Model):
     use_for_candidate_suggestions = models.BooleanField(default=False)
     area_types = models.ManyToManyField(AreaType)
     area_generation = models.CharField(max_length=128, blank=True)
-    organization = models.ForeignKey(Organization, null=True, blank=True)
+    organization = models.ForeignKey('popolo.Organization', null=True, blank=True)
     party_lists_in_use = models.BooleanField(default=False)
     people_elected_per_post = models.IntegerField(
         default=1,

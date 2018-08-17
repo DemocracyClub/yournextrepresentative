@@ -6,7 +6,7 @@ from django_webtest import WebTest
 
 from popolo.models import Person
 
-from candidates.models import ExtraField, PersonExtraFieldValue, PersonExtra
+from candidates.models import ExtraField, PersonExtraFieldValue
 
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
@@ -39,9 +39,9 @@ class ExtraFieldTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         # Create one person with these fields already present:
         self.person = Person.objects.create(
-            name="John the Well-Described"
+            name="John the Well-Described",
+            versions='[]'
         )
-        PersonExtra.objects.create(base=self.person, versions='[]')
         # Now create values for those fields:
         PersonExtraFieldValue.objects.create(
             field=c_field,

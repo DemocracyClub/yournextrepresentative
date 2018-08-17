@@ -25,7 +25,7 @@ class BasicResultEventsFeed(Feed):
             .select_related('post__extra') \
             .select_related('winner') \
             .select_related('winner_party__extra') \
-            .prefetch_related('winner__extra__images')
+            .prefetch_related('winner__images')
 
     def item_title(self, item):
         if item.retraction:

@@ -60,21 +60,21 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
                 post_election__election=self.election_data
             ).exists()
 
-            person.extra.not_standing.remove(self.election_data)
+            person.not_standing.remove(self.election_data)
 
             if not membership_exists:
                 membership = Membership.objects.create(
                     person=person,
                     post=post,
                     role=self.election_data.candidate_membership_role,
-                    on_behalf_of=person.extra.last_party(),
+                    on_behalf_of=person.last_party(),
                     post_election=self.election_data.postextraelection_set.get(
                         postextra=post.extra
                     ),
                 )
 
-            person.extra.record_version(change_metadata)
-            person.extra.save()
+            person.record_version(change_metadata)
+            person.save()
         return get_redirect_to_post(self.election, post)
 
     def get_context_data(self, **kwargs):
@@ -118,10 +118,10 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
                 m.delete()
 
             check_no_candidancy_for_election(person, self.election_data)
-            person.extra.not_standing.add(self.election_data)
+            person.not_standing.add(self.election_data)
 
-            person.extra.record_version(change_metadata)
-            person.extra.save()
+            person.record_version(change_metadata)
+            person.save()
         if self.request.is_ajax():
             return JsonResponse({'success': True})
         return get_redirect_to_post(self.election, post)

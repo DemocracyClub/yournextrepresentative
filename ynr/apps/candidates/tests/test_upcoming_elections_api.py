@@ -9,7 +9,7 @@ from django_webtest import WebTest
 
 from candidates.tests.factories import (
     ElectionFactory, ParliamentaryChamberExtraFactory, PostExtraFactory,
-    PersonExtraFactory, MembershipFactory
+    PersonFactory, MembershipFactory
 )
 from .uk_examples import UK2015ExamplesMixin
 from elections.uk.tests.mapit_postcode_results \
@@ -131,20 +131,20 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
     def test_results_for_candidates_for_postcode(self, mock_requests):
         self._setup_data()
 
-        person_extra = PersonExtraFactory.create(
-            base__id='2009',
-            base__name='Tessa Jowell'
+        person = PersonFactory.create(
+            id='2009',
+            name='Tessa Jowell'
         )
 
         MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.election_gla.postextraelection_set.get(
                 postextra=self.post_extra
             )
         )
-        membership_pk = person_extra.base.memberships.first().pk
+        membership_pk = person.memberships.first().pk
 
         self.maxDiff = None
 
