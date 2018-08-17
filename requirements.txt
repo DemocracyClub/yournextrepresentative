@@ -86,4 +86,4 @@ waitress==0.8.9
 WebOb==1.4
 WebTest==2.0.15
 Whoosh==2.7.4
-yanc==0.2.4
+yanc==0.3.3
