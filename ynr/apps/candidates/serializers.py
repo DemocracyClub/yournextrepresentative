@@ -207,7 +207,8 @@ class ElectionSerializer(MinimalElectionSerializer):
         )
 
 
-    organization = MinimalOrganizationExtraSerializer(source='organization.extra')
+    organization = MinimalOrganizationExtraSerializer(
+        read_only=True, source='organization.extra')
 
 
 class MinimalPostExtraSerializer(serializers.HyperlinkedModelSerializer):
