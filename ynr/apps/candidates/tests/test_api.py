@@ -184,6 +184,14 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(elections["count"], len(elections["results"]))
         self.assertEqual(elections["count"], 3)
 
+    def test_api_elections_without_orgs(self):
+        # Regression test that we can serve elections without an organzation
+        self.election.organization = None
+        self.election.save()
+        elections_resp = self.app.get(
+            "/api/v0.9/elections/", expect_errors=True)
+        self.assertEqual(elections_resp.status_code, 200)
+
     def test_api_election(self):
         elections_resp = self.app.get("/api/v0.9/elections/")
         elections = elections_resp.json
