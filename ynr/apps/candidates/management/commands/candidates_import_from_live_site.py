@@ -77,10 +77,10 @@ class Command(BaseCommand):
                 # Base Popolo models that YNR uses:
                 pmodels.Person, pmodels.Membership, pmodels.Organization,
                 pmodels.Post, pmodels.ContactDetail, pmodels.OtherName,
-                pmodels.Identifier, pmodels.Link, pmodels.Area,
+                pmodels.Identifier, pmodels.Link,
                 # Additional models:
                 models.PartySet, models.ImageExtra, models.LoggedAction,
-                models.PersonRedirect, emodels.Election, models.ExtraField,
+                models.PersonRedirect, emodels.Election#, models.ExtraField,
         ):
             if model_class.objects.exists():
                 non_empty_models.append(model_class)
@@ -102,18 +102,28 @@ class Command(BaseCommand):
 
     def get_api_results(self, endpoint):
         page = 1
-        while True:
-            url = '{base_url}{endpoint}/?format=json&page={page}&page_size=200'.format(
-                base_url=self.base_api_url, endpoint=endpoint, page=page
+
+
+        if 'posts' in endpoint:
+            url = '{base_url}/media/cached-api/latest/posts-000001.json'.format(
+                base_url=self.base_url
             )
+        elif 'persons' in endpoint:
+            url = '{base_url}/media/cached-api/latest/persons-000001.json'.format(
+                base_url=self.base_url
+            )
+        else:
+            url = '{base_url}{endpoint}/?format=json&page_size=200'.format(
+                base_url=self.base_api_url, endpoint=endpoint
+            )
+
+        while url:
             self.stdout.write("Fetching " + url)
             r = requests.get(url)
             data = r.json()
             for result in data['results']:
                 yield(result)
-            if not data['next']:
-                break
-            page += 1
+            url = data.get('next')
 
     def add_related(self, o, model_class, related_data_list):
         for related_data in related_data_list:
@@ -131,7 +141,7 @@ class Command(BaseCommand):
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
-        filename = join(CACHE_DIRECTORY, hashlib.md5(url).hexdigest())
+        filename = join(CACHE_DIRECTORY, hashlib.md5(url.encode('utf8')).hexdigest())
         if exists(filename):
             return filename
         else:
@@ -148,15 +158,11 @@ class Command(BaseCommand):
         for extra_field in self.get_api_results('extra_fields'):
             with show_data_on_error('extra_field', extra_field):
                 del extra_field['url']
-                models.ExtraField.objects.create(**extra_field)
+                models.ExtraField.objects.update_or_create(**extra_field)
         for complex_field in self.get_api_results('complex_fields'):
             with show_data_on_error('complex_field', complex_field):
                 complex_field.pop('url', None)
-                models.ComplexPopoloField.objects.create(**complex_field)
-        for area_type_data in self.get_api_results('area_types'):
-            with show_data_on_error('area_type_data', area_type_data):
-                del area_type_data['url']
-                emodels.AreaType.objects.create(**area_type_data)
+                models.ComplexPopoloField.objects.update_or_create(**complex_field)
         party_sets_by_slug = {}
         for party_set_data in self.get_api_results('party_sets'):
             with show_data_on_error('party_set_data', party_set_data):
@@ -172,10 +178,13 @@ class Command(BaseCommand):
                     founding_date=organization_data['founding_date'],
                     dissolution_date=organization_data['dissolution_date'],
                 )
-                models.OrganizationExtra.objects.create(
+                models.OrganizationExtra.objects.update_or_create(
                     base=o,
-                    slug=organization_data['id'],
-                    register=organization_data['register'],
+                    defaults={
+                        'slug': organization_data['id'],
+                        'register': organization_data['register'],
+                    }
+
                 )
                 for party_set_data in organization_data['party_sets']:
                     with show_data_on_error('party_set_data', party_set_data):
@@ -206,45 +215,7 @@ class Command(BaseCommand):
             parent = pmodels.Organization.objects.get(extra__slug=parent_slug)
             child.parent = parent
             child.save()
-        area_to_parent = {}
-        for area_data in self.get_api_results('areas'):
-            with show_data_on_error('area_data', area_data):
-                a = pmodels.Area.objects.create(
-                    id=area_data['id'],
-                    classification=area_data['classification'],
-                    identifier=area_data['identifier'],
-                    name=area_data['name'],
-                )
-                self.add_related(
-                    o, pmodels.Identifier, area_data['other_identifiers']
-                )
-                ae = models.AreaExtra(base=a)
-                if area_data['type']:
-                    area_type_id = area_data['type']['id']
-                    at = emodels.AreaType.objects.get(id=area_type_id)
-                    ae.type = at
-                ae.save()
-                # Save any parent:
-                if area_data['parent']:
-                    # The API currently (v0.9) returns a URL in the
-                    # 'parent' field, although the existing code was
-                    # written to expect a dictionary containing the
-                    # ID.  Support either representation in this script:
-                    if isinstance(area_data['parent'], string_types):
-                        m = re.search(r'/areas/(\d+)', area_data['parent'])
-                        if not m:
-                            msg = "Couldn't extra area ID from parent URL"
-                            raise Exception(msg)
-                        area_to_parent[area_data['id']] = int(m.group(1))
-                    else:
-                        area_to_parent[area_data['id']] = \
-                            area_data['parent']['id']
-        # Set any parent areas:
-        for child_id, parent_id in area_to_parent.items():
-            child = pmodels.Area.objects.get(id=child_id)
-            parent = pmodels.Area.objects.get(id=parent_id)
-            child.parent = parent
-            child.save()
+
         for election_data in self.get_api_results('elections'):
             with show_data_on_error('election_data', election_data):
                 kwargs = {
@@ -266,16 +237,13 @@ class Command(BaseCommand):
                     )
                 }
                 e = emodels.Election(slug=election_data['id'], **kwargs)
-                election_org = election_data['organization']
+                election_org = election_data.get('organization')
                 if election_org:
                     e.organization = pmodels.Organization.objects.get(
                         extra__slug=election_org['id']
                     )
                 e.save()
-                for area_type_data in election_data['area_types']:
-                    e.area_types.add(
-                        emodels.AreaType.objects.get(pk=area_type_data['id'])
-                    )
+
         for post_data in self.get_api_results('posts'):
             with show_data_on_error('post_data', post_data):
                 p = pmodels.Post(
@@ -285,9 +253,7 @@ class Command(BaseCommand):
                 p.organization = pmodels.Organization.objects.get(
                     extra__slug=post_data['organization']['id']
                 )
-                area_data = post_data['area']
-                if area_data:
-                    p.area = pmodels.Area.objects.get(id=area_data['id'])
+
                 p.save()
                 pe = models.PostExtra(
                     base=p,
@@ -302,10 +268,13 @@ class Command(BaseCommand):
                 for election_data in post_data['elections']:
                     election = \
                         emodels.Election.objects.get(slug=election_data['id'])
-                    models.PostExtraElection.objects.get_or_create(
+                    models.PostExtraElection.objects.update_or_create(
                         postextra=pe,
                         election=election,
                         candidates_locked=election_data['candidates_locked'],
+                        ballot_paper_id="tmp_{}.{}".format(
+                            election.slug,
+                            pe.slug)
                     )
         extra_fields = {
             ef.key: ef for ef in models.ExtraField.objects.all()
@@ -372,6 +341,11 @@ class Command(BaseCommand):
                     kwargs['post'] = pmodels.Post.objects.get(
                         extra__slug=m_data['post']['id']
                     )
+                kwargs['post_election'] = models.PostExtraElection.objects.get(
+                    postextra=kwargs['post'].extra,
+                    election=emodels.Election.objects.get(
+                        slug=m_data['election']['id'])
+                )
                 m = pmodels.Membership.objects.create(**kwargs)
                 kwargs = {
                     'base': m,
@@ -393,9 +367,15 @@ class Command(BaseCommand):
                         slug=object_id
                     )
                 elif endpoint == 'persons':
-                    django_object = models.PersonExtra.objects.get(
-                        base__id=object_id
-                    )
+                    try:
+                        django_object = models.PersonExtra.objects.get(
+                            base__id=object_id
+                        )
+                    except:
+                        # For some reason the PersonExtra doesn't exist.
+                        # Ignore this as it's not worth killing the whole
+                        # import for.
+                        continue
                 else:
                     msg = "Image referring to unhandled endpoint {0}"
                     raise Exception(msg.format(endpoint))
@@ -403,8 +383,7 @@ class Command(BaseCommand):
                     r'/([^/]+)$',
                     image_data['image_url']
                 ).group(1)
-                full_url = self.base_url + image_data['image_url']
-                image_filename = self.get_url_cached(full_url)
+                image_filename = self.get_url_cached(image_data['image_url'])
                 extension = get_image_extension(image_filename)
                 if not extension:
                     continue
@@ -413,8 +392,8 @@ class Command(BaseCommand):
                     join('images', suggested_filename),
                     md5sum=image_data['md5sum'] or '',
                     defaults = {
-                        'uploading_user': self.get_user_from_username(
-                            image_data['uploading_user']
+                            'uploading_user': self.get_user_from_username(
+                            image_data.get('uploading_user')
                         ),
                         'copyright': image_data['copyright'] or '',
                         'notes': image_data['notes'] or '',
@@ -429,7 +408,7 @@ class Command(BaseCommand):
                 )
         reset_sql_list = connection.ops.sequence_reset_sql(
             no_style(), [
-                emodels.AreaType, models.PartySet, pmodels.Area,
+                models.PartySet,
                 emodels.Election, Image, models.ExtraField,
                 models.ComplexPopoloField,
                 pmodels.Person,
