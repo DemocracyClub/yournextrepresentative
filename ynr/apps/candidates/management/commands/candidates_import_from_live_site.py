@@ -70,6 +70,11 @@ class Command(BaseCommand):
             'SITE-URL',
             help='Base URL for the live site'
         )
+        parser.add_argument(
+            '--ignore-images',
+            action='store_true',
+            help="Don't download images when importing"
+        )
 
     def check_database_is_empty(self):
         non_empty_models = []
@@ -154,7 +159,7 @@ class Command(BaseCommand):
             print("done")
         return filename
 
-    def mirror_from_api(self):
+    def mirror_from_api(self, ignore_images):
         for extra_field in self.get_api_results('extra_fields'):
             with show_data_on_error('extra_field', extra_field):
                 del extra_field['url']
@@ -356,56 +361,57 @@ class Command(BaseCommand):
                     kwargs['election'] = emodels.Election.objects.get(
                         slug=m_data['election']['id']
                     )
-        for image_data in self.get_api_results('images'):
-            with show_data_on_error('image_data', image_data):
-                endpoint, object_id = re.search(
-                    r'api/v0.9/(\w+)/([^/]*)/',
-                    image_data['content_object']
-                ).groups()
-                if endpoint == 'organizations':
-                    django_object = models.OrganizationExtra.objects.get(
-                        slug=object_id
-                    )
-                elif endpoint == 'persons':
-                    try:
-                        django_object = models.PersonExtra.objects.get(
-                            base__id=object_id
+        if not ignore_images:
+            for image_data in self.get_api_results('images'):
+                with show_data_on_error('image_data', image_data):
+                    endpoint, object_id = re.search(
+                        r'api/v0.9/(\w+)/([^/]*)/',
+                        image_data['content_object']
+                    ).groups()
+                    if endpoint == 'organizations':
+                        django_object = models.OrganizationExtra.objects.get(
+                            slug=object_id
                         )
-                    except:
-                        # For some reason the PersonExtra doesn't exist.
-                        # Ignore this as it's not worth killing the whole
-                        # import for.
+                    elif endpoint == 'persons':
+                        try:
+                            django_object = models.PersonExtra.objects.get(
+                                base__id=object_id
+                            )
+                        except:
+                            # For some reason the PersonExtra doesn't exist.
+                            # Ignore this as it's not worth killing the whole
+                            # import for.
+                            continue
+                    else:
+                        msg = "Image referring to unhandled endpoint {0}"
+                        raise Exception(msg.format(endpoint))
+                    suggested_filename = re.search(
+                        r'/([^/]+)$',
+                        image_data['image_url']
+                    ).group(1)
+                    image_filename = self.get_url_cached(image_data['image_url'])
+                    extension = get_image_extension(image_filename)
+                    if not extension:
                         continue
-                else:
-                    msg = "Image referring to unhandled endpoint {0}"
-                    raise Exception(msg.format(endpoint))
-                suggested_filename = re.search(
-                    r'/([^/]+)$',
-                    image_data['image_url']
-                ).group(1)
-                image_filename = self.get_url_cached(image_data['image_url'])
-                extension = get_image_extension(image_filename)
-                if not extension:
-                    continue
-                models.ImageExtra.objects.update_or_create_from_file(
-                    image_filename,
-                    join('images', suggested_filename),
-                    md5sum=image_data['md5sum'] or '',
-                    defaults = {
-                            'uploading_user': self.get_user_from_username(
-                            image_data.get('uploading_user')
-                        ),
-                        'copyright': image_data['copyright'] or '',
-                        'notes': image_data['notes'] or '',
-                        'user_copyright': image_data['user_copyright'] or '',
-                        'user_notes': image_data['user_notes'] or '',
-                        'base__source': image_data['source'] or '',
-                        'base__is_primary': image_data['is_primary'],
-                        'base__object_id': django_object.id,
-                        'base__content_type_id':
-                        ContentType.objects.get_for_model(django_object).id
-                    }
-                )
+                    models.ImageExtra.objects.update_or_create_from_file(
+                        image_filename,
+                        join('images', suggested_filename),
+                        md5sum=image_data['md5sum'] or '',
+                        defaults = {
+                                'uploading_user': self.get_user_from_username(
+                                image_data.get('uploading_user')
+                            ),
+                            'copyright': image_data['copyright'] or '',
+                            'notes': image_data['notes'] or '',
+                            'user_copyright': image_data['user_copyright'] or '',
+                            'user_notes': image_data['user_notes'] or '',
+                            'base__source': image_data['source'] or '',
+                            'base__is_primary': image_data['is_primary'],
+                            'base__object_id': django_object.id,
+                            'base__content_type_id':
+                            ContentType.objects.get_for_model(django_object).id
+                        }
+                    )
         reset_sql_list = connection.ops.sequence_reset_sql(
             no_style(), [
                 models.PartySet,
@@ -434,4 +440,4 @@ class Command(BaseCommand):
             self.base_api_url = urlunsplit(new_url_parts)
             self.check_database_is_empty()
             self.remove_field_objects()
-            self.mirror_from_api()
+            self.mirror_from_api(ignore_images=options['ignore_images'])
