@@ -8,7 +8,7 @@ from django.test import TestCase
 from candidates.models import ImageExtra
 from moderation_queue.models import QueuedImage
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import PersonExtraFactory
+from candidates.tests.factories import PersonFactory
 from candidates.tests.output import capture_output, split_output
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
@@ -24,16 +24,16 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         with open(self.image_filename, 'rb') as f:
             self.example_image_binary_data = f.read()
 
-        self.p_no_images = PersonExtraFactory.create(
-            base__id='1',
-            base__name='Person With No Existing Images').base
+        self.p_no_images = PersonFactory.create(
+            id='1',
+            name='Person With No Existing Images')
         self.p_no_images.identifiers.create(
             identifier='1001',
             scheme='twitter')
 
-        p_existing_image = PersonExtraFactory.create(
-            base__id='2',
-            base__name='Person With An Existing Image').base
+        p_existing_image = PersonFactory.create(
+            id='2',
+            name='Person With An Existing Image')
         self.existing_undecided_image = p_existing_image.queuedimage_set.create(
             decision=QueuedImage.UNDECIDED,
             user=self.user,
@@ -42,9 +42,9 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
             identifier='1002',
             scheme='twitter')
 
-        self.p_only_rejected_in_queue = PersonExtraFactory.create(
-            base__id='3',
-            base__name='Person With Only Rejected Images In The Queue').base
+        self.p_only_rejected_in_queue = PersonFactory.create(
+            id='3',
+            name='Person With Only Rejected Images In The Queue')
         self.existing_rejected_image = self.p_only_rejected_in_queue.queuedimage_set.create(
             decision=QueuedImage.REJECTED,
             user=self.user,
@@ -53,13 +53,13 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
             identifier='1003',
             scheme='twitter')
 
-        PersonExtraFactory.create(
-            base__id='4',
-            base__name='Person With No Twitter User ID')
+        PersonFactory.create(
+            id='4',
+            name='Person With No Twitter User ID')
 
-        self.p_accepted_image_in_queue = PersonExtraFactory.create(
-            base__id='5',
-            base__name='Person With An Accepted Image In The Queue').base
+        self.p_accepted_image_in_queue = PersonFactory.create(
+            id='5',
+            name='Person With An Accepted Image In The Queue')
         self.existing_accepted_image = self.p_accepted_image_in_queue.queuedimage_set.create(
             decision=QueuedImage.APPROVED,
             user=self.user,
@@ -84,9 +84,9 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
             }
         )
 
-        self.p_existing_image_but_none_in_queue = PersonExtraFactory.create(
-            base__id='6',
-            base__name='Person With An Existing Image But None In The Queue').base
+        self.p_existing_image_but_none_in_queue = PersonFactory.create(
+            id='6',
+            name='Person With An Existing Image But None In The Queue')
         self.p_existing_image_but_none_in_queue.identifiers.create(
             identifier='1006',
             scheme='twitter')

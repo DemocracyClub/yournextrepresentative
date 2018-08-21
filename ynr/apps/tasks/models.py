@@ -8,7 +8,7 @@ from django.conf import settings
 from django_extensions.db.models import TimeStampedModel
 
 from popolo.models import Person
-from candidates.models import PersonExtra, ComplexPopoloField
+from candidates.models import ComplexPopoloField
 
 
 class PersonTaskManager(models.Manager):
@@ -31,7 +31,7 @@ class PersonTask(TimeStampedModel):
         ordering = ['-task_priority', ]
 
     def get_user_from_vesions(self):
-        version_data = json.loads(self.person.extra.versions)
+        version_data = json.loads(self.person.versions)
         if not version_data or 'username' not in version_data[0]:
             return None
         try:
@@ -44,14 +44,14 @@ class PersonTask(TimeStampedModel):
         if value:
             return value
 
-        person_qs = PersonExtra.objects.filter(base=self.person)
+        person_qs = Person.objects.filter(pk=self.person.pk)
         simple_field = [
             f for f in settings.SIMPLE_POPOLO_FIELDS
             if f.name == self.task_field
         ]
 
         if simple_field:
-            return person_qs.filter(**{'base__' + self.task_field: ''})
+            return person_qs.filter(**{self.task_field: ''})
 
 
         complex_field = ComplexPopoloField.objects.filter(
@@ -59,7 +59,7 @@ class PersonTask(TimeStampedModel):
 
         if complex_field:
             kwargs = {
-                'base__{relation}__{key}'.format(
+                '{relation}__{key}'.format(
                     relation=complex_field.popolo_array,
                     key=complex_field.info_type_key
                 ):
@@ -74,7 +74,7 @@ class PersonTask(TimeStampedModel):
 
 
 def person_saved(sender, **kwargs):
-    person_tasks = PersonTask.objects.filter(person=kwargs['instance'].base)
+    person_tasks = PersonTask.objects.filter(person=kwargs['instance'])
     for task in person_tasks:
         field_value = task.get_value_from_person()
         if field_value:
@@ -85,11 +85,11 @@ def person_saved(sender, **kwargs):
 
 
 def connect_task_signal():
-    post_save.connect(person_saved, sender=PersonExtra)
+    post_save.connect(person_saved, sender=Person)
 
 def disconnect_task_signal():
     # Disconnect the task.post_save  signal
-    post_save.disconnect(receiver=person_saved, sender=PersonExtra)
+    post_save.disconnect(receiver=person_saved, sender=Person)
 
 def pause_task_signal(fn):
     def wrapped_fn(*args, **kwargs):

@@ -3,9 +3,10 @@ from django.core.files.storage import DefaultStorage
 from django.db import reset_queries
 
 from candidates.csv_helpers import list_to_csv
-from candidates.models import PersonExtra, PersonRedirect
+from candidates.models import PersonRedirect
 from candidates.models.fields import get_complex_popolo_fields
 from elections.models import Election
+from popolo.models import Person
 
 
 FETCH_AT_A_TIME = 1000
@@ -21,10 +22,10 @@ def queryset_iterator(qs, complex_popolo_fields):
             start_index : start_index + FETCH_AT_A_TIME
         ]
         empty = True
-        for person_extra in chunk_qs.joins_for_csv_output():
+        for person in chunk_qs.joins_for_csv_output():
             empty = False
-            person_extra.complex_popolo_fields = complex_popolo_fields
-            yield person_extra
+            person.complex_popolo_fields = complex_popolo_fields
+            yield person
         if empty:
             return
         start_index += FETCH_AT_A_TIME
@@ -69,8 +70,8 @@ class Command(BaseCommand):
     def get_people(self, election, qs):
         all_people = []
         elected_people = []
-        for person_extra in queryset_iterator(qs, self.complex_popolo_fields):
-            for d in person_extra.as_list_of_dicts(
+        for person in queryset_iterator(qs, self.complex_popolo_fields):
+            for d in person.as_list_of_dicts(
                 election,
                 base_url=self.options["site_base_url"],
                 redirects=self.redirects,
@@ -101,7 +102,7 @@ class Command(BaseCommand):
             if election is None:
                 # Get information for every candidate in every
                 # election.
-                qs = PersonExtra.objects.all()
+                qs = Person.objects.all()
                 all_people, elected_people = self.get_people(election, qs)
                 output_filenames = {
                     "all": self.output_prefix + "-all.csv",
@@ -111,9 +112,9 @@ class Command(BaseCommand):
                 # Only get the candidates standing in that particular
                 # election
                 role = election.candidate_membership_role
-                qs = PersonExtra.objects.filter(
-                    base__memberships__post_election__election=election,
-                    base__memberships__role=role,
+                qs = Person.objects.filter(
+                    memberships__post_election__election=election,
+                    memberships__role=role,
                 )
                 all_people, elected_people = self.get_people(election, qs)
                 output_filenames = {

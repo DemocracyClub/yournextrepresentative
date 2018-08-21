@@ -4,13 +4,15 @@ def check_constraints():
     return check_paired_models() + check_membership_elections_consistent()
 
 def check_paired_models():
+    from popolo.models import Organization, Post, Area
+    from images.models import Image
+
     errors = []
     for base, extra in (
-        (models.Person, models.PersonExtra),
-        (models.Organization, models.OrganizationExtra),
-        (models.Post, models.PostExtra),
-        (models.Area, models.AreaExtra),
-        (models.Image, models.ImageExtra),
+        (Organization, models.OrganizationExtra),
+        (Post, models.PostExtra),
+        (Area, models.AreaExtra),
+        (Image, models.ImageExtra),
     ):
         format_kwargs = {'base': base.__name__, 'extra': extra.__name__}
         base_ids = set(
@@ -44,6 +46,7 @@ def check_paired_models():
     return errors
 
 def check_membership_elections_consistent():
+    from popolo.models import Membership
     # Any membership with role 'Candidate' should be associated with
     # an election via .extra.election and a post via .post. This
     # election + post combination should also be present in the
@@ -55,7 +58,7 @@ def check_membership_elections_consistent():
         set(models.PostExtraElection.objects \
             .values_list('postextra', 'election'))
 
-    for me in models.Membership.objects.select_related(
+    for me in Membership.objects.select_related(
             'post__extra', 'post_election__election', 'person'):
         post_extra = me.post_election.postextra
         election = me.post_election.election

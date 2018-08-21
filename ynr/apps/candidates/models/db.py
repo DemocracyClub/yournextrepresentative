@@ -11,8 +11,6 @@ from django.utils.six import text_type
 
 from slugify import slugify
 
-from popolo.models import Person, Post
-
 from .needs_review import needs_review_fns
 
 
@@ -49,14 +47,14 @@ class LoggedAction(models.Model):
     malicious users.'''
 
     user = models.ForeignKey(User, blank=True, null=True)
-    person = models.ForeignKey(Person, blank=True, null=True)
+    person = models.ForeignKey('popolo.Person', blank=True, null=True)
     action_type = models.CharField(max_length=64)
     popit_person_new_version = models.CharField(max_length=32)
     created = models.DateTimeField(auto_now_add=True, db_index=True)
     updated = models.DateTimeField(auto_now=True)
     ip_address = models.CharField(max_length=50, blank=True, null=True)
     source = models.TextField()
-    post = models.ForeignKey(Post, blank=True, null=True)
+    post = models.ForeignKey('popolo.Post', blank=True, null=True)
     post_election = models.ForeignKey(
         'candidates.PostExtraElection', null=True)
 
@@ -112,11 +110,11 @@ class LoggedAction(models.Model):
 
     @property
     def diff_html(self):
-        from candidates.models import VersionNotFound
+        from popolo.models import VersionNotFound
         if not self.person:
             return ''
         try:
-            return self.person.extra.diff_for_version(
+            return self.person.diff_for_version(
                 self.popit_person_new_version, inline_style=True)
         except VersionNotFound as e:
             return '<p>{}</p>'.format(escape(text_type(e)))

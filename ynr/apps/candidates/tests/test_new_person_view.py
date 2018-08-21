@@ -107,9 +107,9 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(links.count(), 1)
         self.assertEqual(links[0].url, 'http://en.wikipedia.org/wiki/Lizzie_Bennet')
 
-        self.assertNotEqual(person.extra.versions, '[]')
+        self.assertNotEqual(person.versions, '[]')
 
-        versions = json.loads(person.extra.versions)
+        versions = json.loads(person.versions)
         self.assertEqual(len(versions), 1)
         self.assertEqual(versions[0]['information_source'],
                          'Testing adding a new person to a post')

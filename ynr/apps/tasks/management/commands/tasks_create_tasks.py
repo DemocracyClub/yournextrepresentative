@@ -3,9 +3,8 @@ from datetime import date
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-
-from candidates.models import PersonExtra
 from tasks.models import PersonTask
+from popolo.models import Person
 
 
 class Command(BaseCommand):
@@ -46,10 +45,9 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def add_tasks_for_field(self, field, field_weight):
-        qs = PersonExtra.objects.filter(
-            base__memberships__post_election__election__current=True)
-        qs = qs.select_related('base')
-        qs = qs.prefetch_related('base__memberships')
+        qs = Person.objects.filter(
+            memberships__post_election__election__current=True)
+        qs = qs.prefetch_related('memberships')
         qs = qs.missing(field)
 
         person_tasks = []
@@ -77,7 +75,7 @@ class Command(BaseCommand):
                             person_weight += field_weight
                             person_tasks.append(
                                 PersonTask(
-                                    person=person.base,
+                                    person=person,
                                     task_field=field,
                                     task_priority=person_weight,
                                 )

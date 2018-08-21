@@ -53,7 +53,7 @@
     <tbody>
       {% for membership in postextraelection.membership_set.all %}
       <tr>
-        <td><a href="{{ membership.person.extra.get_absolute_url }}">{{ membership.person.name }}</a></td>
+        <td><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a></td>
         <td>{{ membership.on_behalf_of }}</td>
         {% if postextraelection.resultset %}
         <td>{{ membership.result.num_ballots }}</td>

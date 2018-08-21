@@ -31,7 +31,7 @@ class ResultEvent(models.Model):
     @property
     def image_url_path(self):
         url_path = ''
-        for image in self.winner.extra.images.all():
+        for image in self.winner.images.all():
             if image.is_primary:
                 url_path = image.image.url
                 break

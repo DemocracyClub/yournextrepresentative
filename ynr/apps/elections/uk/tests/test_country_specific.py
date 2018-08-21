@@ -9,7 +9,7 @@ class TestUKSpecificOverride(TestCase):
 
     @patch('elections.uk.lib.additional_merge_actions')
     def test_uk_version_is_actually_called(self, mock_additional_merge_actions):
-        primary = factories.PersonExtraFactory(base__name='Alice')
-        secondary = factories.PersonExtraFactory(base__name='Bob')
+        primary = factories.PersonFactory(name='Alice')
+        secondary = factories.PersonFactory(name='Bob')
         additional_merge_actions(primary, secondary)
         mock_additional_merge_actions.assert_called

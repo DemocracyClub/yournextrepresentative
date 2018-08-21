@@ -19,7 +19,6 @@ def get_person_as_version_data(person, new_person=False):
     """
     from candidates.election_specific import shorten_post_label
     result = {}
-    person_extra = person.extra
     result['id'] = str(person.id)
 
     for field in settings.SIMPLE_POPOLO_FIELDS:
@@ -29,7 +28,7 @@ def get_person_as_version_data(person, new_person=False):
             # Just set the attrs, as these will all be empty
             result[field.name] = ''
         else:
-            result[field.name] = getattr(person_extra, field.name)
+            result[field.name] = getattr(person, field.name)
 
     extra_values = {}
     result['other_names'] = []
@@ -79,7 +78,7 @@ def get_person_as_version_data(person, new_person=False):
                 'id': party.extra.slug,
                 'name': party.name,
             }
-        for not_standing_in_election in person_extra.not_standing.all():
+        for not_standing_in_election in person.not_standing.all():
             standing_in[not_standing_in_election.slug] = None
 
         extra_values = {
@@ -98,7 +97,7 @@ def get_person_as_version_data(person, new_person=False):
     result['party_memberships'] = party_memberships
     return result
 
-def revert_person_from_version_data(person, person_extra, version_data, part_of_merge=False):
+def revert_person_from_version_data(person, version_data, part_of_merge=False):
 
     from popolo.models import Membership, Organization, Post
     from candidates.models import raise_if_unsafe_to_delete
@@ -122,7 +121,7 @@ def revert_person_from_version_data(person, person_extra, version_data, part_of_
     for field in ComplexPopoloField.objects.all():
         new_value = version_data.get(field.name, '')
         if new_value:
-            person_extra.update_complex_field(field, version_data[field.name])
+            person.update_complex_field(field, version_data[field.name])
 
     # Remove any extra field data and create them from the JSON:
     person.extra_field_values.all().delete()
@@ -158,7 +157,7 @@ def revert_person_from_version_data(person, person_extra, version_data, part_of_
 
     # Remove all candidacies, and recreate:
     for membership in Membership.objects.filter(
-        person=person_extra.base,
+        person=person,
         role=F('post_election__election__candidate_membership_role')
     ):
         # At the moment the merge code has its own way of preserving
@@ -173,13 +172,13 @@ def revert_person_from_version_data(person, person_extra, version_data, part_of_
         membership.delete()
     # Also remove the indications of elections that this person is
     # known not to be standing in:
-    person_extra.not_standing.clear()
+    person.not_standing.clear()
     for election_slug, standing_in in version_data['standing_in'].items():
         election = Election.objects.get(slug=election_slug)
         # If the value for that election slug is None, then that means
         # the person is known not to be standing:
         if standing_in is None:
-            person_extra.not_standing.add(election)
+            person.not_standing.add(election)
         else:
             # Get the corresponding party membership data:
             party = Organization.objects.get(
@@ -199,7 +198,6 @@ def revert_person_from_version_data(person, person_extra, version_data, part_of_
             )
 
     person.save()
-    person_extra.save()
     try:
         update_twitter_user_id(person)
     except TwitterAPITokenMissing:

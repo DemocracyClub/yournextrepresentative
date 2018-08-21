@@ -37,7 +37,7 @@
                 {% endif %}
                 <div class="person-name-and-party">
                   <a href="{% url 'person-view' result.object.id result.object.name|slugify %}" class="candidate-name">{{ result.object.name }}</a>
-                  <span class="party">{{ result.object.extra.last_party }}</span>
+                  <span class="party">{{ result.object.last_party }}</span>
                 </div>
                 <a href="{% url 'person-update' person_id=result.object.pk %}" class="button secondary small">Add more details</a>
             </li>

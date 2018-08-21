@@ -11,8 +11,8 @@
 {% block hero %}
 <div class="person__hero">
   <div class="person__photo">
-    {% if person.extra.primary_image %}
-      {% thumbnail person.extra.primary_image "x80" as im %}
+    {% if person.primary_image %}
+      {% thumbnail person.primary_image "x80" as im %}
         <img class="person-avatar" src="{{ im.url }}"/>
       {% endthumbnail %}
     {% elif person.gender|lower == 'female' %}
@@ -25,7 +25,7 @@
     </a>
   </div>
   <h1>{% blocktrans with name=person.name %}Editing: {{ name }}{% endblocktrans %}</h1>
-  {% with last_candidacy=person.extra.last_candidacy %}
+  {% with last_candidacy=person.last_candidacy %}
     {% if last_candidacy %}
       {% with post=last_candidacy.post %}
         {% url 'constituency' election=last_candidacy.post_election.election.slug post_id=post.extra.slug ignored_slug=post.extra.short_label|slugify as url %}

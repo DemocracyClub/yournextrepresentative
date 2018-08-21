@@ -60,8 +60,8 @@ class ObjectWithImageField(serializers.RelatedField):
     def to_representation(self, value):
         kwargs = {'version': 'v0.9'}
         request = self.context['request']
-        if isinstance(value, candidates_models.PersonExtra):
-            kwargs.update({'pk': value.base_id})
+        if isinstance(value, popolo_models.Person):
+            kwargs.update({'pk': value.id})
             return reverse('person-detail', kwargs=kwargs, request=request)
         elif isinstance(value, candidates_models.OrganizationExtra):
             kwargs.update({'slug': value.slug})
@@ -323,9 +323,9 @@ class PersonSerializer(MinimalPersonSerializer):
     identifiers = IdentifierSerializer(many=True, read_only=True)
     links = LinkSerializer(many=True, read_only=True)
     other_names = OtherNameSerializer(many=True, read_only=True)
-    images = ImageSerializer(many=True, read_only=True, source='extra.images')
+    images = ImageSerializer(many=True, read_only=True)
 
-    versions = JSONSerializerField(source='extra.versions', read_only=True)
+    versions = JSONSerializerField(read_only=True)
 
     memberships = MembershipSerializer(many=True, read_only=True)
 
@@ -335,7 +335,7 @@ class PersonSerializer(MinimalPersonSerializer):
     thumbnail = HyperlinkedSorlImageField(
             '300x300',
             options={"crop": "center"},
-            source='extra.primary_image',
+            source='primary_image',
             read_only=True
         )
 

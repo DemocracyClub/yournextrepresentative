@@ -12,8 +12,10 @@ from django.utils.timezone import make_aware
 
 from lxml import etree
 
-from candidates.models import LoggedAction, PersonExtra
+from candidates.models import LoggedAction
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+
+from popolo.models import Person
 
 from . import factories
 from .auth import TestUserMixin
@@ -47,7 +49,7 @@ def fake_diff_html(self, version_id, inline_style=False):
     )
 
 
-@patch.object(PersonExtra, 'diff_for_version', fake_diff_html)
+@patch.object(Person, 'diff_for_version', fake_diff_html)
 @patch('candidates.models.db.datetime')
 @override_settings(PEOPLE_LIABLE_TO_VANDALISM={2811})
 class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
@@ -68,10 +70,10 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
             u.save()
             setattr(self, username, u)
 
-        example_person = factories.PersonExtraFactory.create(
-            base__id='2009',
-            base__name='Tessa Jowell',
-        ).base
+        example_person = factories.PersonFactory.create(
+            id='2009',
+            name='Tessa Jowell',
+        )
 
         # Create old edits for the experienced user:
         date_ages_ago = self.current_datetime - timedelta(days=365)
@@ -126,12 +128,12 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
         # Create a candidate with a death date, and edit of that
         # candidate:
-        dead_person = factories.PersonExtraFactory.create(
-            base__id='7448',
-            base__name='The Eurovisionary Ronnie Carroll',
-            base__birth_date='1934-08-18',
-            base__death_date='2015-04-13'
-        ).base
+        dead_person = factories.PersonFactory.create(
+            id='7448',
+            name='The Eurovisionary Ronnie Carroll',
+            birth_date='1934-08-18',
+            death_date='2015-04-13'
+        )
         la = LoggedAction.objects.create(
             id=3000,
             user=self.morbid_vandal,
@@ -145,10 +147,10 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
         dt = self.current_datetime - timedelta(minutes=4)
         change_updated_and_created(la, dt)
 
-        prime_minister = factories.PersonExtraFactory.create(
-            base__id='2811',
-            base__name='Theresa May',
-        ).base
+        prime_minister = factories.PersonFactory.create(
+            id='2811',
+            name='Theresa May',
+        )
         # Create a candidate on the "liable to vandalism" list.
         la = LoggedAction.objects.create(
             id=4000,
@@ -353,11 +355,11 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
 class TestDiffHTML(TestCase):
 
     def test_missing_version(self):
-        person = factories.PersonExtraFactory.create(
-            base__name='John Smith',
-            base__id='1234567',
+        person = factories.PersonFactory.create(
+            name='John Smith',
+            id='1234567',
             versions='[]',
-        ).base
+        )
         la = LoggedAction.objects.create(
             person=person,
             popit_person_new_version='1376abcd9234')
@@ -368,9 +370,9 @@ class TestDiffHTML(TestCase):
         )
 
     def test_found_version(self):
-        person = factories.PersonExtraFactory.create(
-            base__name='Sarah Jones',
-            base__id='1234567',
+        person = factories.PersonFactory.create(
+            name='Sarah Jones',
+            id='1234567',
             versions='''[{
                 "data": {
                     "honorific_prefix": "Mrs",
@@ -416,7 +418,7 @@ class TestDiffHTML(TestCase):
                 "username": "test",
                 "version_id": "2f07734529a83242"
             }]''',
-        ).base
+        )
         la = LoggedAction.objects.create(
             person=person,
             popit_person_new_version='3fc494d54f61a157')

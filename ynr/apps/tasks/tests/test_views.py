@@ -3,7 +3,7 @@ from django.test import TestCase
 from candidates.tests.factories import (
     ElectionFactory, MembershipFactory,
     ParliamentaryChamberFactory, PartyFactory, PartyExtraFactory,
-    PersonExtraFactory, PostExtraFactory
+    PersonFactory, PostExtraFactory
 )
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
@@ -13,26 +13,26 @@ class TestFieldView(UK2015ExamplesMixin, TestCase):
     def setUp(self):
         super().setUp()
 
-        person_extra = PersonExtraFactory.create(
-            base__id='2009',
-            base__name='Tessa Jowell'
+        person = PersonFactory.create(
+            id='2009',
+            name='Tessa Jowell'
         )
 
         MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.green_party_extra.base,
             post_election=self.dulwich_post_extra_pee
         )
 
-        person_extra = PersonExtraFactory.create(
-            base__id='2010',
-            base__name='Andrew Smith',
-            base__email='andrew@example.com',
+        person = PersonFactory.create(
+            id='2010',
+            name='Andrew Smith',
+            email='andrew@example.com',
         )
 
         MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.green_party_extra.base,
             post_election=self.dulwich_post_extra_pee

@@ -34,12 +34,12 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         super().setUp()
         mkdir_p(TEST_MEDIA_ROOT)
         # Create Tessa Jowell (the primary person)
-        person_extra = factories.PersonExtraFactory.create(
-            base__id=2009,
-            base__name='Tessa Jowell',
-            base__gender='female',
-            base__honorific_suffix='DBE',
-            base__email='jowell@example.com',
+        person = factories.PersonFactory.create(
+            id=2009,
+            name='Tessa Jowell',
+            gender='female',
+            honorific_suffix='DBE',
+            email='jowell@example.com',
             versions='''
                 [
                   {
@@ -118,7 +118,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             EXAMPLE_IMAGE_FILENAME,
             'images/jowell-pilot.jpg',
             base_kwargs={
-                'content_object': person_extra,
+                'content_object': person,
                 'is_primary': True,
                 'source': 'Taken from Wikipedia',
             },
@@ -129,24 +129,24 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             },
         )
         factories.MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
         factories.MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee_earlier,
         )
         # Now create Shane Collins (who we'll merge into Tessa Jowell)
-        person_extra = factories.PersonExtraFactory.create(
-            base__id=2007,
-            base__name='Shane Collins',
-            base__gender='male',
-            base__honorific_prefix='Mr',
-            base__email='shane@gn.apc.org',
+        person = factories.PersonFactory.create(
+            id=2007,
+            name='Shane Collins',
+            gender='male',
+            honorific_prefix='Mr',
+            email='shane@gn.apc.org',
             versions='''
                 [
                   {
@@ -240,7 +240,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             EXAMPLE_IMAGE_FILENAME,
             'images/collins-pilot.jpg',
             base_kwargs={
-                'content_object': person_extra,
+                'content_object': person,
                 'is_primary': True,
                 'source': 'Taken from Twitter',
             },
@@ -251,13 +251,13 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             },
         )
         factories.MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.green_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
         factories.MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.green_party_extra.base,
             post_election=self.edinburgh_east_post_extra_pee,
@@ -363,11 +363,11 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # one from the person to delete is added to the existing images:
         self.assertEqual(
             2,
-            merged_person.extra.images.count()
+            merged_person.images.count()
         )
 
-        primary_image = merged_person.extra.images.get(is_primary=True)
-        non_primary_image = merged_person.extra.images.get(is_primary=False)
+        primary_image = merged_person.images.get(is_primary=True)
+        non_primary_image = merged_person.images.get(is_primary=False)
 
         self.assertEqual(
             primary_image.extra.user_notes, 'A photo of Tessa Jowell'
@@ -394,14 +394,14 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         # Create the primary and secondary versions of Stuart Jeffrey
         # that failed from their JSON serialization.
-        stuart_primary = factories.PersonExtraFactory.create(
-            base__id='2111',
-            base__name='Stuart Jeffrey',
-        ).base
-        stuart_secondary = factories.PersonExtraFactory.create(
-            base__id='12207',
-            base__name='Stuart Robert Jeffrey',
-        ).base
+        stuart_primary = factories.PersonFactory.create(
+            id='2111',
+            name='Stuart Jeffrey',
+        )
+        stuart_secondary = factories.PersonFactory.create(
+            id='12207',
+            name='Stuart Robert Jeffrey',
+        )
 
         # And create the two Westminster posts:
         factories.PostExtraFactory.create(
@@ -422,7 +422,6 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Update each of them from the versions that were merged, and merged badly:
         revert_person_from_version_data(
             stuart_primary,
-            stuart_primary.extra,
             {
                 "birth_date": "1967-12-22",
                 "email": "sjeffery@fmail.co.uk",
@@ -479,7 +478,6 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         revert_person_from_version_data(
             stuart_secondary,
-            stuart_secondary.extra,
             {
                 "birth_date": "",
                 "email": "",

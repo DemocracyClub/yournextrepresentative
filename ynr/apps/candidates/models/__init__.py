@@ -10,14 +10,10 @@ from candidates.models.constraints import check_membership_elections_consistent
 from candidates.models.merge import merge_popit_people
 
 from candidates.models.popolo_extra import AreaExtra
-from candidates.models.popolo_extra import MultipleTwitterIdentifiers
-from candidates.models.popolo_extra import VersionNotFound
-from candidates.models.popolo_extra import PersonExtra
 from candidates.models.popolo_extra import OrganizationExtra
 from candidates.models.popolo_extra import PostExtra
 from candidates.models.popolo_extra import PartySet
 from candidates.models.popolo_extra import ImageExtra
-from candidates.models.popolo_extra import parse_approximate_date
 from candidates.models.popolo_extra import PostExtraElection
 from candidates.models.popolo_extra import raise_if_unsafe_to_delete
 from candidates.models.popolo_extra import UnsafeToDelete

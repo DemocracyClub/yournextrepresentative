@@ -145,14 +145,6 @@ class PersonFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = 'popolo.Person'
-
-
-class PersonExtraFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = 'candidates.PersonExtra'
-
-    base = factory.SubFactory(PersonFactory)
     versions = '[]'
 
 

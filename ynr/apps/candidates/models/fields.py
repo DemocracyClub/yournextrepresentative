@@ -1,7 +1,5 @@
 from django.db import models
 
-from popolo.models import Person
-
 
 def get_complex_popolo_fields():
     """Return a mapping of field name to ComplexField object
@@ -119,6 +117,6 @@ class PersonExtraFieldValue(models.Model):
     class Meta:
         unique_together = (('person', 'field'))
 
-    person = models.ForeignKey(Person, related_name='extra_field_values')
+    person = models.ForeignKey('popolo.Person', related_name='extra_field_values')
     field = models.ForeignKey(ExtraField)
     value = models.TextField(blank=True)

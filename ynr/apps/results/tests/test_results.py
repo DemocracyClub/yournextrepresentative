@@ -49,16 +49,16 @@ class TestResultsFeed(
 
     def setUp(self):
         super().setUp()
-        person_extra = factories.PersonExtraFactory.create(
-            base__id='4322',
-            base__name='Tessa Jowell'
+        person = factories.PersonFactory.create(
+            id='4322',
+            name='Tessa Jowell'
         )
         example_image_filename = EXAMPLE_IMAGE_FILENAME
         self.example_image = ImageExtra.objects.create_from_file(
             example_image_filename,
             'images/jowell-pilot.jpg',
             base_kwargs={
-                'content_object': person_extra,
+                'content_object': person,
                 'is_primary': True,
                 'source': 'Taken from Wikipedia',
             },
@@ -70,7 +70,7 @@ class TestResultsFeed(
         ).base
         ResultEvent.objects.create(
             election=self.election,
-            winner=person_extra.base,
+            winner=person,
             post=self.dulwich_post_extra.base,
             winner_party=self.labour_party_extra.base,
             source='Seen on the BBC news',
@@ -163,17 +163,17 @@ class TestResultsFeedWithRetraction(
 
     def setUp(self):
         super().setUp()
-        accidental_winner = factories.PersonExtraFactory.create(
-            base__id='4322',
-            base__name='Tessa Jowell',
+        accidental_winner = factories.PersonFactory.create(
+            id='4322',
+            name='Tessa Jowell',
         )
-        real_winner = factories.PersonExtraFactory.create(
-            base__id='4493',
-            base__name='James Barber',
+        real_winner = factories.PersonFactory.create(
+            id='4493',
+            name='James Barber',
         )
         ResultEvent.objects.create(
             election=self.election,
-            winner=accidental_winner.base,
+            winner=accidental_winner,
             post=self.dulwich_post_extra.base,
             winner_party=self.labour_party_extra.base,
             source='Seen on the BBC news',
@@ -182,7 +182,7 @@ class TestResultsFeedWithRetraction(
         )
         ResultEvent.objects.create(
             election=self.election,
-            winner=accidental_winner.base,
+            winner=accidental_winner,
             post=self.dulwich_post_extra.base,
             winner_party=self.labour_party_extra.base,
             source='Result recorded in error, retracting',
@@ -192,7 +192,7 @@ class TestResultsFeedWithRetraction(
         )
         ResultEvent.objects.create(
             election=self.election,
-            winner=real_winner.base,
+            winner=real_winner,
             post=self.dulwich_post_extra.base,
             winner_party=self.ld_party_extra.base,
             source='Seen on Sky News',

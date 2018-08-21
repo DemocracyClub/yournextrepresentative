@@ -5,7 +5,7 @@ import sys
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from candidates.models import PersonExtra
+from popolo.models import Person
 
 
 class Command(BaseCommand):
@@ -30,15 +30,15 @@ class Command(BaseCommand):
         else:
             source = 'New version recorded from the command-line'
         with transaction.atomic():
-            for person_extra in PersonExtra.objects.filter(**kwargs):
+            for person in Person.objects.filter(**kwargs):
                 print("Recording the current version of {name} ({id})".format(
-                    name=person_extra.base.name, id=person_extra.base.id
+                    name=person.name, id=person.id
                 ).encode('utf-8'))
-                person_extra.record_version(
+                person.record_version(
                     {
                         'information_source': source,
                         'version_id': "{:016x}".format(randint(0, sys.maxsize)),
                         'timestamp': datetime.utcnow().isoformat(),
                     }
                 )
-                person_extra.save()
+                person.save()

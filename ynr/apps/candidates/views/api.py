@@ -142,7 +142,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                             )
                         ),
                         Prefetch(
-                            'person__extra__images',
+                            'person__images',
                             Image.objects.select_related('extra__uploading_user')
                         ),
                         'person__other_names',
@@ -151,7 +151,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                         'person__identifiers',
                         'person__extra_field_values',
                     ) \
-                    .select_related('person__extra'):
+                    .select_related('person'):
                 candidates.append(
                     serializers.NoVersionPersonSerializer(
                         instance=membership.person,
@@ -296,26 +296,23 @@ class ResultsSetPagination(pagination.PageNumberPagination):
 class PersonViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
-        queryset = Person.objects \
-            .select_related('extra') \
-            .prefetch_related(
-                Prefetch(
-                    'memberships',
-                    Membership.objects.select_related(
-                        'on_behalf_of__extra',
-                        'organization__extra',
-                        'post__extra',
-                    )
-                ),
-                'memberships__post_election__election',
-                'memberships__organization__extra',
-                'extra__images',
-                'other_names',
-                'contact_details',
-                'links',
-                'identifiers',
-            ) \
-            .order_by('id')
+        queryset = Person.objects.prefetch_related(
+            Prefetch(
+                'memberships',
+                Membership.objects.select_related(
+                    'on_behalf_of__extra',
+                    'organization__extra',
+                    'post__extra',
+                )
+            ),
+            'memberships__post_election__election',
+            'memberships__organization__extra',
+            'images',
+            'other_names',
+            'contact_details',
+            'links',
+            'identifiers',
+        ).order_by('id')
         date_qs = self.request.query_params.get('updated_gte', None)
         if date_qs:
             date = parser.parse(date_qs)

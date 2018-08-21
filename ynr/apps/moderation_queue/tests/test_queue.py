@@ -21,9 +21,7 @@ from candidates.models import LoggedAction, PostExtraElection
 from official_documents.models import OfficialDocument
 from ynr.helpers import mkdir_p
 
-from candidates.tests.factories import (
-    PersonExtraFactory, MembershipFactory,
-)
+from candidates.tests.factories import PersonFactory, MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.tests.auth import TestUserMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
@@ -61,22 +59,22 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        person_2009 = PersonExtraFactory.create(
-            base__id='2009',
-            base__name='Tessa Jowell'
+        person_2009 = PersonFactory.create(
+            id='2009',
+            name='Tessa Jowell'
         )
-        person_2007 = PersonExtraFactory.create(
-            base__id='2007',
-            base__name='Tessa Jowell'
+        person_2007 = PersonFactory.create(
+            id='2007',
+            name='Tessa Jowell'
         )
         MembershipFactory.create(
-            person=person_2009.base,
+            person=person_2009,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
         MembershipFactory.create(
-            person=person_2007.base,
+            person=person_2007,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
@@ -104,7 +102,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             justification_for_use="It's their Twitter avatar",
             decision='undecided',
             image=self.storage_filename,
-            person=person_2009.base,
+            person=person_2009,
             user=self.test_upload_user
         )
         self.q2 = QueuedImage.objects.create(
@@ -112,7 +110,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             justification_for_use="I took this last week",
             decision='approved',
             image=self.storage_filename,
-            person=person_2007.base,
+            person=person_2007,
             user=self.test_upload_user
         )
         self.q3 = QueuedImage.objects.create(
@@ -120,7 +118,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             justification_for_use="I found it somewhere",
             decision='rejected',
             image=self.storage_filename,
-            person=person_2007.base,
+            person=person_2007,
             user=self.test_reviewer
         )
         self.q_no_uploading_user = QueuedImage.objects.create(
@@ -128,7 +126,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             justification_for_use='Auto imported from Twitter',
             decision='undecided',
             image=self.storage_filename,
-            person=person_2009.base,
+            person=person_2009,
             user=None
         )
 
@@ -234,7 +232,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             )
 
             person = Person.objects.get(id=2009)
-            image = person.extra.images.last()
+            image = person.images.last()
 
             self.assertTrue(image.is_primary)
             self.assertEqual(
@@ -382,7 +380,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             mock_send_mail.assertFalse(mock_send_mail.called)
 
             person = Person.objects.get(id=2009)
-            image = person.extra.images.last()
+            image = person.images.last()
 
             self.assertTrue(image.is_primary)
             self.assertEqual(
@@ -450,22 +448,22 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
     def setUp(self):
         super().setUp()
-        person_2009 = PersonExtraFactory.create(
-            base__id='2009',
-            base__name='Tessa Jowell'
+        person_2009 = PersonFactory.create(
+            id='2009',
+            name='Tessa Jowell'
         )
-        person_2007 = PersonExtraFactory.create(
-            base__id='2007',
-            base__name='Tessa Jowell'
+        person_2007 = PersonFactory.create(
+            id='2007',
+            name='Tessa Jowell'
         )
         MembershipFactory.create(
-            person=person_2009.base,
+            person=person_2009,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
         MembershipFactory.create(
-            person=person_2007.base,
+            person=person_2007,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,

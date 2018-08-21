@@ -13,14 +13,14 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        self.primary_person = factories.PersonExtraFactory.create(
-            base__id='3885',
-            base__name='Harriet Harman'
-        ).base
-        self.secondary_person = factories.PersonExtraFactory.create(
-            base__id='10000',
-            base__name='Harriet Ruth Harman',
-        ).base
+        self.primary_person = factories.PersonFactory.create(
+            id='3885',
+            name='Harriet Harman'
+        )
+        self.secondary_person = factories.PersonFactory.create(
+            id='10000',
+            name='Harriet Ruth Harman',
+        )
 
     def test_uk_results_for_secondary_preserved(self):
         factories.MembershipFactory.create(

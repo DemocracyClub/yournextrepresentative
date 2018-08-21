@@ -37,7 +37,7 @@ def mark_candidates_as_winner(request, instance):
                 user=request.user,
             )
 
-            membership.person.extra.record_version(change_metadata)
+            membership.person.record_version(change_metadata)
             membership.person.save()
 
             LoggedAction.objects.create(
@@ -50,7 +50,7 @@ def mark_candidates_as_winner(request, instance):
         else:
             change_metadata['information_source'] = \
                 'Setting as "not elected" by implication'
-            membership.person.extra.record_version(change_metadata)
+            membership.person.record_version(change_metadata)
             membership.elected = False
             membership.save()
 

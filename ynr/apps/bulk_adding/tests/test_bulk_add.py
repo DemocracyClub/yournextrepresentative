@@ -99,13 +99,13 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(58):
+        with self.assertNumQueries(59):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
         homer = Person.objects.get()
         self.assertEqual(homer.name, 'Homer Simpson')
-        homer_versions = json.loads(homer.extra.versions)
+        homer_versions = json.loads(homer.versions)
         self.assertEqual(len(homer_versions), 2)
         self.assertEqual(
             homer_versions[0]['information_source'],
@@ -123,10 +123,10 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             'Member of Parliament for Dulwich and West Norwood')
 
     def test_adding_to_existing_person(self):
-        existing_person = factories.PersonExtraFactory.create(
-            base__id='1234567',
-            base__name='Bart Simpson'
-        ).base
+        existing_person = factories.PersonFactory.create(
+            id='1234567',
+            name='Bart Simpson'
+        )
         existing_membership = factories.MembershipFactory.create(
             person=existing_person,
             post=self.local_post.base,
@@ -190,10 +190,10 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # This could happen if someone's missed that there was the
         # same person already listed on the first page, but then
         # spotted them on the review page and said to merge them then.
-        existing_person = factories.PersonExtraFactory.create(
-            base__id='1234567',
-            base__name='Bart Simpson'
-        ).base
+        existing_person = factories.PersonFactory.create(
+            id='1234567',
+            name='Bart Simpson'
+        )
         existing_membership = factories.MembershipFactory.create(
             person=existing_person,
             # !!! This is the line that differs from the previous test:

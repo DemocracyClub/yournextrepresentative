@@ -36,7 +36,7 @@ from ..models.versions import (
     revert_person_from_version_data, get_person_as_version_data
 )
 from ..models import (
-    PersonExtra, merge_popit_people, ExtraField, PersonExtraFieldValue,
+    merge_popit_people, ExtraField, PersonExtraFieldValue,
     ComplexPopoloField
 )
 from .helpers import (
@@ -108,7 +108,7 @@ class PersonView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        path = self.person.extra.get_absolute_url()
+        path = self.person.get_absolute_url()
         context['redirect_after_login'] = urlquote(path)
         context['canonical_url'] = self.request.build_absolute_uri(path)
         context['person'] = self.person
@@ -122,7 +122,7 @@ class PersonView(TemplateView):
             ).order_by('-election_date')
         else:
             context['elections_to_list'] = elections_by_date
-        context['last_candidacy'] = self.person.extra.last_candidacy
+        context['last_candidacy'] = self.person.last_candidacy
         context['election_to_show'] = None
         context['has_current_elections'] = any([
             e.current for e in context['elections_to_list']])
@@ -135,7 +135,7 @@ class PersonView(TemplateView):
             for demographic in demographic_fields
         )
         context['complex_fields'] = [
-            (field, getattr(self.person.extra, field.name))
+            (field, getattr(self.person, field.name))
             for field in ComplexPopoloField.objects.all()
         ]
 
@@ -145,9 +145,9 @@ class PersonView(TemplateView):
     def get(self, request, *args, **kwargs):
         person_id = self.kwargs['person_id']
         try:
-            self.person = Person.objects.select_related('extra'). \
-                prefetch_related('links', 'contact_details'). \
-                get(pk=person_id)
+            self.person = Person.objects.prefetch_related(
+                'links', 'contact_details'
+            ).get(pk=person_id)
         except Person.DoesNotExist:
             try:
                 return self.get_person_redirect(person_id)
@@ -182,13 +182,12 @@ class RevertPersonView(LoginRequiredMixin, View):
 
         with transaction.atomic():
 
-            person_extra = get_object_or_404(
-                PersonExtra.objects.select_related('base'),
-                base__id=person_id
+            person = get_object_or_404(
+                Person,
+                id=person_id
             )
-            person = person_extra.base
 
-            versions = json.loads(person_extra.versions)
+            versions = json.loads(person.versions)
 
             data_to_revert_to = None
             for version in versions:
@@ -203,10 +202,10 @@ class RevertPersonView(LoginRequiredMixin, View):
             change_metadata = get_change_metadata(self.request, source)
 
             # Update the person here...
-            revert_person_from_version_data(person, person_extra, data_to_revert_to)
+            revert_person_from_version_data(person, data_to_revert_to)
 
-            person_extra.record_version(change_metadata)
-            person_extra.save()
+            person.record_version(change_metadata)
+            person.save()
 
             # Log that that action has taken place, and will be shown in
             # the recent changes, leaderboards, etc.
@@ -232,9 +231,8 @@ class MergePeopleView(GroupRequiredMixin, View):
     http_method_names = ['post']
     required_group_name = TRUSTED_TO_MERGE_GROUP_NAME
 
-    def merge(self, primary_person_extra, secondary_person_extra, change_metadata):
-        primary_person = primary_person_extra.base
-        secondary_person = secondary_person_extra.base
+    def merge(self, primary_person, secondary_person, change_metadata):
+
         with additional_merge_actions(primary_person, secondary_person):
             # Merge the reduced JSON representations:
             merged_person_version_data = merge_popit_people(
@@ -243,23 +241,22 @@ class MergePeopleView(GroupRequiredMixin, View):
             )
             revert_person_from_version_data(
                 primary_person,
-                primary_person_extra,
                 merged_person_version_data,
                 part_of_merge=True,
             )
         # Make sure the secondary person's version history is appended, so it
         # isn't lost.
-        primary_person_versions = json.loads(primary_person_extra.versions)
-        primary_person_versions += json.loads(secondary_person_extra.versions)
-        primary_person_extra.versions = json.dumps(primary_person_versions)
-        primary_person_extra.record_version(change_metadata)
-        primary_person_extra.save()
+        primary_person_versions = json.loads(primary_person.versions)
+        primary_person_versions += json.loads(secondary_person.versions)
+        primary_person.versions = json.dumps(primary_person_versions)
+        primary_person.record_version(change_metadata)
+        primary_person.save()
         # Change the secondary person's images to point at the primary
         # person instead:
         existing_primary_image = \
-            primary_person_extra.images.filter(is_primary=True).exists()
-        for image in secondary_person.extra.images.all():
-            image.content_object = primary_person.extra
+            primary_person.images.filter(is_primary=True).exists()
+        for image in secondary_person.images.all():
+            image.content_object = primary_person
             if existing_primary_image:
                 image.is_primary = False
             image.save()
@@ -277,19 +274,19 @@ class MergePeopleView(GroupRequiredMixin, View):
                 primary_person_id, secondary_person_id
             ))
         with transaction.atomic():
-            primary_person_extra, secondary_person_extra = [
+            primary_person, secondary_person = [
                 get_object_or_404(
-                    PersonExtra.objects.select_related('base'),
-                    base__id=person_id
+                    Person,
+                    id=person_id
                 )
                 for person_id in (primary_person_id, secondary_person_id)
             ]
-            primary_person = primary_person_extra.base
-            secondary_person = secondary_person_extra.base
+            primary_person = primary_person
+            secondary_person = secondary_person
             change_metadata = get_change_metadata(
                 self.request, _('After merging person {0}').format(secondary_person.id)
             )
-            self.merge(primary_person_extra, secondary_person_extra, change_metadata)
+            self.merge(primary_person, secondary_person, change_metadata)
             # Now we delete the old person:
             secondary_person.delete()
             # Create a redirect from the old person to the new person:
@@ -323,10 +320,10 @@ class UpdatePersonView(LoginRequiredMixin, FormView):
     def get_initial(self):
         initial_data = super().get_initial()
         person = get_object_or_404(
-            Person.objects.select_related('extra'),
+            Person,
             pk=self.kwargs['person_id']
         )
-        initial_data.update(person.extra.get_initial_form_data())
+        initial_data.update(person.get_initial_form_data())
         initial_data['person'] = person
         return initial_data
 
@@ -334,7 +331,7 @@ class UpdatePersonView(LoginRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
 
         person = get_object_or_404(
-            Person.objects.select_related('extra'),
+            Person,
             pk=self.kwargs['person_id']
         )
         context['person'] = person
@@ -345,7 +342,7 @@ class UpdatePersonView(LoginRequiredMixin, FormView):
         )
 
         context['versions'] = get_version_diffs(
-            json.loads(person.extra.versions)
+            json.loads(person.versions)
         )
 
         context = get_person_form_fields(context, context['form'])
@@ -367,15 +364,14 @@ class UpdatePersonView(LoginRequiredMixin, FormView):
         with transaction.atomic():
 
             person = get_object_or_404(
-                Person.objects.select_related('extra'),
+                Person,
                 id=self.kwargs['person_id']
             )
             old_name = person.name
-            person_extra = person.extra
-            old_candidacies = person_extra.current_candidacies
-            person_extra.update_from_form(form)
-            new_name = person_extra.base.name
-            new_candidacies = person_extra.current_candidacies
+            old_candidacies = person.current_candidacies
+            person.update_from_form(form)
+            new_name = person.name
+            new_candidacies = person.current_candidacies
             check_update_allowed(
                 self.request.user,
                 old_name, old_candidacies,
@@ -384,8 +380,8 @@ class UpdatePersonView(LoginRequiredMixin, FormView):
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data.pop('source')
             )
-            person_extra.record_version(change_metadata)
-            person_extra.save()
+            person.record_version(change_metadata)
+            person.save()
             LoggedAction.objects.create(
                 user=self.request.user,
                 person=person,
@@ -473,16 +469,15 @@ class NewPersonView(ElectionMixin, LoginRequiredMixin, FormView):
 
         with transaction.atomic():
 
-            person_extra = PersonExtra.create_from_form(form)
-            person = person_extra.base
+            person = Person.create_from_form(form)
             check_creation_allowed(
-                self.request.user, person_extra.current_candidacies
+                self.request.user, person.current_candidacies
             )
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data['source']
             )
-            person_extra.record_version(change_metadata)
-            person_extra.save()
+            person.record_version(change_metadata)
+            person.save()
             LoggedAction.objects.create(
                 user=self.request.user,
                 person=person,

@@ -28,8 +28,8 @@ class TwitterBot(object):
             msg = "Updated by TwitterBot"
 
         metadata = self.get_change_metadata_for_bot(msg)
-        person.extra.record_version(metadata)
-        person.extra.save()
+        person.record_version(metadata)
+        person.save()
 
         LoggedAction.objects.create(
             user=self.user,

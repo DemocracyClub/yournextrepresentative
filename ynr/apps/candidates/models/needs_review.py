@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.utils.translation import ugettext as _
 
-from popolo.models import Person
-
 # This is the number of the first edits of a user that are considered
 # to need review.
 NEEDS_REVIEW_FIRST_EDITS = 3
@@ -43,6 +41,7 @@ def needs_review_due_to_first_edits(logged_action_qs):
 
 
 def needs_review_due_to_subject_having_died(logged_action_qs):
+    from popolo.models import Person
     person_ids = logged_action_qs.values_list('person', flat=True)
     person_ids = {p for p in person_ids if p is not None}
     dead_people_ids = set(
@@ -67,7 +66,7 @@ def needs_review_due_to_statement_edit(logged_action_qs):
     for la in logged_action_qs:
         if not la.person:
             continue
-        for version_diff in la.person.extra.version_diffs:
+        for version_diff in la.person.version_diffs:
             if version_diff['version_id'] == la.popit_person_new_version:
                 this_diff = version_diff['diffs'][0]['parent_diff']
                 for op in this_diff:

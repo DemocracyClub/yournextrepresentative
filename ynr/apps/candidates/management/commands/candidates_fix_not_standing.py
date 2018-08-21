@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 
 from popolo.models import Membership
 
-from candidates.models import PersonExtra
+from popolo.models import Person
 
 class Command(BaseCommand):
 
@@ -15,13 +15,13 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        for person_extra in PersonExtra.objects.filter(
+        for person in Person.objects.filter(
             not_standing__isnull=False
         ):
             election_to_remove = []
-            for election in person_extra.not_standing.all():
+            for election in person.not_standing.all():
                 candidacies = Membership.objects.filter(
-                    person=person_extra.base,
+                    person=person,
                     extra__election=election,
                     role=election.candidate_membership_role,
                 )
@@ -32,12 +32,12 @@ class Command(BaseCommand):
             # specified, actually remove it.)
             for election in election_to_remove:
                 fmt = '{person} is marked as not standing in {election}'
-                print(fmt.format(person=person_extra.base, election=election))
+                print(fmt.format(person=person, election=election))
                 print('  ... but also has a candidacy in that election!')
                 if options['delete']:
                     fmt = "  Deleting {election} from {person}'s not_standing"
                     print(fmt.format(
                         election=election.name,
-                        person=person_extra.base.name,
+                        person=person.name,
                     ))
-                    person_extra.not_standing.remove(election)
+                    person.not_standing.remove(election)

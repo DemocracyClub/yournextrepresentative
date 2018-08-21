@@ -4,7 +4,7 @@ from django.test import TestCase, override_settings
 
 from twitterbot.management.twitter import TwitterAPIData
 
-from candidates.tests.factories import PersonExtraFactory
+from candidates.tests.factories import PersonFactory
 
 
 def fake_twitter_api_post(*args, **kwargs):
@@ -113,16 +113,16 @@ class TestTwitterData(TestCase):
 
     @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN='madeuptoken')
     def test_all_screen_names(self):
-        joe = PersonExtraFactory.create(
-            base__id='1',
-            base__name='Joe Bloggs').base
+        joe = PersonFactory.create(
+            id='1',
+            name='Joe Bloggs')
         joe.contact_details.create(
             value='joenotreallyatwitteraccount',
             contact_type='twitter',
         )
-        jane = PersonExtraFactory.create(
-            base__id='2',
-            base__name='Jane Bloggs').base
+        jane = PersonFactory.create(
+            id='2',
+            name='Jane Bloggs')
         jane.contact_details.create(
             value='janenotreallyatwitteraccount',
             contact_type='twitter')
@@ -134,16 +134,16 @@ class TestTwitterData(TestCase):
 
     @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN='madeuptoken')
     def tests_all_user_ids(self):
-        joe = PersonExtraFactory.create(
-            base__id='1',
-            base__name='Joe Bloggs').base
+        joe = PersonFactory.create(
+            id='1',
+            name='Joe Bloggs')
         joe.identifiers.create(
             identifier='246',
             scheme='twitter',
         )
-        jane = PersonExtraFactory.create(
-            base__id='2',
-            base__name='Jane Bloggs').base
+        jane = PersonFactory.create(
+            id='2',
+            name='Jane Bloggs')
         jane.identifiers.create(
             identifier='357',
             scheme='twitter')

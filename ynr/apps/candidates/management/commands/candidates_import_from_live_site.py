@@ -343,7 +343,6 @@ class Command(BaseCommand):
                     'base': p,
                     'versions': json.dumps(person_data['versions'])
                 }
-                pe = models.PersonExtra.objects.create(**kwargs)
                 # Look for any data in ExtraFields
                 for extra_field_data in person_data['extra_fields']:
                     p.extra_field_values.create(

@@ -7,7 +7,7 @@ from popolo.models import Person
 from candidates.models import PostExtraElection
 from .auth import TestUserMixin
 from .factories import (
-    MembershipFactory, MembershipFactory, PersonExtraFactory,
+    MembershipFactory, MembershipFactory, PersonFactory,
 )
 from .dates import templates_after
 from .uk_examples import UK2015ExamplesMixin
@@ -18,24 +18,24 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        person_extra = PersonExtraFactory.create(
-            base__id='2009',
-            base__name='Tessa Jowell'
+        person = PersonFactory.create(
+            id='2009',
+            name='Tessa Jowell'
         )
         MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
 
-        self.winner = PersonExtraFactory.create(
-            base__id='4322',
-            base__name='Helen Hayes'
+        self.winner = PersonFactory.create(
+            id='4322',
+            name='Helen Hayes'
         )
 
         MembershipFactory.create(
-            person=self.winner.base,
+            person=self.winner,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
@@ -128,14 +128,14 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         person = Person.objects.get(id=4322)
-        self.assertTrue(person.extra.get_elected(self.election))
+        self.assertTrue(person.get_elected(self.election))
         resultevent = ResultEvent.objects.get()
         self.assertEqual(resultevent.election, self.election)
-        self.assertEqual(resultevent.winner, self.winner.base)
+        self.assertEqual(resultevent.winner, self.winner)
         self.assertEqual(resultevent.old_post_id, '65808')
         self.assertEqual(resultevent.old_post_name, 'Member of Parliament for Dulwich and West Norwood')
-        self.assertEqual(resultevent.post, self.dulwich_post_extra.base)
-        self.assertEqual(resultevent.winner_party, self.labour_party_extra.base)
+        self.assertEqual(resultevent.post.extra, self.dulwich_post_extra)
+        self.assertEqual(resultevent.winner_party.extra, self.labour_party_extra)
         self.assertEqual(resultevent.source, 'BBC website')
         self.assertEqual(resultevent.user, self.user_who_can_record_results)
         self.assertEqual(resultevent.parlparse_id, '')
@@ -165,7 +165,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         person = Person.objects.get(id=4322)
-        self.assertTrue(person.extra.get_elected(self.election))
+        self.assertTrue(person.get_elected(self.election))
 
         form_get_response = self.app.get(
             base_record_url + '?person=2009',
@@ -207,7 +207,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         person = Person.objects.get(id=4322)
-        self.assertTrue(person.extra.get_elected(self.election))
+        self.assertTrue(person.get_elected(self.election))
 
         form_get_response = self.app.get(
             base_record_url + '?person=2009',
@@ -225,7 +225,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         person = Person.objects.get(id=2009)
-        self.assertTrue(person.extra.get_elected(self.election))
+        self.assertTrue(person.get_elected(self.election))
         self.assertEqual(2, ResultEvent.objects.count())
         self.assertEqual(2, ResultEvent.objects.filter(retraction=False).count())
 
@@ -259,7 +259,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         person = Person.objects.get(id=4322)
-        self.assertTrue(person.extra.get_elected(self.election))
+        self.assertTrue(person.get_elected(self.election))
 
         form_get_response = self.app.get(
             base_record_url + '?person=2009',
@@ -277,7 +277,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         person = Person.objects.get(id=2009)
-        self.assertTrue(person.extra.get_elected(self.election))
+        self.assertTrue(person.get_elected(self.election))
         self.assertEqual(2, ResultEvent.objects.count())
         self.assertEqual(2, ResultEvent.objects.filter(retraction=False).count())
 
@@ -286,24 +286,24 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        person_extra = PersonExtraFactory.create(
-            base__id='2009',
-            base__name='Tessa Jowell'
+        person = PersonFactory.create(
+            id='2009',
+            name='Tessa Jowell'
         )
         MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
 
-        self.winner = PersonExtraFactory.create(
-            base__id='4322',
-            base__name='Helen Hayes'
+        self.winner = PersonFactory.create(
+            id='4322',
+            name='Helen Hayes'
         )
 
         MembershipFactory.create(
-            person=self.winner.base,
+            person=self.winner,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             elected=True,
@@ -401,12 +401,12 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         person = Person.objects.get(id=4322)
-        self.assertFalse(person.extra.get_elected(self.election))
+        self.assertFalse(person.get_elected(self.election))
 
         self.assertEqual(1, ResultEvent.objects.count())
         resultevent = ResultEvent.objects.get()
         self.assertEqual(resultevent.election, self.election)
-        self.assertEqual(resultevent.winner, self.winner.base)
+        self.assertEqual(resultevent.winner, self.winner)
         self.assertEqual(resultevent.old_post_id, '65808')
         self.assertEqual(resultevent.old_post_name, 'Member of Parliament for Dulwich and West Norwood')
         self.assertEqual(resultevent.post, self.dulwich_post_extra.base)

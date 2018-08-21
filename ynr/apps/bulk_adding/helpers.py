@@ -1,7 +1,6 @@
 from popolo.models import Membership, Person
 
-from candidates.models import (LoggedAction, PersonExtra,
-                               raise_if_unsafe_to_delete)
+from candidates.models import LoggedAction, raise_if_unsafe_to_delete
 from candidates.models.auth import check_creation_allowed
 from candidates.views.version_data import get_change_metadata, get_client_ip
 from tasks.models import pause_task_signal
@@ -10,14 +9,13 @@ from tasks.models import pause_task_signal
 @pause_task_signal
 def add_person(request, person_data):
     person = Person.objects.create(name=person_data['name'])
-    person_extra = PersonExtra.objects.create(base=person)
 
     change_metadata = get_change_metadata(
         request, person_data['source']
     )
 
-    person_extra.record_version(change_metadata, new_person=True)
-    person_extra.save()
+    person.record_version(change_metadata, new_person=True)
+    person.save()
 
     LoggedAction.objects.create(
         user=request.user,
@@ -27,23 +25,23 @@ def add_person(request, person_data):
         popit_person_new_version=change_metadata['version_id'],
         source=change_metadata['information_source'],
     )
-    return person_extra
+    return person
 
 
 @pause_task_signal
-def update_person(request=None, person_extra=None,
+def update_person(request=None, person=None,
                   party=None, post_election=None, source=None):
     election = post_election.election
 
-    person_extra.not_standing.remove(election)
+    person.not_standing.remove(election)
 
     check_creation_allowed(
-        request.user, person_extra.current_candidacies
+        request.user, person.current_candidacies
     )
 
     membership, _ = Membership.objects.update_or_create(
         post=post_election.postextra.base,
-        person=person_extra.base,
+        person=person,
         role=election.candidate_membership_role,
         post_election=post_election,
         defaults={
@@ -61,7 +59,7 @@ def update_person(request=None, person_extra=None,
     old_memberships = Membership.objects \
         .exclude(pk=membership.pk) \
         .filter(
-            person=person_extra.base,
+            person=person,
             post_election=post_election,
             role=election.candidate_membership_role,
         )
@@ -73,12 +71,12 @@ def update_person(request=None, person_extra=None,
         request, source
     )
 
-    person_extra.record_version(change_metadata)
-    person_extra.save()
+    person.record_version(change_metadata)
+    person.save()
 
     LoggedAction.objects.create(
         user=request.user,
-        person=person_extra.base,
+        person=person,
         action_type='person-update',
         ip_address=get_client_ip(request),
         popit_person_new_version=change_metadata['version_id'],

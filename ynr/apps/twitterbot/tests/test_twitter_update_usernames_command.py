@@ -4,7 +4,7 @@ from django.core.management import call_command
 from django.test import TestCase, override_settings
 
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import PersonExtraFactory
+from candidates.tests.factories import PersonFactory
 from candidates.tests.output import capture_output, split_output
 
 
@@ -66,9 +66,9 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
                 'screen_name': 'notatwitteraccounteither',
             }
         ]:
-            person = PersonExtraFactory.create(
-                base__name=person_details['name']
-            ).base
+            person = PersonFactory.create(
+                name=person_details['name']
+            )
             setattr(self, person_details['attr'], person)
             if 'user_id' in person_details:
                 person.identifiers.create(

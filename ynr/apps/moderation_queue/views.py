@@ -32,7 +32,7 @@ from .models import QueuedImage, SuggestedPostLock, PHOTO_REVIEWERS_GROUP_NAME
 from candidates.management.images import (
     get_file_md5sum, ImageDownloadException, download_image_from_url)
 from candidates.models import (LoggedAction, ImageExtra,
-                               PersonExtra, PostExtraElection)
+                               PostExtraElection)
 from candidates.views.version_data import get_client_ip, get_change_metadata
 
 from popolo.models import Person
@@ -203,7 +203,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
 
     def get_google_image_search_url(self, person):
         image_search_query = '"{}"'.format(person.name)
-        last_candidacy = person.extra.last_candidacy
+        last_candidacy = person.last_candidacy
         if last_candidacy:
             party = last_candidacy.on_behalf_of
             if party:
@@ -307,7 +307,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         # RGBA rather than RGB so that any alpha channel (transparency)
         # is preserved).
         person_id = self.queued_image.person.id
-        person_extra = PersonExtra.objects.get(base__id=person_id)
+        person = Person.objects.get(pk=person_id)
         original = original.convert('RGBA')
         cropped = original.crop(crop_bounds)
         ntf = NamedTemporaryFile(delete=False)
@@ -328,7 +328,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             base_kwargs={
                 'source': source,
                 'is_primary': make_primary,
-                'content_object': person_extra,
+                'content_object': person,
             },
             extra_kwargs={
                 'md5sum': md5sum,
@@ -345,8 +345,8 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         person = Person.objects.get(
             id=self.queued_image.person.id
         )
-        person_extra = person.extra
-        candidate_path = person_extra.get_absolute_url()
+
+        candidate_path = person.get_absolute_url()
         candidate_name = person.name
         candidate_link = '<a href="{url}">{name}</a>'.format(
             url=candidate_path,
@@ -398,8 +398,8 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 self.request,
                 update_message
             )
-            person_extra.record_version(change_metadata)
-            person_extra.save()
+            person.record_version(change_metadata)
+            person.save()
             person.save()
             LoggedAction.objects.create(
                 user=self.request.user,
@@ -410,7 +410,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 source=update_message,
             )
             candidate_full_url = self.request.build_absolute_uri(
-                person_extra.get_absolute_url(self.request)
+                person.get_absolute_url(self.request)
             )
 
             self.send_mail(

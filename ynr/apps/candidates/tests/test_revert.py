@@ -7,7 +7,8 @@ from django.db.models import F
 from django_webtest import WebTest
 from popolo.models import Membership
 
-from candidates.models import PersonExtra, ExtraField
+from candidates.models import ExtraField
+from popolo.models import Person
 
 from compat import bytes_to_unicode, deep_sort
 
@@ -124,26 +125,26 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        person_extra = factories.PersonExtraFactory.create(
-            base__id=2009,
-            base__name='Tessa Jowell',
-            base__email='jowell@example.com',
+        person = factories.PersonFactory.create(
+            id=2009,
+            name='Tessa Jowell',
+            email='jowell@example.com',
             versions=self.version_template.substitute(
                 slug=self.labour_party_extra.slug
             )
         )
-        person_extra.base.links.create(
+        person.links.create(
             url='',
             note='wikipedia',
         )
         factories.MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee,
         )
         factories.MembershipFactory.create(
-            person=person_extra.base,
+            person=person,
             post=self.dulwich_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.dulwich_post_extra_pee_earlier,
@@ -178,10 +179,10 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         # Now get the person from the database and check if the
         # details are the same as the earlier version:
-        person_extra = PersonExtra.objects.get(base__id=2009)
+        person = Person.objects.get(id=2009)
 
         # First check that a new version has been created:
-        new_versions = json.loads(person_extra.versions)
+        new_versions = json.loads(person.versions)
 
         self.maxDiff = None
         expected_new_version = {
@@ -243,10 +244,10 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             deep_sort(expected_new_version)
         )
 
-        self.assertEqual(person_extra.base.birth_date, '1947-09-17')
-        self.assertEqual(person_extra.homepage_url, 'http://example.org/tessajowell')
+        self.assertEqual(person.birth_date, '1947-09-17')
+        self.assertEqual(person.homepage_url, 'http://example.org/tessajowell')
 
-        extra_values = list(person_extra.base.extra_field_values \
+        extra_values = list(person.extra_field_values \
             .order_by('field__key') \
             .values('field__key', 'value'))
         self.assertEqual(
@@ -264,7 +265,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         candidacies = Membership.objects.filter(
-            person=person_extra.base,
+            person=person,
             role=F('post_election__election__candidate_membership_role')
         ).order_by('post_election__election__election_date')
 
@@ -273,6 +274,6 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         # The homepage link should have been added and the Wikipedia
         # one removed:
-        self.assertEqual(1, person_extra.base.links.count())
-        remaining_link = person_extra.base.links.first()
+        self.assertEqual(1, person.links.count())
+        remaining_link = person.links.first()
         self.assertEqual(remaining_link.note, 'homepage')

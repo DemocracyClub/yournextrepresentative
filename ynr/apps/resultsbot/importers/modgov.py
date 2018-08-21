@@ -102,7 +102,7 @@ class ModGovImporter(BaseImporter):
             if area == "--deleted--":
                 continue
             if not division.local_area:
-                import ipdb; ipdb.set_trace()
+                raise
             if int(division.numseats) != division.local_area.winner_count:
                 if int(division.numseats) == 0:
                     # chances are this is a mistake
@@ -156,7 +156,7 @@ class ModGovElection(object):
         try:
             return self.soup.election.title.get_text(strip=True)
         except:
-            import ipdb; ipdb.set_trace()
+            raise
 
     @property
     def num_candidates(self):

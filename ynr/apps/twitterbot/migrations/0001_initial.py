@@ -7,7 +7,7 @@ from django.conf import settings
 
 def create_user(apps, schema_editor):
     User= apps.get_model('auth', 'User')
-    User.objects.create(username=settings.TWITTER_BOT_USERNAME)
+    User.objects.get_or_create(username=settings.TWITTER_BOT_USERNAME)
 
 
 class Migration(migrations.Migration):

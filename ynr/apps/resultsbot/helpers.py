@@ -47,7 +47,7 @@ class ResultsBot(object):
                     user=self.user,
                 )
 
-                membership.person.extra.record_version(change_metadata)
+                membership.person.record_version(change_metadata)
                 membership.person.save()
 
                 LoggedAction.objects.create(
@@ -60,7 +60,7 @@ class ResultsBot(object):
             else:
                 change_metadata['information_source'] = \
                     'Setting as "not elected" by implication'
-                membership.person.extra.record_version(change_metadata)
+                membership.person.record_version(change_metadata)
                 membership.extra.elected = False
                 membership.extra.save()
 
