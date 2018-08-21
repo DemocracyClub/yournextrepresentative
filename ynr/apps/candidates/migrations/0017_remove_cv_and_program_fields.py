@@ -3,17 +3,9 @@ from django.db import models, migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('candidates', '0016_migrate_data_to_extra_fields'),
-    ]
+    dependencies = [("candidates", "0016_migrate_data_to_extra_fields")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='personextra',
-            name='cv',
-        ),
-        migrations.RemoveField(
-            model_name='personextra',
-            name='program',
-        ),
+        migrations.RemoveField(model_name="personextra", name="cv"),
+        migrations.RemoveField(model_name="personextra", name="program"),
     ]

@@ -4,8 +4,7 @@ import requests
 from django.utils.six.moves.urllib_parse import urljoin
 
 from elections.models import Election
-from .base import (
-    BaseCandidate, BaseDivision, BaseImporter)
+from .base import BaseCandidate, BaseDivision, BaseImporter
 from resultsbot.matchers.mappings import SavedMapping
 from resultsbot.matchers.candidate import CandidateMatcher
 from resultsbot.matchers.party import PartyMatacher
@@ -16,7 +15,7 @@ class ModGovCandidate(BaseCandidate):
         self.division = division
         self.xml = candidate_xml
         if type(candidate_xml) == str:
-            self.soup = BeautifulSoup(self.xml, 'xml')
+            self.soup = BeautifulSoup(self.xml, "xml")
         else:
             self.soup = candidate_xml
 
@@ -50,21 +49,21 @@ class ModGovDivision(BaseDivision):
         title = soup.title.get_text(strip=True)
         super().__init__(election, title)
         ATTRS = [
-            'electionareaid',
-            'title',
-            'description',
-            'externallink',
-            'population',
-            'electorate',
-            'numballotpapersissued',
-            'numproxyvotes',
-            'numpostalvotessent',
-            'numpostalvotesreturned',
-            'startvotedatetime',
-            'endvotedatetime',
-            'endofcountingdatetime',
-            'numseats',
-            'status',
+            "electionareaid",
+            "title",
+            "description",
+            "externallink",
+            "population",
+            "electorate",
+            "numballotpapersissued",
+            "numproxyvotes",
+            "numpostalvotessent",
+            "numpostalvotesreturned",
+            "startvotedatetime",
+            "endvotedatetime",
+            "endofcountingdatetime",
+            "numseats",
+            "status",
         ]
         for attr in ATTRS:
             soup_attr = getattr(soup, attr)
@@ -73,31 +72,29 @@ class ModGovDivision(BaseDivision):
 
     @property
     def spoiled_votes(self):
-        for spoiled in self.soup.find_all('spoiledvote'):
+        for spoiled in self.soup.find_all("spoiledvote"):
             try:
                 if spoiled.description.get_text(strip=True) == "Rejected":
                     return int(spoiled.numvotes.get_text(strip=True))
             except:
                 pass
 
+
 class ModGovImporter(BaseImporter):
     def __init__(self, *args, **kwargs):
-        self.url = kwargs.pop('url')
+        self.url = kwargs.pop("url")
         super().__init__(*args, **kwargs)
         self.get_data()
-        self.saved_numseats = SavedMapping('num_seats.json')
+        self.saved_numseats = SavedMapping("num_seats.json")
 
     def get_data(self):
         self.data = requests.get(self.url).content
-        self.soup = BeautifulSoup(self.data, 'xml')
+        self.soup = BeautifulSoup(self.data, "xml")
 
     def divisions(self):
-        areas = self.soup.election.find_all('electionarea')
+        areas = self.soup.election.find_all("electionarea")
         for area in areas:
-            division = ModGovDivision(
-                self.election,
-                area
-            )
+            division = ModGovDivision(self.election, area)
             area = division.match_name()
             if area == "--deleted--":
                 continue
@@ -113,12 +110,15 @@ class ModGovImporter(BaseImporter):
                     if should_ask:
                         print(division.title)
                         print(self.url)
-                        print(division.numseats, division.local_area.winner_count)
+                        print(
+                            division.numseats, division.local_area.winner_count
+                        )
                         print("winner_count mismatch, update local?")
                         answer = raw_input("y/n: ")
                         if answer.lower() == "y":
-                            division.local_area.winner_count = \
-                                int(division.numseats)
+                            division.local_area.winner_count = int(
+                                division.numseats
+                            )
                             division.local_area.save()
                         self.saved_numseats[key] = False
                         self.saved_numseats.save()
@@ -127,19 +127,16 @@ class ModGovImporter(BaseImporter):
             yield division
 
     def candidates(self, division):
-        for candidate in self.soup.find_all('candidate'):
+        for candidate in self.soup.find_all("candidate"):
             if candidate.electionareaid.get_text() == division.electionareaid:
                 yield ModGovCandidate(candidate, division)
 
     def api_url_to_web_url(self, url):
         url = url.replace(
-            'mgWebService.asmx/GetElectionResults',
-            'mgElectionElectionAreaResults.aspx'
+            "mgWebService.asmx/GetElectionResults",
+            "mgElectionElectionAreaResults.aspx",
         )
-        url = url.replace(
-            'lElectionId=',
-            'Page=all&EID='
-        )
+        url = url.replace("lElectionId=", "Page=all&EID=")
         return url
 
 
@@ -147,9 +144,10 @@ class ModGovElection(object):
     """
     A wrapper around the election XML from modgov
     """
+
     def __init__(self, xml):
         self.raw_xml = xml
-        self.soup = BeautifulSoup(xml, 'xml')
+        self.soup = BeautifulSoup(xml, "xml")
 
     @property
     def title(self):
@@ -160,11 +158,11 @@ class ModGovElection(object):
 
     @property
     def num_candidates(self):
-        return len(self.soup.find_all('candidate'))
+        return len(self.soup.find_all("candidate"))
 
     @property
     def num_divisions(self):
-        return len(self.soup.election.find_all('electionarea'))
+        return len(self.soup.election.find_all("electionarea"))
 
 
 class ModGovElectionMatcher(object):
@@ -174,9 +172,9 @@ class ModGovElectionMatcher(object):
     """
 
     def __init__(self, base_domain, election_id):
-        if base_domain.startswith('http'):
-            raise ValueError('Expected base domain without protocol')
-        if not base_domain.endswith('/'):
+        if base_domain.startswith("http"):
+            raise ValueError("Expected base domain without protocol")
+        if not base_domain.endswith("/"):
             base_domain = base_domain + "/"
         self.base_domain = base_domain
         self.start_id = 1
@@ -187,38 +185,23 @@ class ModGovElectionMatcher(object):
 
     def format_elections_api_url(self):
         endpoint = "mgWebService.asmx/GetElectionResults"
-        url = urljoin(
-            self.base_domain,
-            endpoint
-        )
-        return "https://{}?lElectionId=".format(
-            url
-        )
+        url = urljoin(self.base_domain, endpoint)
+        return "https://{}?lElectionId=".format(url)
 
     def format_elections_html_url(self):
         endpoint = "mgElectionElectionAreaResults.aspx"
-        url = urljoin(
-            self.base_domain,
-            endpoint
-        )
-        url =  "https://{}?Page=all&EID=".format(
-            url
-        )
+        url = urljoin(self.base_domain, endpoint)
+        url = "https://{}?Page=all&EID=".format(url)
         if self.http_only:
-            url = url.replace('https://', 'http://')
+            url = url.replace("https://", "http://")
         return url
 
     def format_elections_index_url(self):
         endpoint = "mgManageElectionResults.aspx"
-        url = urljoin(
-            self.base_domain,
-            endpoint
-        )
-        url =  "https://{}".format(
-            url
-        )
+        url = urljoin(self.base_domain, endpoint)
+        url = "https://{}".format(url)
         if self.http_only:
-            url = url.replace('https://', 'http://')
+            url = url.replace("https://", "http://")
         return url
 
     def parse_remote_date(self, election_id, election):
@@ -226,17 +209,16 @@ class ModGovElectionMatcher(object):
         The API doesn't return the actual poll date, so we have to scrape
         the HTML!
         """
-        req = requests.get("{}{}".format(
-            self.format_elections_html_url(),
-            election_id
-            ))
+        req = requests.get(
+            "{}{}".format(self.format_elections_html_url(), election_id)
+        )
         # print("HTML URL: " + req.url)
-        soup = BeautifulSoup(req.text, 'html5lib')
-        headings = soup.find_all('h2', {'class': 'mgSubTitleTxt'})
+        soup = BeautifulSoup(req.text, "html5lib")
+        headings = soup.find_all("h2", {"class": "mgSubTitleTxt"})
         for heading in headings:
             try:
                 return parser.parse(
-                    heading.get_text().split(' - ')[-1].strip()
+                    heading.get_text().split(" - ")[-1].strip()
                 ).date()
             except:
                 print(title_str)
@@ -249,20 +231,22 @@ class ModGovElectionMatcher(object):
             self.http_only = True
             req = requests.get(self.format_elections_index_url(), timeout=2)
         print(req.url)
-        if 'No published elections found.' in req.text:
+        if "No published elections found." in req.text:
             return False
         else:
             return True
 
     def find_elections(self):
         if not self.uses_election_feature():
-            print("Looks like {} doesn't use the election feature".format(
-                self.base_domain
-            ))
+            print(
+                "Looks like {} doesn't use the election feature".format(
+                    self.base_domain
+                )
+            )
         i = self.start_id
         while i < self.lookahead:
             election = self.get_election_by_id(i)
-            if not '<election />' in election.text:
+            if not "<election />" in election.text:
                 self.lookahead += 1
                 self.elections_by_id[i] = ModGovElection(election.text)
                 self.elections_by_id[i].url = election.url
@@ -273,13 +257,13 @@ class ModGovElectionMatcher(object):
         base_url = self.format_elections_api_url()
         url = "{}{}".format(base_url, election_id)
         if self.http_only:
-            url = url.replace('https://', 'http://')
+            url = url.replace("https://", "http://")
 
         try:
             req = requests.get(url, timeout=2)
             req.raise_for_status()
         except:
-            url = url.replace('https://', 'http://')
+            url = url.replace("https://", "http://")
             req = requests.get(url, timeout=2)
             self.http_only = True
 
@@ -298,8 +282,6 @@ class ModGovElectionMatcher(object):
         elif len(found_elections.values()) > 1:
             print("Found more than one election for this date!")
             for election_id, election in found_elections.items():
-                print("\t{}\t{}".format(
-                    election_id, election.title
-                ))
+                print("\t{}\t{}".format(election_id, election.title))
             selected = int(raw_input("Pick one: "))
             return found_elections[selected]

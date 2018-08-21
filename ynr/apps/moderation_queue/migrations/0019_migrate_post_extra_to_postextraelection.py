@@ -3,8 +3,9 @@ import os
 
 from django.db import migrations, models
 
+
 def migrate_post_extra_to_postextraelection(apps, schema_editor):
-    SuggestedPostLock = apps.get_model('moderation_queue', 'SuggestedPostLock')
+    SuggestedPostLock = apps.get_model("moderation_queue", "SuggestedPostLock")
     for spl in SuggestedPostLock.objects.all():
         # If there's more than one postextraelection, then make sure
         # that we create new SuggestedPostLocks for the rest of them:
@@ -13,8 +14,10 @@ def migrate_post_extra_to_postextraelection(apps, schema_editor):
         if not postextraelections.exists():
             continue
         try:
-            use_for_original, use_for_new_list = \
-                postextraelections[0], postextraelections[1:]
+            use_for_original, use_for_new_list = (
+                postextraelections[0],
+                postextraelections[1:],
+            )
         except IndexError:
             use_for_original = postextraelections[0]
             use_for_new_list = []
@@ -30,8 +33,9 @@ def migrate_post_extra_to_postextraelection(apps, schema_editor):
                 postextraelection=postextraelection,
                 post_extra=spl.post_extra,
                 user=spl.user,
-                justification=spl.justification
+                justification=spl.justification,
             )
+
 
 def migrate_postextraelection_to_post_extra(apps, schema_editor):
     # The reverse migration here will probably lose data, since we're
@@ -45,13 +49,13 @@ def migrate_postextraelection_to_post_extra(apps, schema_editor):
     # set the environment variable ALLOW_LOSSY_REVERSE_MIGRATIONS to
     # '1', in which case the exception won't be raised, and a rollback
     # will be attempted anyway.
-    if os.environ.get('ALLOW_LOSSY_REVERSE_MIGRATIONS') != '1':
+    if os.environ.get("ALLOW_LOSSY_REVERSE_MIGRATIONS") != "1":
         raise Exception(
-            'Cannot reverse the 0019_migrate_post_extra_to_postextraelection ' \
-            'migration as it will lose data. See the migration file for ' \
-            'details on how to do this anyway.'
+            "Cannot reverse the 0019_migrate_post_extra_to_postextraelection "
+            "migration as it will lose data. See the migration file for "
+            "details on how to do this anyway."
         )
-    SuggestedPostLock = apps.get_model('moderation_queue', 'SuggestedPostLock')
+    SuggestedPostLock = apps.get_model("moderation_queue", "SuggestedPostLock")
     # Group these by postextra, user and justification:
     grouped = defaultdict(list)
     for spl in list(SuggestedPostLock.objects.all()):
@@ -69,7 +73,7 @@ def migrate_postextraelection_to_post_extra(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('moderation_queue', '0018_suggestedpostlock_postextraelection'),
+        ("moderation_queue", "0018_suggestedpostlock_postextraelection")
     ]
 
     operations = [

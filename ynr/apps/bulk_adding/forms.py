@@ -9,35 +9,37 @@ from candidates.views import search_person_by_name
 
 class BaseBulkAddFormSet(forms.BaseFormSet):
     def __init__(self, *args, **kwargs):
-        if 'parties' in kwargs:
-            self.parties = kwargs['parties']
-            del kwargs['parties']
-        if 'party_set' in kwargs:
-            self.party_set_slug = kwargs['party_set'].slug
-            del kwargs['party_set']
+        if "parties" in kwargs:
+            self.parties = kwargs["parties"]
+            del kwargs["parties"]
+        if "party_set" in kwargs:
+            self.party_set_slug = kwargs["party_set"].slug
+            del kwargs["party_set"]
         else:
             self.party_set_slug = None
-        if 'source' in kwargs:
-            self.source = kwargs['source']
-            del kwargs['source']
+        if "source" in kwargs:
+            self.source = kwargs["source"]
+            del kwargs["source"]
         super().__init__(*args, **kwargs)
 
     def add_fields(self, form, index):
         super().add_fields(form, index)
-        if hasattr(self, 'parties'):
+        if hasattr(self, "parties"):
             form.fields["party"] = forms.ChoiceField(
                 choices=self.parties,
-                widget=forms.Select(attrs={
-                    'class': 'party-select',
-                    'show_load_more': 1,
-                    'data-partyset': self.party_set_slug
-                }),
+                widget=forms.Select(
+                    attrs={
+                        "class": "party-select",
+                        "show_load_more": 1,
+                        "data-partyset": self.party_set_slug,
+                    }
+                ),
             )
 
-            if 'party' in getattr(form, '_hide', []):
+            if "party" in getattr(form, "_hide", []):
                 form.fields["party"].widget = forms.HiddenInput()
 
-        if hasattr(self, 'source'):
+        if hasattr(self, "source"):
             form.fields["source"].initial = self.source
             form.fields["source"].widget = forms.HiddenInput()
 
@@ -54,13 +56,13 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         """
         name = suggestion.name
         try:
-            candidacy = suggestion.object.memberships.select_related(
-                'post__extra',
-                'on_behalf_of',
-                'post_election__election'
-            ).order_by(
-                '-post_election__election__election_date'
-            ).first()
+            candidacy = (
+                suggestion.object.memberships.select_related(
+                    "post__extra", "on_behalf_of", "post_election__election"
+                )
+                .order_by("-post_election__election__election_date")
+                .first()
+            )
             if candidacy:
                 name = """
                     <strong>{name}</strong>
@@ -79,32 +81,33 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
 
     def add_fields(self, form, index):
         super().add_fields(form, index)
-        if not form['name'].value():
+        if not form["name"].value():
             return
-        suggestions = self.suggested_people(form['name'].value())
+        suggestions = self.suggested_people(form["name"].value())
 
-        CHOICES = [('_new', 'Add new person')]
+        CHOICES = [("_new", "Add new person")]
         if suggestions:
-            CHOICES += [self.format_value(suggestion)
-                        for suggestion in suggestions]
-        form.fields['select_person'] = forms.ChoiceField(
-            choices=CHOICES, widget=forms.RadioSelect())
+            CHOICES += [
+                self.format_value(suggestion) for suggestion in suggestions
+            ]
+        form.fields["select_person"] = forms.ChoiceField(
+            choices=CHOICES, widget=forms.RadioSelect()
+        )
 
-        if hasattr(self, 'parties'):
+        if hasattr(self, "parties"):
             form.fields["party"] = forms.ChoiceField(
                 choices=self.parties,
-                widget=forms.HiddenInput(attrs={
-                    'readonly': 'readonly',
-                    'class': 'party-select',
-                }),
-                required=False
+                widget=forms.HiddenInput(
+                    attrs={"readonly": "readonly", "class": "party-select"}
+                ),
+                required=False,
             )
 
 
 class NameOnlyPersonForm(forms.Form):
     name = forms.CharField(
-        label=_("Name (style: Ali Smith, not SMITH Ali)"),
-        required=True)
+        label=_("Name (style: Ali Smith, not SMITH Ali)"), required=True
+    )
 
 
 class QuickAddSinglePersonForm(NameOnlyPersonForm):
@@ -113,34 +116,31 @@ class QuickAddSinglePersonForm(NameOnlyPersonForm):
 
 class ReviewSinglePersonNameOnlyForm(forms.Form):
     name = forms.CharField(
-        required=False,
-        widget=forms.HiddenInput(attrs={'readonly': 'readonly'}))
+        required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
+    )
 
 
 class ReviewSinglePersonForm(ReviewSinglePersonNameOnlyForm):
     source = forms.CharField(
-        required=False,
-        widget=forms.HiddenInput(attrs={'readonly': 'readonly'}))
+        required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
+    )
     party_description = forms.CharField(
-        required=False,
-        widget=forms.HiddenInput())
+        required=False, widget=forms.HiddenInput()
+    )
 
 
 BulkAddFormSet = forms.formset_factory(
-    QuickAddSinglePersonForm,
-    extra=15,
-    formset=BaseBulkAddFormSet)
+    QuickAddSinglePersonForm, extra=15, formset=BaseBulkAddFormSet
+)
 
 
 BulkAddReviewNameOnlyFormSet = forms.formset_factory(
-    ReviewSinglePersonNameOnlyForm,
-    extra=0,
-    formset=BaseBulkAddReviewFormSet)
+    ReviewSinglePersonNameOnlyForm, extra=0, formset=BaseBulkAddReviewFormSet
+)
 
 BulkAddReviewFormSet = forms.formset_factory(
-    ReviewSinglePersonForm,
-    extra=0,
-    formset=BaseBulkAddReviewFormSet)
+    ReviewSinglePersonForm, extra=0, formset=BaseBulkAddReviewFormSet
+)
 
 
 class BulkAddByPartyFormset(forms.BaseFormSet):
@@ -150,14 +150,16 @@ class BulkAddByPartyFormset(forms.BaseFormSet):
 class SelectPartyForm(forms.Form):
     def __init__(self, *args, **kwargs):
 
-        election = kwargs.pop('election')
+        election = kwargs.pop("election")
         super().__init__(*args, **kwargs)
 
         self.election = election
-        party_set_ids = election.postextraelection_set.all().order_by(
-            'postextra__party_set').values_list(
-                'postextra__party_set', flat=True).annotate(
-                    Count('postextra__party_set'))
+        party_set_ids = (
+            election.postextraelection_set.all()
+            .order_by("postextra__party_set")
+            .values_list("postextra__party_set", flat=True)
+            .annotate(Count("postextra__party_set"))
+        )
 
         for ps in PartySet.objects.filter(pk__in=set(party_set_ids)):
             self.fields["party_{}".format(ps.slug)] = forms.ChoiceField(
@@ -165,19 +167,18 @@ class SelectPartyForm(forms.Form):
                 choices=ps.party_choices(
                     exclude_deregistered=True,
                     include_descriptions=False,
-                    include_non_current=False),
-                widget=forms.Select(attrs={
-                    'class': 'party-select',
-                }),
-                label="{} Parties".format(ps.slug.upper())
+                    include_non_current=False,
+                ),
+                widget=forms.Select(attrs={"class": "party-select"}),
+                label="{} Parties".format(ps.slug.upper()),
             )
 
     def clean(self):
         form_data = self.cleaned_data
         if not len([v for v in form_data.values() if v]) == 1:
             self.cleaned_data = {}
-            raise forms.ValidationError('Select one and only one party')
-        form_data['party'] = [v for v in form_data.values() if v][0]
+            raise forms.ValidationError("Select one and only one party")
+        form_data["party"] = [v for v in form_data.values() if v][0]
 
 
 class AddByPartyForm(forms.Form):

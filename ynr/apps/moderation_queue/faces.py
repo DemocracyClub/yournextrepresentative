@@ -2,7 +2,10 @@
 # Much of the below taken from http://stackoverflow.com/a/13243712/669631
 
 import cv
-faceCascade = cv.Load('/usr/share/opencv/haarcascades/haarcascade_frontalface_alt.xml')
+
+faceCascade = cv.Load(
+    "/usr/share/opencv/haarcascades/haarcascade_frontalface_alt.xml"
+)
 
 # Select one of the haarcascade files:
 #   haarcascade_frontalface_alt.xml  <-- Best one?
@@ -18,7 +21,7 @@ def detectFaces(im):
 
     # Convert a PIL image to a greyscale cv image
     # from: http://pythonpath.wordpress.com/2012/05/08/pil-to-opencv-image/
-    im = im.convert('L')
+    im = im.convert("L")
     cv_im = cv.CreateImageHeader(im.size, cv.IPL_DEPTH_8U, 1)
     cv.SetData(cv_im, im.tobytes(), im.size[0])
 
@@ -33,11 +36,17 @@ def detectFaces(im):
 
     # Detect the faces
     faces = cv.HaarDetectObjects(
-        cv_im, faceCascade, cv.CreateMemStorage(0),
-        haar_scale, min_neighbors, haar_flags, min_size
-        )
+        cv_im,
+        faceCascade,
+        cv.CreateMemStorage(0),
+        haar_scale,
+        min_neighbors,
+        haar_flags,
+        min_size,
+    )
 
     return faces
+
 
 def face_crop_bounds(im):
     source_x, source_y = [int(v) for v in im.size]
@@ -57,8 +66,8 @@ def face_crop_bounds(im):
         return None
 
     return [
-            max(cropBox[0] - xDelta, 0),
-            max(cropBox[1] - yDelta, 0),
-            min(cropBox[0] + cropBox[2] + xDelta, source_x - 1),
-            min(cropBox[1] + cropBox[3] + yDelta, source_y - 1)
+        max(cropBox[0] - xDelta, 0),
+        max(cropBox[1] - yDelta, 0),
+        min(cropBox[0] + cropBox[2] + xDelta, source_x - 1),
+        min(cropBox[1] + cropBox[3] + yDelta, source_y - 1),
     ]

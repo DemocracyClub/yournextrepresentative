@@ -7,43 +7,52 @@ from popolo.models import Person
 
 from candidates.models import PostExtraElection
 
-PHOTO_REVIEWERS_GROUP_NAME = 'Photo Reviewers'
+PHOTO_REVIEWERS_GROUP_NAME = "Photo Reviewers"
 
 
 class CopyrightOptions:
-    PUBLIC_DOMAIN = 'public-domain'
-    COPYRIGHT_ASSIGNED = 'copyright-assigned'
-    PROFILE_PHOTO = 'profile-photo'
-    OTHER = 'other'
+    PUBLIC_DOMAIN = "public-domain"
+    COPYRIGHT_ASSIGNED = "copyright-assigned"
+    PROFILE_PHOTO = "profile-photo"
+    OTHER = "other"
 
     WHY_ALLOWED_CHOICES = (
-        (PUBLIC_DOMAIN,
-         _("This photograph is free of any copyright restrictions")),
-        (COPYRIGHT_ASSIGNED,
-         _("I own copyright of this photo and I assign the copyright "
-           "to Democracy Club Limited in return for it being displayed "
-           "on this site")),
-        (PROFILE_PHOTO,
-         _("This is the candidate's public profile photo from social "
-           "media (e.g. Twitter, Facebook) or their official campaign "
-           "page")),
-        (OTHER,
-         _("Other")),
+        (
+            PUBLIC_DOMAIN,
+            _("This photograph is free of any copyright restrictions"),
+        ),
+        (
+            COPYRIGHT_ASSIGNED,
+            _(
+                "I own copyright of this photo and I assign the copyright "
+                "to Democracy Club Limited in return for it being displayed "
+                "on this site"
+            ),
+        ),
+        (
+            PROFILE_PHOTO,
+            _(
+                "This is the candidate's public profile photo from social "
+                "media (e.g. Twitter, Facebook) or their official campaign "
+                "page"
+            ),
+        ),
+        (OTHER, _("Other")),
     )
 
 
 class QueuedImage(models.Model):
 
-    APPROVED = 'approved'
-    REJECTED = 'rejected'
-    UNDECIDED = 'undecided'
-    IGNORE = 'ignore'
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    UNDECIDED = "undecided"
+    IGNORE = "ignore"
 
     DECISION_CHOICES = (
-        (APPROVED, _('Approved')),
-        (REJECTED, _('Rejected')),
-        (UNDECIDED, _('Undecided')),
-        (IGNORE, _('Ignore')),
+        (APPROVED, _("Approved")),
+        (REJECTED, _("Rejected")),
+        (UNDECIDED, _("Undecided")),
+        (IGNORE, _("Ignore")),
     )
 
     why_allowed = models.CharField(
@@ -53,13 +62,10 @@ class QueuedImage(models.Model):
     )
     justification_for_use = models.TextField(blank=True)
     decision = models.CharField(
-        max_length=32,
-        choices=DECISION_CHOICES,
-        default=UNDECIDED
+        max_length=32, choices=DECISION_CHOICES, default=UNDECIDED
     )
     image = models.ImageField(
-        upload_to='queued-images/%Y/%m/%d',
-        max_length=512,
+        upload_to="queued-images/%Y/%m/%d", max_length=512
     )
     person = models.ForeignKey(Person, blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True)
@@ -77,18 +83,17 @@ class QueuedImage(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        message = _('Image uploaded by {user} of candidate {person_id}')
+        message = _("Image uploaded by {user} of candidate {person_id}")
         return message.format(
-            user=self.user,
-            person_id=(self.person.id if self.person else None)
+            user=self.user, person_id=(self.person.id if self.person else None)
         )
 
     def get_absolute_url(self):
-        return reverse('photo-review', kwargs={'queued_image_id': self.id})
+        return reverse("photo-review", kwargs={"queued_image_id": self.id})
 
     @property
     def has_crop_bounds(self):
-        crop_fields = ['crop_min_x', 'crop_min_y', 'crop_max_x', 'crop_max_y']
+        crop_fields = ["crop_min_x", "crop_min_y", "crop_max_x", "crop_max_y"]
         return not any(getattr(self, c) is None for c in crop_fields)
 
 
@@ -99,4 +104,5 @@ class SuggestedPostLock(models.Model):
     updated = models.DateTimeField(auto_now=True)
     justification = models.TextField(
         blank=True,
-        help_text="e.g I've reviewed the nomination paper for this area")
+        help_text="e.g I've reviewed the nomination paper for this area",
+    )

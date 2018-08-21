@@ -17,7 +17,7 @@ class ResultsBot(object):
         Wraps get_change_metadata without requiring a request object
         """
         metadata = get_change_metadata(None, source)
-        metadata['username'] = self.user.username
+        metadata["username"] = self.user.username
         return metadata
 
     def _mark_candidates_as_winner(self, instance):
@@ -28,9 +28,7 @@ class ResultsBot(object):
 
             source = instance.source
 
-            change_metadata = self.get_change_metadata_for_bot(
-                source
-            )
+            change_metadata = self.get_change_metadata_for_bot(source)
 
             if candidate_result.is_winner:
                 membership.extra.elected = True
@@ -52,14 +50,15 @@ class ResultsBot(object):
 
                 LoggedAction.objects.create(
                     user=self.user,
-                    action_type='set-candidate-elected',
-                    popit_person_new_version=change_metadata['version_id'],
+                    action_type="set-candidate-elected",
+                    popit_person_new_version=change_metadata["version_id"],
                     person=membership.person,
                     source=source,
                 )
             else:
-                change_metadata['information_source'] = \
-                    'Setting as "not elected" by implication'
+                change_metadata[
+                    "information_source"
+                ] = 'Setting as "not elected" by implication'
                 membership.person.record_version(change_metadata)
                 membership.extra.elected = False
                 membership.extra.save()
@@ -74,9 +73,9 @@ class ResultsBot(object):
             instance, _ = ResultSet.objects.update_or_create(
                 post_election=post_election,
                 defaults={
-                    'source': source,
-                    'num_spoilt_ballots': division.spoiled_votes
-                }
+                    "source": source,
+                    "num_spoilt_ballots": division.spoiled_votes,
+                },
             )
             instance.user = self.user
             instance.save()
@@ -84,15 +83,21 @@ class ResultsBot(object):
             winner_count = post_election.winner_count
 
             if winner_count:
-                winners = dict(sorted(
-                    [("{}-{}".format(
-                        c.votes,
-                        c.ynr_membership.base.person.id
-                        ), c.ynr_membership)
-                        for c in candidate_list],
-                    reverse=True,
-                    key=lambda votes: int(votes[0].split('-')[0])
-                )[:winner_count])
+                winners = dict(
+                    sorted(
+                        [
+                            (
+                                "{}-{}".format(
+                                    c.votes, c.ynr_membership.base.person.id
+                                ),
+                                c.ynr_membership,
+                            )
+                            for c in candidate_list
+                        ],
+                        reverse=True,
+                        key=lambda votes: int(votes[0].split("-")[0]),
+                    )[:winner_count]
+                )
             else:
                 winners = {}
 
@@ -101,10 +106,9 @@ class ResultsBot(object):
                 instance.candidate_results.update_or_create(
                     membership=membership_extra.base,
                     defaults={
-                        'is_winner':
-                            bool(membership_extra in winners.values()),
-                        'num_ballots': candidate.votes,
-                    }
+                        "is_winner": bool(membership_extra in winners.values()),
+                        "num_ballots": candidate.votes,
+                    },
                 )
 
             versions, changed = instance.record_version()
@@ -113,7 +117,7 @@ class ResultsBot(object):
                 self._mark_candidates_as_winner(instance)
                 LoggedAction.objects.create(
                     user=instance.user,
-                    action_type='entered-results-data',
+                    action_type="entered-results-data",
                     source=instance.source,
                     post_election=instance.post_election,
                 )

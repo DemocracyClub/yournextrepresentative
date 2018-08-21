@@ -1,12 +1,11 @@
 from django.conf.urls import url
 
-from .feeds import (
-    BasicResultEventsFeed,
-    ResultEventsFeed,
-)
+from .feeds import BasicResultEventsFeed, ResultEventsFeed
 
 
 urlpatterns = [
-    url(r'^all\.atom$', ResultEventsFeed(), name='atom-results'),
-    url(r'^all-basic\.atom$', BasicResultEventsFeed(), name='atom-results-basic'),
+    url(r"^all\.atom$", ResultEventsFeed(), name="atom-results"),
+    url(
+        r"^all-basic\.atom$", BasicResultEventsFeed(), name="atom-results-basic"
+    ),
 ]

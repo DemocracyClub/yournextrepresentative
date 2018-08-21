@@ -6,9 +6,8 @@ from elections.models import Election
 
 
 class ResultEvent(models.Model):
-
     class Meta:
-        ordering = ['created']
+        ordering = ["created"]
 
     created = models.DateTimeField(auto_now_add=True)
     election = models.ForeignKey(Election, blank=True, null=True)
@@ -30,7 +29,7 @@ class ResultEvent(models.Model):
 
     @property
     def image_url_path(self):
-        url_path = ''
+        url_path = ""
         for image in self.winner.images.all():
             if image.is_primary:
                 url_path = image.image.url

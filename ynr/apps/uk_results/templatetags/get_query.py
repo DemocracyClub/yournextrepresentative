@@ -58,7 +58,7 @@ def query_string(parser, token):
     mods = []
     asvar = None
     bits = bits[1:]
-    if len(bits) >= 2 and bits[-2] == 'as':
+    if len(bits) >= 2 and bits[-2] == "as":
         asvar = bits[-1]
         bits = bits[:-2]
     if len(bits) >= 1:
@@ -82,8 +82,10 @@ class QueryStringNode(Node):
         self.asvar = asvar
 
     def render(self, context):
-        mods = [(smart_str(k, 'ascii'), op, v.resolve(context))
-                for k, op, v in self.mods]
+        mods = [
+            (smart_str(k, "ascii"), op, v.resolve(context))
+            for k, op, v in self.mods
+        ]
         if self.qdict:
             qdict = self.qdict.resolve(context)
         else:
@@ -95,10 +97,10 @@ class QueryStringNode(Node):
             qdict.setlist(k, self._process_list(qdict.getlist(k), op, v))
         qstring = qdict.urlencode()
         if qstring:
-            qstring = '?' + qstring
+            qstring = "?" + qstring
         if self.asvar:
             context[self.asvar] = qstring
-            return ''
+            return ""
         else:
             return qstring
 
@@ -108,7 +110,7 @@ class QueryStringNode(Node):
         elif isinstance(qdict, QueryDict):
             qdict = qdict.copy()
         elif isinstance(qdict, basestring):
-            if qdict.startswith('?'):
+            if qdict.startswith("?"):
                 qdict = qdict[1:]
             qdict = QueryDict(qdict, mutable=True)
         else:
@@ -125,7 +127,7 @@ class QueryStringNode(Node):
                     # membership works for numbers.
                     if isinstance(v, (list, tuple)):
                         for e in v:
-                            qdict.appendlist(k,unicode(e))
+                            qdict.appendlist(k, unicode(e))
                     else:
                         qdict.appendlist(k, unicode(v))
             except:
@@ -135,7 +137,7 @@ class QueryStringNode(Node):
 
     def _process_list(self, current_list, op, val):
         if not val:
-            if op == '=':
+            if op == "=":
                 return []
             else:
                 return current_list
@@ -143,16 +145,16 @@ class QueryStringNode(Node):
         if not isinstance(val, (list, tuple)):
             val = [val]
         val = [unicode(v) for v in val]
-       # Remove
-        if op == '-':
+        # Remove
+        if op == "-":
             for v in val:
                 while v in current_list:
                     current_list.remove(v)
         # Replace
-        elif op == '=':
+        elif op == "=":
             current_list = val
         # Add
-        elif op == '+':
+        elif op == "+":
             for v in val:
                 current_list.append(v)
         return current_list

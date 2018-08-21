@@ -30,4 +30,4 @@ class MediaStorage(S3Boto3Storage):
         `base_url` is missing from their implementation of the storage class,
         so we emulate it here by calling URL with an empty key name.
         """
-        return self.url('')
+        return self.url("")

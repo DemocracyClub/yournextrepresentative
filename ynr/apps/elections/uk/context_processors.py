@@ -16,8 +16,8 @@ def site_wide_messages(request):
     }
     """
     messages = []
-    for message in getattr(settings, 'SITE_WIDE_MESSAGES', []):
-        if message.get('show_until'):
-            if parser.parse(message['show_until']) > datetime.datetime.now():
+    for message in getattr(settings, "SITE_WIDE_MESSAGES", []):
+        if message.get("show_until"):
+            if parser.parse(message["show_until"]) > datetime.datetime.now():
                 messages.append(message)
-    return {'site_wide_messages': messages}
+    return {"site_wide_messages": messages}

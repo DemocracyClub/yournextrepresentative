@@ -22,47 +22,48 @@ def merge_dicts_with_list_values(dict_a, dict_b):
 
 
 class LoggedActionQuerySet(models.QuerySet):
-
     def in_recent_days(self, days=5):
-        return self.filter(
-            created__gte=(datetime.now() - timedelta(days=days)))
+        return self.filter(created__gte=(datetime.now() - timedelta(days=days)))
 
     def needs_review(self):
-        '''Return a dict of LoggedAction -> list of reasons should be reviewed'''
+        """Return a dict of LoggedAction -> list of reasons should be reviewed"""
         return reduce(
             merge_dicts_with_list_values,
             [f(self) for f in needs_review_fns],
-            {}
+            {},
         )
 
 
 class LoggedAction(models.Model):
-    '''A model for logging the actions of users on the site
+    """A model for logging the actions of users on the site
 
     We record the changes that have been made to a person in PopIt in
     that person's 'versions' field, but is not much help for queries
     like "what has John Q User been doing on the site?". The
     LoggedAction model makes that kind of query easy, however, and
     should be helpful in tracking down both bugs and the actions of
-    malicious users.'''
+    malicious users."""
 
     user = models.ForeignKey(User, blank=True, null=True)
-    person = models.ForeignKey('popolo.Person', blank=True, null=True)
+    person = models.ForeignKey("popolo.Person", blank=True, null=True)
     action_type = models.CharField(max_length=64)
     popit_person_new_version = models.CharField(max_length=32)
     created = models.DateTimeField(auto_now_add=True, db_index=True)
     updated = models.DateTimeField(auto_now=True)
     ip_address = models.CharField(max_length=50, blank=True, null=True)
     source = models.TextField()
-    post = models.ForeignKey('popolo.Post', blank=True, null=True)
-    post_election = models.ForeignKey(
-        'candidates.PostExtraElection', null=True)
+    post = models.ForeignKey("popolo.Post", blank=True, null=True)
+    post_election = models.ForeignKey("candidates.PostExtraElection", null=True)
 
     objects = LoggedActionQuerySet.as_manager()
 
     def __repr__(self):
-        fmt = str("<LoggedAction username='{username}' action_type='{action_type}'>")
-        return fmt.format(username=self.user.username, action_type=self.action_type)
+        fmt = str(
+            "<LoggedAction username='{username}' action_type='{action_type}'>"
+        )
+        return fmt.format(
+            username=self.user.username, action_type=self.action_type
+        )
 
     @property
     def post_election_guess(self):
@@ -72,25 +73,28 @@ class LoggedAction(models.Model):
         rather than a Post and an Election (or a PostExtraElection).
         """
         from candidates.models import PostExtraElection
+
         if self.post:
-            election = self.post.extra.elections.order_by('-current').first()
+            election = self.post.extra.elections.order_by("-current").first()
             return PostExtraElection.objects.get(
-                election=election,
-                postextra=self.post.extra
+                election=election, postextra=self.post.extra
             )
 
     @property
     def subject_url(self):
         pee = self.post_election_guess
         if pee:
-            return reverse('constituency', kwargs={
-                'election': pee.election.slug,
-                'post_id': pee.postextra.slug,
-                'ignored_slug': slugify(pee.postextra.short_label),
-            })
+            return reverse(
+                "constituency",
+                kwargs={
+                    "election": pee.election.slug,
+                    "post_id": pee.postextra.slug,
+                    "ignored_slug": slugify(pee.postextra.short_label),
+                },
+            )
         elif self.person:
-            return reverse('person-view', kwargs={'person_id': self.person.id})
-        return '/'
+            return reverse("person-view", kwargs={"person_id": self.person.id})
+        return "/"
 
     @property
     def subject_html(self):
@@ -105,26 +109,30 @@ class LoggedAction(models.Model):
             return '<a href="{url}">{text} ({person_id})</a>'.format(
                 url=self.subject_url,
                 text=self.person.name,
-                person_id=self.person.id)
-        return ''
+                person_id=self.person.id,
+            )
+        return ""
 
     @property
     def diff_html(self):
         from popolo.models import VersionNotFound
+
         if not self.person:
-            return ''
+            return ""
         try:
             return self.person.diff_for_version(
-                self.popit_person_new_version, inline_style=True)
+                self.popit_person_new_version, inline_style=True
+            )
         except VersionNotFound as e:
-            return '<p>{}</p>'.format(escape(text_type(e)))
+            return "<p>{}</p>".format(escape(text_type(e)))
 
 
 class PersonRedirect(models.Model):
-    '''This represents a redirection from one person ID to another
+    """This represents a redirection from one person ID to another
 
     This is typically used to redirect from the person that is deleted
-    after two people are merged'''
+    after two people are merged"""
+
     old_person_id = models.IntegerField()
     new_person_id = models.IntegerField()
 
@@ -132,7 +140,8 @@ class PersonRedirect(models.Model):
     def all_redirects_dict(cls):
         new_to_sorted_old = defaultdict(list)
         for old, new in cls.objects.values_list(
-                'old_person_id', 'new_person_id'):
+            "old_person_id", "new_person_id"
+        ):
             new_to_sorted_old[new].append(old)
         for v in new_to_sorted_old.values():
             v.sort()
@@ -140,12 +149,13 @@ class PersonRedirect(models.Model):
 
 
 class UserTermsAgreement(models.Model):
-    user = models.OneToOneField(User, related_name='terms_agreement')
+    user = models.OneToOneField(User, related_name="terms_agreement")
     assigned_to_dc = models.BooleanField(default=False)
 
 
 def create_user_terms_agreement(sender, instance, created, **kwargs):
     if created:
         UserTermsAgreement.objects.create(user=instance)
+
 
 post_save.connect(create_user_terms_agreement, sender=User)

@@ -14,10 +14,7 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
     def setUp(self):
         super().setUp()
         User.objects.create(username=settings.CANDIDATE_BOT_USERNAME)
-        self.person = PersonFactory.create(
-            id='2009',
-            name='Tessa Jowell'
-        )
+        self.person = PersonFactory.create(id="2009", name="Tessa Jowell")
 
     def test_user_smoke_test(self):
         bot = CandidateBot(self.person.pk)
@@ -26,13 +23,11 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
     def test_edit_fields(self):
         bot = CandidateBot(self.person.pk)
 
-        edit = {
-            'email': 'tessa@example.com'
-        }
+        edit = {"email": "tessa@example.com"}
 
         self.assertFalse(LoggedAction.objects.all().exists())
-        self.assertEqual(self.person.versions, '[]')
-        person = bot.edit_fields(edit, 'a source', save=True)
+        self.assertEqual(self.person.versions, "[]")
+        person = bot.edit_fields(edit, "a source", save=True)
         expected = {
             "twitter_username": "",
             "standing_in": {},
@@ -53,19 +48,19 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
             "party_ppc_page_url": "",
             "other_names": [],
             "email": "tessa@example.com",
-            "biography": ""
+            "biography": "",
         }
         got = json.loads(person.versions)
-        self.assertEqual(got[0]['data'], expected)
-        self.assertEqual(got[0]['information_source'], "a source")
-        self.assertEqual(got[0]['username'], settings.CANDIDATE_BOT_USERNAME)
+        self.assertEqual(got[0]["data"], expected)
+        self.assertEqual(got[0]["information_source"], "a source")
+        self.assertEqual(got[0]["username"], settings.CANDIDATE_BOT_USERNAME)
         la = LoggedAction.objects.first()
         self.assertEqual(la.user.username, settings.CANDIDATE_BOT_USERNAME)
 
     def test_add_email(self):
         bot = CandidateBot(self.person.pk)
         bot.add_email("foo@bar.com")
-        person = bot.save('a source')
+        person = bot.save("a source")
         self.assertEqual(person.email, "foo@bar.com")
 
     def test_cant_edit_linkedin(self):

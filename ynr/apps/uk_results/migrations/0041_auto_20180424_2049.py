@@ -7,33 +7,26 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('uk_results', '0040_add_pee_to_resultset'),
-    ]
+    dependencies = [("uk_results", "0040_add_pee_to_resultset")]
 
     operations = [
         migrations.RemoveField(
-            model_name='postelectionresult',
-            name='confirmed_resultset',
+            model_name="postelectionresult", name="confirmed_resultset"
         ),
         migrations.RemoveField(
-            model_name='postelectionresult',
-            name='post_election',
+            model_name="postelectionresult", name="post_election"
         ),
         migrations.RemoveField(
-            model_name='resultset',
-            name='post_election_result',
+            model_name="resultset", name="post_election_result"
         ),
-        migrations.RemoveField(
-            model_name='resultset',
-            name='review_status',
-        ),
+        migrations.RemoveField(model_name="resultset", name="review_status"),
         migrations.AlterField(
-            model_name='resultset',
-            name='post_election',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='candidates.PostExtraElection'),
+            model_name="resultset",
+            name="post_election",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="candidates.PostExtraElection",
+            ),
         ),
-        migrations.DeleteModel(
-            name='PostElectionResult',
-        ),
+        migrations.DeleteModel(name="PostElectionResult"),
     ]

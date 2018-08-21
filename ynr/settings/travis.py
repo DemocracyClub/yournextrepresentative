@@ -1,3 +1,3 @@
 from .testing import *  # noqa
 
-DATABASES['default']['NAME'] = 'postgres'
+DATABASES["default"]["NAME"] = "postgres"

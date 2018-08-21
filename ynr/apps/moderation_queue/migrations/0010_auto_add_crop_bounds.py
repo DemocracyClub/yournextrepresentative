@@ -3,32 +3,30 @@ from django.db import models, migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('moderation_queue', '0009_merge'),
-    ]
+    dependencies = [("moderation_queue", "0009_merge")]
 
     operations = [
         migrations.AddField(
-            model_name='queuedimage',
-            name='crop_max_x',
+            model_name="queuedimage",
+            name="crop_max_x",
             field=models.IntegerField(null=True, blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='queuedimage',
-            name='crop_max_y',
+            model_name="queuedimage",
+            name="crop_max_y",
             field=models.IntegerField(null=True, blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='queuedimage',
-            name='crop_min_x',
+            model_name="queuedimage",
+            name="crop_min_x",
             field=models.IntegerField(null=True, blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='queuedimage',
-            name='crop_min_y',
+            model_name="queuedimage",
+            name="crop_min_y",
             field=models.IntegerField(null=True, blank=True),
             preserve_default=True,
         ),

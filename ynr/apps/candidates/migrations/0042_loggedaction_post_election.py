@@ -7,14 +7,16 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('candidates', '0041_auto_20180323_1400'),
-    ]
+    dependencies = [("candidates", "0041_auto_20180323_1400")]
 
     operations = [
         migrations.AddField(
-            model_name='loggedaction',
-            name='post_election',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='candidates.PostExtraElection'),
-        ),
+            model_name="loggedaction",
+            name="post_election",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="candidates.PostExtraElection",
+            ),
+        )
     ]

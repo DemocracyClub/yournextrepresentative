@@ -13,11 +13,7 @@ class CandidateBot(object):
     and edit history.
     """
 
-    SUPPORTED_EDIT_FIELDS = [
-        'email',
-        'other_names',
-        'name',
-    ]
+    SUPPORTED_EDIT_FIELDS = ["email", "other_names", "name"]
 
     def __init__(self, person_id):
         self.user = User.objects.get(username=settings.CANDIDATE_BOT_USERNAME)
@@ -28,7 +24,7 @@ class CandidateBot(object):
         Wraps get_change_metadata without requiring a request object
         """
         metadata = get_change_metadata(None, source)
-        metadata['username'] = self.user.username
+        metadata["username"] = self.user.username
         return metadata
 
     def edit_fields(self, field_dict, source, save=True):
@@ -41,14 +37,14 @@ class CandidateBot(object):
 
     def _edit_field(self, field_name, field_value):
         if field_name not in self.SUPPORTED_EDIT_FIELDS:
-            raise ValueError("CandidateBot can't edit {} yet".format(
-                field_name
-            ))
+            raise ValueError(
+                "CandidateBot can't edit {} yet".format(field_name)
+            )
         if field_name == "email":
             # The lightest of validation
             if "@" in field_value:
                 if self.person.email:
-                    raise ValueError('Email already exists')
+                    raise ValueError("Email already exists")
                 self.person.email = field_value
             else:
                 ValueError("{} is not a valid email".format(field_value))
@@ -62,10 +58,10 @@ class CandidateBot(object):
             LoggedAction.objects.create(
                 user=self.user,
                 person=self.person,
-                action_type='person-update',
+                action_type="person-update",
                 ip_address=None,
-                popit_person_new_version=metadata['version_id'],
-                source=metadata['information_source'],
+                popit_person_new_version=metadata["version_id"],
+                source=metadata["information_source"],
             )
 
         return self.person

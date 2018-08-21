@@ -23,7 +23,7 @@ from .test_version_diffs import tidy_html_whitespace
 
 
 def random_person_id():
-    return codecs.encode(os.urandom(8), 'hex').decode()
+    return codecs.encode(os.urandom(8), "hex").decode()
 
 
 def change_updated_and_created(la, timestamp):
@@ -33,7 +33,8 @@ def change_updated_and_created(la, timestamp):
     # converted directly to an SQL UPDATE and doesn't trigger
     # save-related signals.
     LoggedAction.objects.filter(pk=la.pk).update(
-        created=timestamp, updated=timestamp)
+        created=timestamp, updated=timestamp
+    )
 
 
 def canonicalize_xml(xml_bytes):
@@ -44,13 +45,13 @@ def canonicalize_xml(xml_bytes):
 
 
 def fake_diff_html(self, version_id, inline_style=False):
-    return '<div{}>Fake diff</div>'.format(
-        ' style="color: red"' if inline_style else ''
+    return "<div{}>Fake diff</div>".format(
+        ' style="color: red"' if inline_style else ""
     )
 
 
-@patch.object(Person, 'diff_for_version', fake_diff_html)
-@patch('candidates.models.db.datetime')
+@patch.object(Person, "diff_for_version", fake_diff_html)
+@patch("candidates.models.db.datetime")
 @override_settings(PEOPLE_LIABLE_TO_VANDALISM={2811})
 class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
@@ -62,17 +63,17 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.current_datetime = make_aware(datetime(2017, 5, 2, 18, 10, 5, 0))
         # Reuse existing users created in TestUserMixin:
         for username, u in (
-                ('lapsed_experienced', self.user),
-                ('new_suddenly_lots', self.user_who_can_merge),
-                ('new_only_one', self.user_who_can_upload_documents),
-                ('morbid_vandal', self.user_who_can_lock)):
+            ("lapsed_experienced", self.user),
+            ("new_suddenly_lots", self.user_who_can_merge),
+            ("new_only_one", self.user_who_can_upload_documents),
+            ("morbid_vandal", self.user_who_can_lock),
+        ):
             u.username = username
             u.save()
             setattr(self, username, u)
 
         example_person = factories.PersonFactory.create(
-            id='2009',
-            name='Tessa Jowell',
+            id="2009", name="Tessa Jowell"
         )
 
         # Create old edits for the experienced user:
@@ -81,24 +82,24 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
             la = LoggedAction.objects.create(
                 id=(1000 + i),
                 user=self.lapsed_experienced,
-                action_type='person-update',
+                action_type="person-update",
                 person=example_person,
                 popit_person_new_version=random_person_id(),
-                source='Just for tests...',
+                source="Just for tests...",
             )
-            dt = date_ages_ago - timedelta(minutes=i*10)
+            dt = date_ages_ago - timedelta(minutes=i * 10)
             change_updated_and_created(la, dt)
         # ... and a couple of new edits for the experienced user:
         for i in range(2):
             la = LoggedAction.objects.create(
                 id=(1500 + i),
                 user=self.lapsed_experienced,
-                action_type='person-update',
+                action_type="person-update",
                 person=example_person,
                 popit_person_new_version=random_person_id(),
-                source='Just for tests...',
+                source="Just for tests...",
             )
-            dt = self.current_datetime - timedelta(minutes=i*5)
+            dt = self.current_datetime - timedelta(minutes=i * 5)
             change_updated_and_created(la, dt)
 
         # Create lots of very recent edits for a new user:
@@ -106,22 +107,22 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
             la = LoggedAction.objects.create(
                 id=(2000 + i),
                 user=self.new_suddenly_lots,
-                action_type='person-update',
+                action_type="person-update",
                 person=example_person,
                 popit_person_new_version=random_person_id(),
-                source='Just for tests',
+                source="Just for tests",
             )
-            dt = self.current_datetime - timedelta(minutes=i*7)
+            dt = self.current_datetime - timedelta(minutes=i * 7)
             change_updated_and_created(la, dt)
 
         # Create a single recent edit for a new user:
         la = LoggedAction.objects.create(
             id=(2500 + i),
             user=self.new_only_one,
-            action_type='person-update',
+            action_type="person-update",
             person=example_person,
             popit_person_new_version=random_person_id(),
-            source='Just for tests',
+            source="Just for tests",
         )
         dt = self.current_datetime - timedelta(minutes=2)
         change_updated_and_created(la, dt)
@@ -129,18 +130,18 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
         # Create a candidate with a death date, and edit of that
         # candidate:
         dead_person = factories.PersonFactory.create(
-            id='7448',
-            name='The Eurovisionary Ronnie Carroll',
-            birth_date='1934-08-18',
-            death_date='2015-04-13'
+            id="7448",
+            name="The Eurovisionary Ronnie Carroll",
+            birth_date="1934-08-18",
+            death_date="2015-04-13",
         )
         la = LoggedAction.objects.create(
             id=3000,
             user=self.morbid_vandal,
-            action_type='person-update',
+            action_type="person-update",
             person=dead_person,
             popit_person_new_version=random_person_id(),
-            source='Just for tests',
+            source="Just for tests",
             updated=dt,
             created=dt,
         )
@@ -148,17 +149,16 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
         change_updated_and_created(la, dt)
 
         prime_minister = factories.PersonFactory.create(
-            id='2811',
-            name='Theresa May',
+            id="2811", name="Theresa May"
         )
         # Create a candidate on the "liable to vandalism" list.
         la = LoggedAction.objects.create(
             id=4000,
             user=self.lapsed_experienced,
-            action_type='person-update',
+            action_type="person-update",
             person=prime_minister,
             popit_person_new_version=random_person_id(),
-            source='Just for tests...',
+            source="Just for tests...",
         )
         dt = self.current_datetime - timedelta(minutes=33)
         change_updated_and_created(la, dt)
@@ -167,10 +167,10 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
         la = LoggedAction.objects.create(
             id=4500,
             user=self.lapsed_experienced,
-            action_type='photo-upload',
+            action_type="photo-upload",
             person=example_person,
             popit_person_new_version=random_person_id(),
-            source='Just for tests...',
+            source="Just for tests...",
         )
         dt = self.current_datetime - timedelta(minutes=41)
         change_updated_and_created(la, dt)
@@ -181,41 +181,42 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
         la = LoggedAction.objects.create(
             id=5000,
             user=self.morbid_vandal,
-            action_type='constituency-lock',
+            action_type="constituency-lock",
             person=None,
             post=None,
-            popit_person_new_version='',
-            source='Testing no post and no person'
+            popit_person_new_version="",
+            source="Testing no post and no person",
         )
         dt = self.current_datetime - timedelta(minutes=13)
         change_updated_and_created(la, dt)
 
         response = self.app.post(
-            '/election/{}/person/create/'.format(self.election.slug),
+            "/election/{}/person/create/".format(self.election.slug),
             {
-                'name': 'Yoshi Aarle',
-                'source': 'just a test',
-                'standing_2015': 'standing',
-                'constituency_2015': '65808',
-                'party_gb_2015': str(self.gb_parties.parties.first().pk),
+                "name": "Yoshi Aarle",
+                "source": "just a test",
+                "standing_2015": "standing",
+                "constituency_2015": "65808",
+                "party_gb_2015": str(self.gb_parties.parties.first().pk),
             },
-            user=self.user
+            user=self.user,
         ).follow()
 
-        person = response.context['person']
+        person = response.context["person"]
         self.person = person
 
         response = self.app.get(
-            '/person/{}/update/'.format(person.pk),
-            user=self.user
+            "/person/{}/update/".format(person.pk), user=self.user
         )
 
         form = response.forms[1]
 
-        form['biography'] = """
+        form[
+            "biography"
+        ] = """
                 Now, this is a story all about how
                 my life got flipped-turned upside down"""
-        form['source'] = 'just a test'
+        form["source"] = "just a test"
         form.submit()
 
         las = LoggedAction.objects.filter(person=person)
@@ -227,8 +228,9 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
     def test_needs_review_as_expected(self, mock_datetime):
         mock_datetime.now.return_value = self.current_datetime
-        needs_review_dict = \
-            LoggedAction.objects.in_recent_days(5).needs_review()
+        needs_review_dict = LoggedAction.objects.in_recent_days(
+            5
+        ).needs_review()
         # Here we're expecting the following LoggedActions to be picked out:
         #    1 edit of a dead candidate (by 'morbid_vandal'
         #    3 edits from 'new_suddenly_lots' (we just consider the first
@@ -241,139 +243,95 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertEqual(len(needs_review_dict), 1 + 3 + 1 + 1 + 1 + 1)
         results = [
             (la.user.username, la.action_type, reasons)
-            for la, reasons in
-            sorted(needs_review_dict.items(), key=lambda t: t[0].created)
+            for la, reasons in sorted(
+                needs_review_dict.items(), key=lambda t: t[0].created
+            )
         ]
 
         self.assertEqual(
             results,
-            [('new_suddenly_lots',
-              'person-update',
-              ['One of the first 3 edits of user new_suddenly_lots']),
-             ('new_suddenly_lots',
-              'person-update',
-              ['One of the first 3 edits of user new_suddenly_lots']),
-             ('new_suddenly_lots',
-              'person-update',
-              ['One of the first 3 edits of user new_suddenly_lots']),
-             ('lapsed_experienced',
-              'person-update',
-               ['Edit of a statement to voters']),
-             ('lapsed_experienced',
-              'person-update',
-              ['Edit of a candidate whose record may be particularly liable to vandalism']),
-             ('morbid_vandal',
-              'constituency-lock',
-              ['One of the first 3 edits of user morbid_vandal']),
-             ('morbid_vandal',
-              'person-update',
-              ['One of the first 3 edits of user morbid_vandal',
-               'Edit of a candidate who has died']),
-             ('new_only_one',
-              'person-update',
-              ['One of the first 3 edits of user new_only_one']),
-             ])
+            [
+                (
+                    "new_suddenly_lots",
+                    "person-update",
+                    ["One of the first 3 edits of user new_suddenly_lots"],
+                ),
+                (
+                    "new_suddenly_lots",
+                    "person-update",
+                    ["One of the first 3 edits of user new_suddenly_lots"],
+                ),
+                (
+                    "new_suddenly_lots",
+                    "person-update",
+                    ["One of the first 3 edits of user new_suddenly_lots"],
+                ),
+                (
+                    "lapsed_experienced",
+                    "person-update",
+                    ["Edit of a statement to voters"],
+                ),
+                (
+                    "lapsed_experienced",
+                    "person-update",
+                    [
+                        "Edit of a candidate whose record may be particularly liable to vandalism"
+                    ],
+                ),
+                (
+                    "morbid_vandal",
+                    "constituency-lock",
+                    ["One of the first 3 edits of user morbid_vandal"],
+                ),
+                (
+                    "morbid_vandal",
+                    "person-update",
+                    [
+                        "One of the first 3 edits of user morbid_vandal",
+                        "Edit of a candidate who has died",
+                    ],
+                ),
+                (
+                    "new_only_one",
+                    "person-update",
+                    ["One of the first 3 edits of user new_only_one"],
+                ),
+            ],
+        )
 
     def test_xml_feed(self, mock_datetime):
         mock_datetime.now.return_value = self.current_datetime
-        response = self.app.get('/feeds/needs-review.xml')
+        response = self.app.get("/feeds/needs-review.xml")
         got = canonicalize_xml(response.content)
 
-        expected = \
-            b'<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb">' \
-            b'<title>example.com changes for review</title>' \
-            \
-            b'<link href="http://example.com/feeds/needs-review.xml" rel="alternate"></link>' \
-            \
-            b'<link href="http://example.com/feeds/needs-review.xml" rel="self"></link>' \
-            \
-            b'<id>http://example.com/feeds/needs-review.xml</id>' \
-            \
-            b'<updated>2017-05-02T17:08:05+00:00</updated>' \
-            \
-            b'<entry><title>Tessa Jowell (2009) - person-update</title>' \
-            b'<link href="http://example.com/person/2009" rel="alternate"></link>' \
-            b'<updated>2017-05-02T17:08:05+00:00</updated>' \
-            b'<author><name>new_only_one</name></author>' \
-            b'<id>needs-review:2509</id>' \
-            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_only_one with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_only_one&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' \
-            \
-            b'<entry><title>The Eurovisionary Ronnie Carroll (7448) - person-update</title>' \
-            b'<link href="http://example.com/person/7448" rel="alternate"></link>' \
-            b'<updated>2017-05-02T17:06:05+00:00</updated>' \
-            b'<author><name>morbid_vandal</name></author>' \
-            b'<id>needs-review:3000</id>' \
-            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/7448"&gt;The Eurovisionary Ronnie Carroll (7448)&lt;/a&gt; by morbid_vandal with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user morbid_vandal&lt;/li&gt;\n&lt;li&gt;Edit of a candidate who has died&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' \
-            \
-            b'<entry><title>constituency-lock</title>' \
-            b'<link href="http://example.com/" rel="alternate"></link>' \
-            b'<updated>2017-05-02T16:57:05+00:00</updated>' \
-            b'<author><name>morbid_vandal</name></author>' \
-            b'<id>needs-review:5000</id>' \
-            b'<summary type="html">&lt;p&gt;constituency-lock of  by morbid_vandal with source: \xe2\x80\x9c Testing no post and no person \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user morbid_vandal&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;</summary></entry>' \
-            \
-            b'<entry><title>Theresa May (2811) - person-update</title>' \
-            b'<link href="http://example.com/person/2811" rel="alternate"></link>' \
-            b'<updated>2017-05-02T16:37:05+00:00</updated>' \
-            b'<author><name>lapsed_experienced</name></author>' \
-            b'<id>needs-review:4000</id>' \
-            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2811"&gt;Theresa May (2811)&lt;/a&gt; by lapsed_experienced with source: \xe2\x80\x9c Just for tests... \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Edit of a candidate whose record may be particularly liable to vandalism&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' \
-            \
-            b'<entry><title>Yoshi Aarle (**YoshiAarleID**) - person-update</title>' \
-            b'<link href="http://example.com/person/**YoshiAarleID**" rel="alternate"></link>' \
-            b'<updated>2017-05-02T16:30:05+00:00</updated>' \
-            b'<author><name>lapsed_experienced</name></author>' \
-            b'<id>needs-review:**laID**</id>' \
-            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/**YoshiAarleID**"&gt;Yoshi Aarle (**YoshiAarleID**)&lt;/a&gt; by lapsed_experienced with source: \xe2\x80\x9c just a test \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Edit of a statement to voters&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' \
-            \
-            b'<entry><title>Tessa Jowell (2009) - person-update</title>' \
-            b'<link href="http://example.com/person/2009" rel="alternate"></link>' \
-            b'<updated>2017-05-02T16:21:05+00:00</updated>' \
-            b'<author><name>new_suddenly_lots</name></author>' \
-            b'<id>needs-review:2007</id>' \
-            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_suddenly_lots with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_suddenly_lots&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' \
-            \
-            b'<entry><title>Tessa Jowell (2009) - person-update</title>' \
-            b'<link href="http://example.com/person/2009" rel="alternate"></link>' \
-            b'<updated>2017-05-02T16:14:05+00:00</updated>' \
-            b'<author><name>new_suddenly_lots</name></author>' \
-            b'<id>needs-review:2008</id>' \
-            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_suddenly_lots with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_suddenly_lots&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' \
-            \
-            b'<entry><title>Tessa Jowell (2009) - person-update</title>' \
-            b'<link href="http://example.com/person/2009" rel="alternate"></link>' \
-            b'<updated>2017-05-02T16:07:05+00:00</updated>' \
-            b'<author><name>new_suddenly_lots</name></author>' \
-            b'<id>needs-review:2009</id>' \
-            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_suddenly_lots with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_suddenly_lots&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry></feed>'
+        expected = b'<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb">' b"<title>example.com changes for review</title>" b'<link href="http://example.com/feeds/needs-review.xml" rel="alternate"></link>' b'<link href="http://example.com/feeds/needs-review.xml" rel="self"></link>' b"<id>http://example.com/feeds/needs-review.xml</id>" b"<updated>2017-05-02T17:08:05+00:00</updated>" b"<entry><title>Tessa Jowell (2009) - person-update</title>" b'<link href="http://example.com/person/2009" rel="alternate"></link>' b"<updated>2017-05-02T17:08:05+00:00</updated>" b"<author><name>new_only_one</name></author>" b"<id>needs-review:2509</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_only_one with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_only_one&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' b"<entry><title>The Eurovisionary Ronnie Carroll (7448) - person-update</title>" b'<link href="http://example.com/person/7448" rel="alternate"></link>' b"<updated>2017-05-02T17:06:05+00:00</updated>" b"<author><name>morbid_vandal</name></author>" b"<id>needs-review:3000</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/7448"&gt;The Eurovisionary Ronnie Carroll (7448)&lt;/a&gt; by morbid_vandal with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user morbid_vandal&lt;/li&gt;\n&lt;li&gt;Edit of a candidate who has died&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' b"<entry><title>constituency-lock</title>" b'<link href="http://example.com/" rel="alternate"></link>' b"<updated>2017-05-02T16:57:05+00:00</updated>" b"<author><name>morbid_vandal</name></author>" b"<id>needs-review:5000</id>" b'<summary type="html">&lt;p&gt;constituency-lock of  by morbid_vandal with source: \xe2\x80\x9c Testing no post and no person \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user morbid_vandal&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;</summary></entry>' b"<entry><title>Theresa May (2811) - person-update</title>" b'<link href="http://example.com/person/2811" rel="alternate"></link>' b"<updated>2017-05-02T16:37:05+00:00</updated>" b"<author><name>lapsed_experienced</name></author>" b"<id>needs-review:4000</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2811"&gt;Theresa May (2811)&lt;/a&gt; by lapsed_experienced with source: \xe2\x80\x9c Just for tests... \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Edit of a candidate whose record may be particularly liable to vandalism&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' b"<entry><title>Yoshi Aarle (**YoshiAarleID**) - person-update</title>" b'<link href="http://example.com/person/**YoshiAarleID**" rel="alternate"></link>' b"<updated>2017-05-02T16:30:05+00:00</updated>" b"<author><name>lapsed_experienced</name></author>" b"<id>needs-review:**laID**</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/**YoshiAarleID**"&gt;Yoshi Aarle (**YoshiAarleID**)&lt;/a&gt; by lapsed_experienced with source: \xe2\x80\x9c just a test \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Edit of a statement to voters&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' b"<entry><title>Tessa Jowell (2009) - person-update</title>" b'<link href="http://example.com/person/2009" rel="alternate"></link>' b"<updated>2017-05-02T16:21:05+00:00</updated>" b"<author><name>new_suddenly_lots</name></author>" b"<id>needs-review:2007</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_suddenly_lots with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_suddenly_lots&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' b"<entry><title>Tessa Jowell (2009) - person-update</title>" b'<link href="http://example.com/person/2009" rel="alternate"></link>' b"<updated>2017-05-02T16:14:05+00:00</updated>" b"<author><name>new_suddenly_lots</name></author>" b"<id>needs-review:2008</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_suddenly_lots with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_suddenly_lots&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' b"<entry><title>Tessa Jowell (2009) - person-update</title>" b'<link href="http://example.com/person/2009" rel="alternate"></link>' b"<updated>2017-05-02T16:07:05+00:00</updated>" b"<author><name>new_suddenly_lots</name></author>" b"<id>needs-review:2009</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_suddenly_lots with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_suddenly_lots&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry></feed>'
 
-        expected = expected.replace(b'**YoshiAarleID**', str(self.person.pk).encode())
-        expected = expected.replace(b'**laID**', str(self.la_id).encode())
+        expected = expected.replace(
+            b"**YoshiAarleID**", str(self.person.pk).encode()
+        )
+        expected = expected.replace(b"**laID**", str(self.la_id).encode())
         self.assertEqual(got, expected)
 
 
 class TestDiffHTML(TestCase):
-
     def test_missing_version(self):
         person = factories.PersonFactory.create(
-            name='John Smith',
-            id='1234567',
-            versions='[]',
+            name="John Smith", id="1234567", versions="[]"
         )
         la = LoggedAction.objects.create(
-            person=person,
-            popit_person_new_version='1376abcd9234')
+            person=person, popit_person_new_version="1376abcd9234"
+        )
         self.assertEqual(
             la.diff_html,
-            '<p>Couldn&#39;t find version 1376abcd9234 for person with ID '
-            '1234567</p>'
+            "<p>Couldn&#39;t find version 1376abcd9234 for person with ID "
+            "1234567</p>",
         )
 
     def test_found_version(self):
         person = factories.PersonFactory.create(
-            name='Sarah Jones',
-            id='1234567',
-            versions='''[{
+            name="Sarah Jones",
+            id="1234567",
+            versions="""[{
                 "data": {
                     "honorific_prefix": "Mrs",
                     "honorific_suffix": "",
@@ -417,16 +375,16 @@ class TestDiffHTML(TestCase):
                 "timestamp": "2015-03-10T05:35:15.297559",
                 "username": "test",
                 "version_id": "2f07734529a83242"
-            }]''',
+            }]""",
         )
         la = LoggedAction.objects.create(
-            person=person,
-            popit_person_new_version='3fc494d54f61a157')
+            person=person, popit_person_new_version="3fc494d54f61a157"
+        )
         self.assertEqual(
             tidy_html_whitespace(la.diff_html),
-            '<dl><dt>Changes made compared to parent 2f07734529a83242</dt>'
+            "<dl><dt>Changes made compared to parent 2f07734529a83242</dt>"
             '<dd><p class="version-diff">'
             '<span class="version-op-remove" style="color: #8e2424">'
-            'Removed: email (previously it was &quot;sarah@example.com&quot;)'
-            '</span><br/></p></dd></dl>'
+            "Removed: email (previously it was &quot;sarah@example.com&quot;)"
+            "</span><br/></p></dd></dl>",
         )

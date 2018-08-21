@@ -8,14 +8,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('candidates', '0046_delete_person_extra'),
-        ('popolo', '0009_move_extra_person_data_to_base'),
+        ("candidates", "0046_delete_person_extra"),
+        ("popolo", "0009_move_extra_person_data_to_base"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='person',
-            name='not_standing',
-            field=models.ManyToManyField(related_name='persons_not_standing', to='elections.Election'),
-        ),
+            model_name="person",
+            name="not_standing",
+            field=models.ManyToManyField(
+                related_name="persons_not_standing", to="elections.Election"
+            ),
+        )
     ]

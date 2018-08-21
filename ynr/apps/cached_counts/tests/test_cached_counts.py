@@ -29,18 +29,12 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             self.sinn_fein_extra,
         ]
         i = 0
-        candidacy_counts = {
-            '14419': 10,
-            '14420': 3,
-            '65808': 5,
-            '65913': 0,
-        }
+        candidacy_counts = {"14419": 10, "14420": 3, "65808": 5, "65913": 0}
         for post_extra in posts_extra:
             candidacy_count = candidacy_counts[post_extra.slug]
             for n in range(candidacy_count):
                 person = factories.PersonFactory.create(
-                    id=str(7000 + i),
-                    name='Test Candidate {}'.format(i)
+                    id=str(7000 + i), name="Test Candidate {}".format(i)
                 )
                 party = parties_extra[n % 5]
                 factories.MembershipFactory.create(
@@ -49,8 +43,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                     on_behalf_of=party.base,
                     post_election=self.election.postextraelection_set.get(
                         postextra=post_extra
-                    )
-
+                    ),
                 )
                 i += 1
         # Now create a couple of candidacies in the earlier election.
@@ -62,7 +55,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             on_behalf_of=parties_extra[0].base,
             post_election=self.earlier_election.postextraelection_set.get(
                 postextra=posts_extra[1]
-            )
+            ),
         )
         # Now one in the same post but standing for a different party:
         factories.MembershipFactory.create(
@@ -71,25 +64,25 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             on_behalf_of=parties_extra[2].base,
             post_election=self.earlier_election.postextraelection_set.get(
                 postextra=posts_extra[1]
-            )
+            ),
         )
 
     def test_reports_top_page(self):
-        response = self.app.get('/numbers/')
+        response = self.app.get("/numbers/")
         self.assertEqual(response.status_code, 200)
         current_div = response.html.find(
-            'div', {'id': 'statistics-election-2015'}
+            "div", {"id": "statistics-election-2015"}
         )
         self.assertTrue(current_div)
-        self.assertIn('Total candidates: 18', str(current_div))
+        self.assertIn("Total candidates: 18", str(current_div))
         earlier_div = response.html.find(
-            'div', {'id': 'statistics-election-2010'}
+            "div", {"id": "statistics-election-2010"}
         )
-        self.assertIn('Total candidates: 2', str(earlier_div))
+        self.assertIn("Total candidates: 2", str(earlier_div))
 
     def test_reports_top_page_json(self):
-        response = self.app.get('/numbers/?format=json')
-        data = json.loads(response.body.decode('utf-8'))
+        response = self.app.get("/numbers/?format=json")
+        data = json.loads(response.body.decode("utf-8"))
         self.assertEqual(
             data,
             [
@@ -103,14 +96,15 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                                         "html_id": "2015",
                                         "id": "2015",
                                         "name": "2015 General Election",
-                                        "total": 18
+                                        "total": 18,
                                     }
                                 ],
-                                "role": "Member of Parliament"
+                                "role": "Member of Parliament",
                             }
                         ],
                         text_type(
-                            self.local_election.election_date.isoformat()): [
+                            self.local_election.election_date.isoformat()
+                        ): [
                             {
                                 "elections": [
                                     {
@@ -121,109 +115,129 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                                     }
                                 ],
                                 "role": "Local Councillor",
-                            },
+                            }
                         ],
-                    }
+                    },
                 },
                 {
                     "current": False,
                     "dates": {
                         text_type(
-                            self.earlier_election.election_date.isoformat()): [
+                            self.earlier_election.election_date.isoformat()
+                        ): [
                             {
                                 "elections": [
                                     {
                                         "html_id": "2010",
                                         "id": "2010",
                                         "name": "2010 General Election",
-                                        "total": 2
+                                        "total": 2,
                                     }
                                 ],
-                                "role": "Member of Parliament"
+                                "role": "Member of Parliament",
                             }
                         ]
-                    }
-                }
-            ]
+                    },
+                },
+            ],
         )
 
     def test_attention_needed_page(self):
-        response = self.app.get('/numbers/attention-needed')
+        response = self.app.get("/numbers/attention-needed")
         rows = [
-            tuple(td.decode() for td in row.find_all('td'))
-            for row in response.html.find_all('tr')
+            tuple(td.decode() for td in row.find_all("td"))
+            for row in response.html.find_all("tr")
         ]
 
         self.assertEqual(
             rows,
             [
-                ('<td>2015 General Election</td>',
-                 '<td><a href="/election/2015/post/65913/camberwell-and-peckham">Camberwell and Peckham</a></td>',
-                 '<td>0</td>'),
-                ('<td>Maidstone local election</td>',
-                 '<td><a href="/election/local.maidstone.2016-05-05/post/DIW:E05005004/shepway-south-ward">Shepway South Ward</a></td>',
-                 '<td>0</td>'),
-                ('<td>2015 General Election</td>',
-                 '<td><a href="/election/2015/post/14420/edinburgh-north-and-leith">Edinburgh North and Leith</a></td>',
-                 '<td>3</td>'),
-                ('<td>2015 General Election</td>',
-                 '<td><a href="/election/2015/post/65808/dulwich-and-west-norwood">Dulwich and West Norwood</a></td>',
-                 '<td>5</td>'),
-                ('<td>2015 General Election</td>',
-                 '<td><a href="/election/2015/post/14419/edinburgh-east">Edinburgh East</a></td>',
-                 '<td>10</td>')
-            ]
+                (
+                    "<td>2015 General Election</td>",
+                    '<td><a href="/election/2015/post/65913/camberwell-and-peckham">Camberwell and Peckham</a></td>',
+                    "<td>0</td>",
+                ),
+                (
+                    "<td>Maidstone local election</td>",
+                    '<td><a href="/election/local.maidstone.2016-05-05/post/DIW:E05005004/shepway-south-ward">Shepway South Ward</a></td>',
+                    "<td>0</td>",
+                ),
+                (
+                    "<td>2015 General Election</td>",
+                    '<td><a href="/election/2015/post/14420/edinburgh-north-and-leith">Edinburgh North and Leith</a></td>',
+                    "<td>3</td>",
+                ),
+                (
+                    "<td>2015 General Election</td>",
+                    '<td><a href="/election/2015/post/65808/dulwich-and-west-norwood">Dulwich and West Norwood</a></td>',
+                    "<td>5</td>",
+                ),
+                (
+                    "<td>2015 General Election</td>",
+                    '<td><a href="/election/2015/post/14419/edinburgh-east">Edinburgh East</a></td>',
+                    "<td>10</td>",
+                ),
+            ],
         )
 
     def test_post_counts_page(self):
-        response = self.app.get('/numbers/election/2015/posts')
+        response = self.app.get("/numbers/election/2015/posts")
         self.assertEqual(response.status_code, 200)
         rows = [
-            tuple(td.decode() for td in row.find_all('td'))
-            for row in response.html.find_all('tr')
+            tuple(td.decode() for td in row.find_all("td"))
+            for row in response.html.find_all("tr")
         ]
         self.assertEqual(
             rows,
             [
                 (
-                '<td><a href="/election/2015/post/14419/edinburgh-east">Member of Parliament for Edinburgh East</a></td>',
-                '<td>10</td>'),
+                    '<td><a href="/election/2015/post/14419/edinburgh-east">Member of Parliament for Edinburgh East</a></td>',
+                    "<td>10</td>",
+                ),
                 (
-                '<td><a href="/election/2015/post/65808/dulwich-and-west-norwood">Member of Parliament for Dulwich and West Norwood</a></td>',
-                '<td>5</td>'),
+                    '<td><a href="/election/2015/post/65808/dulwich-and-west-norwood">Member of Parliament for Dulwich and West Norwood</a></td>',
+                    "<td>5</td>",
+                ),
                 (
-                '<td><a href="/election/2015/post/14420/edinburgh-north-and-leith">Member of Parliament for Edinburgh North and Leith</a></td>',
-                '<td>3</td>'),
+                    '<td><a href="/election/2015/post/14420/edinburgh-north-and-leith">Member of Parliament for Edinburgh North and Leith</a></td>',
+                    "<td>3</td>",
+                ),
                 (
-                '<td><a href="/election/2015/post/65913/camberwell-and-peckham">Member of Parliament for Camberwell and Peckham</a></td>',
-                '<td>0</td>'),
-            ]
+                    '<td><a href="/election/2015/post/65913/camberwell-and-peckham">Member of Parliament for Camberwell and Peckham</a></td>',
+                    "<td>0</td>",
+                ),
+            ],
         )
 
     def test_party_counts_page(self):
-        response = self.app.get('/numbers/election/2015/parties')
+        response = self.app.get("/numbers/election/2015/parties")
         self.assertEqual(response.status_code, 200)
         rows = [
-            tuple(td.decode() for td in row.find_all('td'))
-            for row in response.html.find_all('tr')
+            tuple(td.decode() for td in row.find_all("td"))
+            for row in response.html.find_all("tr")
         ]
         self.assertEqual(
             rows,
             [
                 (
-                '<td><a href="/election/2015/party/party:63/green-party">Green Party</a></td>',
-                '<td>4</td>'),
+                    '<td><a href="/election/2015/party/party:63/green-party">Green Party</a></td>',
+                    "<td>4</td>",
+                ),
                 (
-                '<td><a href="/election/2015/party/party:53/labour-party">Labour Party</a></td>',
-                '<td>4</td>'),
+                    '<td><a href="/election/2015/party/party:53/labour-party">Labour Party</a></td>',
+                    "<td>4</td>",
+                ),
                 (
-                '<td><a href="/election/2015/party/party:90/liberal-democrats">Liberal Democrats</a></td>',
-                '<td>4</td>'),
+                    '<td><a href="/election/2015/party/party:90/liberal-democrats">Liberal Democrats</a></td>',
+                    "<td>4</td>",
+                ),
                 (
-                '<td><a href="/election/2015/party/party:52/conservative-party">Conservative Party</a></td>',
-                '<td>3</td>'),
+                    '<td><a href="/election/2015/party/party:52/conservative-party">Conservative Party</a></td>',
+                    "<td>3</td>",
+                ),
                 (
-                '<td><a href="/election/2015/party/party:39/sinn-fein">Sinn F\xe9in</a></td>',
-                '<td>3</td>'),
-            ]
+                    '<td><a href="/election/2015/party/party:39/sinn-fein">Sinn F\xe9in</a></td>',
+                    "<td>3</td>",
+                ),
+            ],
         )

@@ -6,18 +6,15 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('uk_results', '0043_auto_20180424_2148'),
-    ]
+    dependencies = [("uk_results", "0043_auto_20180424_2148")]
 
     operations = [
         migrations.AlterModelOptions(
-            name='candidateresult',
-            options={'ordering': ('-num_ballots',)},
+            name="candidateresult", options={"ordering": ("-num_ballots",)}
         ),
         migrations.RenameField(
-            model_name='candidateresult',
-            old_name='num_ballots_reported',
-            new_name='num_ballots',
+            model_name="candidateresult",
+            old_name="num_ballots_reported",
+            new_name="num_ballots",
         ),
     ]

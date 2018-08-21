@@ -160,7 +160,5 @@ class Command(BaseCommand):
                 # with out of date information (e.g. this has happened
                 # with the person.versions field, with confusing
                 # results...)
-                person = Person.objects.get(
-                    pk=person_id
-                )
+                person = Person.objects.get(pk=person_id)
                 self.handle_person(person)

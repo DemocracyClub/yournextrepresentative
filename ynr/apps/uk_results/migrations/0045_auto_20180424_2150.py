@@ -6,14 +6,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('uk_results', '0044_auto_20180424_2149'),
-    ]
+    dependencies = [("uk_results", "0044_auto_20180424_2149")]
 
     operations = [
         migrations.AlterField(
-            model_name='resultset',
-            name='ip_address',
+            model_name="resultset",
+            name="ip_address",
             field=models.GenericIPAddressField(null=True),
-        ),
+        )
     ]
