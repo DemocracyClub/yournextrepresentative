@@ -79,9 +79,9 @@ six==1.10.0
 sorl-thumbnail==12.3
 sqlparse==0.2.4
 tox
-traitlets==4.0.0
+traitlets==4.3.2
 Unidecode==1.0.22
-urllib3>=1.21.1,<1.24
+urllib3<1.23,>=1.21.1
 waitress==0.8.9
 WebOb==1.8.2
 WebTest==2.0.15
