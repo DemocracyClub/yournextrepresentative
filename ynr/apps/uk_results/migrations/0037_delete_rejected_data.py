@@ -3,19 +3,16 @@
 
 from django.db import migrations
 
+
 def delete_rejected_results(apps, schema_editor):
     ResultSet = apps.get_model("uk_results", "ResultSet")
-    ResultSet.objects.filter(review_status='rejected').delete()
+    ResultSet.objects.filter(review_status="rejected").delete()
 
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('uk_results', '0036_auto_20180424_1926'),
-    ]
+    dependencies = [("uk_results", "0036_auto_20180424_1926")]
 
     operations = [
-        migrations.RunPython(
-            delete_rejected_results, migrations.RunPython.noop,
-        )
+        migrations.RunPython(delete_rejected_results, migrations.RunPython.noop)
     ]

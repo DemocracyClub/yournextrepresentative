@@ -5,16 +5,14 @@ from django.db import migrations
 
 from django.conf import settings
 
+
 def create_user(apps, schema_editor):
-    User= apps.get_model('auth', 'User')
+    User = apps.get_model("auth", "User")
     User.objects.get_or_create(username=settings.TWITTER_BOT_USERNAME)
 
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-    ]
+    dependencies = []
 
-    operations = [
-        migrations.RunPython(create_user, migrations.RunPython.noop),
-    ]
+    operations = [migrations.RunPython(create_user, migrations.RunPython.noop)]

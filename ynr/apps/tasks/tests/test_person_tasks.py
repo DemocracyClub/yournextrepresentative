@@ -6,21 +6,16 @@ from tasks.models import PersonTask
 
 
 class PersonTaskTests(TestCase):
-
     def setUp(self):
         # Create one person with these fields already present:
         self.person = Person.objects.create(
             name="John the Well-Described",
             additional_name="Very Well-Described",
-            versions='[]'
+            versions="[]",
         )
+        PersonTask.objects.create(task_field="email", person=self.person)
         PersonTask.objects.create(
-            task_field='email',
-            person=self.person,
-        )
-        PersonTask.objects.create(
-            task_field='facebook_page_url',
-            person=self.person,
+            task_field="facebook_page_url", person=self.person
         )
 
     def test_task_updated_on_save(self):
@@ -33,18 +28,19 @@ class PersonTaskTests(TestCase):
         self.assertEqual(PersonTask.objects.unfinished_tasks().count(), 2)
         self.person.email = "a@example.com"
         facebook_field = ComplexPopoloField.objects.get(
-            name="facebook_page_url")
+            name="facebook_page_url"
+        )
         self.person.update_complex_field(
-            facebook_field, 'https://facebook.com/example')
-        twitter_field = ComplexPopoloField.objects.get(
-            name="twitter_username")
+            facebook_field, "https://facebook.com/example"
+        )
+        twitter_field = ComplexPopoloField.objects.get(name="twitter_username")
         self.person.update_complex_field(
-            twitter_field, 'https://twitter.com/example')
+            twitter_field, "https://twitter.com/example"
+        )
 
         self.person.save()
 
         self.assertEqual(PersonTask.objects.unfinished_tasks().count(), 0)
-
 
     def test_task_could_not_find(self):
         task = PersonTask.objects.all().first()

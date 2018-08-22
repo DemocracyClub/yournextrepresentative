@@ -12,16 +12,17 @@ from django.utils.translation import ugettext_lazy as _
 from model_utils.fields import AutoCreatedField, AutoLastModifiedField
 from datetime import datetime
 
-__author__ = 'guglielmo'
+__author__ = "guglielmo"
 
 
 class GenericRelatable(models.Model):
     """
     An abstract class that provides the possibility of generic relations
     """
+
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
-    content_object = GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey("content_type", "object_id")
 
     class Meta:
         abstract = True
@@ -34,15 +35,17 @@ def validate_partial_date(value):
     2013-22 must rais a ValidationError, as 2013-13-12, or 2013-11-55.
     """
     try:
-        datetime.strptime(value, '%Y-%m-%d')
+        datetime.strptime(value, "%Y-%m-%d")
     except ValueError:
         try:
-            datetime.strptime(value, '%Y-%m')
+            datetime.strptime(value, "%Y-%m")
         except ValueError:
             try:
-                datetime.strptime(value, '%Y')
+                datetime.strptime(value, "%Y")
             except ValueError:
-                raise ValidationError(u'date seems not to be correct %s' % value)
+                raise ValidationError(
+                    u"date seems not to be correct %s" % value
+                )
 
 
 class Dateframeable(models.Model):
@@ -50,17 +53,26 @@ class Dateframeable(models.Model):
     An abstract base class model that provides a start and an end dates to the class.
     Uncomplete dates can be used. The validation pattern is: "^[0-9]{4}(-[0-9]{2}){0,2}$"
     """
-    partial_date_validator = RegexValidator(regex="^[0-9]{4}(-[0-9]{2}){0,2}$", message="Date has wrong format")
+
+    partial_date_validator = RegexValidator(
+        regex="^[0-9]{4}(-[0-9]{2}){0,2}$", message="Date has wrong format"
+    )
 
     start_date = models.CharField(
-        _("start date"), max_length=10, blank=True, null=True,
+        _("start date"),
+        max_length=10,
+        blank=True,
+        null=True,
         validators=[partial_date_validator, validate_partial_date],
         help_text=_("The date when the validity of the item starts"),
     )
     end_date = models.CharField(
-        _("end date"), max_length=10, blank=True, null=True,
+        _("end date"),
+        max_length=10,
+        blank=True,
+        null=True,
         validators=[partial_date_validator, validate_partial_date],
-        help_text=_("The date when the validity of the item ends")
+        help_text=_("The date when the validity of the item ends"),
     )
 
     class Meta:
@@ -72,8 +84,9 @@ class Timestampable(models.Model):
     An abstract base class model that provides self-updating
     ``created`` and ``modified`` fields.
     """
-    created_at = AutoCreatedField(_('creation time'))
-    updated_at = AutoLastModifiedField(_('last modification time'))
+
+    created_at = AutoCreatedField(_("creation time"))
+    updated_at = AutoLastModifiedField(_("last modification time"))
 
     class Meta:
         abstract = True

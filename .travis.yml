@@ -14,8 +14,10 @@ install:
   - pip install tox coveralls tox-travis
   # Make sure pip is at the latest version:
   - pip install -U pip
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then pip install black ; fi
 
 script:
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then black -l 80 --check . ; fi
   - tox
 after_success:
   - coveralls

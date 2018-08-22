@@ -7,86 +7,77 @@ from .dates import date_in_near_future, FOUR_YEARS_IN_DAYS
 
 
 class PartySetFactory(factory.DjangoModelFactory):
-
     class Meta:
-        model = 'candidates.PartySet'
+        model = "candidates.PartySet"
 
 
 class ParliamentaryChamberFactory(factory.DjangoModelFactory):
     class Meta:
-        model = 'popolo.Organization'
+        model = "popolo.Organization"
 
-    name = 'House of Commons'
+    name = "House of Commons"
 
 
 class ParliamentaryChamberExtraFactory(factory.DjangoModelFactory):
-
     class Meta:
-        model = 'candidates.OrganizationExtra'
+        model = "candidates.OrganizationExtra"
 
-    slug = 'commons'
+    slug = "commons"
     base = factory.SubFactory(ParliamentaryChamberFactory)
 
 
 class BaseElectionFactory(factory.DjangoModelFactory):
-
     class Meta:
-        model = 'elections.Election'
+        model = "elections.Election"
         abstract = True
 
-    slug = 'sp.2016-05-05'
-    for_post_role = 'Member of the Scottish Parliament'
+    slug = "sp.2016-05-05"
+    for_post_role = "Member of the Scottish Parliament"
     winner_membership_role = None
-    candidate_membership_role = 'Candidate'
+    candidate_membership_role = "Candidate"
     election_date = date_in_near_future
-    name = 'Scottish Parliamentary elections'
+    name = "Scottish Parliamentary elections"
     current = True
     use_for_candidate_suggestions = False
     area_generation = 22
     party_lists_in_use = False
     default_party_list_members_to_show = 0
     show_official_documents = True
-    ocd_division = ''
-    description = ''
+    ocd_division = ""
+    description = ""
 
 
 class ElectionFactory(BaseElectionFactory):
-
     class Meta:
-        model = 'elections.Election'
+        model = "elections.Election"
 
 
 class EarlierElectionFactory(BaseElectionFactory):
-
     class Meta:
-        model = 'elections.Election'
+        model = "elections.Election"
 
-    slug = 'earlier-general-election'
-    name = 'Earlier General Election'
-    election_date = \
-        date_in_near_future - timedelta(days=FOUR_YEARS_IN_DAYS)
+    slug = "earlier-general-election"
+    name = "Earlier General Election"
+    election_date = date_in_near_future - timedelta(days=FOUR_YEARS_IN_DAYS)
     current = False
     use_for_candidate_suggestions = True
 
 
 class PostFactory(factory.DjangoModelFactory):
-
     class Meta:
-        model = 'popolo.Post'
+        model = "popolo.Post"
 
-    role = 'Member of Parliament'
+    role = "Member of Parliament"
 
 
 class PostExtraElectionFactory(factory.DjangoModelFactory):
-
     class Meta:
-        model = 'candidates.PostExtraElection'
+        model = "candidates.PostExtraElection"
 
 
 class PostExtraFactory(factory.DjangoModelFactory):
-
     class Meta:
-        model = 'candidates.PostExtra'
+        model = "candidates.PostExtra"
 
     base = factory.SubFactory(PostFactory)
 
@@ -97,7 +88,7 @@ class PostExtraFactory(factory.DjangoModelFactory):
         if extracted:
             for election in extracted:
                 if re.search("\d\d\d\d-\d\d-\d\d$", election.slug):
-                    parts = election.slug.split('.')
+                    parts = election.slug.split(".")
                     parts.insert(-1, self.slug)
                     ballot_paper_id = ".".join(parts)
                 else:
@@ -113,43 +104,42 @@ class PostExtraFactory(factory.DjangoModelFactory):
 
 class OrganizationFactory(factory.DjangoModelFactory):
     class Meta:
-        model = 'popolo.Organization'
+        model = "popolo.Organization"
 
 
 class OrganizationExtraFactory(factory.DjangoModelFactory):
     class Meta:
-        model = 'candidates.OrganizationExtra'
+        model = "candidates.OrganizationExtra"
+
     base = factory.SubFactory(OrganizationFactory)
 
 
 class PartyFactory(factory.DjangoModelFactory):
-
     class Meta:
-        model = 'popolo.Organization'
+        model = "popolo.Organization"
 
-    classification='Party'
+    classification = "Party"
     end_date = "9999-12-31"
 
 
 class PartyExtraFactory(factory.DjangoModelFactory):
-
     class Meta:
-        model = 'candidates.OrganizationExtra'
+        model = "candidates.OrganizationExtra"
 
-    register = 'Great Britain'
+    register = "Great Britain"
 
     base = factory.SubFactory(PartyFactory)
 
 
 class PersonFactory(factory.DjangoModelFactory):
-
     class Meta:
-        model = 'popolo.Person'
-    versions = '[]'
+        model = "popolo.Person"
+
+    versions = "[]"
 
 
 class MembershipFactory(factory.DjangoModelFactory):
     class Meta:
-        model = 'popolo.Membership'
+        model = "popolo.Membership"
 
-    role = 'Candidate'
+    role = "Candidate"

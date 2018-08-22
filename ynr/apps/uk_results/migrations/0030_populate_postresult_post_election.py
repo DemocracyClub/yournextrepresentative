@@ -10,10 +10,10 @@ def set_post_election_from_post(apps, schema_editor):
     and the related memberships and assuming they're correct (sometimes they
     won't be, and that will have to be fixed manually later).
     """
-    PostResult = apps.get_model('uk_results', 'PostResult')
-    PostExtraElection = apps.get_model('candidates', 'PostExtraElection')
+    PostResult = apps.get_model("uk_results", "PostResult")
+    PostExtraElection = apps.get_model("candidates", "PostExtraElection")
 
-    qs = PostResult.objects.all().select_related('post__extra')
+    qs = PostResult.objects.all().select_related("post__extra")
     for post_result in qs:
         pee = None
         elections = post_result.post.extra.elections.all()
@@ -22,8 +22,7 @@ def set_post_election_from_post(apps, schema_editor):
         if elections.count() == 1:
             # This is an easy case – this post only has one known election
             pee = PostExtraElection.objects.get(
-                election=elections.first(),
-                postextra=post_result.post.extra
+                election=elections.first(), postextra=post_result.post.extra
             )
             post_result.post_election = pee
             post_result.save()
@@ -46,8 +45,7 @@ def set_post_election_from_post(apps, schema_editor):
             if len(set(result_sets_by_election.keys())) == 1:
                 election = result_sets_by_election.keys()[0]
                 pee = PostExtraElection.objects.get(
-                    election=election,
-                    postextra=post_result.post.extra
+                    election=election, postextra=post_result.post.extra
                 )
                 post_result.post_election = pee
                 post_result.save()
@@ -59,14 +57,13 @@ def set_post_election_from_post(apps, schema_editor):
                 for election, result_sets in result_sets_by_election.items():
                     result_sets = set(result_sets)
                     pee = PostExtraElection.objects.get(
-                        election=election,
-                        postextra=post_result.post.extra
+                        election=election, postextra=post_result.post.extra
                     )
                     pr = PostResult.objects.create(
                         post_election=pee,
                         post=post_result.post,
                         confirmed=post_result.confirmed,
-                        confirmed_resultset=post_result.confirmed_resultset
+                        confirmed_resultset=post_result.confirmed_resultset,
                     )
                     for result_set in result_sets:
                         result_set.post_result = pr
@@ -74,14 +71,8 @@ def set_post_election_from_post(apps, schema_editor):
                 post_result.delete()
 
 
-
-
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('uk_results', '0029_add_postresult_post_election'),
-    ]
+    dependencies = [("uk_results", "0029_add_postresult_post_election")]
 
-    operations = [
-        migrations.RunPython(set_post_election_from_post),
-    ]
+    operations = [migrations.RunPython(set_post_election_from_post)]

@@ -6,17 +6,9 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('uk_results', '0037_delete_rejected_data'),
-    ]
+    dependencies = [("uk_results", "0037_delete_rejected_data")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='resultset',
-            name='final_source',
-        ),
-        migrations.RemoveField(
-            model_name='resultset',
-            name='is_final',
-        ),
+        migrations.RemoveField(model_name="resultset", name="final_source"),
+        migrations.RemoveField(model_name="resultset", name="is_final"),
     ]

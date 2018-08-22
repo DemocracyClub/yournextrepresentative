@@ -5,12 +5,12 @@ from django.db import migrations
 
 
 def add_extra_fields_to_base(apps, schema_editor):
-    Membership = apps.get_model('popolo', 'Membership')
+    Membership = apps.get_model("popolo", "Membership")
 
     # First, delete any Membership objects with no extra
     Membership.objects.filter(extra=None).delete()
 
-    for base in Membership.objects.all().select_related('extra'):
+    for base in Membership.objects.all().select_related("extra"):
         base.elected = base.extra.elected
         base.party_list_position = base.extra.party_list_position
         base.post_election = base.extra.post_election
@@ -19,11 +19,10 @@ def add_extra_fields_to_base(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('popolo', '0003_move-extra-fields-to-base'),
-    ]
+    dependencies = [("popolo", "0003_move-extra-fields-to-base")]
 
     operations = [
-        migrations.RunPython(add_extra_fields_to_base,
-                             migrations.RunPython.noop),
+        migrations.RunPython(
+            add_extra_fields_to_base, migrations.RunPython.noop
+        )
     ]

@@ -8,11 +8,9 @@ from tasks.models import pause_task_signal
 
 @pause_task_signal
 def add_person(request, person_data):
-    person = Person.objects.create(name=person_data['name'])
+    person = Person.objects.create(name=person_data["name"])
 
-    change_metadata = get_change_metadata(
-        request, person_data['source']
-    )
+    change_metadata = get_change_metadata(request, person_data["source"])
 
     person.record_version(change_metadata, new_person=True)
     person.save()
@@ -20,24 +18,23 @@ def add_person(request, person_data):
     LoggedAction.objects.create(
         user=request.user,
         person=person,
-        action_type='person-create',
+        action_type="person-create",
         ip_address=get_client_ip(request),
-        popit_person_new_version=change_metadata['version_id'],
-        source=change_metadata['information_source'],
+        popit_person_new_version=change_metadata["version_id"],
+        source=change_metadata["information_source"],
     )
     return person
 
 
 @pause_task_signal
-def update_person(request=None, person=None,
-                  party=None, post_election=None, source=None):
+def update_person(
+    request=None, person=None, party=None, post_election=None, source=None
+):
     election = post_election.election
 
     person.not_standing.remove(election)
 
-    check_creation_allowed(
-        request.user, person.current_candidacies
-    )
+    check_creation_allowed(request.user, person.current_candidacies)
 
     membership, _ = Membership.objects.update_or_create(
         post=post_election.postextra.base,
@@ -45,10 +42,10 @@ def update_person(request=None, person=None,
         role=election.candidate_membership_role,
         post_election=post_election,
         defaults={
-            'on_behalf_of': party,
-            'party_list_position': None,
-            'elected': None,
-        }
+            "on_behalf_of": party,
+            "party_list_position": None,
+            "elected": None,
+        },
     )
 
     # Now remove other memberships in this election for that
@@ -56,20 +53,16 @@ def update_person(request=None, person=None,
     # object that has a
     # ForeignKey to the membership, since that would result in
     # losing data.
-    old_memberships = Membership.objects \
-        .exclude(pk=membership.pk) \
-        .filter(
-            person=person,
-            post_election=post_election,
-            role=election.candidate_membership_role,
-        )
+    old_memberships = Membership.objects.exclude(pk=membership.pk).filter(
+        person=person,
+        post_election=post_election,
+        role=election.candidate_membership_role,
+    )
     for old_membership in old_memberships:
         raise_if_unsafe_to_delete(old_membership)
         old_membership.delete()
 
-    change_metadata = get_change_metadata(
-        request, source
-    )
+    change_metadata = get_change_metadata(request, source)
 
     person.record_version(change_metadata)
     person.save()
@@ -77,8 +70,8 @@ def update_person(request=None, person=None,
     LoggedAction.objects.create(
         user=request.user,
         person=person,
-        action_type='person-update',
+        action_type="person-update",
         ip_address=get_client_ip(request),
-        popit_person_new_version=change_metadata['version_id'],
-        source=change_metadata['information_source'],
+        popit_person_new_version=change_metadata["version_id"],
+        source=change_metadata["information_source"],
     )

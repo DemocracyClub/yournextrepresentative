@@ -13,30 +13,32 @@ from .models import get_attention_needed_posts
 
 def get_counts(for_json=True):
     election_id_to_candidates = {}
-    qs = Membership.objects.filter(
-        role=F('post_election__election__candidate_membership_role')
-    ).values(
-        'post_election__election'
-    ).annotate(count=Count('post_election__election'))
+    qs = (
+        Membership.objects.filter(
+            role=F("post_election__election__candidate_membership_role")
+        )
+        .values("post_election__election")
+        .annotate(count=Count("post_election__election"))
+    )
 
     for d in qs:
-        election_id_to_candidates[d['post_election__election']] = d['count']
+        election_id_to_candidates[d["post_election__election"]] = d["count"]
 
     grouped_elections = Election.group_and_order_elections(for_json=for_json)
     for era_data in grouped_elections:
-        for date, elections in era_data['dates'].items():
+        for date, elections in era_data["dates"].items():
             for role_data in elections:
-                for election_data in role_data['elections']:
-                    e = election_data['election']
+                for election_data in role_data["elections"]:
+                    e = election_data["election"]
                     total = election_id_to_candidates.get(e.id, 0)
                     election_counts = {
-                        'id': e.slug,
-                        'html_id': e.slug.replace('.', '-'),
-                        'name': e.name,
-                        'total': total,
+                        "id": e.slug,
+                        "html_id": e.slug.replace(".", "-"),
+                        "name": e.name,
+                        "total": total,
                     }
                     election_data.update(election_counts)
-                    del election_data['election']
+                    del election_data["election"]
     return grouped_elections
 
 
@@ -45,14 +47,14 @@ class ReportsHomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['all_elections'] = get_counts()
+        context["all_elections"] = get_counts()
         return context
 
     def get(self, *args, **kwargs):
-        if self.request.GET.get('format') == "json":
+        if self.request.GET.get("format") == "json":
             return HttpResponse(
                 json.dumps(get_counts(for_json=True)),
-                content_type="application/json"
+                content_type="application/json",
             )
         return super().get(*args, **kwargs)
 
@@ -63,13 +65,13 @@ class PartyCountsView(ElectionMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = Organization.objects.filter(
-            classification='Party',
-            memberships_on_behalf_of__post_election__election=self.election_data
+            classification="Party",
+            memberships_on_behalf_of__post_election__election=self.election_data,
         )
-        qs = qs.annotate(count=Count('memberships_on_behalf_of'))
-        qs = qs.order_by('-count', 'name')
+        qs = qs.annotate(count=Count("memberships_on_behalf_of"))
+        qs = qs.order_by("-count", "name")
 
-        context['party_counts'] = qs
+        context["party_counts"] = qs
 
         return context
 
@@ -81,14 +83,11 @@ class ConstituencyCountsView(ElectionMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         qs = PostExtraElection.objects.filter(
             election=self.election_data
-        ).annotate(count=Count('membership'))
-        qs = qs.select_related(
-            'postextra__base',
-            'election',
-        )
-        qs = qs.order_by('-count')
+        ).annotate(count=Count("membership"))
+        qs = qs.select_related("postextra__base", "election")
+        qs = qs.order_by("-count")
 
-        context['post_counts'] = qs
+        context["post_counts"] = qs
         return context
 
 
@@ -97,5 +96,5 @@ class AttentionNeededView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['post_counts'] = get_attention_needed_posts()
+        context["post_counts"] = get_attention_needed_posts()
         return context

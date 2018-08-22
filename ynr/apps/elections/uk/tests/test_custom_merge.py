@@ -10,16 +10,13 @@ from uk_results.models import CandidateResult, ResultSet
 
 
 class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
-
     def setUp(self):
         super().setUp()
         self.primary_person = factories.PersonFactory.create(
-            id='3885',
-            name='Harriet Harman'
+            id="3885", name="Harriet Harman"
         )
         self.secondary_person = factories.PersonFactory.create(
-            id='10000',
-            name='Harriet Ruth Harman',
+            id="10000", name="Harriet Ruth Harman"
         )
 
     def test_uk_results_for_secondary_preserved(self):
@@ -41,7 +38,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.secondary_person,
             post=self.camberwell_post_extra.base,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.camberwell_post_extra_pee
+            post_election=self.camberwell_post_extra_pee,
         )
 
         # Now attach a vote count to the secondary person's candidacy:
@@ -50,7 +47,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post_election=self.camberwell_post_extra_pee,
             num_turnout_reported=51561,
             num_spoilt_ballots=42,
-            ip_address='127.0.0.1',
+            ip_address="127.0.0.1",
         )
         CandidateResult.objects.create(
             result_set=result_set,
@@ -60,10 +57,10 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         # Now try the merge:
         response = self.app.get(
-            '/person/3885/update',
-            user=self.user_who_can_merge)
-        merge_form = response.forms['person-merge']
-        merge_form['other'] = '10000'
+            "/person/3885/update", user=self.user_who_can_merge
+        )
+        merge_form = response.forms["person-merge"]
+        merge_form["other"] = "10000"
         response = merge_form.submit()
 
         self.assertEqual(CandidateResult.objects.count(), 1)
@@ -72,7 +69,8 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # has a result attached.
         after_merging = Person.objects.get(pk=3885)
         membership = after_merging.memberships.get(
-            post_election__election=self.election)
+            post_election__election=self.election
+        )
         candidate_result = membership.result
         self.assertEqual(candidate_result.num_ballots, 32614)
 
@@ -89,7 +87,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.local_election.postextraelection_set.get(
                 postextra=self.local_post
-            )
+            ),
         )
         factories.MembershipFactory.create(
             person=self.secondary_person,
@@ -103,7 +101,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post_election=self.camberwell_post_extra_pee_earlier,
             num_turnout_reported=46659,
             num_spoilt_ballots=42,
-            ip_address='127.0.0.1',
+            ip_address="127.0.0.1",
         )
         CandidateResult.objects.create(
             result_set=result_set,
@@ -113,10 +111,10 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         # Now try the merge:
         response = self.app.get(
-            '/person/3885/update',
-            user=self.user_who_can_merge)
-        merge_form = response.forms['person-merge']
-        merge_form['other'] = '10000'
+            "/person/3885/update", user=self.user_who_can_merge
+        )
+        merge_form = response.forms["person-merge"]
+        merge_form["other"] = "10000"
         response = merge_form.submit()
 
         self.assertEqual(CandidateResult.objects.count(), 1)
@@ -125,6 +123,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # has a result attached.
         after_merging = Person.objects.get(pk=3885)
         membership = after_merging.memberships.get(
-            post_election__election=self.earlier_election)
+            post_election__election=self.earlier_election
+        )
         candidate_result = membership.result
         self.assertEqual(candidate_result.num_ballots, 27619)

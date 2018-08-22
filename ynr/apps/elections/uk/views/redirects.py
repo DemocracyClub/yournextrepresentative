@@ -11,7 +11,7 @@ class ConstituenciesRedirect(RedirectView):
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
-        return '/election/2015/constituencies' + kwargs['list_filter']
+        return "/election/2015/constituencies" + kwargs["list_filter"]
 
 
 class ConstituencyRedirect(RedirectView):
@@ -19,7 +19,7 @@ class ConstituencyRedirect(RedirectView):
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
-        return '/election/2015/post/' + kwargs['rest_of_path']
+        return "/election/2015/post/" + kwargs["rest_of_path"]
 
 
 class PartyRedirect(RedirectView):
@@ -27,7 +27,7 @@ class PartyRedirect(RedirectView):
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
-        return '/election/2015/part' + kwargs['rest_of_path']
+        return "/election/2015/part" + kwargs["rest_of_path"]
 
 
 class CandidacyRedirect(RedirectView):
@@ -35,7 +35,7 @@ class CandidacyRedirect(RedirectView):
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
-        return '/election/2015/candidacy' + kwargs['rest_of_path']
+        return "/election/2015/candidacy" + kwargs["rest_of_path"]
 
 
 class PersonCreateRedirect(RedirectView):
@@ -43,7 +43,7 @@ class PersonCreateRedirect(RedirectView):
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
-        return '/election/2015/person/create/'
+        return "/election/2015/person/create/"
 
 
 class CachedCountsRedirect(RedirectView):
@@ -51,18 +51,22 @@ class CachedCountsRedirect(RedirectView):
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
-        if kwargs['rest_of_path'] == 'constituencies':
-            new_rest_of_path = 'posts'
+        if kwargs["rest_of_path"] == "constituencies":
+            new_rest_of_path = "posts"
         else:
-            new_rest_of_path = 'parties'
-        return '/numbers/election/2015/' + new_rest_of_path
+            new_rest_of_path = "parties"
+        return "/numbers/election/2015/" + new_rest_of_path
+
 
 class OfficialDocumentsRedirect(RedirectView):
 
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
-        return '/upload_document/upload/election/2015/post/' + kwargs['rest_of_path']
+        return (
+            "/upload_document/upload/election/2015/post/"
+            + kwargs["rest_of_path"]
+        )
 
 
 class WhoPostcodeRedirect(RedirectView):
@@ -70,7 +74,7 @@ class WhoPostcodeRedirect(RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        postcode = self.request.GET.get('postcode', '')
+        postcode = self.request.GET.get("postcode", "")
         if is_valid_postcode(postcode):
             return "https://whocanivotefor.co.uk/elections/{}".format(postcode)
         else:
@@ -82,28 +86,30 @@ class HelpOutCTAView(RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        pe_qs = PostExtraElection.objects.filter(
-            election__current=True,
-            suggestedpostlock=None,
-            postextra__base__officialdocument__isnull=False
-            ).exclude(
-            candidates_locked=True,
-            ).distinct()
+        pe_qs = (
+            PostExtraElection.objects.filter(
+                election__current=True,
+                suggestedpostlock=None,
+                postextra__base__officialdocument__isnull=False,
+            )
+            .exclude(candidates_locked=True)
+            .distinct()
+        )
 
         if pe_qs:
             random_offset = random.randrange(min(50, pe_qs.count()))
             postextra_election = pe_qs[random_offset]
             return "/bulk_adding/{}/{}/".format(
                 postextra_election.election.slug,
-                postextra_election.postextra.slug
+                postextra_election.postextra.slug,
             )
         return "/?get_involved_link=1"
+
 
 class AreasOfTypeRedirectView(RedirectView):
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
-        return '/posts-of-type/{}/{}'.format(
-            kwargs['area_type'],
-            kwargs['ignored_slug'],
+        return "/posts-of-type/{}/{}".format(
+            kwargs["area_type"], kwargs["ignored_slug"]
         )

@@ -3,15 +3,14 @@ from django.db import migrations
 
 
 def move_candidates_locked_to_postextraelection(apps, schema_editor):
-    PostExtra = apps.get_model('candidates', 'PostExtra')
-    PostExtraElection = apps.get_model('candidates', 'PostExtraElection')
+    PostExtra = apps.get_model("candidates", "PostExtra")
+    PostExtraElection = apps.get_model("candidates", "PostExtraElection")
 
     locks = PostExtra.objects.filter(candidates_locked=True)
     for lock in locks:
         for election in lock.elections.all():
             new_lock = PostExtraElection.objects.get(
-                postextra=lock,
-                election=election
+                postextra=lock, election=election
             )
             new_lock.candidates_locked = True
             new_lock.save()
@@ -27,12 +26,12 @@ def move_candidates_locked_to_postextra(apps, schema_editor):
     able to edit this". Hopefully. Regardless, if you want to do this
     you need to set an env variable `ALLOW_LOSSY_REVERSE_MIGRATIONS=1`
     """
-    if os.environ.get('ALLOW_LOSSY_REVERSE_MIGRATIONS') != '1':
+    if os.environ.get("ALLOW_LOSSY_REVERSE_MIGRATIONS") != "1":
         raise Exception(
-            'Cannot reverse 0034_candidates_locked_data migration as it will \
-            lose data. See the migration file for more details.'
+            "Cannot reverse 0034_candidates_locked_data migration as it will \
+            lose data. See the migration file for more details."
         )
-    PostExtraElection = apps.get_model('candidates', 'PostExtraElection')
+    PostExtraElection = apps.get_model("candidates", "PostExtraElection")
 
     locks = PostExtraElection.objects.filter(candidates_locked=True)
     for lock in locks:
@@ -43,13 +42,11 @@ def move_candidates_locked_to_postextra(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('candidates', '0033_postextraelection_candidates_locked'),
-    ]
+    dependencies = [("candidates", "0033_postextraelection_candidates_locked")]
 
     operations = [
         migrations.RunPython(
             move_candidates_locked_to_postextraelection,
-            move_candidates_locked_to_postextra
+            move_candidates_locked_to_postextra,
         )
     ]

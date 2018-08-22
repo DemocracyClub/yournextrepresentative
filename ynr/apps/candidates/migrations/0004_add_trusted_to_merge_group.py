@@ -9,9 +9,7 @@ from candidates.models import TRUSTED_TO_MERGE_GROUP_NAME
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('candidates', '0003_create_user_terms_agreements'),
-    ]
+    dependencies = [("candidates", "0003_create_user_terms_agreements")]
 
     operations = [
         migrations.RunPython(

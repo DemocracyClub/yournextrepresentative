@@ -16,19 +16,19 @@ from moderation_queue.models import SuggestedPostLock
 from django.utils.translation import to_locale, get_language
 
 SETTINGS_TO_ADD = (
-    'ELECTION_APP',
-    'GOOGLE_ANALYTICS_ACCOUNT',
-    'USE_UNIVERSAL_ANALYTICS',
-    'TWITTER_USERNAME',
-    'SOURCE_HINTS',
-    'MEDIA_URL',
-    'SUPPORT_EMAIL',
-    'EDITS_ALLOWED',
-    'SITE_OWNER',
-    'COPYRIGHT_HOLDER',
-    'RUNNING_TESTS',
-    'SHOW_BANNER',
-    'RAVEN_CONFIG',
+    "ELECTION_APP",
+    "GOOGLE_ANALYTICS_ACCOUNT",
+    "USE_UNIVERSAL_ANALYTICS",
+    "TWITTER_USERNAME",
+    "SOURCE_HINTS",
+    "MEDIA_URL",
+    "SUPPORT_EMAIL",
+    "EDITS_ALLOWED",
+    "SITE_OWNER",
+    "COPYRIGHT_HOLDER",
+    "RUNNING_TESTS",
+    "SHOW_BANNER",
+    "RAVEN_CONFIG",
 )
 
 
@@ -36,24 +36,20 @@ def add_settings(request):
     """Add some selected settings values to the context"""
 
     return {
-        'settings': {
-            k: getattr(settings, k, None) for k in SETTINGS_TO_ADD
-        }
+        "settings": {k: getattr(settings, k, None) for k in SETTINGS_TO_ADD}
     }
 
 
 def election_date(request):
     """Add knowledge of the election date to the context"""
 
-    return {
-        'DATE_TODAY': date.today(),
-    }
+    return {"DATE_TODAY": date.today()}
 
 
 def locale(request):
     """Convert the language string to a locale"""
     """Copied from: http://stackoverflow.com/a/6362929 """
-    return {'LOCALE': to_locale(get_language())}
+    return {"LOCALE": to_locale(get_language())}
 
 
 def add_notification_data(request):
@@ -61,33 +57,36 @@ def add_notification_data(request):
 
     result = {}
     if request.user.is_authenticated():
-        result['photos_for_review'] = \
-            QueuedImage.objects.filter(decision='undecided').count()
-        result['suggestions_to_lock'] = \
-            SuggestedPostLock.objects.filter(postextraelection__candidates_locked=False).count()
+        result["photos_for_review"] = QueuedImage.objects.filter(
+            decision="undecided"
+        ).count()
+        result["suggestions_to_lock"] = SuggestedPostLock.objects.filter(
+            postextraelection__candidates_locked=False
+        ).count()
     return result
 
 
 def add_group_permissions(request):
     """Add user_can_merge and user_can_review_photos"""
 
-    groups = set(request.user.groups.values_list('name', flat=True))
+    groups = set(request.user.groups.values_list("name", flat=True))
     result = {
         context_variable: group_name in groups
         for context_variable, group_name in (
-            ('user_can_upload_documents', DOCUMENT_UPLOADERS_GROUP_NAME),
-            ('user_can_merge', TRUSTED_TO_MERGE_GROUP_NAME),
-            ('user_can_review_photos', PHOTO_REVIEWERS_GROUP_NAME),
-            ('user_can_lock', TRUSTED_TO_LOCK_GROUP_NAME),
-            ('user_can_rename', TRUSTED_TO_RENAME_GROUP_NAME),
-            ('user_can_record_results', RESULT_RECORDERS_GROUP_NAME),
-            ('user_can_bulk_add', TRUSTED_TO_BULK_ADD_GROUP_NAME),
+            ("user_can_upload_documents", DOCUMENT_UPLOADERS_GROUP_NAME),
+            ("user_can_merge", TRUSTED_TO_MERGE_GROUP_NAME),
+            ("user_can_review_photos", PHOTO_REVIEWERS_GROUP_NAME),
+            ("user_can_lock", TRUSTED_TO_LOCK_GROUP_NAME),
+            ("user_can_rename", TRUSTED_TO_RENAME_GROUP_NAME),
+            ("user_can_record_results", RESULT_RECORDERS_GROUP_NAME),
+            ("user_can_bulk_add", TRUSTED_TO_BULK_ADD_GROUP_NAME),
         )
     }
-    result['user_can_edit'] = settings.EDITS_ALLOWED or request.user.is_staff
+    result["user_can_edit"] = settings.EDITS_ALLOWED or request.user.is_staff
     return result
+
 
 def add_site(request):
     """Make sure the current site is available in all contexts"""
 
-    return {'site': Site.objects.get_current()}
+    return {"site": Site.objects.get_current()}

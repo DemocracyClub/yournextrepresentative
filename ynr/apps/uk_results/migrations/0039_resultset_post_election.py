@@ -8,14 +8,18 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('candidates', '0041_auto_20180323_1400'),
-        ('uk_results', '0038_auto_20180424_1949'),
+        ("candidates", "0041_auto_20180323_1400"),
+        ("uk_results", "0038_auto_20180424_1949"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='resultset',
-            name='post_election',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='candidates.PostExtraElection'),
-        ),
+            model_name="resultset",
+            name="post_election",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="candidates.PostExtraElection",
+            ),
+        )
     ]

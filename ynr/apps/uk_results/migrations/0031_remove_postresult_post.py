@@ -3,20 +3,15 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('uk_results', '0030_populate_postresult_post_election'),
-    ]
+    dependencies = [("uk_results", "0030_populate_postresult_post_election")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='postresult',
-            name='post',
-        ),
+        migrations.RemoveField(model_name="postresult", name="post"),
         migrations.AlterField(
-            model_name='postresult',
-            name='post_election',
+            model_name="postresult",
+            name="post_election",
             field=models.ForeignKey(
-                to='candidates.PostExtraElection', null=False),
+                to="candidates.PostExtraElection", null=False
+            ),
         ),
-
     ]

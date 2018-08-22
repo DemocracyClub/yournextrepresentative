@@ -4,8 +4,12 @@ from django.core.urlresolvers import reverse
 from django.forms import ModelForm
 
 from .models import (
-    LoggedAction, PartySet, ExtraField, PersonExtraFieldValue,
-    ComplexPopoloField, PostExtraElection
+    LoggedAction,
+    PartySet,
+    ExtraField,
+    PersonExtraFieldValue,
+    ComplexPopoloField,
+    PostExtraElection,
 )
 
 
@@ -16,22 +20,32 @@ class LoggedActionAdminForm(ModelForm):
 @admin.register(LoggedAction)
 class LoggedActionAdmin(admin.ModelAdmin):
     form = LoggedActionAdminForm
-    search_fields = ('user__username', 'popit_person_new_version',
-                     'person__name', 'ip_address', 'source')
-    list_filter = ('action_type',)
-    list_display = ['user', 'ip_address', 'action_type',
-                    'popit_person_new_version', 'person_link',
-                    'created', 'updated', 'source']
-    ordering = ('-created',)
+    search_fields = (
+        "user__username",
+        "popit_person_new_version",
+        "person__name",
+        "ip_address",
+        "source",
+    )
+    list_filter = ("action_type",)
+    list_display = [
+        "user",
+        "ip_address",
+        "action_type",
+        "popit_person_new_version",
+        "person_link",
+        "created",
+        "updated",
+        "source",
+    ]
+    ordering = ("-created",)
 
     def person_link(self, o):
         if not o.person:
-            return ''
-        url = reverse('person-view', kwargs={'person_id': o.person.id})
-        return '<a href="{}">{}</a>'.format(
-            url,
-            o.person.name,
-        )
+            return ""
+        url = reverse("person-view", kwargs={"person_id": o.person.id})
+        return '<a href="{}">{}</a>'.format(url, o.person.name)
+
     person_link.allow_tags = True
 
 
@@ -64,14 +78,14 @@ class PersonExtraFieldValueAdmin(admin.ModelAdmin):
 
 @admin.register(PostExtraElection)
 class PostExtraElectionAdmin(admin.ModelAdmin):
-    list_display = ['postextra', 'election', 'winner_count']
-    list_filter = ('election__name', 'election__current')
-    raw_id_fields = ("postextra", "election",)
+    list_display = ["postextra", "election", "winner_count"]
+    list_filter = ("election__name", "election__current")
+    raw_id_fields = ("postextra", "election")
 
-    ordering = ('election', 'postextra__base__area__name')
+    ordering = ("election", "postextra__base__area__name")
 
 
 @admin.register(ComplexPopoloField)
 class ComplexPopoloFieldAdmin(admin.ModelAdmin):
-    list_display = ['name', 'label', 'order']
-    ordering = ('order',)
+    list_display = ["name", "label", "order"]
+    ordering = ("order",)

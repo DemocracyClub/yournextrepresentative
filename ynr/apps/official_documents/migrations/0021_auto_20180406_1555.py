@@ -7,14 +7,15 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('official_documents', '0020_add_post_election_values'),
-    ]
+    dependencies = [("official_documents", "0020_add_post_election_values")]
 
     operations = [
         migrations.AlterField(
-            model_name='officialdocument',
-            name='post_election',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='candidates.PostExtraElection'),
-        ),
+            model_name="officialdocument",
+            name="post_election",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="candidates.PostExtraElection",
+            ),
+        )
     ]

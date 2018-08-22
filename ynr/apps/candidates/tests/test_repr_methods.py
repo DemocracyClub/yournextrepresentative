@@ -4,7 +4,6 @@ from .uk_examples import UK2015ExamplesMixin
 
 
 class TestReprMethods(UK2015ExamplesMixin, TestCase):
-
     def test_logged_action_repr(self):
         pee = self.camberwell_post_extra.postextraelection_set.get(
             election=self.election

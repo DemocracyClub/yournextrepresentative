@@ -9,9 +9,7 @@ from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('candidates', '0004_add_trusted_to_merge_group'),
-    ]
+    dependencies = [("candidates", "0004_add_trusted_to_merge_group")]
 
     operations = [
         migrations.RunPython(

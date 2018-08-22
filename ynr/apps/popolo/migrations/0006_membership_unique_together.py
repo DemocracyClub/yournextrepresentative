@@ -9,13 +9,10 @@ import popolo.behaviors.models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('popolo', '0005_set_post_election_not_null_'),
-    ]
+    dependencies = [("popolo", "0005_set_post_election_not_null_")]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='membership',
-            unique_together={('person', 'post_election')},
-        ),
+            name="membership", unique_together={("person", "post_election")}
+        )
     ]

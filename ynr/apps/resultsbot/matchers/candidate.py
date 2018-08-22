@@ -7,7 +7,7 @@ class CandidateMatcher(object):
     def __init__(self, candidate, ballot_paper):
         self.candidate = candidate
         self.ballot_paper = ballot_paper
-        self.membership_map = SavedMapping('membership_map.json')
+        self.membership_map = SavedMapping("membership_map.json")
 
     def match(self):
         matchers = [
@@ -21,26 +21,31 @@ class CandidateMatcher(object):
             if match:
                 return match
         import sys
+
         sys.exit()
 
     def get_parties(self):
-        parties =  [self.candidate.party]
+        parties = [self.candidate.party]
         if self.candidate.party.identifiers.filter(identifier="PP53"):
             parties.append(
                 Identifier.objects.get(
-                    identifier="joint-party:53-119").content_object
+                    identifier="joint-party:53-119"
+                ).content_object
             )
         return parties
 
     def get_memberships(self):
-        if hasattr(self, '_memberships'):
+        if hasattr(self, "_memberships"):
             return self._memberships
         parties = self.get_parties()
 
-        candidates_for_party = \
+        candidates_for_party = (
             self.ballot_paper.local_area.membership_set.filter(
                 on_behalf_of__in=parties
-            ).select_related('person').order_by('pk')
+            )
+            .select_related("person")
+            .order_by("pk")
+        )
         self._memberships = candidates_for_party
         return self._memberships
 
@@ -49,15 +54,13 @@ class CandidateMatcher(object):
         try:
             key = "{}--{}".format(
                 self.ballot_paper.local_area.ballot_paper_id,
-                self.candidate.name.encode('utf8'),
+                self.candidate.name.encode("utf8"),
             )
         except:
             raise
         value = self.membership_map.get(key, None)
         if value:
-            return self.ballot_paper.local_area.membership_set.get(
-                pk=value)
-
+            return self.ballot_paper.local_area.membership_set.get(pk=value)
 
     def match_party_and_name(self, qs=None):
         if not qs:
@@ -71,21 +74,21 @@ class CandidateMatcher(object):
             for membership in candidates_for_party:
 
                 def _clean_name(name):
-                    name =name.lower()
-                    name =name.replace('  ', ' ')
-                    name =name.replace(',', '')
-                    name =name.replace('councillor', '')
+                    name = name.lower()
+                    name = name.replace("  ", " ")
+                    name = name.replace(",", "")
+                    name = name.replace("councillor", "")
                     return name
 
                 person_name = _clean_name(membership.base.person.name.lower())
                 candidate_name = _clean_name(self.candidate.name.lower())
 
-                if  person_name == candidate_name:
+                if person_name == candidate_name:
                     return membership
 
                 def _name_to_parts(name):
-                    name = name.split(' ')
-                    name = [n.strip().encode('utf8') for n in name if name]
+                    name = name.split(" ")
+                    name = [n.strip().encode("utf8") for n in name if name]
                     return name
 
                 split_person_name = _name_to_parts(person_name)
@@ -101,31 +104,34 @@ class CandidateMatcher(object):
                     if split_person_name[0] == split_candidate_name[-1]:
                         return membership
 
-                print("person name {} didn't match to candidate {}".format(
-                    split_person_name,
-                    split_candidate_name
-                ))
+                print(
+                    "person name {} didn't match to candidate {}".format(
+                        split_person_name, split_candidate_name
+                    )
+                )
 
     def _manual_matcher(self, qs):
-        print("No match for '{}' in {}. Please pick from the following".format(
-            self.candidate.name,
-            self.ballot_paper.title
-        ))
+        print(
+            "No match for '{}' in {}. Please pick from the following".format(
+                self.candidate.name, self.ballot_paper.title
+            )
+        )
         for i, membership in enumerate(qs, start=1):
-            print("\t{}\t{}".format(i, membership.base.person.name.encode('utf8')))
+            print(
+                "\t{}\t{}".format(i, membership.base.person.name.encode("utf8"))
+            )
         match = raw_input("Enter selection: ")
         if match == "s":
             return
         match = int(match)
         key = "{}--{}".format(
             self.ballot_paper.local_area.ballot_paper_id,
-            self.candidate.name.encode('utf8'),
+            self.candidate.name.encode("utf8"),
         )
-        picked_membership = qs[match-1]
+        picked_membership = qs[match - 1]
         self.membership_map[key] = picked_membership.pk
         self.membership_map.save()
         return picked_membership
-
 
     def match_manually(self):
         candidates_for_party = self.get_memberships()
@@ -138,6 +144,4 @@ class CandidateMatcher(object):
         match = self.match_party_and_name(qs=qs)
         if match:
             return match
-        return self._manual_matcher(
-            qs
-        )
+        return self._manual_matcher(qs)

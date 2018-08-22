@@ -6,11 +6,10 @@ from auth_helpers.migrations import (
 )
 from candidates.models import RESULT_RECORDERS_GROUP_NAME
 
+
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('candidates', '0006_auto_add_trusted_to_rename_group'),
-    ]
+    dependencies = [("candidates", "0006_auto_add_trusted_to_rename_group")]
 
     operations = [
         migrations.RunPython(

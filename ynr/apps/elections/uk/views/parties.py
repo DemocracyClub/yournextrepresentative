@@ -1,19 +1,21 @@
 from candidates.views import PartyDetailView
 from popolo.models import Identifier
 
-class UKPartyDetailView(PartyDetailView):
 
+class UKPartyDetailView(PartyDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['ec_url'] = ''
-        context['register'] = ''
+        context["ec_url"] = ""
+        context["register"] = ""
         try:
-            party_ec_id = context['party'].identifiers.get(scheme='electoral-commission')
+            party_ec_id = context["party"].identifiers.get(
+                scheme="electoral-commission"
+            )
             if party_ec_id:
-                ec_tmpl = 'http://search.electoralcommission.org.uk/English/Registrations/{0}'
-                context['ec_url'] = ec_tmpl.format(party_ec_id.identifier)
-            context['register'] = context['party'].extra.register
+                ec_tmpl = "http://search.electoralcommission.org.uk/English/Registrations/{0}"
+                context["ec_url"] = ec_tmpl.format(party_ec_id.identifier)
+            context["register"] = context["party"].extra.register
         except Identifier.DoesNotExist:
             pass
 

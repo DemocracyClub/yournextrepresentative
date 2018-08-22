@@ -3,14 +3,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('results', '0014_rename_election_new_to_election'),
-    ]
+    dependencies = [("results", "0014_rename_election_new_to_election")]
 
     operations = [
         migrations.RenameField(
-            model_name='resultevent',
-            old_name='winner_party_new',
-            new_name='winner_party',
-        ),
+            model_name="resultevent",
+            old_name="winner_party_new",
+            new_name="winner_party",
+        )
     ]

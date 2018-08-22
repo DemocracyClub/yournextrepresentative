@@ -45,27 +45,24 @@ class XMLEqualityMixin(object):
 
 
 class TestResultsFeed(
-        XMLEqualityMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
-
+    XMLEqualityMixin, TestUserMixin, UK2015ExamplesMixin, WebTest
+):
     def setUp(self):
         super().setUp()
-        person = factories.PersonFactory.create(
-            id='4322',
-            name='Tessa Jowell'
-        )
+        person = factories.PersonFactory.create(id="4322", name="Tessa Jowell")
         example_image_filename = EXAMPLE_IMAGE_FILENAME
         self.example_image = ImageExtra.objects.create_from_file(
             example_image_filename,
-            'images/jowell-pilot.jpg',
+            "images/jowell-pilot.jpg",
             base_kwargs={
-                'content_object': person,
-                'is_primary': True,
-                'source': 'Taken from Wikipedia',
+                "content_object": person,
+                "is_primary": True,
+                "source": "Taken from Wikipedia",
             },
             extra_kwargs={
-                'copyright': 'example-license',
-                'uploading_user': self.user,
-                'user_notes': 'A photo of Tessa Jowell',
+                "copyright": "example-license",
+                "uploading_user": self.user,
+                "user_notes": "A photo of Tessa Jowell",
             },
         ).base
         ResultEvent.objects.create(
@@ -73,18 +70,18 @@ class TestResultsFeed(
             winner=person,
             post=self.dulwich_post_extra.base,
             winner_party=self.labour_party_extra.base,
-            source='Seen on the BBC news',
+            source="Seen on the BBC news",
             user=self.user,
-            parlparse_id='uk.org.publicwhip/person/123456',
+            parlparse_id="uk.org.publicwhip/person/123456",
         )
 
     def test_all_feed_with_one_item(self):
-        response = self.app.get('/results/all.atom')
+        response = self.app.get("/results/all.atom")
         root = etree.XML(response.content)
         xml_pretty = etree.tounicode(root, pretty_print=True)
 
         result_event = ResultEvent.objects.first()
-        expected = '''<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb">
+        expected = """<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb">
   <title>Election results from example.com (with extra data)</title>
   <link href="http://example.com/" rel="alternate"/>
   <link href="http://example.com/results/all.atom" rel="self"/>
@@ -116,23 +113,23 @@ class TestResultsFeed(
     <parlparse_id>uk.org.publicwhip/person/123456</parlparse_id>
   </entry>
 </feed>
-'''.format(
-    updated=rfc3339_date(result_event.created),
-    space_separated=result_event.created.strftime("%Y-%m-%d %H:%M:%S"),
-    item_id=result_event.id,
-    user_id=self.user.id,
-    election_date=self.election.election_date,
-    image_url_path=self.example_image.image.url,
-)
+""".format(
+            updated=rfc3339_date(result_event.created),
+            space_separated=result_event.created.strftime("%Y-%m-%d %H:%M:%S"),
+            item_id=result_event.id,
+            user_id=self.user.id,
+            election_date=self.election.election_date,
+            image_url_path=self.example_image.image.url,
+        )
         self.compare_xml(expected, xml_pretty)
 
     def test_all_basic_feed_with_one_item(self):
-        response = self.app.get('/results/all-basic.atom')
+        response = self.app.get("/results/all-basic.atom")
         root = etree.XML(response.content)
         xml_pretty = etree.tounicode(root, pretty_print=True)
 
         result_event = ResultEvent.objects.first()
-        expected = '''<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb">
+        expected = """<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb">
   <title>Election results from example.com</title>
   <link href="http://example.com/" rel="alternate"/>
   <link href="http://example.com/results/all-basic.atom" rel="self"/>
@@ -150,44 +147,42 @@ class TestResultsFeed(
     <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
   </entry>
 </feed>
-'''.format(
-    updated=rfc3339_date(result_event.created),
-    space_separated=result_event.created.strftime("%Y-%m-%d %H:%M:%S"),
-    item_id=result_event.id,
-)
+""".format(
+            updated=rfc3339_date(result_event.created),
+            space_separated=result_event.created.strftime("%Y-%m-%d %H:%M:%S"),
+            item_id=result_event.id,
+        )
         self.compare_xml(expected, xml_pretty)
 
 
 class TestResultsFeedWithRetraction(
-        XMLEqualityMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
-
+    XMLEqualityMixin, TestUserMixin, UK2015ExamplesMixin, WebTest
+):
     def setUp(self):
         super().setUp()
         accidental_winner = factories.PersonFactory.create(
-            id='4322',
-            name='Tessa Jowell',
+            id="4322", name="Tessa Jowell"
         )
         real_winner = factories.PersonFactory.create(
-            id='4493',
-            name='James Barber',
+            id="4493", name="James Barber"
         )
         ResultEvent.objects.create(
             election=self.election,
             winner=accidental_winner,
             post=self.dulwich_post_extra.base,
             winner_party=self.labour_party_extra.base,
-            source='Seen on the BBC news',
+            source="Seen on the BBC news",
             user=self.user,
-            parlparse_id='uk.org.publicwhip/person/123456',
+            parlparse_id="uk.org.publicwhip/person/123456",
         )
         ResultEvent.objects.create(
             election=self.election,
             winner=accidental_winner,
             post=self.dulwich_post_extra.base,
             winner_party=self.labour_party_extra.base,
-            source='Result recorded in error, retracting',
+            source="Result recorded in error, retracting",
             user=self.user,
-            parlparse_id='uk.org.publicwhip/person/123456',
+            parlparse_id="uk.org.publicwhip/person/123456",
             retraction=True,
         )
         ResultEvent.objects.create(
@@ -195,18 +190,18 @@ class TestResultsFeedWithRetraction(
             winner=real_winner,
             post=self.dulwich_post_extra.base,
             winner_party=self.ld_party_extra.base,
-            source='Seen on Sky News',
+            source="Seen on Sky News",
             user=self.user,
         )
         # This is ordered by default:
         self.events = ResultEvent.objects.all()
 
     def test_all_feed_with_a_correction(self):
-        response = self.app.get('/results/all.atom')
+        response = self.app.get("/results/all.atom")
         root = etree.XML(response.content)
         xml_pretty = etree.tounicode(root, pretty_print=True)
 
-        expected = '''<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb">
+        expected = """<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb">
   <title>Election results from example.com (with extra data)</title>
   <link href="http://example.com/" rel="alternate"/>
   <link href="http://example.com/results/all.atom" rel="self"/>
@@ -284,27 +279,27 @@ class TestResultsFeedWithRetraction(
     <information_source>Seen on Sky News</information_source>
   </entry>
 </feed>
-'''.format(
-    updated=[
-        rfc3339_date(result_event.created) for result_event in
-        self.events
-    ],
-    space_separated=[
-        result_event.created.strftime("%Y-%m-%d %H:%M:%S") for result_event in
-        self.events
-    ],
-    item_id=[result_event.id for result_event in self.events],
-    user_id=self.user.id,
-    election_date=self.election.election_date,
-)
+""".format(
+            updated=[
+                rfc3339_date(result_event.created)
+                for result_event in self.events
+            ],
+            space_separated=[
+                result_event.created.strftime("%Y-%m-%d %H:%M:%S")
+                for result_event in self.events
+            ],
+            item_id=[result_event.id for result_event in self.events],
+            user_id=self.user.id,
+            election_date=self.election.election_date,
+        )
         self.compare_xml(expected, xml_pretty)
 
     def test_all_basic_feed_with_a_correction(self):
-        response = self.app.get('/results/all-basic.atom')
+        response = self.app.get("/results/all-basic.atom")
         root = etree.XML(response.content)
         xml_pretty = etree.tounicode(root, pretty_print=True)
 
-        expected = '''<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb">
+        expected = """<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb">
   <title>Election results from example.com</title>
   <link href="http://example.com/" rel="alternate"/>
   <link href="http://example.com/results/all-basic.atom" rel="self"/>
@@ -344,15 +339,15 @@ class TestResultsFeedWithRetraction(
     <summary type="html">A example.com volunteer recorded at {space_separated[2]} that James Barber (Liberal Democrats) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on Sky News'.</summary>
   </entry>
 </feed>
-'''.format(
-    updated=[
-        rfc3339_date(result_event.created) for result_event in
-        self.events
-    ],
-    space_separated=[
-        result_event.created.strftime("%Y-%m-%d %H:%M:%S") for result_event in
-        self.events
-    ],
-    item_id=[result_event.id for result_event in self.events],
-)
+""".format(
+            updated=[
+                rfc3339_date(result_event.created)
+                for result_event in self.events
+            ],
+            space_separated=[
+                result_event.created.strftime("%Y-%m-%d %H:%M:%S")
+                for result_event in self.events
+            ],
+            item_id=[result_event.id for result_event in self.events],
+        )
         self.compare_xml(expected, xml_pretty)

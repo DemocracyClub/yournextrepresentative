@@ -26,19 +26,18 @@ You can find a link for this on the main country page.
         ep_result = requests.get(ep_url)
         ep_json = ep_result.json()
 
-        orgs = ep_json['organizations']
+        orgs = ep_json["organizations"]
 
         for json_org in orgs:
-            if json_org['classification'] != 'Party':
+            if json_org["classification"] != "Party":
                 continue
 
-            name = json_org['name']
+            name = json_org["name"]
             slug = slugify(name)
-            ep_id = json_org['id']
+            ep_id = json_org["id"]
 
             org, created = Organization.objects.get_or_create(
-                name=name,
-                classification='Party'
+                name=name, classification="Party"
             )
 
             content_type = ContentType.objects.get_for_model(org)
@@ -47,7 +46,7 @@ You can find a link for this on the main country page.
                 Identifier.objects.get_or_create(
                     object_id=org.id,
                     content_type_id=content_type.id,
-                    scheme='everypolitician',
+                    scheme="everypolitician",
                     identifier=ep_id,
                 )
 
@@ -55,31 +54,29 @@ You can find a link for this on the main country page.
                     object_id=org.id,
                     content_type_id=content_type.id,
                     url=ep_url,
-                    note='Import from EveryPolitician'
+                    note="Import from EveryPolitician",
                 )
 
-            other_ids = json_org.get('identifiers', [])
+            other_ids = json_org.get("identifiers", [])
             for other_id in other_ids:
                 Identifier.objects.get_or_create(
                     object_id=org.id,
                     content_type_id=content_type.id,
-                    scheme=other_id['scheme'],
-                    identifier=other_id['identifier'],
+                    scheme=other_id["scheme"],
+                    identifier=other_id["identifier"],
                 )
 
-            links = json_org.get('links', [])
+            links = json_org.get("links", [])
             for link in links:
                 Link.objects.get_or_create(
                     object_id=org.id,
                     content_type_id=content_type.id,
-                    url=link['url'],
-                    note=link['note'],
+                    url=link["url"],
+                    note=link["note"],
                 )
 
             if created:
-                org_extra, _ = OrganizationExtra.objects.get_or_create(
-                    base=org
-                )
+                org_extra, _ = OrganizationExtra.objects.get_or_create(base=org)
 
                 org_extra.slug = slug
                 org_extra.save()

@@ -9,7 +9,7 @@ from django.conf import settings
 
 from .models import LoggedAction
 
-lock_re = re.compile(r'^(?:Unl|L)ocked\s*constituency (.*) \((\d+)\)$')
+lock_re = re.compile(r"^(?:Unl|L)ocked\s*constituency (.*) \((\d+)\)$")
 
 
 class ChangesMixin(object):
@@ -50,13 +50,15 @@ class ChangesMixin(object):
 class RecentChangesFeed(ChangesMixin, Feed):
     site_name = settings.SITE_NAME
     title = _("{site_name} recent changes").format(site_name=site_name)
-    description = _("Changes to {site_name} candidates").format(site_name=site_name)
+    description = _("Changes to {site_name} candidates").format(
+        site_name=site_name
+    )
     link = "/feeds/changes.xml"
     feed_type = Atom1Feed
-    id_format = 'changes:{0}'
+    id_format = "changes:{0}"
 
     def items(self):
-        return LoggedAction.objects.order_by('-updated')[:50]
+        return LoggedAction.objects.order_by("-updated")[:50]
 
     def item_title(self, item):
         return self.get_title(item)
@@ -80,29 +82,30 @@ class RecentChangesFeed(ChangesMixin, Feed):
         # As a hack for the moment, constituencies are just mentioned
         # in the source message:
         if item.person_id:
-            return reverse('person-view', args=[item.person_id])
+            return reverse("person-view", args=[item.person_id])
         else:
-            return '/'
+            return "/"
 
 
 class NeedsReviewFeed(ChangesMixin, Feed):
     site_name = settings.SITE_NAME
-    title = _('{site_name} changes for review').format(site_name=site_name)
-    link = '/feeds/needs-review.xml'
+    title = _("{site_name} changes for review").format(site_name=site_name)
+    link = "/feeds/needs-review.xml"
     feed_type = Atom1Feed
-    id_format = 'needs-review:{0}'
+    id_format = "needs-review:{0}"
 
     def items(self):
         # Consider changes in the last 5 days. We exclude any photo
         # related activity since that has its own reviewing system.
         return sorted(
-            LoggedAction.objects \
-                .exclude(action_type__startswith='photo-') \
-                .in_recent_days(1) \
-                .order_by('-created') \
-                .needs_review().items(),
+            LoggedAction.objects.exclude(action_type__startswith="photo-")
+            .in_recent_days(1)
+            .order_by("-created")
+            .needs_review()
+            .items(),
             key=lambda t: t[0].created,
-            reverse=True)
+            reverse=True,
+        )
 
     def item_title(self, item):
         return self.get_title(item[0])
@@ -118,19 +121,21 @@ class NeedsReviewFeed(ChangesMixin, Feed):
 
     def item_description(self, item):
         la = item[0]
-        return '''
+        return """
 <p>{action_type} of {subject} by {user} with source: “ {source} ”;</p>
 <ul>
 {reasons_review_needed}
-</ul></p>{diff}'''.strip().format(
+</ul></p>{diff}""".strip().format(
             action_type=la.action_type,
             subject=la.subject_html,
             user=la.user.username,
             source=la.source,
-            reasons_review_needed='\n'.join(
-                '<li>{}</li>'.format(i) for i in item[1]),
+            reasons_review_needed="\n".join(
+                "<li>{}</li>".format(i) for i in item[1]
+            ),
             timestamp=la.updated,
-            diff=la.diff_html)
+            diff=la.diff_html,
+        )
 
     def item_link(self, item):
         return item[0].subject_url

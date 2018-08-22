@@ -28,14 +28,14 @@ class PersonTask(TimeStampedModel):
     objects = PersonTaskManager()
 
     class Meta:
-        ordering = ['-task_priority', ]
+        ordering = ["-task_priority"]
 
     def get_user_from_vesions(self):
         version_data = json.loads(self.person.versions)
-        if not version_data or 'username' not in version_data[0]:
+        if not version_data or "username" not in version_data[0]:
             return None
         try:
-            return User.objects.get(username=version_data[0]['username'])
+            return User.objects.get(username=version_data[0]["username"])
         except User.DoesNotExist:
             return None
 
@@ -46,24 +46,24 @@ class PersonTask(TimeStampedModel):
 
         person_qs = Person.objects.filter(pk=self.person.pk)
         simple_field = [
-            f for f in settings.SIMPLE_POPOLO_FIELDS
+            f
+            for f in settings.SIMPLE_POPOLO_FIELDS
             if f.name == self.task_field
         ]
 
         if simple_field:
-            return person_qs.filter(**{self.task_field: ''})
-
+            return person_qs.filter(**{self.task_field: ""})
 
         complex_field = ComplexPopoloField.objects.filter(
-            name=self.task_field).first()
+            name=self.task_field
+        ).first()
 
         if complex_field:
             kwargs = {
-                '{relation}__{key}'.format(
+                "{relation}__{key}".format(
                     relation=complex_field.popolo_array,
-                    key=complex_field.info_type_key
-                ):
-                complex_field.info_type
+                    key=complex_field.info_type_key,
+                ): complex_field.info_type
             }
             return person_qs.filter(**kwargs)
 
@@ -74,7 +74,7 @@ class PersonTask(TimeStampedModel):
 
 
 def person_saved(sender, **kwargs):
-    person_tasks = PersonTask.objects.filter(person=kwargs['instance'])
+    person_tasks = PersonTask.objects.filter(person=kwargs["instance"])
     for task in person_tasks:
         field_value = task.get_value_from_person()
         if field_value:
@@ -83,13 +83,14 @@ def person_saved(sender, **kwargs):
             task.save()
 
 
-
 def connect_task_signal():
     post_save.connect(person_saved, sender=Person)
+
 
 def disconnect_task_signal():
     # Disconnect the task.post_save  signal
     post_save.disconnect(receiver=person_saved, sender=Person)
+
 
 def pause_task_signal(fn):
     def wrapped_fn(*args, **kwargs):
@@ -98,6 +99,8 @@ def pause_task_signal(fn):
             return fn(*args, **kwargs)
         finally:
             connect_task_signal()
+
     return wrapped_fn
+
 
 connect_task_signal()

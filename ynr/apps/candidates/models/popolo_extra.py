@@ -34,15 +34,16 @@ class UnsafeToDelete(Exception):
 
 def raise_if_unsafe_to_delete(base_object):
     if not paired_object_safe_to_delete(base_object):
-        msg = 'Trying to delete a {model} (pk={pk}) that other ' \
-              'objects that depend on'
-        raise UnsafeToDelete(msg.format(
-            model=base_object._meta.model.__name__,
-            pk=base_object.id))
+        msg = "Trying to delete a {model} (pk={pk}) that other " "objects that depend on"
+        raise UnsafeToDelete(
+            msg.format(
+                model=base_object._meta.model.__name__, pk=base_object.id
+            )
+        )
 
 
 def paired_object_safe_to_delete(base_object):
-    collector = NestedObjects(using='default')
+    collector = NestedObjects(using="default")
     collector.collect([base_object])
     collected = collector.nested()
     if len(collected) > 2:
@@ -57,7 +58,7 @@ def paired_object_safe_to_delete(base_object):
 
 
 class OrganizationExtra(HasImageMixin, models.Model):
-    base = models.OneToOneField('popolo.Organization', related_name='extra')
+    base = models.OneToOneField("popolo.Organization", related_name="extra")
     slug = models.CharField(max_length=256, blank=True, unique=True)
 
     # For parties, which party register is it on:
@@ -74,24 +75,22 @@ class OrganizationExtra(HasImageMixin, models.Model):
     def ec_id(self):
         try:
             party_id = self.base.identifiers.filter(
-                scheme="electoral-commission").first()
+                scheme="electoral-commission"
+            ).first()
             return party_id.identifier
         except:
             return "ynmp-party:2"
 
 
-
 class PostExtra(HasImageMixin, models.Model):
-    base = models.OneToOneField('popolo.Post', related_name='extra')
+    base = models.OneToOneField("popolo.Post", related_name="extra")
     slug = models.CharField(max_length=256, blank=True, unique=True)
 
     elections = models.ManyToManyField(
-        Election,
-        related_name='posts',
-        through='PostExtraElection'
+        Election, related_name="posts", through="PostExtraElection"
     )
     group = models.CharField(max_length=1024, blank=True)
-    party_set = models.ForeignKey('PartySet', blank=True, null=True)
+    party_set = models.ForeignKey("PartySet", blank=True, null=True)
 
     def __str__(self):
         # WARNING: This will cause an extra query when getting the
@@ -102,6 +101,7 @@ class PostExtra(HasImageMixin, models.Model):
     @property
     def short_label(self):
         from candidates.election_specific import shorten_post_label
+
         return shorten_post_label(self.base.label)
 
 
@@ -114,28 +114,37 @@ class PostExtraElection(models.Model):
     winner_count = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        unique_together = ('election', 'postextra')
+        unique_together = ("election", "postextra")
 
     def __repr__(self):
         fmt = "<PostExtraElection ballot_paper_id='{e}'{l}{w}>"
         return fmt.format(
             e=self.ballot_paper_id,
-            l=(' candidates_locked=True' if self.candidates_locked else ''),
-            w=(' winner_count={}'.format(self.winner_count)
-               if (self.winner_count is not None) else ''))
+            l=(" candidates_locked=True" if self.candidates_locked else ""),
+            w=(
+                " winner_count={}".format(self.winner_count)
+                if (self.winner_count is not None)
+                else ""
+            ),
+        )
 
     def get_absolute_url(self):
-        return reverse('constituency', args=[
-            self.election.slug,
-            self.postextra.slug,
-            slugify(self.postextra.short_label)
-        ])
+        return reverse(
+            "constituency",
+            args=[
+                self.election.slug,
+                self.postextra.slug,
+                slugify(self.postextra.short_label),
+            ],
+        )
 
 
 class AreaExtra(models.Model):
-    base = models.OneToOneField('popolo.Area', related_name='extra')
+    base = models.OneToOneField("popolo.Area", related_name="extra")
 
-    type = models.ForeignKey(AreaType, blank=True, null=True, related_name='areas')
+    type = models.ForeignKey(
+        AreaType, blank=True, null=True, related_name="areas"
+    )
 
     def __str__(self):
         # WARNING: This will cause an extra query when getting the
@@ -147,19 +156,25 @@ class AreaExtra(models.Model):
 class PartySet(models.Model):
     slug = models.CharField(max_length=256, unique=True)
     name = models.CharField(max_length=1024)
-    parties = models.ManyToManyField('popolo.Organization', related_name='party_sets')
+    parties = models.ManyToManyField(
+        "popolo.Organization", related_name="party_sets"
+    )
 
     def __str__(self):
         return self.name
 
     def party_choices_basic(self):
-        result = list(self.parties.order_by('name').values_list('id', 'name'))
-        result.insert(0, ('', ''))
+        result = list(self.parties.order_by("name").values_list("id", "name"))
+        result.insert(0, ("", ""))
         return result
 
-    def party_choices(self,
-            include_descriptions=True, exclude_deregistered=False,
-            include_description_ids=False, include_non_current=True):
+    def party_choices(
+        self,
+        include_descriptions=True,
+        exclude_deregistered=False,
+        include_description_ids=False,
+        include_non_current=True,
+    ):
         # For various reasons, we've found it's best to order the
         # parties by those that have the most candidates - this means
         # that the commonest parties to select are at the top of the
@@ -169,31 +184,46 @@ class PartySet(models.Model):
         # alphabetically.
         from popolo.models import Membership
 
-        candidacies_ever_qs = self.parties.all().annotate(
-                membership_count=models.Count('memberships_on_behalf_of__pk')
-            ).order_by('-membership_count', 'name').only('end_date', 'name')
+        candidacies_ever_qs = (
+            self.parties.all()
+            .annotate(
+                membership_count=models.Count("memberships_on_behalf_of__pk")
+            )
+            .order_by("-membership_count", "name")
+            .only("end_date", "name")
+        )
 
-        parties_current_qs = self.parties.filter(
-            memberships_on_behalf_of__post_election__election__current=True
-            ).annotate(
-                membership_count=models.Count('memberships_on_behalf_of__pk')
-            ).order_by('-membership_count', 'name').only('end_date', 'name')
+        parties_current_qs = (
+            self.parties.filter(
+                memberships_on_behalf_of__post_election__election__current=True
+            )
+            .annotate(
+                membership_count=models.Count("memberships_on_behalf_of__pk")
+            )
+            .order_by("-membership_count", "name")
+            .only("end_date", "name")
+        )
 
         if not include_non_current:
             parties_current_qs = parties_current_qs.exclude(membership_count=0)
 
-        parties_notcurrent_qs = self.parties.filter(
+        parties_notcurrent_qs = (
+            self.parties.filter(
                 ~models.Q(
-                    memberships_on_behalf_of__post_election__election__current=True)
-            ).annotate(
-                membership_count=models.Value(0, models.IntegerField()),
-            ).order_by('-membership_count', 'name').only('end_date', 'name')
-
+                    memberships_on_behalf_of__post_election__election__current=True
+                )
+            )
+            .annotate(membership_count=models.Value(0, models.IntegerField()))
+            .order_by("-membership_count", "name")
+            .only("end_date", "name")
+        )
 
         minimum_count = settings.CANDIDATES_REQUIRED_FOR_WEIGHTED_PARTY_LIST
 
         total_memberships = Membership.objects.all()
-        current_memberships = total_memberships.filter(post_election__election__current=True)
+        current_memberships = total_memberships.filter(
+            post_election__election__current=True
+        )
 
         queries = []
         if current_memberships.count() > minimum_count:
@@ -205,22 +235,22 @@ class PartySet(models.Model):
         else:
             return self.party_choices_basic()
 
-        result = [('', '')]
+        result = [("", "")]
         parties_with_candidates = []
 
         for qs in queries:
             if include_descriptions:
-                qs = qs.prefetch_related('other_names')
+                qs = qs.prefetch_related("other_names")
             for party in qs:
                 parties_with_candidates.append(party)
                 count_string = ""
                 if party.membership_count:
                     count_string = " ({} candidates)".format(
-                        party.membership_count)
+                        party.membership_count
+                    )
 
-                name = _('{party_name}{count_string}').format(
-                    party_name=party.name,
-                    count_string=count_string
+                name = _("{party_name}{count_string}").format(
+                    party_name=party.name, count_string=count_string
                 )
 
                 if party.end_date:
@@ -233,14 +263,13 @@ class PartySet(models.Model):
                         )
 
                 if include_descriptions and party.other_names.exists():
-                    names = [(party.pk, party.name),]
+                    names = [(party.pk, party.name)]
                     for other_name in party.other_names.all():
-                        joint_text = re.compile(r'joint descriptions? with')
+                        joint_text = re.compile(r"joint descriptions? with")
                         party_id_str = str(party.pk)
                         if include_description_ids:
                             party_id_str = "{}__{}".format(
-                                party_id_str,
-                                other_name.pk
+                                party_id_str, other_name.pk
                             )
                         if not joint_text.search(other_name.name.lower()):
                             names.append((party_id_str, other_name.name))
@@ -248,34 +277,33 @@ class PartySet(models.Model):
                 else:
                     party_names = (str(party.pk), name)
 
-
                 result.append(party_names)
         return result
 
 
 class ImageExtraManager(models.Manager):
-
     def create_from_file(
-            self, image_filename, ideal_relative_name, base_kwargs, extra_kwargs
+        self, image_filename, ideal_relative_name, base_kwargs, extra_kwargs
     ):
         # Import the file to media root and create the ORM
         # objects.
         storage = DefaultStorage()
-        desired_storage_path = join('images', ideal_relative_name)
-        with open(image_filename, 'rb') as f:
+        desired_storage_path = join("images", ideal_relative_name)
+        with open(image_filename, "rb") as f:
             storage_filename = storage.save(desired_storage_path, f)
         image = Image.objects.create(image=storage_filename, **base_kwargs)
         return ImageExtra.objects.create(base=image, **extra_kwargs)
 
     def update_or_create_from_file(
-            self, image_filename, ideal_relative_name, defaults, **kwargs
+        self, image_filename, ideal_relative_name, defaults, **kwargs
     ):
         try:
-            image_extra = ImageExtra.objects \
-                .select_related('base').get(**kwargs)
+            image_extra = ImageExtra.objects.select_related("base").get(
+                **kwargs
+            )
             for k, v in defaults.items():
-                if k.startswith('base__'):
-                    base_k = re.sub(r'^base__', '', k)
+                if k.startswith("base__"):
+                    base_k = re.sub(r"^base__", "", k)
                     setattr(image_extra.base, base_k, v)
                 else:
                     setattr(image_extra, k, v)
@@ -285,20 +313,24 @@ class ImageExtraManager(models.Manager):
         except ImageExtra.DoesNotExist:
             # Prepare args for the base object first:
             base_kwargs = {
-                re.sub(r'base__', '', k): v for k, v in defaults.items()
-                if k.startswith('base__')
+                re.sub(r"base__", "", k): v
+                for k, v in defaults.items()
+                if k.startswith("base__")
             }
-            base_kwargs.update({
-                re.sub(r'base__', '', k): v for k, v in kwargs.items()
-                if k.startswith('base__')
-            })
+            base_kwargs.update(
+                {
+                    re.sub(r"base__", "", k): v
+                    for k, v in kwargs.items()
+                    if k.startswith("base__")
+                }
+            )
             # And now the extra object:
             extra_kwargs = {
-                k: v for k, v in defaults.items() if not k.startswith('base__')
+                k: v for k, v in defaults.items() if not k.startswith("base__")
             }
-            extra_kwargs.update({
-                k: v for k, v in kwargs.items() if not k.startswith('base__')
-            })
+            extra_kwargs.update(
+                {k: v for k, v in kwargs.items() if not k.startswith("base__")}
+            )
             image_extra = self.create_from_file(
                 image_filename, ideal_relative_name, base_kwargs, extra_kwargs
             )
@@ -306,9 +338,9 @@ class ImageExtraManager(models.Manager):
 
 
 class ImageExtra(models.Model):
-    base = models.OneToOneField(Image, related_name='extra')
+    base = models.OneToOneField(Image, related_name="extra")
 
-    copyright = models.CharField(max_length=64, default='other', blank=True)
+    copyright = models.CharField(max_length=64, default="other", blank=True)
     uploading_user = models.ForeignKey(User, blank=True, null=True)
     user_notes = models.TextField(blank=True)
     md5sum = models.CharField(max_length=32, blank=True)

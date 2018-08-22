@@ -1,5 +1,6 @@
 aenum==2.1.2
 beautifulsoup4==4.6.3
+black;python_version>="3.6"
 bleach==2.1.4
 boto3==1.7.46
 celery[redis]==4.2.1

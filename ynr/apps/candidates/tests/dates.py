@@ -7,23 +7,20 @@ date_in_near_future = date.today() + timedelta(days=14)
 
 FOUR_YEARS_IN_DAYS = 1462
 
-election_date_before = lambda r: {
-    'DATE_TODAY': date.today()
-}
-election_date_on_election_day = lambda r: {
-    'DATE_TODAY': date_in_near_future
-}
+election_date_before = lambda r: {"DATE_TODAY": date.today()}
+election_date_on_election_day = lambda r: {"DATE_TODAY": date_in_near_future}
 election_date_after = lambda r: {
-    'DATE_TODAY': date.today() + timedelta(days=28)
+    "DATE_TODAY": date.today() + timedelta(days=28)
 }
 
 default_templates = settings.TEMPLATES
 
+
 def _insert_context_processor(path):
     templates = copy.deepcopy(default_templates)
-    cps = list(templates[0]['OPTIONS']['context_processors'])
+    cps = list(templates[0]["OPTIONS"]["context_processors"])
     cps.append(path)
-    templates[0]['OPTIONS']['context_processors'] = cps
+    templates[0]["OPTIONS"]["context_processors"] = cps
     return templates
 
 
