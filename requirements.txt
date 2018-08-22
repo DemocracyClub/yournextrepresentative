@@ -36,7 +36,7 @@ fake-factory==0.5.3
 futures==3.0.3
 git+https://github.com/dessibelle/sorl-thumbnail-serializer-field.git#egg=sorl-thumbnail-serializer-field
 html5lib==1.0.1
-idna<2.7,>=2.5
+idna>=2.5,<2.8
 ipaddress==1.0.22
 ipdb==0.11
 ipython-genutils==0.2.0
