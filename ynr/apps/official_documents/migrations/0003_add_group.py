@@ -12,16 +12,14 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('official_documents', '0002_officialdocument_document_type'),
+        ("official_documents", "0002_officialdocument_document_type"),
     ]
 
     operations = [
         migrations.RunPython(
             get_migration_group_create(
-                DOCUMENT_UPLOADERS_GROUP_NAME, ['add_officialdocument']
+                DOCUMENT_UPLOADERS_GROUP_NAME, ["add_officialdocument"]
             ),
-            get_migration_group_delete(
-                DOCUMENT_UPLOADERS_GROUP_NAME
-            )
-        ),
+            get_migration_group_delete(DOCUMENT_UPLOADERS_GROUP_NAME),
+        )
     ]

@@ -13,74 +13,65 @@ from ..models import PartySet, ExtraField, ComplexPopoloField
 
 def get_field_groupings():
     personal = [
-        'name',
-        'family_name',
-        'given_name',
-        'additional_name',
-        'honorific_prefix',
-        'honorific_suffix',
-        'patronymic_name',
-        'sort_name',
-        'email',
-        'summary',
-        'biography',
+        "name",
+        "family_name",
+        "given_name",
+        "additional_name",
+        "honorific_prefix",
+        "honorific_suffix",
+        "patronymic_name",
+        "sort_name",
+        "email",
+        "summary",
+        "biography",
     ]
 
-    demographic = [
-        'gender',
-        'birth_date',
-        'death_date',
-        'national_identity',
-    ]
+    demographic = ["gender", "birth_date", "death_date", "national_identity"]
 
     return (personal, demographic)
 
 
 def get_redirect_to_post(election, post):
     from ..election_specific import shorten_post_label
+
     short_post_label = shorten_post_label(post.label)
     return HttpResponseRedirect(
         reverse(
-            'constituency',
+            "constituency",
             kwargs={
-                'election': election,
-                'post_id': post.extra.slug,
-                'ignored_slug': slugify(short_post_label),
-            }
+                "election": election,
+                "post_id": post.extra.slug,
+                "ignored_slug": slugify(short_post_label),
+            },
         )
     )
 
 
 def get_person_form_fields(context, form):
-    context['extra_fields'] = []
+    context["extra_fields"] = []
     extra_fields = ExtraField.objects.all()
     for field in extra_fields:
-        context['extra_fields'].append(
-            form[field.key]
-        )
+        context["extra_fields"].append(form[field.key])
 
-    context['complex_fields'] = []
+    context["complex_fields"] = []
     complex_fields = ComplexPopoloField.objects.all()
     for field in complex_fields:
-        context['complex_fields'].append((field, form[field.name]))
+        context["complex_fields"].append((field, form[field.name]))
 
     personal_fields, demographic_fields = get_field_groupings()
-    context['personal_fields'] = []
-    context['demographic_fields'] = []
+    context["personal_fields"] = []
+    context["demographic_fields"] = []
     simple_fields = settings.SIMPLE_POPOLO_FIELDS
     for field in simple_fields:
         if field.name in personal_fields:
-            context['personal_fields'].append(
-                form[field.name]
-            )
+            context["personal_fields"].append(form[field.name])
 
         if field.name in demographic_fields:
-            context['demographic_fields'].append(
-                form[field.name]
-            )
+            context["demographic_fields"].append(form[field.name])
 
-    context['constituencies_form_fields'] = \
-        get_candidacy_fields_for_person_form(form)
+    context[
+        "constituencies_form_fields"
+    ] = get_candidacy_fields_for_person_form(form)
 
     return context
 
@@ -92,55 +83,65 @@ def get_candidacy_fields_for_person_form(form):
             continue
 
         # Only show elections that we know this person to be standing in
-        standing_id = 'standing_' + election_data.slug
-        if not form.initial[standing_id] == 'standing':
+        standing_id = "standing_" + election_data.slug
+        if not form.initial[standing_id] == "standing":
             continue
 
         cons_form_fields = {
-            'election': election_data,
-            'election_name': election_data.name,
-            'standing': form[standing_id],
-            'constituency': form['constituency_' + election_data.slug],
+            "election": election_data,
+            "election_name": election_data.name,
+            "standing": form[standing_id],
+            "constituency": form["constituency_" + election_data.slug],
         }
         party_fields = []
         for ps in PartySet.objects.all():
-            key_suffix = ps.slug + '_' + election_data.slug
+            key_suffix = ps.slug + "_" + election_data.slug
             position_field = None
             try:
                 if election_data.party_lists_in_use:
-                    position_field = form['party_list_position_' + key_suffix]
+                    position_field = form["party_list_position_" + key_suffix]
                 party_position_tuple = (
-                    form['party_' + key_suffix],
-                    position_field
+                    form["party_" + key_suffix],
+                    position_field,
                 )
             # the new person form often is specific to one election so doesn't
             # have all the party sets
             except KeyError:
                 continue
             party_fields.append(party_position_tuple)
-        cons_form_fields['party_fields'] = party_fields
+        cons_form_fields["party_fields"] = party_fields
         fields.append(cons_form_fields)
 
     return fields
 
 
-def get_party_people_for_election_from_memberships(election, party_id,
-                                                   memberships):
+def get_party_people_for_election_from_memberships(
+    election, party_id, memberships
+):
     election_data = Election.objects.get_by_slug(election)
-    memberships = memberships.select_related('person').filter(
-        role=election_data.candidate_membership_role,
-        post_election__election=election_data,
-        on_behalf_of_id=party_id
-    ).order_by('party_list_position').all()
+    memberships = (
+        memberships.select_related("person")
+        .filter(
+            role=election_data.candidate_membership_role,
+            post_election__election=election_data,
+            on_behalf_of_id=party_id,
+        )
+        .order_by("party_list_position")
+        .all()
+    )
 
     people = []
     for membership in memberships.all():
-        people.append((
-            membership.party_list_position, membership.person,
-            membership.elected
-        ))
+        people.append(
+            (
+                membership.party_list_position,
+                membership.person,
+                membership.elected,
+            )
+        )
 
     return people
+
 
 def split_candidacies(election_data, memberships):
     # Group the candidates from memberships of a post into current and
@@ -160,6 +161,7 @@ def split_candidacies(election_data, memberships):
 
     return current_candidadacies, past_candidadacies
 
+
 def split_by_elected(election_data, memberships):
     elected_candidates = set()
     unelected_candidates = set()
@@ -173,25 +175,24 @@ def split_by_elected(election_data, memberships):
 
     return elected_candidates, unelected_candidates
 
+
 def order_candidates_by_name_no_grouping(election_data, candidacies):
     result = [
         (
             {
-                'id': candidacy.on_behalf_of_id,
-                'name': candidacy.on_behalf_of.name,
-                'max_count': 0,
-                'truncated': False,
-                'total_count': 1,
+                "id": candidacy.on_behalf_of_id,
+                "name": candidacy.on_behalf_of.name,
+                "max_count": 0,
+                "truncated": False,
+                "total_count": 1,
             },
             [(None, candidacy.person, candidacy.elected)],
         )
         for candidacy in candidacies
     ]
     result.sort(key=lambda t: t[1][0][1].name.split()[-1])
-    return {
-        'party_lists_in_use': False,
-        'parties_and_people': result
-    }
+    return {"party_lists_in_use": False, "parties_and_people": result}
+
 
 def group_candidates_by_party(election_data, candidacies, show_all=False):
     """Take a list of candidacies and return the people grouped by party
@@ -239,7 +240,7 @@ def group_candidates_by_party(election_data, candidacies, show_all=False):
         truncated = False
         total_count = len(people_list)
         # sort by party list position
-        people_list.sort(key=lambda p: ( p[0] is None, p[0] ))
+        people_list.sort(key=lambda p: (p[0] is None, p[0]))
         # only return the configured maximum number of people
         # for a party list
         if max_people and len(people_list) > max_people:
@@ -251,23 +252,20 @@ def group_candidates_by_party(election_data, candidacies, show_all=False):
         result = [
             (
                 {
-                    'id': k,
-                    'name': party_id_to_name[k],
-                    'max_count': max_people,
-                    'truncated': party_truncated[k],
-                    'total_count': party_total[k],
+                    "id": k,
+                    "name": party_id_to_name[k],
+                    "max_count": max_people,
+                    "truncated": party_truncated[k],
+                    "total_count": party_total[k],
                 },
-                v
+                v,
             )
             for k, v in party_id_to_people.items()
         ]
     except KeyError as ke:
         raise Exception("Unknown party: {}".format(ke))
     if party_list:
-        result.sort(key=lambda t: t[0]['name'])
+        result.sort(key=lambda t: t[0]["name"])
     else:
         result.sort(key=lambda t: t[1][0][1].name.split()[-1])
-    return {
-        'party_lists_in_use': party_list,
-        'parties_and_people': result
-    }
+    return {"party_lists_in_use": party_list, "parties_and_people": result}

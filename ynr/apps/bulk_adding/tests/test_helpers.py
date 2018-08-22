@@ -13,13 +13,10 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_add_person(self):
 
-        request = self.factory.get('/')
+        request = self.factory.get("/")
         request.user = self.user
 
-        person_data = {
-            'name': 'Foo',
-            'source': 'example.com'
-        }
+        person_data = {"name": "Foo", "source": "example.com"}
 
         with self.assertNumQueries(9):
             helpers.add_person(request, person_data)

@@ -24,12 +24,8 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
 
-        person = PersonFactory.create(
-            id="2009", name="Tessa Jowell"
-        )
-        dulwich_not_stand = PersonFactory.create(
-            id="4322", name="Helen Hayes"
-        )
+        person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        dulwich_not_stand = PersonFactory.create(id="4322", name="Helen Hayes")
         edinburgh_candidate = PersonFactory.create(
             id="818", name="Sheila Gilmore"
         )
@@ -189,7 +185,8 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         self.election.organization = None
         self.election.save()
         elections_resp = self.app.get(
-            "/api/v0.9/elections/", expect_errors=True)
+            "/api/v0.9/elections/", expect_errors=True
+        )
         self.assertEqual(elections_resp.status_code, 200)
 
     def test_api_election(self):
@@ -327,15 +324,19 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         with self.storage.open(
             join(expected_timestamped_directory, persons_1_leafname)
         ) as f:
-            persons_1_data = json.loads(f.read().decode('utf8'))
+            persons_1_data = json.loads(f.read().decode("utf8"))
         with self.storage.open(
             join(expected_timestamped_directory, persons_2_leafname)
         ) as f:
-            persons_2_data = json.loads(f.read().decode('utf8'))
-        with self.storage.open(join(expected_timestamped_directory, posts_1_leafname)) as f:
-            posts_1_data = json.loads(f.read().decode('utf8'))
-        with self.storage.open(join(expected_timestamped_directory, posts_2_leafname)) as f:
-            posts_2_data = json.loads(f.read().decode('utf8'))
+            persons_2_data = json.loads(f.read().decode("utf8"))
+        with self.storage.open(
+            join(expected_timestamped_directory, posts_1_leafname)
+        ) as f:
+            posts_1_data = json.loads(f.read().decode("utf8"))
+        with self.storage.open(
+            join(expected_timestamped_directory, posts_2_leafname)
+        ) as f:
+            posts_2_data = json.loads(f.read().decode("utf8"))
         # Check the previous and next links are as we expect:
         self.assertEqual(
             persons_1_data["next"],
@@ -487,4 +488,3 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
             self.assertFalse(
                 self.storage.exists(join("cached-api", dir_name, ".keep"))
             )
-

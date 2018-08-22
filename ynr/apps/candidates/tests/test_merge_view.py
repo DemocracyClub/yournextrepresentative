@@ -20,27 +20,27 @@ from . import factories
 from ynr.helpers import mkdir_p
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
-example_timestamp = '2014-09-29T10:11:59.216159'
-example_version_id = '5aa6418325c1a0bb'
+example_timestamp = "2014-09-29T10:11:59.216159"
+example_version_id = "5aa6418325c1a0bb"
 
-TEST_MEDIA_ROOT = realpath(join(dirname(__file__), 'media'))
+TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
+
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN=None)
-@patch('candidates.views.people.additional_merge_actions')
+@patch("candidates.views.people.additional_merge_actions")
 class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
-
     def setUp(self):
         super().setUp()
         mkdir_p(TEST_MEDIA_ROOT)
         # Create Tessa Jowell (the primary person)
         person = factories.PersonFactory.create(
             id=2009,
-            name='Tessa Jowell',
-            gender='female',
-            honorific_suffix='DBE',
-            email='jowell@example.com',
-            versions='''
+            name="Tessa Jowell",
+            gender="female",
+            honorific_suffix="DBE",
+            email="jowell@example.com",
+            versions="""
                 [
                   {
                     "username": "symroe",
@@ -112,20 +112,20 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     }
                   }
                 ]
-            ''',
+            """,
         )
         ImageExtra.objects.create_from_file(
             EXAMPLE_IMAGE_FILENAME,
-            'images/jowell-pilot.jpg',
+            "images/jowell-pilot.jpg",
             base_kwargs={
-                'content_object': person,
-                'is_primary': True,
-                'source': 'Taken from Wikipedia',
+                "content_object": person,
+                "is_primary": True,
+                "source": "Taken from Wikipedia",
             },
             extra_kwargs={
-                'copyright': 'example-license',
-                'uploading_user': self.user,
-                'user_notes': 'A photo of Tessa Jowell',
+                "copyright": "example-license",
+                "uploading_user": self.user,
+                "user_notes": "A photo of Tessa Jowell",
             },
         )
         factories.MembershipFactory.create(
@@ -143,11 +143,11 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Now create Shane Collins (who we'll merge into Tessa Jowell)
         person = factories.PersonFactory.create(
             id=2007,
-            name='Shane Collins',
-            gender='male',
-            honorific_prefix='Mr',
-            email='shane@gn.apc.org',
-            versions='''
+            name="Shane Collins",
+            gender="male",
+            honorific_prefix="Mr",
+            email="shane@gn.apc.org",
+            versions="""
                 [
                   {
                     "data": {
@@ -235,19 +235,20 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     "version_id": "68a452284d95d9ab"
                   }
                 ]
-            ''')
+            """,
+        )
         ImageExtra.objects.create_from_file(
             EXAMPLE_IMAGE_FILENAME,
-            'images/collins-pilot.jpg',
+            "images/collins-pilot.jpg",
             base_kwargs={
-                'content_object': person,
-                'is_primary': True,
-                'source': 'Taken from Twitter',
+                "content_object": person,
+                "is_primary": True,
+                "source": "Taken from Twitter",
             },
             extra_kwargs={
-                'copyright': 'profile-photo',
-                'uploading_user': self.user,
-                'user_notes': 'A photo of Shane Collins',
+                "copyright": "profile-photo",
+                "uploading_user": self.user,
+                "user_notes": "A photo of Shane Collins",
             },
         )
         factories.MembershipFactory.create(
@@ -268,32 +269,29 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         rmtree(TEST_MEDIA_ROOT)
 
     def test_merge_disallowed_no_form(self, mock_additional_merge_actions):
-        response = self.app.get('/person/2009/update', user=self.user)
-        self.assertNotIn('person-merge', response.forms)
+        response = self.app.get("/person/2009/update", user=self.user)
+        self.assertNotIn("person-merge", response.forms)
         self.assertEqual(mock_additional_merge_actions.call_count, 0)
 
     def test_merge_two_people_disallowed(self, mock_additional_merge_actions):
         # Get the update page for the person just to get the CSRF token:
-        response = self.app.get('/person/2009/update', user=self.user)
-        csrftoken = self.app.cookies['csrftoken']
+        response = self.app.get("/person/2009/update", user=self.user)
+        csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            '/person/2009/merge',
-            {
-                'csrfmiddlewaretoken': csrftoken,
-                'other': '2007',
-            },
-            expect_errors=True
+            "/person/2009/merge",
+            {"csrfmiddlewaretoken": csrftoken, "other": "2007"},
+            expect_errors=True,
         )
         self.assertEqual(response.status_code, 403)
         self.assertEqual(mock_additional_merge_actions.call_count, 0)
 
-    @patch('candidates.views.version_data.get_current_timestamp')
-    @patch('candidates.views.version_data.create_version_id')
+    @patch("candidates.views.version_data.get_current_timestamp")
+    @patch("candidates.views.version_data.create_version_id")
     def test_merge_two_people(
-            self,
-            mock_create_version_id,
-            mock_get_current_timestamp,
-            mock_additional_merge_actions,
+        self,
+        mock_create_version_id,
+        mock_get_current_timestamp,
+        mock_additional_merge_actions,
     ):
         mock_get_current_timestamp.return_value = example_timestamp
         mock_create_version_id.return_value = example_version_id
@@ -301,30 +299,27 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         primary_person = Person.objects.get(pk=2009)
         non_primary_person = Person.objects.get(pk=2007)
 
-        response = self.app.get('/person/2009/update', user=self.user_who_can_merge)
-        merge_form = response.forms['person-merge']
-        merge_form['other'] = '2007'
+        response = self.app.get(
+            "/person/2009/update", user=self.user_who_can_merge
+        )
+        merge_form = response.forms["person-merge"]
+        merge_form["other"] = "2007"
         response = merge_form.submit()
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location,
-            '/person/2009/tessa-jowell'
-        )
+        self.assertEqual(response.location, "/person/2009/tessa-jowell")
 
         # Check that the redirect object has been made:
         self.assertEqual(
             PersonRedirect.objects.filter(
-                old_person_id=2007,
-                new_person_id=2009,
+                old_person_id=2007, new_person_id=2009
             ).count(),
-            1
+            1,
         )
 
         # Check that person 2007 redirects to person 2009 in future
-        response = self.app.get('/person/2007')
+        response = self.app.get("/person/2007")
         self.assertEqual(response.status_code, 301)
-
 
         # Check that the other person was deleted (in the future we
         # might want to "soft delete" the person instead).
@@ -333,47 +328,43 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Get the merged person, and check that everything's as we expect:
         merged_person = Person.objects.get(id=2009)
 
-        self.assertEqual(merged_person.birth_date, '')
-        self.assertEqual(merged_person.email, 'jowell@example.com')
-        self.assertEqual(merged_person.gender, 'female')
-        self.assertEqual(merged_person.honorific_prefix, 'Mr')
-        self.assertEqual(merged_person.honorific_suffix, 'DBE')
+        self.assertEqual(merged_person.birth_date, "")
+        self.assertEqual(merged_person.email, "jowell@example.com")
+        self.assertEqual(merged_person.gender, "female")
+        self.assertEqual(merged_person.honorific_prefix, "Mr")
+        self.assertEqual(merged_person.honorific_suffix, "DBE")
 
         candidacies = Membership.objects.filter(
             person=merged_person,
-            role=F('post_election__election__candidate_membership_role')
-        ).order_by('post_election__election__election_date')
+            role=F("post_election__election__candidate_membership_role"),
+        ).order_by("post_election__election__election_date")
 
         self.assertEqual(len(candidacies), 2)
-        for c, expected_election in zip(candidacies, ('2010', '2015')):
+        for c, expected_election in zip(candidacies, ("2010", "2015")):
             self.assertEqual(c.post_election.election.slug, expected_election)
-            self.assertEqual(c.post.extra.slug, '65808')
+            self.assertEqual(c.post.extra.slug, "65808")
 
         # Check that there are only two Membership objects
         self.assertEqual(
-            2,
-            Membership.objects.filter(person=merged_person).count()
+            2, Membership.objects.filter(person=merged_person).count()
         )
 
         other_names = list(merged_person.other_names.all())
         self.assertEqual(len(other_names), 1)
-        self.assertEqual(other_names[0].name, 'Shane Collins')
+        self.assertEqual(other_names[0].name, "Shane Collins")
 
         # Check that the remaining person now has two images, i.e. the
         # one from the person to delete is added to the existing images:
-        self.assertEqual(
-            2,
-            merged_person.images.count()
-        )
+        self.assertEqual(2, merged_person.images.count())
 
         primary_image = merged_person.images.get(is_primary=True)
         non_primary_image = merged_person.images.get(is_primary=False)
 
         self.assertEqual(
-            primary_image.extra.user_notes, 'A photo of Tessa Jowell'
+            primary_image.extra.user_notes, "A photo of Tessa Jowell"
         )
         self.assertEqual(
-            non_primary_image.extra.user_notes, 'A photo of Shane Collins'
+            non_primary_image.extra.user_notes, "A photo of Shane Collins"
         )
         self.assertEqual(mock_additional_merge_actions.call_count, 1)
         self.assertEqual(len(mock_additional_merge_actions.call_args), 2)
@@ -381,13 +372,13 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # The ID will be None now because the secondary has been deleted.
         self.assertEqual(mock_additional_merge_actions.call_args[0][1].id, None)
 
-    @patch('candidates.views.version_data.get_current_timestamp')
-    @patch('candidates.views.version_data.create_version_id')
+    @patch("candidates.views.version_data.get_current_timestamp")
+    @patch("candidates.views.version_data.create_version_id")
     def test_merge_regression(
-            self,
-            mock_create_version_id,
-            mock_get_current_timestamp,
-            mock_additional_merge_actions,
+        self,
+        mock_create_version_id,
+        mock_get_current_timestamp,
+        mock_additional_merge_actions,
     ):
         mock_get_current_timestamp.return_value = example_timestamp
         mock_create_version_id.return_value = example_version_id
@@ -395,28 +386,26 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Create the primary and secondary versions of Stuart Jeffrey
         # that failed from their JSON serialization.
         stuart_primary = factories.PersonFactory.create(
-            id='2111',
-            name='Stuart Jeffrey',
+            id="2111", name="Stuart Jeffrey"
         )
         stuart_secondary = factories.PersonFactory.create(
-            id='12207',
-            name='Stuart Robert Jeffrey',
+            id="12207", name="Stuart Robert Jeffrey"
         )
 
         # And create the two Westminster posts:
         factories.PostExtraFactory.create(
             elections=(self.election, self.earlier_election),
-            slug='65878',
-            base__label='Canterbury',
+            slug="65878",
+            base__label="Canterbury",
             party_set=self.gb_parties,
-            base__organization=self.commons
+            base__organization=self.commons,
         )
         factories.PostExtraFactory.create(
             elections=(self.election, self.earlier_election),
-            slug='65936',
-            base__label='Maidstone and The Weald',
+            slug="65936",
+            base__label="Maidstone and The Weald",
             party_set=self.gb_parties,
-            base__organization=self.commons
+            base__organization=self.commons,
         )
 
         # Update each of them from the versions that were merged, and merged badly:
@@ -433,48 +422,34 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "honorific_suffix": "",
                 "id": "2111",
                 "identifiers": [
-                    {
-                        "identifier": "2111",
-                        "scheme": "popit-person"
-                    },
-                    {
-                        "identifier": "3476",
-                        "scheme": "yournextmp-candidate"
-                    },
-                    {
-                        "identifier": "15712527",
-                        "scheme": "twitter"
-                    }
+                    {"identifier": "2111", "scheme": "popit-person"},
+                    {"identifier": "3476", "scheme": "yournextmp-candidate"},
+                    {"identifier": "15712527", "scheme": "twitter"},
                 ],
                 "image": "http://yournextmp.popit.mysociety.org/persons/2111/image/54bc790ecb19ebca71e2af8e",
                 "linkedin_url": "",
                 "name": "Stuart Jeffery",
                 "other_names": [],
                 "party_memberships": {
-                    "2010": {
-                        "id": "party:63",
-                        "name": "Green Party"
-                    },
-                    "2015": {
-                        "id": "party:63",
-                        "name": "Green Party"
-                    }
+                    "2010": {"id": "party:63", "name": "Green Party"},
+                    "2015": {"id": "party:63", "name": "Green Party"},
                 },
                 "party_ppc_page_url": "https://my.greenparty.org.uk/candidates/105873",
                 "standing_in": {
                     "2010": {
                         "name": "Maidstone and The Weald",
-                        "post_id": "65936"
+                        "post_id": "65936",
                     },
                     "2015": {
                         "elected": False,
                         "name": "Canterbury",
-                        "post_id": "65878"
-                    }
+                        "post_id": "65878",
+                    },
                 },
                 "twitter_username": "stuartjeffery",
-                "wikipedia_url": ""
-            })
+                "wikipedia_url": "",
+            },
+        )
 
         revert_person_from_version_data(
             stuart_secondary,
@@ -495,7 +470,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "party_memberships": {
                     "local.maidstone.2016-05-05": {
                         "id": "party:63",
-                        "name": "Green Party"
+                        "name": "Green Party",
                     }
                 },
                 "party_ppc_page_url": "",
@@ -503,42 +478,46 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     "local.maidstone.2016-05-05": {
                         "elected": False,
                         "name": "Shepway South ward",
-                        "post_id": "DIW:E05005004"
+                        "post_id": "DIW:E05005004",
                     }
                 },
                 "twitter_username": "",
                 "wikipedia_url": "",
-            })
+            },
+        )
 
-        response = self.app.get('/person/2111/update', user=self.user_who_can_merge)
-        merge_form = response.forms['person-merge']
-        merge_form['other'] = '12207'
+        response = self.app.get(
+            "/person/2111/update", user=self.user_who_can_merge
+        )
+        merge_form = response.forms["person-merge"]
+        merge_form["other"] = "12207"
         response = merge_form.submit()
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location,
-            '/person/2111/stuart-jeffery'
+        self.assertEqual(response.location, "/person/2111/stuart-jeffery")
+
+        merged_person = Person.objects.get(pk="2111")
+
+        candidacies = (
+            Membership.objects.filter(
+                person=merged_person,
+                role=F("post_election__election__candidate_membership_role"),
+            )
+            .values_list(
+                "post_election__election__slug",
+                "post__extra__slug",
+                "on_behalf_of__extra__slug",
+            )
+            .order_by("post_election__election__slug")
         )
-
-        merged_person = Person.objects.get(pk='2111')
-
-        candidacies = Membership.objects.filter(
-            person=merged_person,
-            role=F('post_election__election__candidate_membership_role')
-        ).values_list(
-            'post_election__election__slug',
-            'post__extra__slug',
-            'on_behalf_of__extra__slug',
-        ).order_by('post_election__election__slug')
 
         self.assertEqual(
             list(candidacies),
             [
-                ('2010', '65936', 'party:63'),
-                ('2015', '65878', 'party:63'),
-                ('local.maidstone.2016-05-05', 'DIW:E05005004', 'party:63')
-            ]
+                ("2010", "65936", "party:63"),
+                ("2015", "65878", "party:63"),
+                ("local.maidstone.2016-05-05", "DIW:E05005004", "party:63"),
+            ],
         )
 
         self.assertEqual(mock_additional_merge_actions.call_count, 1)

@@ -4,19 +4,16 @@ from .auth import TestUserMixin
 
 from .uk_examples import UK2015ExamplesMixin
 
-class TestAreasView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
+class TestAreasView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_any_area_page_without_login(self):
         response = self.app.get(
-            '/areas/WMC--65808/dulwich-and-west-norwood',
-            status=410
+            "/areas/WMC--65808/dulwich-and-west-norwood", status=410
         )
         self.assertEqual(response.status_code, 410)
 
-
     def test_get_non_existent(self):
         response = self.app.get(
-            '/areas/WMC--11111111/imaginary-constituency',
-            expect_errors=True
+            "/areas/WMC--11111111/imaginary-constituency", expect_errors=True
         )
         self.assertEqual(response.status_code, 410)

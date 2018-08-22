@@ -3,21 +3,16 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('candidates', '0028_create_order_attr_of_extra'),
-    ]
+    dependencies = [("candidates", "0028_create_order_attr_of_extra")]
 
     operations = [
         migrations.AlterModelOptions(
-            name='complexpopolofield',
-            options={'ordering': ('order',)},
+            name="complexpopolofield", options={"ordering": ("order",)}
         ),
         migrations.AlterModelOptions(
-            name='extrafield',
-            options={'ordering': ('order',)},
+            name="extrafield", options={"ordering": ("order",)}
         ),
         migrations.AlterModelOptions(
-            name='simplepopolofield',
-            options={'ordering': ('order',)},
+            name="simplepopolofield", options={"ordering": ("order",)}
         ),
     ]

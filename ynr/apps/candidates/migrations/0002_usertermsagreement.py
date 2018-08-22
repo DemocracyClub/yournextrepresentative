@@ -6,19 +6,32 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('candidates', '0001_initial'),
+        ("candidates", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='UserTermsAgreement',
+            name="UserTermsAgreement",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('assigned_to_dc', models.BooleanField(default=False)),
-                ('user', models.OneToOneField(related_name='terms_agreement', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("assigned_to_dc", models.BooleanField(default=False)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        related_name="terms_agreement",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
-            options={
-            },
+            options={},
             bases=(models.Model,),
-        ),
+        )
     ]

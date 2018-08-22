@@ -3,22 +3,27 @@ from django.db import models, migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='CachedCount',
+            name="CachedCount",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('count_type', models.CharField(max_length=100, db_index=True)),
-                ('name', models.CharField(max_length=100)),
-                ('count', models.IntegerField()),
-                ('object_id', models.CharField(max_length=100, blank=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("count_type", models.CharField(max_length=100, db_index=True)),
+                ("name", models.CharField(max_length=100)),
+                ("count", models.IntegerField()),
+                ("object_id", models.CharField(max_length=100, blank=True)),
             ],
-            options={
-                'ordering': ['-count', 'name'],
-            },
+            options={"ordering": ["-count", "name"]},
             bases=(models.Model,),
-        ),
+        )
     ]

@@ -6,13 +6,8 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('candidates', '0043_remove_simple_popolo_field'),
-    ]
+    dependencies = [("candidates", "0043_remove_simple_popolo_field")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='membershipextra',
-            name='election',
-        ),
+        migrations.RemoveField(model_name="membershipextra", name="election")
     ]

@@ -20,25 +20,28 @@ from ynr.helpers import mkdir_p
 
 from candidates.models import LoggedAction
 from candidates.management.images import (
-    ImageDownloadException, download_image_from_url)
+    ImageDownloadException,
+    download_image_from_url,
+)
 
 from candidates.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
-TEST_MEDIA_ROOT = realpath(join(dirname(__file__), 'media'))
+TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
 
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
 
     example_image_filename = EXAMPLE_IMAGE_FILENAME
+
     @classmethod
     def setUpClass(cls):
         super(PhotoUploadImageTests, cls).setUpClass()
         storage = FileSystemStorage()
-        desired_storage_path = join('queued-images', 'pilot.jpg')
-        with open(cls.example_image_filename, 'rb') as f:
+        desired_storage_path = join("queued-images", "pilot.jpg")
+        with open(cls.example_image_filename, "rb") as f:
             cls.storage_filename = storage.save(desired_storage_path, f)
         mkdir_p(TEST_MEDIA_ROOT)
 
@@ -49,14 +52,9 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        PersonFactory.create(
-            id='2009',
-            name='Tessa Jowell'
-        )
+        PersonFactory.create(id="2009", name="Tessa Jowell")
         self.test_upload_user = User.objects.create_user(
-            'john',
-            'john@example.com',
-            'notagoodpassword',
+            "john", "john@example.com", "notagoodpassword"
         )
         self.test_upload_user.terms_agreement.assigned_to_dc = True
         self.test_upload_user.terms_agreement.save()
@@ -68,52 +66,43 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
     def test_photo_upload_through_image_field(self):
         queued_images = QueuedImage.objects.all()
         initial_count = queued_images.count()
-        upload_form_url = reverse(
-            'photo-upload',
-            kwargs={'person_id': '2009'}
-        )
+        upload_form_url = reverse("photo-upload", kwargs={"person_id": "2009"})
         form_page_response = self.app.get(
-            upload_form_url,
-            user=self.test_upload_user
+            upload_form_url, user=self.test_upload_user
         )
-        form = form_page_response.forms['person-upload-photo-image']
-        with open(self.example_image_filename, 'rb') as f:
-            form['image'] = Upload('pilot.jpg', f.read())
-        form['why_allowed'] = 'copyright-assigned'
-        form['justification_for_use'] = 'I took this photo'
+        form = form_page_response.forms["person-upload-photo-image"]
+        with open(self.example_image_filename, "rb") as f:
+            form["image"] = Upload("pilot.jpg", f.read())
+        form["why_allowed"] = "copyright-assigned"
+        form["justification_for_use"] = "I took this photo"
         upload_response = form.submit()
         self.assertEqual(upload_response.status_code, 302)
 
         split_location = urlsplit(upload_response.location)
-        self.assertEqual('/moderation/photo/upload/2009/success', split_location.path)
+        self.assertEqual(
+            "/moderation/photo/upload/2009/success", split_location.path
+        )
 
         queued_images = QueuedImage.objects.all()
         self.assertEqual(initial_count + 1, queued_images.count())
 
         queued_image = queued_images.last()
-        self.assertEqual(queued_image.decision, 'undecided')
-        self.assertEqual(queued_image.why_allowed, 'copyright-assigned')
+        self.assertEqual(queued_image.decision, "undecided")
+        self.assertEqual(queued_image.why_allowed, "copyright-assigned")
         self.assertEqual(
-            queued_image.justification_for_use,
-            'I took this photo'
+            queued_image.justification_for_use, "I took this photo"
         )
         self.assertEqual(queued_image.person.id, 2009)
         self.assertEqual(queued_image.user, self.test_upload_user)
 
     def test_shows_photo_policy_text_in_photo_upload_page(self):
-        upload_form_url = reverse(
-            'photo-upload',
-            kwargs={'person_id': '2009'}
-        )
-        response = self.app.get(
-            upload_form_url,
-            user=self.test_upload_user
-        )
-        self.assertContains(response, 'Photo policy')
+        upload_form_url = reverse("photo-upload", kwargs={"person_id": "2009"})
+        response = self.app.get(upload_form_url, user=self.test_upload_user)
+        self.assertContains(response, "Photo policy")
 
 
-@patch('moderation_queue.forms.requests')
-@patch('candidates.management.images.requests')
+@patch("moderation_queue.forms.requests")
+@patch("candidates.management.images.requests")
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
 
@@ -123,8 +112,8 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
     def setUpClass(cls):
         super(PhotoUploadURLTests, cls).setUpClass()
         storage = FileSystemStorage()
-        desired_storage_path = join('queued-images', 'pilot.jpg')
-        with open(cls.example_image_filename, 'rb') as f:
+        desired_storage_path = join("queued-images", "pilot.jpg")
+        with open(cls.example_image_filename, "rb") as f:
             cls.storage_filename = storage.save(desired_storage_path, f)
         mkdir_p(TEST_MEDIA_ROOT)
 
@@ -135,43 +124,33 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        PersonFactory.create(
-            id='2009',
-            name='Tessa Jowell'
-        )
+        PersonFactory.create(id="2009", name="Tessa Jowell")
         self.test_upload_user = User.objects.create_user(
-            'john',
-            'john@example.com',
-            'notagoodpassword',
+            "john", "john@example.com", "notagoodpassword"
         )
         self.test_upload_user.terms_agreement.assigned_to_dc = True
         self.test_upload_user.terms_agreement.save()
-        upload_form_url = reverse(
-            'photo-upload',
-            kwargs={'person_id': '2009'}
-        )
+        upload_form_url = reverse("photo-upload", kwargs={"person_id": "2009"})
         self.form_page_response = self.app.get(
-            upload_form_url,
-            user=self.test_upload_user
+            upload_form_url, user=self.test_upload_user
         )
 
     def get_and_head_methods(self, *all_mock_requests):
         return [
             getattr(mock_requests, attr)
             for mock_requests in all_mock_requests
-            for attr in ('get', 'head')
+            for attr in ("get", "head")
         ]
 
     def successful_get_image(self, *all_mock_requests, **kwargs):
-        content_type = kwargs.get('content_type', 'image/jpeg')
-        headers = {'content-type': content_type}
-        with open(self.example_image_filename, 'rb') as image:
+        content_type = kwargs.get("content_type", "image/jpeg")
+        headers = {"content-type": content_type}
+        with open(self.example_image_filename, "rb") as image:
             image_data = image.read()
-            for mock_method in self.get_and_head_methods(
-                    *all_mock_requests):
+            for mock_method in self.get_and_head_methods(*all_mock_requests):
                 setattr(
                     mock_method,
-                    'return_value',
+                    "return_value",
                     Mock(
                         status_code=200,
                         headers=headers,
@@ -179,25 +158,22 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
                         # image, so we don't need to worry about
                         # returning subsequent chunks.
                         iter_content=lambda **kwargs: [image_data],
-                    ))
+                    ),
+                )
 
     def unsuccessful_get_image(self, *all_mock_requests):
-        for mock_method in self.get_and_head_methods(
-                *all_mock_requests):
-            setattr(
-                mock_method,
-                'return_value',
-                Mock(status_code=404))
+        for mock_method in self.get_and_head_methods(*all_mock_requests):
+            setattr(mock_method, "return_value", Mock(status_code=404))
 
     def valid_form(self):
-        form = self.form_page_response.forms['person-upload-photo-url']
-        form['image_url'] = 'http://foo.com/bar.jpg'
-        form['why_allowed_url'] = 'copyright-assigned'
-        form['justification_for_use_url'] = 'I took this photo'
+        form = self.form_page_response.forms["person-upload-photo-url"]
+        form["image_url"] = "http://foo.com/bar.jpg"
+        form["why_allowed_url"] = "copyright-assigned"
+        form["justification_for_use_url"] = "I took this photo"
         return form
 
     def invalid_form(self):
-        return self.form_page_response.forms['person-upload-photo-url']
+        return self.form_page_response.forms["person-upload-photo-url"]
 
     def test_uploads_a_photo_from_a_url(self, *all_mock_requests):
         initial_count = QueuedImage.objects.all().count()
@@ -210,9 +186,11 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
         self.successful_get_image(*all_mock_requests)
         self.valid_form().submit()
         queued_image = QueuedImage.objects.all().last()
-        self.assertEqual(queued_image.decision, 'undecided')
-        self.assertEqual(queued_image.why_allowed, 'copyright-assigned')
-        self.assertEqual(queued_image.justification_for_use, 'I took this photo')
+        self.assertEqual(queued_image.decision, "undecided")
+        self.assertEqual(queued_image.why_allowed, "copyright-assigned")
+        self.assertEqual(
+            queued_image.justification_for_use, "I took this photo"
+        )
         self.assertEqual(queued_image.person.id, 2009)
         self.assertEqual(queued_image.user, self.test_upload_user)
 
@@ -223,40 +201,55 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
         final_count = LoggedAction.objects.all().count()
         self.assertEqual(final_count, initial_count + 1)
 
-    def test_loads_success_page_if_upload_was_successful(self, *all_mock_requests):
+    def test_loads_success_page_if_upload_was_successful(
+        self, *all_mock_requests
+    ):
         self.successful_get_image(*all_mock_requests)
         upload_response = self.valid_form().submit()
         self.assertEqual(upload_response.status_code, 302)
         split_location = urlsplit(upload_response.location)
-        self.assertEqual(split_location.path, '/moderation/photo/upload/2009/success')
+        self.assertEqual(
+            split_location.path, "/moderation/photo/upload/2009/success"
+        )
 
     def test_fails_validation_if_image_does_not_exist(self, *all_mock_requests):
         self.unsuccessful_get_image(*all_mock_requests)
         upload_response = self.valid_form().submit()
         self.assertEqual(upload_response.status_code, 200)
         self.assertIn(
-            'That URL produced an HTTP error status code: 404',
-            upload_response.content.decode('utf-8'))
+            "That URL produced an HTTP error status code: 404",
+            upload_response.content.decode("utf-8"),
+        )
 
-    def test_fails_validation_if_image_has_wrong_content_type(self, *all_mock_requests):
-        self.successful_get_image(*all_mock_requests, content_type='text/html')
+    def test_fails_validation_if_image_has_wrong_content_type(
+        self, *all_mock_requests
+    ):
+        self.successful_get_image(*all_mock_requests, content_type="text/html")
         upload_response = self.valid_form().submit()
-        with open('/tmp/foo.html', 'wb') as f:
+        with open("/tmp/foo.html", "wb") as f:
             f.write(upload_response.content)
         self.assertEqual(upload_response.status_code, 200)
         self.assertIn(
             "This URL isn&#39;t for an image - it had Content-Type: text/html",
-            upload_response.content.decode('utf-8'))
+            upload_response.content.decode("utf-8"),
+        )
 
-    def test_loads_upload_photo_page_if_form_is_invalid(self, *all_mock_requests):
+    def test_loads_upload_photo_page_if_form_is_invalid(
+        self, *all_mock_requests
+    ):
         self.successful_get_image(*all_mock_requests)
         upload_response = self.invalid_form().submit()
-        self.assertContains(upload_response, '<h1>Upload a photo of Tessa Jowell</h1>')
+        self.assertContains(
+            upload_response, "<h1>Upload a photo of Tessa Jowell</h1>"
+        )
 
     def test_upload_size_restriction_works(self, *all_mock_requests):
         self.successful_get_image(*all_mock_requests)
         with self.assertRaises(ImageDownloadException) as context:
-            download_image_from_url('http://foo.com/bar.jpg', max_size_bytes=512)
+            download_image_from_url(
+                "http://foo.com/bar.jpg", max_size_bytes=512
+            )
         self.assertEqual(
             text_type(context.exception),
-            'The image exceeded the maximum allowed size')
+            "The image exceeded the maximum allowed size",
+        )

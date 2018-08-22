@@ -18,12 +18,10 @@ class GroupRequiredMixin(object):
     You should set 'required_group_name' on the class that uses this
     mixin to the name of the group that the user must be a member of."""
 
-    permission_denied_template = 'auth_helpers/group_permission_denied.html'
+    permission_denied_template = "auth_helpers/group_permission_denied.html"
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         if not user_in_group(request.user, self.required_group_name):
             return render(request, self.permission_denied_template, status=403)
-        return super().dispatch(
-            request, *args, **kwargs
-        )
+        return super().dispatch(request, *args, **kwargs)

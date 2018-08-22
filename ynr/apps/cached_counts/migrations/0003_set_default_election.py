@@ -5,23 +5,21 @@ from django.db import migrations
 # installations will set the right election when creating CachedCount
 # objects.
 
+
 def set_uk_2015_election(apps, schema_editor):
-    CachedCount = apps.get_model('cached_counts', 'CachedCount')
+    CachedCount = apps.get_model("cached_counts", "CachedCount")
     for cc in CachedCount.objects.all():
         if not cc.election:
-            cc.election = '2015'
+            cc.election = "2015"
             cc.save()
 
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('cached_counts', '0002_cachedcount_election'),
-    ]
+    dependencies = [("cached_counts", "0002_cachedcount_election")]
 
     operations = [
         migrations.RunPython(
-            set_uk_2015_election,
-            lambda apps, schema_editor: None
-        ),
+            set_uk_2015_election, lambda apps, schema_editor: None
+        )
     ]

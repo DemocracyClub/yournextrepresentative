@@ -1,7 +1,9 @@
 from . import popolo_extra as models
 
+
 def check_constraints():
     return check_paired_models() + check_membership_elections_consistent()
+
 
 def check_paired_models():
     from popolo.models import Organization, Post, Area
@@ -14,27 +16,24 @@ def check_paired_models():
         (Area, models.AreaExtra),
         (Image, models.ImageExtra),
     ):
-        format_kwargs = {'base': base.__name__, 'extra': extra.__name__}
-        base_ids = set(
-            base.objects.values_list('pk', flat=True))
+        format_kwargs = {"base": base.__name__, "extra": extra.__name__}
+        base_ids = set(base.objects.values_list("pk", flat=True))
         base_ids_from_extra = set(
-            extra.objects.values_list('base_id', flat=True))
-        extra_ids = set(
-            extra.objects.values_list('pk', flat=True))
+            extra.objects.values_list("base_id", flat=True)
+        )
+        extra_ids = set(extra.objects.values_list("pk", flat=True))
         if len(base_ids) != len(extra_ids):
-            msg = 'There were {base_count} {base} objects, but ' \
-                  '{extra_count} {extra} objects'
+            msg = "There were {base_count} {base} objects, but " "{extra_count} {extra} objects"
             fmt = format_kwargs.copy()
-            fmt.update({
-                'base_count': len(base_ids),
-                'extra_count': len(extra_ids)})
+            fmt.update(
+                {"base_count": len(base_ids), "extra_count": len(extra_ids)}
+            )
             errors.append(msg.format(**fmt))
         base_ids_with_no_extra = sorted(base_ids - base_ids_from_extra)
         for base_id in base_ids_with_no_extra:
-            msg = 'The {base} object with ID {id} had no corresponding ' \
-                  '{extra} object'
+            msg = "The {base} object with ID {id} had no corresponding " "{extra} object"
             fmt = format_kwargs.copy()
-            fmt.update({'id': base_id})
+            fmt.update({"id": base_id})
             errors.append(msg.format(**fmt))
         # We could try to check for other errors here, but they are
         # prevented by various constraints. For example, you can't
@@ -45,8 +44,10 @@ def check_paired_models():
         # there is a unique constraint on the base_id field.
     return errors
 
+
 def check_membership_elections_consistent():
     from popolo.models import Membership
+
     # Any membership with role 'Candidate' should be associated with
     # an election via .extra.election and a post via .post. This
     # election + post combination should also be present in the
@@ -54,33 +55,42 @@ def check_membership_elections_consistent():
     # enforced. This method checks for that.
     errors = []
 
-    postextra_election_tuples_allowed = \
-        set(models.PostExtraElection.objects \
-            .values_list('postextra', 'election'))
+    postextra_election_tuples_allowed = set(
+        models.PostExtraElection.objects.values_list("postextra", "election")
+    )
 
     for me in Membership.objects.select_related(
-            'post__extra', 'post_election__election', 'person'):
+        "post__extra", "post_election__election", "person"
+    ):
         post_extra = me.post_election.postextra
         election = me.post_election.election
-        if (post_extra.id, election.id) not in postextra_election_tuples_allowed:
+        if (
+            post_extra.id,
+            election.id,
+        ) not in postextra_election_tuples_allowed:
             errors.append(
-                'There was a membership for {person_name} ({person_id}) ' \
-                'with post {post_label} ({post_extra_slug}) and election ' \
-                '{election_slug} but there\'s no PostExtraElection linking ' \
-                'them.'.format(
+                "There was a membership for {person_name} ({person_id}) "
+                "with post {post_label} ({post_extra_slug}) and election "
+                "{election_slug} but there's no PostExtraElection linking "
+                "them.".format(
                     person_name=me.base.person.name,
                     person_id=me.base.person.id,
                     post_label=me.base.post.label,
                     post_extra_slug=post_extra.slug,
-                    election_slug=me.election.slug))
+                    election_slug=me.election.slug,
+                )
+            )
     return errors
 
 
 def check_no_candidancy_for_election(person, election):
     if election.postextraelection_set.filter(
-            membership__person=person,
-            membership__role=election.candidate_membership_role).exists():
-        msg = 'There was an existing candidacy for {person} ({person_id}) ' \
-            'in the election "{election}"'
-        raise Exception(msg.format(
-            person=person, person_id=person.id, election=election.name))
+        membership__person=person,
+        membership__role=election.candidate_membership_role,
+    ).exists():
+        msg = "There was an existing candidacy for {person} ({person_id}) " 'in the election "{election}"'
+        raise Exception(
+            msg.format(
+                person=person, person_id=person.id, election=election.name
+            )
+        )

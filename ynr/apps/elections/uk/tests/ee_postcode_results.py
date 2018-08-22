@@ -20,13 +20,13 @@ ee_sw1a1aa_result = {
                     "mapit_generation_id": "",
                     "consultation_url": "https://example.com/consultation",
                     "notes": "This is just for testing.",
-                    "end_date": "2025-05-03"
+                    "end_date": "2025-05-03",
                 },
                 "mapit_generation_high": None,
                 "geography_curie": "test:9",
                 "seats_total": None,
                 "slug": "9",
-                "mapit_generation_low": None
+                "mapit_generation_low": None,
             },
             "elected_role": "Councillor",
             "voting_system": None,
@@ -36,7 +36,7 @@ ee_sw1a1aa_result = {
             "election_title": "Election 5",
             "election_type": {
                 "election_type": "local",
-                "name": "Local elections"
+                "name": "Local elections",
             },
             "organisation": {
                 "official_name": "The Organisation 38 Council",
@@ -47,15 +47,12 @@ ee_sw1a1aa_result = {
                 "election_name": "",
                 "common_name": "Organisation 38",
                 "slug": "org-38",
-                "organisation_subtype": ""
+                "organisation_subtype": "",
             },
-            "group_type": None
+            "group_type": None,
         }
-    ]
+    ],
 }
-
-
-
 
 
 ee_se240ag_result = {
@@ -79,7 +76,7 @@ ee_se240ag_result = {
             "election_title": "Election 5",
             "election_type": {
                 "election_type": "local",
-                "name": "Local elections"
+                "name": "Local elections",
             },
             "organisation": {
                 "official_name": "The Organisation 38 Council",
@@ -90,9 +87,9 @@ ee_se240ag_result = {
                 "election_name": "",
                 "common_name": "Organisation 38",
                 "slug": "org-38",
-                "organisation_subtype": ""
+                "organisation_subtype": "",
             },
-            "group_type": None
+            "group_type": None,
         },
         {
             "election_id": "gla.a.london.2016-05-05",
@@ -110,7 +107,7 @@ ee_se240ag_result = {
             "election_title": "Election 5",
             "election_type": {
                 "election_type": "local",
-                "name": "Local elections"
+                "name": "Local elections",
             },
             "organisation": {
                 "official_name": "The Organisation 38 Council",
@@ -121,9 +118,9 @@ ee_se240ag_result = {
                 "election_name": "",
                 "common_name": "Organisation 38",
                 "slug": "org-38",
-                "organisation_subtype": ""
+                "organisation_subtype": "",
             },
-            "group_type": None
+            "group_type": None,
         },
         {
             "election_id": "parl.dulwich-and-west-norwood.2017-03-23",
@@ -141,7 +138,7 @@ ee_se240ag_result = {
             "election_title": "Election 5",
             "election_type": {
                 "election_type": "local",
-                "name": "Local elections"
+                "name": "Local elections",
             },
             "organisation": {
                 "official_name": "The Organisation 38 Council",
@@ -152,9 +149,9 @@ ee_se240ag_result = {
                 "election_name": "",
                 "common_name": "Organisation 38",
                 "slug": "org-38",
-                "organisation_subtype": ""
+                "organisation_subtype": "",
             },
-            "group_type": None
-        }
-    ]
+            "group_type": None,
+        },
+    ],
 }

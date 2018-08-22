@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('moderation_queue', '0021_remove_suggestedpostlock_post_extra'),
+        ("moderation_queue", "0021_remove_suggestedpostlock_post_extra")
     ]
 
     operations = [
         migrations.AddField(
-            model_name='queuedimage',
-            name='detection_metadata',
+            model_name="queuedimage",
+            name="detection_metadata",
             field=models.TextField(blank=True),
-        ),
+        )
     ]

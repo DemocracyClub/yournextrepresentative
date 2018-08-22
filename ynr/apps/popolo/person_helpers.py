@@ -5,10 +5,17 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _l
 from django_date_extensions.fields import ApproximateDate
 
-from candidates.models import ComplexPopoloField, ExtraField, \
-    PersonExtraFieldValue, PartySet, raise_if_unsafe_to_delete
-from candidates.twitter_api import update_twitter_user_id, \
-    TwitterAPITokenMissing
+from candidates.models import (
+    ComplexPopoloField,
+    ExtraField,
+    PersonExtraFieldValue,
+    PartySet,
+    raise_if_unsafe_to_delete,
+)
+from candidates.twitter_api import (
+    update_twitter_user_id,
+    TwitterAPITokenMissing,
+)
 from popolo.models import Organization, Post, Membership
 
 
@@ -29,20 +36,20 @@ def parse_approximate_date(s):
     """
 
     for regexp in [
-        r'^(\d{4})-(\d{2})-(\d{2})$',
-        r'^(\d{4})-(\d{2})$',
-        r'^(\d{4})$'
+        r"^(\d{4})-(\d{2})-(\d{2})$",
+        r"^(\d{4})-(\d{2})$",
+        r"^(\d{4})$",
     ]:
         m = re.search(regexp, s)
         if m:
             return ApproximateDate(*(int(g, 10) for g in m.groups()))
-    if s == 'future':
+    if s == "future":
         return ApproximateDate(future=True)
     if s:
         dt = parser.parse(
             s,
             parserinfo=localparserinfo(),
-            dayfirst=settings.DD_MM_DATE_FORMAT_PREFERRED
+            dayfirst=settings.DD_MM_DATE_FORMAT_PREFERRED,
         )
         return ApproximateDate(dt.year, dt.month, dt.day)
     raise ValueError("Couldn't parse '{}' as an ApproximateDate".format(s))
@@ -50,32 +57,32 @@ def parse_approximate_date(s):
 
 class localparserinfo(parser.parserinfo):
     MONTHS = [
-        ('Jan', _l('Jan'), 'January', _l('January')),
-        ('Feb', _l('Feb'), 'February', _l('February')),
-        ('Mar', _l('Mar'), 'March', _l('March')),
-        ('Apr', _l('Apr'), 'April', _l('April')),
-        ('May', _l('May'), 'May', _l('May')),
-        ('Jun', _l('Jun'), 'June', _l('June')),
-        ('Jul', _l('Jul'), 'July', _l('July')),
-        ('Aug', _l('Aug'), 'August', _l('August')),
-        ('Sep', _l('Sep'), 'Sept', 'September', _l('September')),
-        ('Oct', _l('Oct'), 'October', _l('October')),
-        ('Nov', _l('Nov'), 'November', _l('November')),
-        ('Dec', _l('Dec'), 'December', _l('December'))
+        ("Jan", _l("Jan"), "January", _l("January")),
+        ("Feb", _l("Feb"), "February", _l("February")),
+        ("Mar", _l("Mar"), "March", _l("March")),
+        ("Apr", _l("Apr"), "April", _l("April")),
+        ("May", _l("May"), "May", _l("May")),
+        ("Jun", _l("Jun"), "June", _l("June")),
+        ("Jul", _l("Jul"), "July", _l("July")),
+        ("Aug", _l("Aug"), "August", _l("August")),
+        ("Sep", _l("Sep"), "Sept", "September", _l("September")),
+        ("Oct", _l("Oct"), "October", _l("October")),
+        ("Nov", _l("Nov"), "November", _l("November")),
+        ("Dec", _l("Dec"), "December", _l("December")),
     ]
 
-    PERTAIN = ['of', _l('of')]
+    PERTAIN = ["of", _l("of")]
 
 
 def update_person_from_form(person, form):
     form_data = form.cleaned_data.copy()
     # The date is returned as a datetime.date, so if that's set, turn
     # it into a string:
-    birth_date_date = form_data['birth_date']
+    birth_date_date = form_data["birth_date"]
     if birth_date_date:
-        form_data['birth_date'] = repr(birth_date_date).replace("-00-00", "")
+        form_data["birth_date"] = repr(birth_date_date).replace("-00-00", "")
     else:
-        form_data['birth_date'] = ''
+        form_data["birth_date"] = ""
     for field in settings.SIMPLE_POPOLO_FIELDS:
         setattr(person, field.name, form_data[field.name])
     for field in ComplexPopoloField.objects.all():
@@ -83,8 +90,9 @@ def update_person_from_form(person, form):
     for extra_field in ExtraField.objects.all():
         if extra_field.key in form_data:
             PersonExtraFieldValue.objects.update_or_create(
-                person=person, field=extra_field,
-                defaults={'value': form_data[extra_field.key]}
+                person=person,
+                field=extra_field,
+                defaults={"value": form_data[extra_field.key]},
             )
     person.save()
     try:
@@ -93,13 +101,17 @@ def update_person_from_form(person, form):
         pass
     for election_data in form.elections_with_fields:
         # Interpret the form data relating to this election:
-        post_id = form_data.get('constituency_' + election_data.slug)
-        standing = form_data.pop('standing_' + election_data.slug, 'standing')
+        post_id = form_data.get("constituency_" + election_data.slug)
+        standing = form_data.pop("standing_" + election_data.slug, "standing")
         if post_id:
             party_set = PartySet.objects.get(postextra__slug=post_id)
-            party_key = 'party_' + party_set.slug + '_' + election_data.slug
-            position_key = \
-                'party_list_position_' + party_set.slug + '_' + election_data.slug
+            party_key = "party_" + party_set.slug + "_" + election_data.slug
+            position_key = (
+                "party_list_position_"
+                + party_set.slug
+                + "_"
+                + election_data.slug
+            )
             party = Organization.objects.get(pk=form_data[party_key])
             party_list_position = form_data.get(position_key) or None
             post = Post.objects.get(extra__slug=post_id)
@@ -108,10 +120,11 @@ def update_person_from_form(person, form):
             party_list_position = None
             post = None
         # Now update the candidacies and not_standing based on those values:
-        if standing == 'standing':
+        if standing == "standing":
             mark_as_standing(
-                person, election_data, post, party, party_list_position)
-        elif standing == 'not-standing':
+                person, election_data, post, party, party_list_position
+            )
+        elif standing == "not-standing":
             mark_as_not_standing(person, election_data, post)
         else:
             mark_as_unsure_if_standing(person, election_data, post)
@@ -145,7 +158,8 @@ def mark_as_standing(person, election_data, post, party, party_list_position):
             person=person,
             role=election_data.candidate_membership_role,
             post_election=election_data.postextraelection_set.get(
-                postextra=post.extra)
+                postextra=post.extra
+            ),
         )
     # Update the party list position in case it's changed:
     membership.party_list_position = party_list_position
@@ -155,7 +169,8 @@ def mark_as_standing(person, election_data, post, party, party_list_position):
     membership.save()
     # Now remove any memberships that shouldn't now be there:
     for membership_to_remove in Membership.objects.filter(
-            pk__in=membership_ids_to_remove):
+        pk__in=membership_ids_to_remove
+    ):
         raise_if_unsafe_to_delete(membership_to_remove)
         membership_to_remove.delete()
 
@@ -174,6 +189,7 @@ def mark_as_not_standing(person, election_data, post):
         raise_if_unsafe_to_delete(membership)
         membership.delete()
     from candidates.models.constraints import check_no_candidancy_for_election
+
     check_no_candidancy_for_election(person, election_data)
     person.not_standing.add(election_data)
 
@@ -183,7 +199,7 @@ def mark_as_unsure_if_standing(person, election_data, post):
     for membership in Membership.objects.filter(
         extra__election=election_data,
         role=election_data.candidate_membership_role,
-        twitterbot_add_images_to_queue=person
+        twitterbot_add_images_to_queue=person,
     ):
         raise_if_unsafe_to_delete(membership)
         membership.delete()
@@ -197,6 +213,5 @@ def squash_whitespace(s):
     # it either with a newline (if that replaced text contained a
     # newline) or a space (otherwise).
     return re.sub(
-        r'(?ims)\s+',
-        lambda m: '\n' if '\n' in m.group(0) else ' ',
-        s)
+        r"(?ims)\s+", lambda m: "\n" if "\n" in m.group(0) else " ", s
+    )

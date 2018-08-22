@@ -8,12 +8,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('popolo', '0009_move_extra_person_data_to_base'),
-        ('candidates', '0045_delete_membership_extra'),
+        ("popolo", "0009_move_extra_person_data_to_base"),
+        ("candidates", "0045_delete_membership_extra"),
     ]
 
-    operations = [
-        migrations.DeleteModel(
-            name='PersonExtra',
-        ),
-    ]
+    operations = [migrations.DeleteModel(name="PersonExtra")]

@@ -3,6 +3,7 @@ import sys
 
 from django.utils import six
 
+
 @contextmanager
 def capture_output():
     # Suggested here: http://stackoverflow.com/a/17981937/223092
@@ -13,6 +14,7 @@ def capture_output():
         yield new_out, new_err
     finally:
         sys.stdout, sys.stderr = old_out, old_err
+
 
 def split_output(stringio_output):
     return stringio_output.getvalue().strip().splitlines()

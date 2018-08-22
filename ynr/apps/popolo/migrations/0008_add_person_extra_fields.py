@@ -7,20 +7,19 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('popolo', '0007_python_3_migrations'),
-    ]
+    dependencies = [("popolo", "0007_python_3_migrations")]
 
     operations = [
         migrations.AddField(
-            model_name='person',
-            name='versions',
+            model_name="person",
+            name="versions",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='person',
-            name='not_standing',
-            field=models.ManyToManyField(related_name='persons_not_standing_tmp',
-                                         to='elections.Election'),
+            model_name="person",
+            name="not_standing",
+            field=models.ManyToManyField(
+                related_name="persons_not_standing_tmp", to="elections.Election"
+            ),
         ),
     ]

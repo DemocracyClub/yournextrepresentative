@@ -1,6 +1,7 @@
 import json
 
-current_elections = json.loads("""
+current_elections = json.loads(
+    """
 {
   "count": 518,
   "next": "https://elections.democracyclub.org.uk/api/elections/?current=True&limit=100&offset=100",
@@ -5588,10 +5589,12 @@ current_elections = json.loads("""
     }
   ]
 }
-""")  # noqa
+"""
+)  # noqa
 
 
-current_elections_page_2 = json.loads("""
+current_elections_page_2 = json.loads(
+    """
 {
   "count": 518,
   "next": null,
@@ -11217,9 +11220,11 @@ current_elections_page_2 = json.loads("""
     }
   ]
 }
-""")  # noqa
+"""
+)  # noqa
 
-each_type_of_election_on_one_day = json.loads("""
+each_type_of_election_on_one_day = json.loads(
+    """
 {
   "count": 27,
   "next": null,
@@ -12444,4 +12449,5 @@ each_type_of_election_on_one_day = json.loads("""
     }
   ]
 }
-""")
+"""
+)

@@ -7,47 +7,34 @@ from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
 from . import factories
 
-class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
 
+class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
     def setUp(self):
         super().setUp()
-        slogan_field = ExtraField.objects.create(
-            key='slogan',
-            type='line',
-        )
+        slogan_field = ExtraField.objects.create(key="slogan", type="line")
         person_old_election = factories.PersonFactory.create(
-            id=100,
-            name='John Past',
+            id=100, name="John Past"
         )
         person_no_details = factories.PersonFactory.create(
-            id=101,
-            name='Jane Doe',
+            id=101, name="Jane Doe"
         )
         person_empty_slogan = factories.PersonFactory.create(
-            id=102,
-            name='John Smith',
-            birth_date='1999-12-31',
+            id=102, name="John Smith", birth_date="1999-12-31"
         )
         person_empty_slogan.contact_details.create(
-            contact_type='twitter',
-            value='anothermadeuptwitterusername',
+            contact_type="twitter", value="anothermadeuptwitterusername"
         )
         person_empty_slogan.extra_field_values.create(
-            field=slogan_field,
-            value='',
+            field=slogan_field, value=""
         )
         person_with_details = factories.PersonFactory.create(
-            id=103,
-            name='Joe Bloggs',
-            birth_date='1980-01-01',
+            id=103, name="Joe Bloggs", birth_date="1980-01-01"
         )
         person_with_details.contact_details.create(
-            contact_type='twitter',
-            value='madeuptwitterusername',
+            contact_type="twitter", value="madeuptwitterusername"
         )
         person_with_details.extra_field_values.create(
-            field=slogan_field,
-            value='Things can only get better',
+            field=slogan_field, value="Things can only get better"
         )
         factories.MembershipFactory.create(
             person=person_old_election,
@@ -75,21 +62,21 @@ class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
 
     def test_find_those_missing_dob(self):
-        qs = Person.objects.missing('birth_date')
+        qs = Person.objects.missing("birth_date")
         self.assertEqual(qs.count(), 1)
-        self.assertEqual(qs[0].name, 'Jane Doe')
+        self.assertEqual(qs[0].name, "Jane Doe")
 
     def test_find_those_missing_twitter(self):
-        qs = Person.objects.missing('twitter_username')
+        qs = Person.objects.missing("twitter_username")
         self.assertEqual(qs.count(), 1)
-        self.assertEqual(qs[0].name, 'Jane Doe')
+        self.assertEqual(qs[0].name, "Jane Doe")
 
     def test_find_those_missing_slogan(self):
-        qs = Person.objects.missing('slogan').order_by('name')
+        qs = Person.objects.missing("slogan").order_by("name")
         self.assertEqual(qs.count(), 2)
-        self.assertEqual(qs[0].name, 'Jane Doe')
-        self.assertEqual(qs[1].name, 'John Smith')
+        self.assertEqual(qs[0].name, "Jane Doe")
+        self.assertEqual(qs[1].name, "John Smith")
 
     def test_non_existent_field(self):
         with self.assertRaises(ValueError):
-            Person.objects.missing('quux')
+            Person.objects.missing("quux")

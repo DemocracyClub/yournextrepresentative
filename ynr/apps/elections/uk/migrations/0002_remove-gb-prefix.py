@@ -11,7 +11,6 @@ IDS_TO_ALTER = {
     "gb-naw-2016-05-05-r": "naw-2016-05-05-r",
     "gb-gla-2016-05-05-a": "gla-2016-05-05-a",
     "gb-gla-2016-05-05-c": "gla-2016-05-05-c",
-
 }
 
 
@@ -28,20 +27,14 @@ def add_gb_prefix(apps, schema_editor):
     reversed_ids_to_alter = {v: k for k, v in IDS_TO_ALTER.iteritems()}
 
     for election in Election.objects.filter(
-            slug__in=reversed_ids_to_alter.keys()):
+        slug__in=reversed_ids_to_alter.keys()
+    ):
         election.slug = reversed_ids_to_alter[election.slug]
         election.save()
 
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('uk', '0001_migrate_area_ids'),
-    ]
+    dependencies = [("uk", "0001_migrate_area_ids")]
 
-    operations = [
-        migrations.RunPython(
-            remove_gb_prefix,
-            add_gb_prefix,
-        )
-    ]
+    operations = [migrations.RunPython(remove_gb_prefix, add_gb_prefix)]

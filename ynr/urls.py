@@ -10,26 +10,30 @@ from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
-    url(r'^parties/', include('parties.urls')),
-    url(r'^', include('candidates.urls')),
-    url(r'^tasks/', include('tasks.urls')),
-    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^accounts/', include('allauth.urls')),
-    url(r'^upload_document/', include('official_documents.urls')),
-    url(r'^results/', include('results.urls')),
-    url(r'^robots\.txt$', TemplateView.as_view(
-        template_name='robots.txt',
-        content_type='text/plain')),
+    url(r"^parties/", include("parties.urls")),
+    url(r"^", include("candidates.urls")),
+    url(r"^tasks/", include("tasks.urls")),
+    url(r"^admin/doc/", include("django.contrib.admindocs.urls")),
+    url(r"^admin/", include(admin.site.urls)),
+    url(r"^accounts/", include("allauth.urls")),
+    url(r"^upload_document/", include("official_documents.urls")),
+    url(r"^results/", include("results.urls")),
+    url(
+        r"^robots\.txt$",
+        TemplateView.as_view(
+            template_name="robots.txt", content_type="text/plain"
+        ),
+    ),
 ]
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns += [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    ]
 
-if settings.DEBUG or getattr(settings, 'RUNNING_TESTS', False):
+    urlpatterns += [url(r"^__debug__/", include(debug_toolbar.urls))]
+
+if settings.DEBUG or getattr(settings, "RUNNING_TESTS", False):
     urlpatterns += staticfiles_urlpatterns()
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(
+        settings.STATIC_URL, document_root=settings.STATIC_ROOT
+    )
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

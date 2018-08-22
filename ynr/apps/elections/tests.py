@@ -3,22 +3,22 @@ from datetime import date, timedelta
 from django.test import TestCase
 
 from candidates.tests.factories import (
-    ElectionFactory, ParliamentaryChamberExtraFactory,
+    ElectionFactory,
+    ParliamentaryChamberExtraFactory,
 )
 
 from .models import Election
 
 
 class ElectionTests(TestCase):
-
     def setUp(self):
         org = ParliamentaryChamberExtraFactory.create()
 
         self.election = ElectionFactory.create(
-            slug='2015',
-            name='2015 Election',
+            slug="2015",
+            name="2015 Election",
             election_date=date.today(),
-            organization=org.base
+            organization=org.base,
         )
 
     def test_are_upcoming_elections(self):

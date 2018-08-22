@@ -7,13 +7,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('candidates', '0042_loggedaction_post_election'),
-        ('uk', '0004_add_biography'),
-
+        ("candidates", "0042_loggedaction_post_election"),
+        ("uk", "0004_add_biography"),
     ]
 
-    operations = [
-        migrations.DeleteModel(
-            name='SimplePopoloField',
-        ),
-    ]
+    operations = [migrations.DeleteModel(name="SimplePopoloField")]

@@ -5,7 +5,6 @@ NOTE: Both views in this file are deprecated and redirects should be found
 """
 
 
-
 from django.db.models import Prefetch
 from django.http import Http404, HttpResponseBadRequest
 from django.views.generic import TemplateView
@@ -18,8 +17,10 @@ from elections.models import Election
 
 from ..forms import NewPersonForm, ToggleLockForm
 from .helpers import (
-    split_candidacies, group_candidates_by_party,
-    get_person_form_fields, split_by_elected
+    split_candidacies,
+    group_candidates_by_party,
+    get_person_form_fields,
+    split_by_elected,
 )
 
 
@@ -36,7 +37,7 @@ class AreasView(TemplateView):
        conversion of postcode to areas was previously done elsewhere
     """
 
-    template_name = 'candidates/areas.html'
+    template_name = "candidates/areas.html"
 
     def get(self, request, *args, **kwargs):
         """
@@ -66,13 +67,14 @@ class PostsOfTypeView(TemplateView):
     This view should be removed in the future if it's not providing anything
     useful. It shouldn't be linked to unless it's actually useful.
     """
-    template_name = 'candidates/posts-of-type.html'
+
+    template_name = "candidates/posts-of-type.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post_type = context['post_type']
+        post_type = context["post_type"]
 
         posts_qs = PostExtra.objects.filter(slug__startswith=post_type)
-        posts_qs = posts_qs.select_related('base').order_by('base__label')
-        context['posts'] = posts_qs
+        posts_qs = posts_qs.select_related("base").order_by("base__label")
+        context["posts"] = posts_qs
         return context

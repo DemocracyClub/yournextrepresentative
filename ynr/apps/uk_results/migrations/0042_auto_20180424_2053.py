@@ -6,25 +6,17 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('uk_results', '0041_auto_20180424_2049'),
-    ]
+    dependencies = [("uk_results", "0041_auto_20180424_2049")]
 
     operations = [
         migrations.AlterModelOptions(
-            name='resultset',
-            options={'get_latest_by': 'modified', 'ordering': ('-modified', '-created')},
+            name="resultset",
+            options={
+                "get_latest_by": "modified",
+                "ordering": ("-modified", "-created"),
+            },
         ),
-        migrations.RemoveField(
-            model_name='candidateresult',
-            name='source',
-        ),
-        migrations.RemoveField(
-            model_name='resultset',
-            name='review_source',
-        ),
-        migrations.RemoveField(
-            model_name='resultset',
-            name='reviewed_by',
-        ),
+        migrations.RemoveField(model_name="candidateresult", name="source"),
+        migrations.RemoveField(model_name="resultset", name="review_source"),
+        migrations.RemoveField(model_name="resultset", name="reviewed_by"),
     ]

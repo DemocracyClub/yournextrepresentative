@@ -7,6 +7,7 @@ from django.core import validators
 # the directory (including any missing parent components of the path)
 # exists. This is from http://stackoverflow.com/a/600612/223092
 
+
 def mkdir_p(path):
     try:
         os.makedirs(path)
@@ -19,7 +20,7 @@ def mkdir_p(path):
 
 allauth_validators = [
     validators.RegexValidator(
-        regex=r'\@',
+        regex=r"\@",
         message="Usernames are made public, so shouldn't be email addresses",
         inverse_match=True,
     )

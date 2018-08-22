@@ -7,20 +7,22 @@ class BaseDivision(object):
     A representation of a division and the relationship between a remote
     source and a local Post object.
     """
+
     def __init__(self, election, remote_name):
         self.election = election
         self.remote_name = remote_name
         self.local_area = None
-        self.saved_matches = SavedMapping('division_matches.json')
+        self.saved_matches = SavedMapping("division_matches.json")
 
     def election_specific_guess(self):
         guesses_by_election = {
-            'local.swindon.2018-05-03': {
-                'Gorsehill & Pinehurst': 'Gorse Hill and Pinehurst'
+            "local.swindon.2018-05-03": {
+                "Gorsehill & Pinehurst": "Gorse Hill and Pinehurst"
             }
         }
-        return guesses_by_election.get(
-            self.election.slug, {}).get(self.remote_name)
+        return guesses_by_election.get(self.election.slug, {}).get(
+            self.remote_name
+        )
 
     def match_name(self):
         # TODO use OtherName here
@@ -38,23 +40,23 @@ class BaseDivision(object):
 
         guesses = [
             self.remote_name,
-            self.remote_name.replace(' & ', ' and '),
-            self.remote_name.replace(' and ', ' & '),
-            self.remote_name.replace(' ward', '').strip(),
-            self.remote_name.replace(
-                ' & ', ' and ').replace(' ward', '').strip(),
+            self.remote_name.replace(" & ", " and "),
+            self.remote_name.replace(" and ", " & "),
+            self.remote_name.replace(" ward", "").strip(),
+            self.remote_name.replace(" & ", " and ")
+            .replace(" ward", "")
+            .strip(),
         ]
-        if self.remote_name.endswith('s'):
-            guesses.append(
-                "{}'s".format(self.remote_name[:-1])
-            )
+        if self.remote_name.endswith("s"):
+            guesses.append("{}'s".format(self.remote_name[:-1]))
         if self.election_specific_guess():
             guesses.append(self.election_specific_guess())
 
         for name in guesses:
             try:
                 area = self.election.postextraelection_set.get(
-                    postextra__base__label__iexact=name)
+                    postextra__base__label__iexact=name
+                )
                 self.local_area = area
                 return
             except:
@@ -62,42 +64,44 @@ class BaseDivision(object):
         # Try a regex…I know
         for name in guesses:
             try:
-                name = name.replace(' ', '.')
-                name = name.replace('-', '.')
+                name = name.replace(" ", ".")
+                name = name.replace("-", ".")
                 name = name + "$"
                 area = self.election.postextraelection_set.get(
-                    postextra__base__label__iregex=name)
+                    postextra__base__label__iregex=name
+                )
                 self.local_area = area
                 return
             except:
                 continue
 
         # If all else fails, just ask the user
-        print("No match for {} found. Can you manually match it?".format(
-            self.remote_name
-        ))
+        print(
+            "No match for {} found. Can you manually match it?".format(
+                self.remote_name
+            )
+        )
         possible = [
             pee
-            for pee in self.election.postextraelection_set.all().order_by(
-                'postextra__base__label'
-            ).select_related('postextra__base')
+            for pee in self.election.postextraelection_set.all()
+            .order_by("postextra__base__label")
+            .select_related("postextra__base")
         ]
         for i, pee in enumerate(possible, start=1):
-            print ("\t{}\t{}".format(i, pee.postextra.base.label))
+            print("\t{}\t{}".format(i, pee.postextra.base.label))
         answer = raw_input("Pick a number or 'd' if it's deleted: ")
-        if answer.lower() == 'd':
+        if answer.lower() == "d":
             self.saved_matches[key] = "--deleted--"
             self.saved_matches.save()
             return "--deleted--"
         else:
-            answer = int(answer)-1
+            answer = int(answer) - 1
         area = possible[answer]
         self.saved_matches[key] = area.ballot_paper_id
         self.saved_matches.save()
         print(area)
         self.local_area = area
         return area
-
 
 
 class BaseImporter(object):
@@ -112,5 +116,3 @@ class BaseImporter(object):
 
 class BaseCandidate(object):
     pass
-
-

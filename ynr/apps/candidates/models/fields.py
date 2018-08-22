@@ -29,20 +29,17 @@ class ComplexPopoloField(models.Model):
     """
 
     class Meta:
-        ordering = ('order',)
+        ordering = ("order",)
 
     VALID_ARRAYS = (
-        ('links', 'Links'),
-        ('contact_details', 'Contact Details'),
-        ('identifier', 'Identifier'),
+        ("links", "Links"),
+        ("contact_details", "Contact Details"),
+        ("identifier", "Identifier"),
     )
 
-    name = models.CharField(
-        max_length=256,
-    )
+    name = models.CharField(max_length=256)
     label = models.CharField(
-        max_length=256,
-        help_text="User facing description of the information",
+        max_length=256, help_text="User facing description of the information"
     )
     popolo_array = models.CharField(
         choices=VALID_ARRAYS,
@@ -52,16 +49,16 @@ class ComplexPopoloField(models.Model):
 
     field_type = models.CharField(
         choices=(
-            ('text', 'Text Field'),
-            ('url', 'URL Field'),
-            ('email', 'Email Field'),
+            ("text", "Text Field"),
+            ("url", "URL Field"),
+            ("email", "Email Field"),
         ),
         max_length=256,
         help_text="Type of HTML field the user will see",
     )
     info_type_key = models.CharField(
         max_length=100,
-        help_text="Name of the field in the array that stores the type ('note' for links, 'contact_type' for contacts, 'scheme' for identifiers)"
+        help_text="Name of the field in the array that stores the type ('note' for links, 'contact_type' for contacts, 'scheme' for identifiers)",
     )
     info_type = models.CharField(
         max_length=100,
@@ -70,7 +67,7 @@ class ComplexPopoloField(models.Model):
     old_info_type = models.CharField(
         max_length=100,
         blank=True,
-        help_text="Used for supporting info_types that have been renamed. As such it's rarely used."
+        help_text="Used for supporting info_types that have been renamed. As such it's rarely used.",
     )
     info_value_key = models.CharField(
         max_length=100,
@@ -84,27 +81,23 @@ class ComplexPopoloField(models.Model):
 
 
 class ExtraField(models.Model):
-
     class Meta:
-        ordering = ('order',)
+        ordering = ("order",)
 
-    LINE = 'line'
-    LONGER_TEXT = 'longer-text'
-    URL = 'url'
-    YESNO = 'yesno'
+    LINE = "line"
+    LONGER_TEXT = "longer-text"
+    URL = "url"
+    YESNO = "yesno"
 
     FIELD_TYPES = (
-        (LINE, 'A single line of text'),
-        (LONGER_TEXT, 'One or more paragraphs of text'),
-        (URL, 'A URL'),
-        (YESNO, 'A Yes/No/Don\'t know dropdown')
+        (LINE, "A single line of text"),
+        (LONGER_TEXT, "One or more paragraphs of text"),
+        (URL, "A URL"),
+        (YESNO, "A Yes/No/Don't know dropdown"),
     )
 
     key = models.CharField(max_length=256)
-    type = models.CharField(
-        max_length=64,
-        choices=FIELD_TYPES,
-    )
+    type = models.CharField(max_length=64, choices=FIELD_TYPES)
     label = models.CharField(max_length=1024)
     order = models.IntegerField(blank=True, default=0)
 
@@ -113,10 +106,11 @@ class ExtraField(models.Model):
 
 
 class PersonExtraFieldValue(models.Model):
-
     class Meta:
-        unique_together = (('person', 'field'))
+        unique_together = ("person", "field")
 
-    person = models.ForeignKey('popolo.Person', related_name='extra_field_values')
+    person = models.ForeignKey(
+        "popolo.Person", related_name="extra_field_values"
+    )
     field = models.ForeignKey(ExtraField)
     value = models.TextField(blank=True)

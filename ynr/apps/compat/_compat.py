@@ -5,7 +5,7 @@ from six.moves import input
 import csv
 import io
 
-_ENCODING = 'utf-8'
+_ENCODING = "utf-8"
 
 
 def _map_dict(func, dict_):
@@ -25,21 +25,47 @@ class BufferDictReader(csv.DictReader):
     """
 
     if six.PY2:
-        def __init__(self, s='', fieldnames=None, restkey=None, restval=None,
-                     dialect='excel', *_, **kwargs):
+
+        def __init__(
+            self,
+            s="",
+            fieldnames=None,
+            restkey=None,
+            restval=None,
+            dialect="excel",
+            *_,
+            **kwargs
+        ):
             s = io.BytesIO(unicode_to_bytes(s))
             csv.DictReader.__init__(
-                self, s, fieldnames, restkey, restval, dialect,
-                **_map_dict(unicode_to_bytes, kwargs))
+                self,
+                s,
+                fieldnames,
+                restkey,
+                restval,
+                dialect,
+                **_map_dict(unicode_to_bytes, kwargs)
+            )
 
         def next(self):
             return _map_dict(bytes_to_unicode, csv.DictReader.next(self))
+
     else:
-        def __new__(cls, s='', fieldnames=None, restkey=None, restval=None,
-                    dialect='excel', *_, **kwargs):
+
+        def __new__(
+            cls,
+            s="",
+            fieldnames=None,
+            restkey=None,
+            restval=None,
+            dialect="excel",
+            *_,
+            **kwargs
+        ):
             s = io.StringIO(bytes_to_unicode(s))
-            return csv.DictReader(s, fieldnames, restkey, restval, dialect,
-                                  **kwargs)
+            return csv.DictReader(
+                s, fieldnames, restkey, restval, dialect, **kwargs
+            )
 
 
 class BufferDictWriter(csv.DictWriter):
@@ -57,28 +83,55 @@ class BufferDictWriter(csv.DictWriter):
     """
 
     if six.PY2:
-        def __init__(self, fieldnames, restval='', extrasaction='raise',
-                     dialect='excel', *_, **kwargs):
+
+        def __init__(
+            self,
+            fieldnames,
+            restval="",
+            extrasaction="raise",
+            dialect="excel",
+            *_,
+            **kwargs
+        ):
             self.f = io.BytesIO()
             csv.DictWriter.__init__(
-                self, self.f, fieldnames, restval, extrasaction, dialect,
-                **_map_dict(unicode_to_bytes, kwargs))
+                self,
+                self.f,
+                fieldnames,
+                restval,
+                extrasaction,
+                dialect,
+                **_map_dict(unicode_to_bytes, kwargs)
+            )
 
         def _dict_to_list(self, row_dict):
-            return map(unicode_to_bytes,
-                       csv.DictWriter._dict_to_list(self, row_dict))
+            return map(
+                unicode_to_bytes, csv.DictWriter._dict_to_list(self, row_dict)
+            )
 
         @property
-        def output(self): return bytes_to_unicode(self.f.getvalue())
+        def output(self):
+            return bytes_to_unicode(self.f.getvalue())
+
     else:
-        def __init__(self, fieldnames, restval='', extrasaction='raise',
-                     dialect='excel', *_, **kwargs):
+
+        def __init__(
+            self,
+            fieldnames,
+            restval="",
+            extrasaction="raise",
+            dialect="excel",
+            *_,
+            **kwargs
+        ):
             self.f = io.StringIO()
-            super().__init__(self.f, fieldnames, restval, extrasaction,
-                             dialect, **kwargs)
+            super().__init__(
+                self.f, fieldnames, restval, extrasaction, dialect, **kwargs
+            )
 
         @property
-        def output(self): return self.f.getvalue()
+        def output(self):
+            return self.f.getvalue()
 
 
 def bytes_to_unicode(bytes_):
@@ -93,6 +146,7 @@ def unicode_to_bytes(unicode_):
     if isinstance(unicode_, text_type):
         return unicode_.encode(_ENCODING)
     return unicode_
+
 
 def deep_sort(obj):
     """
@@ -113,7 +167,7 @@ def deep_sort(obj):
             new_list.append(deep_sort(val))
             if isinstance(val, dict):
                 sort_key = sorted(list(val))[0]
-        _sorted = sorted(new_list, key=lambda  k: k[sort_key])
+        _sorted = sorted(new_list, key=lambda k: k[sort_key])
 
     else:
         _sorted = obj

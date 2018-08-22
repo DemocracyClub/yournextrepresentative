@@ -12,38 +12,34 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         import time
+
         start_time = time.time()
         fieldnames = (
-            'election_id',
-            'division_id',
-            'division_name',
-            'candidate_id',
-            'candidate_name',
-            'candidate_other_names',
-            'party_id',
-            'party_name',
-            'document_id',
+            "election_id",
+            "division_id",
+            "division_name",
+            "candidate_id",
+            "candidate_name",
+            "candidate_other_names",
+            "party_id",
+            "party_name",
+            "document_id",
         )
         out_csv = BufferDictWriter(fieldnames)
         out_csv.writeheader()
-        documents = OfficialDocument.objects.all().order_by('election', 'post')
+        documents = OfficialDocument.objects.all().order_by("election", "post")
         for document in documents:
             document_memberships = Membership.objects.filter(
-                post=document.post,
-                election=document.election
+                post=document.post, election=document.election
             ).select_related(
-                'base',
-                'on_behalf_of',
-                'post__extra',
-                'post',
-                'person',
+                "base", "on_behalf_of", "post__extra", "post", "person"
             )
 
             out_dict = {
-                'election_id': document.election.slug,
-                'division_id': document.post.extra.slug,
-                'division_name': document.post.extra.short_label,
-                'document_id': document.pk,
+                "election_id": document.election.slug,
+                "division_id": document.post.extra.slug,
+                "division_name": document.post.extra.short_label,
+                "document_id": document.pk,
             }
 
             for membership in document_memberships:
@@ -54,18 +50,22 @@ class Command(BaseCommand):
                 party = membership.base.on_behalf_of
                 try:
                     party_id = party.identifiers.get(
-                        scheme='electoral-commission').identifier
+                        scheme="electoral-commission"
+                    ).identifier
                 except Identifier.DoesNotExist:
                     party_id = party.identifiers.get(
-                        scheme='popit-organization').identifier
+                        scheme="popit-organization"
+                    ).identifier
 
-                out_dict.update({
-                    'candidate_id': membership.base.person.id,
-                    'candidate_name': membership.base.person.name,
-                    'candidate_other_names': other_names,
-                    'party_id': party_id,
-                    'party_name': party.name,
-                })
+                out_dict.update(
+                    {
+                        "candidate_id": membership.base.person.id,
+                        "candidate_name": membership.base.person.name,
+                        "candidate_other_names": other_names,
+                        "party_id": party_id,
+                        "party_name": party.name,
+                    }
+                )
 
                 out_csv.writerow(out_dict)
             else:
