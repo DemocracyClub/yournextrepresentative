@@ -10,7 +10,7 @@ coverage>=3.6
 cryptography==2.3.1
 decorator==4.0.4
 django-allauth==0.31.0
-django-appconf==1.0.1
+django-appconf==1.0.2
 django-braces==1.13.0
 django-cors-headers==2.4.0
 django-date-extensions==2.0
