@@ -17,7 +17,7 @@ class TestHelpPages(WebTest):
         response = self.app.get("/help/about")
         self.assertContains(
             response, 
-            "<a href="https://democracyclub.org.uk/privacy/">here</a>"
+            '<a href="https://democracyclub.org.uk/privacy/">here</a>'
         )
 
     def test_privacy_policy(self):
