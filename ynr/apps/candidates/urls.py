@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
+from django.views.generic.base import RedirectView
 from django.views.decorators.cache import cache_page
 
 from rest_framework import routers
@@ -236,7 +237,9 @@ patterns_to_format = [
     },
     {
         "pattern": r"^help/privacy$",
-        "view": TemplateView.as_view(template_name="candidates/privacy.html"),
+        "view": RedirectView.as_view(
+            url="https://democracyclub.org.uk/privacy/", permanent=True
+        ),
         "name": "help-privacy",
     },
     {
