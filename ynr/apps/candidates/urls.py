@@ -238,10 +238,9 @@ patterns_to_format = [
     {
         "pattern": r"^help/privacy$",
         "view": RedirectView.as_view(
-            url="https://democracyclub.org.uk/privacy/",
-            permanent=True
+            url="https://democracyclub.org.uk/privacy/", permanent=True
         ),
-        "name": "help-privacy"
+        "name": "help-privacy",
     },
     {
         "pattern": r"^help/photo-policy$",
