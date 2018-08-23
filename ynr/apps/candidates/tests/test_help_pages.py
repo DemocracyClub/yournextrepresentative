@@ -10,7 +10,7 @@ class TestHelpPages(WebTest):
         response = self.app.get("/help/about")
         self.assertContains(
             response,
-            '<a href="/help/privacy">here</a>'
+            '<a href="https://democracyclub.org.uk/privacy/">here</a>'
         )
 
     def test_about_page_links_to_photo_policy(self):
