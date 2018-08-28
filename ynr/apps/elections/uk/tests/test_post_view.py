@@ -13,10 +13,10 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_suggest_post_lock_offered_with_document_when_unlocked(self):
         OfficialDocument.objects.create(
             election=self.election,
-            post=self.edinburgh_east_post_extra.base,
+            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_extra_pee,
+            post_election=self.edinburgh_east_post_pee,
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
@@ -32,16 +32,16 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_suggest_post_lock_not_offered_with_document_when_locked(self):
         pee = PostExtraElection.objects.get(
-            election__slug="2015", postextra__slug="14419"
+            election__slug="2015", post__slug="14419"
         )
         pee.candidates_locked = True
         pee.save()
         OfficialDocument.objects.create(
             election=self.election,
-            post=self.edinburgh_east_post_extra.base,
+            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_extra_pee,
+            post_election=self.edinburgh_east_post_pee,
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
@@ -52,10 +52,10 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_create_suggested_post_lock(self):
         OfficialDocument.objects.create(
             election=self.election,
-            post=self.edinburgh_east_post_extra.base,
+            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_extra_pee,
+            post_election=self.edinburgh_east_post_pee,
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
@@ -72,9 +72,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         suggested_locks = SuggestedPostLock.objects.all()
         self.assertEqual(suggested_locks.count(), 1)
         suggested_lock = suggested_locks.get()
-        self.assertEqual(
-            suggested_lock.postextraelection.postextra.slug, "14419"
-        )
+        self.assertEqual(suggested_lock.postextraelection.post.slug, "14419")
         self.assertEqual(suggested_lock.postextraelection.election.slug, "2015")
         self.assertEqual(suggested_lock.user, self.user)
         self.assertEqual(
@@ -88,15 +86,15 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         OfficialDocument.objects.create(
             election=self.election,
-            post=self.edinburgh_east_post_extra.base,
+            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_extra_pee,
+            post_election=self.edinburgh_east_post_pee,
             uploaded_file="sopn.pdf",
         )
 
         pee = PostExtraElection.objects.get(
-            election__slug="2015", postextra__slug="14419"
+            election__slug="2015", post__slug="14419"
         )
 
         SuggestedPostLock.objects.create(
@@ -107,7 +105,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         SuggestedPostLock.objects.create(
             postextraelection=PostExtraElection.objects.get(
-                election__slug="2010", postextra__slug="14419"
+                election__slug="2010", post__slug="14419"
             ),
             user=self.user,
             justification="I liked totally reviewed the SOPN",
@@ -134,15 +132,15 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         OfficialDocument.objects.create(
             election=self.election,
-            post=self.edinburgh_east_post_extra.base,
+            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_extra_pee,
+            post_election=self.edinburgh_east_post_pee,
             uploaded_file="sopn.pdf",
         )
 
         pee = PostExtraElection.objects.get(
-            election__slug="2015", postextra__slug="14419"
+            election__slug="2015", post__slug="14419"
         )
 
         SuggestedPostLock.objects.create(
@@ -165,15 +163,15 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         OfficialDocument.objects.create(
             election=self.election,
-            post=self.edinburgh_east_post_extra.base,
+            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_extra_pee,
+            post_election=self.edinburgh_east_post_pee,
             uploaded_file="sopn.pdf",
         )
 
         pee = PostExtraElection.objects.get(
-            election__slug="2015", postextra__slug="14419"
+            election__slug="2015", post__slug="14419"
         )
 
         SuggestedPostLock.objects.create(
@@ -193,7 +191,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.user.save()
 
         pee = PostExtraElection.objects.get(
-            election__slug="2015", postextra__slug="14419"
+            election__slug="2015", post__slug="14419"
         )
 
         SuggestedPostLock.objects.create(
@@ -214,15 +212,15 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         OfficialDocument.objects.create(
             election=self.election,
-            post=self.edinburgh_east_post_extra.base,
+            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_extra_pee,
+            post_election=self.edinburgh_east_post_pee,
             uploaded_file="sopn.pdf",
         )
 
         pee = PostExtraElection.objects.get(
-            election__slug="2015", postextra__slug="14419"
+            election__slug="2015", post__slug="14419"
         )
 
         response = self.app.get(

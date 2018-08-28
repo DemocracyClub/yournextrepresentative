@@ -37,9 +37,9 @@ class ResultsBot(object):
                 ResultEvent.objects.create(
                     election=election,
                     winner=membership.person,
-                    post=post_election.postextra.base,
-                    old_post_id=post_election.postextra.slug,
-                    old_post_name=post_election.postextra.base.label,
+                    post=post_election.post,
+                    old_post_id=post_election.post.slug,
+                    old_post_name=post_election.post.label,
                     winner_party=membership.on_behalf_of,
                     source=source,
                     user=self.user,

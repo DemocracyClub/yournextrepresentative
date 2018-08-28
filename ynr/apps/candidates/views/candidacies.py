@@ -26,9 +26,7 @@ def raise_if_locked(request, post, election):
     if user_in_group(request.user, TRUSTED_TO_LOCK_GROUP_NAME):
         return
     # Otherwise, if the constituency is locked, raise an exception:
-    if post.extra.postextraelection_set.get(
-        election=election
-    ).candidates_locked:
+    if post.postextraelection_set.get(election=election).candidates_locked:
         raise Exception(
             _("Attempt to edit a candidacy in a locked constituency")
         )
@@ -42,7 +40,7 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
     def form_valid(self, form):
         post_id = form.cleaned_data["post_id"]
         with transaction.atomic():
-            post = get_object_or_404(Post, extra__slug=post_id)
+            post = get_object_or_404(Post, slug=post_id)
             raise_if_locked(self.request, post, self.election_data)
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data["source"]
@@ -75,7 +73,7 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
                     role=self.election_data.candidate_membership_role,
                     on_behalf_of=person.last_party(),
                     post_election=self.election_data.postextraelection_set.get(
-                        postextra=post.extra
+                        post=post
                     ),
                 )
 
@@ -103,7 +101,7 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
     def form_valid(self, form):
         post_id = form.cleaned_data["post_id"]
         with transaction.atomic():
-            post = get_object_or_404(Post, extra__slug=post_id)
+            post = get_object_or_404(Post, slug=post_id)
             raise_if_locked(self.request, post, self.election_data)
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data["source"]

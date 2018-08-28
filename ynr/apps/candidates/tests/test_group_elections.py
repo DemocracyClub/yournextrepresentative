@@ -9,8 +9,8 @@ from .uk_examples import UK2015ExamplesMixin
 from .factories import ElectionFactory
 
 
-def get_election_extra(postextra, election):
-    return postextra.postextraelection_set.get(election=election)
+def get_election_extra(post, election):
+    return post.postextraelection_set.get(election=election)
 
 
 class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
@@ -104,28 +104,28 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
 
     def test_election_grouping_with_posts(self):
         camberwell_postextraelection = get_election_extra(
-            self.camberwell_post_extra, self.election
+            self.camberwell_post, self.election
         )
         dulwich_postextraelection = get_election_extra(
-            self.dulwich_post_extra, self.election
+            self.dulwich_post, self.election
         )
         edinburgh_east_postextraelection = get_election_extra(
-            self.edinburgh_east_post_extra, self.election
+            self.edinburgh_east_post, self.election
         )
         edinburgh_north_postextraelection = get_election_extra(
-            self.edinburgh_north_post_extra, self.election
+            self.edinburgh_north_post, self.election
         )
         camberwell_earlier = get_election_extra(
-            self.camberwell_post_extra, self.earlier_election
+            self.camberwell_post, self.earlier_election
         )
         dulwich_earlier = get_election_extra(
-            self.dulwich_post_extra, self.earlier_election
+            self.dulwich_post, self.earlier_election
         )
         edinburgh_east_earlier = get_election_extra(
-            self.edinburgh_east_post_extra, self.earlier_election
+            self.edinburgh_east_post, self.earlier_election
         )
         edinburgh_north_earlier = get_election_extra(
-            self.edinburgh_north_post_extra, self.earlier_election
+            self.edinburgh_north_post, self.earlier_election
         )
         local_council_pee = get_election_extra(
             self.local_post, self.local_election

@@ -10,7 +10,7 @@
 
 {% for pee in pees %}
   <h2>{{ pee.election.name }}</h2>
-  <a href="{{ pee.get_absolute_url }}">{{ pee.postextra.base.label }}</a>
+  <a href="{{ pee.get_absolute_url }}">{{ pee.post.label }}</a>
 
 {% empty %}
   {% if postcode %}

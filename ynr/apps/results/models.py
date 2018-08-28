@@ -24,7 +24,7 @@ class ResultEvent(models.Model):
     @property
     def short_post_name(self):
         if self.post:
-            return self.post.extra.short_label
+            return self.post.short_label
         return self.old_post_name
 
     @property

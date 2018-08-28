@@ -64,7 +64,7 @@ def get_person_as_version_data(person, new_person=False):
             post_election = membership.post_election
             election = post_election.election
             standing_in[post_election.election.slug] = {
-                "post_id": post.extra.slug,
+                "post_id": post.slug,
                 "name": shorten_post_label(post.label),
             }
             if membership.elected is not None:
@@ -183,7 +183,7 @@ def revert_person_from_version_data(person, version_data, part_of_merge=False):
                     "id"
                 ]
             )
-            post = Post.objects.get(extra__slug=standing_in["post_id"])
+            post = Post.objects.get(slug=standing_in["post_id"])
             Membership.objects.create(
                 on_behalf_of=party,
                 person=person,
@@ -191,9 +191,7 @@ def revert_person_from_version_data(person, version_data, part_of_merge=False):
                 role=election.candidate_membership_role,
                 elected=standing_in.get("elected"),
                 party_list_position=standing_in.get("party_list_position"),
-                post_election=election.postextraelection_set.get(
-                    postextra=post.extra
-                ),
+                post_election=election.postextraelection_set.get(post=post),
             )
 
     person.save()

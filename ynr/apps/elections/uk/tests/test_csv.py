@@ -22,15 +22,15 @@ class CSVTests(UK2015ExamplesMixin, TestCase):
         )
         factories.MembershipFactory.create(
             person=self.gb_person,
-            post=self.camberwell_post_extra.base,
+            post=self.camberwell_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.camberwell_post_extra_pee,
+            post_election=self.camberwell_post_pee,
         )
         factories.MembershipFactory.create(
             person=self.gb_person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.camberwell_post_extra_pee_earlier,
+            post_election=self.camberwell_post_pee_earlier,
         )
         self.gb_person.identifiers.create(
             identifier="uk.org.publicwhip/person/10326",

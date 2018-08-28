@@ -90,7 +90,7 @@ class HelpOutCTAView(RedirectView):
             PostExtraElection.objects.filter(
                 election__current=True,
                 suggestedpostlock=None,
-                postextra__base__officialdocument__isnull=False,
+                post__officialdocument__isnull=False,
             )
             .exclude(candidates_locked=True)
             .distinct()
@@ -100,8 +100,7 @@ class HelpOutCTAView(RedirectView):
             random_offset = random.randrange(min(50, pe_qs.count()))
             postextra_election = pe_qs[random_offset]
             return "/bulk_adding/{}/{}/".format(
-                postextra_election.election.slug,
-                postextra_election.postextra.slug,
+                postextra_election.election.slug, postextra_election.post.slug
             )
         return "/?get_involved_link=1"
 

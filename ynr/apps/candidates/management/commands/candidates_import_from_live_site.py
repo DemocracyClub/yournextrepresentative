@@ -260,33 +260,34 @@ class Command(BaseCommand):
 
         for post_data in self.get_api_results("posts"):
             with show_data_on_error("post_data", post_data):
-                p = pmodels.Post(
-                    label=post_data["label"], role=post_data["role"]
+                post = pmodels.Post(
+                    label=post_data["label"],
+                    role=post_data["role"],
+                    slug=post_data["id"],
+                    group=post_data["group"],
                 )
-                p.organization = pmodels.Organization.objects.get(
+                post.organization = pmodels.Organization.objects.get(
                     extra__slug=post_data["organization"]["id"]
                 )
 
-                p.save()
-                pe = models.PostExtra(
-                    base=p, slug=post_data["id"], group=post_data["group"]
-                )
+                post.save()
+
                 if post_data.get("party_set"):
                     party_set_data = post_data["party_set"]
-                    pe.party_set = models.PartySet.objects.get(
+                    post.party_set = models.PartySet.objects.get(
                         pk=party_set_data["id"]
                     )
-                pe.save()
+                    post.save()
                 for election_data in post_data["elections"]:
                     election = emodels.Election.objects.get(
                         slug=election_data["id"]
                     )
                     models.PostExtraElection.objects.update_or_create(
-                        postextra=pe,
+                        post=post,
                         election=election,
                         candidates_locked=election_data["candidates_locked"],
                         ballot_paper_id="tmp_{}.{}".format(
-                            election.slug, pe.slug
+                            election.slug, post.slug
                         ),
                     )
         extra_fields = {ef.key: ef for ef in models.ExtraField.objects.all()}
@@ -306,24 +307,26 @@ class Command(BaseCommand):
                         "death_date",
                     )
                 }
-                p = pmodels.Person.objects.create(**kwargs)
+                person = pmodels.Person.objects.create(**kwargs)
                 self.add_related(
-                    p, pmodels.Identifier, person_data["identifiers"]
+                    person, pmodels.Identifier, person_data["identifiers"]
                 )
                 self.add_related(
-                    p, pmodels.ContactDetail, person_data["contact_details"]
+                    person,
+                    pmodels.ContactDetail,
+                    person_data["contact_details"],
                 )
                 self.add_related(
-                    p, pmodels.OtherName, person_data["other_names"]
+                    person, pmodels.OtherName, person_data["other_names"]
                 )
                 self.add_related(p, pmodels.Link, person_data["links"])
                 kwargs = {
-                    "base": p,
+                    "base": person,
                     "versions": json.dumps(person_data["versions"]),
                 }
                 # Look for any data in ExtraFields
                 for extra_field_data in person_data["extra_fields"]:
-                    p.extra_field_values.create(
+                    person.extra_field_values.create(
                         field=extra_fields[extra_field_data["key"]],
                         value=extra_field_data["value"],
                     )

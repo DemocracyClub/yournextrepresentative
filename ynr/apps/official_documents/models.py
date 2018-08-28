@@ -41,7 +41,7 @@ class OfficialDocument(TimeStampedModel):
     )
 
     def __str__(self):
-        return "{} ({})".format(self.post.extra.slug, self.source_url)
+        return "{} ({})".format(self.post.slug, self.source_url)
 
     @models.permalink
     def get_absolute_url(self):

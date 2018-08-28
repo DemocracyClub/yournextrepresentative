@@ -27,7 +27,7 @@
             {{ membership_extra.base.person.name }}
           </a>
         </td>
-        <td>{{ membership_extra.post_election.postextra.base.label }}</td>
+        <td>{{ membership_extra.post_election.post.label }}</td>
         <td>{% include "parties/_row_item.html" with item=membership_extra.base.person.email %}</td>
         <td>{% include "parties/_row_item.html" with item=membership_extra.base.person.twitter_username|urlize type="twitter" %}</td>
         <td>{% include "parties/_row_item.html" with item=membership_extra.base.person.facebook_personal_url|urlize %}</td>

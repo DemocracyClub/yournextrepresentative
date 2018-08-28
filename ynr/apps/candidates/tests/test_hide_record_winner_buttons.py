@@ -13,9 +13,9 @@ class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
         person = PersonFactory.create(id="2009", name="Tessa Jowell")
         MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
     @override_settings(TEMPLATES=templates_before)

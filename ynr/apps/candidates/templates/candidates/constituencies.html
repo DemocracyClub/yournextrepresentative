@@ -24,10 +24,10 @@
 
 {% for postextraelection in all_constituencies %}
   <h3>
-    <a href="{{ postextraelection.get_absolute_url }}">{{ postextraelection.postextra.base.label }}</a>
+    <a href="{{ postextraelection.get_absolute_url }}">{{ postextraelection.post.label }}</a>
     {% if postextraelection.candidates_locked %}
      <abbr title="Candidates verified and post locked">🔒</abbr>
-    {% elif postextraelection.postextra.suggestedpostlock_set.exists %}
+    {% elif postextraelection.suggestedpostlock_set.exists %}
      <abbr title="Someone suggested locking this post">🔓</abbr>
     {% endif %}
   </h3>

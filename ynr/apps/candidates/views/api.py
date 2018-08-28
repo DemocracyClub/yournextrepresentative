@@ -77,13 +77,13 @@ class UpcomingElectionsView(View):
             )
 
         results = []
-        pees = pees.select_related("postextra__base", "election")
+        pees = pees.select_related("post", "election")
         for pee in pees:
             results.append(
                 {
-                    "post_name": pee.postextra.base.label,
-                    "post_slug": pee.postextra.slug,
-                    "organization": pee.postextra.base.organization.name,
+                    "post_name": pee.post.label,
+                    "post_slug": pee.post.slug,
+                    "organization": pee.post.organization.name,
                     "election_date": text_type(pee.election.election_date),
                     "election_name": pee.election.name,
                     "election_id": pee.election.slug,
@@ -122,7 +122,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
             return self._error(e.message)
 
         results = []
-        pees = pees.select_related("postextra__base__organization", "election")
+        pees = pees.select_related("post__organization", "election")
         for pee in pees:
             candidates = []
             for membership in (
@@ -136,7 +136,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                         Membership.objects.select_related(
                             "on_behalf_of__extra",
                             "organization__extra",
-                            "post__extra",
+                            "post",
                             "post_election__election",
                         ),
                     ),
@@ -164,11 +164,11 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                 "election_name": pee.election.name,
                 "election_id": pee.election.slug,
                 "post": {
-                    "post_name": pee.postextra.base.label,
-                    "post_slug": pee.postextra.slug,
+                    "post_name": pee.post.label,
+                    "post_slug": pee.post.slug,
                     "post_candidates": None,
                 },
-                "organization": pee.postextra.base.organization.name,
+                "organization": pee.post.organization.name,
                 "candidates": candidates,
             }
 
@@ -233,9 +233,9 @@ class PostIDToPartySetView(View):
 
     def get(self, request, *args, **kwargs):
         result = dict(
-            extra_models.PostExtra.objects.filter(
-                elections__current=True
-            ).values_list("slug", "party_set__slug")
+            Post.objects.filter(elections__current=True).values_list(
+                "slug", "party_set__slug"
+            )
         )
         return HttpResponse(json.dumps(result), content_type="application/json")
 
@@ -288,7 +288,7 @@ class PersonViewSet(viewsets.ModelViewSet):
             Prefetch(
                 "memberships",
                 Membership.objects.select_related(
-                    "on_behalf_of__extra", "organization__extra", "post__extra"
+                    "on_behalf_of__extra", "organization__extra", "post"
                 ),
             ),
             "memberships__post_election__election",
@@ -334,9 +334,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = (
-        extra_models.PostExtra.objects.select_related(
-            "base__organization__extra", "party_set"
-        )
+        Post.objects.select_related("organization__extra", "party_set")
         .prefetch_related(
             Prefetch(
                 "postextraelection_set",
@@ -345,20 +343,20 @@ class PostViewSet(viewsets.ModelViewSet):
                 ),
             ),
             Prefetch(
-                "base__memberships",
+                "memberships",
                 Membership.objects.select_related(
                     "person",
                     "on_behalf_of__extra",
                     "organization__extra",
-                    "post__extra",
+                    "post",
                     "post_election__election",
                 ),
             ),
         )
-        .order_by("base__id")
+        .order_by("id")
     )
     lookup_field = "slug"
-    serializer_class = serializers.PostExtraSerializer
+    serializer_class = serializers.PostSerializer
     pagination_class = ResultsSetPagination
 
 
@@ -385,7 +383,7 @@ class ImageViewSet(viewsets.ModelViewSet):
 
 class PostExtraElectionViewSet(viewsets.ModelViewSet):
     queryset = extra_models.PostExtraElection.objects.select_related(
-        "election", "postextra"
+        "election", "post"
     ).order_by("id")
     serializer_class = serializers.PostElectionSerializer
     pagination_class = ResultsSetPagination

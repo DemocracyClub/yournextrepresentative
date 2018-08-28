@@ -23,7 +23,7 @@ class ChangesMixin(object):
         elif logged_action.post:
             return "{} ({}) - {}".format(
                 logged_action.post.label,
-                logged_action.post.extra.slug,
+                logged_action.post.slug,
                 logged_action.action_type,
             )
         else:

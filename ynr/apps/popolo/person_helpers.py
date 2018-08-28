@@ -104,7 +104,7 @@ def update_person_from_form(person, form):
         post_id = form_data.get("constituency_" + election_data.slug)
         standing = form_data.pop("standing_" + election_data.slug, "standing")
         if post_id:
-            party_set = PartySet.objects.get(postextra__slug=post_id)
+            party_set = PartySet.objects.get(post__slug=post_id)
             party_key = "party_" + party_set.slug + "_" + election_data.slug
             position_key = (
                 "party_list_position_"
@@ -114,7 +114,7 @@ def update_person_from_form(person, form):
             )
             party = Organization.objects.get(pk=form_data[party_key])
             party_list_position = form_data.get(position_key) or None
-            post = Post.objects.get(extra__slug=post_id)
+            post = Post.objects.get(slug=post_id)
         else:
             party = None
             party_list_position = None
@@ -157,9 +157,7 @@ def mark_as_standing(person, election_data, post, party, party_list_position):
             post=post,
             person=person,
             role=election_data.candidate_membership_role,
-            post_election=election_data.postextraelection_set.get(
-                postextra=post.extra
-            ),
+            post_election=election_data.postextraelection_set.get(post=post),
         )
     # Update the party list position in case it's changed:
     membership.party_list_position = party_list_position
@@ -184,7 +182,7 @@ def mark_as_not_standing(person, election_data, post):
         # n.b. we are planning to make "not standing" post
         # specific in the future, in which case we would also want
         # this line:
-        # post__extra__slug=post_slug,
+        # post__slug=post_slug,
     ):
         raise_if_unsafe_to_delete(membership)
         membership.delete()

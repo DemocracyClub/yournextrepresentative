@@ -63,8 +63,8 @@ class CurrentElectionsWithNoResuts(TemplateView):
                 election__election_date__lt=date.today(),
                 resultset=None,
             )
-            .select_related("postextra__base", "election")
-            .order_by("election", "postextra__base__label")
+            .select_related("post", "election")
+            .order_by("election", "post__label")
         )
 
         return context

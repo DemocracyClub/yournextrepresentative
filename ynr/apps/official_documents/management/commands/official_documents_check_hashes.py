@@ -47,7 +47,7 @@ class Command(BaseCommand):
         line = {
             "ballot_paper_id": doc.post_election.ballot_paper_id,
             "Election name": doc.post_election.election.name,
-            "Area name": doc.post_election.postextra.base.label,
+            "Area name": doc.post_election.post.label,
             "Source URL": doc.source_url,
         }
 

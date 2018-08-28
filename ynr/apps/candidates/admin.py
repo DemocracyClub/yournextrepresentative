@@ -78,11 +78,11 @@ class PersonExtraFieldValueAdmin(admin.ModelAdmin):
 
 @admin.register(PostExtraElection)
 class PostExtraElectionAdmin(admin.ModelAdmin):
-    list_display = ["postextra", "election", "winner_count"]
+    list_display = ["post", "election", "winner_count"]
     list_filter = ("election__name", "election__current")
-    raw_id_fields = ("postextra", "election")
+    raw_id_fields = ("post", "election")
 
-    ordering = ("election", "postextra__base__area__name")
+    ordering = ("election", "post__area__name")
 
 
 @admin.register(ComplexPopoloField)

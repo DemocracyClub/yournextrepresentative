@@ -2,7 +2,7 @@ import re
 
 from django_webtest import WebTest
 
-from .factories import MembershipFactory, PersonFactory, PostExtraFactory
+from .factories import MembershipFactory, PersonFactory, PostFactory
 from .uk_examples import UK2015ExamplesMixin
 
 
@@ -15,29 +15,29 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
             ("65672", "Doncaster North", "England"),
             ("65719", "South Shields", "England"),
         ]:
-            constituencies[cons_name] = PostExtraFactory.create(
+            constituencies[cons_name] = PostFactory.create(
                 elections=(self.election, self.earlier_election),
-                base__organization=self.commons,
+                organization=self.commons,
                 slug=slug,
-                base__label="Member of Parliament for {}".format(cons_name),
+                label="Member of Parliament for {}".format(cons_name),
                 group=country,
             )
         person = PersonFactory.create(id="3056", name="Ed Miliband")
         MembershipFactory.create(
             person=person,
-            post=constituencies["Doncaster North"].base,
+            post=constituencies["Doncaster North"],
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.election.postextraelection_set.get(
-                postextra=constituencies["Doncaster North"]
+                post=constituencies["Doncaster North"]
             ),
         )
         person = PersonFactory.create(id="3814", name="David Miliband")
         MembershipFactory.create(
             person=person,
-            post=constituencies["South Shields"].base,
+            post=constituencies["South Shields"],
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.earlier_election.postextraelection_set.get(
-                postextra=constituencies["South Shields"]
+                post=constituencies["South Shields"]
             ),
         )
         conservative_opponent = PersonFactory.create(
@@ -45,10 +45,10 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
         )
         MembershipFactory.create(
             person=conservative_opponent,
-            post=constituencies["South Shields"].base,
+            post=constituencies["South Shields"],
             on_behalf_of=self.conservative_party_extra.base,
             post_election=self.election.postextraelection_set.get(
-                postextra=constituencies["South Shields"]
+                post=constituencies["South Shields"]
             ),
         )
 

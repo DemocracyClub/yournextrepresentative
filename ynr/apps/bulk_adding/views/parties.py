@@ -31,7 +31,7 @@ class BasePartyBulkAddView(LoginRequiredMixin, TemplateView):
 
     def get_pee_qs(self, election):
         qs = election.postextraelection_set.all()
-        qs = qs.order_by("postextra__base__label")
+        qs = qs.order_by("post__label")
         return qs
 
 
@@ -86,7 +86,7 @@ class BulkAddPartyView(BasePartyBulkAddView):
         for pee in qs:
             existing = Membership.objects.filter(
                 post_election__election=pee.election,
-                post=pee.postextra.base,
+                post=pee.post,
                 on_behalf_of=context["party"],
             )
             extra_forms = pee.winner_count or WINNER_COUNT_IF_NONE

@@ -27,7 +27,7 @@
   {% for post_election in suggestions.list %}
         <h4>
             <a href="{{ post_election.get_absolute_url }}">
-              {{ post_election.postextra.short_label }}
+              {{ post_election.post.short_label }}
             </a>
         </h4>
         <p>Suggested by:</p>
@@ -67,7 +67,7 @@
           </div>
           <div class="large-7 columns">
             {% if test_pdf_view %}
-            <canvas id="the-canvas-{{ post_election.postextra.pk }}" style="max-width:100%"></canvas>
+            <canvas id="the-canvas-{{ post_election.post.pk }}" style="max-width:100%"></canvas>
             {% endif %}
           </div>
         </div>
@@ -78,7 +78,7 @@
 
         <script>
           var url = '{{ suggestions.list.0.officialdocument_set.first.uploaded_file.url }}';
-          var ward_name_{{ post_election.postextra.pk }} = '{{ post_election.postextra.short_label }}'
+          var ward_name_{{ post_election.post.pk }} = '{{ post_election.post.short_label }}'
           var loadingTask = pdfjsLib.getDocument(url);
           loadingTask.promise.then(function(pdf) {
             console.log('PDF loaded');
@@ -96,7 +96,7 @@
                       txt += txtadd.replace(/[^a-zA-Z0-9:;,.?!-() ]/g,'');
                   }
                   txt = txt.toLowerCase()
-                  ward_search_str = ' ' + ward_name_{{ post_election.postextra.pk }}.toLowerCase() + ' ';
+                  ward_search_str = ' ' + ward_name_{{ post_election.post.pk }}.toLowerCase() + ' ';
                   valid_page_strings = [
                     'statement of the persons nominated',
                     'statement of persons nominated',
@@ -117,7 +117,7 @@
                     var viewport = page.getViewport(scale);
 
                     // Prepare canvas using PDF page dimensions
-                    var canvas = document.getElementById('the-canvas-{{ post_election.postextra.pk }}');
+                    var canvas = document.getElementById('the-canvas-{{ post_election.post.pk }}');
                     if (canvas.getAttribute('data')!='loaded') {
                       canvas.setAttribute('data', 'loaded')
                       var context = canvas.getContext('2d');

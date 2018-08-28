@@ -34,9 +34,9 @@ class CreateDocumentView(ElectionMixin, GroupRequiredMixin, CreateView):
     template_name = "official_documents/upload_document_form.html"
 
     def get_initial(self):
-        post = get_object_or_404(Post, extra__slug=self.kwargs["post_id"])
+        post = get_object_or_404(Post, slug=self.kwargs["post_id"])
         pee = PostExtraElection.objects.get(
-            postextra__base=post, election=self.election_data
+            post=post, election=self.election_data
         )
         return {
             "election": self.election_data,
@@ -47,7 +47,7 @@ class CreateDocumentView(ElectionMixin, GroupRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post = get_object_or_404(Post, extra__slug=self.kwargs["post_id"])
+        post = get_object_or_404(Post, slug=self.kwargs["post_id"])
         context["post_label"] = post.label
         return context
 
@@ -60,11 +60,7 @@ class PostsForDocumentView(DetailView):
         context = super().get_context_data(**kwargs)
         documents = (
             OfficialDocument.objects.filter(source_url=self.object.source_url)
-            .select_related(
-                "post_election__postextra",
-                "post_election__postextra__base",
-                "post_election__election",
-            )
+            .select_related("post_election__post", "post_election__election")
             .order_by("post__label")
             .prefetch_related("post_election__suggestedpostlock_set")
         )
@@ -89,16 +85,16 @@ class UnlockedWithDocumentsView(TemplateView):
 
         SOPNs_qs = OfficialDocument.objects.filter(
             election__current=True
-        ).select_related("election", "post__extra")
+        ).select_related("election", "post")
 
         SOPNs_qs = SOPNs_qs.exclude(
             post__in=SuggestedPostLock.objects.all().values(
-                "postextraelection__postextra__base"
+                "postextraelection__post"
             )
         )
 
         context["unlocked_sopns"] = SOPNs_qs.filter(
-            post__extra__postextraelection__candidates_locked=False
+            post__postextraelection__candidates_locked=False
         )
 
         return context

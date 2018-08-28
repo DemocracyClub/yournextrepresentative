@@ -142,7 +142,7 @@ def by_election_ctas(context):
         all_pees = (
             PostExtraElection.objects.filter(election__current=True)
             .order_by("election__election_date", "election")
-            .select_related("election", "postextra__base")
+            .select_related("election", "post")
             .prefetch_related("membership_set")
         )
         context["upcoming_pees"] = [

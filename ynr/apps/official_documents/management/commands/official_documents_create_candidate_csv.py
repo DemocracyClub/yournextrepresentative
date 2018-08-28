@@ -31,14 +31,12 @@ class Command(BaseCommand):
         for document in documents:
             document_memberships = Membership.objects.filter(
                 post=document.post, election=document.election
-            ).select_related(
-                "base", "on_behalf_of", "post__extra", "post", "person"
-            )
+            ).select_related("base", "on_behalf_of", "post", "person")
 
             out_dict = {
                 "election_id": document.election.slug,
-                "division_id": document.post.extra.slug,
-                "division_name": document.post.extra.short_label,
+                "division_id": document.post.slug,
+                "division_name": document.post.short_label,
                 "document_id": document.pk,
             }
 

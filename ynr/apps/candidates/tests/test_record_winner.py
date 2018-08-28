@@ -19,18 +19,18 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         person = PersonFactory.create(id="2009", name="Tessa Jowell")
         MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
         self.winner = PersonFactory.create(id="4322", name="Helen Hayes")
 
         MembershipFactory.create(
             person=self.winner,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
     @override_settings(TEMPLATES=templates_after)
@@ -105,7 +105,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             resultevent.old_post_name,
             "Member of Parliament for Dulwich and West Norwood",
         )
-        self.assertEqual(resultevent.post.extra, self.dulwich_post_extra)
+        self.assertEqual(resultevent.post, self.dulwich_post)
         self.assertEqual(
             resultevent.winner_party.extra, self.labour_party_extra
         )
@@ -200,7 +200,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_record_multiple_winners_per_post_setting(self):
         post_election = PostExtraElection.objects.get(
-            postextra=self.dulwich_post_extra, election=self.election
+            post=self.dulwich_post, election=self.election
         )
         post_election.winner_count = 2
         post_election.save()
@@ -254,19 +254,19 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         person = PersonFactory.create(id="2009", name="Tessa Jowell")
         MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
         self.winner = PersonFactory.create(id="4322", name="Helen Hayes")
 
         MembershipFactory.create(
             person=self.winner,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
             elected=True,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
     def test_retract_winner_link_present(self):
@@ -344,7 +344,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             resultevent.old_post_name,
             "Member of Parliament for Dulwich and West Norwood",
         )
-        self.assertEqual(resultevent.post, self.dulwich_post_extra.base)
+        self.assertEqual(resultevent.post, self.dulwich_post)
         self.assertEqual(resultevent.winner_party, self.labour_party_extra.base)
         self.assertEqual(
             resultevent.source, "Result recorded in error, retracting"

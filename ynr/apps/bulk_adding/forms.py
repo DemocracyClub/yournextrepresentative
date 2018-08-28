@@ -58,7 +58,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         try:
             candidacy = (
                 suggestion.object.memberships.select_related(
-                    "post__extra", "on_behalf_of", "post_election__election"
+                    "post", "on_behalf_of", "post_election__election"
                 )
                 .order_by("-post_election__election__election_date")
                 .first()
@@ -70,7 +70,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
                         {party} candidate)
                         """.format(
                     name=name,
-                    post=candidacy.post.extra.short_label,
+                    post=candidacy.post.short_label,
                     election=candidacy.extra.post_election.election.name,
                     party=candidacy.on_behalf_of.name,
                 )
@@ -156,9 +156,9 @@ class SelectPartyForm(forms.Form):
         self.election = election
         party_set_ids = (
             election.postextraelection_set.all()
-            .order_by("postextra__party_set")
-            .values_list("postextra__party_set", flat=True)
-            .annotate(Count("postextra__party_set"))
+            .order_by("post__party_set")
+            .values_list("post__party_set", flat=True)
+            .annotate(Count("post__party_set"))
         )
 
         for ps in PartySet.objects.filter(pk__in=set(party_set_ids)):

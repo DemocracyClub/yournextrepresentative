@@ -12,7 +12,6 @@ def check_paired_models():
     errors = []
     for base, extra in (
         (Organization, models.OrganizationExtra),
-        (Post, models.PostExtra),
         (Area, models.AreaExtra),
         (Image, models.ImageExtra),
     ):
@@ -55,19 +54,16 @@ def check_membership_elections_consistent():
     # enforced. This method checks for that.
     errors = []
 
-    postextra_election_tuples_allowed = set(
-        models.PostExtraElection.objects.values_list("postextra", "election")
+    post_election_tuples_allowed = set(
+        models.PostExtraElection.objects.values_list("post", "election")
     )
 
     for me in Membership.objects.select_related(
-        "post__extra", "post_election__election", "person"
+        "post", "post_election__election", "person"
     ):
-        post_extra = me.post_election.postextra
+        post = me.post_election.post
         election = me.post_election.election
-        if (
-            post_extra.id,
-            election.id,
-        ) not in postextra_election_tuples_allowed:
+        if (post.id, election.id) not in post_election_tuples_allowed:
             errors.append(
                 "There was a membership for {person_name} ({person_id}) "
                 "with post {post_label} ({post_extra_slug}) and election "
@@ -76,7 +72,7 @@ def check_membership_elections_consistent():
                     person_name=me.base.person.name,
                     person_id=me.base.person.id,
                     post_label=me.base.post.label,
-                    post_extra_slug=post_extra.slug,
+                    post_extra_slug=post.slug,
                     election_slug=me.election.slug,
                 )
             )

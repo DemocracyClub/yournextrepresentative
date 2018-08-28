@@ -39,7 +39,7 @@ class Command(BaseCommand):
             PostExtraElection.objects.filter(
                 election__election_date=options["election_date"]
             )
-            .select_related("election", "postextra", "postextra__base")
+            .select_related("election", "postextra", "post")
             .order_by("election__slug")
         )
 
@@ -50,7 +50,7 @@ class Command(BaseCommand):
             row = {
                 "ballot_paper_id": pee.ballot_paper_id,
                 "Election name": pee.election.name,
-                "Area name": pee.postextra.base.label,
+                "Area name": pee.post.label,
                 "Council webpage likely to link to SOPN": "",
                 "Link to PDF": "",
                 "Notes": "",

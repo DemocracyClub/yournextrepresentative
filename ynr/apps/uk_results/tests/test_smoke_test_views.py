@@ -37,7 +37,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
             MembershipFactory.create(
                 post_election=pee,
                 person=person,
-                post=self.local_post.base,
+                post=self.local_post,
                 on_behalf_of=party_extra.base,
             )
             for person, party_extra in zip(self.people, parties_extra)

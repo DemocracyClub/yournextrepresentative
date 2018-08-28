@@ -15,11 +15,11 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        posts_extra = [
-            self.edinburgh_east_post_extra,
-            self.edinburgh_north_post_extra,
-            self.dulwich_post_extra,
-            self.camberwell_post_extra,
+        posts = [
+            self.edinburgh_east_post,
+            self.edinburgh_north_post,
+            self.dulwich_post,
+            self.camberwell_post,
         ]
         parties_extra = [
             self.labour_party_extra,
@@ -30,8 +30,8 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
         ]
         i = 0
         candidacy_counts = {"14419": 10, "14420": 3, "65808": 5, "65913": 0}
-        for post_extra in posts_extra:
-            candidacy_count = candidacy_counts[post_extra.slug]
+        for post in posts:
+            candidacy_count = candidacy_counts[post.slug]
             for n in range(candidacy_count):
                 person = factories.PersonFactory.create(
                     id=str(7000 + i), name="Test Candidate {}".format(i)
@@ -39,10 +39,10 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                 party = parties_extra[n % 5]
                 factories.MembershipFactory.create(
                     person=person,
-                    post=post_extra.base,
+                    post=post,
                     on_behalf_of=party.base,
                     post_election=self.election.postextraelection_set.get(
-                        postextra=post_extra
+                        post=post
                     ),
                 )
                 i += 1
@@ -51,19 +51,19 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
         # post):
         factories.MembershipFactory.create(
             person=Person.objects.get(id=7000),
-            post=posts_extra[1].base,
+            post=posts[1],
             on_behalf_of=parties_extra[0].base,
             post_election=self.earlier_election.postextraelection_set.get(
-                postextra=posts_extra[1]
+                post=posts[1]
             ),
         )
         # Now one in the same post but standing for a different party:
         factories.MembershipFactory.create(
             person=Person.objects.get(id=7001),
-            post=posts_extra[1].base,
+            post=posts[1],
             on_behalf_of=parties_extra[2].base,
             post_election=self.earlier_election.postextraelection_set.get(
-                postextra=posts_extra[1]
+                post=posts[1]
             ),
         )
 

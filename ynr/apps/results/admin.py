@@ -30,7 +30,7 @@ class ResultEventAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.select_related(
-            "user", "winner", "post__extra", "winner_party__extra", "election"
+            "user", "winner", "post", "winner_party__extra", "election"
         )
 
     def winner_link(self, o):
@@ -51,11 +51,11 @@ class ResultEventAdmin(admin.ModelAdmin):
                 "constituency",
                 kwargs={
                     "election": o.election.slug,
-                    "post_id": o.post.extra.slug,
-                    "ignored_slug": slugify(o.post.extra.short_label),
+                    "post_id": o.post.slug,
+                    "ignored_slug": slugify(o.post.short_label),
                 },
             )
-            return '<a href="{}">{}</a>'.format(url, o.post.extra.short_label)
+            return '<a href="{}">{}</a>'.format(url, o.post.short_label)
         else:
             # There is still data in the database for some posts that
             # were deleted and never recreated, so we can't create a

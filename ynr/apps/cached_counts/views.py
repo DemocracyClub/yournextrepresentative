@@ -84,7 +84,7 @@ class ConstituencyCountsView(ElectionMixin, TemplateView):
         qs = PostExtraElection.objects.filter(
             election=self.election_data
         ).annotate(count=Count("membership"))
-        qs = qs.select_related("postextra__base", "election")
+        qs = qs.select_related("post", "election")
         qs = qs.order_by("-count")
 
         context["post_counts"] = qs

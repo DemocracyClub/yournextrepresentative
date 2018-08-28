@@ -8,7 +8,7 @@
   <ul>
     {% for pee in group.list %}
       <li>
-        <a href="{{ pee.get_absolute_url }}">{{ pee.postextra.base.label }}</a>
+        <a href="{{ pee.get_absolute_url }}">{{ pee.post.label }}</a>
         <a href="{% url "ballot_paper_results_form" pee.ballot_paper_id %}" class="button tiny">Add results</a>
       </li>
     {% endfor %}

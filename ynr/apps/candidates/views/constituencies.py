@@ -54,7 +54,7 @@ from popolo.models import Membership, Post, Organization, Person
 def get_max_winners(post, election):
     max_winners = election.people_elected_per_post
     post_extra_election = PostExtraElection.objects.filter(
-        postextra__base=post, election=election, winner_count__isnull=False
+        post=post, election=election, winner_count__isnull=False
     ).first()
     if post_extra_election:
         max_winners = post_extra_election.winner_count
@@ -75,15 +75,13 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["post_election"] = get_object_or_404(
-            PostExtraElection.objects.all().select_related(
-                "postextra__base", "election"
-            ),
-            postextra__slug=context["post_id"],
+            PostExtraElection.objects.all().select_related("post", "election"),
+            post__slug=context["post_id"],
             election__slug=kwargs["election"],
         )
 
         context["post_id"] = post_id = kwargs["post_id"]
-        mp_post = context["post_election"].postextra.base
+        mp_post = context["post_election"].post
         context["post_obj"] = mp_post
 
         documents_by_type = {}
@@ -118,44 +116,35 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
             )
         )
 
-        context["post_data"] = {
-            "id": mp_post.extra.slug,
-            "label": mp_post.label,
-        }
+        context["post_data"] = {"id": mp_post.slug, "label": mp_post.label}
 
         context["candidates_locked"] = is_post_locked(
             mp_post, self.election_data
         )
 
-        if hasattr(mp_post, "extra"):
-            # FIXME: Sym has a pending change which adds the
-            # PostExtraElection to the context earlier anyway, so this
-            # is just temporary.
-            pee = PostExtraElection.objects.get(
-                postextra=mp_post.extra, election=self.election_data
-            )
+        pee = context["post_election"]
 
-            context["has_lock_suggestion"] = SuggestedPostLock.objects.filter(
-                postextraelection=pee
+        context["has_lock_suggestion"] = SuggestedPostLock.objects.filter(
+            postextraelection=pee
+        ).exists()
+
+        if self.request.user.is_authenticated():
+            context[
+                "current_user_suggested_lock"
+            ] = SuggestedPostLock.objects.filter(
+                user=self.request.user, postextraelection=pee
             ).exists()
 
-            if self.request.user.is_authenticated():
-                context[
-                    "current_user_suggested_lock"
-                ] = SuggestedPostLock.objects.filter(
-                    user=self.request.user, postextraelection=pee
-                ).exists()
+        context["suggest_lock_form"] = SuggestedPostLockForm(
+            initial={"postextraelection": pee}
+        )
 
-            context["suggest_lock_form"] = SuggestedPostLockForm(
-                initial={"postextraelection": pee}
-            )
-
-            if self.request.user.is_authenticated():
-                context[
-                    "user_has_suggested_lock"
-                ] = SuggestedPostLock.objects.filter(
-                    user=self.request.user, postextraelection=pee
-                ).exists()
+        if self.request.user.is_authenticated():
+            context[
+                "user_has_suggested_lock"
+            ] = SuggestedPostLock.objects.filter(
+                user=self.request.user, postextraelection=pee
+            ).exists()
 
         context["lock_form"] = ToggleLockForm(
             initial={
@@ -829,11 +818,11 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
             "WMC:S14000018": "14415",
         }
         # HACK
-        slug = area_2015_map.get(mp_post.extra.slug)
+        slug = area_2015_map.get(mp_post.slug)
         current_candidacies_2015 = set()
         past_candidacies_2015 = set()
         if slug:
-            other_post = Post.objects.get(extra__slug=slug)
+            other_post = Post.objects.get(slug=slug)
             current_candidacies_2015, past_candidacies_2015 = split_candidacies(
                 self.election_data,
                 other_post.memberships.select_related(
@@ -912,7 +901,7 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
             if c.elected is not None:
                 context["show_retract_result"] = True
 
-        max_winners = get_max_winners(mp_post, self.election_data)
+        max_winners = pee.winner_count
         context["show_confirm_result"] = (
             max_winners < 0
         ) or number_of_winners < max_winners
@@ -936,9 +925,7 @@ class ConstituencyDetailCSVView(ElectionMixin, View):
 
     def get(self, request, *args, **kwargs):
         redirects = PersonRedirect.all_redirects_dict()
-        post = Post.objects.select_related("extra").get(
-            extra__slug=kwargs["post_id"]
-        )
+        post = Post.objects.get(slug=kwargs["post_id"])
         all_people = []
         for me in Membership.objects.filter(
             post_election__election=self.election_data, post=post
@@ -949,8 +936,7 @@ class ConstituencyDetailCSVView(ElectionMixin, View):
                 all_people.append(d)
 
         filename = "{election}-{constituency_slug}.csv".format(
-            election=self.election,
-            constituency_slug=slugify(post.extra.short_label),
+            election=self.election, constituency_slug=slugify(post.short_label)
         )
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="%s"' % filename
@@ -965,8 +951,8 @@ class ConstituencyListView(ElectionMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["all_constituencies"] = (
             PostExtraElection.objects.filter(election=self.election_data)
-            .order_by("postextra__base__label")
-            .select_related("postextra__base")
+            .order_by("post__label")
+            .select_related("post")
             .select_related("election")
             .select_related("resultset")
             .prefetch_related("suggestedpostlock_set")
@@ -991,14 +977,14 @@ class ConstituencyLockView(ElectionMixin, GroupRequiredMixin, View):
         if form.is_valid():
             post_id = form.cleaned_data["post_id"]
             with transaction.atomic():
-                post = get_object_or_404(Post, extra__slug=post_id)
+                post = get_object_or_404(Post, slug=post_id)
                 lock = form.cleaned_data["lock"]
                 extra_election = PostExtraElection.objects.get(
-                    postextra__base=post, election__slug=self.election
+                    post=post, election__slug=self.election
                 )
                 extra_election.candidates_locked = lock
                 extra_election.save()
-                post_name = post.extra.short_label
+                post_name = post.short_label
                 if lock:
                     suffix = "-lock"
                     pp = "Locked"
@@ -1047,7 +1033,7 @@ class ConstituenciesUnlockedListView(ElectionMixin, TemplateView):
             context[k] = []
         postextraelections = (
             PostExtraElection.objects.filter(election=self.election_data)
-            .select_related("postextra")
+            .select_related("post")
             .all()
         )
         for postextraelection in postextraelections:
@@ -1059,8 +1045,8 @@ class ConstituenciesUnlockedListView(ElectionMixin, TemplateView):
                 context_field = "unlocked"
             context[context_field].append(
                 {
-                    "id": postextraelection.postextra.slug,
-                    "name": postextraelection.postextra.short_label,
+                    "id": postextraelection.post.slug,
+                    "name": postextraelection.post.short_label,
                 }
             )
         for k in keys:
@@ -1088,9 +1074,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
             "person_id", self.request.GET.get("person", "")
         )
         self.person = get_object_or_404(Person, id=person_id)
-        self.post_data = get_object_or_404(
-            Post, extra__slug=self.kwargs["post_id"]
-        )
+        self.post_data = get_object_or_404(Post, slug=self.kwargs["post_id"])
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -1140,7 +1124,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
             ResultEvent.objects.create(
                 election=self.election_data,
                 winner=self.person,
-                old_post_id=self.post_data.extra.slug,
+                old_post_id=self.post_data.slug,
                 old_post_name=self.post_data.label,
                 post=self.post_data,
                 winner_party=membership_new_winner.on_behalf_of,
@@ -1193,8 +1177,8 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         post_id = self.kwargs["post_id"]
         with transaction.atomic():
-            post = get_object_or_404(Post, extra__slug=post_id)
-            constituency_name = post.extra.short_label
+            post = get_object_or_404(Post, slug=post_id)
+            constituency_name = post.short_label
 
             all_candidacies = post.memberships.filter(
                 role=self.election_data.candidate_membership_role,
@@ -1210,7 +1194,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
                     ResultEvent.objects.create(
                         election=self.election_data,
                         winner=candidacy.person,
-                        old_post_id=candidacy.post.extra.slug,
+                        old_post_id=candidacy.post.slug,
                         old_post_name=candidacy.post.label,
                         post=candidacy.post,
                         winner_party=candidacy.on_behalf_of,
@@ -1252,11 +1236,9 @@ class ConstituenciesDeclaredListView(ElectionMixin, TemplateView):
         constituency_seen = {}
         constituencies = []
         total_constituencies = Post.objects.filter(
-            extra__elections=self.election_data
+            elections=self.election_data
         ).count()
-        for membership in Membership.objects.select_related(
-            "post", "post__extra"
-        ).filter(
+        for membership in Membership.objects.select_related("post").filter(
             post__isnull=False,
             post_election__election_id=self.election_data.id,
             role=self.election_data.candidate_membership_role,
@@ -1266,7 +1248,7 @@ class ConstituenciesDeclaredListView(ElectionMixin, TemplateView):
             total_declared += 1
             constituencies.append((membership.post, True))
         for membership in (
-            Membership.objects.select_related("post", "post__extra")
+            Membership.objects.select_related("post")
             .filter(
                 post__isnull=False,
                 post_election__election=self.election_data,
@@ -1303,8 +1285,8 @@ class OrderedPartyListView(ElectionMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["post_id"] = post_id = kwargs["post_id"]
-        post_qs = Post.objects.select_related("extra")
-        mp_post = get_object_or_404(post_qs, extra__slug=post_id)
+        post_qs = Post.objects.all()
+        mp_post = get_object_or_404(post_qs, slug=post_id)
 
         party_id = kwargs["organization_id"]
         party = get_object_or_404(Organization, extra__slug=party_id)
@@ -1327,10 +1309,7 @@ class OrderedPartyListView(ElectionMixin, TemplateView):
             )
         )
 
-        context["post_data"] = {
-            "id": mp_post.extra.slug,
-            "label": mp_post.label,
-        }
+        context["post_data"] = {"id": mp_post.slug, "label": mp_post.label}
 
         context["candidates_locked"] = is_post_locked(
             mp_post, self.election_data
@@ -1351,7 +1330,7 @@ class OrderedPartyListView(ElectionMixin, TemplateView):
             self.election, party.id, mp_post.memberships
         )
 
-        party_set = PartySet.objects.get(postextra__slug=post_id)
+        party_set = PartySet.objects.get(post__slug=post_id)
 
         context["add_candidate_form"] = NewPersonForm(
             election=self.election,

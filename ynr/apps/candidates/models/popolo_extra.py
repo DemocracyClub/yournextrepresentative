@@ -81,31 +81,8 @@ class OrganizationExtra(HasImageMixin, models.Model):
             return "ynmp-party:2"
 
 
-class PostExtra(HasImageMixin, models.Model):
-    base = models.OneToOneField("popolo.Post", related_name="extra")
-    slug = models.CharField(max_length=256, blank=True, unique=True)
-
-    elections = models.ManyToManyField(
-        Election, related_name="posts", through="PostExtraElection"
-    )
-    group = models.CharField(max_length=1024, blank=True)
-    party_set = models.ForeignKey("PartySet", blank=True, null=True)
-
-    def __str__(self):
-        # WARNING: This will cause an extra query when getting the
-        # repr() or unicode() of this object unless the base object
-        # has been select_related.
-        return self.base.label
-
-    @property
-    def short_label(self):
-        from candidates.election_specific import shorten_post_label
-
-        return shorten_post_label(self.base.label)
-
-
 class PostExtraElection(models.Model):
-    postextra = models.ForeignKey(PostExtra)
+    post = models.ForeignKey("popolo.Post")
     election = models.ForeignKey(Election)
     ballot_paper_id = models.CharField(blank=True, max_length=255, unique=True)
 
@@ -113,7 +90,7 @@ class PostExtraElection(models.Model):
     winner_count = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        unique_together = ("election", "postextra")
+        unique_together = ("election", "post")
 
     def __repr__(self):
         fmt = "<PostExtraElection ballot_paper_id='{e}'{l}{w}>"
@@ -132,8 +109,8 @@ class PostExtraElection(models.Model):
             "constituency",
             args=[
                 self.election.slug,
-                self.postextra.slug,
-                slugify(self.postextra.short_label),
+                self.post.slug,
+                slugify(self.post.short_label),
             ],
         )
 

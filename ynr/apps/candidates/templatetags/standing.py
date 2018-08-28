@@ -70,11 +70,11 @@ def post_in_election(person, election):
                 "constituency",
                 kwargs={
                     "election": election.slug,
-                    "post_id": candidacy.post.extra.slug,
-                    "ignored_slug": slugify(candidacy.post.extra.short_label),
+                    "post_id": candidacy.post.slug,
+                    "ignored_slug": slugify(candidacy.post.short_label),
                 },
             ),
-            cons_name=candidacy.post.extra.short_label,
+            cons_name=candidacy.post.short_label,
         )
         result = '<span class="constituency-value-standing-link">{}</span>'.format(
             link

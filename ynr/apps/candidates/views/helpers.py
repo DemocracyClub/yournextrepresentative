@@ -40,7 +40,7 @@ def get_redirect_to_post(election, post):
             "constituency",
             kwargs={
                 "election": election,
-                "post_id": post.extra.slug,
+                "post_id": post.slug,
                 "ignored_slug": slugify(short_post_label),
             },
         )

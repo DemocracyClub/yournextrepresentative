@@ -68,7 +68,7 @@ class TestResultsFeed(
         ResultEvent.objects.create(
             election=self.election,
             winner=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             winner_party=self.labour_party_extra.base,
             source="Seen on the BBC news",
             user=self.user,
@@ -169,7 +169,7 @@ class TestResultsFeedWithRetraction(
         ResultEvent.objects.create(
             election=self.election,
             winner=accidental_winner,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             winner_party=self.labour_party_extra.base,
             source="Seen on the BBC news",
             user=self.user,
@@ -178,7 +178,7 @@ class TestResultsFeedWithRetraction(
         ResultEvent.objects.create(
             election=self.election,
             winner=accidental_winner,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             winner_party=self.labour_party_extra.base,
             source="Result recorded in error, retracting",
             user=self.user,
@@ -188,7 +188,7 @@ class TestResultsFeedWithRetraction(
         ResultEvent.objects.create(
             election=self.election,
             winner=real_winner,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             winner_party=self.ld_party_extra.base,
             source="Seen on Sky News",
             user=self.user,

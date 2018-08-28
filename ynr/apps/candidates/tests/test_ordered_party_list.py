@@ -13,28 +13,28 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         tessa_jowell = PersonFactory.create(id="2009", name="Tessa Jowell")
         MembershipFactory.create(
             person=tessa_jowell,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
             party_list_position=1,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
         winner = PersonFactory.create(id="4322", name="Helen Hayes")
         MembershipFactory.create(
             person=winner,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
             party_list_position=2,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
         james_smith = PersonFactory.create(id="2010", name="James Smith")
         MembershipFactory.create(
             person=james_smith,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
             party_list_position=3,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
     def test_party_list_page(self):

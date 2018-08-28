@@ -8,29 +8,36 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('popolo', '0010_rename_not_standing_related_name'),
-    ]
+    dependencies = [("popolo", "0010_rename_not_standing_related_name")]
 
     operations = [
         migrations.AddField(
-            model_name='post',
-            name='elections',
-            field=models.ManyToManyField(related_name='posts_tmp', through='candidates.PostExtraElection', to='elections.Election'),
+            model_name="post",
+            name="elections",
+            field=models.ManyToManyField(
+                related_name="posts_tmp",
+                through="candidates.PostExtraElection",
+                to="elections.Election",
+            ),
         ),
         migrations.AddField(
-            model_name='post',
-            name='group',
+            model_name="post",
+            name="group",
             field=models.CharField(blank=True, max_length=1024),
         ),
         migrations.AddField(
-            model_name='post',
-            name='party_set',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='candidates.PartySet'),
+            model_name="post",
+            name="party_set",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="candidates.PartySet",
+            ),
         ),
         migrations.AddField(
-            model_name='post',
-            name='slug',
+            model_name="post",
+            name="slug",
             field=models.CharField(blank=True, max_length=256, unique=False),
         ),
     ]
