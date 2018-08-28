@@ -1,6 +1,9 @@
 from django_webtest import WebTest
+from django.contrib.auth.models import User
 
 from .uk_examples import UK2015ExamplesMixin
+
+from moderation_queue.models import SuggestedPostLock
 
 
 class TestPostsView(UK2015ExamplesMixin, WebTest):
@@ -40,3 +43,30 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
         self.assertTrue(response.html.find("h4", text="2010 General Election"))
 
         self.assertTrue(response.html.find("h4", text="2015 General Election"))
+
+    def test_suggested_post_lock_text(self):
+        pee = self.election.postextraelection_set.first()
+        pee.candidates_locked = False
+        SuggestedPostLock.objects.create(
+            postextraelection=pee,
+            user=User.objects.create(username="locking_user"),
+        )
+        response = self.app.get("/posts")
+
+        self.assertTrue(response.html.find("abbr", text="🔓"))
+
+
+class TestPostIDToPartySetView(UK2015ExamplesMixin, WebTest):
+    def test_post_id_to_party_set_json(self):
+
+        response = self.app.get("/post-id-to-party-set.json")
+        self.assertEqual(
+            response.json,
+            {
+                "14419": "gb",
+                "14420": "gb",
+                "65808": "gb",
+                "65913": "gb",
+                "DIW:E05005004": "gb",
+            },
+        )
