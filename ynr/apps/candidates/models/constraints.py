@@ -66,13 +66,13 @@ def check_membership_elections_consistent():
         if (post.id, election.id) not in post_election_tuples_allowed:
             errors.append(
                 "There was a membership for {person_name} ({person_id}) "
-                "with post {post_label} ({post_extra_slug}) and election "
+                "with post {post_label} ({post_slug}) and election "
                 "{election_slug} but there's no PostExtraElection linking "
                 "them.".format(
                     person_name=me.base.person.name,
                     person_id=me.base.person.id,
                     post_label=me.base.post.label,
-                    post_extra_slug=post.slug,
+                    post_slug=post.slug,
                     election_slug=me.election.slug,
                 )
             )
