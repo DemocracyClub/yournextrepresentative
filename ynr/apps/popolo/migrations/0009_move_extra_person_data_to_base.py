@@ -11,12 +11,13 @@ def add_extra_fields_to_base(apps, schema_editor):
     ContentType = apps.get_model("contenttypes", "ContentType")
     Image = apps.get_model("images", "Image")
 
-    # import ipdb; ipdb.set_trace()
+    old_to_new_map = {}
 
     # First, delete any Membership objects with no extra
     Person.objects.filter(extra=None).delete()
 
     for base in Person.objects.all().select_related("extra"):
+        old_to_new_map[base.extra.pk] = base.pk
         base.versions = base.extra.versions
         base.save()
         for election in base.extra.not_standing.all():
@@ -28,6 +29,11 @@ def add_extra_fields_to_base(apps, schema_editor):
     Image.objects.filter(content_type_id=pe_content_type_id).update(
         content_type_id=p_content_type_id
     )
+    images = Image.objects.filter(content_type_id=p_content_type_id)
+    for image in images:
+        if image.object_id in old_to_new_map:
+            image.object_id = old_to_new_map[image.object_id]
+            image.save()
 
 
 class Migration(migrations.Migration):
