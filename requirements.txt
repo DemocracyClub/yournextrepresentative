@@ -52,7 +52,7 @@ ndg-httpsclient==0.5.1
 numpy==1.15.1
 oauthlib==2.1.0
 path.py==11.0.1
-pexpect==3.3
+pexpect==4.6.0
 pickleshare==0.7.4
 Pillow==3.2.0
 psycopg2-binary==2.7.5
