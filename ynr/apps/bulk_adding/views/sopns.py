@@ -170,7 +170,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
 
             if self.request.POST.get("suggest_locking") == "on":
                 pee = PostExtraElection.objects.get(
-                    post=context["post_extra"],
+                    post=context["post"],
                     election=Election.objects.get(slug=context["election"]),
                 )
                 SuggestedPostLock.objects.create(
@@ -195,8 +195,8 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                 "constituency",
                 kwargs={
                     "election": context["election"],
-                    "post_id": context["post_extra"].slug,
-                    "ignored_slug": slugify(context["post_extra"].base.label),
+                    "post_id": context["post"].slug,
+                    "ignored_slug": slugify(context["post"].label),
                 },
             )
         return HttpResponseRedirect(url)
