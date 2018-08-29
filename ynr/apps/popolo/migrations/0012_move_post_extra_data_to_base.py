@@ -9,7 +9,7 @@ def add_extra_fields_to_base(apps, schema_editor):
     Post = apps.get_model("popolo", "Post")
     PostExtra = apps.get_model("candidates", "PostExtra")
 
-    # First, delete any Membership objects with no extra
+    # First, delete any Post objects with no extra
     Post.objects.filter(extra=None).delete()
 
     for base in Post.objects.all().select_related("extra"):

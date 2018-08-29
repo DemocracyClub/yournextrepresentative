@@ -13,7 +13,7 @@ def add_extra_fields_to_base(apps, schema_editor):
 
     old_to_new_map = {}
 
-    # First, delete any Membership objects with no extra
+    # First, delete any Person objects with no extra
     Person.objects.filter(extra=None).delete()
 
     for base in Person.objects.all().select_related("extra"):
