@@ -15,26 +15,26 @@ class TestConstituenciesDeclared(TestUserMixin, UK2015ExamplesMixin, WebTest):
         tessa_jowell = PersonFactory.create(id="2009", name="Tessa Jowell")
         MembershipFactory.create(
             person=tessa_jowell,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
         winner = PersonFactory.create(id="4322", name="Helen Hayes")
         MembershipFactory.create(
             person=winner,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
             elected=True,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
         james_smith = PersonFactory.create(id="2010", name="James Smith")
         MembershipFactory.create(
             person=james_smith,
-            post=self.camberwell_post_extra.base,
+            post=self.camberwell_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.camberwell_post_extra_pee,
+            post_election=self.camberwell_post_pee,
         )
 
     def test_constituencies_declared(self):
@@ -80,7 +80,7 @@ class TestConstituenciesDeclared(TestUserMixin, UK2015ExamplesMixin, WebTest):
         unelected = Membership.objects.filter(
             post_election__election=self.election,
             person_id=2010,
-            post__extra__slug="65913",
+            post__slug="65913",
         ).first()
 
         unelected.elected = True

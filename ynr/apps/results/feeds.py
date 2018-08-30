@@ -23,7 +23,7 @@ class BasicResultEventsFeed(Feed):
             ResultEvent.objects.filter(election__current=True)
             .select_related("user")
             .select_related("election")
-            .select_related("post__extra")
+            .select_related("post")
             .select_related("winner")
             .select_related("winner_party__extra")
             .prefetch_related("winner__images")
@@ -132,7 +132,7 @@ class ResultEventsFeed(BasicResultEventsFeed):
             "election_slug": o.election.slug,
             "election_name": o.election.name,
             "election_date": o.election.election_date,
-            "post_id": o.post.extra.slug if o.post else o.old_post_id,
+            "post_id": o.post.slug if o.post else o.old_post_id,
             "winner_person_id": o.winner.id,
             "winner_person_name": o.winner.name,
             "winner_party_id": o.winner_party.extra.slug,

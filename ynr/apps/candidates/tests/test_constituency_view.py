@@ -9,7 +9,7 @@ from .factories import (
     MembershipFactory,
     OrganizationExtraFactory,
     PersonFactory,
-    PostExtraFactory,
+    PostFactory,
 )
 from .uk_examples import UK2015ExamplesMixin
 
@@ -25,12 +25,12 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         dulwich_not_stand = PersonFactory.create(id="4322", name="Helen Hayes")
         MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
-        winner_post_extra = self.edinburgh_east_post_extra
+        winner_post = self.edinburgh_east_post
 
         edinburgh_candidate = PersonFactory.create(
             id="818", name="Sheila Gilmore"
@@ -44,35 +44,35 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         MembershipFactory.create(
             person=dulwich_not_stand,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee_earlier,
+            post_election=self.dulwich_post_pee_earlier,
         )
         dulwich_not_stand.not_standing.add(self.election)
 
         MembershipFactory.create(
             person=edinburgh_winner,
-            post=winner_post_extra.base,
+            post=winner_post,
             on_behalf_of=self.labour_party_extra.base,
             elected=True,
             post_election=self.election.postextraelection_set.get(
-                postextra=winner_post_extra
+                post=winner_post
             ),
         )
 
         MembershipFactory.create(
             person=edinburgh_candidate,
-            post=winner_post_extra.base,
+            post=winner_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
         MembershipFactory.create(
             person=edinburgh_may_stand,
-            post=winner_post_extra.base,
+            post=winner_post,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.earlier_election.postextraelection_set.get(
-                postextra=winner_post_extra
+                post=winner_post
             ),
         )
 
@@ -288,7 +288,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         membership = Membership.objects.filter(
             person_id=818,
-            post__extra__slug="14419",
+            post__slug="14419",
             post_election__election__slug="2015",
         )
         self.assertFalse(membership.exists())
@@ -321,7 +321,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         membership = Membership.objects.filter(
             person_id=5163,
-            post__extra__slug="14419",
+            post__slug="14419",
             post_election__election__slug="2015",
         )
 
@@ -351,7 +351,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         membership = Membership.objects.filter(
             person_id=5163,
-            post__extra__slug="14419",
+            post__slug="14419",
             post_election__election__slug="2015",
         )
         self.assertFalse(membership.exists())
@@ -384,7 +384,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         membership = Membership.objects.filter(
             person_id=4322,
-            post__extra__slug="65808",
+            post__slug="65808",
             post_election__election__slug="2015",
         )
 

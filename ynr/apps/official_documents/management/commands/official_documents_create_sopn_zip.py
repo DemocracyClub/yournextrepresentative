@@ -19,9 +19,7 @@ class Command(BaseCommand):
     def add_files_to_zip(self, out_zip):
         for document in OfficialDocument.objects.all():
             doc_name = os.path.join(
-                document.election.slug,
-                document.post.extra.slug,
-                str(document.pk),
+                document.election.slug, document.post.slug, str(document.pk)
             )
             doc_name = "{}.{}".format(
                 doc_name, document.uploaded_file.path.split(".")[-1]

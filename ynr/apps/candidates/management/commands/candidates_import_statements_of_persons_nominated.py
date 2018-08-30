@@ -154,7 +154,7 @@ class Command(BaseCommand):
                 if not recovered:
                     continue
             filename = "official_documents/{post_id}/statement-of-persons-nominated{extension}".format(
-                post_id=pee.postextra.slug, extension=extension
+                post_id=pee.post.slug, extension=extension
             )
             with open(downloaded_filename, "rb") as f:
                 storage_filename = storage.save(filename, f)
@@ -163,7 +163,7 @@ class Command(BaseCommand):
                 document_type=OfficialDocument.NOMINATION_PAPER,
                 uploaded_file=storage_filename,
                 election=pee.election,
-                post=pee.postextra.base,
+                post=pee.post,
                 post_election=pee,
                 source_url=document_url,
             )

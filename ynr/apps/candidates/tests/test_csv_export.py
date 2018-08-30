@@ -50,40 +50,40 @@ class CSVTests(TestUserMixin, UK2015ExamplesMixin, TestCase):
         self.ni_person = factories.PersonFactory.create(
             id=1953, name="Daithí McKay", gender="male"
         )
-        north_antrim_post_extra = factories.PostExtraFactory.create(
+        north_antrim_post = factories.PostFactory.create(
             elections=(self.election, self.earlier_election),
-            base__organization=self.commons,
+            organization=self.commons,
             slug="66135",
-            base__label="Member of Parliament for North Antrim",
+            label="Member of Parliament for North Antrim",
             party_set=self.ni_parties,
         )
         factories.MembershipFactory.create(
             person=self.ni_person,
-            post=north_antrim_post_extra.base,
+            post=north_antrim_post,
             on_behalf_of=self.sinn_fein_extra.base,
             post_election=self.election.postextraelection_set.get(
-                postextra=north_antrim_post_extra
+                post=north_antrim_post
             ),
         )
         factories.MembershipFactory.create(
             person=self.ni_person,
-            post=north_antrim_post_extra.base,
+            post=north_antrim_post,
             on_behalf_of=self.sinn_fein_extra.base,
             post_election=self.earlier_election.postextraelection_set.get(
-                postextra=north_antrim_post_extra
+                post=north_antrim_post
             ),
         )
         factories.MembershipFactory.create(
             person=self.gb_person,
-            post=self.camberwell_post_extra.base,
+            post=self.camberwell_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.camberwell_post_extra_pee,
+            post_election=self.camberwell_post_pee,
         )
         factories.MembershipFactory.create(
             person=self.gb_person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee_earlier,
+            post_election=self.dulwich_post_pee_earlier,
         )
 
     def test_as_list_single_dict(self):

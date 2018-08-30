@@ -130,15 +130,15 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         factories.MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
         factories.MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee_earlier,
+            post_election=self.dulwich_post_pee_earlier,
         )
         # Now create Shane Collins (who we'll merge into Tessa Jowell)
         person = factories.PersonFactory.create(
@@ -253,15 +253,15 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         factories.MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.green_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
         factories.MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.green_party_extra.base,
-            post_election=self.edinburgh_east_post_extra_pee,
+            post_election=self.edinburgh_east_post_pee,
         )
 
     def tearDown(self):
@@ -342,7 +342,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(len(candidacies), 2)
         for c, expected_election in zip(candidacies, ("2010", "2015")):
             self.assertEqual(c.post_election.election.slug, expected_election)
-            self.assertEqual(c.post.extra.slug, "65808")
+            self.assertEqual(c.post.slug, "65808")
 
         # Check that there are only two Membership objects
         self.assertEqual(
@@ -393,19 +393,19 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         # And create the two Westminster posts:
-        factories.PostExtraFactory.create(
+        factories.PostFactory.create(
             elections=(self.election, self.earlier_election),
             slug="65878",
-            base__label="Canterbury",
+            label="Canterbury",
             party_set=self.gb_parties,
-            base__organization=self.commons,
+            organization=self.commons,
         )
-        factories.PostExtraFactory.create(
+        factories.PostFactory.create(
             elections=(self.election, self.earlier_election),
             slug="65936",
-            base__label="Maidstone and The Weald",
+            label="Maidstone and The Weald",
             party_set=self.gb_parties,
-            base__organization=self.commons,
+            organization=self.commons,
         )
 
         # Update each of them from the versions that were merged, and merged badly:
@@ -505,7 +505,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             )
             .values_list(
                 "post_election__election__slug",
-                "post__extra__slug",
+                "post__slug",
                 "on_behalf_of__extra__slug",
             )
             .order_by("post_election__election__slug")

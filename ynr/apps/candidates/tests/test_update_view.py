@@ -25,9 +25,9 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.green_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
     def test_update_person_should_not_lose_existing_not_standing(self):

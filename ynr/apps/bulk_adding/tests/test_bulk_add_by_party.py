@@ -83,7 +83,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         pee.save()
 
         # Make sure we have no people or logged actions
-        self.assertEqual(pee.postextra.base.memberships.count(), 0)
+        self.assertEqual(pee.post.memberships.count(), 0)
         self.assertEqual(LoggedAction.objects.count(), 0)
 
         form = self.app.get(
@@ -108,20 +108,18 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "This field is required.")
 
         # Now submit the valid form
-        with self.assertNumQueries(60):
+        with self.assertNumQueries(58):
             form["{}-0-select_person".format(pee.pk)] = "_new"
             response = form.submit().follow()
 
         # We should have a new person and membership
         self.assertTrue(
-            pee.postextra.base.memberships.first().person.name,
-            "Pemphero Pasternak",
+            pee.post.memberships.first().person.name, "Pemphero Pasternak"
         )
 
         # We should have a new person and membership
         self.assertTrue(
-            pee.postextra.base.memberships.first().person.name,
-            "Pemphero Pasternak",
+            pee.post.memberships.first().person.name, "Pemphero Pasternak"
         )
 
         # We should have created 2 logged actions, one for person-create

@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from popolo.models import Organization, Membership
 
-from candidates.models import OrganizationExtra, PostExtra
+from candidates.models import OrganizationExtra
 from elections.mixins import ElectionMixin
 
 
@@ -73,19 +73,18 @@ class PartyDetailView(ElectionMixin, TemplateView):
                 role=self.election_data.candidate_membership_role,
             )
             .select_related()
-            .prefetch_related("post__extra", "person")
+            .prefetch_related("post", "person")
         ):
             person = membership.person
             post = membership.post
-            post_group = post.extra.group
+            post_group = post.group
             by_post_group[post_group]["posts_with_memberships"][post].append(
                 {"membership": membership, "person": person, "post": post}
             )
         # That'll only find the posts that someone from the party is
         # actually standing for, so add any other posts...
-        for post_extra in self.election_data.posts.select_related("base").all():
-            post = post_extra.base
-            post_group = post_extra.group
+        for post in self.election_data.posts.all():
+            post_group = post.group
             post_group_data = by_post_group[post_group]
             posts_with_memberships = post_group_data["posts_with_memberships"]
             posts_with_memberships.setdefault(post, [])

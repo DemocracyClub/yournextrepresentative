@@ -58,6 +58,6 @@ class ContributorsMixin(object):
             LoggedAction.objects.exclude(
                 action_type="set-candidate-not-elected"
             )
-            .select_related("user", "person", "post", "post__extra")
+            .select_related("user", "person", "post")
             .order_by("-created")
         )

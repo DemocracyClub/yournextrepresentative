@@ -37,44 +37,44 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         )
         MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
         MembershipFactory.create(
             person=person,
             organization=self.labour_party_extra.base,
-            post_election=self.edinburgh_east_post_extra_pee,
+            post_election=self.edinburgh_east_post_pee,
         )
 
         MembershipFactory.create(
             person=dulwich_not_stand,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee_earlier,
+            post_election=self.dulwich_post_pee_earlier,
         )
         dulwich_not_stand.not_standing.add(self.election)
 
         MembershipFactory.create(
             person=edinburgh_winner,
-            post=self.edinburgh_east_post_extra.base,
+            post=self.edinburgh_east_post,
             on_behalf_of=self.labour_party_extra.base,
             elected=True,
-            post_election=self.edinburgh_east_post_extra_pee,
+            post_election=self.edinburgh_east_post_pee,
         )
 
         MembershipFactory.create(
             person=edinburgh_candidate,
-            post=self.edinburgh_east_post_extra.base,
+            post=self.edinburgh_east_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.edinburgh_east_post_extra_pee,
+            post_election=self.edinburgh_east_post_pee,
         )
 
         MembershipFactory.create(
             person=edinburgh_may_stand,
-            post=self.edinburgh_east_post_extra.base,
+            post=self.edinburgh_east_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.edinburgh_east_post_extra_pee_earlier,
+            post_election=self.edinburgh_east_post_pee_earlier,
         )
 
         self.storage = DefaultStorage()
@@ -377,7 +377,7 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         )
         # Similarly, check that the URL of the first post is as expected:
         first_post = posts_1_data["results"][0]
-        self.assertEqual(first_post["id"], self.edinburgh_east_post_extra.slug)
+        self.assertEqual(first_post["id"], self.edinburgh_east_post.slug)
         self.assertEqual(
             first_post["label"], "Member of Parliament for Edinburgh East"
         )

@@ -553,9 +553,9 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
             "constituency",
             kwargs={
                 "election": self.kwargs["election_id"],
-                "post_id": self.object.postextraelection.postextra.slug,
+                "post_id": self.object.postextraelection.post.slug,
                 "ignored_slug": slugify(
-                    self.object.postextraelection.postextra.short_label
+                    self.object.postextraelection.post.short_label
                 ),
             },
         )
@@ -581,7 +581,7 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
                 models.Q(suggestedpostlock=None)
                 | models.Q(officialdocument=None)
             )
-            .select_related("election", "postextra", "postextra__base")
+            .select_related("election", "post")
             .prefetch_related(
                 "officialdocument_set",
                 models.Prefetch(
@@ -589,7 +589,7 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
                     SuggestedPostLock.objects.select_related("user"),
                 ),
             )
-            .order_by("officialdocument__source_url", "postextra__base__label")
+            .order_by("officialdocument__source_url", "post__label")
         )
 
         if mine:
@@ -622,7 +622,7 @@ class SOPNReviewRequiredView(ListView):
                 pee = qs[random_offset]
                 url = reverse(
                     "bulk_add_from_sopn",
-                    args=(pee.election.slug, pee.postextra.slug),
+                    args=(pee.election.slug, pee.post.slug),
                 )
                 return HttpResponseRedirect(url)
         return super().get(*args, **kwargs)
@@ -638,13 +638,9 @@ class SOPNReviewRequiredView(ListView):
                 election__current=True,
             )
             .exclude(officialdocument=None)
-            .select_related("postextra__base", "election")
+            .select_related("post", "election")
             .prefetch_related("officialdocument_set")
-            .order_by(
-                "officialdocument__source_url",
-                "election",
-                "postextra__base__label",
-            )
+            .order_by("officialdocument__source_url", "election", "post__label")
         )
         return qs
 

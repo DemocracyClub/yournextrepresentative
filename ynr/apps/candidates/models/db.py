@@ -75,9 +75,9 @@ class LoggedAction(models.Model):
         from candidates.models import PostExtraElection
 
         if self.post:
-            election = self.post.extra.elections.order_by("-current").first()
+            election = self.post.elections.order_by("-current").first()
             return PostExtraElection.objects.get(
-                election=election, postextra=self.post.extra
+                election=election, post=self.post
             )
 
     @property
@@ -88,8 +88,8 @@ class LoggedAction(models.Model):
                 "constituency",
                 kwargs={
                     "election": pee.election.slug,
-                    "post_id": pee.postextra.slug,
-                    "ignored_slug": slugify(pee.postextra.short_label),
+                    "post_id": pee.post.slug,
+                    "ignored_slug": slugify(pee.post.short_label),
                 },
             )
         elif self.person:
@@ -102,8 +102,8 @@ class LoggedAction(models.Model):
         if pee:
             return '<a href="{url}">{text} ({post_slug})</a>'.format(
                 url=self.subject_url,
-                text=pee.postextra.short_label,
-                post_slug=pee.postextra.slug,
+                text=pee.post.short_label,
+                post_slug=pee.post.slug,
             )
         elif self.person:
             return '<a href="{url}">{text} ({person_id})</a>'.format(

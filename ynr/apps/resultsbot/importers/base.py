@@ -55,7 +55,7 @@ class BaseDivision(object):
         for name in guesses:
             try:
                 area = self.election.postextraelection_set.get(
-                    postextra__base__label__iexact=name
+                    post__label__iexact=name
                 )
                 self.local_area = area
                 return
@@ -68,7 +68,7 @@ class BaseDivision(object):
                 name = name.replace("-", ".")
                 name = name + "$"
                 area = self.election.postextraelection_set.get(
-                    postextra__base__label__iregex=name
+                    post__label__iregex=name
                 )
                 self.local_area = area
                 return
@@ -84,11 +84,11 @@ class BaseDivision(object):
         possible = [
             pee
             for pee in self.election.postextraelection_set.all()
-            .order_by("postextra__base__label")
-            .select_related("postextra__base")
+            .order_by("post__label")
+            .select_related("post")
         ]
         for i, pee in enumerate(possible, start=1):
-            print("\t{}\t{}".format(i, pee.postextra.base.label))
+            print("\t{}\t{}".format(i, pee.post.label))
         answer = raw_input("Pick a number or 'd' if it's deleted: ")
         if answer.lower() == "d":
             self.saved_matches[key] = "--deleted--"

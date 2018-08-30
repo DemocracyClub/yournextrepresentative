@@ -49,13 +49,13 @@
       {% if stats.candidates > 0 %}
         <ul>
           {% for post, post_members in posts_with_memberships %}
-              {% url 'constituency' election=election post_id=post.extra.slug ignored_slug=post.extra.short_label|slugify as post_url %}
+              {% url 'constituency' election=election post_id=post.slug ignored_slug=post.short_label|slugify as post_url %}
               {% if post_members %}
                 <li>
                 <ul>
                   {% for member_data in post_members %}
                     {% url 'person-view' person_id=member_data.person.id as person_url %}
-                      <li>{% blocktrans trimmed with name=member_data.person.name post_short_label=post.extra.short_label %}
+                      <li>{% blocktrans trimmed with name=member_data.person.name post_short_label=post.short_label %}
                         <a href="{{ person_url }}">{{ name }}</a> is standing in
                         <a href="{{ post_url }}">{{ post_short_label }}</a>{% endblocktrans %}
                       </li>
@@ -65,7 +65,7 @@
               {% else %}
                 {% if stats.show_all %}
                   <li>
-                    {% blocktrans trimmed with post_short_label=post.extra.short_label %}
+                    {% blocktrans trimmed with post_short_label=post.short_label %}
                       No candidate in <a href="{{ post_url }}">{{ post_short_label }}</a>
                     {% endblocktrans %}
                   </li>

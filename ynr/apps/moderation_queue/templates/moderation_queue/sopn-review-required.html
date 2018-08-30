@@ -21,9 +21,9 @@
       <li>
 
       <a href="{{ postextraelection.get_absolute_url }}">
-          {{ postextraelection.postextra.base.label }}
+          {{ postextraelection.post.label }}
       </a>
-      <a href="{% url "bulk_add_from_sopn" postextraelection.election.slug postextraelection.postextra.slug %}" class="button tiny">
+      <a href="{% url "bulk_add_from_sopn" postextraelection.election.slug postextraelection.post.slug %}" class="button tiny">
           Add candidates from nomination paper</a>
       </li>
   {% endfor %}

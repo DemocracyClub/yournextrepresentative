@@ -59,16 +59,10 @@ class Command(BaseCommand):
             person_weight = 0
             membership_qs = person.base.memberships.all()
             membership_qs = membership_qs.select_related(
-                "post__extra"
-            ).prefetch_related("post__extra__elections")
+                "post"
+            ).prefetch_related("post__elections")
             for membership in membership_qs:
-                try:
-                    getattr(membership.post, "extra")
-                except:
-                    continue
-                for election in membership.post.extra.elections.filter(
-                    current=True
-                ):
+                for election in membership.post.elections.filter(current=True):
                     for (
                         election_id,
                         election_weight,

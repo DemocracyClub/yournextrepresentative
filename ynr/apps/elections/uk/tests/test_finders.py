@@ -8,7 +8,7 @@ from django_webtest import WebTest
 
 from candidates.tests.factories import (
     ElectionFactory,
-    PostExtraFactory,
+    PostFactory,
     ParliamentaryChamberFactory,
     ParliamentaryChamberExtraFactory,
     PartySetFactory,
@@ -59,11 +59,11 @@ class TestHomePageView(WebTest):
             organization=commons,
             election_date="2017-03-23",
         )
-        PostExtraFactory.create(
+        PostFactory.create(
             elections=(election,),
-            base__organization=commons,
+            organization=commons,
             slug="dulwich-and-west-norwood",
-            base__label="Member of Parliament for Dulwich and West Norwood",
+            label="Member of Parliament for Dulwich and West Norwood",
             party_set=gb_parties,
         )
 
@@ -82,17 +82,17 @@ class TestHomePageView(WebTest):
             organization=london_assembly.base,
             name="2016 London Assembly Election (Additional)",
         )
-        PostExtraFactory.create(
+        PostFactory.create(
             elections=(election_lac,),
-            base__organization=london_assembly.base,
+            organization=london_assembly.base,
             slug="lambeth-and-southwark",
-            base__label="Assembly Member for Lambeth and Southwark",
+            label="Assembly Member for Lambeth and Southwark",
         )
-        PostExtraFactory.create(
+        PostFactory.create(
             elections=(election_gla,),
-            base__organization=london_assembly.base,
+            organization=london_assembly.base,
             slug="london",
-            base__label="2016 London Assembly Election (Additional)",
+            label="2016 London Assembly Election (Additional)",
         )
 
     def test_front_page(self, mock_requests):

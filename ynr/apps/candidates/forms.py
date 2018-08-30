@@ -231,11 +231,11 @@ class BasePersonForm(forms.Form):
                     message.format(election=election_name)
                 )
             # Check that that post actually exists:
-            if not Post.objects.filter(extra__slug=post_id).exists():
+            if not Post.objects.filter(slug=post_id).exists():
                 message = _("An unknown post ID '{post_id}' was specified")
                 raise forms.ValidationError(message.format(post_id=post_id))
             try:
-                party_set = PartySet.objects.get(postextra__slug=post_id)
+                party_set = PartySet.objects.get(post__slug=post_id)
             except PartySet.DoesNotExist:
                 message = _(
                     "Could not find parties for the post with ID "
@@ -303,9 +303,9 @@ class NewPersonForm(BasePersonForm):
                 choices=[("", "")]
                 + sorted(
                     [
-                        (post.extra.slug, shorten_post_label(post.label))
-                        for post in Post.objects.select_related("extra").filter(
-                            extra__elections__slug=election
+                        (post.slug, shorten_post_label(post.label))
+                        for post in Post.objects.filter(
+                            elections__slug=election
                         )
                     ],
                     key=lambda t: t[1],
@@ -329,7 +329,7 @@ class NewPersonForm(BasePersonForm):
             # Then the post can't be changed, so only add the
             # particular party set relevant for that post:
             post_id = kwargs["initial"]["constituency_" + election]
-            specific_party_set = PartySet.objects.get(postextra__slug=post_id)
+            specific_party_set = PartySet.objects.get(post__slug=post_id)
 
         for party_set in PartySet.objects.all():
             if specific_party_set and (
@@ -416,10 +416,8 @@ class AddElectionFieldsMixin(object):
             choices=[("", "")]
             + sorted(
                 [
-                    (post.extra.slug, shorten_post_label(post.label))
-                    for post in Post.objects.select_related("extra").filter(
-                        extra__elections__slug=election
-                    )
+                    (post.slug, shorten_post_label(post.label))
+                    for post in Post.objects.filter(elections__slug=election)
                 ],
                 key=lambda t: t[1],
             ),

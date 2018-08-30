@@ -104,7 +104,7 @@ class PersonQuerySet(DateframeableQuerySet):
                     "post_election__election",
                     "on_behalf_of__extra",
                     "post__area",
-                    "post__extra",
+                    "post",
                 ).prefetch_related(
                     "on_behalf_of__identifiers", "post__area__other_identifiers"
                 ),

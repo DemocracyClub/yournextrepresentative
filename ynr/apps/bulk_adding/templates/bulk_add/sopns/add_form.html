@@ -13,13 +13,13 @@
 {% endblock %}
 
 {% block content %}
-<h2>Add candidates to {{ election_obj.name }}: <a href="{{ post_election.get_absolute_url }}">{{ post_extra.base.label }}</a></h2>
+<h2>Add candidates to {{ election_obj.name }}: <a href="{{ post_election.get_absolute_url }}">{{ post.label }}</a></h2>
 {% if official_document %}
 <h3>How to add or check candidates:</h3>
 <ol>
   <li>Open the <a href="{{ official_document.get_absolute_url }}" target="_blank" class="button tiny">nomination paper</a>
     in a new window</li>
-  <li>Find the part of the document about {{ post_extra.base.label }}</li>
+  <li>Find the part of the document about {{ post.label }}</li>
   <li>Either
     <ol type="a">
       <li>Add new candidates in the form below,</li>
@@ -58,7 +58,7 @@
         <a href="{% url 'person-other-name-create' person.pk %}" class="button secondary tiny js-bulk-known-person-alternate-name">
             Nomination paper shows different name variant
         </a>
-        <a data-person-id="{{ person.pk }}" data-post-id="{{ post_extra.slug }}" href="{% url 'candidacy-delete' election=election %}" class="button secondary tiny js-bulk-known-person-not-standing">
+        <a data-person-id="{{ person.pk }}" data-post-id="{{ post.slug }}" href="{% url 'candidacy-delete' election=election %}" class="button secondary tiny js-bulk-known-person-not-standing">
             Not standing
         </a>
     </li>
@@ -113,7 +113,7 @@
 <p>
 This post doesn't have a nomination paper.
             Can you help us by
-            <a href="{% url 'upload_document_view' election=election post_id=post_extra.slug %}">uploading
+            <a href="{% url 'upload_document_view' election=election post_id=post.slug %}">uploading
             the PDF of the Statement of Persons Nominated?</a>
 </p>
 {% endif %}

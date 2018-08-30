@@ -7,7 +7,7 @@ from candidates.tests.factories import (
     PartyFactory,
     PartyExtraFactory,
     PersonFactory,
-    PostExtraFactory,
+    PostFactory,
 )
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
@@ -20,9 +20,9 @@ class TestFieldView(UK2015ExamplesMixin, TestCase):
 
         MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.green_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
         person = PersonFactory.create(
@@ -31,9 +31,9 @@ class TestFieldView(UK2015ExamplesMixin, TestCase):
 
         MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.green_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
     def test_context_data(self):

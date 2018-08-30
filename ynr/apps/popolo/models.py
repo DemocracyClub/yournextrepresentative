@@ -220,16 +220,10 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
 
     @property
     def current_candidacies(self):
-        result = (
-            self.memberships.filter(
-                post_election__election__current=True,
-                role=models.F(
-                    "post_election__election__candidate_membership_role"
-                ),
-            )
-            .select_related("person", "on_behalf_of", "post")
-            .prefetch_related("post__extra")
-        )
+        result = self.memberships.filter(
+            post_election__election__current=True,
+            role=models.F("post_election__election__candidate_membership_role"),
+        ).select_related("person", "on_behalf_of", "post")
         return list(result)
 
     def record_version(self, change_metadata, new_person=False):
@@ -470,11 +464,11 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
                 initial_data[standing_key] = "not-standing"
             elif candidacy:
                 initial_data[standing_key] = "standing"
-                post_id = candidacy.post.extra.slug
+                post_id = candidacy.post.slug
                 initial_data[constituency_key] = post_id
                 from candidates.models import PartySet
 
-                party_set = PartySet.objects.get(postextra__slug=post_id)
+                party_set = PartySet.objects.get(post__slug=post_id)
                 party = candidacy.on_behalf_of
                 party_key = "party_" + party_set.slug + "_" + election_data.slug
                 initial_data[party_key] = party.id
@@ -588,8 +582,8 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
                 "party_lists_in_use": candidacy.post_election.election.party_lists_in_use,
                 "party_list_position": candidacy.party_list_position,
                 "party_name": party.name,
-                "post_id": post.extra.slug,
-                "post_label": post.extra.short_label,
+                "post_id": post.slug,
+                "post_label": post.short_label,
                 "mapit_url": mapit_url,
                 "elected": elected_for_csv,
                 "email": self.email,
@@ -832,6 +826,23 @@ class Post(Dateframeable, Timestampable, models.Model):
     sources = GenericRelation(
         "Source", help_text="URLs to source documents about the post"
     )
+
+    # PostExtra fields
+    slug = models.CharField(max_length=256, blank=True, unique=True)
+
+    elections = models.ManyToManyField(
+        "elections.Election",
+        related_name="posts",
+        through="candidates.PostExtraElection",
+    )
+    group = models.CharField(max_length=1024, blank=True)
+    party_set = models.ForeignKey("candidates.PartySet", blank=True, null=True)
+
+    @property
+    def short_label(self):
+        from candidates.election_specific import shorten_post_label
+
+        return shorten_post_label(self.label)
 
     try:
         # PassTrhroughManager was removed in django-model-utils 2.4, see issue #22

@@ -13,7 +13,7 @@
         <tbody>
         {% for pee in post_counts %}
             <tr {% if pee.count == 0 %}class="no_known"{% endif%}>
-                <td><a href="{{ pee.get_absolute_url }}">{{ pee.postextra.base.label }}</a></td>
+                <td><a href="{{ pee.get_absolute_url }}">{{ pee.post.label }}</a></td>
                 <td>{{ pee.count }}</td>
             </tr>
         {% endfor %}

@@ -8,12 +8,7 @@ from django.conf import settings
 
 from elections.models import Election as YNRElection
 from popolo.models import Post, Organization
-from candidates.models import (
-    PostExtra,
-    OrganizationExtra,
-    PartySet,
-    PostExtraElection,
-)
+from candidates.models import OrganizationExtra, PartySet, PostExtraElection
 
 
 class EEElection(dict):
@@ -150,15 +145,14 @@ class EEElection(dict):
                 label = self["organisation"]["official_name"]
                 role = self["elected_role"]
             try:
-                post_extra = PostExtra.objects.get(slug=slug)
-                self.post_object = post_extra.base
+                self.post_object = Post.objects.get(slug=slug)
                 self.post_created = False
-            except PostExtra.DoesNotExist:
-                self.post_object = Post.objects.create(
-                    label=label, organization=self.organization_object
-                )
-                post_extra = PostExtra.objects.create(
-                    base=self.post_object, slug=slug
+            except Post.DoesNotExist:
+                self.post_object = Post(
+                    label=label,
+                    organization=self.organization_object,
+                    slug=slug,
+                    party_set=self.get_or_create_partyset()[0],
                 )
                 self.post_created = True
 
@@ -166,13 +160,11 @@ class EEElection(dict):
             self.post_object.label = label
             self.post_object.organization = self.organization_object
             self.post_object.save()
-            post_extra.party_set = self.get_or_create_partyset()[0]
-            post_extra.save()
         return (self.post_object, self.post_created)
 
     def get_or_create_post_election(self, parent):
-        if hasattr(self, "post_extra_object"):
-            self.post_extra_created = False
+        if hasattr(self, "post_election_object"):
+            self.post_election_created = False
         else:
             # First, set up the Post and Election with related objects
             self.get_or_create_post()
@@ -188,15 +180,15 @@ class EEElection(dict):
             # Get the winner count
             winner_count = self["seats_contested"]
 
-            self.post_extra_object, self.post_extra_created = PostExtraElection.objects.update_or_create(
-                postextra=self.post_object.extra,
+            self.post_election_object, self.post_election_created = PostExtraElection.objects.update_or_create(
+                post=self.post_object,
                 election=parent.election_object,
                 defaults={
                     "ballot_paper_id": self["election_id"],
                     "winner_count": winner_count,
                 },
             )
-        return (self.post_extra_object, self.post_extra_created)
+        return (self.post_election_object, self.post_election_created)
 
 
 def is_mayor_or_pcc_ballot(election):

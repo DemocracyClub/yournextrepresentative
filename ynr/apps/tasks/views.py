@@ -21,7 +21,7 @@ class IncompleteFieldView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(IncompleteFieldView, self).get_context_data(**kwargs)
         all_results = Membership.objects.select_related(
-            "person", "post", "person", "post__extra", "on_behalf_of"
+            "person", "post", "person", "on_behalf_of"
         ).filter(role="Candidate", post_election__election__current=True)
 
         filtered_results = self.get_results(all_results)
@@ -43,7 +43,7 @@ class IncompleteFieldView(TemplateView):
             details = {
                 "person": {"id": result.person_id, "name": result.person.name},
                 "party": {"name": result.on_behalf_of.name},
-                "post": {"name": result.post.extra.short_label},
+                "post": {"name": result.post.short_label},
             }
             if person_to_twitter.get(result.person_id, None) is not None:
                 details["twitter"] = person_to_twitter[result.person_id]

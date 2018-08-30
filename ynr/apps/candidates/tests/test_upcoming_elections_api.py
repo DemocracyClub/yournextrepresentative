@@ -10,7 +10,7 @@ from django_webtest import WebTest
 from candidates.tests.factories import (
     ElectionFactory,
     ParliamentaryChamberExtraFactory,
-    PostExtraFactory,
+    PostFactory,
     PersonFactory,
     MembershipFactory,
 )
@@ -89,17 +89,17 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
             name="2016 London Assembly Election (Additional)",
             election_date=self.future_date.isoformat(),
         )
-        PostExtraFactory.create(
+        PostFactory.create(
             elections=(election_lac,),
-            base__organization=london_assembly.base,
+            organization=london_assembly.base,
             slug="lambeth-and-southwark",
-            base__label="Assembly Member for Lambeth and Southwark",
+            label="Assembly Member for Lambeth and Southwark",
         )
-        self.post_extra = PostExtraFactory.create(
+        self.post = PostFactory.create(
             elections=(self.election_gla,),
-            base__organization=london_assembly.base,
+            organization=london_assembly.base,
             slug="london",
-            base__label="Assembly Member",
+            label="Assembly Member",
         )
 
     def test_results_for_upcoming_elections(self, mock_requests):
@@ -139,10 +139,10 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
 
         MembershipFactory.create(
             person=person,
-            post=self.post_extra.base,
+            post=self.post,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.election_gla.postextraelection_set.get(
-                postextra=self.post_extra
+                post=self.post
             ),
         )
         membership_pk = person.memberships.first().pk

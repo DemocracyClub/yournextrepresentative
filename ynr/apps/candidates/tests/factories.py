@@ -69,18 +69,6 @@ class PostFactory(factory.DjangoModelFactory):
 
     role = "Member of Parliament"
 
-
-class PostExtraElectionFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = "candidates.PostExtraElection"
-
-
-class PostExtraFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = "candidates.PostExtra"
-
-    base = factory.SubFactory(PostFactory)
-
     @factory.post_generation
     def elections(self, create, extracted, **kwargs):
         if not create:
@@ -95,11 +83,16 @@ class PostExtraFactory(factory.DjangoModelFactory):
                     ballot_paper_id = "{}.{}".format(election.slug, self.slug)
 
                 PostExtraElectionFactory.create(
-                    postextra=self,
+                    post=self,
                     election=election,
                     ballot_paper_id=ballot_paper_id,
                     winner_count=1,
                 )
+
+
+class PostExtraElectionFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = "candidates.PostExtraElection"
 
 
 class OrganizationFactory(factory.DjangoModelFactory):

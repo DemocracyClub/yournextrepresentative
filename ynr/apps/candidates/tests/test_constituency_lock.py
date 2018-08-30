@@ -1,15 +1,15 @@
 from django_webtest import WebTest
 from popolo.models import Person
 
-from candidates.models import PostExtra
+from popolo.models import Post
 
 from .auth import TestUserMixin
 from .factories import MembershipFactory, PersonFactory
 from .uk_examples import UK2015ExamplesMixin
 
 
-def update_lock(post_extra, election, lock_status):
-    postextraelection = post_extra.postextraelection_set.get(election=election)
+def update_lock(post, election, lock_status):
+    postextraelection = post.postextraelection_set.get(election=election)
     postextraelection.candidates_locked = lock_status
     postextraelection.save()
 
@@ -21,8 +21,8 @@ class TestConstituencyLockAndUnlock(
 ):
     def setUp(self):
         super().setUp()
-        update_lock(self.camberwell_post_extra, self.election, True)
-        self.post_extra_id = self.dulwich_post_extra.id
+        update_lock(self.camberwell_post, self.election, True)
+        self.post_id = self.dulwich_post.id
 
     def test_constituency_lock_unauthorized(self):
         self.app.get(
@@ -42,8 +42,8 @@ class TestConstituencyLockAndUnlock(
         self.assertEqual(response.status_code, 403)
 
     def test_constituency_lock_bad_submission(self):
-        post_extra = PostExtra.objects.get(id=self.post_extra_id)
-        update_lock(post_extra, self.election, False)
+        post = Post.objects.get(id=self.post_id)
+        update_lock(post, self.election, False)
         self.app.get(
             "/election/2015/post/65808/dulwich-and-west-norwood",
             user=self.user_who_can_lock,
@@ -60,8 +60,8 @@ class TestConstituencyLockAndUnlock(
             self.assertTrue("Invalid data POSTed" in context.exception)
 
     def test_constituency_lock(self):
-        post_extra = PostExtra.objects.get(id=self.post_extra_id)
-        postextraelection = update_lock(post_extra, self.election, False)
+        post = Post.objects.get(id=self.post_id)
+        postextraelection = update_lock(post, self.election, False)
         self.app.get(
             "/election/2015/post/65808/dulwich-and-west-norwood",
             user=self.user_who_can_lock,
@@ -86,8 +86,8 @@ class TestConstituencyLockAndUnlock(
         )
 
     def test_constituency_unlock(self):
-        post_extra = PostExtra.objects.get(id=self.post_extra_id)
-        postextraelection = update_lock(post_extra, self.election, True)
+        post = Post.objects.get(id=self.post_id)
+        postextraelection = update_lock(post, self.election, True)
         self.app.get(
             "/election/2015/post/65808/dulwich-and-west-norwood",
             user=self.user_who_can_lock,
@@ -121,16 +121,16 @@ class TestConstituencyLockAndUnlock(
 class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
-        update_lock(self.camberwell_post_extra, self.election, True)
-        post_extra_locked = self.camberwell_post_extra
-        self.post_extra_id = self.dulwich_post_extra.id
+        update_lock(self.camberwell_post, self.election, True)
+        post_locked = self.camberwell_post
+        self.post_id = self.dulwich_post.id
         person = PersonFactory.create(id="4170", name="Naomi Newstead")
 
         MembershipFactory.create(
             person=person,
-            post=post_extra_locked.base,
+            post=post_locked,
             on_behalf_of=self.green_party_extra.base,
-            post_election=post_extra_locked.postextraelection_set.get(
+            post_election=post_locked.postextraelection_set.get(
                 election=self.election
             ),
         )
@@ -139,9 +139,9 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.green_party_extra.base,
-            post_election=self.dulwich_post_extra.postextraelection_set.get(
+            post_election=self.dulwich_post.postextraelection_set.get(
                 election=self.election
             ),
         )

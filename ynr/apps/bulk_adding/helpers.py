@@ -37,7 +37,7 @@ def update_person(
     check_creation_allowed(request.user, person.current_candidacies)
 
     membership, _ = Membership.objects.update_or_create(
-        post=post_election.postextra.base,
+        post=post_election.post,
         person=person,
         role=election.candidate_membership_role,
         post_election=post_election,

@@ -6,10 +6,10 @@ from django.db.models import F
 from django.http import HttpResponseRedirect
 from django.utils.text import slugify
 from django.views.generic import RedirectView, TemplateView
-from popolo.models import Organization, Person
+from popolo.models import Organization, Person, Post
 
 from bulk_adding import forms, helpers
-from candidates.models import PostExtra, PostExtraElection
+from candidates.models import PostExtraElection
 from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
@@ -31,20 +31,17 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
     # required_group_name = models.TRUSTED_TO_BULK_ADD_GROUP_NAME
 
     def add_election_and_post_to_context(self, context):
-        context["post_extra"] = PostExtra.objects.get(slug=context["post_id"])
+        context["post"] = Post.objects.get(slug=context["post_id"])
         context["election_obj"] = Election.objects.get(slug=context["election"])
         context["post_election"] = context[
             "election_obj"
-        ].postextraelection_set.get(postextra=context["post_extra"])
+        ].postextraelection_set.get(post=context["post"])
         kwargs = {"exclude_deregistered": True, "include_description_ids": True}
         if not self.request.POST:
             kwargs["include_non_current"] = False
-        context["parties"] = context["post_extra"].party_set.party_choices(
-            **kwargs
-        )
+        context["parties"] = context["post"].party_set.party_choices(**kwargs)
         context["official_document"] = OfficialDocument.objects.filter(
-            post__extra__slug=context["post_id"],
-            election__slug=context["election"],
+            post__slug=context["post_id"], election__slug=context["election"]
         ).first()
         self.official_document = context["official_document"]
         return context
@@ -52,8 +49,8 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
     def remaining_posts_for_sopn(self):
         return OfficialDocument.objects.filter(
             source_url=self.official_document.source_url,
-            post__extra__postextraelection__election=F("election"),
-            post__extra__postextraelection__suggestedpostlock=None,
+            post__postextraelection__election=F("election"),
+            post__postextraelection__suggestedpostlock=None,
         )
 
     def post(self, request, *args, **kwargs):
@@ -73,7 +70,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
 
         form_kwargs = {
             "parties": context["parties"],
-            "party_set": context["post_extra"].party_set,
+            "party_set": context["post"].party_set,
         }
 
         if (
@@ -90,7 +87,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             context["formset"] = forms.BulkAddFormSet(**form_kwargs)
 
         people_set = set()
-        for membership in context["post_extra"].base.memberships.filter(
+        for membership in context["post"].memberships.filter(
             post_election__election=context["election_obj"]
         ):
             person = membership.person
@@ -173,7 +170,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
 
             if self.request.POST.get("suggest_locking") == "on":
                 pee = PostExtraElection.objects.get(
-                    postextra=context["post_extra"],
+                    post=context["post"],
                     election=Election.objects.get(slug=context["election"]),
                 )
                 SuggestedPostLock.objects.create(
@@ -198,8 +195,8 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                 "constituency",
                 kwargs={
                     "election": context["election"],
-                    "post_id": context["post_extra"].slug,
-                    "ignored_slug": slugify(context["post_extra"].base.label),
+                    "post_id": context["post"].slug,
+                    "ignored_slug": slugify(context["post"].label),
                 },
             )
         return HttpResponseRedirect(url)

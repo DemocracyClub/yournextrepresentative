@@ -10,10 +10,11 @@ from django.http import Http404, HttpResponseBadRequest
 from django.views.generic import TemplateView
 from django.utils.translation import ugettext as _
 
-from candidates.models import AreaExtra, PostExtra
+from candidates.models import AreaExtra
 from candidates.models.auth import get_edits_allowed, is_post_locked
 
 from elections.models import Election
+from popolo.models import Post
 
 from ..forms import NewPersonForm, ToggleLockForm
 from .helpers import (
@@ -74,7 +75,7 @@ class PostsOfTypeView(TemplateView):
         context = super().get_context_data(**kwargs)
         post_type = context["post_type"]
 
-        posts_qs = PostExtra.objects.filter(slug__startswith=post_type)
-        posts_qs = posts_qs.select_related("base").order_by("base__label")
+        posts_qs = Post.objects.filter(slug__startswith=post_type)
+        posts_qs = posts_qs.order_by("label")
         context["posts"] = posts_qs
         return context

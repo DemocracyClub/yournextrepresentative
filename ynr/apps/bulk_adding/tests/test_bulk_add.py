@@ -29,14 +29,14 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertNotContains(response, "Review")
 
     def testFormIfSopn(self):
-        post = self.dulwich_post_extra
+        post = self.dulwich_post
 
         OfficialDocument.objects.create(
             election=self.election,
-            post=post.base,
+            post=post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
             uploaded_file="sopn.pdf",
         )
 
@@ -52,14 +52,14 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "Review")
 
     def test_submitting_form(self):
-        post = self.dulwich_post_extra.base
+        post = self.dulwich_post
 
         OfficialDocument.objects.create(
             election=self.election,
             post=post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
             uploaded_file="sopn.pdf",
         )
 
@@ -87,7 +87,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(59):
+        with self.assertNumQueries(57):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -117,20 +117,20 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         existing_membership = factories.MembershipFactory.create(
             person=existing_person,
-            post=self.local_post.base,
+            post=self.local_post,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.local_election.postextraelection_set.get(
-                postextra=self.local_post
+                post=self.local_post
             ),
         )
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:
         OfficialDocument.objects.create(
             election=self.election,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
             uploaded_file="sopn.pdf",
         )
 
@@ -156,14 +156,14 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         new_memberships = memberships_after - memberships_before
         self.assertEqual(len(new_memberships), 1)
         new_membership = Membership.objects.get(pk=list(new_memberships)[0])
-        self.assertEqual(new_membership.post, self.dulwich_post_extra.base)
+        self.assertEqual(new_membership.post, self.dulwich_post)
         self.assertEqual(
             new_membership.on_behalf_of, self.green_party_extra.base
         )
         same_memberships = memberships_before & memberships_after
         self.assertEqual(len(same_memberships), 1)
         same_membership = Membership.objects.get(pk=list(same_memberships)[0])
-        self.assertEqual(same_membership.post, self.local_post.base)
+        self.assertEqual(same_membership.post, self.local_post)
         self.assertEqual(
             same_membership.on_behalf_of, self.labour_party_extra.base
         )
@@ -179,20 +179,20 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         existing_membership = factories.MembershipFactory.create(
             person=existing_person,
             # !!! This is the line that differs from the previous test:
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
             post_election=self.election.postextraelection_set.get(
-                postextra=self.dulwich_post_extra
+                post=self.dulwich_post
             ),
         )
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:
         OfficialDocument.objects.create(
             election=self.election,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
             uploaded_file="sopn.pdf",
         )
 
@@ -220,7 +220,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         same_memberships = memberships_before & memberships_after
         self.assertEqual(len(same_memberships), 1)
         same_membership = Membership.objects.get(pk=list(same_memberships)[0])
-        self.assertEqual(same_membership.post, self.dulwich_post_extra.base)
+        self.assertEqual(same_membership.post, self.dulwich_post)
         self.assertEqual(
             same_membership.on_behalf_of, self.green_party_extra.base
         )

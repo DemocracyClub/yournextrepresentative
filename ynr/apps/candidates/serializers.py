@@ -69,9 +69,9 @@ class ObjectWithImageField(serializers.RelatedField):
             return reverse(
                 "organizationextra-detail", kwargs=kwargs, request=request
             )
-        elif isinstance(value, candidates_models.PostExtra):
+        elif isinstance(value, popolo_models.Post):
             kwargs.update({"slug": value.slug})
-            return reverse("postextra-detail", kwargs=kwargs, request=request)
+            return reverse("post-detail", kwargs=kwargs, request=request)
         else:
             raise Exception("Unexpected type of object with an Image")
 
@@ -218,17 +218,15 @@ class ElectionSerializer(MinimalElectionSerializer):
     )
 
 
-class MinimalPostExtraSerializer(serializers.HyperlinkedModelSerializer):
+class MinimalPostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = candidates_models.PostExtra
+        model = popolo_models.Post
         fields = ("id", "url", "label", "slug")
 
     id = serializers.ReadOnlyField(source="slug")
-    label = serializers.ReadOnlyField(source="base.label")
+    label = serializers.ReadOnlyField()
     url = serializers.HyperlinkedIdentityField(
-        view_name="postextra-detail",
-        lookup_field="slug",
-        lookup_url_kwarg="slug",
+        view_name="post-detail", lookup_field="slug", lookup_url_kwarg="slug"
     )
 
 
@@ -266,7 +264,7 @@ class MembershipSerializer(serializers.HyperlinkedModelSerializer):
     on_behalf_of = MinimalOrganizationExtraSerializer(
         read_only=True, source="on_behalf_of.extra"
     )
-    post = MinimalPostExtraSerializer(read_only=True, source="post.extra")
+    post = MinimalPostSerializer(read_only=True)
 
     election = MinimalElectionSerializer(source="post_election.election")
 
@@ -283,7 +281,7 @@ class PostElectionSerializer(serializers.HyperlinkedModelSerializer):
             "ballot_paper_id",
         )
 
-    post = MinimalPostExtraSerializer(read_only=True, source="postextra")
+    post = MinimalPostSerializer(read_only=True)
     election = MinimalElectionSerializer(read_only=True)
 
 
@@ -390,9 +388,9 @@ class EmbeddedPostElectionSerializer(serializers.HyperlinkedModelSerializer):
     winner_count = serializers.ReadOnlyField()
 
 
-class PostExtraSerializer(MinimalPostExtraSerializer):
+class PostSerializer(MinimalPostSerializer):
     class Meta:
-        model = candidates_models.PostExtra
+        model = popolo_models.Post
         fields = (
             "id",
             "url",
@@ -405,15 +403,13 @@ class PostExtraSerializer(MinimalPostExtraSerializer):
             "memberships",
         )
 
-    role = serializers.ReadOnlyField(source="base.role")
+    role = serializers.ReadOnlyField()
     party_set = PartySetSerializer(read_only=True)
 
-    memberships = MembershipSerializer(
-        many=True, read_only=True, source="base.memberships"
-    )
+    memberships = MembershipSerializer(many=True, read_only=True)
 
     organization = MinimalOrganizationExtraSerializer(
-        source="base.organization.extra"
+        source="organization.extra"
     )
 
     elections = EmbeddedPostElectionSerializer(

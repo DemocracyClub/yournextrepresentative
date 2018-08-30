@@ -130,7 +130,7 @@
               as the winner
             {% elif action.action_type == 'entered-results-data' %}
               entered results data for
-              <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.postextra.base.label }}</a>
+              <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.post.label }}</a>
             {% else %}
               updated <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
             {% endif %}

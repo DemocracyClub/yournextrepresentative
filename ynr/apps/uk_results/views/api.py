@@ -12,7 +12,7 @@ class CandidateResultViewSet(viewsets.ModelViewSet):
     queryset = CandidateResult.objects.select_related(
         "membership__on_behalf_of__extra",
         "membership__organization__extra",
-        "membership__post__extra",
+        "membership__post",
         "membership__extra__election",
         "membership__person",
     ).order_by("id")
@@ -33,7 +33,7 @@ class ProductFilter(filterset.FilterSet):
 
 class ResultSetViewSet(viewsets.ModelViewSet):
     queryset = ResultSet.objects.select_related(
-        "post_election__postextra__base", "user"
+        "post_election__post", "user"
     ).order_by("id")
     serializer_class = ResultSetSerializer
     pagination_class = ResultsSetPagination

@@ -121,14 +121,12 @@ class EE_ImporterTest(WebTest):
 
     def test_create_post_from_ballot_id_dict(self):
         self.assertEqual(every_election.Post.objects.all().count(), 0)
-        self.assertEqual(every_election.PostExtra.objects.all().count(), 0)
         election = self.ee_importer.election_tree[self.child_id]
         election.get_or_create_post()
         self.assertTrue(election.post_created)
         election.get_or_create_post()
         self.assertFalse(election.post_created)
         self.assertEqual(every_election.Post.objects.all().count(), 1)
-        self.assertEqual(every_election.PostExtra.objects.all().count(), 1)
 
         self.assertEqual(election.party_set_object.name, "Great Britain")
         self.assertEqual(election.post_object.label, "Alperton")
@@ -136,7 +134,6 @@ class EE_ImporterTest(WebTest):
 
     def test_create_post__election_from_ballot_id_dict(self):
         self.assertEqual(every_election.Post.objects.all().count(), 0)
-        self.assertEqual(every_election.PostExtra.objects.all().count(), 0)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 0)
         election = self.ee_importer.election_tree[self.child_id]
 
@@ -150,7 +147,6 @@ class EE_ImporterTest(WebTest):
         self.assertFalse(election.post_created)
 
         self.assertEqual(every_election.Post.objects.all().count(), 1)
-        self.assertEqual(every_election.PostExtra.objects.all().count(), 1)
 
         self.assertEqual(election.party_set_object.name, "Great Britain")
         self.assertEqual(election.post_object.label, "Alperton")
@@ -160,7 +156,7 @@ class EE_ImporterTest(WebTest):
         for ballot_id, election_dict in self.ee_importer.ballot_ids.items():
             parent = self.ee_importer.get_parent(ballot_id)
             election_dict.get_or_create_post_election(parent=parent)
-        self.assertEqual(every_election.PostExtra.objects.all().count(), 189)
+        self.assertEqual(every_election.Post.objects.all().count(), 189)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
         self.assertEqual(check_constraints(), [])
 
@@ -174,7 +170,7 @@ class EE_ImporterTest(WebTest):
         for ballot_id, election_dict in self.ee_importer.ballot_ids.items():
             parent = self.ee_importer.get_parent(ballot_id)
             election_dict.get_or_create_post_election(parent=parent)
-        self.assertEqual(every_election.PostExtra.objects.all().count(), 11)
+        self.assertEqual(every_election.Post.objects.all().count(), 11)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
         self.assertEqual(check_constraints(), [])
 
@@ -187,8 +183,10 @@ class EE_ImporterTest(WebTest):
             }
         )
 
-        self.assertEqual(every_election.PostExtra.objects.all().count(), 0)
-        with self.assertNumQueries(300):
+        self.assertEqual(
+            every_election.PostExtraElection.objects.all().count(), 0
+        )
+        with self.assertNumQueries(267):
             call_command("uk_create_elections_from_every_election")
         self.assertEqual(
             every_election.PostExtraElection.objects.all().count(), 15

@@ -129,8 +129,8 @@ class Election(models.Model):
                   {
                     'election': <Election: 2015 General Election>,
                     'postextraelections': [
-                      <PostExtra: Member of Parliament for Aberavon>,
-                      <PostExtra: Member of Parliament for Aberconwy>,
+                      <Post: Member of Parliament for Aberavon>,
+                      <Post: Member of Parliament for Aberconwy>,
                       ...
                     ]
                   }
@@ -144,16 +144,16 @@ class Election(models.Model):
                   {
                     'election': <Election: 2016 Scottish Parliament Election (Regions)>,
                      'postextraelections': [
-                       <PostExtra: Member of the Scottish Parliament for Central Scotland>,
-                       <PostExtra: Member of the Scottish Parliament for Glasgow>,
+                       <Post: Member of the Scottish Parliament for Central Scotland>,
+                       <Post: Member of the Scottish Parliament for Glasgow>,
                        ...
                      ]
                   },
                   {
                     'election': <Election: 2016 Scottish Parliament Election (Constituencies)>,
                     'postextraelections': [
-                      <PostExtra: Member of the Scottish Parliament for Aberdeen Central>,
-                      <PostExtra: Member of the Scottish Parliament for Aberdeen Donside>,
+                      <Post: Member of the Scottish Parliament for Aberdeen Central>,
+                      <Post: Member of the Scottish Parliament for Aberdeen Donside>,
                       ...
                     ]
                   }
@@ -170,8 +170,8 @@ class Election(models.Model):
                   {
                     'election': <Election: 2010 General Election>,
                     'postextraelections': [
-                      <PostExtra: Member of Parliament for Aberavon>,
-                      <PostExtra: Member of Parliament for Aberconwy>,
+                      <Post: Member of Parliament for Aberavon>,
+                      <Post: Member of Parliament for Aberconwy>,
                       ...
                     ]
                   }
@@ -198,8 +198,8 @@ class Election(models.Model):
             qs = qs.prefetch_related(
                 models.Prefetch(
                     "postextraelection_set",
-                    PostExtraElection.objects.select_related("postextra__base")
-                    .order_by("postextra__base__label")
+                    PostExtraElection.objects.select_related("post")
+                    .order_by("post__label")
                     .prefetch_related("suggestedpostlock_set"),
                 )
             )

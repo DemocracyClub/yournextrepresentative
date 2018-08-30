@@ -87,46 +87,46 @@ class UK2015ExamplesMixin(object):
                 "id": "14419",
                 "name": "Edinburgh East",
                 "country": "Scotland",
-                "attr": "edinburgh_east_post_extra",
+                "attr": "edinburgh_east_post",
             },
             {
                 "id": "14420",
                 "name": "Edinburgh North and Leith",
                 "country": "Scotland",
-                "attr": "edinburgh_north_post_extra",
+                "attr": "edinburgh_north_post",
             },
             {
                 "id": "65808",
                 "name": "Dulwich and West Norwood",
                 "country": "England",
-                "attr": "dulwich_post_extra",
+                "attr": "dulwich_post",
             },
             {
                 "id": "65913",
                 "name": "Camberwell and Peckham",
                 "country": "England",
-                "attr": "camberwell_post_extra",
+                "attr": "camberwell_post",
             },
         ]
         for cons in EXAMPLE_CONSTITUENCIES:
             label = "Member of Parliament for {}".format(cons["name"])
-            pe = factories.PostExtraFactory.create(
+            post = factories.PostFactory.create(
                 elections=(cls.election, cls.earlier_election),
-                base__organization=cls.commons,
+                organization=cls.commons,
                 slug=cons["id"],
-                base__label=label,
+                label=label,
                 party_set=cls.gb_parties,
                 group=cons["country"],
             )
 
-            setattr(cls, cons["attr"], pe)
+            setattr(cls, cons["attr"], post)
 
             pee_attr_name = "{}_pee".format(cons["attr"])
-            pee = pe.postextraelection_set.get(election=cls.election)
+            pee = post.postextraelection_set.get(election=cls.election)
             setattr(cls, pee_attr_name, pee)
 
             pee_attr_name = "{}_pee_earlier".format(cons["attr"])
-            pee = pe.postextraelection_set.get(election=cls.earlier_election)
+            pee = post.postextraelection_set.get(election=cls.earlier_election)
             setattr(cls, pee_attr_name, pee)
 
         # Also create a local election and post:
@@ -140,10 +140,10 @@ class UK2015ExamplesMixin(object):
             for_post_role="Local Councillor",
             election_date=date(2016, 5, 5),
         )
-        cls.local_post = factories.PostExtraFactory.create(
+        cls.local_post = factories.PostFactory.create(
             elections=(cls.local_election,),
             slug="DIW:E05005004",
-            base__label="Shepway South Ward",
+            label="Shepway South Ward",
             party_set=cls.gb_parties,
-            base__organization=cls.local_council,
+            organization=cls.local_council,
         )

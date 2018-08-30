@@ -47,7 +47,7 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
             user=self.user,
             action_type="constituency-lock",
             ip_address="127.0.0.1",
-            post=self.camberwell_post_extra.base,
+            post=self.camberwell_post,
             popit_person_new_version="1234567890abcdef",
             source="Just for tests...",
         )
@@ -61,14 +61,14 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
             user=self.user,
             action_type="constituency-lock",
             ip_address="127.0.0.1",
-            post=self.camberwell_post_extra.base,
+            post=self.camberwell_post,
             popit_person_new_version="1234567890abcdef",
             source="Just for tests...",
         )
         self.assertEqual(
             action.post_election_guess,
             PostExtraElection.objects.get(
-                election=self.election, postextra=self.camberwell_post_extra
+                election=self.election, post=self.camberwell_post
             ),
         )
 
@@ -81,13 +81,13 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
         council = factories.OrganizationFactory.create(
             name="Essex County Council"
         )
-        post = factories.PostExtraFactory.create(
+        post = factories.PostFactory.create(
             elections=(past_election,),
             slug="CED:19782",
-            base__label="CED:19782",
+            label="CED:19782",
             party_set=self.gb_parties,
-            base__organization=council,
-        ).base
+            organization=council,
+        )
         action = LoggedAction.objects.create(
             user=self.user,
             action_type="constituency-lock",
@@ -98,7 +98,5 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
         self.assertEqual(
             action.post_election_guess,
-            PostExtraElection.objects.get(
-                election=past_election, postextra=post.extra
-            ),
+            PostExtraElection.objects.get(election=past_election, post=post),
         )

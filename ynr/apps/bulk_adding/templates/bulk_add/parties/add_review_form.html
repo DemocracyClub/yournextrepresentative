@@ -6,7 +6,7 @@
 {% csrf_token %}
 {% for formset in formsets %}
 <div style="clear: both; margin-top:2em">
-  <h3>{{ formset.pee.postextra.base.label }}</h3>
+  <h3>{{ formset.pee.post.label }}</h3>
   <div style="margin-top:2em; margin-left: 1em">
   {{ formset.management_form }}
   {% for form in formset.data %}
@@ -32,7 +32,7 @@
           {% if choice.choice_value != '_new' %}
           <div>
             Mark <a href="{% url 'person-view' choice.choice_value %}" target="_blank">
-            {{ choice.choice_label }}</a> as standing in {{ formset.pee.postextra.base.label }}
+            {{ choice.choice_label }}</a> as standing in {{ formset.pee.post.label }}
           </div>
           {% else %}
           <div>

@@ -66,15 +66,15 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         person_2007 = PersonFactory.create(id="2007", name="Tessa Jowell")
         MembershipFactory.create(
             person=person_2009,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
         MembershipFactory.create(
             person=person_2007,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
         self.test_upload_user = User.objects.create_user(
@@ -430,15 +430,15 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
         person_2007 = PersonFactory.create(id="2007", name="Tessa Jowell")
         MembershipFactory.create(
             person=person_2009,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
         MembershipFactory.create(
             person=person_2007,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
 
     def test_login_required(self):
@@ -457,7 +457,7 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
     def test_suggested_lock_review_view_with_suggestions(self):
         pee = PostExtraElection.objects.get(
-            postextra=self.dulwich_post_extra, election=self.election
+            post=self.dulwich_post, election=self.election
         )
         SuggestedPostLock.objects.create(
             postextraelection=pee, user=self.user, justification="test data"
@@ -465,7 +465,7 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
         OfficialDocument.objects.create(
             election=self.election,
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             post_election=pee,
             source_url="http://example.com",
         )
@@ -486,8 +486,8 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         OfficialDocument.objects.create(
             election=self.election,
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post=self.dulwich_post_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post=self.dulwich_post,
+            post_election=self.dulwich_post_pee,
             source_url="http://example.com",
         )
         url = reverse("sopn-review-required")
@@ -496,7 +496,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertContains(response, "Dulwich")
 
     def test_sopn_review_view_document_with_suggested_lock_not_included(self):
-        postextraelection = self.dulwich_post_extra.postextraelection_set.get(
+        postextraelection = self.dulwich_post.postextraelection_set.get(
             election=self.election
         )
         SuggestedPostLock.objects.create(
@@ -507,8 +507,8 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         OfficialDocument.objects.create(
             election=self.election,
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post=self.dulwich_post_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post=self.dulwich_post,
+            post_election=self.dulwich_post_pee,
             source_url="http://example.com",
         )
         url = reverse("sopn-review-required")
@@ -517,7 +517,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertNotContains(response, "Dulwich")
 
     def test_sopn_review_view_document_with_lock_not_included(self):
-        postextraelection = self.dulwich_post_extra.postextraelection_set.get(
+        postextraelection = self.dulwich_post.postextraelection_set.get(
             election=self.election
         )
         postextraelection.candidates_locked = True
@@ -525,8 +525,8 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         OfficialDocument.objects.create(
             election=self.election,
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post=self.dulwich_post_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post=self.dulwich_post,
+            post_election=self.dulwich_post_pee,
             source_url="http://example.com",
         )
         url = reverse("sopn-review-required")

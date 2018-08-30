@@ -139,15 +139,15 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         person.links.create(url="", note="wikipedia")
         factories.MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee,
+            post_election=self.dulwich_post_pee,
         )
         factories.MembershipFactory.create(
             person=person,
-            post=self.dulwich_post_extra.base,
+            post=self.dulwich_post,
             on_behalf_of=self.labour_party_extra.base,
-            post_election=self.dulwich_post_extra_pee_earlier,
+            post_election=self.dulwich_post_pee_earlier,
         )
         ExtraField.objects.create(type="url", key="cv", label="CV or Resumé")
         ExtraField.objects.create(

@@ -21,17 +21,17 @@ class TestGetFlashMessage(UK2015ExamplesMixin, TestCase):
         self.fake_person = factories.PersonFactory.create(
             name="Wreck-it-Ralph", id=42
         )
-        post_extra_in_2010 = self.edinburgh_east_post_extra
-        post_extra_in_2015 = self.edinburgh_north_post_extra
+        post_in_2010 = self.edinburgh_east_post
+        post_in_2015 = self.edinburgh_north_post
         factories.MembershipFactory.create(
             person=self.fake_person,
-            post=post_extra_in_2010.base,
-            post_election=self.edinburgh_east_post_extra_pee,
+            post=post_in_2010,
+            post_election=self.edinburgh_east_post_pee,
         )
         factories.MembershipFactory.create(
             person=self.fake_person,
-            post=post_extra_in_2015.base,
-            post_election=self.edinburgh_north_post_extra_pee,
+            post=post_in_2015,
+            post_election=self.edinburgh_north_post_pee,
         )
 
     def test_get_flash_message_new_person(self):

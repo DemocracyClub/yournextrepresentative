@@ -20,11 +20,11 @@ class TestPartyDropDownOrdering(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def create_lots_of_candidates(self, election, parties_and_counts):
-        posts_extra = [
-            self.edinburgh_east_post_extra,
-            self.edinburgh_north_post_extra,
-            self.dulwich_post_extra,
-            self.camberwell_post_extra,
+        posts = [
+            self.edinburgh_east_post,
+            self.edinburgh_north_post,
+            self.dulwich_post,
+            self.camberwell_post,
         ]
         created = 0
         for party, candidates_to_create in parties_and_counts:
@@ -35,10 +35,10 @@ class TestPartyDropDownOrdering(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 )
                 factories.MembershipFactory.create(
                     person=person,
-                    post=posts_extra[created % len(posts_extra)].base,
+                    post=posts[created % len(posts)],
                     on_behalf_of=party.base,
                     post_election=election.postextraelection_set.get(
-                        postextra=posts_extra[created % len(posts_extra)]
+                        post=posts[created % len(posts)]
                     ),
                 )
                 created += 1

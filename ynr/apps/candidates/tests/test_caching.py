@@ -50,7 +50,7 @@ class TestCaching(TestUserMixin, UK2015ExamplesMixin, WebTest):
         #     if request.user.is_authenticated():
         # AttributeError: 'WSGIRequest' object has no attribute 'user'
         without_slash = "/api/v0.9/posts/{}".format(
-            self.edinburgh_east_post_extra.slug
+            self.edinburgh_east_post.slug
         )
         with_slash = without_slash + "/"
         response = self.app.get(without_slash)

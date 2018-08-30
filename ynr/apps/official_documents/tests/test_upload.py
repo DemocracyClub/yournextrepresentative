@@ -13,7 +13,7 @@ from official_documents.models import OfficialDocument
 from candidates.tests.factories import (
     ElectionFactory,
     ParliamentaryChamberFactory,
-    PostExtraFactory,
+    PostFactory,
     PartySetFactory,
 )
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
@@ -40,11 +40,11 @@ class TestModels(TestUserMixin, WebTest):
             slug="2015", name="2015 General Election", current=True
         )
         commons = ParliamentaryChamberFactory.create()
-        self.post_extra = PostExtraFactory.create(
+        self.post = PostFactory.create(
             elections=(election,),
-            base__organization=commons,
+            organization=commons,
             slug="65808",
-            base__label="Member of Parliament for Dulwich and West Norwood",
+            label="Member of Parliament for Dulwich and West Norwood",
             party_set=gb_parties,
         )
 
@@ -55,14 +55,14 @@ class TestModels(TestUserMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         upload_url = reverse(
             "upload_document_view",
-            kwargs={"election": "2015", "post_id": self.post_extra.slug},
+            kwargs={"election": "2015", "post_id": self.post.slug},
         )
         with open(self.example_image_filename, "rb") as f:
             response = self.app.post(
                 upload_url,
                 {
                     "csrfmiddlewaretoken": csrftoken,
-                    "post_id": self.post_extra.slug,
+                    "post_id": self.post.slug,
                     "document_type": OfficialDocument.NOMINATION_PAPER,
                     "source_url": "http://example.org/foo",
                     "": Upload("pilot.jpg", f.read()),
@@ -85,9 +85,7 @@ class TestModels(TestUserMixin, WebTest):
             "as you have permission to upload documents", response.text
         )
         response = self.app.get(
-            reverse(
-                "upload_document_view", args=("2015", self.post_extra.slug)
-            ),
+            reverse("upload_document_view", args=("2015", self.post.slug)),
             user=self.user_who_can_upload_documents,
         )
         form = response.forms["document-upload-form"]
@@ -100,7 +98,7 @@ class TestModels(TestUserMixin, WebTest):
         self.assertEqual(ods.count(), 1)
         od = ods[0]
         self.assertEqual(od.source_url, "http://example.org/foo")
-        self.assertEqual(od.post.extra.slug, "65808")
+        self.assertEqual(od.post.slug, "65808")
 
         # Test that the document is listed on the all documents page
         url = reverse("unlocked_posts_with_documents")
