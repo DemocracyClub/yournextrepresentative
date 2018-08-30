@@ -4,9 +4,9 @@
 {% if position_in_list %}
   <span class="person-position">{{ position_in_list }}</span>
 {% endif %}
-{% if c.extra.primary_image %}
+{% if c.primary_image %}
   <a href="{% url 'person-view' c.id c.name|slugify %}">
-    {% thumbnail c.extra.primary_image "x64" as im %}
+    {% thumbnail c.primary_image "x64" as im %}
       <img class="person-avatar" src="{{ im.url }}"/>
     {% endthumbnail %}
   </a>
