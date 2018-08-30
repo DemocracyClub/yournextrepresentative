@@ -1089,11 +1089,9 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
         self.person = get_object_or_404(Person, id=person_id)
         self.post_data = get_object_or_404(Post, slug=self.kwargs["post_id"])
         self.post_election = PostExtraElection.objects.get(
-            election=self.election_data,
-            post=self.post_data
+            election=self.election_data, post=self.post_data
         )
         return super().dispatch(request, *args, **kwargs)
-
 
     def get_initial(self):
         initial = super().get_initial()
