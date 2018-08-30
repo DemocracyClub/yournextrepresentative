@@ -12,6 +12,7 @@ source =
     results
     tasks
     uk_results
+    parties
 omit =
     */tests/*
     */test_*
