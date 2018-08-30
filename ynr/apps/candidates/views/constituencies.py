@@ -51,15 +51,28 @@ from moderation_queue.models import SuggestedPostLock
 from popolo.models import Membership, Post, Organization, Person
 
 
-def get_max_winners(post, election):
-    max_winners = election.people_elected_per_post
-    post_extra_election = PostExtraElection.objects.filter(
-        post=post, election=election, winner_count__isnull=False
-    ).first()
-    if post_extra_election:
-        max_winners = post_extra_election.winner_count
+def get_max_winners(post_election):
+    """
+    If we know the winner count for this ballot, return it, otherwise return 0
 
-    return max_winners
+    This is because the source of truth for winners is
+    elections.democracyclub.org.uk. If it's not set there (and therefore at
+    import time) then there is a high chance that we don't know the winner_count
+    at all yet.
+
+    Setting the winner_count to 0 will prevent things like setting winners or
+    showing winners.
+
+    TODO: move this on to the PostExtraElection model, or set it as a default
+          in the database, TBD, see comment in
+          https://github.com/DemocracyClub/yournextrepresentative/pull/621#issuecomment-417252565
+
+    """
+    if post_election.winner_count:
+
+        return post_election.winner_count
+
+    return 0
 
 
 class ConstituencyDetailView(ElectionMixin, TemplateView):
@@ -901,10 +914,8 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
             if c.elected is not None:
                 context["show_retract_result"] = True
 
-        max_winners = pee.winner_count
-        context["show_confirm_result"] = (
-            max_winners < 0
-        ) or number_of_winners < max_winners
+        max_winners = get_max_winners(pee)
+        context["show_confirm_result"] = bool(max_winners)
 
         context["add_candidate_form"] = NewPersonForm(
             election=self.election,
@@ -1070,13 +1081,19 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
     required_group_name = RESULT_RECORDERS_GROUP_NAME
 
     def dispatch(self, request, *args, **kwargs):
+
         person_id = self.request.POST.get(
             "person_id", self.request.GET.get("person", "")
         )
+        self.election_data = self.get_election()
         self.person = get_object_or_404(Person, id=person_id)
         self.post_data = get_object_or_404(Post, slug=self.kwargs["post_id"])
-
+        self.post_election = PostExtraElection.objects.get(
+            election=self.election_data,
+            post=self.post_data
+        )
         return super().dispatch(request, *args, **kwargs)
+
 
     def get_initial(self):
         initial = super().get_initial()
@@ -1086,6 +1103,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["post_id"] = self.kwargs["post_id"]
+        context["post_election"] = self.post_election
         context["constituency_name"] = self.post_data.label
         context["person"] = self.person
         return context
@@ -1099,7 +1117,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
             number_of_existing_winners = self.post_data.memberships.filter(
                 elected=True, post_election__election=self.election_data
             ).count()
-            max_winners = get_max_winners(self.post_data, self.election_data)
+            max_winners = get_max_winners(self.post_election)
             if max_winners >= 0 and number_of_existing_winners >= max_winners:
                 msg = "There were already {n} winners of {post_label}" "and the maximum in election {election_name} is {max}"
                 raise Exception(
