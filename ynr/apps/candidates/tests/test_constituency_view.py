@@ -1,6 +1,8 @@
 from django.utils.six import text_type
 from django_webtest import WebTest
 
+from sorl.thumbnail import get_thumbnail
+
 from .auth import TestUserMixin
 from .dates import date_in_near_future
 from .factories import (
@@ -15,7 +17,9 @@ from .uk_examples import UK2015ExamplesMixin
 
 from compat import BufferDictReader
 
+from candidates.models import ImageExtra
 from popolo.models import Membership, Person
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 
 class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -408,3 +412,24 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/election/2015/post/DIW:E05005004/whatever", expect_errors=True
         )
         self.assertEqual(response.status_code, 404)
+
+    def test_person_photo_shown(self):
+        person = Person.objects.get(id=2009)
+        im = ImageExtra.objects.update_or_create_from_file(
+            EXAMPLE_IMAGE_FILENAME,
+            "images/imported.jpg",
+            md5sum="md5sum",
+            defaults={
+                "copyright": "example-license",
+                "uploading_user": self.user,
+                "user_notes": "Here's an image...",
+                "base__content_object": person,
+                "base__is_primary": True,
+                "base__source": "Found on the candidate's Flickr feed",
+            },
+        )
+        expected_url = get_thumbnail(im.base.image, "x64").url
+        response = self.app.get(
+            "/election/2015/post/65808/dulwich-and-west-norwood"
+        )
+        response.mustcontain(expected_url)
