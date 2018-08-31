@@ -27,9 +27,10 @@ class Party(TimeStampedModel):
 
     ec_id = models.CharField(db_index=True, max_length=20)
     name = models.CharField(max_length=255)
-    register = models.CharField(max_length=2, db_index=True)
+    register = models.CharField(max_length=2, db_index=True, null=True)
     status = models.CharField(db_index=True, max_length=255)
-    date_registered = models.DateField(null=True)
+    date_registered = models.DateField()
+    date_deregistered = models.DateField(null=True)
 
     def __str__(self):
         return "{} ({})".format(self.name, self.ec_id)

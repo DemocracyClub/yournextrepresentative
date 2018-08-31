@@ -7,6 +7,7 @@ class PartyFactory(factory.DjangoModelFactory):
 
     ec_id = factory.Sequence(lambda n: n)
     name = factory.Sequence(lambda n: 'Party %d' % n)
+    date_registered = "2001-01-01"
 
 
 class PartyDescriptionFactory(factory.DjangoModelFactory):

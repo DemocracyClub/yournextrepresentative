@@ -17,7 +17,7 @@ class TestPartyModels(TestCase):
 
     def test_party_emblem(self):
         party = PartyFactory()
-        PartyEmblemFactory.create_batch(3, party=party)
+        PartyEmblemFactory.create_batch(3, party=party, __sequence=0)
         self.assertEqual(party.emblems.count(), 3)
         self.assertTrue(
             party.emblems.first().image.url.startswith(
