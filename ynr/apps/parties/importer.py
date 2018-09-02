@@ -9,7 +9,7 @@ import dateutil.parser
 
 import requests
 
-from .constants import EC_API_BASE, EC_EMBLEM_BASE
+from .constants import EC_API_BASE, EC_EMBLEM_BASE, DEFAULT_EMBLEMS
 from .models import Party, PartyDescription, PartyEmblem
 
 
@@ -244,8 +244,15 @@ class ECEmblem:
             ec_emblem_id=self.emblem_dict["Id"],
             party=self.party,
             description=self.emblem_dict["MonochromeDescription"],
+            default=self.get_default(),
         )
 
         emblem.image.save(filename, open(image_file_name, "rb"))
         os.remove(image_file_name)
         return (emblem, True)
+
+    def get_default(self):
+        return (
+            DEFAULT_EMBLEMS.get(self.party.ec_id, False)
+            == self.emblem_dict["Id"]
+        )

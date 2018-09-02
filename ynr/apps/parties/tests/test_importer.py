@@ -118,3 +118,38 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
     def test_raises_on_bad_dict(self):
         with self.assertRaises(ValueError):
             ECParty({})
+
+    @patch("parties.importer.ECPartyImporter.get_party_list")
+    @patch.dict("parties.importer.DEFAULT_EMBLEMS", {
+            "PP01": 1
+        }, clear=True)
+    def test_set_emblem_default(self, FakeGetPartyList):
+        MULTI_EMBLEM_PARTY = dict(FAKE_PARTY_DICT)
+        MULTI_EMBLEM_PARTY["PartyEmblems"].append(
+            {
+                "PartyEmblemId": 1,
+                "MonochromeDescription": "Default Emblem",
+                "Id": 1,
+            }
+        )
+        MULTI_EMBLEM_PARTY["PartyEmblems"].append(
+            {
+                "PartyEmblemId": 0,
+                "MonochromeDescription": "Not this one",
+                "Id": 0,
+            }
+        )
+        MULTI_EMBLEM_RESULTS_DICT = dict(FAKE_RESULTS_DICT)
+        MULTI_EMBLEM_RESULTS_DICT["Results"] = [MULTI_EMBLEM_PARTY]
+        FakeGetPartyList.return_value = MULTI_EMBLEM_RESULTS_DICT
+        cmd = Command()
+
+        out = StringIO()
+        cmd.stdout = out
+
+        self.assertEqual(PartyEmblem.objects.count(), 0)
+        cmd.handle(**{"output_new_parties": True, "clear_emblems": True})
+        self.assertEqual(PartyEmblem.objects.count(), 3)
+        self.assertEqual(
+            Party.objects.first().default_emblem.description, "Default Emblem"
+        )
