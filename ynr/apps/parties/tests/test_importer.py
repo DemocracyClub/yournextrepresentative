@@ -24,8 +24,8 @@ FAKE_PARTY_DICT = {
     "ApprovedDate": "/Date(1134345600000)/",
     "PartyDescriptions": [
         {
-            "Description": "Wombling for a better future",
-            "Translation": "Wombling am well dyfodol",
+            "Description": "Make Good Use of Bad Rubbish",
+            "Translation": "Gwneud Defnydd Da o Sbwriel Gwael",
             "DateDescriptionFirstApproved": "/Date(1225756800000)/",
         }
     ],
@@ -108,7 +108,7 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
         self.assertEqual(party_model.status, "Registered")
         self.assertEqual(
             party_model.descriptions.first().description,
-            "Wombling for a better future | Wombling am well dyfodol",
+            "Make Good Use of Bad Rubbish | Gwneud Defnydd Da o Sbwriel Gwael",
         )
         self.assertEqual(party_model.emblems.count(), 1)
         self.assertEqual(
