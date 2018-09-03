@@ -42,9 +42,7 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
             post_election=self.dulwich_post_pee,
         )
         MembershipFactory.create(
-            person=person,
-            organization=self.labour_party_extra.base,
-            post_election=self.edinburgh_east_post_pee,
+            person=person, post_election=self.edinburgh_east_post_pee
         )
 
         MembershipFactory.create(

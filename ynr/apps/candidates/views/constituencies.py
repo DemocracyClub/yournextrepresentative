@@ -174,7 +174,7 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
         current_candidacies, past_candidacies = split_candidacies(
             self.election_data,
             mp_post.memberships.select_related(
-                "person", "on_behalf_of", "on_behalf_of__extra", "organization"
+                "person", "on_behalf_of", "on_behalf_of__extra"
             ).all(),
         )
 
@@ -839,10 +839,7 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
             current_candidacies_2015, past_candidacies_2015 = split_candidacies(
                 self.election_data,
                 other_post.memberships.select_related(
-                    "person",
-                    "on_behalf_of",
-                    "on_behalf_of__extra",
-                    "organization",
+                    "person", "on_behalf_of", "on_behalf_of__extra"
                 ).filter(post_election__election__slug="2015"),
             )
 

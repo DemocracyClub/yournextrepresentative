@@ -885,14 +885,6 @@ class Membership(Dateframeable, Timestampable, models.Model):
         help_text=_("The person who is a party to the relationship"),
     )
 
-    # reference to "http://popoloproject.com/schemas/organization.json#"
-    organization = models.ForeignKey(
-        "Organization",
-        blank=True,
-        null=True,
-        related_name="memberships",
-        help_text=_("The organization that is a party to the relationship"),
-    )
     on_behalf_of = models.ForeignKey(
         "Organization",
         blank=True,

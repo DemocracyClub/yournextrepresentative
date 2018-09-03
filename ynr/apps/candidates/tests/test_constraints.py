@@ -31,7 +31,6 @@ class PostElectionCombinationTests(UK2015ExamplesMixin, TestCase):
         MembershipFactory.create(
             person=new_candidate,
             post=post,
-            organization=election.organization,
             post_election=election.postextraelection_set.get(post=post),
         )
         self.assertEqual(check_membership_elections_consistent(), [])

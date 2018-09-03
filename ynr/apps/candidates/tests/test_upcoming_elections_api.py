@@ -200,7 +200,6 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
                                     "name": "Labour Party",
                                     "url": "http://localhost:80/api/v0.9/organizations/party:53/",
                                 },
-                                "organization": None,
                                 "party_list_position": None,
                                 "person": {
                                     "id": 2009,

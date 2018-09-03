@@ -95,7 +95,6 @@ def additional_merge_actions(primary_person, secondary_person):
                 "post": cr.membership.post,
                 "role": cr.membership.role,
                 "post_election__election": cr.membership.post_election.election,
-                "organization": cr.membership.organization,
                 "on_behalf_of": cr.membership.on_behalf_of,
             },
         )

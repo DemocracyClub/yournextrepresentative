@@ -135,7 +135,6 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                         "person__memberships",
                         Membership.objects.select_related(
                             "on_behalf_of__extra",
-                            "organization__extra",
                             "post",
                             "post_election__election",
                         ),
@@ -288,11 +287,10 @@ class PersonViewSet(viewsets.ModelViewSet):
             Prefetch(
                 "memberships",
                 Membership.objects.select_related(
-                    "on_behalf_of__extra", "organization__extra", "post"
+                    "on_behalf_of__extra", "post"
                 ),
             ),
             "memberships__post_election__election",
-            "memberships__organization__extra",
             "images",
             "other_names",
             "contact_details",
@@ -347,7 +345,6 @@ class PostViewSet(viewsets.ModelViewSet):
                 Membership.objects.select_related(
                     "person",
                     "on_behalf_of__extra",
-                    "organization__extra",
                     "post",
                     "post_election__election",
                 ),
