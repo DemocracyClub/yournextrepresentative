@@ -135,17 +135,23 @@ class ECPartyImporter:
                 other_party_name = CORRECTED_PARTY_NAMES_IN_DESC.get(
                     other_party_name, other_party_name
                 )
-                date = CORRECTED_DESCRIPTION_DATES.get(description.description, description.date_description_approved)
+                date = CORRECTED_DESCRIPTION_DATES.get(
+                    description.description,
+                    description.date_description_approved,
+                )
 
                 try:
-                    other_party = Party.objects.filter(
-                        name=other_party_name,
-                        register=description.party.register,
-                    ).active_for_date(date).get()
+                    other_party = (
+                        Party.objects.filter(
+                            name=other_party_name,
+                            register=description.party.register,
+                        )
+                        .active_for_date(date)
+                        .get()
+                    )
                 except Party.DoesNotExist:
                     print("Can't find the folllowing")
                     print(other_party_name)
-                    import ipdb; ipdb.set_trace()
                     continue
                 joint_id = make_joint_party_id(
                     description.party.ec_id, other_party.ec_id

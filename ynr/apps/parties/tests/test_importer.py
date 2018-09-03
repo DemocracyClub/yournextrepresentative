@@ -150,7 +150,8 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
         cmd.handle(**{"output_new_parties": True, "clear_emblems": True})
         self.assertEqual(PartyEmblem.objects.count(), 3)
         self.assertEqual(
-            Party.objects.first().default_emblem.description, "Default Emblem"
+            Party.objects.get(ec_id="PP01").default_emblem.description,
+            "Default Emblem",
         )
 
     @patch.dict(

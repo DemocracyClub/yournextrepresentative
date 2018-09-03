@@ -9,7 +9,8 @@ class PartyQuerySet(models.QuerySet):
             date = timezone.now()
         qs = self.filter(date_registered__lte=date)
         qs = qs.filter(
-            models.Q(date_deregistered__gte=date) | models.Q(date_deregistered=None)
+            models.Q(date_deregistered__gte=date)
+            | models.Q(date_deregistered=None)
         )
         return qs
 

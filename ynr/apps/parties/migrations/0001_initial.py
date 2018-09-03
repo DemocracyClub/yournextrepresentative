@@ -12,59 +12,127 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Party',
+            name="Party",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', django_extensions.db.fields.CreationDateTimeField(auto_now_add=True, verbose_name='created')),
-                ('modified', django_extensions.db.fields.ModificationDateTimeField(auto_now=True, verbose_name='modified')),
-                ('ec_id', models.CharField(db_index=True, max_length=20)),
-                ('name', models.CharField(max_length=255)),
-                ('register', models.CharField(db_index=True, max_length=2, null=True)),
-                ('status', models.CharField(db_index=True, max_length=255)),
-                ('date_registered', models.DateField()),
-                ('date_deregistered', models.DateField(null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created",
+                    django_extensions.db.fields.CreationDateTimeField(
+                        auto_now_add=True, verbose_name="created"
+                    ),
+                ),
+                (
+                    "modified",
+                    django_extensions.db.fields.ModificationDateTimeField(
+                        auto_now=True, verbose_name="modified"
+                    ),
+                ),
+                ("ec_id", models.CharField(db_index=True, max_length=20)),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "register",
+                    models.CharField(db_index=True, max_length=2, null=True),
+                ),
+                ("status", models.CharField(db_index=True, max_length=255)),
+                ("date_registered", models.DateField()),
+                ("date_deregistered", models.DateField(null=True)),
             ],
             options={
-                'ordering': ('-modified', '-created'),
-                'get_latest_by': 'modified',
-                'abstract': False,
+                "ordering": ("-modified", "-created"),
+                "get_latest_by": "modified",
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='PartyDescription',
+            name="PartyDescription",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', django_extensions.db.fields.CreationDateTimeField(auto_now_add=True, verbose_name='created')),
-                ('modified', django_extensions.db.fields.ModificationDateTimeField(auto_now=True, verbose_name='modified')),
-                ('description', models.CharField(max_length=800)),
-                ('date_description_approved', models.DateField(null=True)),
-                ('party', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='descriptions', to='parties.Party')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created",
+                    django_extensions.db.fields.CreationDateTimeField(
+                        auto_now_add=True, verbose_name="created"
+                    ),
+                ),
+                (
+                    "modified",
+                    django_extensions.db.fields.ModificationDateTimeField(
+                        auto_now=True, verbose_name="modified"
+                    ),
+                ),
+                ("description", models.CharField(max_length=800)),
+                ("date_description_approved", models.DateField(null=True)),
+                (
+                    "party",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="descriptions",
+                        to="parties.Party",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-modified', '-created'),
-                'get_latest_by': 'modified',
-                'abstract': False,
+                "ordering": ("-modified", "-created"),
+                "get_latest_by": "modified",
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='PartyEmblem',
+            name="PartyEmblem",
             fields=[
-                ('created', django_extensions.db.fields.CreationDateTimeField(auto_now_add=True, verbose_name='created')),
-                ('modified', django_extensions.db.fields.ModificationDateTimeField(auto_now=True, verbose_name='modified')),
-                ('ec_emblem_id', models.IntegerField(primary_key=True, serialize=False)),
-                ('image', models.ImageField(upload_to=parties.models.emblem_upload_path)),
-                ('description', models.CharField(max_length=255)),
-                ('date_approved', models.DateField(null=True)),
-                ('default', models.BooleanField(default=False)),
-                ('party', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='emblems', to='parties.Party')),
+                (
+                    "created",
+                    django_extensions.db.fields.CreationDateTimeField(
+                        auto_now_add=True, verbose_name="created"
+                    ),
+                ),
+                (
+                    "modified",
+                    django_extensions.db.fields.ModificationDateTimeField(
+                        auto_now=True, verbose_name="modified"
+                    ),
+                ),
+                (
+                    "ec_emblem_id",
+                    models.IntegerField(primary_key=True, serialize=False),
+                ),
+                (
+                    "image",
+                    models.ImageField(
+                        upload_to=parties.models.emblem_upload_path
+                    ),
+                ),
+                ("description", models.CharField(max_length=255)),
+                ("date_approved", models.DateField(null=True)),
+                ("default", models.BooleanField(default=False)),
+                (
+                    "party",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="emblems",
+                        to="parties.Party",
+                    ),
+                ),
             ],
-            options={
-                'ordering': ('-default', 'ec_emblem_id'),
-            },
+            options={"ordering": ("-default", "ec_emblem_id")},
         ),
     ]

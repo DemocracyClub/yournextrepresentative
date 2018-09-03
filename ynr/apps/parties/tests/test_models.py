@@ -32,4 +32,3 @@ class TestPartyModels(TestCase):
                 "/media/emblems/0/99_example"
             )
         )
-

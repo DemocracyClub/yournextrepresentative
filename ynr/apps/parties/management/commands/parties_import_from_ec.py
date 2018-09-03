@@ -22,9 +22,8 @@ class Command(BaseCommand):
 
         importer.do_import()
 
-        if not options['skip_create_joint']:
+        if not options["skip_create_joint"]:
             importer.create_joint_parties()
-
 
         if options["output_new_parties"] and importer.collector:
             self.stdout.write("Found new political parties!")

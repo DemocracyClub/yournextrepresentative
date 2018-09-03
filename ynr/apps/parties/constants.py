@@ -55,10 +55,7 @@ CORRECTED_PARTY_NAMES_IN_DESC = {
 # before (sometimes by years) a the joint party is registered.
 # This is a mapping of descriptions and the earliest date they can be valid
 CORRECTED_DESCRIPTION_DATES = {
-'Ulster Conservatives and Unionists - New Force (Joint Description with Conservative and Unionist Party)':
-        "2001-02-16",
-"Alliance for Democracy (Joint Description with English Democrats Party, and Jury Team)":
-    "2009-03-13",
-"Solidarity - Trade Unionist and Socialist Coalition (Joint Description with Trade Unionist and Socialist Coalition)":
-    "2010-01-27"
+    "Ulster Conservatives and Unionists - New Force (Joint Description with Conservative and Unionist Party)": "2001-02-16",
+    "Alliance for Democracy (Joint Description with English Democrats Party, and Jury Team)": "2009-03-13",
+    "Solidarity - Trade Unionist and Socialist Coalition (Joint Description with Trade Unionist and Socialist Coalition)": "2010-01-27",
 }
