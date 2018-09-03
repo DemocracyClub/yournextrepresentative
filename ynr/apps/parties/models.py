@@ -2,6 +2,8 @@ from django.db import models
 
 from django_extensions.db.models import TimeStampedModel
 
+from .managers import PartyQuerySet
+
 
 class Party(TimeStampedModel):
     """
@@ -32,8 +34,13 @@ class Party(TimeStampedModel):
     date_registered = models.DateField()
     date_deregistered = models.DateField(null=True)
 
+    objects = PartyQuerySet.as_manager()
+
     def __str__(self):
         return "{} ({})".format(self.name, self.ec_id)
+
+    class Meta:
+        ordering = ("name",)
 
     @property
     def default_emblem(self):
