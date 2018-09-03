@@ -14,6 +14,7 @@ from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from parties.importer import ECParty, ECPartyImporter
 from parties.models import Party, PartyDescription, PartyEmblem
 from parties.management.commands.parties_import_from_ec import Command
+from .factories import PartyFactory, PartyDescriptionFactory
 
 
 FAKE_PARTY_DICT = {
@@ -120,9 +121,7 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
             ECParty({})
 
     @patch("parties.importer.ECPartyImporter.get_party_list")
-    @patch.dict("parties.importer.DEFAULT_EMBLEMS", {
-            "PP01": 1
-        }, clear=True)
+    @patch.dict("parties.importer.DEFAULT_EMBLEMS", {"PP01": 1}, clear=True)
     def test_set_emblem_default(self, FakeGetPartyList):
         MULTI_EMBLEM_PARTY = dict(FAKE_PARTY_DICT)
         MULTI_EMBLEM_PARTY["PartyEmblems"].append(
@@ -153,3 +152,32 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
         self.assertEqual(
             Party.objects.first().default_emblem.description, "Default Emblem"
         )
+
+    @patch.dict(
+        "parties.importer.CORRECTED_PARTY_NAMES_IN_DESC",
+        {"The Wombles Alliance": "Wombles Alliance"},
+        clear=True,
+    )
+    def test_create_joint_parties(self):
+        p1 = PartyFactory(ec_id="PP01", name="Wombles Alliance")
+        p2 = PartyFactory(ec_id="PP02", name="Froglets Party")
+        PartyDescriptionFactory(
+            party=p2,
+            description="Stop motion coalition (Joint description with Wombles Alliance)",
+            date_description_approved="2011-01-01",
+        )
+        PartyDescriptionFactory(
+            party=p1,
+            description="Stop motion coalition (Joint description with Froglets Party)",
+            date_description_approved="2011-02-01",
+        )
+
+        self.assertEqual(Party.objects.all().count(), 2)
+        importer = ECPartyImporter()
+        importer.create_joint_parties()
+        self.assertEqual(Party.objects.all().count(), 3)
+        self.assertEqual(
+            Party.objects.get(name="Stop motion coalition").ec_id,
+            "joint-party:1-2",
+        )
+        self.assertTrue(len(importer.collector), 3)

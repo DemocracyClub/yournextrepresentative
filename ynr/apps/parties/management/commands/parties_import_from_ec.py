@@ -10,6 +10,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--clear-emblems", action="store_true")
         parser.add_argument("--output-new-parties", action="store_true")
+        parser.add_argument("--skip-create-joint", action="store_true")
 
     def handle(self, *args, **options):
         if options["clear_emblems"]:
@@ -19,9 +20,13 @@ class Command(BaseCommand):
 
         importer = ECPartyImporter()
 
-        new_parties = importer.do_import()
+        importer.do_import()
 
-        if options["output_new_parties"] and new_parties:
+        if not options['skip_create_joint']:
+            importer.create_joint_parties()
+
+
+        if options["output_new_parties"] and importer.collector:
             self.stdout.write("Found new political parties!")
-            for party in new_parties:
+            for party in importer.collector:
                 self.stdout.write(str(party))

@@ -9,8 +9,26 @@ import dateutil.parser
 
 import requests
 
-from .constants import EC_API_BASE, EC_EMBLEM_BASE, DEFAULT_EMBLEMS
+from .constants import (
+    EC_API_BASE,
+    EC_EMBLEM_BASE,
+    DEFAULT_EMBLEMS,
+    JOINT_DESCRIPTION_REGEX,
+    CORRECTED_PARTY_NAMES_IN_DESC,
+    CORRECTED_DESCRIPTION_DATES,
+)
 from .models import Party, PartyDescription, PartyEmblem
+
+
+def extract_number_from_id(party_id):
+    m = re.search("\d+", party_id)
+    if m:
+        return int(m.group(0), 10)
+
+
+def make_joint_party_id(id1, id2):
+    numbers = sorted(map(extract_number_from_id, [id1, id2]))
+    return "joint-party:{}-{}".format(*numbers)
 
 
 class ECPartyImporter:
@@ -86,6 +104,61 @@ class ECPartyImporter:
             start = start + self.per_page
             party_list = self.get_party_list(start)
         return self.collector
+
+    def create_joint_parties(self):
+        """
+        We create joint parties if one party's description matches the
+        JOINT_DESCRIPTION_REGEX (e.g. contains "joint description").
+
+        The new party gets an ID made up of both parties IDs like
+
+        `joint-party:51-83`
+
+        Where each number is the ID of the 'parent' party.
+
+        The lower number ID is always first.
+
+        """
+
+        qs = PartyDescription.objects.filter(
+            description__iregex=JOINT_DESCRIPTION_REGEX
+        )
+        for description in qs:
+            joint_party_name, other_party_names = re.match(
+                JOINT_DESCRIPTION_REGEX, description.description, re.IGNORECASE
+            ).groups()
+
+            sub_parties = other_party_names.split(", and ")
+            for other_party_name in sub_parties:
+                # Try to get a corrected name for the other party
+                other_party_name = other_party_name.replace("’", "'")
+                other_party_name = CORRECTED_PARTY_NAMES_IN_DESC.get(
+                    other_party_name, other_party_name
+                )
+                date = CORRECTED_DESCRIPTION_DATES.get(description.description, description.date_description_approved)
+
+                try:
+                    other_party = Party.objects.filter(
+                        name=other_party_name,
+                        register=description.party.register,
+                    ).active_for_date(date).get()
+                except Party.DoesNotExist:
+                    print("Can't find the folllowing")
+                    print(other_party_name)
+                    import ipdb; ipdb.set_trace()
+                    continue
+                joint_id = make_joint_party_id(
+                    description.party.ec_id, other_party.ec_id
+                )
+                joint_party, created = Party.objects.update_or_create(
+                    ec_id=joint_id,
+                    defaults={
+                        "name": joint_party_name,
+                        "date_registered": description.date_description_approved,
+                    },
+                )
+                if created:
+                    self.collector.append(joint_party)
 
 
 class ECParty(dict):
