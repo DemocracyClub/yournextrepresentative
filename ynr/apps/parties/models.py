@@ -33,6 +33,7 @@ class Party(TimeStampedModel):
     status = models.CharField(db_index=True, max_length=255)
     date_registered = models.DateField()
     date_deregistered = models.DateField(null=True)
+    legacy_slug = models.CharField(max_length=256, blank=True, unique=True)
 
     objects = PartyQuerySet.as_manager()
 
