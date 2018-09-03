@@ -123,6 +123,7 @@ class ECPartyImporter:
         qs = PartyDescription.objects.filter(
             description__iregex=JOINT_DESCRIPTION_REGEX
         )
+
         for description in qs:
             joint_party_name, other_party_names = re.match(
                 JOINT_DESCRIPTION_REGEX, description.description, re.IGNORECASE

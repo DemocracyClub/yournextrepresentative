@@ -52,7 +52,7 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
         FakeGetPartyList.return_value = FAKE_RESULTS_DICT
         importer = ECPartyImporter()
         new_parties = importer.do_import()
-        self.assertEqual(Party.objects.count(), 1)
+        self.assertEqual(Party.objects.count(), 2)
         self.assertEqual(new_parties[0].name, "Wombles Alliance")
 
     @patch("parties.importer.ECPartyImporter.get_party_list")
@@ -62,7 +62,13 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
 
         out = StringIO()
         cmd.stdout = out
-        cmd.handle(**{"output_new_parties": True, "clear_emblems": True})
+        cmd.handle(
+            **{
+                "output_new_parties": True,
+                "clear_emblems": True,
+                "skip_create_joint": False,
+            }
+        )
         self.assertTrue(
             cmd.stdout.getvalue().startswith("Found new political parties!")
         )
@@ -97,12 +103,12 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
     @patch("parties.importer.ECEmblem.download_emblem")
     def test_save(self, FakeEmblemPath):
         FakeEmblemPath.return_value = EXAMPLE_IMAGE_FILENAME
-        self.assertFalse(Party.objects.all().exists())
-        self.assertFalse(PartyDescription.objects.all().exists())
+        self.assertEqual(Party.objects.count(), 1)
+        self.assertEqual(PartyDescription.objects.count(), 0)
         self.assertFalse(PartyEmblem.objects.all().exists())
         party = ECParty(FAKE_PARTY_DICT)
         party.save()
-        self.assertEqual(Party.objects.count(), 1)
+        self.assertEqual(Party.objects.count(), 2)
         party_model = Party.objects.get(ec_id="PP01")
         self.assertEqual(party_model.name, "Wombles Alliance")
         self.assertEqual(party_model.register, "GB")
@@ -125,18 +131,10 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
     def test_set_emblem_default(self, FakeGetPartyList):
         MULTI_EMBLEM_PARTY = dict(FAKE_PARTY_DICT)
         MULTI_EMBLEM_PARTY["PartyEmblems"].append(
-            {
-                "PartyEmblemId": 1,
-                "MonochromeDescription": "Default Emblem",
-                "Id": 1,
-            }
+            {"PartyEmblemId": 1, "MonochromeDescription": "Default Emblem", "Id": 1}
         )
         MULTI_EMBLEM_PARTY["PartyEmblems"].append(
-            {
-                "PartyEmblemId": 0,
-                "MonochromeDescription": "Not this one",
-                "Id": 0,
-            }
+            {"PartyEmblemId": 0, "MonochromeDescription": "Not this one", "Id": 0}
         )
         MULTI_EMBLEM_RESULTS_DICT = dict(FAKE_RESULTS_DICT)
         MULTI_EMBLEM_RESULTS_DICT["Results"] = [MULTI_EMBLEM_PARTY]
@@ -147,7 +145,13 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
         cmd.stdout = out
 
         self.assertEqual(PartyEmblem.objects.count(), 0)
-        cmd.handle(**{"output_new_parties": True, "clear_emblems": True})
+        cmd.handle(
+            **{
+                "output_new_parties": True,
+                "clear_emblems": True,
+                "skip_create_joint": False,
+            }
+        )
         self.assertEqual(PartyEmblem.objects.count(), 3)
         self.assertEqual(
             Party.objects.get(ec_id="PP01").default_emblem.description,
@@ -164,7 +168,7 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
         p2 = PartyFactory(ec_id="PP02", name="Froglets Party")
         PartyDescriptionFactory(
             party=p2,
-            description="Stop motion coalition (Joint description with Wombles Alliance)",
+            description="Stop motion coalition (Joint description with The Wombles Alliance)",
             date_description_approved="2011-01-01",
         )
         PartyDescriptionFactory(
@@ -173,12 +177,13 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
             date_description_approved="2011-02-01",
         )
 
-        self.assertEqual(Party.objects.all().count(), 2)
-        importer = ECPartyImporter()
-        importer.create_joint_parties()
         self.assertEqual(Party.objects.all().count(), 3)
+        importer = ECPartyImporter()
+
+        importer.create_joint_parties()
+
+        self.assertEqual(Party.objects.all().count(), 4)
         self.assertEqual(
-            Party.objects.get(name="Stop motion coalition").ec_id,
-            "joint-party:1-2",
+            Party.objects.get(name="Stop motion coalition").ec_id, "joint-party:1-2"
         )
         self.assertTrue(len(importer.collector), 3)

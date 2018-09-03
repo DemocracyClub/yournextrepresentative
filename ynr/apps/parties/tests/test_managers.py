@@ -28,18 +28,20 @@ class TestPartyManager(TestCase):
             PartyFactory(**party_date._asdict())
 
     def test_parties(self):
-        self.assertEqual(Party.objects.count(), 3)
+        self.assertEqual(Party.objects.count(), 4)
 
     def test_current_parties(self):
-        self.assertEqual(Party.objects.current().count(), 2)
-        self.assertEqual(Party.objects.current().first().ec_id, "PP01")
+        self.assertEqual(Party.objects.current().count(), 3)
+        self.assertTrue(
+            "PP01" in Party.objects.current().values_list("ec_id", flat=True)
+        )
 
     def test_active_for_date(self):
         date = timezone.datetime(2001, 10, 5)
         qs = Party.objects.active_for_date(date)
-        self.assertEqual(qs.count(), 2)
+        self.assertEqual(qs.count(), 3)
 
-        # Before any known parties!
-        date = timezone.datetime(2001, 10, 5)
+        # Before any known parties (apart from Indepentant)!
+        date = timezone.datetime(2001, 1, 5)
         qs = Party.objects.active_for_date(date)
-        self.assertFalse(qs.exists())
+        self.assertEqual(qs.count(), 1)

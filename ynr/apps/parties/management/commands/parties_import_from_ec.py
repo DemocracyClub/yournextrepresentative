@@ -21,7 +21,6 @@ class Command(BaseCommand):
         importer = ECPartyImporter()
 
         importer.do_import()
-
         if not options["skip_create_joint"]:
             importer.create_joint_parties()
 
