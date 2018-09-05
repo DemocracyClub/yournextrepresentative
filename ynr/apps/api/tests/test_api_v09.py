@@ -13,8 +13,8 @@ from django.core.files.base import ContentFile
 
 from django_webtest import WebTest
 
-from .factories import MembershipFactory, PersonFactory
-from .uk_examples import UK2015ExamplesMixin
+from candidates.tests.factories import MembershipFactory, PersonFactory
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 from candidates.models import LoggedAction, PersonRedirect
 from candidates.tests.helpers import TmpMediaRootMixin
@@ -38,7 +38,7 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
         MembershipFactory.create(
@@ -48,7 +48,7 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=dulwich_not_stand,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee_earlier,
         )
         dulwich_not_stand.not_standing.add(self.election)
@@ -56,7 +56,7 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=edinburgh_winner,
             post=self.edinburgh_east_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             elected=True,
             post_election=self.edinburgh_east_post_pee,
         )
@@ -64,14 +64,14 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=edinburgh_candidate,
             post=self.edinburgh_east_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.edinburgh_east_post_pee,
         )
 
         MembershipFactory.create(
             person=edinburgh_may_stand,
             post=self.edinburgh_east_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.edinburgh_east_post_pee_earlier,
         )
 
@@ -145,7 +145,24 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertEqual(len(person["versions"]), 0)
 
-    def test_api_organizations(self):
+    def _make_legacy_parties(self):
+        """
+        It used to be that political parties were stored on the "Organization"
+        model. for maintaining v0.9 API compatibility we've not deleted them
+        from that model (yet), so let's make the test data support this legacy
+        case
+        """
+
+        from candidates.tests.factories import OrganizationExtraFactory
+        from candidates.tests.uk_examples import EXAMPLE_PARTIES
+
+        for party in EXAMPLE_PARTIES:
+            p = OrganizationExtraFactory(
+                slug=party["legacy_slug"], base__name=party["name"]
+            )
+
+    def test_api_legacy_organizations_with_parties(self):
+        self._make_legacy_parties()
         organizations_resp = self.app.get("/api/v0.9/organizations/")
 
         organizations = organizations_resp.json
@@ -153,7 +170,8 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(organizations["count"], len(organizations["results"]))
         self.assertEqual(organizations["count"], 7)
 
-    def test_api_organization(self):
+    def test_api_legacy_organization_with_parties(self):
+        self._make_legacy_parties()
         organizations_resp = self.app.get("/api/v0.9/organizations/")
         organizations = organizations_resp.json
 
