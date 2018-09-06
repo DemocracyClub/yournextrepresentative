@@ -5,10 +5,11 @@ class PartyFactory(factory.DjangoModelFactory):
     class Meta:
         model = "parties.Party"
 
-    ec_id = factory.Sequence(lambda n: n)
+    ec_id = factory.Sequence(lambda n: "PP{}".format(n))
     name = factory.Sequence(lambda n: "Party %d" % n)
     date_registered = "2001-01-01"
     legacy_slug = factory.Sequence(lambda n: "party:%d" % n)
+    register = "GB"
 
 
 class PartyDescriptionFactory(factory.DjangoModelFactory):

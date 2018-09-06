@@ -13,7 +13,7 @@ class TestPartyModels(TestCase):
 
     def test_party_str(self):
         party = PartyFactory()
-        self.assertEqual(str(party), "Party 0 (0)")
+        self.assertEqual(str(party), "Party 0 (PP0)")
 
     def test_party_emblem(self):
         party = PartyFactory()
@@ -21,7 +21,7 @@ class TestPartyModels(TestCase):
         self.assertEqual(party.emblems.count(), 3)
         self.assertTrue(
             party.emblems.first().image.url.startswith(
-                "/media/emblems/0/0_example"
+                "/media/emblems/PP0/0_example"
             )
         )
 
@@ -29,6 +29,6 @@ class TestPartyModels(TestCase):
         PartyEmblemFactory(party=party, __sequence=99, default=True)
         self.assertTrue(
             party.default_emblem.image.url.startswith(
-                "/media/emblems/0/99_example"
+                "/media/emblems/PP0/99_example"
             )
         )
