@@ -92,4 +92,4 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
 
     def test_party_endpoint(self):
         parties_resp = self.app.get("/api/next/parties/")
-        self.assertEqual(parties_resp.json["count"], 6)
+        self.assertEqual(parties_resp.json["count"], 7)
