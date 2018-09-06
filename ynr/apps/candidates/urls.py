@@ -5,39 +5,13 @@ from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from django.views.decorators.cache import cache_page
 
-from rest_framework import routers
-
 import candidates.views as views
-from uk_results.views import CandidateResultViewSet, ResultSetViewSet
 
 from .feeds import RecentChangesFeed, NeedsReviewFeed
 from .constants import ELECTION_ID_REGEX, POST_ID_REGEX
 
-api_router = routers.DefaultRouter()
-api_router.register(r"persons", views.PersonViewSet, base_name="person")
-api_router.register(r"organizations", views.OrganizationViewSet)
-api_router.register(r"posts", views.PostViewSet)
-api_router.register(r"elections", views.ElectionViewSet)
-api_router.register(r"party_sets", views.PartySetViewSet)
-api_router.register(r"images", views.ImageViewSet)
-api_router.register(r"post_elections", views.PostExtraElectionViewSet)
-api_router.register(r"memberships", views.MembershipViewSet)
-api_router.register(r"logged_actions", views.LoggedActionViewSet)
-api_router.register(r"extra_fields", views.ExtraFieldViewSet)
-api_router.register(r"complex_fields", views.ComplexPopoloFieldViewSet)
-api_router.register(r"person_redirects", views.PersonRedirectViewSet)
-
-api_router.register(r"candidate_results", CandidateResultViewSet)
-api_router.register(r"result_sets", ResultSetViewSet)
-
-api_router.register(
-    r"candidates_for_postcode",
-    views.CandidatesAndElectionsForPostcodeViewSet,
-    base_name="candidates-for-postcode",
-)
 
 urlpatterns = [
-    url(r"^api/(?P<version>v0.9)/", include(api_router.urls)),
     url(
         r"^api-auth/",
         include("rest_framework.urls", namespace="rest_framework"),
@@ -253,31 +227,6 @@ patterns_to_format = [
         "pattern": r"^copyright-question$",
         "view": views.AskForCopyrightAssigment.as_view(),
         "name": "ask-for-copyright-assignment",
-    },
-    {
-        "pattern": r"^post-id-to-party-set.json$",
-        "view": cache_page(60 * 60)(views.PostIDToPartySetView.as_view()),
-        "name": "post-id-to-party-set",
-    },
-    {
-        "pattern": r"^all-parties.json$",
-        "view": cache_page(60 * 60)(views.AllPartiesJSONView.as_view()),
-        "name": "all-parties-json-view",
-    },
-    {
-        "pattern": r"^version.json",
-        "view": views.VersionView.as_view(),
-        "name": "version",
-    },
-    {
-        "pattern": r"^upcoming-elections",
-        "view": views.UpcomingElectionsView.as_view(),
-        "name": "upcoming-elections",
-    },
-    {
-        "pattern": r"^api/current-elections",
-        "view": views.CurrentElectionsView.as_view(),
-        "name": "current-elections",
     },
     {
         "pattern": r"^search$",
