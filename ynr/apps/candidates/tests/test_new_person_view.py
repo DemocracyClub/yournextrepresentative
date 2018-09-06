@@ -48,7 +48,7 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms["new-candidate-form"]
         form["name"] = "Elizabeth Bennet"
         form["email"] = "lizzie@example.com"
-        form["party_gb_2015"] = self.labour_party_extra.base_id
+        form["party_GB_2015"] = self.labour_party.ec_id
         form["wikipedia_url"] = "http://en.wikipedia.org/wiki/Lizzie_Bennet"
 
         submission_response = form.submit()
@@ -82,7 +82,8 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertEqual(candidacy.post.slug, "65808")
         self.assertEqual(candidacy.role, "Candidate")
-        self.assertEqual(candidacy.on_behalf_of.extra.slug, "party:53")
+        self.assertEqual(candidacy.party.legacy_slug, "party:53")
+        self.assertEqual(candidacy.party.ec_id, "PP53")
         self.assertEqual(candidacy.post_election.election_id, self.election.id)
 
         links = person.links.all()

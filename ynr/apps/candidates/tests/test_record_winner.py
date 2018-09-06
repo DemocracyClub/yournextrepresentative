@@ -20,7 +20,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
 
@@ -29,7 +29,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=self.winner,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
 
@@ -106,9 +106,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "Member of Parliament for Dulwich and West Norwood",
         )
         self.assertEqual(resultevent.post, self.dulwich_post)
-        self.assertEqual(
-            resultevent.winner_party.extra, self.labour_party_extra
-        )
+        self.assertEqual(resultevent.winner_party, self.labour_party)
         self.assertEqual(resultevent.source, "BBC website")
         self.assertEqual(resultevent.user, self.user_who_can_record_results)
         self.assertEqual(resultevent.parlparse_id, "")
@@ -255,7 +253,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
 
@@ -264,7 +262,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=self.winner,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             elected=True,
             post_election=self.dulwich_post_pee,
         )
@@ -345,7 +343,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "Member of Parliament for Dulwich and West Norwood",
         )
         self.assertEqual(resultevent.post, self.dulwich_post)
-        self.assertEqual(resultevent.winner_party, self.labour_party_extra.base)
+        self.assertEqual(resultevent.winner_party, self.labour_party)
         self.assertEqual(
             resultevent.source, "Result recorded in error, retracting"
         )

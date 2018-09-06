@@ -30,7 +30,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
 
@@ -49,7 +49,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=dulwich_not_stand,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee_earlier,
         )
         dulwich_not_stand.not_standing.add(self.election)
@@ -57,7 +57,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=edinburgh_winner,
             post=winner_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             elected=True,
             post_election=self.election.postextraelection_set.get(
                 post=winner_post
@@ -67,14 +67,14 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=edinburgh_candidate,
             post=winner_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
 
         MembershipFactory.create(
             person=edinburgh_may_stand,
             post=winner_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.earlier_election.postextraelection_set.get(
                 post=winner_post
             ),

@@ -16,6 +16,7 @@ from candidates.models import LoggedAction
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 from popolo.models import Person
+from parties.models import Party
 
 from . import factories
 from .auth import TestUserMixin
@@ -197,11 +198,10 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
                 "source": "just a test",
                 "standing_2015": "standing",
                 "constituency_2015": "65808",
-                "party_gb_2015": str(self.gb_parties.parties.first().pk),
+                "party_GB_2015": str(Party.objects.first().ec_id),
             },
             user=self.user,
         ).follow()
-
         person = response.context["person"]
         self.person = person
 

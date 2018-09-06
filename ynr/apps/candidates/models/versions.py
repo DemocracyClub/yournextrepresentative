@@ -8,6 +8,7 @@ from django.db.models import F
 from django.conf import settings
 
 from ..twitter_api import update_twitter_user_id, TwitterAPITokenMissing
+from parties.models import Party
 
 # FIXME: handle the extra fields (e.g. cv & program for BF)
 # FIXME: check all the preserve_fields are dealt with
@@ -73,9 +74,9 @@ def get_person_as_version_data(person, new_person=False):
                 standing_in[election.slug][
                     "party_list_position"
                 ] = membership.party_list_position
-            party = membership.on_behalf_of
+            party = membership.party
             party_memberships[post_election.election.slug] = {
-                "id": party.extra.slug,
+                "id": party.legacy_slug,
                 "name": party.name,
             }
         for not_standing_in_election in person.not_standing.all():
@@ -178,14 +179,14 @@ def revert_person_from_version_data(person, version_data, part_of_merge=False):
             person.not_standing.add(election)
         else:
             # Get the corresponding party membership data:
-            party = Organization.objects.get(
-                extra__slug=version_data["party_memberships"][election_slug][
+            party = Party.objects.get(
+                legacy_slug=version_data["party_memberships"][election_slug][
                     "id"
                 ]
             )
             post = Post.objects.get(slug=standing_in["post_id"])
             Membership.objects.create(
-                on_behalf_of=party,
+                party=party,
                 person=person,
                 post=post,
                 role=election.candidate_membership_role,

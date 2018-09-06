@@ -23,13 +23,13 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         factories.MembershipFactory.create(
             person=self.primary_person,
             post=self.camberwell_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.camberwell_post_pee_earlier,
         )
         factories.MembershipFactory.create(
             person=self.secondary_person,
             post=self.local_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.local_election.postextraelection_set.get(
                 post=self.local_post
             ),
@@ -37,7 +37,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         secondary_membership = factories.MembershipFactory.create(
             person=self.secondary_person,
             post=self.camberwell_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.camberwell_post_pee,
         )
 
@@ -78,13 +78,13 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         primary_membership = factories.MembershipFactory.create(
             person=self.primary_person,
             post=self.camberwell_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.camberwell_post_pee_earlier,
         )
         factories.MembershipFactory.create(
             person=self.secondary_person,
             post=self.local_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.local_election.postextraelection_set.get(
                 post=self.local_post
             ),
@@ -92,7 +92,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         factories.MembershipFactory.create(
             person=self.secondary_person,
             post=self.camberwell_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.camberwell_post_pee,
         )
 

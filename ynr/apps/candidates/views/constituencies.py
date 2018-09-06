@@ -47,8 +47,8 @@ from results.models import ResultEvent
 from moderation_queue.forms import SuggestedPostLockForm
 from moderation_queue.models import SuggestedPostLock
 
-
-from popolo.models import Membership, Post, Organization, Person
+from popolo.models import Membership, Post, Person
+from parties.models import Party
 
 
 def get_max_winners(post_election):
@@ -173,9 +173,7 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
         extra_qs = Membership.objects.select_related("post_election__election")
         current_candidacies, past_candidacies = split_candidacies(
             self.election_data,
-            mp_post.memberships.select_related(
-                "person", "on_behalf_of", "on_behalf_of__extra"
-            ).all(),
+            mp_post.memberships.select_related("person", "party").all(),
         )
 
         area_2015_map = {
@@ -838,9 +836,9 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
             other_post = Post.objects.get(slug=slug)
             current_candidacies_2015, past_candidacies_2015 = split_candidacies(
                 self.election_data,
-                other_post.memberships.select_related(
-                    "person", "on_behalf_of", "on_behalf_of__extra"
-                ).filter(post_election__election__slug="2015"),
+                other_post.memberships.select_related("person", "party").filter(
+                    post_election__election__slug="2015"
+                ),
             )
 
         # HACK
@@ -967,7 +965,7 @@ class ConstituencyListView(ElectionMixin, TemplateView):
             .prefetch_related(
                 Prefetch(
                     "membership_set",
-                    Membership.objects.select_related("on_behalf_of", "person"),
+                    Membership.objects.select_related("party", "person"),
                 )
             )
         )
@@ -1140,7 +1138,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 old_post_id=self.post_data.slug,
                 old_post_name=self.post_data.label,
                 post=self.post_data,
-                winner_party=membership_new_winner.on_behalf_of,
+                winner_party=membership_new_winner.party,
                 source=form.cleaned_data["source"],
                 user=self.request.user,
                 parlparse_id=self.person.get_identifier("uk.org.publicwhip"),
@@ -1210,7 +1208,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
                         old_post_id=candidacy.post.slug,
                         old_post_name=candidacy.post.label,
                         post=candidacy.post,
-                        winner_party=candidacy.on_behalf_of,
+                        winner_party=candidacy.party,
                         source=source,
                         user=self.request.user,
                         parlparse_id=candidacy.person.get_identifier(
@@ -1301,8 +1299,8 @@ class OrderedPartyListView(ElectionMixin, TemplateView):
         post_qs = Post.objects.all()
         mp_post = get_object_or_404(post_qs, slug=post_id)
 
-        party_id = kwargs["organization_id"]
-        party = get_object_or_404(Organization, extra__slug=party_id)
+        party_id = kwargs["legacy_slug"]
+        party = get_object_or_404(Party, legacy_slug=party_id)
 
         context["party"] = party
 
@@ -1317,7 +1315,7 @@ class OrderedPartyListView(ElectionMixin, TemplateView):
                 kwargs={
                     "election": self.election,
                     "post_id": post_id,
-                    "organization_id": party_id,
+                    "legacy_slug": party_id,
                 },
             )
         )
@@ -1340,7 +1338,7 @@ class OrderedPartyListView(ElectionMixin, TemplateView):
         context[
             "positions_and_people"
         ] = get_party_people_for_election_from_memberships(
-            self.election, party.id, mp_post.memberships
+            self.election, party.ec_id, mp_post.memberships
         )
 
         party_set = PartySet.objects.get(post__slug=post_id)

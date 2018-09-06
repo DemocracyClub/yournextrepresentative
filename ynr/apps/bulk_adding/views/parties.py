@@ -4,11 +4,11 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.views.generic import FormView, TemplateView
-from popolo.models import Identifier, Membership, Person
+from popolo.models import Membership, Person
 
 from bulk_adding import forms, helpers
-from candidates.models import OrganizationExtra
 from elections.models import Election
+from parties.models import Party
 
 # Assume 5 winners if we have no other info.
 # If someone reports this, we can update EE and re-import
@@ -24,10 +24,7 @@ class BasePartyBulkAddView(LoginRequiredMixin, TemplateView):
         return self._election_obj
 
     def get_party(self):
-        identifier = Identifier.objects.get(
-            scheme="electoral-commission", identifier=self.kwargs["party_id"]
-        )
-        return identifier.content_object
+        return Party.objects.get(ec_id=self.kwargs["party_id"])
 
     def get_pee_qs(self, election):
         qs = election.postextraelection_set.all()
@@ -58,14 +55,12 @@ class SelectPartyForm(BasePartyBulkAddView, FormView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        org = OrganizationExtra.objects.get(base__pk=form.cleaned_data["party"])
-        org_ec_id = org.base.identifiers.get(scheme="electoral-commission")
         return HttpResponseRedirect(
             reverse(
                 "bulk_add_by_party",
                 kwargs={
                     "election": self.get_election().slug,
-                    "party_id": org_ec_id.identifier,
+                    "party_id": form.cleaned_data["party"],
                 },
             )
         )
@@ -87,7 +82,7 @@ class BulkAddPartyView(BasePartyBulkAddView):
             existing = Membership.objects.filter(
                 post_election__election=pee.election,
                 post=pee.post,
-                on_behalf_of=context["party"],
+                party=context["party"],
             )
             extra_forms = pee.winner_count or WINNER_COUNT_IF_NONE
             factory = django_forms.formset_factory(

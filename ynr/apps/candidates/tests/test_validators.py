@@ -110,7 +110,7 @@ class TestValidators(UK2015ExamplesMixin, TestCase):
                 "source": "Just testing...",
                 "standing_2015": "standing",
                 "constituency_2015": "65808",
-                "party_gb_2015": self.conservative_party_extra.base.id,
+                "party_GB_2015": self.conservative_party.id,
             },
             initial={"person": self.person},
         )
@@ -149,7 +149,7 @@ class TestValidators(UK2015ExamplesMixin, TestCase):
                 "source": "Just testing...",
                 "standing_2015": "standing",
                 "constituency_2015": "65808",
-                "party_gb_2015": self.conservative_party_extra.base.id,
+                "party_GB_2015": self.conservative_party.id,
             },
             initial={"person": self.person},
         )
@@ -188,7 +188,7 @@ class TestValidators(UK2015ExamplesMixin, TestCase):
                 "source": "Just testing...",
                 "standing_2015": "not-sure",
                 "constituency_2015": "65808",
-                "party_gb_2015": self.conservative_party_extra.base.id,
+                "party_GB_2015": self.conservative_party.id,
             },
             initial={"person": self.person},
         )

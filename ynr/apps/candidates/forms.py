@@ -15,6 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from candidates.models import PartySet, ExtraField, ComplexPopoloField
 from popolo.models import Organization, OtherName, Post
 from popolo.person_helpers import parse_approximate_date
+from parties.models import Party
 from .twitter_api import get_twitter_user_id, TwitterAPITokenMissing
 
 if django_version[:2] < (1, 9):
@@ -244,14 +245,12 @@ class BasePersonForm(forms.Form):
                 raise forms.ValidationError(
                     message.format(post_id=post_id, election=election_name)
                 )
-            party_field = "party_" + party_set.slug + "_" + election
+            party_field = "party_" + party_set.slug.upper() + "_" + election
             try:
-                party_id = int(cleaned_data[party_field], 10)
+                party_id = cleaned_data[party_field]
             except ValueError:
                 party_id = None
-            if not Organization.objects.filter(
-                classification="Party", id=party_id
-            ).exists():
+            if not Party.objects.filter(ec_id=party_id).exists():
                 message = _("You must specify a party for the {election}")
                 raise forms.ValidationError(
                     message.format(election=election_name)
@@ -333,26 +332,32 @@ class NewPersonForm(BasePersonForm):
 
         for party_set in PartySet.objects.all():
             if specific_party_set and (
-                party_set.slug != specific_party_set.slug
+                party_set.slug.upper() != specific_party_set.slug.upper()
             ):
                 continue
             self.fields[
-                "party_" + party_set.slug + "_" + election
+                "party_" + party_set.slug.upper() + "_" + election
             ] = forms.ChoiceField(
                 label=_("Party in {election}").format(
                     election=election_data.name
                 ),
-                choices=party_set.party_choices(),
+                choices=Party.objects.register(
+                    party_set.slug.upper()
+                ).party_choices(),
                 required=False,
                 widget=forms.Select(
                     attrs={"class": "party-select party-select-" + election}
                 ),
             )
+
             if election_data.party_lists_in_use:
                 # Then add a field to enter the position on the party list
                 # as an integer:
                 field_name = (
-                    "party_list_position_" + party_set.slug + "_" + election
+                    "party_list_position_"
+                    + party_set.slug.upper()
+                    + "_"
+                    + election
                 )
                 self.fields[field_name] = forms.IntegerField(
                     label=_(
@@ -393,7 +398,12 @@ class AddElectionFieldsMixin(object):
         # slow, so cache these results, so they're not fetched from
         # the database again each time add_election_fields is called.
         return [
-            (party_set, party_set.party_choices(include_descriptions=False))
+            (
+                party_set,
+                Party.objects.register(party_set.slug.upper()).party_choices(
+                    include_descriptions=False
+                ),
+            )
             for party_set in PartySet.objects.all()
         ]
 
@@ -425,7 +435,7 @@ class AddElectionFieldsMixin(object):
         )
         for party_set, party_choices in self.party_sets_and_party_choices:
             self.fields[
-                "party_" + party_set.slug + "_" + election
+                "party_" + party_set.slug.upper() + "_" + election
             ] = forms.ChoiceField(
                 label=_("Party in {election} ({party_set_name})").format(
                     election=election_data.name, party_set_name=party_set.name
@@ -440,7 +450,10 @@ class AddElectionFieldsMixin(object):
                 # Then add a field to enter the position on the party list
                 # as an integer:
                 field_name = (
-                    "party_list_position_" + party_set.slug + "_" + election
+                    "party_list_position_"
+                    + party_set.slug.upper()
+                    + "_"
+                    + election
                 )
                 self.fields[field_name] = forms.IntegerField(
                     label=_(

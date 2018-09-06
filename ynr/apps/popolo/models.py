@@ -221,9 +221,8 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
     @property
     def current_candidacies(self):
         result = self.memberships.filter(
-            post_election__election__current=True,
-            role=models.F("post_election__election__candidate_membership_role"),
-        ).select_related("person", "on_behalf_of", "post")
+            post_election__election__current=True
+        ).select_related("person", "party", "post")
         return list(result)
 
     def record_version(self, change_metadata, new_person=False):
@@ -281,7 +280,7 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
         last_candidacy = self.last_candidacy
         if last_candidacy is None:
             return None
-        return last_candidacy.on_behalf_of
+        return last_candidacy.party
 
     def name_with_honorifics(self):
         name_parts = []
@@ -469,13 +468,15 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
                 from candidates.models import PartySet
 
                 party_set = PartySet.objects.get(post__slug=post_id)
-                party = candidacy.on_behalf_of
-                party_key = "party_" + party_set.slug + "_" + election_data.slug
-                initial_data[party_key] = party.id
+                party = candidacy.party
+                party_key = (
+                    "party_" + party_set.slug.upper() + "_" + election_data.slug
+                )
+                initial_data[party_key] = party.ec_id
                 position = candidacy.party_list_position
                 position_key = (
                     "party_list_position_"
-                    + party_set.slug
+                    + party_set.slug.upper()
                     + "_"
                     + election_data.slug
                 )
@@ -524,7 +525,7 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
                 ):
                     candidacies.append(m)
         for candidacy in candidacies:
-            party = candidacy.on_behalf_of
+            party = candidacy.party
             post = candidacy.post
             elected = candidacy.elected
             elected_for_csv = ""
@@ -578,7 +579,7 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
                 "election": candidacy.post_election.election.slug,
                 "election_date": candidacy.post_election.election.election_date,
                 "election_current": candidacy.post_election.election.current,
-                "party_id": party.extra.slug,
+                "party_id": party.legacy_slug,
                 "party_lists_in_use": candidacy.post_election.election.party_lists_in_use,
                 "party_list_position": candidacy.party_list_position,
                 "party_name": party.name,

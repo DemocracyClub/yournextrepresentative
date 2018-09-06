@@ -22,7 +22,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = self.app.get(
             "/bulk_adding/party/2015/", user=self.user_who_can_upload_documents
         ).forms[1]
-        form["party_gb"] = ""
+        form["party_GB"] = ""
         response = form.submit()
         self.assertContains(response, "Select one and only one party")
 
@@ -30,7 +30,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = self.app.get(
             "/bulk_adding/party/2015/", user=self.user_who_can_upload_documents
         ).forms[1]
-        form["party_gb"] = self.conservative_party_extra.base.pk
+        form["party_GB"] = self.conservative_party.ec_id
         response = form.submit().follow()
 
         self.assertEqual(response.status_code, 200)
@@ -38,10 +38,6 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "Add Conservative Party candidates")
 
         self.assertEqual(response.context["election_obj"], self.election)
-
-        self.assertEqual(
-            response.context["party"].extra, self.conservative_party_extra
-        )
 
         self.assertTrue(len(response.context["posts"]), 2)
 
@@ -108,7 +104,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "This field is required.")
 
         # Now submit the valid form
-        with self.assertNumQueries(58):
+        with self.assertNumQueries(56):
             form["{}-0-select_person".format(pee.pk)] = "_new"
             response = form.submit().follow()
 

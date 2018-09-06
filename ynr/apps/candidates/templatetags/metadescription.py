@@ -12,7 +12,7 @@ register = template.Library()
 def metadescription(person, last_candidacy, today):
     if last_candidacy:
         election = last_candidacy.post_election.election
-        last_party_name = format_party_name(last_candidacy.on_behalf_of.name)
+        last_party_name = format_party_name(last_candidacy.party.name)
         args = {
             "election": election.name,
             "name": person.name,

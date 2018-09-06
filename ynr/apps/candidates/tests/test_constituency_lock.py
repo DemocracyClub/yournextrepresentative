@@ -129,7 +129,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=person,
             post=post_locked,
-            on_behalf_of=self.green_party_extra.base,
+            party=self.green_party,
             post_election=post_locked.postextraelection_set.get(
                 election=self.election
             ),
@@ -140,7 +140,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.green_party_extra.base,
+            party=self.green_party,
             post_election=self.dulwich_post.postextraelection_set.get(
                 election=self.election
             ),
@@ -158,7 +158,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
             {
                 "csrfmiddlewaretoken": csrftoken,
                 "name": "Imaginary Candidate",
-                "party_gb_2015": self.green_party_extra.base_id,
+                "party_GB_2015": self.green_party.ec_id,
                 "constituency_2015": "65913",
                 "standing_2015": "standing",
                 "source": "Testing adding a new candidate to a locked constituency",
@@ -174,7 +174,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         form = response.forms["new-candidate-form"]
         form["name"] = "Imaginary Candidate"
-        form["party_gb_2015"] = self.green_party_extra.base_id
+        form["party_GB_2015"] = self.green_party.ec_id
         form[
             "source"
         ] = "Testing adding a new candidate to a locked constituency"
@@ -232,7 +232,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get("/person/4170/update", user=self.user)
         form = response.forms["person-details"]
         form["source"] = "Testing a party change in a locked constituency"
-        form["party_gb_2015"] = self.conservative_party_extra.base_id
+        form["party_GB_2015"] = self.conservative_party.ec_id
         submission_response = form.submit(expect_errors=True)
         self.assertEqual(submission_response.status_code, 403)
 
@@ -242,7 +242,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         form = response.forms["person-details"]
         form["source"] = "Testing a party change in a locked constituency"
-        form["party_gb_2015"] = self.conservative_party_extra.base_id
+        form["party_GB_2015"] = self.conservative_party.ec_id
         submission_response = form.submit()
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(submission_response.location, "/person/4170")
@@ -251,7 +251,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get("/person/4322/update", user=self.user)
         form = response.forms["person-details"]
         form["source"] = "Testing a party change in an unlocked constituency"
-        form["party_gb_2015"] = self.conservative_party_extra.base_id
+        form["party_GB_2015"] = self.conservative_party.ec_id
         submission_response = form.submit()
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(submission_response.location, "/person/4322")

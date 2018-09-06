@@ -135,7 +135,7 @@
       <dd>{% if person.email %}<a href="mailto:{{ person.email }}">{{ person.email }}</a>{% endif %}</dd>
     {% endif %}
     <dt>{% trans "Party" %}</dt>
-    <dd>{{ last_candidacy.on_behalf_of.name }}</dd>
+    <dd>{{ last_candidacy.party.name }}</dd>
     {% if 'summary' in simple_fields %}
       <dt>{% trans "Summary" %}</dt>
       <dd>{% if person.summary %}{{ person.summary }}{% endif %}</dd>
@@ -234,9 +234,9 @@
 
 <div class="person__actions">
 
-  {% if last_candidacy.on_behalf_of.extra.primary_image %}
+  {% if last_candidacy.party.default_emblem %}
     <div class="person__party_emblem">
-      {% thumbnail last_candidacy.on_behalf_of.extra.primary_image "240" as im %}
+      {% thumbnail last_candidacy.party.default_emblem.image "240" as im %}
         <img src="{{ im.url }}"/>
       {% endthumbnail %}
     </div>

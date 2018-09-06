@@ -6,6 +6,7 @@ from django.views.generic.base import RedirectView
 from django.views.decorators.cache import cache_page
 
 import candidates.views as views
+import parties.views
 
 from .feeds import RecentChangesFeed, NeedsReviewFeed
 from .constants import ELECTION_ID_REGEX, POST_ID_REGEX
@@ -61,7 +62,7 @@ patterns_to_format = [
         "name": "constituency",
     },
     {
-        "pattern": r"^election/{election}/party-list/{post}/(?P<organization_id>[^/]+)$",
+        "pattern": r"^election/{election}/party-list/{post}/(?P<legacy_slug>[^/]+)$",
         "view": views.OrderedPartyListView.as_view(),
         "name": "party-for-post",
     },
@@ -160,13 +161,13 @@ patterns_to_format = [
         "name": "posts-of-type-view",
     },
     {
-        "pattern": r"^election/{election}/party/(?P<organization_id>[^/]+)/(?P<ignored_slug>.*)$",
-        "view": views.PartyDetailView.as_view(),
+        "pattern": r"^election/{election}/party/(?P<legacy_slug>[^/]+)/(?P<ignored_slug>.*)$",
+        "view": parties.views.PartyDetailView.as_view(),
         "name": "party",
     },
     {
         "pattern": r"^election/{election}/parties/?$",
-        "view": views.PartyListView.as_view(),
+        "view": parties.views.PartyListView.as_view(),
         "name": "party-list",
     },
     {

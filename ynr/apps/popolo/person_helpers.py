@@ -16,7 +16,8 @@ from candidates.twitter_api import (
     update_twitter_user_id,
     TwitterAPITokenMissing,
 )
-from popolo.models import Organization, Post, Membership
+from popolo.models import Post, Membership
+from parties.models import Party
 
 
 def parse_approximate_date(s):
@@ -105,14 +106,16 @@ def update_person_from_form(person, form):
         standing = form_data.pop("standing_" + election_data.slug, "standing")
         if post_id:
             party_set = PartySet.objects.get(post__slug=post_id)
-            party_key = "party_" + party_set.slug + "_" + election_data.slug
+            party_key = (
+                "party_" + party_set.slug.upper() + "_" + election_data.slug
+            )
             position_key = (
                 "party_list_position_"
-                + party_set.slug
+                + party_set.slug.upper()
                 + "_"
                 + election_data.slug
             )
-            party = Organization.objects.get(pk=form_data[party_key])
+            party = Party.objects.get(ec_id=form_data[party_key])
             party_list_position = form_data.get(position_key) or None
             post = Post.objects.get(slug=post_id)
         else:
@@ -163,7 +166,7 @@ def mark_as_standing(person, election_data, post, party, party_list_position):
     membership.party_list_position = party_list_position
     membership.save()
     # Update the party, in case it's changed:
-    membership.on_behalf_of = party
+    membership.party = party
     membership.save()
     # Now remove any memberships that shouldn't now be there:
     for membership_to_remove in Membership.objects.filter(

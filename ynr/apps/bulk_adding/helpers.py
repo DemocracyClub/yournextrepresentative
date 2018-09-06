@@ -41,11 +41,7 @@ def update_person(
         person=person,
         role=election.candidate_membership_role,
         post_election=post_election,
-        defaults={
-            "on_behalf_of": party,
-            "party_list_position": None,
-            "elected": None,
-        },
+        defaults={"party": party, "party_list_position": None, "elected": None},
     )
 
     # Now remove other memberships in this election for that

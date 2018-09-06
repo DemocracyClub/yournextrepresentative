@@ -50,7 +50,7 @@ class PreventCreatingBadMemberships(UK2015ExamplesMixin, TestCase):
             Membership.objects.create(
                 role="Candidate",
                 person=new_candidate,
-                on_behalf_of=self.green_party_extra.base,
+                party=self.green_party,
                 post=self.camberwell_post,
                 post_election=self.camberwell_post_pee,
             )

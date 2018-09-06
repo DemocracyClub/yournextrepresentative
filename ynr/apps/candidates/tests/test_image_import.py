@@ -9,6 +9,7 @@ from candidates.models import ImageExtra
 from . import factories
 from .auth import TestUserMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from parties.tests.factories import PartyFactory
 
 
 def get_file_md5sum(filename):
@@ -18,15 +19,13 @@ def get_file_md5sum(filename):
 
 class TestImageImport(TestUserMixin, TestCase):
     def setUp(self):
-        self.labour_extra = factories.PartyExtraFactory.create(
-            slug="party:53", base__name="Labour Party"
-        )
-        self.org_ct = ContentType.objects.get_for_model(self.labour_extra)
+        self.person = factories.PersonFactory.create(name="Alex")
+        self.org_ct = ContentType.objects.get_for_model(self.person)
         self.image_filename = EXAMPLE_IMAGE_FILENAME
 
     def test_import_new_image(self):
         md5sum = get_file_md5sum(self.image_filename)
-        self.assertEqual(0, self.labour_extra.images.count())
+        self.assertEqual(0, self.person.images.count())
         ImageExtra.objects.update_or_create_from_file(
             self.image_filename,
             "images/imported.jpg",
@@ -35,15 +34,15 @@ class TestImageImport(TestUserMixin, TestCase):
                 "copyright": "example-license",
                 "uploading_user": self.user,
                 "user_notes": "Here's an image...",
-                "base__content_object": self.labour_extra,
+                "base__content_object": self.person,
                 "base__is_primary": True,
                 "base__source": "Found on the candidate's Flickr feed",
             },
         )
-        self.assertEqual(1, self.labour_extra.images.count())
+        self.assertEqual(1, self.person.images.count())
         # This refetches the object from the database so we don't get
         # ORM-cached data:
-        updated_labour = self.labour_extra.images.first()
+        updated_labour = self.person.images.first()
         updated_labour_extra = updated_labour.extra
         self.assertEqual(updated_labour_extra.copyright, "example-license")
         self.assertEqual(updated_labour_extra.uploading_user, self.user)
@@ -55,7 +54,7 @@ class TestImageImport(TestUserMixin, TestCase):
 
     def test_update_imported_image(self):
         md5sum = get_file_md5sum(self.image_filename)
-        self.assertEqual(0, self.labour_extra.images.count())
+        self.assertEqual(0, self.person.images.count())
         ImageExtra.objects.update_or_create_from_file(
             self.image_filename,
             "images/imported.jpg",
@@ -64,12 +63,12 @@ class TestImageImport(TestUserMixin, TestCase):
                 "copyright": "example-license",
                 "uploading_user": self.user,
                 "user_notes": "Here's an image...",
-                "base__content_object": self.labour_extra,
+                "base__content_object": self.person,
                 "base__is_primary": True,
                 "base__source": "Found on the candidates Flickr feed",
             },
         )
-        self.assertEqual(1, self.labour_extra.images.count())
+        self.assertEqual(1, self.person.images.count())
         # Now try to update that image:
         ImageExtra.objects.update_or_create_from_file(
             self.image_filename,
@@ -79,15 +78,15 @@ class TestImageImport(TestUserMixin, TestCase):
                 "copyright": "another-license",
                 "uploading_user": self.user_who_can_merge,
                 "user_notes": "The classic image...",
-                "base__content_object": self.labour_extra,
+                "base__content_object": self.person,
                 "base__is_primary": True,
                 "base__source": "The same image from the Flickr feed",
             },
         )
-        self.assertEqual(1, self.labour_extra.images.count())
+        self.assertEqual(1, self.person.images.count())
         # This refetches the object from the database so we don't get
         # ORM-cached data:
-        updated_labour = self.labour_extra.images.first()
+        updated_labour = self.person.images.first()
         updated_labour_extra = updated_labour.extra
         self.assertEqual(updated_labour_extra.copyright, "another-license")
         self.assertEqual(

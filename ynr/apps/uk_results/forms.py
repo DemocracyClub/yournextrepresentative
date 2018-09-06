@@ -30,7 +30,7 @@ def mark_candidates_as_winner(request, instance):
                 post=post_election.post,
                 old_post_id=post_election.post.slug,
                 old_post_name=post_election.post.label,
-                winner_party=membership.on_behalf_of,
+                winner_party=membership.party,
                 source=source,
                 user=request.user,
             )
@@ -86,7 +86,7 @@ class ResultSetForm(forms.ModelForm):
                 initial = None
             fields[name] = forms.IntegerField(
                 label="{} ({})".format(
-                    membership.person.name, membership.on_behalf_of.name
+                    membership.person.name, membership.party.name
                 ),
                 initial=initial,
             )

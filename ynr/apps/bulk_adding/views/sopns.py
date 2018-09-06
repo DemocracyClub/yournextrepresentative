@@ -6,7 +6,8 @@ from django.db.models import F
 from django.http import HttpResponseRedirect
 from django.utils.text import slugify
 from django.views.generic import RedirectView, TemplateView
-from popolo.models import Organization, Person, Post
+from popolo.models import Person, Post
+from parties.models import Party
 
 from bulk_adding import forms, helpers
 from candidates.models import PostExtraElection
@@ -39,7 +40,10 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         kwargs = {"exclude_deregistered": True, "include_description_ids": True}
         if not self.request.POST:
             kwargs["include_non_current"] = False
-        context["parties"] = context["post"].party_set.party_choices(**kwargs)
+        register = context["post"].party_set.slug.upper()
+        context["parties"] = Party.objects.register(register).party_choices(
+            **kwargs
+        )
         context["official_document"] = OfficialDocument.objects.filter(
             post__slug=context["post_id"], election__slug=context["election"]
         ).first()
@@ -91,7 +95,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             post_election__election=context["election_obj"]
         ):
             person = membership.person
-            person.party = membership.on_behalf_of
+            person.party = membership.party
             people_set.add(person)
 
         known_people = list(people_set)
@@ -128,11 +132,11 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
         for form in self.request.session["bulk_add_data"]:
             if form:
                 if "__" in form["party"]:
-                    org_id, other_name_id = form["party"].split("__")
-                    org = Organization.objects.get(pk=org_id)
-                    desc = org.other_names.get(pk=other_name_id)
+                    party_id, description_id = form["party"].split("__")
+                    party = Party.objects.get(ec_id=party_id)
+                    desc = party.descriptions.get(pk=description_id)
                 else:
-                    desc = Organization.objects.get(pk=form["party"]).name
+                    desc = Party.objects.get(ec_id=form["party"]).name
 
                 form["party_description"] = desc
                 initial.append(form)
@@ -161,8 +165,8 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                 helpers.update_person(
                     self.request,
                     person,
-                    Organization.objects.get(
-                        pk=person_form.cleaned_data["party"].split("__")[0]
+                    Party.objects.get(
+                        ec_id=person_form.cleaned_data["party"].split("__")[0]
                     ),
                     context["post_election"],
                     data["source"],

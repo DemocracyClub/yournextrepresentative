@@ -27,7 +27,7 @@ urlpatterns = [
         name="constituency",
     ),
     url(
-        r"^election/{election}/party/(?P<organization_id>[a-z-]+:[-\d]+)/(?P<ignored_slug>.*)$".format(
+        r"^election/{election}/party/(?P<legacy_slug>[a-z-]+:[-\d]+)/(?P<ignored_slug>.*)$".format(
             election=r"(?P<election>[^/]+)"
         ),
         views.UKPartyDetailView.as_view(),
