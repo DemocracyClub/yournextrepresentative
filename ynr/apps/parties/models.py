@@ -12,7 +12,7 @@ class Party(TimeStampedModel):
     The canonical source of these parties is The Electoral Commission, with
     some exceptions. Candidate can _technically_ stand for 2 or fewer parties
     (that is, 0, 1 or 2 parties). To save representing this in the data model
-    (and all the complexities that would arise) we make two types of
+    (and all the complexities that would arise) we make three types of
     "psudo-party" objects:
 
     1. "Independent" (standing for 0 parties) is given the ID "ynmp-party:2"
@@ -23,6 +23,9 @@ class Party(TimeStampedModel):
        "Labour and Co-operative Party (Joint Description with Labour Party)"
 
        If we detect "Joint Description with" (or similar) we make a new party
+    3. "Speaker seeking re-election". The speaker of the house doens't
+        stand for a party, rather they are elected directly in to that role
+        (sort of). Thisis given the ID "ynmp-party:12522"
 
 
     """
