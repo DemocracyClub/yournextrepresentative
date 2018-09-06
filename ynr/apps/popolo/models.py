@@ -885,16 +885,6 @@ class Membership(Dateframeable, Timestampable, models.Model):
         help_text=_("The person who is a party to the relationship"),
     )
 
-    on_behalf_of = models.ForeignKey(
-        "Organization",
-        blank=True,
-        null=True,
-        related_name="memberships_on_behalf_of",
-        help_text=_(
-            "The organization on whose behalf the person is a party to the relationship"
-        ),
-    )
-
     party = models.ForeignKey(
         "parties.Party",
         null=True,
