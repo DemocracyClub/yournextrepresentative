@@ -3,12 +3,15 @@ Test some of the basic model use cases
 
 """
 from django.test import TestCase
+from django.core.files.storage import DefaultStorage
 
+from candidates.tests.helpers import TmpMediaRootMixin
 from .factories import PartyFactory, PartyEmblemFactory
 
 
-class TestPartyModels(TestCase):
+class TestPartyModels(TmpMediaRootMixin, TestCase):
     def setUp(self):
+        self.storage = DefaultStorage()
         PartyFactory.reset_sequence()
 
     def test_party_str(self):
