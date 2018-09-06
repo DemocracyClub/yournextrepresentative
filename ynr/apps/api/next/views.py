@@ -16,7 +16,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 
 from images.models import Image
-from candidates import serializers
+from api.next import serializers
 from candidates import models as extra_models
 from elections.models import Election
 from popolo.models import Membership, Person, Post
@@ -134,9 +134,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                     Prefetch(
                         "person__memberships",
                         Membership.objects.select_related(
-                            "on_behalf_of__extra",
-                            "post",
-                            "post_election__election",
+                            "party", "post", "post_election__election"
                         ),
                     ),
                     Prefetch(
@@ -286,9 +284,7 @@ class PersonViewSet(viewsets.ModelViewSet):
         queryset = Person.objects.prefetch_related(
             Prefetch(
                 "memberships",
-                Membership.objects.select_related(
-                    "on_behalf_of__extra", "post"
-                ),
+                Membership.objects.select_related("party", "post"),
             ),
             "memberships__post_election__election",
             "images",
@@ -310,6 +306,7 @@ class PersonViewSet(viewsets.ModelViewSet):
 
 
 class OrganizationViewSet(viewsets.ModelViewSet):
+
     queryset = (
         extra_models.OrganizationExtra.objects.select_related("base")
         .prefetch_related(
@@ -324,7 +321,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             "base__parent__extra",
         )
         .order_by("base__id")
-    )
+    ).exclude(base__classification="Party")
     lookup_field = "slug"
     serializer_class = serializers.OrganizationExtraSerializer
     pagination_class = ResultsSetPagination
@@ -343,10 +340,7 @@ class PostViewSet(viewsets.ModelViewSet):
             Prefetch(
                 "memberships",
                 Membership.objects.select_related(
-                    "person",
-                    "on_behalf_of__extra",
-                    "post",
-                    "post_election__election",
+                    "person", "party", "post", "post_election__election"
                 ),
             ),
         )
