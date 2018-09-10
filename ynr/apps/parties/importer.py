@@ -34,6 +34,7 @@ def make_joint_party_id(id1, id2):
 class ECPartyImporter:
     def __init__(self):
         self.collector = []
+        self.error_collector = []
         self.base_url = EC_API_BASE
         self.per_page = 50
         # Params relating to the search criteria on
@@ -105,7 +106,7 @@ class ECPartyImporter:
             party_list = self.get_party_list(start)
         return self.collector
 
-    def create_joint_parties(self):
+    def create_joint_parties(self, raise_on_error=True):
         """
         We create joint parties if one party's description matches the
         JOINT_DESCRIPTION_REGEX (e.g. contains "joint description").
@@ -151,9 +152,12 @@ class ECPartyImporter:
                         .get()
                     )
                 except Party.DoesNotExist:
-                    print("Can't find the folllowing")
-                    print(other_party_name)
-                    continue
+                    message = "Can't find: {}".format(other_party_name)
+                    if raise_on_error:
+                        raise ValueError(message)
+                    else:
+                        self.error_collector.append(message)
+                        continue
                 joint_id = make_joint_party_id(
                     description.party.ec_id, other_party.ec_id
                 )
