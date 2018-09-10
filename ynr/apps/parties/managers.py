@@ -68,17 +68,16 @@ class PartyQuerySet(models.QuerySet):
         from popolo.models import Membership
 
         candidacies_ever_qs = (
-            self.annotate(candidate_count=models.Count("membership")).order_by(
-                "-candidate_count", "name"
-            )
-            # .only("end_date", "name")
+            self.annotate(candidate_count=models.Count("membership"))
+            .order_by("-candidate_count", "name")
+            .only("date_deregistered", "name")
         )
 
         parties_current_qs = (
             self.filter(membership__post_election__election__current=True)
             .annotate(candidate_count=models.Count("membership"))
             .order_by("-candidate_count", "name")
-            # .only("end_date", "name")
+            .only("date_deregistered", "name")
         )
 
         if not include_non_current:
@@ -90,7 +89,7 @@ class PartyQuerySet(models.QuerySet):
             )
             .annotate(candidate_count=models.Value(0, models.IntegerField()))
             .order_by("-candidate_count", "name")
-            # .only("end_date", "name")
+            .only("date_deregistered", "name")
         )
 
         minimum_count = settings.CANDIDATES_REQUIRED_FOR_WEIGHTED_PARTY_LIST
