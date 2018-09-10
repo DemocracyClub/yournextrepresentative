@@ -4,6 +4,7 @@ Test some of the basic model use cases
 """
 from mock import patch
 from io import StringIO
+from tempfile import NamedTemporaryFile
 
 from django.test import TestCase
 from django.core.files.storage import DefaultStorage
@@ -40,6 +41,18 @@ FAKE_PARTY_DICT = {
 }
 
 FAKE_RESULTS_DICT = {"Total": 1, "Result": [FAKE_PARTY_DICT]}
+
+
+def make_tmp_file_from_source(source):
+    """
+    Copy a file to a tmp location, so we can test deleting it without
+    deleting the checked in source file.
+    """
+    with open(source, "rb") as source_file:
+        ntf = NamedTemporaryFile(delete=False)
+        with open(ntf.name, "wb") as f:
+            f.write(source_file.read())
+            return ntf.name
 
 
 class TestECPartyImporter(TmpMediaRootMixin, TestCase):
@@ -102,7 +115,9 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
 
     @patch("parties.importer.ECEmblem.download_emblem")
     def test_save(self, FakeEmblemPath):
-        FakeEmblemPath.return_value = EXAMPLE_IMAGE_FILENAME
+        FakeEmblemPath.return_value = make_tmp_file_from_source(
+            EXAMPLE_IMAGE_FILENAME
+        )
         self.assertEqual(Party.objects.count(), 2)
         self.assertEqual(PartyDescription.objects.count(), 0)
         self.assertFalse(PartyEmblem.objects.all().exists())
