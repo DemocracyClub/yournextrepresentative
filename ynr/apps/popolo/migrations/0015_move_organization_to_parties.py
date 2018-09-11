@@ -112,8 +112,8 @@ def copy_org_to_party(apps, schema_editor):
     assert Membership.objects.filter(party=None).count() == 0
 
     # These numbers should be identical
-    if Party.objects.count() != all_org_parties.count():
-        raise ValueError("Different number of parties to org parties")
+    if Party.objects.count() < all_org_parties.count():
+        raise ValueError("More Organzation parties than Parties")
 
 
 class Migration(migrations.Migration):
