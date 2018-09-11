@@ -63,10 +63,10 @@ class TestPostIDToPartySetView(UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             response.json,
             {
-                "14419": "gb",
-                "14420": "gb",
-                "65808": "gb",
-                "65913": "gb",
-                "DIW:E05005004": "gb",
+                "14419": "GB",
+                "14420": "GB",
+                "65808": "GB",
+                "65913": "GB",
+                "DIW:E05005004": "GB",
             },
         )

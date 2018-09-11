@@ -70,7 +70,7 @@ urlpatterns = [
     # Standard Django views
     url(
         r"^api/current-elections",
-        v09views.CurrentElectionsView,
+        v09views.CurrentElectionsView.as_view(),
         name="current-elections",
     ),
     url(

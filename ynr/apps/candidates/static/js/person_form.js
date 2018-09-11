@@ -156,7 +156,7 @@ function updateSelectsForElection(show, election) {
       postID = $('#id_constituency_' + escapeID(election)).val(),
       partySet;
   if (postID) {
-    partySet = postIDToPartySet[postID];
+    partySet = postIDToPartySet[postID].toUpperCase();
   }
   if (show) {
     if (postID) {

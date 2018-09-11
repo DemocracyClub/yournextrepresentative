@@ -229,11 +229,10 @@ class PostIDToPartySetView(View):
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):
-        result = dict(
-            Post.objects.filter(elections__current=True).values_list(
-                "slug", "party_set__slug"
-            )
+        qs = Post.objects.filter(elections__current=True).values_list(
+            "slug", "party_set__slug"
         )
+        result = dict([(k, v.upper()) for k, v in qs])
         return HttpResponse(json.dumps(result), content_type="application/json")
 
 
