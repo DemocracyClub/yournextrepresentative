@@ -77,13 +77,14 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
         cmd.stdout = out
         cmd.handle(
             **{
-                "output_new_parties": True,
                 "clear_emblems": True,
                 "skip_create_joint": False,
+                "quiet": False,
+                "no_color": True,
             }
         )
         self.assertTrue(
-            cmd.stdout.getvalue().startswith("Found new political parties!")
+            "Found 1 new political parties!" in cmd.stdout.getvalue()
         )
 
     def test_cleaned_name(self):
@@ -170,9 +171,9 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
         self.assertEqual(PartyEmblem.objects.count(), 0)
         cmd.handle(
             **{
-                "output_new_parties": True,
                 "clear_emblems": True,
                 "skip_create_joint": False,
+                "quiet": False,
             }
         )
         self.assertEqual(PartyEmblem.objects.count(), 3)

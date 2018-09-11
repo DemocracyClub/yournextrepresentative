@@ -1,3 +1,5 @@
+from io import StringIO
+
 from django.core.management.base import BaseCommand
 
 from parties.importer import ECPartyImporter
@@ -23,9 +25,10 @@ class Command(BaseCommand):
             help="Deletes all emblems and re-downloads them all",
         )
         parser.add_argument(
-            "--output-new-parties",
+            "-q",
+            "--quiet",
             action="store_true",
-            help="Write newly created parties to stdout (helpful for notifying of newly registererd parties)",
+            help="Don't output info about new parties. Will still output on error",
         )
         parser.add_argument(
             "--skip-create-joint",
@@ -34,21 +37,34 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        if options["quiet"]:
+            self.stdout = StringIO()
+
         if options["clear_emblems"]:
             for emblem in PartyEmblem.objects.all():
                 emblem.image.delete()
                 emblem.delete()
 
         importer = ECPartyImporter()
-
         importer.do_import()
+
         if not options["skip_create_joint"]:
             importer.create_joint_parties(raise_on_error=False)
 
-        if options["output_new_parties"] and importer.collector:
-            self.stdout.write("Found new political parties!")
+        if importer.collector:
+            self.stdout.write(
+                self.style.SUCCESS(
+                    "Found {} new political parties!".format(
+                        len(importer.collector)
+                    )
+                )
+            )
             for party in importer.collector:
                 self.stdout.write(str(party))
+        else:
+            self.stdout.write(
+                self.style.SUCCESS("Up do date: No new parties found")
+            )
 
         for error in importer.error_collector:
             self.stderr.write(error)
