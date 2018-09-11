@@ -177,6 +177,8 @@ class ECPartyImporter:
                     ec_id=joint_id,
                     defaults={
                         "name": joint_party_name,
+                        "status": "Registered",
+                        "register": "GB",
                         "date_registered": description.date_description_approved,
                         "legacy_slug": make_slug(joint_id),
                     },
@@ -279,7 +281,8 @@ class ECParty(dict):
     def register(self):
         if not self["RegisterName"] and "PPm" in self.ec_id:
             # Minor parties don't always need to be on a register
-            return None
+            # but for our use let's define them as in GB
+            return "GB"
         expected_names = ["Northern Ireland", "Great Britain"]
         if self["RegisterName"] not in expected_names:
             raise ValueError(
