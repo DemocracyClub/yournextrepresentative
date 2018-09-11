@@ -25,7 +25,7 @@ class Party(TimeStampedModel):
        If we detect "Joint Description with" (or similar) we make a new party
     3. "Speaker seeking re-election". The speaker of the house doens't
         stand for a party, rather they are elected directly in to that role
-        (sort of). Thisis given the ID "ynmp-party:12522"
+        (sort of). This is given the ID "ynmp-party:12522"
 
 
     """
@@ -36,7 +36,15 @@ class Party(TimeStampedModel):
     status = models.CharField(db_index=True, max_length=255)
     date_registered = models.DateField()
     date_deregistered = models.DateField(null=True)
-    legacy_slug = models.CharField(max_length=256, blank=True, unique=True)
+    legacy_slug = models.CharField(
+        max_length=256,
+        blank=True,
+        unique=True,
+        help_text="""
+            A slug used in URLs that comes from the old OrganizationExtra model. 
+            This field will be removed in the future in favour of the ec_id, 
+            but it's required until then""",
+    )
 
     objects = PartyQuerySet.as_manager()
 
