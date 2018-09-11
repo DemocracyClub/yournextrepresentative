@@ -20,6 +20,18 @@ from .constants import (
 from .models import Party, PartyDescription, PartyEmblem
 
 
+def make_slug(party_id):
+    if "-party:" in party_id:
+        return party_id
+    if "PPm" in party_id:
+        prefix = "minor-party"
+    else:
+        prefix = "party"
+
+    party_id = re.sub(r"^PPm?\s*", "", party_id).strip()
+    return "{}:{}".format(prefix, party_id)
+
+
 def extract_number_from_id(party_id):
     m = re.search("\d+", party_id)
     if m:
@@ -166,6 +178,7 @@ class ECPartyImporter:
                     defaults={
                         "name": joint_party_name,
                         "date_registered": description.date_description_approved,
+                        "legacy_slug": make_slug(joint_id),
                     },
                 )
                 if created:
@@ -196,6 +209,7 @@ class ECParty(dict):
                 "status": self.registration_status,
                 "date_registered": self.parse_date(self["ApprovedDate"]),
                 "date_deregistered": self.date_deregistered,
+                "legacy_slug": make_slug(self.ec_id),
             },
         )
 

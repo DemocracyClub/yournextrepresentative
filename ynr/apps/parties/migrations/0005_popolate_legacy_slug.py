@@ -6,12 +6,7 @@ import re
 
 from django.db import migrations
 
-
-def make_slug(party_id):
-    if "-party:" in party_id:
-        return party_id
-    party_id = re.sub(r"^PPm?\s*", "", party_id).strip()
-    return "party:{}".format(party_id)
+from parties.importer import make_slug
 
 
 def add_legacy_slug(apps, schema_editor):
