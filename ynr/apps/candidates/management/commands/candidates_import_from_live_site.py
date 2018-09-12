@@ -319,7 +319,7 @@ class Command(BaseCommand):
                 self.add_related(
                     person, pmodels.OtherName, person_data["other_names"]
                 )
-                self.add_related(p, pmodels.Link, person_data["links"])
+                self.add_related(person, pmodels.Link, person_data["links"])
                 kwargs = {
                     "base": person,
                     "versions": json.dumps(person_data["versions"]),
@@ -350,10 +350,10 @@ class Command(BaseCommand):
                     )
                 if m_data.get("post"):
                     kwargs["post"] = pmodels.Post.objects.get(
-                        extra__slug=m_data["post"]["id"]
+                        slug=m_data["post"]["id"]
                     )
                 kwargs["post_election"] = models.PostExtraElection.objects.get(
-                    postextra=kwargs["post"].extra,
+                    post=kwargs["post"],
                     election=emodels.Election.objects.get(
                         slug=m_data["election"]["id"]
                     ),
