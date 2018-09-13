@@ -61,16 +61,24 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
         self.storage = DefaultStorage()
 
     @patch("parties.importer.ECPartyImporter.get_party_list")
-    def test_importer(self, FakeGetPartyList):
+    @patch("parties.importer.ECEmblem.download_emblem")
+    def test_importer(self, FakeEmblemPath, FakeGetPartyList):
         FakeGetPartyList.return_value = FAKE_RESULTS_DICT
+        FakeEmblemPath.return_value = make_tmp_file_from_source(
+            EXAMPLE_IMAGE_FILENAME
+        )
         importer = ECPartyImporter()
         new_parties = importer.do_import()
         self.assertEqual(Party.objects.count(), 3)
         self.assertEqual(new_parties[0].name, "Wombles Alliance")
 
     @patch("parties.importer.ECPartyImporter.get_party_list")
-    def test_import_management_command(self, FakeGetPartyList):
+    @patch("parties.importer.ECEmblem.download_emblem")
+    def test_import_management_command(self, FakeEmblemPath, FakeGetPartyList):
         FakeGetPartyList.return_value = FAKE_RESULTS_DICT
+        FakeEmblemPath.side_effect = [
+            make_tmp_file_from_source(EXAMPLE_IMAGE_FILENAME)
+        ]
         cmd = Command()
 
         out = StringIO()
@@ -143,8 +151,15 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
             ECParty({})
 
     @patch("parties.importer.ECPartyImporter.get_party_list")
+    @patch("parties.importer.ECEmblem.download_emblem")
     @patch.dict("parties.importer.DEFAULT_EMBLEMS", {"PP01": 1}, clear=True)
-    def test_set_emblem_default(self, FakeGetPartyList):
+    def test_set_emblem_default(self, FakeEmblemPath, FakeGetPartyList):
+        FakeEmblemPath.side_effect = [
+            make_tmp_file_from_source(EXAMPLE_IMAGE_FILENAME),
+            make_tmp_file_from_source(EXAMPLE_IMAGE_FILENAME),
+            make_tmp_file_from_source(EXAMPLE_IMAGE_FILENAME),
+        ]
+
         MULTI_EMBLEM_PARTY = dict(FAKE_PARTY_DICT)
         MULTI_EMBLEM_PARTY["PartyEmblems"].append(
             {
@@ -171,7 +186,7 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
         self.assertEqual(PartyEmblem.objects.count(), 0)
         cmd.handle(
             **{
-                "clear_emblems": True,
+                "clear_emblems": False,
                 "skip_create_joint": False,
                 "quiet": False,
             }
