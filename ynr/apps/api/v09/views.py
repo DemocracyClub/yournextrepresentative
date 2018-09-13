@@ -20,13 +20,15 @@ from api.v09 import serializers
 from candidates import models as extra_models
 from elections.models import Election
 from popolo.models import Membership, Person, Post
-from rest_framework import pagination, viewsets
+from rest_framework import viewsets
 from elections.uk.geo_helpers import (
     get_post_elections_from_coords,
     get_post_elections_from_postcode,
 )
 
 from compat import text_type
+
+from api.helpers import ResultsSetPagination
 
 
 def parse_date(date_text):
@@ -270,12 +272,6 @@ class AllPartiesJSONView(View):
 
 
 # Now the django-rest-framework based API views:
-
-
-class ResultsSetPagination(pagination.PageNumberPagination):
-    page_size = 10
-    page_size_query_param = "page_size"
-    max_page_size = 200
 
 
 class PersonViewSet(viewsets.ModelViewSet):
