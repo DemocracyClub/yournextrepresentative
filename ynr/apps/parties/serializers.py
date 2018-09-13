@@ -41,3 +41,9 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
     default_emblem = PartyEmblemSerializer()
     emblems = PartyEmblemSerializer(many=True)
     descriptions = PartyDescriptionSerializer(many=True)
+
+
+class MinimalPartySerializer(PartySerializer):
+    class Meta:
+        model = Party
+        fields = ("ec_id", "name")

@@ -8,6 +8,7 @@ from candidates import models as candidates_models
 from images.models import Image
 from elections import models as election_models
 from popolo import models as popolo_models
+from parties.serializers import MinimalPartySerializer
 
 # These are serializer classes from the Django-REST-framework API
 #
@@ -245,9 +246,9 @@ class MembershipSerializer(serializers.HyperlinkedModelSerializer):
             "label",
             "role",
             "elected",
+            "party",
             "party_list_position",
             "person",
-            "on_behalf_of",
             "post",
             "start_date",
             "end_date",
@@ -257,9 +258,7 @@ class MembershipSerializer(serializers.HyperlinkedModelSerializer):
     elected = serializers.ReadOnlyField()
     party_list_position = serializers.ReadOnlyField()
     person = MinimalPersonSerializer(read_only=True)
-    on_behalf_of = MinimalOrganizationExtraSerializer(
-        read_only=True, source="on_behalf_of.extra"
-    )
+    party = MinimalPartySerializer()
     post = MinimalPostSerializer(read_only=True)
 
     election = MinimalElectionSerializer(source="post_election.election")
