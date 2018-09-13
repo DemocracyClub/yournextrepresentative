@@ -70,14 +70,14 @@ class PartyQuerySet(models.QuerySet):
         candidacies_ever_qs = (
             self.annotate(candidate_count=models.Count("membership"))
             .order_by("-candidate_count", "name")
-            .only("date_deregistered", "name")
+            .only("date_deregistered", "name", "ec_id")
         )
 
         parties_current_qs = (
             self.filter(membership__post_election__election__current=True)
             .annotate(candidate_count=models.Count("membership"))
             .order_by("-candidate_count", "name")
-            .only("date_deregistered", "name")
+            .only("date_deregistered", "name", "ec_id")
         )
 
         if not include_non_current:
@@ -89,7 +89,7 @@ class PartyQuerySet(models.QuerySet):
             )
             .annotate(candidate_count=models.Value(0, models.IntegerField()))
             .order_by("-candidate_count", "name")
-            .only("date_deregistered", "name")
+            .only("date_deregistered", "name", "ec_id")
         )
 
         minimum_count = settings.CANDIDATES_REQUIRED_FOR_WEIGHTED_PARTY_LIST

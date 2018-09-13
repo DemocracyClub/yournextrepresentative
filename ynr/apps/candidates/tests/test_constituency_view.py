@@ -97,9 +97,11 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_any_constituency_page(self):
         # Just a smoke test for the moment:
-        response = self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood", user=self.user
-        )
+        with self.assertNumQueries(46):
+            response = self.app.get(
+                "/election/2015/post/65808/dulwich-and-west-norwood",
+                user=self.user,
+            )
         response.mustcontain(
             '<a href="/person/2009/tessa-jowell" class="candidate-name">Tessa Jowell</a> <span class="party">Labour Party</span>'
         )
