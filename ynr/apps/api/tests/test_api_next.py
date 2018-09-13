@@ -3,6 +3,8 @@ from django_webtest import WebTest
 from candidates.tests.factories import MembershipFactory, PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
+from parties.tests.factories import PartyEmblemFactory, PartyDescriptionFactory
+
 
 class TestAPI(UK2015ExamplesMixin, WebTest):
     def setUp(self):
@@ -58,6 +60,9 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
             party=self.labour_party,
             post_election=self.edinburgh_east_post_pee_earlier,
         )
+
+        PartyEmblemFactory(party=self.labour_party)
+        PartyDescriptionFactory(party=self.labour_party)
 
     def test_api_basic_response(self):
         response = self.app.get("/api/next/")
