@@ -890,6 +890,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
         "parties.Party",
         null=True,
         help_text="The political party for this membership",
+        on_delete=models.PROTECT,
     )
 
     # reference to "http://popoloproject.com/schemas/post.json#"
