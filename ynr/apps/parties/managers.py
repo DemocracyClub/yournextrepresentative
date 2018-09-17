@@ -25,7 +25,9 @@ class PartyQuerySet(models.QuerySet):
         return self.active_for_date()
 
     def register(self, register):
-        return self.filter(register=register)
+        return self.filter(
+            models.Q(register=register) | models.Q(register=None)
+        )
 
     def order_by_memberships(self, date=None, nocounts=False):
         qs = self
