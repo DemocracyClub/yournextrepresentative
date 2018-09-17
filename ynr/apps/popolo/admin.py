@@ -57,18 +57,6 @@ class PersonAdmin(admin.ModelAdmin):
     inlines = generics.BASE_INLINES + [MembershipInline]
 
 
-class OrganizationMembersInline(MembershipInline):
-    verbose_name = _("Member")
-    verbose_name_plural = _("Members of this organization")
-    fk_name = "organization"
-
-
-class OrganizationOnBehalfInline(MembershipInline):
-    verbose_name = "Proxy member"
-    verbose_name_plural = "Members acting on behalf of this organization"
-    fk_name = "on_behalf_of"
-
-
 class PostAdmin(admin.ModelAdmin):
     model = models.Post
     fieldsets = (
@@ -106,10 +94,7 @@ class OrganizationAdmin(admin.ModelAdmin):
             },
         ),
     )
-    inlines = generics.BASE_INLINES + [
-        OrganizationMembersInline,
-        OrganizationOnBehalfInline,
-    ]
+    inlines = generics.BASE_INLINES
 
 
 admin.site.register(models.Post, PostAdmin)

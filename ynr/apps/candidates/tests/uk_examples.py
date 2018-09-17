@@ -1,11 +1,52 @@
+from abc import abstractmethod, ABCMeta
+
 from django.contrib.contenttypes.models import ContentType
 
 from datetime import date
 
 from . import factories
+from parties.tests.factories import PartyFactory
+
+EXAMPLE_PARTIES = [
+    {
+        "ec_id": "PP53",
+        "legacy_slug": "party:53",
+        "name": "Labour Party",
+        "attr": "labour_party",
+        "register": "GB",
+    },
+    {
+        "ec_id": "PP90",
+        "legacy_slug": "party:90",
+        "name": "Liberal Democrats",
+        "attr": "ld_party",
+        "register": "GB",
+    },
+    {
+        "ec_id": "PP63",
+        "legacy_slug": "party:63",
+        "name": "Green Party",
+        "attr": "green_party",
+        "register": "GB",
+    },
+    {
+        "ec_id": "PP52",
+        "legacy_slug": "party:52",
+        "name": "Conservative Party",
+        "attr": "conservative_party",
+        "register": "GB",
+    },
+    {
+        "ec_id": "PP39",
+        "legacy_slug": "party:39",
+        "name": "Sinn Féin",
+        "attr": "sinn_fein",
+        "register": "NI",
+    },
+]
 
 
-class UK2015ExamplesMixin(object):
+class UK2015ExamplesMixin(object, metaclass=ABCMeta):
     def setUp(self):
         ContentType.objects.clear_cache()
 
@@ -35,52 +76,17 @@ class UK2015ExamplesMixin(object):
             organization=commons_extra.base,
         )
         # Create some example parties:
-        factories.PartyFactory.reset_sequence()
-        factories.PartyExtraFactory.reset_sequence()
-        EXAMPLE_PARTIES = [
-            {
-                "id": "party:53",
-                "name": "Labour Party",
-                "attr": "labour_party_extra",
-                "party_set": cls.gb_parties,
-            },
-            {
-                "id": "party:90",
-                "name": "Liberal Democrats",
-                "attr": "ld_party_extra",
-                "party_set": cls.gb_parties,
-            },
-            {
-                "id": "party:63",
-                "name": "Green Party",
-                "attr": "green_party_extra",
-                "party_set": cls.gb_parties,
-            },
-            {
-                "id": "party:52",
-                "name": "Conservative Party",
-                "attr": "conservative_party_extra",
-                "party_set": cls.gb_parties,
-            },
-            {
-                "id": "party:39",
-                "name": "Sinn Féin",
-                "attr": "sinn_fein_extra",
-                "party_set": cls.ni_parties,
-            },
-        ]
+        PartyFactory.reset_sequence()
+
         for party in EXAMPLE_PARTIES:
-            p = factories.PartyExtraFactory(
-                slug=party["id"], base__name=party["name"]
-            )
-            p.base.identifiers.update_or_create(
-                scheme="electoral-commission",
-                defaults={
-                    "identifier": "PP{}".format(party["id"].split(":")[1])
-                },
+            p = PartyFactory(
+                ec_id=party["ec_id"],
+                name=party["name"],
+                legacy_slug=party["legacy_slug"],
+                register=party["register"],
             )
             setattr(cls, party["attr"], p)
-            party["party_set"].parties.add(p.base)
+
         # Create some example posts as well:
         EXAMPLE_CONSTITUENCIES = [
             {
@@ -147,3 +153,27 @@ class UK2015ExamplesMixin(object):
             party_set=cls.gb_parties,
             organization=cls.local_council,
         )
+
+    def create_lots_of_candidates(self, election, parties_and_counts):
+        posts = [
+            self.edinburgh_east_post,
+            self.edinburgh_north_post,
+            self.dulwich_post,
+            self.camberwell_post,
+        ]
+        created = 0
+        for party, candidates_to_create in parties_and_counts:
+            for i in range(candidates_to_create):
+                person_id = int("{}00{}".format(election.pk, created + 1))
+                person = factories.PersonFactory.create(
+                    id=person_id, name="John Doe {}".format(person_id)
+                )
+                factories.MembershipFactory.create(
+                    person=person,
+                    post=posts[created % len(posts)],
+                    party=party,
+                    post_election=election.postextraelection_set.get(
+                        post=posts[created % len(posts)]
+                    ),
+                )
+                created += 1

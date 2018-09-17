@@ -31,7 +31,7 @@ class Command(BaseCommand):
         for document in documents:
             document_memberships = Membership.objects.filter(
                 post=document.post, election=document.election
-            ).select_related("base", "on_behalf_of", "post", "person")
+            ).select_related("base", "party", "post", "person")
 
             out_dict = {
                 "election_id": document.election.slug,
@@ -45,22 +45,14 @@ class Command(BaseCommand):
                 other_names = "|".join(
                     [o.name for o in membership.base.person.other_names.all()]
                 )
-                party = membership.base.on_behalf_of
-                try:
-                    party_id = party.identifiers.get(
-                        scheme="electoral-commission"
-                    ).identifier
-                except Identifier.DoesNotExist:
-                    party_id = party.identifiers.get(
-                        scheme="popit-organization"
-                    ).identifier
+                party = membership.party
 
                 out_dict.update(
                     {
                         "candidate_id": membership.base.person.id,
                         "candidate_name": membership.base.person.name,
                         "candidate_other_names": other_names,
-                        "party_id": party_id,
+                        "party_id": party.ec_id,
                         "party_name": party.name,
                     }
                 )

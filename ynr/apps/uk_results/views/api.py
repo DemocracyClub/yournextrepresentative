@@ -1,8 +1,7 @@
 from rest_framework import viewsets
-from rest_framework import filters as rf_filters
 from django_filters import filters, filterset
 
-from candidates.views import ResultsSetPagination
+from api.v09.views import ResultsSetPagination
 
 from ..models import CandidateResult, ResultSet
 from ..serializers import CandidateResultSerializer, ResultSetSerializer

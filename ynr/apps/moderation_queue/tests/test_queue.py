@@ -67,13 +67,13 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=person_2009,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
         MembershipFactory.create(
             person=person_2007,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
 
@@ -431,13 +431,13 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
         MembershipFactory.create(
             person=person_2009,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
         MembershipFactory.create(
             person=person_2007,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
 

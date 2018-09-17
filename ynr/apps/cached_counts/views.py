@@ -9,6 +9,7 @@ from elections.mixins import ElectionMixin
 from elections.models import Election
 from popolo.models import Membership, Organization
 from .models import get_attention_needed_posts
+from parties.models import Party
 
 
 def get_counts(for_json=True):
@@ -64,11 +65,10 @@ class PartyCountsView(ElectionMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qs = Organization.objects.filter(
-            classification="Party",
-            memberships_on_behalf_of__post_election__election=self.election_data,
+        qs = Party.objects.filter(
+            membership__post_election__election=self.election_data
         )
-        qs = qs.annotate(count=Count("memberships_on_behalf_of"))
+        qs = qs.annotate(count=Count("membership"))
         qs = qs.order_by("-count", "name")
 
         context["party_counts"] = qs

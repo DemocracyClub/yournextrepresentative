@@ -67,7 +67,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms["bulk_add_form"]
         form["form-0-name"] = "Homer Simpson"
-        form["form-0-party"] = self.green_party_extra.base.id
+        form["form-0-party"] = self.green_party.ec_id
 
         response = form.submit()
         self.assertEqual(response.status_code, 302)
@@ -87,7 +87,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(57):
+        with self.assertNumQueries(56):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -105,7 +105,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(homer.memberships.count(), 1)
         membership = homer.memberships.get()
         self.assertEqual(membership.role, "Candidate")
-        self.assertEqual(membership.on_behalf_of.name, "Green Party")
+        self.assertEqual(membership.party.name, "Green Party")
         self.assertEqual(
             membership.post.label,
             "Member of Parliament for Dulwich and West Norwood",
@@ -118,7 +118,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         existing_membership = factories.MembershipFactory.create(
             person=existing_person,
             post=self.local_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.local_election.postextraelection_set.get(
                 post=self.local_post
             ),
@@ -138,7 +138,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms["bulk_add_form"]
         form["form-0-name"] = "Bart Simpson"
-        form["form-0-party"] = self.green_party_extra.base.id
+        form["form-0-party"] = self.green_party.ec_id
 
         response = form.submit()
         self.assertEqual(response.status_code, 302)
@@ -157,16 +157,12 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(len(new_memberships), 1)
         new_membership = Membership.objects.get(pk=list(new_memberships)[0])
         self.assertEqual(new_membership.post, self.dulwich_post)
-        self.assertEqual(
-            new_membership.on_behalf_of, self.green_party_extra.base
-        )
+        self.assertEqual(new_membership.party, self.green_party)
         same_memberships = memberships_before & memberships_after
         self.assertEqual(len(same_memberships), 1)
         same_membership = Membership.objects.get(pk=list(same_memberships)[0])
         self.assertEqual(same_membership.post, self.local_post)
-        self.assertEqual(
-            same_membership.on_behalf_of, self.labour_party_extra.base
-        )
+        self.assertEqual(same_membership.party, self.labour_party)
         self.assertEqual(same_membership.id, existing_membership.id)
 
     def test_adding_to_existing_person_same_election(self):
@@ -180,7 +176,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=existing_person,
             # !!! This is the line that differs from the previous test:
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.election.postextraelection_set.get(
                 post=self.dulwich_post
             ),
@@ -200,7 +196,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms["bulk_add_form"]
         form["form-0-name"] = "Bart Simpson"
-        form["form-0-party"] = self.green_party_extra.base.id
+        form["form-0-party"] = self.green_party.ec_id
 
         response = form.submit()
         self.assertEqual(response.status_code, 302)
@@ -221,9 +217,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(len(same_memberships), 1)
         same_membership = Membership.objects.get(pk=list(same_memberships)[0])
         self.assertEqual(same_membership.post, self.dulwich_post)
-        self.assertEqual(
-            same_membership.on_behalf_of, self.green_party_extra.base
-        )
+        self.assertEqual(same_membership.party, self.green_party)
         self.assertEqual(same_membership.id, existing_membership.id)
 
     def test_old_url_redirects(self):

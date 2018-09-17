@@ -21,12 +21,12 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             self.dulwich_post,
             self.camberwell_post,
         ]
-        parties_extra = [
-            self.labour_party_extra,
-            self.ld_party_extra,
-            self.green_party_extra,
-            self.conservative_party_extra,
-            self.sinn_fein_extra,
+        parties = [
+            self.labour_party,
+            self.ld_party,
+            self.green_party,
+            self.conservative_party,
+            self.sinn_fein,
         ]
         i = 0
         candidacy_counts = {"14419": 10, "14420": 3, "65808": 5, "65913": 0}
@@ -36,11 +36,11 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                 person = factories.PersonFactory.create(
                     id=str(7000 + i), name="Test Candidate {}".format(i)
                 )
-                party = parties_extra[n % 5]
+                party = parties[n % 5]
                 factories.MembershipFactory.create(
                     person=person,
                     post=post,
-                    on_behalf_of=party.base,
+                    party=party,
                     post_election=self.election.postextraelection_set.get(
                         post=post
                     ),
@@ -52,7 +52,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
         factories.MembershipFactory.create(
             person=Person.objects.get(id=7000),
             post=posts[1],
-            on_behalf_of=parties_extra[0].base,
+            party=parties[0],
             post_election=self.earlier_election.postextraelection_set.get(
                 post=posts[1]
             ),
@@ -61,7 +61,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
         factories.MembershipFactory.create(
             person=Person.objects.get(id=7001),
             post=posts[1],
-            on_behalf_of=parties_extra[2].base,
+            party=parties[2],
             post_election=self.earlier_election.postextraelection_set.get(
                 post=posts[1]
             ),

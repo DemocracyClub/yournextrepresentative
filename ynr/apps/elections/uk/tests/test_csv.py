@@ -23,21 +23,18 @@ class CSVTests(UK2015ExamplesMixin, TestCase):
         factories.MembershipFactory.create(
             person=self.gb_person,
             post=self.camberwell_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.camberwell_post_pee,
         )
         factories.MembershipFactory.create(
             person=self.gb_person,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.camberwell_post_pee_earlier,
         )
         self.gb_person.identifiers.create(
             identifier="uk.org.publicwhip/person/10326",
             scheme="uk.org.publicwhip",
-        )
-        self.labour_party_extra.base.identifiers.create(
-            identifier="PP53", scheme="electoral-commission"
         )
 
     def test_as_list_single_dict(self):

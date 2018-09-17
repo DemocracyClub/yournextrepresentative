@@ -40,7 +40,7 @@ class ResultsBot(object):
                     post=post_election.post,
                     old_post_id=post_election.post.slug,
                     old_post_name=post_election.post.label,
-                    winner_party=membership.on_behalf_of,
+                    winner_party=membership.party,
                     source=source,
                     user=self.user,
                 )

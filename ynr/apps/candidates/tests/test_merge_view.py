@@ -131,13 +131,13 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee_earlier,
         )
         # Now create Shane Collins (who we'll merge into Tessa Jowell)
@@ -254,13 +254,13 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.green_party_extra.base,
+            party=self.green_party,
             post_election=self.dulwich_post_pee,
         )
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.green_party_extra.base,
+            party=self.green_party,
             post_election=self.edinburgh_east_post_pee,
         )
 
@@ -506,7 +506,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             .values_list(
                 "post_election__election__slug",
                 "post__slug",
-                "on_behalf_of__extra__slug",
+                "party__legacy_slug",
             )
             .order_by("post_election__election__slug")
         )

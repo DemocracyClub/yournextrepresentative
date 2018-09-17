@@ -27,20 +27,16 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
             PersonFactory.create(id="15", name="Carol"),
         ]
 
-        parties_extra = [
-            self.labour_party_extra,
-            self.conservative_party_extra,
-            self.ld_party_extra,
-        ]
+        parties = [self.labour_party, self.conservative_party, self.ld_party]
         # Create their candidacies:
         candidacies = [
             MembershipFactory.create(
                 post_election=pee,
                 person=person,
                 post=self.local_post,
-                on_behalf_of=party_extra.base,
+                party=party,
             )
-            for person, party_extra in zip(self.people, parties_extra)
+            for person, party in zip(self.people, parties)
         ]
         # Create their CandidateResult objects:
         votes = [2000, 5000, 3000]

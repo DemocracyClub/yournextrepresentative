@@ -39,25 +39,25 @@ class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
         factories.MembershipFactory.create(
             person=person_old_election,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee_earlier,
         )
         factories.MembershipFactory.create(
             person=person_no_details,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
         factories.MembershipFactory.create(
             person=person_empty_slogan,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
         factories.MembershipFactory.create(
             person=person_with_details,
             post=self.dulwich_post,
-            on_behalf_of=self.green_party_extra.base,
+            party=self.green_party,
             post_election=self.dulwich_post_pee,
         )
 

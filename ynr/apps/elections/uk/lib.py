@@ -49,9 +49,7 @@ def get_extra_csv_values(person, election, post):
         if m.post != post:
             continue
         # Now m / m_extra should be the candidacy membership:
-        for i in m.on_behalf_of.identifiers.all():
-            if i.scheme == "electoral-commission":
-                party_ec_id = i.identifier
+        party_ec_id = m.party.ec_id
         # TODO Add identifiers here
         break
     favourite_biscuits = ""
@@ -95,8 +93,7 @@ def additional_merge_actions(primary_person, secondary_person):
                 "post": cr.membership.post,
                 "role": cr.membership.role,
                 "post_election__election": cr.membership.post_election.election,
-                "organization": cr.membership.organization,
-                "on_behalf_of": cr.membership.on_behalf_of,
+                "party": cr.membership.party,
             },
         )
         for cr in CandidateResult.objects.filter(

@@ -4,12 +4,11 @@ from candidates.tests.factories import (
     ElectionFactory,
     MembershipFactory,
     ParliamentaryChamberFactory,
-    PartyFactory,
-    PartyExtraFactory,
     PersonFactory,
     PostFactory,
 )
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from parties.tests.factories import PartyFactory
 
 
 class TestFieldView(UK2015ExamplesMixin, TestCase):
@@ -21,7 +20,7 @@ class TestFieldView(UK2015ExamplesMixin, TestCase):
         MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.green_party_extra.base,
+            party=self.green_party,
             post_election=self.dulwich_post_pee,
         )
 
@@ -32,7 +31,7 @@ class TestFieldView(UK2015ExamplesMixin, TestCase):
         MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.green_party_extra.base,
+            party=self.green_party,
             post_election=self.dulwich_post_pee,
         )
 

@@ -31,7 +31,7 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["name"] = "Mr Darcy"
         form["email"] = "darcy@example.com"
         form["source"] = "Testing adding a new person to a post"
-        form["party_gb_2015"] = self.labour_party_extra.base_id
+        form["party_GB_2015"] = self.labour_party.ec_id
         form.submit()
 
         response = self.app.get(
@@ -41,7 +41,7 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["name"] = "Elizabeth Bennet"
         form["email"] = "lizzie@example.com"
         form["source"] = "Testing adding a new person to a post"
-        form["party_gb_2015"] = self.labour_party_extra.base_id
+        form["party_GB_2015"] = self.labour_party.ec_id
         form.submit()
 
         response = self.app.get(
@@ -51,7 +51,7 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["name"] = "Charlotte O'Lucas"  # testers license
         form["email"] = "charlotte@example.com"
         form["source"] = "Testing adding a new person to a post"
-        form["party_gb_2015"] = self.labour_party_extra.base_id
+        form["party_GB_2015"] = self.labour_party.ec_id
         form.submit()
 
         # check searching finds them
@@ -67,7 +67,7 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["name"] = "Elizabeth Jones"
         form["email"] = "e.jones@example.com"
         form["source"] = "Testing adding a new person to a post"
-        form["party_gb_2015"] = self.labour_party_extra.base_id
+        form["party_GB_2015"] = self.labour_party.ec_id
         form.submit()
 
         response = self.app.get("/search?q=Elizabeth")

@@ -107,23 +107,6 @@ class OrganizationExtraFactory(factory.DjangoModelFactory):
     base = factory.SubFactory(OrganizationFactory)
 
 
-class PartyFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = "popolo.Organization"
-
-    classification = "Party"
-    end_date = "9999-12-31"
-
-
-class PartyExtraFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = "candidates.OrganizationExtra"
-
-    register = "Great Britain"
-
-    base = factory.SubFactory(PartyFactory)
-
-
 class PersonFactory(factory.DjangoModelFactory):
     class Meta:
         model = "popolo.Person"

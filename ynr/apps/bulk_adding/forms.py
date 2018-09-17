@@ -3,8 +3,8 @@ from django.db.models import Count
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
-from candidates.models import PartySet
 from candidates.views import search_person_by_name
+from parties.models import Party
 
 
 class BaseBulkAddFormSet(forms.BaseFormSet):
@@ -58,7 +58,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         try:
             candidacy = (
                 suggestion.object.memberships.select_related(
-                    "post", "on_behalf_of", "post_election__election"
+                    "post", "party", "post_election__election"
                 )
                 .order_by("-post_election__election__election_date")
                 .first()
@@ -72,7 +72,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
                     name=name,
                     post=candidacy.post.short_label,
                     election=candidacy.extra.post_election.election.name,
-                    party=candidacy.on_behalf_of.name,
+                    party=candidacy.party.name,
                 )
                 name = SafeText(name)
         except AttributeError:
@@ -154,23 +154,24 @@ class SelectPartyForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         self.election = election
-        party_set_ids = (
+        party_set_qs = (
             election.postextraelection_set.all()
             .order_by("post__party_set")
-            .values_list("post__party_set", flat=True)
+            .values_list("post__party_set__slug", flat=True)
             .annotate(Count("post__party_set"))
         )
 
-        for ps in PartySet.objects.filter(pk__in=set(party_set_ids)):
-            self.fields["party_{}".format(ps.slug)] = forms.ChoiceField(
+        registers = set([p.upper() for p in party_set_qs])
+        for register in registers:
+            self.fields["party_{}".format(register)] = forms.ChoiceField(
                 required=False,
-                choices=ps.party_choices(
+                choices=Party.objects.register(register).party_choices(
                     exclude_deregistered=True,
                     include_descriptions=False,
                     include_non_current=False,
                 ),
                 widget=forms.Select(attrs={"class": "party-select"}),
-                label="{} Parties".format(ps.slug.upper()),
+                label="{} Parties".format(register),
             )
 
     def clean(self):

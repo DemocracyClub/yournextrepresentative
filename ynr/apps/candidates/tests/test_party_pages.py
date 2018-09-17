@@ -26,7 +26,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=person,
             post=constituencies["Doncaster North"],
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.election.postextraelection_set.get(
                 post=constituencies["Doncaster North"]
             ),
@@ -35,7 +35,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=person,
             post=constituencies["South Shields"],
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.earlier_election.postextraelection_set.get(
                 post=constituencies["South Shields"]
             ),
@@ -46,7 +46,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=conservative_opponent,
             post=constituencies["South Shields"],
-            on_behalf_of=self.conservative_party_extra.base,
+            party=self.conservative_party,
             post_election=self.election.postextraelection_set.get(
                 post=constituencies["South Shields"]
             ),

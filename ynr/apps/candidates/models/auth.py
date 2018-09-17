@@ -97,12 +97,8 @@ def check_update_allowed(
     # Now check that they're not changing party in a locked
     # constituency:
     for post, election in old_posts & new_posts:
-        old_party = next(
-            c.on_behalf_of for c in old_candidacies if c.post == post
-        )
-        new_party = next(
-            c.on_behalf_of for c in new_candidacies if c.post == post
-        )
+        old_party = next(c.party for c in old_candidacies if c.post == post)
+        new_party = next(c.party for c in new_candidacies if c.post == post)
         dummy, edits_allowed = get_constituency_lock(user, post, election)
         if not edits_allowed and (old_party != new_party):
             raise ChangeToLockedConstituencyDisallowedException(

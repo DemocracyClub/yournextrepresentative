@@ -25,7 +25,7 @@ class BasicResultEventsFeed(Feed):
             .select_related("election")
             .select_related("post")
             .select_related("winner")
-            .select_related("winner_party__extra")
+            .select_related("winner_party")
             .prefetch_related("winner__images")
         )
 
@@ -135,7 +135,7 @@ class ResultEventsFeed(BasicResultEventsFeed):
             "post_id": o.post.slug if o.post else o.old_post_id,
             "winner_person_id": o.winner.id,
             "winner_person_name": o.winner.name,
-            "winner_party_id": o.winner_party.extra.slug,
+            "winner_party_id": o.winner_party.legacy_slug,
             "winner_party_name": o.winner_party.name,
             "user_id": user_id,
             "post_name": o.short_post_name,

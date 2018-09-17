@@ -14,7 +14,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=tessa_jowell,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             party_list_position=1,
             post_election=self.dulwich_post_pee,
         )
@@ -23,7 +23,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=winner,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             party_list_position=2,
             post_election=self.dulwich_post_pee,
         )
@@ -32,14 +32,14 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=james_smith,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             party_list_position=3,
             post_election=self.dulwich_post_pee,
         )
 
     def test_party_list_page(self):
         response = self.app.get(
-            "/election/2015/party-list/65808/" + self.labour_party_extra.slug
+            "/election/2015/party-list/65808/" + self.labour_party.legacy_slug
         )
 
         self.assertEqual(response.status_code, 200)
@@ -94,7 +94,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         response.mustcontain(
             '<a href="/election/2015/party-list/65808/{}">See all 3 members on the party list'.format(
-                self.labour_party_extra.slug
+                self.labour_party.legacy_slug
             )
         )
 

@@ -71,7 +71,7 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
                     person=person,
                     post=post,
                     role=self.election_data.candidate_membership_role,
-                    on_behalf_of=person.last_party(),
+                    party=person.last_party(),
                     post_election=self.election_data.postextraelection_set.get(
                         post=post
                     ),

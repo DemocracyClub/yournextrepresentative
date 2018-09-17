@@ -95,7 +95,7 @@ def get_candidacy_fields_for_person_form(form):
         }
         party_fields = []
         for ps in PartySet.objects.all():
-            key_suffix = ps.slug + "_" + election_data.slug
+            key_suffix = ps.slug.upper() + "_" + election_data.slug
             position_field = None
             try:
                 if election_data.party_lists_in_use:
@@ -124,7 +124,7 @@ def get_party_people_for_election_from_memberships(
         .filter(
             role=election_data.candidate_membership_role,
             post_election__election=election_data,
-            on_behalf_of_id=party_id,
+            party__ec_id=party_id,
         )
         .order_by("party_list_position")
         .all()
@@ -153,8 +153,6 @@ def split_candidacies(election_data, memberships):
     past_candidadacies = set()
     for membership in memberships:
         if membership.post_election.election == election_data:
-            if not membership.role == election_data.candidate_membership_role:
-                continue
             current_candidadacies.add(membership)
         elif membership.post_election.election:
             past_candidadacies.add(membership)
@@ -180,8 +178,9 @@ def order_candidates_by_name_no_grouping(election_data, candidacies):
     result = [
         (
             {
-                "id": candidacy.on_behalf_of_id,
-                "name": candidacy.on_behalf_of.name,
+                "id": candidacy.party.ec_id,
+                "legacy_slug": candidacy.party.legacy_slug,
+                "name": candidacy.party.name,
                 "max_count": 0,
                 "truncated": False,
                 "total_count": 1,
@@ -226,14 +225,16 @@ def group_candidates_by_party(election_data, candidacies, show_all=False):
         return order_candidates_by_name_no_grouping(election_data, candidacies)
 
     party_id_to_name = {}
+    party_id_to_legacy_slug = {}
     party_id_to_people = defaultdict(list)
     party_truncated = dict()
     party_total = dict()
     for candidacy in candidacies:
-        party = candidacy.on_behalf_of
-        party_id_to_name[party.extra.slug] = party.name
+        party = candidacy.party
+        party_id_to_name[party.ec_id] = party.name
+        party_id_to_legacy_slug[party.ec_id] = party.legacy_slug
         position = candidacy.party_list_position
-        party_id_to_people[party.extra.slug].append(
+        party_id_to_people[party.ec_id].append(
             (position, candidacy.person, candidacy.elected)
         )
     for party_id, people_list in party_id_to_people.items():
@@ -254,6 +255,7 @@ def group_candidates_by_party(election_data, candidacies, show_all=False):
                 {
                     "id": k,
                     "name": party_id_to_name[k],
+                    "legacy_slug": party_id_to_legacy_slug[k],
                     "max_count": max_people,
                     "truncated": party_truncated[k],
                     "total_count": party_total[k],

@@ -79,9 +79,7 @@ def post_in_election(person, election):
         result = '<span class="constituency-value-standing-link">{}</span>'.format(
             link
         )
-        result += ' <span class="party">{}</span>'.format(
-            candidacy.on_behalf_of.name
-        )
+        result += ' <span class="party">{}</span>'.format(candidacy.party.name)
         prefix, suffix = get_known_candidacy_prefix_and_suffix(candidacy)
         result = prefix + result + suffix
     else:

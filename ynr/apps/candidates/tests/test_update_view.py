@@ -26,7 +26,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.green_party_extra.base,
+            party=self.green_party,
             post_election=self.dulwich_post_pee,
         )
 
@@ -65,7 +65,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get("/person/2009/update", user=self.user)
         form = response.forms["person-details"]
         form["wikipedia_url"] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
-        form["party_gb_2015"] = self.labour_party_extra.base_id
+        form["party_GB_2015"] = self.labour_party.ec_id
         form["source"] = "Some source of this information"
         submission_response = form.submit(user=self.user_refused)
         split_location = urlsplit(submission_response.location)
@@ -79,7 +79,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         form = response.forms["person-details"]
         form["wikipedia_url"] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
-        form["party_gb_2015"] = self.labour_party_extra.base_id
+        form["party_GB_2015"] = self.labour_party.ec_id
         form["source"] = "Some source of this information"
         submission_response = form.submit()
 
@@ -87,7 +87,8 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         party = person.memberships.filter(role="Candidate")
 
         self.assertEqual(party.count(), 1)
-        self.assertEqual(party[0].on_behalf_of.extra.slug, "party:53")
+        self.assertEqual(party[0].party.legacy_slug, "party:53")
+        self.assertEqual(party[0].party.ec_id, "PP53")
 
         links = person.links.all()
         self.assertEqual(links.count(), 1)
@@ -158,10 +159,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms["person-details"]
         for name, value in [
             ("extra_election_id", "local.maidstone.2016-05-05"),
-            (
-                "party_gb_local.maidstone.2016-05-05",
-                self.labour_party_extra.base.id,
-            ),
+            ("party_GB_local.maidstone.2016-05-05", self.labour_party.ec_id),
             ("constituency_local.maidstone.2016-05-05", "DIW:E05005004"),
             ("standing_local.maidstone.2016-05-05", "standing"),
             ("source", "Testing dynamic election addition"),
@@ -184,6 +182,6 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             new_candidacy.post_election.election.slug,
             "local.maidstone.2016-05-05",
         )
-        self.assertEqual(new_candidacy.on_behalf_of.name, "Labour Party")
+        self.assertEqual(new_candidacy.party.name, "Labour Party")
         same_before_and_after = memberships_before & memberships_afterwards
         self.assertEqual(len(same_before_and_after), 1)

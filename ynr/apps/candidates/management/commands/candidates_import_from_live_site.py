@@ -22,6 +22,7 @@ from candidates import models
 from elections import models as emodels
 from popolo import models as pmodels
 from images.models import Image
+from parties.models import Party
 
 from ..images import get_image_extension
 
@@ -111,7 +112,7 @@ class Command(BaseCommand):
         # remove those fields:
         models.ComplexPopoloField.objects.all().delete()
 
-    def get_api_results(self, endpoint):
+    def get_api_results(self, endpoint, api_version="v0.9"):
         page = 1
 
         if "posts" in endpoint:
@@ -123,8 +124,10 @@ class Command(BaseCommand):
                 base_url=self.base_url
             )
         else:
-            url = "{base_url}{endpoint}/?format=json&page_size=200".format(
-                base_url=self.base_api_url, endpoint=endpoint
+            url = "{base_url}{api_version}/{endpoint}/?format=json&page_size=200".format(
+                base_url=self.base_api_url,
+                api_version=api_version,
+                endpoint=endpoint,
             )
 
         while url:
@@ -181,17 +184,46 @@ class Command(BaseCommand):
         for party_set_data in self.get_api_results("party_sets"):
             with show_data_on_error("party_set_data", party_set_data):
                 del party_set_data["url"]
-                party_set = models.PartySet.objects.create(**party_set_data)
+                party_set, _ = models.PartySet.objects.update_or_create(
+                    **party_set_data
+                )
                 party_sets_by_slug[party_set.slug] = party_set
+
+        # Parties
+        for party_dict in self.get_api_results("parties", "next"):
+            # Only import a small subset of party data needed to get
+            # memberships working. The canonical source of parties is The
+            # Electoral Commission so the EC importer in the parties app should
+            # be used to get the full party info.
+            Party.objects.update_or_create(
+                ec_id=party_dict["ec_id"],
+                defaults={
+                    "name": party_dict["name"],
+                    "register": party_dict["register"],
+                },
+            )
+
         organization_to_parent = {}
         for organization_data in self.get_api_results("organizations"):
+            if organization_data["classification"] == "Party":
+                # We don't use this model for party data any more, so this data
+                # isn't needed
+                continue
             with show_data_on_error("organization_data", organization_data):
-                o = pmodels.Organization.objects.create(
+                kwargs = dict(
                     name=organization_data["name"],
                     classification=organization_data["classification"],
                     founding_date=organization_data["founding_date"],
                     dissolution_date=organization_data["dissolution_date"],
                 )
+                if pmodels.Organization.objects.filter(**kwargs).count() > 1:
+                    # Because there are no unique constraints on Organization,
+                    # the below update_or_create can fail on
+                    # MultipleObjectsReturned in some cases.
+                    # If that will happen, assumg everything is created already
+                    # and skip this org.
+                    continue
+                o, _ = pmodels.Organization.objects.update_or_create(**kwargs)
                 models.OrganizationExtra.objects.update_or_create(
                     base=o,
                     defaults={
@@ -199,10 +231,7 @@ class Command(BaseCommand):
                         "register": organization_data["register"],
                     },
                 )
-                for party_set_data in organization_data["party_sets"]:
-                    with show_data_on_error("party_set_data", party_set_data):
-                        party_set = party_sets_by_slug[party_set_data["slug"]]
-                        o.party_sets.add(party_set)
+
                 self.add_related(
                     o, pmodels.Identifier, organization_data["identifiers"]
                 )
@@ -250,7 +279,9 @@ class Command(BaseCommand):
                         "description",
                     )
                 }
-                e = emodels.Election(slug=election_data["id"], **kwargs)
+                e, _ = emodels.Election.objects.update_or_create(
+                    slug=election_data["id"], defaults=kwargs
+                )
                 election_org = election_data.get("organization")
                 if election_org:
                     e.organization = pmodels.Organization.objects.get(
@@ -331,7 +362,7 @@ class Command(BaseCommand):
                         value=extra_field_data["value"],
                     )
 
-        for m_data in self.get_api_results("memberships"):
+        for m_data in self.get_api_results("memberships", "next"):
             with show_data_on_error("m_data", m_data):
                 kwargs = {
                     k: m_data[k]
@@ -340,9 +371,9 @@ class Command(BaseCommand):
                 kwargs["person"] = pmodels.Person.objects.get(
                     pk=m_data["person"]["id"]
                 )
-                if m_data.get("on_behalf_of"):
-                    kwargs["on_behalf_of"] = pmodels.Organization.objects.get(
-                        extra__slug=m_data["on_behalf_of"]["id"]
+                if m_data.get("party"):
+                    kwargs["party"] = Party.objects.get(
+                        ec_id=m_data["party"]["ec_id"]
                     )
                 if m_data.get("organization"):
                     kwargs["organization"] = pmodels.Organization.objects.get(
@@ -452,7 +483,7 @@ class Command(BaseCommand):
             new_url_parts = list(split_url)
             new_url_parts[2] = ""
             self.base_url = urlunsplit(new_url_parts)
-            new_url_parts[2] = "/api/v0.9/"
+            new_url_parts[2] = "/api/"
             self.base_api_url = urlunsplit(new_url_parts)
             self.check_database_is_empty()
             self.remove_field_objects()

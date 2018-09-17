@@ -13,12 +13,9 @@ from candidates.tests.factories import (
     PostFactory,
     PersonFactory,
     MembershipFactory,
+    OrganizationExtraFactory,
 )
-from .uk_examples import UK2015ExamplesMixin
-from elections.uk.tests.mapit_postcode_results import (
-    se240ag_result,
-    sw1a1aa_result,
-)
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from elections.uk.tests.ee_postcode_results import (
     ee_se240ag_result,
     ee_sw1a1aa_result,
@@ -140,7 +137,7 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
         MembershipFactory.create(
             person=person,
             post=self.post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.election_gla.postextraelection_set.get(
                 post=self.post
             ),
@@ -198,9 +195,7 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
                                 "on_behalf_of": {
                                     "id": "party:53",
                                     "name": "Labour Party",
-                                    "url": "http://localhost:80/api/v0.9/organizations/party:53/",
                                 },
-                                "organization": None,
                                 "party_list_position": None,
                                 "person": {
                                     "id": 2009,

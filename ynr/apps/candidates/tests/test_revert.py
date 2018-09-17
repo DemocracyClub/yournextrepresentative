@@ -133,20 +133,20 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             name="Tessa Jowell",
             email="jowell@example.com",
             versions=self.version_template.substitute(
-                slug=self.labour_party_extra.slug
+                slug=self.labour_party.legacy_slug
             ),
         )
         person.links.create(url="", note="wikipedia")
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee_earlier,
         )
         ExtraField.objects.create(type="url", key="cv", label="CV or Resumé")
@@ -203,7 +203,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "wikipedia_url": "",
                 "party_memberships": {
                     "2010": {
-                        "id": self.labour_party_extra.slug,
+                        "id": self.labour_party.legacy_slug,
                         "name": "Labour Party",
                     }
                 },

@@ -203,7 +203,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         image_search_query = '"{}"'.format(person.name)
         last_candidacy = person.last_candidacy
         if last_candidacy:
-            party = last_candidacy.on_behalf_of
+            party = last_candidacy.party
             if party:
                 image_search_query += ' "{}"'.format(
                     tidy_party_name(party.name)

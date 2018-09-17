@@ -16,17 +16,19 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 
 from images.models import Image
-from candidates import serializers
+from api.v09 import serializers
 from candidates import models as extra_models
 from elections.models import Election
 from popolo.models import Membership, Person, Post
-from rest_framework import pagination, viewsets
+from rest_framework import viewsets
 from elections.uk.geo_helpers import (
     get_post_elections_from_coords,
     get_post_elections_from_postcode,
 )
 
 from compat import text_type
+
+from api.helpers import ResultsSetPagination
 
 
 def parse_date(date_text):
@@ -134,10 +136,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                     Prefetch(
                         "person__memberships",
                         Membership.objects.select_related(
-                            "on_behalf_of__extra",
-                            "organization__extra",
-                            "post",
-                            "post_election__election",
+                            "party", "post", "post_election__election"
                         ),
                     ),
                     Prefetch(
@@ -232,11 +231,10 @@ class PostIDToPartySetView(View):
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):
-        result = dict(
-            Post.objects.filter(elections__current=True).values_list(
-                "slug", "party_set__slug"
-            )
+        qs = Post.objects.filter(elections__current=True).values_list(
+            "slug", "party_set__slug"
         )
+        result = dict([(k, v.upper()) for k, v in qs])
         return HttpResponse(json.dumps(result), content_type="application/json")
 
 
@@ -276,23 +274,14 @@ class AllPartiesJSONView(View):
 # Now the django-rest-framework based API views:
 
 
-class ResultsSetPagination(pagination.PageNumberPagination):
-    page_size = 10
-    page_size_query_param = "page_size"
-    max_page_size = 200
-
-
 class PersonViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Person.objects.prefetch_related(
             Prefetch(
                 "memberships",
-                Membership.objects.select_related(
-                    "on_behalf_of__extra", "organization__extra", "post"
-                ),
+                Membership.objects.select_related("party", "post"),
             ),
             "memberships__post_election__election",
-            "memberships__organization__extra",
             "images",
             "other_names",
             "contact_details",
@@ -345,11 +334,7 @@ class PostViewSet(viewsets.ModelViewSet):
             Prefetch(
                 "memberships",
                 Membership.objects.select_related(
-                    "person",
-                    "on_behalf_of__extra",
-                    "organization__extra",
-                    "post",
-                    "post_election__election",
+                    "person", "party", "post", "post_election__election"
                 ),
             ),
         )

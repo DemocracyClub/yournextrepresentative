@@ -60,7 +60,7 @@ class CSVTests(TestUserMixin, UK2015ExamplesMixin, TestCase):
         factories.MembershipFactory.create(
             person=self.ni_person,
             post=north_antrim_post,
-            on_behalf_of=self.sinn_fein_extra.base,
+            party=self.sinn_fein,
             post_election=self.election.postextraelection_set.get(
                 post=north_antrim_post
             ),
@@ -68,7 +68,7 @@ class CSVTests(TestUserMixin, UK2015ExamplesMixin, TestCase):
         factories.MembershipFactory.create(
             person=self.ni_person,
             post=north_antrim_post,
-            on_behalf_of=self.sinn_fein_extra.base,
+            party=self.sinn_fein,
             post_election=self.earlier_election.postextraelection_set.get(
                 post=north_antrim_post
             ),
@@ -76,13 +76,13 @@ class CSVTests(TestUserMixin, UK2015ExamplesMixin, TestCase):
         factories.MembershipFactory.create(
             person=self.gb_person,
             post=self.camberwell_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.camberwell_post_pee,
         )
         factories.MembershipFactory.create(
             person=self.gb_person,
             post=self.dulwich_post,
-            on_behalf_of=self.labour_party_extra.base,
+            party=self.labour_party,
             post_election=self.dulwich_post_pee_earlier,
         )
 
