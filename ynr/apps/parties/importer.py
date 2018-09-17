@@ -333,12 +333,10 @@ class ECEmblem:
 
         image_file_name = self.download_emblem()
         mime_type = magic.Magic(mime=True).from_file(image_file_name)
-        extension = mimetypes.guess_extension(mime_type.decode("utf8"))
-        if extension == ".html":
-            #  Something has gone wrong here, maybe the EC site is down
-            # or the file is raising a 404 for some reason.
-            # Either way, we don't want this file to be saved
+        if not mime_type.startswith(b"image/"):
+            # This isn't an image, so let's not try to save it
             return
+        extension = mimetypes.guess_extension(mime_type.decode("utf8"))
         filename = "Emblem_{}{}".format(self.emblem_dict["Id"], extension)
 
         emblem = PartyEmblem.objects.create(

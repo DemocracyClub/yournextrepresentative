@@ -10,7 +10,10 @@ from django.test import TestCase
 from django.core.files.storage import DefaultStorage
 
 from candidates.tests.helpers import TmpMediaRootMixin
-from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from moderation_queue.tests.paths import (
+    EXAMPLE_IMAGE_FILENAME,
+    BROKEN_IMAGE_FILENAME,
+)
 
 from parties.importer import ECParty, ECPartyImporter
 from parties.models import Party, PartyDescription, PartyEmblem
@@ -145,6 +148,16 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
         self.assertEqual(
             party_model.default_emblem.description, "Box containing the word"
         )
+
+    @patch("parties.importer.ECEmblem.download_emblem")
+    def test_save_with_non_image_emblem(self, FakeEmblemPath):
+        FakeEmblemPath.return_value = make_tmp_file_from_source(
+            BROKEN_IMAGE_FILENAME
+        )
+        self.assertFalse(PartyEmblem.objects.all().exists())
+        party = ECParty(FAKE_PARTY_DICT)
+        party.save()
+        self.assertFalse(PartyEmblem.objects.all().exists())
 
     def test_raises_on_bad_dict(self):
         with self.assertRaises(ValueError):
