@@ -107,7 +107,7 @@ class EE_ImporterTest(WebTest):
             election.organization_object.name, "London Borough of Brent"
         )
         self.assertEqual(
-            election.organization_object.extra.slug, "local-authority:brent"
+            election.organization_object.slug, "local-authority:brent"
         )
         with self.assertNumQueries(0):
             election.get_or_create_organisation()
@@ -186,7 +186,7 @@ class EE_ImporterTest(WebTest):
         self.assertEqual(
             every_election.PostExtraElection.objects.all().count(), 0
         )
-        with self.assertNumQueries(267):
+        with self.assertNumQueries(250):
             call_command("uk_create_elections_from_every_election")
         self.assertEqual(
             every_election.PostExtraElection.objects.all().count(), 15

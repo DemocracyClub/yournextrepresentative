@@ -17,7 +17,7 @@ from popolo.models import Organization
 import requests
 import dateutil.parser
 
-from candidates.models import OrganizationExtra, PartySet, ImageExtra
+from candidates.models import PartySet, ImageExtra
 
 emblem_directory = join(settings.BASE_DIR, "data", "party-emblems")
 base_emblem_url = (
@@ -155,15 +155,11 @@ class Command(BaseCommand):
             party_founded = self.clean_date(ec_party["ApprovedDate"])
             # Does this party already exist?  If not, create a new one.
             try:
-                party_extra = OrganizationExtra.objects.select_related(
-                    "base"
-                ).get(slug=party_id)
-                party = party_extra.base
+                party = Organization.objects.get(slug=party_id)
                 print("Got the existing party:", party.name)
-            except OrganizationExtra.DoesNotExist:
-                party = Organization.objects.create(name=party_name)
-                party_extra = OrganizationExtra.objects.create(
-                    base=party, slug=party_id
+            except Organization.DoesNotExist:
+                party = Organization.objects.create(
+                    name=party_name, slug=party_id
                 )
                 print(
                     "Couldn't find {}, creating a new party {}".format(
@@ -175,7 +171,7 @@ class Command(BaseCommand):
             party.classification = "Party"
             party.founding_date = party_founded
             party.end_date = party_dissolved
-            party_extra.register = register
+            party.register = register
             {
                 "Great Britain": self.gb_parties,
                 "Northern Ireland": self.ni_parties,
@@ -193,9 +189,8 @@ class Command(BaseCommand):
                 party.other_names.create(
                     name=value, note="registered-description"
                 )
-            self.upload_images(ec_party["PartyEmblems"], party_extra)
+            self.upload_images(ec_party["PartyEmblems"], party)
             party.save()
-            party_extra.save()
 
     def clean_date(self, date):
         timestamp = re.match(r"\/Date\((\d+)\)\/", date).group(1)

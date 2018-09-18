@@ -1,6 +1,5 @@
-from popolo.models import Identifier, OtherName
+from popolo.models import Identifier, OtherName, Organization
 
-from candidates.models import OrganizationExtra
 from resultsbot.matchers.mappings import SavedMapping
 
 
@@ -40,7 +39,7 @@ class PartyMatacher(object):
 
     def match_party_name(self, cleaned_name):
         try:
-            OrganizationExtra.objects.get(base__name__iexact=cleaned_name)
+            Organization.objects.get(name__iexact=cleaned_name)
         except:
             return None
 

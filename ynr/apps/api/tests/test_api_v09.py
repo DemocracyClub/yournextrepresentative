@@ -153,12 +153,12 @@ class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         case
         """
 
-        from candidates.tests.factories import OrganizationExtraFactory
+        from candidates.tests.factories import OrganizationFactory
         from candidates.tests.uk_examples import EXAMPLE_PARTIES
 
         for party in EXAMPLE_PARTIES:
-            p = OrganizationExtraFactory(
-                slug=party["legacy_slug"], base__name=party["name"]
+            p = OrganizationFactory(
+                slug=party["legacy_slug"], name=party["name"]
             )
 
     def test_api_legacy_organizations_with_parties(self):

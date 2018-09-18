@@ -9,11 +9,10 @@ from django_webtest import WebTest
 
 from candidates.tests.factories import (
     ElectionFactory,
-    ParliamentaryChamberExtraFactory,
+    ParliamentaryChamberFactory,
     PostFactory,
     PersonFactory,
     MembershipFactory,
-    OrganizationExtraFactory,
 )
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from elections.uk.tests.ee_postcode_results import (
@@ -71,30 +70,30 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
     def _setup_data(self):
         one_day = timedelta(days=1)
         self.future_date = date.today() + one_day
-        london_assembly = ParliamentaryChamberExtraFactory.create(
-            slug="london-assembly", base__name="London Assembly"
+        london_assembly = ParliamentaryChamberFactory.create(
+            slug="london-assembly", name="London Assembly"
         )
         election_lac = ElectionFactory.create(
             slug="gla.c.2016-05-05",
-            organization=london_assembly.base,
+            organization=london_assembly,
             name="2016 London Assembly Election (Constituencies)",
             election_date=self.future_date.isoformat(),
         )
         self.election_gla = ElectionFactory.create(
             slug="gla.a.2016-05-05",
-            organization=london_assembly.base,
+            organization=london_assembly,
             name="2016 London Assembly Election (Additional)",
             election_date=self.future_date.isoformat(),
         )
         PostFactory.create(
             elections=(election_lac,),
-            organization=london_assembly.base,
+            organization=london_assembly,
             slug="lambeth-and-southwark",
             label="Assembly Member for Lambeth and Southwark",
         )
         self.post = PostFactory.create(
             elections=(self.election_gla,),
-            organization=london_assembly.base,
+            organization=london_assembly,
             slug="london",
             label="Assembly Member",
         )

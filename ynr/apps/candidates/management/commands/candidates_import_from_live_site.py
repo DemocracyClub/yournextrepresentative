@@ -215,22 +215,17 @@ class Command(BaseCommand):
                     classification=organization_data["classification"],
                     founding_date=organization_data["founding_date"],
                     dissolution_date=organization_data["dissolution_date"],
+                    slug=organization_data["id"],
+                    register=organization_data["register"],
                 )
                 if pmodels.Organization.objects.filter(**kwargs).count() > 1:
                     # Because there are no unique constraints on Organization,
                     # the below update_or_create can fail on
                     # MultipleObjectsReturned in some cases.
-                    # If that will happen, assumg everything is created already
-                    # and skip this org.
+                    # If that will happen, assuming everything is created
+                    # already and skip this org.
                     continue
                 o, _ = pmodels.Organization.objects.update_or_create(**kwargs)
-                models.OrganizationExtra.objects.update_or_create(
-                    base=o,
-                    defaults={
-                        "slug": organization_data["id"],
-                        "register": organization_data["register"],
-                    },
-                )
 
                 self.add_related(
                     o, pmodels.Identifier, organization_data["identifiers"]
@@ -406,7 +401,7 @@ class Command(BaseCommand):
                         r"api/v0.9/(\w+)/([^/]*)/", image_data["content_object"]
                     ).groups()
                     if endpoint == "organizations":
-                        django_object = models.OrganizationExtra.objects.get(
+                        django_object = pmodels.Organization.objects.get(
                             slug=object_id
                         )
                     elif endpoint == "persons":

@@ -7,8 +7,6 @@ from django.db import transaction
 
 from popolo.models import Organization
 
-from candidates.models import OrganizationExtra
-
 
 def fix_joint_party_name(joint_party_name):
     return {
@@ -31,14 +29,11 @@ def create_or_update_party(joint_party_name, sub_parties):
     if len(registers) > 1:
         raise Exception("Multiple registers found " + repr(registers))
     joint_party_id = "joint-party:" + "-".join(str(i) for i in party_ids)
-    if not OrganizationExtra.objects.filter(slug=joint_party_id).exists():
-        joint_party = Organization.objects.create(
+    if not Organization.objects.filter(slug=joint_party_id).exists():
+        Organization.objects.create(
             name=joint_party_name,
             classification="Party",
             dissolution_date="9999-12-31",
-        )
-        OrganizationExtra.objects.create(
-            base=joint_party,
             slug=joint_party_id,
             register=next(iter(registers)),
         )
@@ -57,10 +52,7 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, **options):
         joint_party_to_sub_parties = defaultdict(list)
-        for party_extra in OrganizationExtra.objects.filter(
-            base__classification="Party"
-        ).select_related("base"):
-            party = party_extra.base
+        for party in Organization.objects.filter(classification="Party"):
             today_str = str(date.today())
             if party.dissolution_date and (party.dissolution_date < today_str):
                 continue

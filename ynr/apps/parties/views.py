@@ -3,7 +3,6 @@ from collections.__init__ import defaultdict
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 
-from candidates.models import OrganizationExtra
 from elections.mixins import ElectionMixin
 
 from popolo.models import Identifier, Membership

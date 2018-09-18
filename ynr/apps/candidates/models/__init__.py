@@ -10,7 +10,6 @@ from candidates.models.constraints import check_membership_elections_consistent
 from candidates.models.merge import merge_popit_people
 
 from candidates.models.popolo_extra import AreaExtra
-from candidates.models.popolo_extra import OrganizationExtra
 from candidates.models.popolo_extra import PartySet
 from candidates.models.popolo_extra import ImageExtra
 from candidates.models.popolo_extra import PostExtraElection

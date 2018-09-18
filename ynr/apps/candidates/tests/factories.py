@@ -16,14 +16,7 @@ class ParliamentaryChamberFactory(factory.DjangoModelFactory):
         model = "popolo.Organization"
 
     name = "House of Commons"
-
-
-class ParliamentaryChamberExtraFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = "candidates.OrganizationExtra"
-
     slug = "commons"
-    base = factory.SubFactory(ParliamentaryChamberFactory)
 
 
 class BaseElectionFactory(factory.DjangoModelFactory):
@@ -98,13 +91,6 @@ class PostExtraElectionFactory(factory.DjangoModelFactory):
 class OrganizationFactory(factory.DjangoModelFactory):
     class Meta:
         model = "popolo.Organization"
-
-
-class OrganizationExtraFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = "candidates.OrganizationExtra"
-
-    base = factory.SubFactory(OrganizationFactory)
 
 
 class PersonFactory(factory.DjangoModelFactory):
