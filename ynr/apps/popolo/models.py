@@ -637,10 +637,11 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
         return self.name
 
 
-class Organization(Dateframeable, Timestampable, models.Model):
+class Organization(HasImageMixin, Dateframeable, Timestampable, models.Model):
     """
-    A group with a common purpose or reason for existence that goes beyond the set of people belonging to it
-    see schema at http://popoloproject.com/schemas/organization.json#
+    A group with a common purpose or reason for existence that goes beyond the
+    set of people belonging to it see schema at
+    http://popoloproject.com/schemas/organization.json#
     """
 
     name = models.CharField(
@@ -743,6 +744,20 @@ class Organization(Dateframeable, Timestampable, models.Model):
     sources = GenericRelation(
         "Source", help_text="URLs to source documents about the organization"
     )
+
+    # Copied from OrganizationExtra
+    slug = models.CharField(max_length=256, blank=True, unique=True)
+    register = models.CharField(blank=True, max_length=512)
+    images = GenericRelation("images.Image")
+
+    def ec_id(self):
+        try:
+            party_id = self.identifiers.filter(
+                scheme="electoral-commission"
+            ).first()
+            return party_id.identifier
+        except:
+            return "ynmp-party:2"
 
     try:
         # PassTrhroughManager was removed in django-model-utils 2.4, see issue #22
