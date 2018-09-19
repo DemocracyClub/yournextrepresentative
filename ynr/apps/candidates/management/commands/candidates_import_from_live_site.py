@@ -249,8 +249,8 @@ class Command(BaseCommand):
                     ] = organization_data["parent"]["id"]
         # Set any parent organizations:
         for child_slug, parent_slug in organization_to_parent.items():
-            child = pmodels.Organization.objects.get(extra__slug=child_slug)
-            parent = pmodels.Organization.objects.get(extra__slug=parent_slug)
+            child = pmodels.Organization.objects.get(slug=child_slug)
+            parent = pmodels.Organization.objects.get(slug=parent_slug)
             child.parent = parent
             child.save()
 
@@ -280,7 +280,7 @@ class Command(BaseCommand):
                 election_org = election_data.get("organization")
                 if election_org:
                     e.organization = pmodels.Organization.objects.get(
-                        extra__slug=election_org["id"]
+                        slug=election_org["id"]
                     )
                 e.save()
 
@@ -293,7 +293,7 @@ class Command(BaseCommand):
                     group=post_data["group"],
                 )
                 post.organization = pmodels.Organization.objects.get(
-                    extra__slug=post_data["organization"]["id"]
+                    slug=post_data["organization"]["id"]
                 )
 
                 post.save()
@@ -372,7 +372,7 @@ class Command(BaseCommand):
                     )
                 if m_data.get("organization"):
                     kwargs["organization"] = pmodels.Organization.objects.get(
-                        extra__slug=m_data["organization"]["id"]
+                        slug=m_data["organization"]["id"]
                     )
                 if m_data.get("post"):
                     kwargs["post"] = pmodels.Post.objects.get(
@@ -406,11 +406,11 @@ class Command(BaseCommand):
                         )
                     elif endpoint == "persons":
                         try:
-                            django_object = models.PersonExtra.objects.get(
-                                base__id=object_id
+                            django_object = models.Person.objects.get(
+                                id=object_id
                             )
                         except:
-                            # For some reason the PersonExtra doesn't exist.
+                            # For some reason the Person doesn't exist.
                             # Ignore this as it's not worth killing the whole
                             # import for.
                             continue
