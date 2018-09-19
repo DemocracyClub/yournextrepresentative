@@ -22,10 +22,8 @@ def extract_number_from_id(party_id):
 
 
 def create_or_update_party(joint_party_name, sub_parties):
-    party_ids = sorted(
-        extract_number_from_id(p.extra.slug) for p in sub_parties
-    )
-    registers = {p.extra.register for p in sub_parties}
+    party_ids = sorted(extract_number_from_id(p.slug) for p in sub_parties)
+    registers = {p.register for p in sub_parties}
     if len(registers) > 1:
         raise Exception("Multiple registers found " + repr(registers))
     joint_party_id = "joint-party:" + "-".join(str(i) for i in party_ids)
