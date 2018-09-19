@@ -751,6 +751,8 @@ class Organization(HasImageMixin, Dateframeable, Timestampable, models.Model):
     images = GenericRelation("images.Image")
 
     def ec_id(self):
+        if self.classification != "Party":
+            raise ValueError("'{}' isn't a Party".format(str(self)))
         try:
             party_id = self.identifiers.filter(
                 scheme="electoral-commission"
