@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("results", "0022_resultevent_winner_party_tmp"),
-        ("parties", "0007_add_speaker"),
+        ("parties", "0008_unique_ec_id"),
     ]
 
     operations = [
