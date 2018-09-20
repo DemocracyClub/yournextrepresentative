@@ -35,6 +35,7 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
             "default_emblem",
             "emblems",
             "descriptions",
+            "legacy_slug",
         )
         extra_kwargs = {"url": {"lookup_field": "ec_id"}}
 

@@ -199,6 +199,8 @@ class Command(BaseCommand):
                 defaults={
                     "name": party_dict["name"],
                     "register": party_dict["register"],
+                    "date_registered": party_dict["date_registered"],
+                    "legacy_slug": party_dict["legacy_slug"],
                 },
             )
 
