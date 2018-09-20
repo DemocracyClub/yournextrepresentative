@@ -10,7 +10,6 @@ from candidates.tests.factories import (
     ElectionFactory,
     PostFactory,
     ParliamentaryChamberFactory,
-    ParliamentaryChamberExtraFactory,
     PartySetFactory,
 )
 from .ee_postcode_results import ee_se240ag_result, ee_sw1a1aa_result
@@ -69,28 +68,28 @@ class TestHomePageView(WebTest):
 
     def _setup_extra_posts(self):
         # Create some extra posts and areas:
-        london_assembly = ParliamentaryChamberExtraFactory.create(
-            slug="london-assembly", base__name="London Assembly"
+        london_assembly = ParliamentaryChamberFactory.create(
+            slug="london-assembly", name="London Assembly"
         )
         election_lac = ElectionFactory.create(
             slug="gla.c.2016-05-05",
-            organization=london_assembly.base,
+            organization=london_assembly,
             name="2016 London Assembly Election (Constituencies)",
         )
         election_gla = ElectionFactory.create(
             slug="gla.a.2016-05-05",
-            organization=london_assembly.base,
+            organization=london_assembly,
             name="2016 London Assembly Election (Additional)",
         )
         PostFactory.create(
             elections=(election_lac,),
-            organization=london_assembly.base,
+            organization=london_assembly,
             slug="lambeth-and-southwark",
             label="Assembly Member for Lambeth and Southwark",
         )
         PostFactory.create(
             elections=(election_gla,),
-            organization=london_assembly.base,
+            organization=london_assembly,
             slug="london",
             label="2016 London Assembly Election (Additional)",
         )

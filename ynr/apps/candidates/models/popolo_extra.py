@@ -56,31 +56,6 @@ def paired_object_safe_to_delete(base_object):
     return True
 
 
-class OrganizationExtra(HasImageMixin, models.Model):
-    base = models.OneToOneField("popolo.Organization", related_name="extra")
-    slug = models.CharField(max_length=256, blank=True, unique=True)
-
-    # For parties, which party register is it on:
-    register = models.CharField(blank=True, max_length=512)
-
-    images = GenericRelation(Image)
-
-    def __str__(self):
-        # WARNING: This will cause an extra query when getting the
-        # repr() or unicode() of this object unless the base object
-        # has been select_related.
-        return self.base.name
-
-    def ec_id(self):
-        try:
-            party_id = self.base.identifiers.filter(
-                scheme="electoral-commission"
-            ).first()
-            return party_id.identifier
-        except:
-            return "ynmp-party:2"
-
-
 class PostExtraElection(models.Model):
     post = models.ForeignKey("popolo.Post")
     election = models.ForeignKey(Election)

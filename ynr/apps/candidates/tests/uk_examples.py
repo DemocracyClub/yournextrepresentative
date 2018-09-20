@@ -59,21 +59,20 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
         cls.ni_parties = factories.PartySetFactory.create(
             slug="ni", name="Northern Ireland"
         )
-        commons_extra = factories.ParliamentaryChamberExtraFactory.create()
-        cls.commons = commons_extra.base
+        cls.commons = factories.ParliamentaryChamberFactory.create()
         # Create the 2010 and 2015 general elections:
         cls.election = factories.ElectionFactory.create(
             slug="2015",
             name="2015 General Election",
             for_post_role="Member of Parliament",
-            organization=commons_extra.base,
+            organization=cls.commons,
         )
         cls.earlier_election = factories.EarlierElectionFactory.create(
             slug="2010",
             name="2010 General Election",
             for_post_role="Member of Parliament",
             current=False,
-            organization=commons_extra.base,
+            organization=cls.commons,
         )
         # Create some example parties:
         PartyFactory.reset_sequence()
@@ -136,9 +135,9 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
             setattr(cls, pee_attr_name, pee)
 
         # Also create a local election and post:
-        cls.local_council = factories.OrganizationExtraFactory.create(
-            base__name="Maidstone", slug="local-authority:maidstone"
-        ).base
+        cls.local_council = factories.OrganizationFactory.create(
+            name="Maidstone", slug="local-authority:maidstone"
+        )
         cls.local_election = factories.ElectionFactory.create(
             slug="local.maidstone.2016-05-05",
             organization=cls.local_council,

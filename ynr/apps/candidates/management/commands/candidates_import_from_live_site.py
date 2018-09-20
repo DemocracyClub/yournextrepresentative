@@ -215,22 +215,17 @@ class Command(BaseCommand):
                     classification=organization_data["classification"],
                     founding_date=organization_data["founding_date"],
                     dissolution_date=organization_data["dissolution_date"],
+                    slug=organization_data["id"],
+                    register=organization_data["register"],
                 )
                 if pmodels.Organization.objects.filter(**kwargs).count() > 1:
                     # Because there are no unique constraints on Organization,
                     # the below update_or_create can fail on
                     # MultipleObjectsReturned in some cases.
-                    # If that will happen, assumg everything is created already
-                    # and skip this org.
+                    # If that will happen, assuming everything is created
+                    # already and skip this org.
                     continue
                 o, _ = pmodels.Organization.objects.update_or_create(**kwargs)
-                models.OrganizationExtra.objects.update_or_create(
-                    base=o,
-                    defaults={
-                        "slug": organization_data["id"],
-                        "register": organization_data["register"],
-                    },
-                )
 
                 self.add_related(
                     o, pmodels.Identifier, organization_data["identifiers"]
@@ -254,8 +249,8 @@ class Command(BaseCommand):
                     ] = organization_data["parent"]["id"]
         # Set any parent organizations:
         for child_slug, parent_slug in organization_to_parent.items():
-            child = pmodels.Organization.objects.get(extra__slug=child_slug)
-            parent = pmodels.Organization.objects.get(extra__slug=parent_slug)
+            child = pmodels.Organization.objects.get(slug=child_slug)
+            parent = pmodels.Organization.objects.get(slug=parent_slug)
             child.parent = parent
             child.save()
 
@@ -285,7 +280,7 @@ class Command(BaseCommand):
                 election_org = election_data.get("organization")
                 if election_org:
                     e.organization = pmodels.Organization.objects.get(
-                        extra__slug=election_org["id"]
+                        slug=election_org["id"]
                     )
                 e.save()
 
@@ -298,7 +293,7 @@ class Command(BaseCommand):
                     group=post_data["group"],
                 )
                 post.organization = pmodels.Organization.objects.get(
-                    extra__slug=post_data["organization"]["id"]
+                    slug=post_data["organization"]["id"]
                 )
 
                 post.save()
@@ -377,7 +372,7 @@ class Command(BaseCommand):
                     )
                 if m_data.get("organization"):
                     kwargs["organization"] = pmodels.Organization.objects.get(
-                        extra__slug=m_data["organization"]["id"]
+                        slug=m_data["organization"]["id"]
                     )
                 if m_data.get("post"):
                     kwargs["post"] = pmodels.Post.objects.get(
@@ -406,16 +401,16 @@ class Command(BaseCommand):
                         r"api/v0.9/(\w+)/([^/]*)/", image_data["content_object"]
                     ).groups()
                     if endpoint == "organizations":
-                        django_object = models.OrganizationExtra.objects.get(
+                        django_object = pmodels.Organization.objects.get(
                             slug=object_id
                         )
                     elif endpoint == "persons":
                         try:
-                            django_object = models.PersonExtra.objects.get(
-                                base__id=object_id
+                            django_object = models.Person.objects.get(
+                                id=object_id
                             )
                         except:
-                            # For some reason the PersonExtra doesn't exist.
+                            # For some reason the Person doesn't exist.
                             # Ignore this as it's not worth killing the whole
                             # import for.
                             continue

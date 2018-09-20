@@ -192,18 +192,6 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
     except:
         objects = PersonQuerySet.as_manager()
 
-    def add_membership(self, organization):
-        m = Membership(person=self, organization=organization)
-        m.save()
-
-    def add_memberships(self, organizations):
-        for o in organizations:
-            self.add_membership(o)
-
-    def add_role(self, post):
-        m = Membership(person=self, post=post, organization=post.organization)
-        m.save()
-
     def add_contact_detail(self, **kwargs):
         c = ContactDetail(content_object=self, **kwargs)
         c.save()
@@ -637,10 +625,11 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
         return self.name
 
 
-class Organization(Dateframeable, Timestampable, models.Model):
+class Organization(HasImageMixin, Dateframeable, Timestampable, models.Model):
     """
-    A group with a common purpose or reason for existence that goes beyond the set of people belonging to it
-    see schema at http://popoloproject.com/schemas/organization.json#
+    A group with a common purpose or reason for existence that goes beyond the
+    set of people belonging to it see schema at
+    http://popoloproject.com/schemas/organization.json#
     """
 
     name = models.CharField(
@@ -744,6 +733,22 @@ class Organization(Dateframeable, Timestampable, models.Model):
         "Source", help_text="URLs to source documents about the organization"
     )
 
+    # Copied from OrganizationExtra
+    slug = models.CharField(max_length=256, blank=True, unique=True)
+    register = models.CharField(blank=True, max_length=512)
+    images = GenericRelation("images.Image")
+
+    def ec_id(self):
+        if self.classification != "Party":
+            raise ValueError("'{}' isn't a Party".format(str(self)))
+        try:
+            party_id = self.identifiers.filter(
+                scheme="electoral-commission"
+            ).first()
+            return party_id.identifier
+        except:
+            return "ynmp-party:2"
+
     try:
         # PassTrhroughManager was removed in django-model-utils 2.4, see issue #22
         objects = PassThroughManager.for_queryset_class(OrganizationQuerySet)()
@@ -759,6 +764,7 @@ class Organization(Dateframeable, Timestampable, models.Model):
             self.add_member(p)
 
     def add_post(self, **kwargs):
+        kwargs["slug"] = slugify(kwargs["label"])
         p = Post(organization=self, **kwargs)
         p.save()
 
@@ -850,10 +856,6 @@ class Post(Dateframeable, Timestampable, models.Model):
         objects = PassThroughManager.for_queryset_class(PostQuerySet)()
     except:
         objects = PostQuerySet.as_manager()
-
-    def add_person(self, person):
-        m = Membership(post=self, person=person, organization=self.organization)
-        m.save()
 
     def __str__(self):
         return self.label

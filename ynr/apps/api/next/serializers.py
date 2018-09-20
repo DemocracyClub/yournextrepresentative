@@ -65,10 +65,10 @@ class ObjectWithImageField(serializers.RelatedField):
         if isinstance(value, popolo_models.Person):
             kwargs.update({"pk": value.id})
             return reverse("person-detail", kwargs=kwargs, request=request)
-        elif isinstance(value, candidates_models.OrganizationExtra):
+        elif isinstance(value, popolo_models.Organization):
             kwargs.update({"slug": value.slug})
             return reverse(
-                "organizationextra-detail", kwargs=kwargs, request=request
+                "organization-detail", kwargs=kwargs, request=request
             )
         elif isinstance(value, popolo_models.Post):
             kwargs.update({"slug": value.slug})
@@ -110,17 +110,14 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
         return i.image.url
 
 
-class MinimalOrganizationExtraSerializer(
-    serializers.HyperlinkedModelSerializer
-):
+class MinimalOrganizationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = candidates_models.OrganizationExtra
+        model = popolo_models.Organization
         fields = ("id", "url", "name")
 
     id = serializers.ReadOnlyField(source="slug")
-    name = serializers.ReadOnlyField(source="base.name")
     url = serializers.HyperlinkedIdentityField(
-        view_name="organizationextra-detail",
+        view_name="organization-detail",
         lookup_field="slug",
         lookup_url_kwarg="slug",
     )
@@ -132,9 +129,9 @@ class PartySetSerializer(serializers.HyperlinkedModelSerializer):
         fields = ("id", "url", "name", "slug")
 
 
-class OrganizationExtraSerializer(MinimalOrganizationExtraSerializer):
+class OrganizationSerializer(MinimalOrganizationSerializer):
     class Meta:
-        model = candidates_models.OrganizationExtra
+        model = popolo_models.Organization
         fields = (
             "id",
             "url",
@@ -153,30 +150,16 @@ class OrganizationExtraSerializer(MinimalOrganizationExtraSerializer):
             "party_sets",
         )
 
-    classification = serializers.ReadOnlyField(source="base.classification")
-    founding_date = serializers.ReadOnlyField(source="base.founding_date")
-    dissolution_date = serializers.ReadOnlyField(source="base.dissolution_date")
+    parent = MinimalOrganizationSerializer(allow_null=True)
 
-    parent = MinimalOrganizationExtraSerializer(
-        source="base.parent.extra", allow_null=True
-    )
-
-    contact_details = ContactDetailSerializer(
-        many=True, read_only=True, source="base.contact_details"
-    )
-    identifiers = IdentifierSerializer(
-        many=True, read_only=True, source="base.identifiers"
-    )
-    links = LinkSerializer(many=True, read_only=True, source="base.links")
-    other_names = OtherNameSerializer(
-        many=True, read_only=True, source="base.other_names"
-    )
-    sources = SourceSerializer(many=True, read_only=True, source="base.sources")
+    contact_details = ContactDetailSerializer(many=True, read_only=True)
+    identifiers = IdentifierSerializer(many=True, read_only=True)
+    links = LinkSerializer(many=True, read_only=True)
+    other_names = OtherNameSerializer(many=True, read_only=True)
+    sources = SourceSerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True)
 
-    party_sets = PartySetSerializer(
-        many=True, read_only=True, source="base.party_sets"
-    )
+    party_sets = PartySetSerializer(many=True, read_only=True)
 
 
 class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
@@ -214,9 +197,7 @@ class ElectionSerializer(MinimalElectionSerializer):
             "description",
         )
 
-    organization = MinimalOrganizationExtraSerializer(
-        read_only=True, source="organization.extra"
-    )
+    organization = MinimalOrganizationSerializer(read_only=True)
 
 
 class MinimalPostSerializer(serializers.HyperlinkedModelSerializer):
@@ -403,9 +384,7 @@ class PostSerializer(MinimalPostSerializer):
 
     memberships = MembershipSerializer(many=True, read_only=True)
 
-    organization = MinimalOrganizationExtraSerializer(
-        source="organization.extra"
-    )
+    organization = MinimalOrganizationSerializer()
 
     elections = EmbeddedPostElectionSerializer(
         many=True, read_only=True, source="postextraelection_set"

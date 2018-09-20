@@ -3,7 +3,7 @@ import json
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 
-from candidates.models import PartySet, OrganizationExtra
+from candidates.models import PartySet
 from popolo import models as popolo_models
 from popolo.importers.popit import PopItImporter
 
@@ -27,7 +27,7 @@ class Command(BaseCommand):
                 related_manager.create(**kwargs)
 
     def update_party(self, party_data, party_set):
-        kwargs = {}
+        kwargs = {"slug": party_data["id"]}
         for k in (
             "name",
             "summary",
@@ -40,17 +40,13 @@ class Command(BaseCommand):
             if v:
                 kwargs[k] = v
         try:
-            org_extra = OrganizationExtra.objects.get(slug=party_data["id"])
-            org = org_extra.base
+            org = popolo_models.Organization.objects.get(slug=party_data["id"])
             for k, v in kwargs.items():
                 setattr(org, k, v)
             if not org.party_sets.filter(slug=party_set.slug):
                 org.party_sets.add(party_set)
-        except OrganizationExtra.DoesNotExist:
+        except popolo_models.Organization.DoesNotExist:
             org = popolo_models.Organization.objects.create(**kwargs)
-            org_extra = OrganizationExtra.objects.create(
-                base=org, slug=party_data["id"]
-            )
             org.party_sets.add(party_set)
         # Now make sure any related objects exist:
         for k, get_kwargs in [

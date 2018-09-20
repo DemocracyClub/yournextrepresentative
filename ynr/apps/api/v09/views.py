@@ -19,7 +19,7 @@ from images.models import Image
 from api.v09 import serializers
 from candidates import models as extra_models
 from elections.models import Election
-from popolo.models import Membership, Person, Post
+from popolo.models import Membership, Person, Post, Organization
 from rest_framework import viewsets
 from elections.uk.geo_helpers import (
     get_post_elections_from_coords,
@@ -301,29 +301,25 @@ class PersonViewSet(viewsets.ModelViewSet):
 
 
 class OrganizationViewSet(viewsets.ModelViewSet):
-    queryset = (
-        extra_models.OrganizationExtra.objects.select_related("base")
-        .prefetch_related(
-            "images",
-            "images__extra",
-            "base__contact_details",
-            "base__other_names",
-            "base__sources",
-            "base__links",
-            "base__identifiers",
-            "base__parent",
-            "base__parent__extra",
-        )
-        .order_by("base__id")
-    )
+    queryset = Organization.objects.prefetch_related(
+        "images",
+        "images__extra",
+        "contact_details",
+        "other_names",
+        "sources",
+        "links",
+        "identifiers",
+        "parent",
+        "parent",
+    ).order_by("id")
     lookup_field = "slug"
-    serializer_class = serializers.OrganizationExtraSerializer
+    serializer_class = serializers.OrganizationSerializer
     pagination_class = ResultsSetPagination
 
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = (
-        Post.objects.select_related("organization__extra", "party_set")
+        Post.objects.select_related("organization", "party_set")
         .prefetch_related(
             Prefetch(
                 "postextraelection_set",

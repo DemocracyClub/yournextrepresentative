@@ -9,7 +9,6 @@ from .factories import (
     MembershipFactory,
     ElectionFactory,
     MembershipFactory,
-    OrganizationExtraFactory,
     PersonFactory,
     PostFactory,
 )

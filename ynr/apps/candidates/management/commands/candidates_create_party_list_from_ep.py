@@ -5,7 +5,6 @@ import requests
 from slugify import slugify
 
 from popolo.models import Organization, Identifier, Source, Link
-from candidates.models import OrganizationExtra
 
 
 class Command(BaseCommand):
@@ -37,7 +36,7 @@ You can find a link for this on the main country page.
             ep_id = json_org["id"]
 
             org, created = Organization.objects.get_or_create(
-                name=name, classification="Party"
+                name=name, classification="Party", slug=slug
             )
 
             content_type = ContentType.objects.get_for_model(org)
@@ -74,9 +73,3 @@ You can find a link for this on the main country page.
                     url=link["url"],
                     note=link["note"],
                 )
-
-            if created:
-                org_extra, _ = OrganizationExtra.objects.get_or_create(base=org)
-
-                org_extra.slug = slug
-                org_extra.save()

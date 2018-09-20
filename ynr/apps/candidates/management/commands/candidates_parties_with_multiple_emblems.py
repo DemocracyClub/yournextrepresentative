@@ -1,16 +1,14 @@
 from django.core.management.base import BaseCommand
 
-from candidates.models import OrganizationExtra
+from popolo.models import Organization
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
 
-        for party_extra in (
-            OrganizationExtra.objects.filter(base__classification="Party")
-            .select_related("base")
-            .prefetch_related("images")
-        ):
+        for party_extra in Organization.objects.filter(
+            classification="Party"
+        ).prefetch_related("images"):
             images = list(party_extra.images.all())
             if len(images) < 2:
                 continue

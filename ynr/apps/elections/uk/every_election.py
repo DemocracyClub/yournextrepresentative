@@ -8,7 +8,7 @@ from django.conf import settings
 
 from elections.models import Election as YNRElection
 from popolo.models import Post, Organization
-from candidates.models import OrganizationExtra, PartySet, PostExtraElection
+from candidates.models import PartySet, PostExtraElection
 
 
 class EEElection(dict):
@@ -45,17 +45,13 @@ class EEElection(dict):
             self.organization_created = False
         else:
             try:
-                organization_extra = OrganizationExtra.objects.get(
-                    slug=org_slug, base__classification=classification
+                organization = Organization.objects.get(
+                    slug=org_slug, classification=classification
                 )
-                organization = organization_extra.base
                 self.organization_created = False
-            except OrganizationExtra.DoesNotExist:
+            except Organization.DoesNotExist:
                 organization = Organization.objects.create(
-                    name=org_name, classification=classification
-                )
-                organization_extra = OrganizationExtra.objects.create(
-                    base=organization, slug=org_slug
+                    name=org_name, classification=classification, slug=org_slug
                 )
                 self.organization_created = True
 

@@ -10,11 +10,7 @@ def check_paired_models():
     from images.models import Image
 
     errors = []
-    for base, extra in (
-        (Organization, models.OrganizationExtra),
-        (Area, models.AreaExtra),
-        (Image, models.ImageExtra),
-    ):
+    for base, extra in ((Area, models.AreaExtra), (Image, models.ImageExtra)):
         format_kwargs = {"base": base.__name__, "extra": extra.__name__}
         base_ids = set(base.objects.values_list("pk", flat=True))
         base_ids_from_extra = set(

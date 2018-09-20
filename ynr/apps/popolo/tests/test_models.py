@@ -4,9 +4,13 @@ Run with "manage.py test popolo, or with python".
 """
 
 from django.test import TestCase
-from popolo.behaviors.tests import TimestampableTests, DateframeableTests
+from popolo.behaviors.tests.test_behaviors import (
+    TimestampableTests,
+    DateframeableTests,
+)
 from popolo.models import Person, Organization, Post, ContactDetail
 from faker import Factory
+from slugify import slugify
 
 faker = Factory.create("it_IT")  # a factory to create fake names for tests
 
@@ -19,27 +23,6 @@ class PersonTestCase(DateframeableTests, TimestampableTests, TestCase):
         if "name" not in kwargs:
             kwargs.update({"name": u"test instance"})
         return Person.objects.create(**kwargs)
-
-    def test_add_membership(self):
-        p = self.create_instance(name=faker.name(), birth_date=faker.year())
-        o = Organization.objects.create(name=faker.company())
-        p.add_membership(o)
-        self.assertEqual(p.memberships.count(), 1)
-
-    def test_add_memberships(self):
-        p = self.create_instance(name=faker.name(), birth_date=faker.year())
-        os = [
-            Organization.objects.create(name=faker.company()) for i in range(3)
-        ]
-        p.add_memberships(os)
-        self.assertEqual(p.memberships.count(), 3)
-
-    def test_add_role(self):
-        p = self.create_instance(name=faker.name(), birth_date=faker.year())
-        o = Organization.objects.create(name=faker.company())
-        r = Post.objects.create(label=u"CEO", organization=o)
-        p.add_role(r)
-        self.assertEqual(p.memberships.count(), 1)
 
     def test_add_contact_detail(self):
         p = self.create_instance()
@@ -92,23 +75,8 @@ class OrganizationTestCase(DateframeableTests, TimestampableTests, TestCase):
     def create_instance(self, **kwargs):
         if "name" not in kwargs:
             kwargs.update({"name": u"test instance"})
+        kwargs["slug"] = slugify("-".join([v for k, v in kwargs.items()]))
         return Organization.objects.create(**kwargs)
-
-    def test_add_member(self):
-        o = self.create_instance(name=faker.company())
-        p = Person.objects.create(name=faker.name(), birth_date=faker.year())
-        o.add_member(p)
-        self.assertEqual(o.memberships.count(), 1)
-
-    def test_add_members(self):
-        o = self.create_instance(name=faker.company())
-        ps = [
-            Person.objects.create(name=faker.name(), birth_date=faker.year()),
-            Person.objects.create(name=faker.name(), birth_date=faker.year()),
-            Person.objects.create(name=faker.name(), birth_date=faker.year()),
-        ]
-        o.add_members(ps)
-        self.assertEqual(o.memberships.count(), 3)
 
     def test_add_post(self):
         o = Organization.objects.create(name=faker.company())
@@ -133,29 +101,3 @@ class OrganizationTestCase(DateframeableTests, TimestampableTests, TestCase):
         self.assertIsNone(o.end_date)
         o.save()
         self.assertEqual(o.end_date, o.dissolution_date)
-
-
-class PostTestCase(DateframeableTests, TimestampableTests, TestCase):
-    model = Post
-
-    def create_instance(self, **kwargs):
-        if "label" not in kwargs:
-            kwargs.update({"label": u"test instance"})
-        if "other_label" not in kwargs:
-            kwargs.update({"other_label": u"TI,TEST"})
-
-        if "organization" not in kwargs:
-            o = Organization.objects.create(name=faker.company())
-            kwargs.update({"organization": o})
-        return Post.objects.create(**kwargs)
-
-    def test_add_person(self):
-        o = Organization.objects.create(name=faker.company())
-        p = self.create_instance(
-            label=u"Chief Executive Officer",
-            other_label=u"CEO,AD",
-            organization=o,
-        )
-        pr = Person.objects.create(name=faker.name(), birth_date=faker.year())
-        p.add_person(pr)
-        self.assertEqual(p.memberships.count(), 1)

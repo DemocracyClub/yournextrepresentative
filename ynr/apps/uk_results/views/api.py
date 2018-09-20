@@ -9,8 +9,8 @@ from ..serializers import CandidateResultSerializer, ResultSetSerializer
 
 class CandidateResultViewSet(viewsets.ModelViewSet):
     queryset = CandidateResult.objects.select_related(
-        "membership__on_behalf_of__extra",
-        "membership__organization__extra",
+        "membership__on_behalf_of",
+        "membership__organization",
         "membership__post",
         "membership__extra__election",
         "membership__person",
