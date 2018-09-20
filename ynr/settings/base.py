@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     "storages",
     "twitterbot",
     "api",
+    "people",
 )
 
 MIDDLEWARE_CLASSES = (
