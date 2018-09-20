@@ -17,7 +17,7 @@ from popolo.models import Organization
 import requests
 import dateutil.parser
 
-from candidates.models import PartySet, ImageExtra
+from candidates.models import PartySet
 
 emblem_directory = join(settings.BASE_DIR, "data", "party-emblems")
 base_emblem_url = (
@@ -25,49 +25,11 @@ base_emblem_url = (
 )
 
 
-def get_file_md5sum(filename):
-    with open(filename, "rb") as f:
-        return hashlib.md5(f.read()).hexdigest()
-
-
 def find_index(l, predicate):
     for i, e in enumerate(l):
         if predicate(e):
             return i
     return -1
-
-
-IMAGES_TO_USE = {
-    # Labour Party
-    "party:53": "Rose with the word Labour underneath",
-    # Green Party
-    "party:63": "World with petals and Green Party name English",
-    # Another Green Party
-    "party:305": "Emblem 1",
-    # Plaid Cymru
-    "party:77": "emblem 3",
-    # Ulster Unionist Party
-    "party:83": "Emblem 1",
-    # Trade Unionist and Socialist Coalition
-    "party:804": "Emblem 3",
-    # Socialist Labour Party
-    "party:73": "Globe with map of Earth with wordsletters Socialist Labour PartySLP",
-    # National Front
-    "party:2707": "Emblem 2",
-    # Christian Party
-    "party:2893": "Christian Party",
-}
-
-
-def sort_emblems(emblems, party_id):
-    if party_id in IMAGES_TO_USE:
-        generic_image_index = find_index(
-            emblems,
-            lambda e: e["MonochromeDescription"] == IMAGES_TO_USE[party_id],
-        )
-        if generic_image_index < 0:
-            raise Exception("Couldn't find the generic logo for " + party_id)
-        emblems.insert(0, emblems.pop(generic_image_index))
 
 
 def get_descriptions(party):
@@ -189,7 +151,6 @@ class Command(BaseCommand):
                 party.other_names.create(
                     name=value, note="registered-description"
                 )
-            self.upload_images(ec_party["PartyEmblems"], party)
             party.save()
 
     def clean_date(self, date):
@@ -210,46 +171,6 @@ class Command(BaseCommand):
         ).strftime("%Y-%m-%d")
 
         return name.strip(), deregistered_date
-
-    def upload_images(self, emblems, party_extra):
-        content_type = ContentType.objects.get_for_model(party_extra)
-        sort_emblems(emblems, party_extra.slug)
-        primary = True
-        for emblem in emblems:
-            emblem_id = str(emblem["Id"])
-            ntf = NamedTemporaryFile(delete=False)
-            image_url = urljoin(base_emblem_url, emblem_id)
-            r = requests.get(image_url)
-            with open(ntf.name, "wb") as f:
-                f.write(r.content)
-            mime_type = self.mime_type_magic.from_file(ntf.name)
-            extension = mimetypes.guess_extension(mime_type)
-            leafname = "Emblem_{}{}".format(emblem_id, extension)
-            desired_storage_path = join("images", leafname)
-            fname = join(emblem_directory, leafname)
-            move(ntf.name, fname)
-            md5sum = get_file_md5sum(fname)
-            existing_image = ImageExtra.objects.filter(
-                md5sum=md5sum,
-                base__object_id=party_extra.id,
-                base__content_type_id=content_type.id,
-            )
-            if existing_image.exists():
-                continue
-            ImageExtra.objects.update_or_create_from_file(
-                fname,
-                desired_storage_path,
-                md5sum=md5sum,
-                base__object_id=party_extra.id,
-                base__content_type_id=content_type.id,
-                defaults={
-                    "uploading_user": None,
-                    "notes": emblem["MonochromeDescription"],
-                    "base__source": "The Electoral Commission",
-                    "base__is_primary": primary,
-                },
-            )
-            primary = False
 
     def clean_id(self, party_id):
         party_id = re.sub(r"^PPm?\s*", "", party_id).strip()
