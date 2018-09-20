@@ -137,9 +137,7 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
         blank=True,
         help_text=_("A date of death"),
     )
-    image = models.URLField(
-        _("image"), blank=True, null=True, help_text=_("A URL of a head shot")
-    )
+
     summary = models.CharField(
         _("summary"),
         max_length=1024,

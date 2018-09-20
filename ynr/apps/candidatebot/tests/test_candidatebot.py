@@ -35,7 +35,6 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
             "honorific_suffix": "",
             "facebook_page_url": "",
             "gender": "",
-            "image": None,
             "facebook_personal_url": "",
             "id": "2009",
             "honorific_prefix": "",
