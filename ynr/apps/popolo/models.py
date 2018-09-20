@@ -192,18 +192,6 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
     except:
         objects = PersonQuerySet.as_manager()
 
-    def add_membership(self, organization):
-        m = Membership(person=self, organization=organization)
-        m.save()
-
-    def add_memberships(self, organizations):
-        for o in organizations:
-            self.add_membership(o)
-
-    def add_role(self, post):
-        m = Membership(person=self, post=post, organization=post.organization)
-        m.save()
-
     def add_contact_detail(self, **kwargs):
         c = ContactDetail(content_object=self, **kwargs)
         c.save()
@@ -776,6 +764,7 @@ class Organization(HasImageMixin, Dateframeable, Timestampable, models.Model):
             self.add_member(p)
 
     def add_post(self, **kwargs):
+        kwargs["slug"] = slugify(kwargs["label"])
         p = Post(organization=self, **kwargs)
         p.save()
 
@@ -867,10 +856,6 @@ class Post(Dateframeable, Timestampable, models.Model):
         objects = PassThroughManager.for_queryset_class(PostQuerySet)()
     except:
         objects = PostQuerySet.as_manager()
-
-    def add_person(self, person):
-        m = Membership(post=self, person=person, organization=self.organization)
-        m.save()
 
     def __str__(self):
         return self.label
