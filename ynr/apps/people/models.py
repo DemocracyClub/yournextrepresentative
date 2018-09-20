@@ -1,5 +1,7 @@
 from django.db import models
 
+from people.managers import PersonImageManager
+
 
 def person_image_path(instance, filename):
     # Ensure the filename isn't too long
@@ -15,7 +17,7 @@ class PersonImage(models.Model):
     notes they have.
     """
 
-    person = models.ForeignKey("popolo.Person")
+    person = models.ForeignKey("popolo.Person", related_name="images")
     image = models.ImageField(upload_to=person_image_path, max_length=512)
     source = models.CharField(max_length=400)
     copyright = models.CharField(max_length=64, default="other", blank=True)
@@ -25,3 +27,5 @@ class PersonImage(models.Model):
     user_copyright = models.CharField(max_length=128, blank=True)
     notes = models.TextField(blank=True)
     is_primary = models.BooleanField(default=False)
+
+    objects = PersonImageManager()

@@ -107,7 +107,7 @@ class PersonQuerySet(DateframeableQuerySet):
             "contact_details",
             "identifiers",
             "links",
-            "images__extra__uploading_user",
+            "images__uploading_user",
             models.Prefetch(
                 "extra_field_values",
                 PersonExtraFieldValue.objects.select_related("field"),

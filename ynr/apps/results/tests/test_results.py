@@ -10,7 +10,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.utils.feedgenerator import rfc3339_date
 
-from candidates.models import ImageExtra
+from people.models import PersonImage
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
@@ -51,20 +51,18 @@ class TestResultsFeed(
         super().setUp()
         person = factories.PersonFactory.create(id="4322", name="Tessa Jowell")
         example_image_filename = EXAMPLE_IMAGE_FILENAME
-        self.example_image = ImageExtra.objects.create_from_file(
+        self.example_image = PersonImage.objects.create_from_file(
             example_image_filename,
             "images/jowell-pilot.jpg",
-            base_kwargs={
-                "content_object": person,
+            defaults={
+                "person": person,
                 "is_primary": True,
                 "source": "Taken from Wikipedia",
-            },
-            extra_kwargs={
                 "copyright": "example-license",
                 "uploading_user": self.user,
                 "user_notes": "A photo of Tessa Jowell",
             },
-        ).base
+        )
         ResultEvent.objects.create(
             election=self.election,
             winner=person,

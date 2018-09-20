@@ -4,7 +4,7 @@ from os.path import dirname, join
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 
-from candidates.models import ImageExtra
+from people.models import PersonImage
 
 from . import factories
 from .auth import TestUserMixin
@@ -26,27 +26,26 @@ class TestImageImport(TestUserMixin, TestCase):
     def test_import_new_image(self):
         md5sum = get_file_md5sum(self.image_filename)
         self.assertEqual(0, self.person.images.count())
-        ImageExtra.objects.update_or_create_from_file(
+        PersonImage.objects.update_or_create_from_file(
             self.image_filename,
             "images/imported.jpg",
-            md5sum=md5sum,
+            self.person,
             defaults={
+                "md5sum": md5sum,
                 "copyright": "example-license",
                 "uploading_user": self.user,
                 "user_notes": "Here's an image...",
-                "base__content_object": self.person,
-                "base__is_primary": True,
-                "base__source": "Found on the candidate's Flickr feed",
+                "is_primary": True,
+                "source": "Found on the candidate's Flickr feed",
             },
         )
         self.assertEqual(1, self.person.images.count())
         # This refetches the object from the database so we don't get
         # ORM-cached data:
         updated_labour = self.person.images.first()
-        updated_labour_extra = updated_labour.extra
-        self.assertEqual(updated_labour_extra.copyright, "example-license")
-        self.assertEqual(updated_labour_extra.uploading_user, self.user)
-        self.assertEqual(updated_labour_extra.user_notes, "Here's an image...")
+        self.assertEqual(updated_labour.copyright, "example-license")
+        self.assertEqual(updated_labour.uploading_user, self.user)
+        self.assertEqual(updated_labour.user_notes, "Here's an image...")
         self.assertEqual(
             updated_labour.source, "Found on the candidate's Flickr feed"
         )
@@ -55,46 +54,41 @@ class TestImageImport(TestUserMixin, TestCase):
     def test_update_imported_image(self):
         md5sum = get_file_md5sum(self.image_filename)
         self.assertEqual(0, self.person.images.count())
-        ImageExtra.objects.update_or_create_from_file(
+        PersonImage.objects.update_or_create_from_file(
             self.image_filename,
             "images/imported.jpg",
-            md5sum=md5sum,
+            self.person,
             defaults={
+                "md5sum": md5sum,
                 "copyright": "example-license",
                 "uploading_user": self.user,
                 "user_notes": "Here's an image...",
-                "base__content_object": self.person,
-                "base__is_primary": True,
-                "base__source": "Found on the candidates Flickr feed",
+                "is_primary": True,
+                "source": "Found on the candidates Flickr feed",
             },
         )
         self.assertEqual(1, self.person.images.count())
         # Now try to update that image:
-        ImageExtra.objects.update_or_create_from_file(
+        PersonImage.objects.update_or_create_from_file(
             self.image_filename,
             "images/imported.jpg",
-            md5sum=md5sum,
+            self.person,
             defaults={
+                "md5sum": md5sum,
                 "copyright": "another-license",
                 "uploading_user": self.user_who_can_merge,
                 "user_notes": "The classic image...",
-                "base__content_object": self.person,
-                "base__is_primary": True,
-                "base__source": "The same image from the Flickr feed",
+                "is_primary": True,
+                "source": "The same image from the Flickr feed",
             },
         )
         self.assertEqual(1, self.person.images.count())
         # This refetches the object from the database so we don't get
         # ORM-cached data:
         updated_labour = self.person.images.first()
-        updated_labour_extra = updated_labour.extra
-        self.assertEqual(updated_labour_extra.copyright, "another-license")
-        self.assertEqual(
-            updated_labour_extra.uploading_user, self.user_who_can_merge
-        )
-        self.assertEqual(
-            updated_labour_extra.user_notes, "The classic image..."
-        )
+        self.assertEqual(updated_labour.copyright, "another-license")
+        self.assertEqual(updated_labour.uploading_user, self.user_who_can_merge)
+        self.assertEqual(updated_labour.user_notes, "The classic image...")
         self.assertEqual(
             updated_labour.source, "The same image from the Flickr feed"
         )

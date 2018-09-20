@@ -253,7 +253,7 @@ class MergePeopleView(GroupRequiredMixin, View):
             is_primary=True
         ).exists()
         for image in secondary_person.images.all():
-            image.content_object = primary_person
+            image.person = primary_person
             if existing_primary_image:
                 image.is_primary = False
             image.save()

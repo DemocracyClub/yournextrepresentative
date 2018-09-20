@@ -15,11 +15,11 @@ from rest_framework.reverse import reverse
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 
-from images.models import Image
 from api.v09 import serializers
 from candidates import models as extra_models
 from elections.models import Election
 from popolo.models import Membership, Person, Post, Organization
+from people.models import PersonImage
 from rest_framework import viewsets
 from elections.uk.geo_helpers import (
     get_post_elections_from_coords,
@@ -139,10 +139,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                             "party", "post", "post_election__election"
                         ),
                     ),
-                    Prefetch(
-                        "person__images",
-                        Image.objects.select_related("extra__uploading_user"),
-                    ),
+                    "person__images",
                     "person__other_names",
                     "person__contact_details",
                     "person__links",
@@ -282,8 +279,8 @@ class PersonViewSet(viewsets.ModelViewSet):
                 Membership.objects.select_related("party", "post"),
             ),
             "memberships__post_election__election",
-            "images",
             "other_names",
+            "images",
             "contact_details",
             "links",
             "identifiers",
@@ -302,8 +299,6 @@ class PersonViewSet(viewsets.ModelViewSet):
 
 class OrganizationViewSet(viewsets.ModelViewSet):
     queryset = Organization.objects.prefetch_related(
-        "images",
-        "images__extra",
         "contact_details",
         "other_names",
         "sources",
@@ -357,7 +352,7 @@ class PartySetViewSet(viewsets.ModelViewSet):
 
 
 class ImageViewSet(viewsets.ModelViewSet):
-    queryset = Image.objects.order_by("id")
+    queryset = PersonImage.objects.order_by("id")
     serializer_class = serializers.ImageSerializer
     pagination_class = ResultsSetPagination
 

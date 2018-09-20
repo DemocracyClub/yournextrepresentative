@@ -15,7 +15,6 @@ from dateutil import parser
 from slugify import slugify
 
 from elections.models import Election, AreaType
-from images.models import Image, HasImageMixin
 
 """Extensions to the base django-popolo classes for YourNextRepresentative
 

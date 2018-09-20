@@ -4,9 +4,10 @@ from os.path import join
 from django.conf import settings
 from django.test import TestCase
 
-from candidates.models import ImageExtra, PersonRedirect
+from candidates.models import PersonRedirect
 from candidates.csv_helpers import list_to_csv
 from popolo.models import Person
+from people.models import PersonImage
 
 from . import factories
 from .auth import TestUserMixin
@@ -32,15 +33,13 @@ class CSVTests(TestUserMixin, UK2015ExamplesMixin, TestCase):
             email="jowell@example.com",
             gender="female",
         )
-        ImageExtra.objects.create_from_file(
+        PersonImage.objects.create_from_file(
             EXAMPLE_IMAGE_FILENAME,
             "images/jowell-pilot.jpg",
-            base_kwargs={
-                "content_object": self.gb_person,
+            defaults={
+                "person": self.gb_person,
                 "is_primary": True,
                 "source": "Taken from Wikipedia",
-            },
-            extra_kwargs={
                 "copyright": "example-license",
                 "uploading_user": self.user,
                 "user_notes": "A photo of Tessa Jowell",
@@ -111,7 +110,7 @@ class CSVTests(TestUserMixin, UK2015ExamplesMixin, TestCase):
         self.assertEqual(person_dict["id"], 2009)
 
     def test_csv_output(self):
-        tessa_image_url = self.gb_person.primary_image().url
+        tessa_image_url = self.gb_person.primary_image.url
         d = {
             "election_date": date_in_near_future,
             "earlier_election_date": date_in_near_future

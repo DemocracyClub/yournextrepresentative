@@ -38,10 +38,11 @@ from candidates.management.images import (
     ImageDownloadException,
     download_image_from_url,
 )
-from candidates.models import LoggedAction, ImageExtra, PostExtraElection
+from candidates.models import LoggedAction, PostExtraElection
 from candidates.views.version_data import get_client_ip, get_change_metadata
 
 from popolo.models import Person
+from people.models import PersonImage
 
 
 @login_required
@@ -318,15 +319,13 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             "Uploaded by {uploaded_by}: Approved from photo moderation queue"
         ).format(uploaded_by=uploaded_by)
 
-        ImageExtra.objects.create_from_file(
+        PersonImage.objects.create_from_file(
             ntf.name,
             join("images", filename),
-            base_kwargs={
+            defaults={
+                "person": person,
                 "source": source,
                 "is_primary": make_primary,
-                "content_object": person,
-            },
-            extra_kwargs={
                 "md5sum": md5sum,
                 "uploading_user": self.queued_image.user,
                 "user_notes": self.queued_image.justification_for_use,

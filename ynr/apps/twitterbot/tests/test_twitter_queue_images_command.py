@@ -5,7 +5,7 @@ import re
 from django.core.management import call_command
 from django.test import TestCase
 
-from candidates.models import ImageExtra
+from people.models import PersonImage
 from moderation_queue.models import QueuedImage
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import PersonFactory
@@ -62,15 +62,13 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         )
         # If they've had an image accepted, they'll probably have an
         # Image too, so create that:
-        self.image_create_from_queue = ImageExtra.objects.create_from_file(
+        self.image_create_from_queue = PersonImage.objects.create_from_file(
             self.image_filename,
             "images/person-accepted.jpg",
-            base_kwargs={
-                "content_object": self.p_accepted_image_in_queue,
+            defaults={
+                "person": self.p_accepted_image_in_queue,
                 "is_primary": True,
                 "source": "From Flickr, used as an example image",
-            },
-            extra_kwargs={
                 "copyright": "example-license",
                 "uploading_user": self.user,
                 "user_notes": "Here is a photo for you!",
@@ -83,15 +81,13 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         self.p_existing_image_but_none_in_queue.identifiers.create(
             identifier="1006", scheme="twitter"
         )
-        self.image_create_from_queue = ImageExtra.objects.create_from_file(
+        self.image_create_from_queue = PersonImage.objects.create_from_file(
             self.image_filename,
             "images/person-existing-image.jpg",
-            base_kwargs={
-                "content_object": self.p_existing_image_but_none_in_queue,
+            defaults={
+                "person": self.p_existing_image_but_none_in_queue,
                 "is_primary": True,
                 "source": "From Flickr, used as an example image",
-            },
-            extra_kwargs={
                 "copyright": "example-license",
                 "uploading_user": self.user,
                 "user_notes": "Photo from their party page, say",
