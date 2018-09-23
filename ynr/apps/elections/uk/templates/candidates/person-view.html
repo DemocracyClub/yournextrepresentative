@@ -18,15 +18,7 @@
 
     <!-- Just Open Graph metadata -->
     <meta property="og:type" content="article" />
-    {% if person.primary_image %}
-      {% thumbnail person.primary_image "x80" as im %}
-        <meta property="og:image" content="{{ im.url }}" />
-      {% endthumbnail %}
-    {% elif person.gender|lower == 'female' %}
-      <meta property="og:image" content="{{ 'candidates/img/blank-woman.png'|static_image_path:request }}"/>
-    {% else %}
-     <meta property="og:image" content="{{ 'candidates/img/blank-man.png'|static_image_path:request }}"/>
-    {% endif %}
+    <meta property="og:image" content="{{ person.get_display_image_url }}" />
     <meta property="og:image:height" content="80" />
     <meta property="og:image:width" content="80" />
     <meta property="og:site_name" content="{{ site.name }}" />
@@ -37,13 +29,7 @@
     {% if settings.TWITTER_USERNAME %}
       <meta name="twitter:site" content="@{{ settings.TWITTER_USERNAME }}" />
     {% endif %}
-    {% if person.primary_image %}
-      <meta property="twitter:image" content="{{ person.primary_image.url }}" />
-    {% elif person.gender|lower == 'female' %}
-      <meta property="twitter:image" content="{{ 'candidates/img/blank-woman-160.png'|static_image_path:request }}"/>
-    {% else %}
-     <meta property="twitter:image" content="{{ 'candidates/img/blank-man-160.png'|static_image_path:request }}"/>
-    {% endif %}
+    <meta property="twitter:image" content="{{ person.get_display_image_url }}" /
     <meta property="twitter:image:width" content="160" />
     <meta property="twitter:image:height" content="160" />
 {% endblock %}
@@ -62,21 +48,12 @@
 
 <div class="person__hero">
   <div class="person__photo">
-    {% if person.primary_image %}
-      {% thumbnail person.primary_image "x80" as im %}
-        <img class="person-avatar" src="{{ im.url }}"/>
-      {% endthumbnail %}
-    {% else %}
-      {% if person.gender|lower == 'female' %}
-        <img class="person-avatar" src="{% static 'candidates/img/blank-woman.png' %}"/>
-      {% else %}
-        <img class="person-avatar" src="{% static 'candidates/img/blank-man.png' %}"/>
-      {% endif %}
-      {% if user.is_authenticated %}
-        <a class="upload-photo" href="{% url 'photo-upload' person.id %}">
-          {% trans 'Upload photo' %}
-        </a>
-      {% endif %}
+
+    <img class="person-avatar" src="{{ person.get_display_image_url }}"/>
+    {% if not person.primary_image and user.is_authenticated %}
+      <a class="upload-photo" href="{% url 'photo-upload' person.id %}">
+        {% trans 'Upload photo' %}
+      </a>
     {% endif %}
   </div>
   <h1>{{ person.name }}</h1>

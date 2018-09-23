@@ -16,12 +16,14 @@ except ImportError:
 
 import json
 from slugify import slugify
+from sorl.thumbnail import get_thumbnail
 
 from django.core.validators import RegexValidator
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template import loader
+from django.templatetags.static import static
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.six.moves.urllib_parse import urljoin, quote_plus
@@ -601,6 +603,16 @@ class Person(Dateframeable, Timestampable, models.Model):
         images = self.images.filter(is_primary=True)
         if images.exists():
             return images.first().image
+
+    def get_display_image_url(self):
+        """
+        Return either the person's primary image or blank outline of a person
+        """
+
+        if self.primary_image:
+            return get_thumbnail(self.primary_image.path, "x64").url
+
+        return static("candidates/img/blank-person.png")
 
     def __getattr__(self, name):
         # We don't want to trigger the population of the
