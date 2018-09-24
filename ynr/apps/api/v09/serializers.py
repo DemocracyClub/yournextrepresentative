@@ -74,10 +74,10 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
             "user_copyright",
             "notes",
             "image_url",
-            "content_object",
         )
 
     image_url = serializers.SerializerMethodField()
+    uploading_user = serializers.ReadOnlyField(source="uploading_user.username")
 
     def get_image_url(self, i):
         return i.image.url
@@ -287,9 +287,7 @@ class PersonSerializer(MinimalPersonSerializer):
     identifiers = IdentifierSerializer(many=True, read_only=True)
     links = LinkSerializer(many=True, read_only=True)
     other_names = OtherNameSerializer(many=True, read_only=True)
-    images = ImageSerializer(
-        many=True, read_only=True, source="personimages_set", default=[]
-    )
+    images = ImageSerializer(many=True, read_only=True, default=[])
 
     versions = JSONSerializerField(read_only=True)
 
