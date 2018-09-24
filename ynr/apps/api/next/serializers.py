@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
 
+from api.helpers import JSONSerializerField
 from candidates import models as candidates_models
 from elections import models as election_models
 from popolo import models as popolo_models
@@ -249,11 +250,6 @@ class PostElectionSerializer(serializers.HyperlinkedModelSerializer):
 
     post = MinimalPostSerializer(read_only=True)
     election = MinimalElectionSerializer(read_only=True)
-
-
-class JSONSerializerField(serializers.Field):
-    def to_representation(self, value):
-        return json.loads(value)
 
 
 class PersonExtraFieldSerializer(serializers.HyperlinkedModelSerializer):
