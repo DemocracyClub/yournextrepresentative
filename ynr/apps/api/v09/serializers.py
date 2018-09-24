@@ -59,25 +59,6 @@ class SourceSerializer(serializers.ModelSerializer):
         fields = ("note", "url")
 
 
-class ObjectWithImageField(serializers.RelatedField):
-    def to_representation(self, value):
-        kwargs = {"version": "v0.9"}
-        request = self.context["request"]
-        if isinstance(value, popolo_models.Person):
-            kwargs.update({"pk": value.id})
-            return reverse("person-detail", kwargs=kwargs, request=request)
-        elif isinstance(value, popolo_models.Organization):
-            kwargs.update({"slug": value.slug})
-            return reverse(
-                "organization-detail", kwargs=kwargs, request=request
-            )
-        elif isinstance(value, popolo_models.Post):
-            kwargs.update({"slug": value.slug})
-            return reverse("post-detail", kwargs=kwargs, request=request)
-        else:
-            raise Exception("Unexpected type of object with an Image")
-
-
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PersonImage
