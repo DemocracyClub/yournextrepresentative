@@ -59,12 +59,11 @@ class SourceSerializer(serializers.ModelSerializer):
         fields = ("note", "url")
 
 
-class ImageSerializer(serializers.HyperlinkedModelSerializer):
+class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PersonImage
         fields = (
             "id",
-            "url",
             "source",
             "is_primary",
             "md5sum",

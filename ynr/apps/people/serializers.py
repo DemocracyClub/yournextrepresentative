@@ -3,12 +3,11 @@ from rest_framework import serializers
 from people.models import PersonImage
 
 
-class ImageSerializer(serializers.HyperlinkedModelSerializer):
+class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PersonImage
         fields = (
             "id",
-            "url",
             "source",
             "is_primary",
             "md5sum",
