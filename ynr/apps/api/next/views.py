@@ -15,6 +15,7 @@ from rest_framework.reverse import reverse
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 
+import people.serializers
 from api.next import serializers
 from candidates import models as extra_models
 from elections.models import Election
@@ -364,7 +365,7 @@ class PartySetViewSet(viewsets.ModelViewSet):
 
 class ImageViewSet(viewsets.ModelViewSet):
     queryset = PersonImage.objects.order_by("id")
-    serializer_class = serializers.ImageSerializer
+    serializer_class = people.serializers.ImageSerializer
     pagination_class = ResultsSetPagination
 
 

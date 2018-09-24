@@ -1,14 +1,11 @@
-import json
-
 from rest_framework import serializers
-from rest_framework.reverse import reverse
 from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
 
 from api.helpers import JSONSerializerField
 from candidates import models as candidates_models
 from elections import models as election_models
+from people.serializers import ImageSerializer
 from popolo import models as popolo_models
-from people.models import PersonImage
 from parties.serializers import MinimalPartySerializer
 
 # These are serializer classes from the Django-REST-framework API
@@ -76,29 +73,6 @@ class ObjectWithImageField(serializers.RelatedField):
             return reverse("post-detail", kwargs=kwargs, request=request)
         else:
             raise Exception("Unexpected type of object with an Image")
-
-
-class ImageSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = PersonImage
-        fields = (
-            "id",
-            "url",
-            "source",
-            "is_primary",
-            "md5sum",
-            "copyright",
-            "uploading_user",
-            "user_notes",
-            "user_copyright",
-            "notes",
-            "image_url",
-        )
-
-    image_url = serializers.SerializerMethodField()
-
-    def get_image_url(self, i):
-        return i.image.url
 
 
 class MinimalOrganizationSerializer(serializers.HyperlinkedModelSerializer):
@@ -290,9 +264,7 @@ class PersonSerializer(MinimalPersonSerializer):
     identifiers = IdentifierSerializer(many=True, read_only=True)
     links = LinkSerializer(many=True, read_only=True)
     other_names = OtherNameSerializer(many=True, read_only=True)
-    images = ImageSerializer(
-        many=True, read_only=True, source="personimages_set"
-    )
+    images = ImageSerializer(many=True, read_only=True, default=[])
 
     versions = JSONSerializerField(read_only=True)
 
