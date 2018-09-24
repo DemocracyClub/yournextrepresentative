@@ -363,12 +363,6 @@ class PartySetViewSet(viewsets.ModelViewSet):
     pagination_class = ResultsSetPagination
 
 
-class ImageViewSet(viewsets.ModelViewSet):
-    queryset = PersonImage.objects.order_by("id")
-    serializer_class = people.serializers.ImageSerializer
-    pagination_class = ResultsSetPagination
-
-
 class PostExtraElectionViewSet(viewsets.ModelViewSet):
     queryset = extra_models.PostExtraElection.objects.select_related(
         "election", "post"
