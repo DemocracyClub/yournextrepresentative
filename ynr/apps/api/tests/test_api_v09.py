@@ -13,18 +13,33 @@ from django.core.files.base import ContentFile
 
 from django_webtest import WebTest
 
+from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory, PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-
 from candidates.models import LoggedAction, PersonRedirect
 from candidates.tests.helpers import TmpMediaRootMixin
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from people.models import PersonImage
 
 
-class TestAPI(TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
+class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
 
         person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        PersonImage.objects.update_or_create_from_file(
+            EXAMPLE_IMAGE_FILENAME,
+            "images/imported.jpg",
+            person,
+            defaults={
+                "md5sum": "md5sum",
+                "copyright": "example-license",
+                "uploading_user": self.user,
+                "user_notes": "Here's an image...",
+                "is_primary": True,
+                "source": "Found on the candidate's Flickr feed",
+            },
+        )
         dulwich_not_stand = PersonFactory.create(id="4322", name="Helen Hayes")
         edinburgh_candidate = PersonFactory.create(
             id="818", name="Sheila Gilmore"

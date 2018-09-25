@@ -9,8 +9,8 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("parties", "0006_legacy_slug_unique"),
         ("results", "0021_resultevent_retraction"),
+        ("parties", "0008_unique_ec_id"),
     ]
 
     operations = [

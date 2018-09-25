@@ -16,11 +16,14 @@ except ImportError:
 
 import json
 from slugify import slugify
+from sorl.thumbnail import get_thumbnail
 
 from django.core.validators import RegexValidator
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template import loader
+from django.templatetags.static import static
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.six.moves.urllib_parse import urljoin, quote_plus
@@ -29,7 +32,6 @@ from model_utils import Choices
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-from images.models import HasImageMixin
 
 from candidates.diffs import get_version_diffs
 from candidates.models import ComplexPopoloField, PersonExtraFieldValue
@@ -53,7 +55,7 @@ class VersionNotFound(Exception):
     pass
 
 
-class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
+class Person(Dateframeable, Timestampable, models.Model):
     """
     A real person, alive or dead
     see schema at http://popoloproject.com/schemas/person.json#
@@ -137,9 +139,7 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
         blank=True,
         help_text=_("A date of death"),
     )
-    image = models.URLField(
-        _("image"), blank=True, null=True, help_text=_("A URL of a head shot")
-    )
+
     summary = models.CharField(
         _("summary"),
         max_length=1024,
@@ -178,7 +178,6 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
     # This field stores JSON data with previous version information
     # (as it did in PopIt).
     versions = models.TextField(blank=True)
-    images = GenericRelation("images.Image")
     not_standing = models.ManyToManyField(
         "elections.Election", related_name="persons_not_standing"
     )
@@ -540,13 +539,13 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
                     )
 
                 try:
-                    image_copyright = primary_image.extra.copyright
-                    user = primary_image.extra.uploading_user
+                    image_copyright = primary_image.copyright
+                    user = primary_image.uploading_user
                     if user is not None:
                         image_uploading_user = (
-                            primary_image.extra.uploading_user.username
+                            primary_image.uploading_user.username
                         )
-                    image_uploading_user_notes = primary_image.extra.user_notes
+                    image_uploading_user_notes = primary_image.user_notes
                 except ObjectDoesNotExist:
                     pass
             twitter_user_id = ""
@@ -599,6 +598,22 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
 
         return result
 
+    @property
+    def primary_image(self):
+        images = self.images.filter(is_primary=True)
+        if images.exists():
+            return images.first().image
+
+    def get_display_image_url(self):
+        """
+        Return either the person's primary image or blank outline of a person
+        """
+
+        if self.primary_image:
+            return get_thumbnail(self.primary_image.path, "x64").url
+
+        return static("candidates/img/blank-person.png")
+
     def __getattr__(self, name):
         # We don't want to trigger the population of the
         # complex_popolo_fields property just because Django is
@@ -625,7 +640,7 @@ class Person(HasImageMixin, Dateframeable, Timestampable, models.Model):
         return self.name
 
 
-class Organization(HasImageMixin, Dateframeable, Timestampable, models.Model):
+class Organization(Dateframeable, Timestampable, models.Model):
     """
     A group with a common purpose or reason for existence that goes beyond the
     set of people belonging to it see schema at
@@ -736,7 +751,6 @@ class Organization(HasImageMixin, Dateframeable, Timestampable, models.Model):
     # Copied from OrganizationExtra
     slug = models.CharField(max_length=256, blank=True, unique=True)
     register = models.CharField(blank=True, max_length=512)
-    images = GenericRelation("images.Image")
 
     def ec_id(self):
         if self.classification != "Party":

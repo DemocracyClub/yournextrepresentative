@@ -11,8 +11,9 @@ from django_webtest import WebTest
 
 from popolo.models import Membership, Person
 
-from candidates.models import PersonRedirect, ImageExtra
+from candidates.models import PersonRedirect
 from candidates.models.versions import revert_person_from_version_data
+from people.models import PersonImage
 from ynr.helpers import mkdir_p
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
@@ -114,15 +115,13 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 ]
             """,
         )
-        ImageExtra.objects.create_from_file(
+        PersonImage.objects.create_from_file(
             EXAMPLE_IMAGE_FILENAME,
             "images/jowell-pilot.jpg",
-            base_kwargs={
-                "content_object": person,
+            defaults={
+                "person": person,
                 "is_primary": True,
                 "source": "Taken from Wikipedia",
-            },
-            extra_kwargs={
                 "copyright": "example-license",
                 "uploading_user": self.user,
                 "user_notes": "A photo of Tessa Jowell",
@@ -237,15 +236,13 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 ]
             """,
         )
-        ImageExtra.objects.create_from_file(
+        PersonImage.objects.create_from_file(
             EXAMPLE_IMAGE_FILENAME,
             "images/collins-pilot.jpg",
-            base_kwargs={
-                "content_object": person,
+            defaults={
+                "person": person,
                 "is_primary": True,
                 "source": "Taken from Twitter",
-            },
-            extra_kwargs={
                 "copyright": "profile-photo",
                 "uploading_user": self.user,
                 "user_notes": "A photo of Shane Collins",
@@ -360,11 +357,9 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         primary_image = merged_person.images.get(is_primary=True)
         non_primary_image = merged_person.images.get(is_primary=False)
 
+        self.assertEqual(primary_image.user_notes, "A photo of Tessa Jowell")
         self.assertEqual(
-            primary_image.extra.user_notes, "A photo of Tessa Jowell"
-        )
-        self.assertEqual(
-            non_primary_image.extra.user_notes, "A photo of Shane Collins"
+            non_primary_image.user_notes, "A photo of Shane Collins"
         )
         self.assertEqual(mock_additional_merge_actions.call_count, 1)
         self.assertEqual(len(mock_additional_merge_actions.call_args), 2)

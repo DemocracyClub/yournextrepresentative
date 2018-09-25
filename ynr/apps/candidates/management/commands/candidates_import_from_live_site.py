@@ -21,7 +21,7 @@ import requests
 from candidates import models
 from elections import models as emodels
 from popolo import models as pmodels
-from images.models import Image
+from people.models import PersonImage
 from parties.models import Party
 
 from ..images import get_image_extension
@@ -89,7 +89,6 @@ class Command(BaseCommand):
             pmodels.Link,
             # Additional models:
             models.PartySet,
-            models.ImageExtra,
             models.LoggedAction,
             models.PersonRedirect,
             emodels.Election,  # , models.ExtraField,
@@ -200,6 +199,8 @@ class Command(BaseCommand):
                 defaults={
                     "name": party_dict["name"],
                     "register": party_dict["register"],
+                    "date_registered": party_dict["date_registered"],
+                    "legacy_slug": party_dict["legacy_slug"],
                 },
             )
 
@@ -317,6 +318,7 @@ class Command(BaseCommand):
                         ),
                     )
         extra_fields = {ef.key: ef for ef in models.ExtraField.objects.all()}
+        person_to_image_data = {}
         for person_data in self.get_api_results("persons"):
             with show_data_on_error("person_data", person_data):
                 kwargs = {
@@ -334,6 +336,8 @@ class Command(BaseCommand):
                     )
                 }
                 person = pmodels.Person.objects.create(**kwargs)
+                if not ignore_images:
+                    person_to_image_data[person] = person_data["images"]
                 self.add_related(
                     person, pmodels.Identifier, person_data["identifiers"]
                 )
@@ -395,58 +399,36 @@ class Command(BaseCommand):
                         slug=m_data["election"]["id"]
                     )
         if not ignore_images:
-            for image_data in self.get_api_results("images"):
-                with show_data_on_error("image_data", image_data):
-                    endpoint, object_id = re.search(
-                        r"api/v0.9/(\w+)/([^/]*)/", image_data["content_object"]
-                    ).groups()
-                    if endpoint == "organizations":
-                        django_object = pmodels.Organization.objects.get(
-                            slug=object_id
+            for person, image_data_list in person_to_image_data.items():
+                for image_data in image_data_list:
+                    with show_data_on_error("image_data", image_data):
+                        suggested_filename = re.search(
+                            r"/([^/]+)$", image_data["image_url"]
+                        ).group(1)
+                        image_filename = self.get_url_cached(
+                            image_data["image_url"]
                         )
-                    elif endpoint == "persons":
-                        try:
-                            django_object = models.Person.objects.get(
-                                id=object_id
-                            )
-                        except:
-                            # For some reason the Person doesn't exist.
-                            # Ignore this as it's not worth killing the whole
-                            # import for.
+                        extension = get_image_extension(image_filename)
+                        if not extension:
                             continue
-                    else:
-                        msg = "Image referring to unhandled endpoint {0}"
-                        raise Exception(msg.format(endpoint))
-                    suggested_filename = re.search(
-                        r"/([^/]+)$", image_data["image_url"]
-                    ).group(1)
-                    image_filename = self.get_url_cached(
-                        image_data["image_url"]
-                    )
-                    extension = get_image_extension(image_filename)
-                    if not extension:
-                        continue
-                    models.ImageExtra.objects.update_or_create_from_file(
-                        image_filename,
-                        join("images", suggested_filename),
-                        md5sum=image_data["md5sum"] or "",
-                        defaults={
-                            "uploading_user": self.get_user_from_username(
-                                image_data.get("uploading_user")
-                            ),
-                            "copyright": image_data["copyright"] or "",
-                            "notes": image_data["notes"] or "",
-                            "user_copyright": image_data["user_copyright"]
-                            or "",
-                            "user_notes": image_data["user_notes"] or "",
-                            "base__source": image_data["source"] or "",
-                            "base__is_primary": image_data["is_primary"],
-                            "base__object_id": django_object.id,
-                            "base__content_type_id": ContentType.objects.get_for_model(
-                                django_object
-                            ).id,
-                        },
-                    )
+                        PersonImage.objects.update_or_create_from_file(
+                            image_filename,
+                            join("images", suggested_filename),
+                            person,
+                            defaults={
+                                "md5sum": image_data["md5sum"],
+                                "uploading_user": self.get_user_from_username(
+                                    image_data.get("uploading_user")
+                                ),
+                                "copyright": image_data["copyright"] or "",
+                                "notes": image_data["notes"] or "",
+                                "user_copyright": image_data["user_copyright"]
+                                or "",
+                                "user_notes": image_data["user_notes"] or "",
+                                "source": image_data["source"] or "",
+                                "is_primary": image_data["is_primary"],
+                            },
+                        )
         reset_sql_list = connection.ops.sequence_reset_sql(
             no_style(),
             [

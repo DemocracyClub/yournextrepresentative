@@ -15,7 +15,6 @@ from dateutil import parser
 from slugify import slugify
 
 from elections.models import Election, AreaType
-from images.models import Image, HasImageMixin
 
 """Extensions to the base django-popolo classes for YourNextRepresentative
 
@@ -113,72 +112,3 @@ class PartySet(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class ImageExtraManager(models.Manager):
-    def create_from_file(
-        self, image_filename, ideal_relative_name, base_kwargs, extra_kwargs
-    ):
-        # Import the file to media root and create the ORM
-        # objects.
-        storage = DefaultStorage()
-        desired_storage_path = join("images", ideal_relative_name)
-        with open(image_filename, "rb") as f:
-            storage_filename = storage.save(desired_storage_path, f)
-        image = Image.objects.create(image=storage_filename, **base_kwargs)
-        return ImageExtra.objects.create(base=image, **extra_kwargs)
-
-    def update_or_create_from_file(
-        self, image_filename, ideal_relative_name, defaults, **kwargs
-    ):
-        try:
-            image_extra = ImageExtra.objects.select_related("base").get(
-                **kwargs
-            )
-            for k, v in defaults.items():
-                if k.startswith("base__"):
-                    base_k = re.sub(r"^base__", "", k)
-                    setattr(image_extra.base, base_k, v)
-                else:
-                    setattr(image_extra, k, v)
-            image_extra.save()
-            image_extra.base.save()
-            return image_extra, False
-        except ImageExtra.DoesNotExist:
-            # Prepare args for the base object first:
-            base_kwargs = {
-                re.sub(r"base__", "", k): v
-                for k, v in defaults.items()
-                if k.startswith("base__")
-            }
-            base_kwargs.update(
-                {
-                    re.sub(r"base__", "", k): v
-                    for k, v in kwargs.items()
-                    if k.startswith("base__")
-                }
-            )
-            # And now the extra object:
-            extra_kwargs = {
-                k: v for k, v in defaults.items() if not k.startswith("base__")
-            }
-            extra_kwargs.update(
-                {k: v for k, v in kwargs.items() if not k.startswith("base__")}
-            )
-            image_extra = self.create_from_file(
-                image_filename, ideal_relative_name, base_kwargs, extra_kwargs
-            )
-        return image_extra
-
-
-class ImageExtra(models.Model):
-    base = models.OneToOneField(Image, related_name="extra")
-
-    copyright = models.CharField(max_length=64, default="other", blank=True)
-    uploading_user = models.ForeignKey(User, blank=True, null=True)
-    user_notes = models.TextField(blank=True)
-    md5sum = models.CharField(max_length=32, blank=True)
-    user_copyright = models.CharField(max_length=128, blank=True)
-    notes = models.TextField(blank=True)
-
-    objects = ImageExtraManager()

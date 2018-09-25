@@ -2,15 +2,32 @@ from django_webtest import WebTest
 
 from candidates.tests.factories import MembershipFactory, PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from candidates.tests.auth import TestUserMixin
 
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from parties.tests.factories import PartyEmblemFactory, PartyDescriptionFactory
+from people.models import PersonImage
 
 
-class TestAPI(UK2015ExamplesMixin, WebTest):
+class TestAPI(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
 
         person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        PersonImage.objects.update_or_create_from_file(
+            EXAMPLE_IMAGE_FILENAME,
+            "images/imported.jpg",
+            person,
+            defaults={
+                "md5sum": "md5sum",
+                "copyright": "example-license",
+                "uploading_user": self.user,
+                "user_notes": "Here's an image...",
+                "is_primary": True,
+                "source": "Found on the candidate's Flickr feed",
+            },
+        )
+
         dulwich_not_stand = PersonFactory.create(id="4322", name="Helen Hayes")
         edinburgh_candidate = PersonFactory.create(
             id="818", name="Sheila Gilmore"
@@ -98,3 +115,12 @@ class TestAPI(UK2015ExamplesMixin, WebTest):
     def test_party_endpoint(self):
         parties_resp = self.app.get("/api/next/parties/")
         self.assertEqual(parties_resp.json["count"], 7)
+
+    def test_person_endpoint_smoke_test(self):
+        response = self.app.get("/api/next/persons/")
+        result_json = response.json
+        self.assertEqual(result_json["count"], 5)
+
+        response = self.app.get("/api/next/persons/2009/")
+        result_json = response.json
+        self.assertTrue(result_json["images"][0]["is_primary"])

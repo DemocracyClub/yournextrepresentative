@@ -2,8 +2,12 @@ from datetime import timedelta
 import re
 
 import factory
+import faker
+
 
 from .dates import date_in_near_future, FOUR_YEARS_IN_DAYS
+
+faker_factory = faker.Factory.create()
 
 
 class PartySetFactory(factory.DjangoModelFactory):

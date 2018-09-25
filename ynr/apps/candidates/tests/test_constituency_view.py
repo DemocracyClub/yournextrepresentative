@@ -16,7 +16,7 @@ from .uk_examples import UK2015ExamplesMixin
 
 from compat import BufferDictReader
 
-from candidates.models import ImageExtra
+from people.models import PersonImage
 from popolo.models import Membership, Person
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
@@ -96,7 +96,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_any_constituency_page(self):
         # Just a smoke test for the moment:
-        with self.assertNumQueries(46):
+        with self.assertNumQueries(48):
             response = self.app.get(
                 "/election/2015/post/65808/dulwich-and-west-norwood",
                 user=self.user,
@@ -416,20 +416,20 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_person_photo_shown(self):
         person = Person.objects.get(id=2009)
-        im = ImageExtra.objects.update_or_create_from_file(
+        im = PersonImage.objects.update_or_create_from_file(
             EXAMPLE_IMAGE_FILENAME,
             "images/imported.jpg",
-            md5sum="md5sum",
+            person=person,
             defaults={
+                "md5sum": "md5sum",
                 "copyright": "example-license",
                 "uploading_user": self.user,
                 "user_notes": "Here's an image...",
-                "base__content_object": person,
-                "base__is_primary": True,
-                "base__source": "Found on the candidate's Flickr feed",
+                "is_primary": True,
+                "source": "Found on the candidate's Flickr feed",
             },
         )
-        expected_url = get_thumbnail(im.base.image, "x64").url
+        expected_url = get_thumbnail(im.image, "x64").url
         response = self.app.get(
             "/election/2015/post/65808/dulwich-and-west-norwood"
         )

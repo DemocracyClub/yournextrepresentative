@@ -37,7 +37,6 @@ def get_person_as_version_data(person, new_person=False):
     result["other_names"] = []
     standing_in = {}
     party_memberships = {}
-    result["image"] = ""
 
     if not new_person:
         result["other_names"] = [
@@ -58,7 +57,6 @@ def get_person_as_version_data(person, new_person=False):
                 {"scheme": i.scheme, "identifier": i.identifier}
                 for i in identifiers
             ]
-        result["image"] = person.image
 
         for membership in person.memberships.filter(post__isnull=False):
             post = membership.post
@@ -132,9 +130,6 @@ def revert_person_from_version_data(person, version_data, part_of_merge=False):
         value = extra_fields_from_version.get(extra_field.key)
         if value is not None:
             person.extra_field_values.create(field=extra_field, value=value)
-
-    # Other fields to preserve:
-    person.image = version_data.get("image")
 
     # Remove all other names, and recreate:
     person.other_names.all().delete()

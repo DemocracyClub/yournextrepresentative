@@ -4,8 +4,9 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
 
+from api.helpers import JSONSerializerField
 from candidates import models as candidates_models
-from images.models import Image
+from people.models import PersonImage
 from elections import models as election_models
 from popolo import models as popolo_models
 from parties.models import Party
@@ -58,31 +59,11 @@ class SourceSerializer(serializers.ModelSerializer):
         fields = ("note", "url")
 
 
-class ObjectWithImageField(serializers.RelatedField):
-    def to_representation(self, value):
-        kwargs = {"version": "v0.9"}
-        request = self.context["request"]
-        if isinstance(value, popolo_models.Person):
-            kwargs.update({"pk": value.id})
-            return reverse("person-detail", kwargs=kwargs, request=request)
-        elif isinstance(value, popolo_models.Organization):
-            kwargs.update({"slug": value.slug})
-            return reverse(
-                "organization-detail", kwargs=kwargs, request=request
-            )
-        elif isinstance(value, popolo_models.Post):
-            kwargs.update({"slug": value.slug})
-            return reverse("post-detail", kwargs=kwargs, request=request)
-        else:
-            raise Exception("Unexpected type of object with an Image")
-
-
-class ImageSerializer(serializers.HyperlinkedModelSerializer):
+class ImageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Image
+        model = PersonImage
         fields = (
             "id",
-            "url",
             "source",
             "is_primary",
             "md5sum",
@@ -92,19 +73,10 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
             "user_copyright",
             "notes",
             "image_url",
-            "content_object",
         )
 
-    md5sum = serializers.ReadOnlyField(source="extra.md5sum")
-    copyright = serializers.ReadOnlyField(source="extra.copyright")
-    uploading_user = serializers.ReadOnlyField(
-        source="extra.uploading_user.username"
-    )
-    user_notes = serializers.ReadOnlyField(source="extra.user_notes")
-    user_copyright = serializers.ReadOnlyField(source="extra.user_copyright")
-    notes = serializers.ReadOnlyField(source="extra.notes")
     image_url = serializers.SerializerMethodField()
-    content_object = ObjectWithImageField(read_only=True)
+    uploading_user = serializers.ReadOnlyField(source="uploading_user.username")
 
     def get_image_url(self, i):
         return i.image.url
@@ -276,11 +248,6 @@ class PostElectionSerializer(serializers.HyperlinkedModelSerializer):
     election = MinimalElectionSerializer(read_only=True)
 
 
-class JSONSerializerField(serializers.Field):
-    def to_representation(self, value):
-        return json.loads(value)
-
-
 class PersonExtraFieldSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = candidates_models.PersonExtraFieldValue
@@ -319,7 +286,7 @@ class PersonSerializer(MinimalPersonSerializer):
     identifiers = IdentifierSerializer(many=True, read_only=True)
     links = LinkSerializer(many=True, read_only=True)
     other_names = OtherNameSerializer(many=True, read_only=True)
-    images = ImageSerializer(many=True, read_only=True)
+    images = ImageSerializer(many=True, read_only=True, default=[])
 
     versions = JSONSerializerField(read_only=True)
 

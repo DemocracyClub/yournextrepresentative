@@ -11,15 +11,7 @@
 {% block hero %}
 <div class="person__hero">
   <div class="person__photo">
-    {% if person.primary_image %}
-      {% thumbnail person.primary_image "x80" as im %}
-        <img class="person-avatar" src="{{ im.url }}"/>
-      {% endthumbnail %}
-    {% elif person.gender|lower == 'female' %}
-      <img class="person-avatar" src="{% static 'candidates/img/blank-woman.png' %}"/>
-    {% else %}
-      <img class="person-avatar" src="{% static 'candidates/img/blank-man.png' %}"/>
-    {% endif %}
+    <img class="person-avatar" src="{{ person.get_display_image_url }}"/>
     <a class="upload-photo" href="{% url 'photo-upload' person.id %}">
       {% trans 'Upload photo' %}
     </a>

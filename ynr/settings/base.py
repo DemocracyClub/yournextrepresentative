@@ -53,6 +53,7 @@ DEFAULT_FROM_EMAIL = "candidates@democracyclub.org.uk"
 
 # The From: address for error emails
 SERVER_EMAIL = "candidates@democracyclub.org.uk"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = None
@@ -131,6 +132,7 @@ INSTALLED_APPS = (
     "storages",
     "twitterbot",
     "api",
+    "people",
 )
 
 MIDDLEWARE_CLASSES = (

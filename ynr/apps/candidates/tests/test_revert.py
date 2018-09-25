@@ -187,7 +187,6 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "honorific_suffix": "",
                 "party_ppc_page_url": "",
                 "gender": "",
-                "image": None,
                 "linkedin_url": "",
                 "id": "2009",
                 "other_names": [],
