@@ -34,7 +34,7 @@ def get_constituency_lock_from_person_data(
 
 
 def get_edits_allowed(user, candidates_locked):
-    return user.is_authenticated() and (
+    return user.is_authenticated and (
         user_in_group(user, TRUSTED_TO_LOCK_GROUP_NAME)
         or (not candidates_locked)
     )

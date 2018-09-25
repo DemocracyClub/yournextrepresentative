@@ -69,7 +69,7 @@ class CopyrightAssignmentMiddleware(object):
         for path_re in self.EXCLUDED_PATHS:
             if path_re.search(request.path):
                 return None
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return None
         if request.session.get("terms_agreement_assigned_to_dc") == True:
             return None
@@ -92,7 +92,7 @@ class DisableCachingForAuthenticatedUsers(object):
     EXCLUDED_PATHS = (re.compile(r"^/static"), re.compile(r"^/media"))
 
     def process_response(self, request, response):
-        if hasattr(request, "user") and request.user.is_authenticated():
+        if hasattr(request, "user") and request.user.is_authenticated:
             if all(
                 path_re.search(request.path) is None
                 for path_re in self.EXCLUDED_PATHS
@@ -106,7 +106,7 @@ class LogoutDisabledUsersMiddleware(object):
     def process_request(self, request):
         if (
             hasattr(request, "user")
-            and request.user.is_authenticated()
+            and request.user.is_authenticated
             and not request.user.is_active
         ):
             logout(request)
