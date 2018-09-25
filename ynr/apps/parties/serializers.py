@@ -47,4 +47,4 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
 class MinimalPartySerializer(PartySerializer):
     class Meta:
         model = Party
-        fields = ("ec_id", "name")
+        fields = ("ec_id", "name", "legacy_slug")
