@@ -248,5 +248,4 @@ urlpatterns += [
 urlpatterns += [
     url(r"^numbers/", include("cached_counts.urls")),
     url(r"^moderation/", include("moderation_queue.urls")),
-    url(r"^admin/", include(admin.site.urls)),
 ]
