@@ -193,7 +193,7 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
         response = self.app.post(
             "/election/{}/person/create/".format(self.election.slug),
-            {
+            params={
                 "name": "Yoshi Aarle",
                 "source": "just a test",
                 "standing_2015": "standing",

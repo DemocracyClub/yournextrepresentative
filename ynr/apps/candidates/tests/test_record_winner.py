@@ -66,7 +66,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(form_get_response.status_code, 403)
         post_response = self.app.post(
             base_record_url,
-            {
+            params={
                 "csrfmiddlewaretoken": csrftoken,
                 "person_id": "4322",
                 "source": "BBC news",
@@ -299,7 +299,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(form_get_response.status_code, 403)
         post_response = self.app.post(
             base_record_url,
-            {
+            params={
                 "csrfmiddlewaretoken": csrftoken,
                 "person_id": "4322",
                 "source": "BBC news",
@@ -320,7 +320,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         response = self.app.post(
             base_record_url,
-            {"csrfmiddlewaretoken": csrftoken},
+            params={"csrfmiddlewaretoken": csrftoken},
             user=self.user_who_can_record_results,
             expect_errors=True,
         )

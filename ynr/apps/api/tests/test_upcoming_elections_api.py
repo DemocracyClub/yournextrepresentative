@@ -186,7 +186,7 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
                                 "election": {
                                     "id": "gla.a.2016-05-05",
                                     "name": "2016 London Assembly Election (Additional)",
-                                    "url": "http://localhost:80/api/v0.9/elections/gla.a.2016-05-05/",
+                                    "url": "http://testserver/api/v0.9/elections/gla.a.2016-05-05/",
                                 },
                                 "end_date": None,
                                 "id": membership_pk,
@@ -199,17 +199,17 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
                                 "person": {
                                     "id": 2009,
                                     "name": "Tessa Jowell",
-                                    "url": "http://localhost:80/api/v0.9/persons/2009/",
+                                    "url": "http://testserver/api/v0.9/persons/2009/",
                                 },
                                 "post": {
                                     "id": "london",
                                     "label": "Assembly Member",
                                     "slug": "london",
-                                    "url": "http://localhost:80/api/v0.9/posts/london/",
+                                    "url": "http://testserver/api/v0.9/posts/london/",
                                 },
                                 "role": "Candidate",
                                 "start_date": None,
-                                "url": "http://localhost:80/api/v0.9/memberships/{}/".format(
+                                "url": "http://testserver/api/v0.9/memberships/{}/".format(
                                     membership_pk
                                 ),
                             }
@@ -218,7 +218,7 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
                         "other_names": [],
                         "sort_name": "",
                         "thumbnail": None,
-                        "url": "http://localhost:80/api/v0.9/persons/2009/",
+                        "url": "http://testserver/api/v0.9/persons/2009/",
                     }
                 ],
                 "election_date": text_type(self.future_date.isoformat()),

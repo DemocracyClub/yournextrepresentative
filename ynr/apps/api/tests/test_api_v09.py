@@ -97,16 +97,14 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 200)
         json = response.json
 
+        self.assertEqual(json["persons"], "http://testserver/api/v0.9/persons/")
         self.assertEqual(
-            json["persons"], "http://localhost:80/api/v0.9/persons/"
+            json["organizations"], "http://testserver/api/v0.9/organizations/"
         )
         self.assertEqual(
-            json["organizations"], "http://localhost:80/api/v0.9/organizations/"
+            json["elections"], "http://testserver/api/v0.9/elections/"
         )
-        self.assertEqual(
-            json["elections"], "http://localhost:80/api/v0.9/elections/"
-        )
-        self.assertEqual(json["posts"], "http://localhost:80/api/v0.9/posts/")
+        self.assertEqual(json["posts"], "http://testserver/api/v0.9/posts/")
 
         persons_resp = self.app.get("/api/v0.9/persons/")
         self.assertEqual(persons_resp.status_code, 200)
@@ -133,7 +131,9 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get("/api/v0.9/persons/4000/", expect_errors=True)
         self.assertEqual(response.status_code, 404)
 
-        response = self.app.post("/api/v0.9/persons/", {}, expect_errors=True)
+        response = self.app.post(
+            "/api/v0.9/persons/", params={}, expect_errors=True
+        )
         self.assertEqual(response.status_code, 403)
 
     def test_api_persons(self):

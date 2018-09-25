@@ -44,7 +44,7 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         response = self.app.post(
             url,
-            {
+            params={
                 "csrfmiddlewaretoken": self.app.cookies["csrftoken"],
                 "source": "Some good reasons for deleting this name",
             },
@@ -60,7 +60,7 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         response = self.app.post(
             url,
-            {
+            params={
                 "csrfmiddlewaretoken": self.app.cookies["csrftoken"],
                 "source": "Some good reasons for deleting this name",
             },
@@ -88,7 +88,7 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Post to the create page:
         response = self.app.post(
             "/person/5678/other-names/create",
-            {
+            params={
                 "name": "J Smith",
                 "note": "Name with just initials",
                 "csrfmiddlewaretoken": self.app.cookies["csrftoken"],
@@ -145,7 +145,7 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/person/5678/other-name/{on_id}/update".format(
                 on_id=self.fozzie_bear.id
             ),
-            {
+            params={
                 "name": "F Bear",
                 "note": "Name with just initials",
                 "csrfmiddlewaretoken": self.app.cookies["csrftoken"],

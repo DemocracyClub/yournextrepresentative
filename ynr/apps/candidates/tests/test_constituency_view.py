@@ -206,7 +206,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/candidacy/delete",
-            {
+            params={
                 "person_id": "9999",
                 "post_id": "14419",
                 "source": "test data",
@@ -225,7 +225,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/candidacy/delete",
-            {
+            params={
                 "person_id": "181",
                 "post_id": "9999",
                 "source": "test data",
@@ -244,7 +244,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/candidacy",
-            {
+            params={
                 "person_id": "9999",
                 "post_id": "14419",
                 "source": "test data",
@@ -263,7 +263,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/candidacy",
-            {
+            params={
                 "person_id": "5163",
                 "post_id": "9999",
                 "source": "test data",
@@ -282,7 +282,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/candidacy/delete",
-            {
+            params={
                 "person_id": "818",
                 "post_id": "14419",
                 "source": "test data",
@@ -315,7 +315,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/candidacy",
-            {
+            params={
                 "person_id": "5163",
                 "post_id": "14419",
                 "source": "test data",
@@ -345,7 +345,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/candidacy/delete",
-            {
+            params={
                 "person_id": "5163",
                 "post_id": "14419",
                 "source": "test data",
@@ -378,7 +378,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/candidacy",
-            {
+            params={
                 "person_id": "4322",
                 "post_id": "65808",
                 "source": "test data",
