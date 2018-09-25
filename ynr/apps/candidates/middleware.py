@@ -10,6 +10,7 @@ from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
 from django.http import HttpResponseForbidden
 from django.shortcuts import render
+from django.utils.deprecation import MiddlewareMixin
 from django.utils.http import urlquote
 from django.utils.translation import ugettext as _
 
@@ -21,7 +22,7 @@ from candidates.models.auth import (
 )
 
 
-class DisallowedUpdateMiddleware(object):
+class DisallowedUpdateMiddleware(MiddlewareMixin):
     def process_exception(self, request, exc):
         if isinstance(exc, NameChangeDisallowedException):
             intro = _("As a precaution, an update was blocked:")
@@ -48,7 +49,7 @@ class DisallowedUpdateMiddleware(object):
             return HttpResponseForbidden()
 
 
-class CopyrightAssignmentMiddleware(object):
+class CopyrightAssignmentMiddleware(MiddlewareMixin):
     """Check that authenticated users have agreed to copyright assigment
 
     This must come after AuthenticationMiddleware so that request.user
@@ -87,7 +88,7 @@ class CopyrightAssignmentMiddleware(object):
             return HttpResponseRedirect(assign_copyright_url)
 
 
-class DisableCachingForAuthenticatedUsers(object):
+class DisableCachingForAuthenticatedUsers(MiddlewareMixin):
 
     EXCLUDED_PATHS = (re.compile(r"^/static"), re.compile(r"^/media"))
 
@@ -102,7 +103,7 @@ class DisableCachingForAuthenticatedUsers(object):
         return response
 
 
-class LogoutDisabledUsersMiddleware(object):
+class LogoutDisabledUsersMiddleware(MiddlewareMixin):
     def process_request(self, request):
         if (
             hasattr(request, "user")

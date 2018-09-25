@@ -135,7 +135,7 @@ INSTALLED_APPS = (
     "people",
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
