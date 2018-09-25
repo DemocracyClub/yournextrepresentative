@@ -41,7 +41,7 @@ class PreventCreatingBadMemberships(UK2015ExamplesMixin, TestCase):
         new_candidate = PersonFactory.create(name="John Doe")
         new_candidate.not_standing.add(self.election)
 
-        with self.assertRaisesRegexp(
+        with self.assertRaisesRegex(
             Exception,
             r'Trying to add a Membership with an election "2015 '
             r'General Election", but that\'s in John Doe '
@@ -65,7 +65,7 @@ class PreventCreatingBadMemberships(UK2015ExamplesMixin, TestCase):
             role=self.election.candidate_membership_role,
             post_election=self.election.postextraelection_set.get(post=post),
         )
-        with self.assertRaisesRegexp(
+        with self.assertRaisesRegex(
             Exception,
             (
                 r"There was an existing candidacy for John Doe "

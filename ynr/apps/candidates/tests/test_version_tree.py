@@ -259,7 +259,7 @@ class TestVersionTree(TestCase):
                 "version_id": "3787faf978dee092",
             },
         ]
-        with self.assertRaisesRegexp(
+        with self.assertRaisesRegex(
             Exception,
             r"It looks like there was a bogus merge version for person "
             r"with ID 2009; there were 2 merge versions and 2 person IDs.",
