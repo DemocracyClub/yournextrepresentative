@@ -19,6 +19,7 @@ class Migration(migrations.Migration):
                         primary_key=True,
                         serialize=False,
                         to="popolo.Organization",
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],
@@ -26,6 +27,10 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="electionarea",
             name="winning_party",
-            field=models.ForeignKey(to="uk_results.PartyWithColour", null=True),
+            field=models.ForeignKey(
+                to="uk_results.PartyWithColour",
+                null=True,
+                on_delete=models.CASCADE,
+            ),
         ),
     ]

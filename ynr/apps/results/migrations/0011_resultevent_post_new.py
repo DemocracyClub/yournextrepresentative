@@ -12,6 +12,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="resultevent",
             name="post_new",
-            field=models.ForeignKey(blank=True, to="popolo.Post", null=True),
+            field=models.ForeignKey(
+                blank=True,
+                to="popolo.Post",
+                null=True,
+                on_delete=models.CASCADE,
+            ),
         )
     ]

@@ -11,6 +11,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="officialdocument",
             name="election",
-            field=models.ForeignKey(to="elections.Election"),
+            field=models.ForeignKey(
+                to="elections.Election", on_delete=models.CASCADE
+            ),
         )
     ]

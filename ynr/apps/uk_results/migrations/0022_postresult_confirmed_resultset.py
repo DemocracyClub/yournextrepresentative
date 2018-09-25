@@ -9,6 +9,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="postresult",
             name="confirmed_resultset",
-            field=models.OneToOneField(null=True, to="uk_results.ResultSet"),
+            field=models.OneToOneField(
+                null=True, to="uk_results.ResultSet", on_delete=models.CASCADE
+            ),
         )
     ]

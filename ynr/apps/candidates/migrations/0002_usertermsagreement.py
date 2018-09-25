@@ -28,6 +28,7 @@ class Migration(migrations.Migration):
                     models.OneToOneField(
                         related_name="terms_agreement",
                         to=settings.AUTH_USER_MODEL,
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],

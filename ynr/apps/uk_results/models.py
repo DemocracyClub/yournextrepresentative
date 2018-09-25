@@ -14,7 +14,12 @@ class ResultSet(TimeStampedModel):
     )
     source = models.TextField(null=True)
 
-    user = models.ForeignKey("auth.User", related_name="result_sets", null=True)
+    user = models.ForeignKey(
+        "auth.User",
+        related_name="result_sets",
+        null=True,
+        on_delete=models.CASCADE,
+    )
     versions = JSONField(default=list)
 
     ip_address = models.GenericIPAddressField(null=True)
@@ -73,11 +78,11 @@ class ResultSet(TimeStampedModel):
 
 class CandidateResult(TimeStampedModel):
     result_set = models.ForeignKey(
-        "ResultSet", related_name="candidate_results"
+        "ResultSet", related_name="candidate_results", on_delete=models.CASCADE
     )
 
     membership = models.OneToOneField(
-        "popolo.Membership", related_name="result"
+        "popolo.Membership", related_name="result", on_delete=models.CASCADE
     )
 
     num_ballots = models.IntegerField()

@@ -24,10 +24,19 @@ class Migration(migrations.Migration):
                 ("area_gss", models.CharField(max_length=100)),
                 ("area_name", models.CharField(max_length=255, blank=True)),
                 ("geo_json", models.TextField(blank=True)),
-                ("election", models.ForeignKey(to="elections.Election")),
+                (
+                    "election",
+                    models.ForeignKey(
+                        to="elections.Election", on_delete=models.CASCADE
+                    ),
+                ),
                 (
                     "parent",
-                    models.ForeignKey(to="uk_results.ElectionArea", null=True),
+                    models.ForeignKey(
+                        to="uk_results.ElectionArea",
+                        null=True,
+                        on_delete=models.CASCADE,
+                    ),
                 ),
             ],
         ),

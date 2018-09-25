@@ -13,7 +13,10 @@ class Migration(migrations.Migration):
             model_name="election",
             name="new_organization",
             field=models.ForeignKey(
-                blank=True, to="popolo.Organization", null=True
+                blank=True,
+                to="popolo.Organization",
+                null=True,
+                on_delete=models.CASCADE,
             ),
         )
     ]

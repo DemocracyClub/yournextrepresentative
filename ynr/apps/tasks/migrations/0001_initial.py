@@ -50,9 +50,18 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "finder",
-                    models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True),
+                    models.ForeignKey(
+                        to=settings.AUTH_USER_MODEL,
+                        null=True,
+                        on_delete=models.CASCADE,
+                    ),
                 ),
-                ("person", models.ForeignKey(to="popolo.Person")),
+                (
+                    "person",
+                    models.ForeignKey(
+                        to="popolo.Person", on_delete=models.CASCADE
+                    ),
+                ),
             ],
             options={
                 "ordering": ("-modified", "-created"),

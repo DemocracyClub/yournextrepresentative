@@ -12,7 +12,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="resultevent",
             name="winner",
-            field=models.ForeignKey(default=1, to="popolo.Person"),
+            field=models.ForeignKey(
+                default=1, to="popolo.Person", on_delete=models.CASCADE
+            ),
             preserve_default=False,
         )
     ]

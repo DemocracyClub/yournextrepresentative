@@ -45,8 +45,18 @@ class Migration(migrations.Migration):
                         primary_key=True,
                     ),
                 ),
-                ("council", models.ForeignKey(to="uk_results.Council")),
-                ("election", models.ForeignKey(to="elections.Election")),
+                (
+                    "council",
+                    models.ForeignKey(
+                        to="uk_results.Council", on_delete=models.CASCADE
+                    ),
+                ),
+                (
+                    "election",
+                    models.ForeignKey(
+                        to="elections.Election", on_delete=models.CASCADE
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
@@ -76,11 +86,18 @@ class Migration(migrations.Migration):
                 ("source", models.TextField(null=True)),
                 (
                     "controller",
-                    models.ForeignKey(to="popolo.Organization", null=True),
+                    models.ForeignKey(
+                        to="popolo.Organization",
+                        null=True,
+                        on_delete=models.CASCADE,
+                    ),
                 ),
                 (
                     "council_election",
-                    models.ForeignKey(to="uk_results.CouncilElection"),
+                    models.ForeignKey(
+                        to="uk_results.CouncilElection",
+                        on_delete=models.CASCADE,
+                    ),
                 ),
             ],
             options={"abstract": False},
