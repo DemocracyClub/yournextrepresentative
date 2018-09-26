@@ -36,7 +36,6 @@ class BaseElectionFactory(factory.DjangoModelFactory):
     name = "Scottish Parliamentary elections"
     current = True
     use_for_candidate_suggestions = False
-    area_generation = 22
     party_lists_in_use = False
     default_party_list_members_to_show = 0
     show_official_documents = True

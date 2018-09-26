@@ -65,7 +65,7 @@ class PostAdmin(admin.ModelAdmin):
             "Details",
             {
                 "classes": ("collapse",),
-                "fields": ("other_label", "area", "organization"),
+                "fields": ("other_label", "organization"),
             },
         ),
     )

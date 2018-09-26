@@ -101,8 +101,8 @@ class PersonQuerySet(DateframeableQuerySet):
             models.Prefetch(
                 "memberships",
                 Membership.objects.select_related(
-                    "post_election__election", "party", "post__area", "post"
-                ).prefetch_related("post__area__other_identifiers"),
+                    "post_election__election", "party", "post"
+                ),
             ),
             "contact_details",
             "identifiers",

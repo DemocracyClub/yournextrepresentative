@@ -687,17 +687,6 @@ class Organization(Dateframeable, Timestampable, models.Model):
         help_text=_("The organization that contains this organization"),
     )
 
-    # reference to "http://popoloproject.com/schemas/area.json#"
-    area = models.ForeignKey(
-        "Area",
-        blank=True,
-        null=True,
-        related_name="organizations",
-        help_text=_(
-            "The geographic area to which this organization is related"
-        ),
-    )
-
     founding_date = models.CharField(
         _("founding date"),
         max_length=10,
@@ -824,15 +813,6 @@ class Post(Dateframeable, Timestampable, models.Model):
         help_text=_("The organization in which the post is held"),
     )
 
-    # reference to "http://popoloproject.com/schemas/area.json#"
-    area = models.ForeignKey(
-        "Area",
-        blank=True,
-        null=True,
-        related_name="posts",
-        help_text=_("The geographic area to which the post is related"),
-    )
-
     # array of items referencing "http://popoloproject.com/schemas/contact_detail.json#"
     contact_details = GenericRelation(
         "ContactDetail", help_text="Means of contacting the holder of the post"
@@ -918,15 +898,6 @@ class Membership(Dateframeable, Timestampable, models.Model):
         help_text=_(
             "The post held by the person in the organization through this membership"
         ),
-    )
-
-    # reference to "http://popoloproject.com/schemas/area.json#"
-    area = models.ForeignKey(
-        "Area",
-        blank=True,
-        null=True,
-        related_name="memberships",
-        help_text=_("The geographic area to which the post is related"),
     )
 
     # array of items referencing "http://popoloproject.com/schemas/contact_detail.json#"
@@ -1147,89 +1118,6 @@ class Language(models.Model):
 
     def __str__(self):
         return u"{} ({})".format(self.name, self.iso639_1_code)
-
-
-class Area(GenericRelatable, Dateframeable, Timestampable, models.Model):
-    """
-    An area is a geographic area whose geometry may change over time.
-    see schema at http://popoloproject.com/schemas/area.json#
-    """
-
-    name = models.CharField(
-        _("name"), max_length=256, blank=True, help_text=_("A primary name")
-    )
-    identifier = models.CharField(
-        _("identifier"),
-        max_length=512,
-        blank=True,
-        help_text=_("An issued identifier"),
-    )
-    classification = models.CharField(
-        _("identifier"),
-        max_length=512,
-        blank=True,
-        help_text=_("An area category, e.g. city"),
-    )
-
-    # array of items referencing "http://popoloproject.com/schemas/identifier.json#"
-    other_identifiers = GenericRelation(
-        "Identifier",
-        blank=True,
-        null=True,
-        help_text="Other issued identifiers (zip code, other useful codes, ...)",
-    )
-
-    # reference to "http://popoloproject.com/schemas/area.json#"
-    parent = models.ForeignKey(
-        "Area",
-        blank=True,
-        null=True,
-        related_name="children",
-        help_text=_("The area that contains this area"),
-    )
-
-    # geom property, as text (GeoJson, KML, GML)
-    geom = models.TextField(
-        _("geom"), null=True, blank=True, help_text=_("A geometry")
-    )
-
-    # inhabitants, can be useful for some queries
-    inhabitants = models.IntegerField(
-        _("inhabitants"),
-        null=True,
-        blank=True,
-        help_text=_("The total number of inhabitants"),
-    )
-
-    # array of items referencing "http://popoloproject.com/schemas/link.json#"
-    sources = GenericRelation(
-        "Source",
-        blank=True,
-        null=True,
-        help_text="URLs to source documents about the contact detail",
-    )
-
-    def __str__(self):
-        return self.name
-
-
-class AreaI18Name(models.Model):
-    """
-    Internationalized name for an Area.
-    Contains references to language and area.
-    """
-
-    area = models.ForeignKey("Area", related_name="i18n_names")
-    language = models.ForeignKey("Language")
-    name = models.CharField(_("name"), max_length=255)
-
-    def __str__(self):
-        return "{} - {}".format(self.language, self.name)
-
-    class Meta:
-        verbose_name = "I18N Name"
-        verbose_name_plural = "I18N Names"
-        unique_together = ("area", "language", "name")
 
 
 ##

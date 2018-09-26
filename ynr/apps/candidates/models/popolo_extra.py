@@ -14,7 +14,7 @@ from django.utils.translation import ugettext as _
 from dateutil import parser
 from slugify import slugify
 
-from elections.models import Election, AreaType
+from elections.models import Election
 
 """Extensions to the base django-popolo classes for YourNextRepresentative
 
@@ -90,20 +90,6 @@ class PostExtraElection(models.Model):
                 slugify(self.post.short_label),
             ],
         )
-
-
-class AreaExtra(models.Model):
-    base = models.OneToOneField("popolo.Area", related_name="extra")
-
-    type = models.ForeignKey(
-        AreaType, blank=True, null=True, related_name="areas"
-    )
-
-    def __str__(self):
-        # WARNING: This will cause an extra query when getting the
-        # repr() or unicode() of this object unless the base object
-        # has been select_related.
-        return self.base.name
 
 
 class PartySet(models.Model):
