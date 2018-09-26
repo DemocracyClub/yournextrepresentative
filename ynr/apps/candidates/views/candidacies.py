@@ -81,17 +81,6 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
             person.save()
         return get_redirect_to_post(self.election, post)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["person"] = get_object_or_404(
-            Person, id=self.request.POST.get("person_id")
-        )
-        post = get_object_or_404(
-            Post, extra__slug=self.request.POST.get("post_id")
-        )
-        context["post_label"] = post.label
-        return context
-
 
 class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
 
