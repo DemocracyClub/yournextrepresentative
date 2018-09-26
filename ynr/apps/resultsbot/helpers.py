@@ -31,8 +31,8 @@ class ResultsBot(object):
             change_metadata = self.get_change_metadata_for_bot(source)
 
             if candidate_result.is_winner:
-                membership.extra.elected = True
-                membership.extra.save()
+                membership.elected = True
+                membership.save()
 
                 ResultEvent.objects.create(
                     election=election,
@@ -60,8 +60,8 @@ class ResultsBot(object):
                     "information_source"
                 ] = 'Setting as "not elected" by implication'
                 membership.person.record_version(change_metadata)
-                membership.extra.elected = False
-                membership.extra.save()
+                membership.elected = False
+                membership.save()
 
     def add_results(self, division=None, candidate_list=None, source=None):
         """
@@ -88,7 +88,7 @@ class ResultsBot(object):
                         [
                             (
                                 "{}-{}".format(
-                                    c.votes, c.ynr_membership.base.person.id
+                                    c.votes, c.ynr_membership.person.id
                                 ),
                                 c.ynr_membership,
                             )
@@ -102,11 +102,11 @@ class ResultsBot(object):
                 winners = {}
 
             for candidate in candidate_list:
-                membership_extra = candidate.ynr_membership
+                membership = candidate.ynr_membership
                 instance.candidate_results.update_or_create(
-                    membership=membership_extra.base,
+                    membership=membership,
                     defaults={
-                        "is_winner": bool(membership_extra in winners.values()),
+                        "is_winner": bool(membership in winners.values()),
                         "num_ballots": candidate.votes,
                     },
                 )
