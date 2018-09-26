@@ -1,8 +1,6 @@
 from collections import OrderedDict
 import re
 
-from .models.address import check_address
-
 from elections.models import Election
 
 from django import forms, VERSION as django_version
@@ -42,21 +40,6 @@ if django_version[:2] < (1, 9):
 
 else:
     StrippedCharField = forms.CharField
-
-
-class AddressForm(forms.Form):
-    address = StrippedCharField(
-        label=_("Enter your address or town"), max_length=2048
-    )
-
-    def __init__(self, country, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.country = country
-
-    def clean_address(self):
-        address = self.cleaned_data["address"]
-        check_address(address, self.country)
-        return address
 
 
 class BaseCandidacyForm(forms.Form):
