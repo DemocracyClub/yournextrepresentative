@@ -112,7 +112,6 @@ INSTALLED_APPS = (
     "template_timings_panel",
     "official_documents",
     "results",
-    "notifications",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -384,9 +383,6 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
 }
-
-# allow attaching extra data to notifications:
-NOTIFICATIONS_USE_JSONFIELD = True
 
 HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
 
