@@ -12,7 +12,6 @@ from .ee_import_results import (
     each_type_of_election_on_one_day,
 )
 from elections.uk import every_election
-from candidates.models import check_constraints
 
 
 def fake_requests_for_every_election(url, *args, **kwargs):
@@ -130,7 +129,6 @@ class EE_ImporterTest(WebTest):
 
         self.assertEqual(election.party_set_object.name, "Great Britain")
         self.assertEqual(election.post_object.label, "Alperton")
-        self.assertEqual(check_constraints(), [])
 
     def test_create_post__election_from_ballot_id_dict(self):
         self.assertEqual(every_election.Post.objects.all().count(), 0)
@@ -150,7 +148,6 @@ class EE_ImporterTest(WebTest):
 
         self.assertEqual(election.party_set_object.name, "Great Britain")
         self.assertEqual(election.post_object.label, "Alperton")
-        self.assertEqual(check_constraints(), [])
 
     def test_create_many_elections_and_posts(self):
         for ballot_id, election_dict in self.ee_importer.ballot_ids.items():
@@ -158,7 +155,6 @@ class EE_ImporterTest(WebTest):
             election_dict.get_or_create_post_election(parent=parent)
         self.assertEqual(every_election.Post.objects.all().count(), 189)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
-        self.assertEqual(check_constraints(), [])
 
     @patch("elections.uk.every_election.requests")
     def test_create_from_all_elections(self, mock_requests):
@@ -172,7 +168,6 @@ class EE_ImporterTest(WebTest):
             election_dict.get_or_create_post_election(parent=parent)
         self.assertEqual(every_election.Post.objects.all().count(), 11)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
-        self.assertEqual(check_constraints(), [])
 
     @patch("elections.uk.every_election.requests")
     def test_import_management_command(self, mock_requests):
@@ -186,7 +181,7 @@ class EE_ImporterTest(WebTest):
         self.assertEqual(
             every_election.PostExtraElection.objects.all().count(), 0
         )
-        with self.assertNumQueries(247):
+        with self.assertNumQueries(242):
             call_command("uk_create_elections_from_every_election")
         self.assertEqual(
             every_election.PostExtraElection.objects.all().count(), 15
