@@ -33,5 +33,8 @@ class Command(BaseCommand):
             if errors:
                 for error in errors:
                     print(error)
-                msg = "The import broke the constraints listed above; " "rolling back the transaction..."
+                msg = (
+                    "The import broke the constraints listed above; "
+                    "rolling back the transaction..."
+                )
                 raise Exception(msg)

@@ -304,7 +304,62 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
         response = self.app.get("/feeds/needs-review.xml")
         got = canonicalize_xml(response.content)
 
-        expected = b'<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb">' b"<title>example.com changes for review</title>" b'<link href="http://example.com/feeds/needs-review.xml" rel="alternate"></link>' b'<link href="http://example.com/feeds/needs-review.xml" rel="self"></link>' b"<id>http://example.com/feeds/needs-review.xml</id>" b"<updated>2017-05-02T17:08:05+00:00</updated>" b"<entry><title>Tessa Jowell (2009) - person-update</title>" b'<link href="http://example.com/person/2009" rel="alternate"></link>' b"<updated>2017-05-02T17:08:05+00:00</updated>" b"<author><name>new_only_one</name></author>" b"<id>needs-review:2509</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_only_one with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_only_one&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' b"<entry><title>The Eurovisionary Ronnie Carroll (7448) - person-update</title>" b'<link href="http://example.com/person/7448" rel="alternate"></link>' b"<updated>2017-05-02T17:06:05+00:00</updated>" b"<author><name>morbid_vandal</name></author>" b"<id>needs-review:3000</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/7448"&gt;The Eurovisionary Ronnie Carroll (7448)&lt;/a&gt; by morbid_vandal with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user morbid_vandal&lt;/li&gt;\n&lt;li&gt;Edit of a candidate who has died&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' b"<entry><title>constituency-lock</title>" b'<link href="http://example.com/" rel="alternate"></link>' b"<updated>2017-05-02T16:57:05+00:00</updated>" b"<author><name>morbid_vandal</name></author>" b"<id>needs-review:5000</id>" b'<summary type="html">&lt;p&gt;constituency-lock of  by morbid_vandal with source: \xe2\x80\x9c Testing no post and no person \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user morbid_vandal&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;</summary></entry>' b"<entry><title>Theresa May (2811) - person-update</title>" b'<link href="http://example.com/person/2811" rel="alternate"></link>' b"<updated>2017-05-02T16:37:05+00:00</updated>" b"<author><name>lapsed_experienced</name></author>" b"<id>needs-review:4000</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2811"&gt;Theresa May (2811)&lt;/a&gt; by lapsed_experienced with source: \xe2\x80\x9c Just for tests... \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Edit of a candidate whose record may be particularly liable to vandalism&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' b"<entry><title>Yoshi Aarle (**YoshiAarleID**) - person-update</title>" b'<link href="http://example.com/person/**YoshiAarleID**" rel="alternate"></link>' b"<updated>2017-05-02T16:30:05+00:00</updated>" b"<author><name>lapsed_experienced</name></author>" b"<id>needs-review:**laID**</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/**YoshiAarleID**"&gt;Yoshi Aarle (**YoshiAarleID**)&lt;/a&gt; by lapsed_experienced with source: \xe2\x80\x9c just a test \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Edit of a statement to voters&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' b"<entry><title>Tessa Jowell (2009) - person-update</title>" b'<link href="http://example.com/person/2009" rel="alternate"></link>' b"<updated>2017-05-02T16:21:05+00:00</updated>" b"<author><name>new_suddenly_lots</name></author>" b"<id>needs-review:2007</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_suddenly_lots with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_suddenly_lots&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' b"<entry><title>Tessa Jowell (2009) - person-update</title>" b'<link href="http://example.com/person/2009" rel="alternate"></link>' b"<updated>2017-05-02T16:14:05+00:00</updated>" b"<author><name>new_suddenly_lots</name></author>" b"<id>needs-review:2008</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_suddenly_lots with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_suddenly_lots&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>' b"<entry><title>Tessa Jowell (2009) - person-update</title>" b'<link href="http://example.com/person/2009" rel="alternate"></link>' b"<updated>2017-05-02T16:07:05+00:00</updated>" b"<author><name>new_suddenly_lots</name></author>" b"<id>needs-review:2009</id>" b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_suddenly_lots with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_suddenly_lots&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry></feed>'
+        expected = (
+            b'<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb">'
+            b"<title>example.com changes for review</title>"
+            b'<link href="http://example.com/feeds/needs-review.xml" rel="alternate"></link>'
+            b'<link href="http://example.com/feeds/needs-review.xml" rel="self"></link>'
+            b"<id>http://example.com/feeds/needs-review.xml</id>"
+            b"<updated>2017-05-02T17:08:05+00:00</updated>"
+            b"<entry><title>Tessa Jowell (2009) - person-update</title>"
+            b'<link href="http://example.com/person/2009" rel="alternate"></link>'
+            b"<updated>2017-05-02T17:08:05+00:00</updated>"
+            b"<author><name>new_only_one</name></author>"
+            b"<id>needs-review:2509</id>"
+            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_only_one with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_only_one&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>'
+            b"<entry><title>The Eurovisionary Ronnie Carroll (7448) - person-update</title>"
+            b'<link href="http://example.com/person/7448" rel="alternate"></link>'
+            b"<updated>2017-05-02T17:06:05+00:00</updated>"
+            b"<author><name>morbid_vandal</name></author>"
+            b"<id>needs-review:3000</id>"
+            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/7448"&gt;The Eurovisionary Ronnie Carroll (7448)&lt;/a&gt; by morbid_vandal with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user morbid_vandal&lt;/li&gt;\n&lt;li&gt;Edit of a candidate who has died&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>'
+            b"<entry><title>constituency-lock</title>"
+            b'<link href="http://example.com/" rel="alternate"></link>'
+            b"<updated>2017-05-02T16:57:05+00:00</updated>"
+            b"<author><name>morbid_vandal</name></author>"
+            b"<id>needs-review:5000</id>"
+            b'<summary type="html">&lt;p&gt;constituency-lock of  by morbid_vandal with source: \xe2\x80\x9c Testing no post and no person \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user morbid_vandal&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;</summary></entry>'
+            b"<entry><title>Theresa May (2811) - person-update</title>"
+            b'<link href="http://example.com/person/2811" rel="alternate"></link>'
+            b"<updated>2017-05-02T16:37:05+00:00</updated>"
+            b"<author><name>lapsed_experienced</name></author>"
+            b"<id>needs-review:4000</id>"
+            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2811"&gt;Theresa May (2811)&lt;/a&gt; by lapsed_experienced with source: \xe2\x80\x9c Just for tests... \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Edit of a candidate whose record may be particularly liable to vandalism&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>'
+            b"<entry><title>Yoshi Aarle (**YoshiAarleID**) - person-update</title>"
+            b'<link href="http://example.com/person/**YoshiAarleID**" rel="alternate"></link>'
+            b"<updated>2017-05-02T16:30:05+00:00</updated>"
+            b"<author><name>lapsed_experienced</name></author>"
+            b"<id>needs-review:**laID**</id>"
+            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/**YoshiAarleID**"&gt;Yoshi Aarle (**YoshiAarleID**)&lt;/a&gt; by lapsed_experienced with source: \xe2\x80\x9c just a test \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Edit of a statement to voters&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>'
+            b"<entry><title>Tessa Jowell (2009) - person-update</title>"
+            b'<link href="http://example.com/person/2009" rel="alternate"></link>'
+            b"<updated>2017-05-02T16:21:05+00:00</updated>"
+            b"<author><name>new_suddenly_lots</name></author>"
+            b"<id>needs-review:2007</id>"
+            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_suddenly_lots with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_suddenly_lots&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>'
+            b"<entry><title>Tessa Jowell (2009) - person-update</title>"
+            b'<link href="http://example.com/person/2009" rel="alternate"></link>'
+            b"<updated>2017-05-02T16:14:05+00:00</updated>"
+            b"<author><name>new_suddenly_lots</name></author>"
+            b"<id>needs-review:2008</id>"
+            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_suddenly_lots with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_suddenly_lots&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>'
+            b"<entry><title>Tessa Jowell (2009) - person-update</title>"
+            b'<link href="http://example.com/person/2009" rel="alternate"></link>'
+            b"<updated>2017-05-02T16:07:05+00:00</updated>"
+            b"<author><name>new_suddenly_lots</name></author>"
+            b"<id>needs-review:2009</id>"
+            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_suddenly_lots with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;One of the first 3 edits of user new_suddenly_lots&lt;/li&gt;\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry></feed>'
+        )
 
         expected = expected.replace(
             b"**YoshiAarleID**", str(self.person.pk).encode()

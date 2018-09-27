@@ -1112,7 +1112,10 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
             ).count()
             max_winners = get_max_winners(self.post_election)
             if max_winners >= 0 and number_of_existing_winners >= max_winners:
-                msg = "There were already {n} winners of {post_label}" "and the maximum in election {election_name} is {max}"
+                msg = (
+                    "There were already {n} winners of {post_label}"
+                    "and the maximum in election {election_name} is {max}"
+                )
                 raise Exception(
                     msg.format(
                         n=number_of_existing_winners,

@@ -307,7 +307,7 @@ class ECParty(dict):
 
     def parse_date(self, date_str):
         timestamp = re.match(r"\/Date\((\d+)\)\/", date_str).group(1)
-        dt = datetime.fromtimestamp(int(timestamp) / 1000.)
+        dt = datetime.fromtimestamp(int(timestamp) / 1000.0)
         return dt.strftime("%Y-%m-%d")
 
 
