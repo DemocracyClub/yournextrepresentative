@@ -35,7 +35,6 @@ def raise_if_locked(request, post, election):
 class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
 
     form_class = CandidacyCreateForm
-    template_name = "candidates/candidacy-create.html"
 
     def form_valid(self, form):
         post_id = form.cleaned_data["post_id"]
