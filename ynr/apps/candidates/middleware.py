@@ -22,7 +22,14 @@ from candidates.models.auth import (
 )
 
 
-class DisallowedUpdateMiddleware(MiddlewareMixin):
+class DisallowedUpdateMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        return response
+
     def process_exception(self, request, exc):
         if isinstance(exc, NameChangeDisallowedException):
             intro = _("As a precaution, an update was blocked:")
@@ -49,7 +56,7 @@ class DisallowedUpdateMiddleware(MiddlewareMixin):
             return HttpResponseForbidden()
 
 
-class CopyrightAssignmentMiddleware(MiddlewareMixin):
+class CopyrightAssignmentMiddleware:
     """Check that authenticated users have agreed to copyright assigment
 
     This must come after AuthenticationMiddleware so that request.user
@@ -59,6 +66,15 @@ class CopyrightAssignmentMiddleware(MiddlewareMixin):
     assign copyright of any contributions to the COPYRIGHT_HOLDER in
     settings.
     """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        return response
 
     EXCLUDED_PATHS = (
         re.compile(r"^/copyright-question"),
@@ -88,7 +104,13 @@ class CopyrightAssignmentMiddleware(MiddlewareMixin):
             return HttpResponseRedirect(assign_copyright_url)
 
 
-class DisableCachingForAuthenticatedUsers(MiddlewareMixin):
+class DisableCachingForAuthenticatedUsers:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.process_response(request, self.get_response(request))
+        return response
 
     EXCLUDED_PATHS = (re.compile(r"^/static"), re.compile(r"^/media"))
 
@@ -103,7 +125,15 @@ class DisableCachingForAuthenticatedUsers(MiddlewareMixin):
         return response
 
 
-class LogoutDisabledUsersMiddleware(MiddlewareMixin):
+class LogoutDisabledUsersMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        self.process_request(request)
+        response = self.get_response(request)
+        return response
+
     def process_request(self, request):
         if (
             hasattr(request, "user")
