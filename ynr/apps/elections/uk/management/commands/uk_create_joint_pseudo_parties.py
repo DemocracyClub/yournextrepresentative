@@ -66,7 +66,10 @@ class Command(BaseCommand):
                 joint_party_to_sub_parties[joint_name].append(party)
         for joint_name, sub_parties in joint_party_to_sub_parties.items():
             if len(sub_parties) < 2:
-                message = 'Ignoring "{joint_name}"' ' (only made up of one party: "{sub_party}")'
+                message = (
+                    'Ignoring "{joint_name}"'
+                    ' (only made up of one party: "{sub_party}")'
+                )
                 print(
                     message.format(
                         joint_name=joint_name, sub_party=sub_parties[0].name

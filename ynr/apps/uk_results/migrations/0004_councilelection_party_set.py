@@ -12,7 +12,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="councilelection",
             name="party_set",
-            field=models.ForeignKey(default=1, to="candidates.PartySet"),
+            field=models.ForeignKey(
+                default=1, to="candidates.PartySet", on_delete=models.CASCADE
+            ),
             preserve_default=False,
         )
     ]

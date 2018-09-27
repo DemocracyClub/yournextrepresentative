@@ -155,7 +155,7 @@ class Command(BaseCommand):
 
     def clean_date(self, date):
         timestamp = re.match(r"\/Date\((\d+)\)\/", date).group(1)
-        dt = datetime.fromtimestamp(int(timestamp) / 1000.)
+        dt = datetime.fromtimestamp(int(timestamp) / 1000.0)
         return dt.strftime("%Y-%m-%d")
 
     def clean_name(self, name):

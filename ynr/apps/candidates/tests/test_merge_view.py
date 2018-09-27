@@ -276,7 +276,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/person/2009/merge",
-            {"csrfmiddlewaretoken": csrftoken, "other": "2007"},
+            params={"csrfmiddlewaretoken": csrftoken, "other": "2007"},
             expect_errors=True,
         )
         self.assertEqual(response.status_code, 403)

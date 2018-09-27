@@ -41,11 +41,15 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="resultset",
             name="reviewed_by",
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(
+                to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE
+            ),
         ),
         migrations.AlterField(
             model_name="councilelectionresultset",
             name="reviewed_by",
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(
+                to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE
+            ),
         ),
     ]

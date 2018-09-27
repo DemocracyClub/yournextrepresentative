@@ -33,7 +33,10 @@ class UnsafeToDelete(Exception):
 
 def raise_if_unsafe_to_delete(base_object):
     if not paired_object_safe_to_delete(base_object):
-        msg = "Trying to delete a {model} (pk={pk}) that other " "objects that depend on"
+        msg = (
+            "Trying to delete a {model} (pk={pk}) that other "
+            "objects that depend on"
+        )
         raise UnsafeToDelete(
             msg.format(
                 model=base_object._meta.model.__name__, pk=base_object.id

@@ -56,7 +56,7 @@ def add_notification_data(request):
     """Make the number of photos for review available in the template"""
 
     result = {}
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         result["photos_for_review"] = QueuedImage.objects.filter(
             decision="undecided"
         ).count()

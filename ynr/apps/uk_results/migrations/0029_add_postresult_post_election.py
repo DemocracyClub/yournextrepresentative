@@ -13,7 +13,9 @@ class Migration(migrations.Migration):
             model_name="postresult",
             name="post_election",
             field=models.ForeignKey(
-                null=True, to="candidates.PostExtraElection"
+                null=True,
+                to="candidates.PostExtraElection",
+                on_delete=models.CASCADE,
             ),
             preserve_default=False,
         )

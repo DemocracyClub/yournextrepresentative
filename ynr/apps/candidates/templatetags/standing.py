@@ -34,28 +34,21 @@ def get_candidacy(person, election):
 
 
 def get_known_candidacy_prefix_and_suffix(candidacy):
-    # The 'result' attribute will only be present if the 'uk_results'
-    # application is in INSTALLED_APPS.
     prefix = ""
     suffix = ""
-    if "uk_results" in settings.INSTALLED_APPS:
-        candidate_result = getattr(candidacy, "result", None)
-        if candidate_result:
-            # Then we're OK to display this result:
-            suffix += "<br>"
-            if candidate_result.is_winner:
-                suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-elected">Elected!</span>'
-            else:
-                suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-not-elected">Not elected</span>'
-            suffix += ' <span class="vote-count">({} votes)</span>'.format(
-                candidate_result.num_ballots
-            )
-            suffix += "<br>"
-
-    elif candidacy.extra.party_list_position:
-        prefix += '<div title="{0}" aria-label="{0}" class="person-position">{1}</div>'.format(
-            _("Party list position"), candidacy.extra.party_list_position
+    candidate_result = getattr(candidacy, "result", None)
+    if candidate_result:
+        # Then we're OK to display this result:
+        suffix += "<br>"
+        if candidate_result.is_winner:
+            suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-elected">Elected!</span>'
+        else:
+            suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-not-elected">Not elected</span>'
+        suffix += ' <span class="vote-count">({} votes)</span>'.format(
+            candidate_result.num_ballots
         )
+        suffix += "<br>"
+
     return prefix, suffix
 
 

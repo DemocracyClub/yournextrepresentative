@@ -47,6 +47,7 @@ class Migration(migrations.Migration):
                 related_name="results_reviewed",
                 to=settings.AUTH_USER_MODEL,
                 null=True,
+                on_delete=models.CASCADE,
             ),
         ),
     ]

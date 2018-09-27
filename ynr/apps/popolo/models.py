@@ -953,7 +953,11 @@ class Membership(Dateframeable, Timestampable, models.Model):
     def save(self, *args, **kwargs):
         if self.post_election and getattr(self, "check_for_broken", True):
             if self.post_election.election in self.person.not_standing.all():
-                msg = "Trying to add a Membership with an election " '"{election}", but that\'s in {person} ' "({person_id})'s not_standing list."
+                msg = (
+                    "Trying to add a Membership with an election "
+                    '"{election}", but that\'s in {person} '
+                    "({person_id})'s not_standing list."
+                )
                 raise Exception(
                     msg.format(
                         election=self.post_election.election,

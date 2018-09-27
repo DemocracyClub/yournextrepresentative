@@ -16,6 +16,6 @@ class TestApiHelpView(WebTest):
         self.assertIn("Download the 2015 General Election candidates", response)
 
         self.assertIn(
-            'The browsable base URL of the site\'s read-only API is: <a href="http://localhost:80/api/v0.9/">http://localhost:80/api/v0.9/</a>',
+            'The browsable base URL of the site\'s read-only API is: <a href="http://testserver/api/v0.9/">http://testserver/api/v0.9/</a>',
             response,
         )

@@ -55,28 +55,27 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         Turn the whole form in to a value string
         """
         name = suggestion.name
-        try:
-            candidacy = (
-                suggestion.object.memberships.select_related(
-                    "post", "party", "post_election__election"
-                )
-                .order_by("-post_election__election__election_date")
-                .first()
+
+        candidacy = (
+            suggestion.object.memberships.select_related(
+                "post", "party", "post_election__election"
             )
-            if candidacy:
-                name = """
-                    <strong>{name}</strong>
-                        (previously stood in {post} in the {election} as a
-                        {party} candidate)
-                        """.format(
-                    name=name,
-                    post=candidacy.post.short_label,
-                    election=candidacy.extra.post_election.election.name,
-                    party=candidacy.party.name,
-                )
-                name = SafeText(name)
-        except AttributeError:
-            pass
+            .order_by("-post_election__election__election_date")
+            .first()
+        )
+        if candidacy:
+            name = """
+                <strong>{name}</strong>
+                    (previously stood in {post} in the {election} as a
+                    {party} candidate)
+                    """.format(
+                name=name,
+                post=candidacy.post.short_label,
+                election=candidacy.post_election.election.name,
+                party=candidacy.party.name,
+            )
+            name = SafeText(name)
+
         return [suggestion.pk, name]
 
     def add_fields(self, form, index):

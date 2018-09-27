@@ -10,6 +10,7 @@ from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
 from django.http import HttpResponseForbidden
 from django.shortcuts import render
+from django.utils.deprecation import MiddlewareMixin
 from django.utils.http import urlquote
 from django.utils.translation import ugettext as _
 
@@ -21,7 +22,14 @@ from candidates.models.auth import (
 )
 
 
-class DisallowedUpdateMiddleware(object):
+class DisallowedUpdateMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        return response
+
     def process_exception(self, request, exc):
         if isinstance(exc, NameChangeDisallowedException):
             intro = _("As a precaution, an update was blocked:")
@@ -48,7 +56,7 @@ class DisallowedUpdateMiddleware(object):
             return HttpResponseForbidden()
 
 
-class CopyrightAssignmentMiddleware(object):
+class CopyrightAssignmentMiddleware:
     """Check that authenticated users have agreed to copyright assigment
 
     This must come after AuthenticationMiddleware so that request.user
@@ -58,6 +66,15 @@ class CopyrightAssignmentMiddleware(object):
     assign copyright of any contributions to the COPYRIGHT_HOLDER in
     settings.
     """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        return response
 
     EXCLUDED_PATHS = (
         re.compile(r"^/copyright-question"),
@@ -69,7 +86,7 @@ class CopyrightAssignmentMiddleware(object):
         for path_re in self.EXCLUDED_PATHS:
             if path_re.search(request.path):
                 return None
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return None
         if request.session.get("terms_agreement_assigned_to_dc") == True:
             return None
@@ -87,12 +104,18 @@ class CopyrightAssignmentMiddleware(object):
             return HttpResponseRedirect(assign_copyright_url)
 
 
-class DisableCachingForAuthenticatedUsers(object):
+class DisableCachingForAuthenticatedUsers:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.process_response(request, self.get_response(request))
+        return response
 
     EXCLUDED_PATHS = (re.compile(r"^/static"), re.compile(r"^/media"))
 
     def process_response(self, request, response):
-        if hasattr(request, "user") and request.user.is_authenticated():
+        if hasattr(request, "user") and request.user.is_authenticated:
             if all(
                 path_re.search(request.path) is None
                 for path_re in self.EXCLUDED_PATHS
@@ -102,11 +125,19 @@ class DisableCachingForAuthenticatedUsers(object):
         return response
 
 
-class LogoutDisabledUsersMiddleware(object):
+class LogoutDisabledUsersMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        self.process_request(request)
+        response = self.get_response(request)
+        return response
+
     def process_request(self, request):
         if (
             hasattr(request, "user")
-            and request.user.is_authenticated()
+            and request.user.is_authenticated
             and not request.user.is_active
         ):
             logout(request)

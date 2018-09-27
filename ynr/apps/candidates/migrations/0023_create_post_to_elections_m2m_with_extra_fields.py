@@ -22,8 +22,18 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("winner_count", models.IntegerField(null=True, blank=True)),
-                ("election", models.ForeignKey(to="elections.Election")),
-                ("postextra", models.ForeignKey(to="candidates.PostExtra")),
+                (
+                    "election",
+                    models.ForeignKey(
+                        to="elections.Election", on_delete=models.CASCADE
+                    ),
+                ),
+                (
+                    "postextra",
+                    models.ForeignKey(
+                        to="candidates.PostExtra", on_delete=models.CASCADE
+                    ),
+                ),
             ],
         ),
         migrations.AddField(

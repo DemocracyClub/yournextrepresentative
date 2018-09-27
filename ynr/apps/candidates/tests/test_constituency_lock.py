@@ -31,7 +31,7 @@ class TestConstituencyLockAndUnlock(
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/post/lock",
-            {
+            params={
                 "lock": "True",
                 "post_id": "65808",
                 "csrfmiddlewaretoken": csrftoken,
@@ -52,7 +52,7 @@ class TestConstituencyLockAndUnlock(
         with self.assertRaises(Exception) as context:
             self.app.post(
                 "/election/2015/post/lock",
-                {"csrfmiddlewaretoken": csrftoken},
+                params={"csrfmiddlewaretoken": csrftoken},
                 user=self.user_who_can_lock,
                 expect_errors=True,
             )
@@ -69,7 +69,7 @@ class TestConstituencyLockAndUnlock(
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/post/lock",
-            {
+            params={
                 "lock": "True",
                 "post_id": "65808",
                 "csrfmiddlewaretoken": csrftoken,
@@ -95,7 +95,7 @@ class TestConstituencyLockAndUnlock(
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/post/lock",
-            {
+            params={
                 "lock": "False",
                 "post_id": "65808",
                 "csrfmiddlewaretoken": csrftoken,
@@ -155,7 +155,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/person/create/",
-            {
+            params={
                 "csrfmiddlewaretoken": csrftoken,
                 "name": "Imaginary Candidate",
                 "party_GB_2015": self.green_party.ec_id,

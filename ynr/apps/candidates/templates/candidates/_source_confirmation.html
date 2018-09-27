@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="source-confirmation source-confirmation-{{ standing }}">
-  <form method="post" action="{% url action election=election %}">
+  <form method="post" action="{% url action election=election %}" id="{{ action }}">
     {% csrf_token %}
     <input type="hidden" name="person_id" value="{{ c.id }}"/>
     <input type="hidden" name="post_id" value="{{ post_data.id }}"/>

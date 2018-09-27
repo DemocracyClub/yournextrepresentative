@@ -35,7 +35,6 @@ def raise_if_locked(request, post, election):
 class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
 
     form_class = CandidacyCreateForm
-    template_name = "candidates/candidacy-create.html"
 
     def form_valid(self, form):
         post_id = form.cleaned_data["post_id"]
@@ -80,17 +79,6 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
             person.record_version(change_metadata)
             person.save()
         return get_redirect_to_post(self.election, post)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["person"] = get_object_or_404(
-            Person, id=self.request.POST.get("person_id")
-        )
-        post = get_object_or_404(
-            Post, extra__slug=self.request.POST.get("post_id")
-        )
-        context["post_label"] = post.label
-        return context
 
 
 class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
@@ -149,8 +137,6 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
         context["person"] = get_object_or_404(
             Person, id=self.request.POST.get("person_id")
         )
-        post = get_object_or_404(
-            Post, extra__slug=self.request.POST.get("post_id")
-        )
+        post = get_object_or_404(Post, slug=self.request.POST.get("post_id"))
         context["post_label"] = post.label
         return context

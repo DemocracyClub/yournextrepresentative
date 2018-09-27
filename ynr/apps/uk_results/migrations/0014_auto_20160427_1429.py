@@ -17,7 +17,10 @@ class Migration(migrations.Migration):
             model_name="candidateresult",
             name="membership",
             field=models.ForeignKey(
-                related_name="result", default=1, to="popolo.Membership"
+                related_name="result",
+                default=1,
+                to="popolo.Membership",
+                on_delete=models.CASCADE,
             ),
             preserve_default=False,
         ),

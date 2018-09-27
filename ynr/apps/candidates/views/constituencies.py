@@ -141,7 +141,7 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
             postextraelection=pee
         ).exists()
 
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             context[
                 "current_user_suggested_lock"
             ] = SuggestedPostLock.objects.filter(
@@ -152,7 +152,7 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
             initial={"postextraelection": pee}
         )
 
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             context[
                 "user_has_suggested_lock"
             ] = SuggestedPostLock.objects.filter(
@@ -1112,7 +1112,10 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
             ).count()
             max_winners = get_max_winners(self.post_election)
             if max_winners >= 0 and number_of_existing_winners >= max_winners:
-                msg = "There were already {n} winners of {post_label}" "and the maximum in election {election_name} is {max}"
+                msg = (
+                    "There were already {n} winners of {post_label}"
+                    "and the maximum in election {election_name} is {max}"
+                )
                 raise Exception(
                     msg.format(
                         n=number_of_existing_winners,

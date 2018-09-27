@@ -13,7 +13,10 @@ class Migration(migrations.Migration):
             model_name="resultevent",
             name="winner_party_new",
             field=models.ForeignKey(
-                blank=True, to="popolo.Organization", null=True
+                blank=True,
+                to="popolo.Organization",
+                null=True,
+                on_delete=models.CASCADE,
             ),
         )
     ]

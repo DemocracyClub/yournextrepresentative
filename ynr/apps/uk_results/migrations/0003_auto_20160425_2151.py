@@ -9,11 +9,15 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="councilelection",
             name="council",
-            field=models.OneToOneField(to="uk_results.Council"),
+            field=models.OneToOneField(
+                to="uk_results.Council", on_delete=models.CASCADE
+            ),
         ),
         migrations.AlterField(
             model_name="councilelection",
             name="election",
-            field=models.OneToOneField(to="elections.Election"),
+            field=models.OneToOneField(
+                to="elections.Election", on_delete=models.CASCADE
+            ),
         ),
     ]

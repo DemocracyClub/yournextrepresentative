@@ -10,7 +10,9 @@ class Migration(migrations.Migration):
             model_name="councilelection",
             name="confirming_result_set",
             field=models.OneToOneField(
-                null=True, to="uk_results.CouncilElectionResultSet"
+                null=True,
+                to="uk_results.CouncilElectionResultSet",
+                on_delete=models.CASCADE,
             ),
         )
     ]

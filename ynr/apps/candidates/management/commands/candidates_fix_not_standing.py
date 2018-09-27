@@ -22,7 +22,7 @@ class Command(BaseCommand):
             for election in person.not_standing.all():
                 candidacies = Membership.objects.filter(
                     person=person,
-                    extra__election=election,
+                    post_election__election=election,
                     role=election.candidate_membership_role,
                 )
                 if candidacies.exists():

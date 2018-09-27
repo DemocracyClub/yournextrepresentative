@@ -11,6 +11,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="suggestedpostlock",
             name="postextraelection",
-            field=models.ForeignKey(to="candidates.PostExtraElection"),
+            field=models.ForeignKey(
+                to="candidates.PostExtraElection", on_delete=models.CASCADE
+            ),
         )
     ]

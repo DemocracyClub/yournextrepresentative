@@ -15,7 +15,9 @@ class Migration(migrations.Migration):
             model_name="councilelectionresultset",
             name="council_election",
             field=models.ForeignKey(
-                related_name="reported_results", to="uk_results.CouncilElection"
+                related_name="reported_results",
+                to="uk_results.CouncilElection",
+                on_delete=models.CASCADE,
             ),
         ),
     ]

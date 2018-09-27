@@ -24,39 +24,39 @@ class DateframeableTests(BehaviorTestCaseMixin):
         """Test complete or incomplete dates,
         according to the "^[0-9]{4}(-[0-9]{2}){0,2}$" pattern (incomplete dates)"""
         obj = self.create_instance(start_date="2012-01")
-        self.assertRegexpMatches(
+        self.assertRegex(
             obj.start_date,
             "^[0-9]{4}(-[0-9]{2}){0,2}$",
             "date does not match pattern",
         )
         obj = self.create_instance(end_date="2012-02")
-        self.assertRegexpMatches(
+        self.assertRegex(
             obj.end_date,
             "^[0-9]{4}(-[0-9]{2}){0,2}$",
             "date does not match pattern",
         )
 
         obj = self.create_instance(start_date="2012-03")
-        self.assertRegexpMatches(
+        self.assertRegex(
             obj.start_date,
             "^[0-9]{4}(-[0-9]{2}){0,2}$",
             "date does not match pattern",
         )
         obj = self.create_instance(end_date="2012-04")
-        self.assertRegexpMatches(
+        self.assertRegex(
             obj.end_date,
             "^[0-9]{4}(-[0-9]{2}){0,2}$",
             "date does not match pattern",
         )
 
         obj = self.create_instance(start_date="2012-10-12")
-        self.assertRegexpMatches(
+        self.assertRegex(
             obj.start_date,
             "^[0-9]{4}(-[0-9]{2}){0,2}$",
             "date does not match pattern",
         )
         obj = self.create_instance(end_date="2012-12-10")
-        self.assertRegexpMatches(
+        self.assertRegex(
             obj.end_date,
             "^[0-9]{4}(-[0-9]{2}){0,2}$",
             "date does not match pattern",

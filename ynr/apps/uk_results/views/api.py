@@ -15,10 +15,10 @@ class CandidateResultViewSet(viewsets.ModelViewSet):
     pagination_class = ResultsSetPagination
 
 
-class ProductFilter(filterset.FilterSet):
-    election_id = filters.CharFilter(name="post_election__election__slug")
+class ResultSetFilter(filterset.FilterSet):
+    election_id = filters.CharFilter(field_name="post_election__election__slug")
     election_date = filters.DateFilter(
-        name="post_election__election__election_date"
+        field_name="post_election__election__election_date"
     )
 
     class Meta:
@@ -33,4 +33,4 @@ class ResultSetViewSet(viewsets.ModelViewSet):
     serializer_class = ResultSetSerializer
     pagination_class = ResultsSetPagination
 
-    filter_class = ProductFilter
+    filter_class = ResultSetFilter

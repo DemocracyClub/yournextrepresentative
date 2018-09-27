@@ -185,3 +185,29 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(new_candidacy.party.name, "Labour Party")
         same_before_and_after = memberships_before & memberships_afterwards
         self.assertEqual(len(same_before_and_after), 1)
+
+    def test_update_person_add_new_candidacy_unsure_if_standing(self):
+        memberships_before = membership_id_set(Person.objects.get(pk=2009))
+        response = self.app.get("/person/2009/update", user=self.user)
+        # Now fake the addition of elements to the form as would
+        # happen with the Javascript addition of a new candidacy.
+        form = response.forms["person-details"]
+        for name, value in [
+            ("extra_election_id", "local.maidstone.2016-05-05"),
+            ("party_GB_local.maidstone.2016-05-05", self.labour_party.ec_id),
+            ("constituency_local.maidstone.2016-05-05", "DIW:E05005004"),
+            ("standing_local.maidstone.2016-05-05", "not-sure"),
+            ("source", "Testing dynamic election addition"),
+        ]:
+            field = Text(form, "input", None, None, value)
+            form.fields[name] = [field]
+            form.field_order.append((name, field))
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+        split_location = urlsplit(response.location)
+        self.assertEqual("/person/2009", split_location.path)
+
+        person = Person.objects.get(pk=2009)
+        memberships_afterwards = membership_id_set(person)
+        membership_ids = memberships_afterwards - memberships_before
+        self.assertEqual(len(membership_ids), 0)

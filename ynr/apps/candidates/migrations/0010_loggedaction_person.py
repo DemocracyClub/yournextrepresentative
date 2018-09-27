@@ -12,6 +12,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="loggedaction",
             name="person",
-            field=models.ForeignKey(blank=True, to="popolo.Person", null=True),
+            field=models.ForeignKey(
+                blank=True,
+                to="popolo.Person",
+                null=True,
+                on_delete=models.CASCADE,
+            ),
         )
     ]

@@ -49,11 +49,18 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("value", models.TextField(blank=True)),
-                ("field", models.ForeignKey(to="candidates.ExtraField")),
+                (
+                    "field",
+                    models.ForeignKey(
+                        to="candidates.ExtraField", on_delete=models.CASCADE
+                    ),
+                ),
                 (
                     "person",
                     models.ForeignKey(
-                        related_name="extra_field_values", to="popolo.Person"
+                        related_name="extra_field_values",
+                        to="popolo.Person",
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],

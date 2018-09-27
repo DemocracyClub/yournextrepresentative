@@ -22,14 +22,21 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("confirmed", models.BooleanField(default=False)),
-                ("post", models.ForeignKey(to="popolo.Post")),
+                (
+                    "post",
+                    models.ForeignKey(
+                        to="popolo.Post", on_delete=models.CASCADE
+                    ),
+                ),
             ],
         ),
         migrations.AlterField(
             model_name="resultset",
             name="post",
             field=models.ForeignKey(
-                related_name="result_sets", to="uk_results.PostResult"
+                related_name="result_sets",
+                to="uk_results.PostResult",
+                on_delete=models.CASCADE,
             ),
         ),
     ]

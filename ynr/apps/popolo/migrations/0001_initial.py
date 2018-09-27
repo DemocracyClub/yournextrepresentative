@@ -118,7 +118,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "content_type",
-                    models.ForeignKey(to="contenttypes.ContentType"),
+                    models.ForeignKey(
+                        to="contenttypes.ContentType", on_delete=models.CASCADE
+                    ),
                 ),
             ],
             options={"abstract": False},
@@ -155,7 +157,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "content_type",
-                    models.ForeignKey(to="contenttypes.ContentType"),
+                    models.ForeignKey(
+                        to="contenttypes.ContentType", on_delete=models.CASCADE
+                    ),
                 ),
             ],
             options={"abstract": False},
@@ -185,7 +189,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "content_type",
-                    models.ForeignKey(to="contenttypes.ContentType"),
+                    models.ForeignKey(
+                        to="contenttypes.ContentType", on_delete=models.CASCADE
+                    ),
                 ),
             ],
             options={"abstract": False},
@@ -392,6 +398,7 @@ class Migration(migrations.Migration):
                         to="popolo.Organization",
                         help_text="The organization that contains this organization",
                         null=True,
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],
@@ -463,7 +470,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "content_type",
-                    models.ForeignKey(to="contenttypes.ContentType"),
+                    models.ForeignKey(
+                        to="contenttypes.ContentType", on_delete=models.CASCADE
+                    ),
                 ),
             ],
             options={"abstract": False},
@@ -752,6 +761,7 @@ class Migration(migrations.Migration):
                         related_name="posts",
                         to="popolo.Organization",
                         help_text="The organization in which the post is held",
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],
@@ -782,7 +792,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "content_type",
-                    models.ForeignKey(to="contenttypes.ContentType"),
+                    models.ForeignKey(
+                        to="contenttypes.ContentType", on_delete=models.CASCADE
+                    ),
                 ),
             ],
             options={"abstract": False},
@@ -796,6 +808,7 @@ class Migration(migrations.Migration):
                 to="popolo.Organization",
                 help_text="The organization on whose behalf the person is a party to the relationship",
                 null=True,
+                on_delete=models.CASCADE,
             ),
         ),
         migrations.AddField(
@@ -805,6 +818,7 @@ class Migration(migrations.Migration):
                 related_name="memberships",
                 to="popolo.Organization",
                 help_text="The organization that is a party to the relationship",
+                on_delete=models.CASCADE,
             ),
         ),
         migrations.AddField(
@@ -814,6 +828,7 @@ class Migration(migrations.Migration):
                 related_name="memberships",
                 to="popolo.Person",
                 help_text="The person who is a party to the relationship",
+                on_delete=models.CASCADE,
             ),
         ),
         migrations.AddField(
@@ -825,6 +840,7 @@ class Migration(migrations.Migration):
                 to="popolo.Post",
                 help_text="The post held by the person in the organization through this membership",
                 null=True,
+                on_delete=models.CASCADE,
             ),
         ),
     ]

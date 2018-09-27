@@ -88,7 +88,10 @@ class Command(BaseCommand):
             print("WARNING: {message}, skipping".format(message=e))
             return
         if user_id and user_id in self.twitter_data.user_id_to_photo_url:
-            msg = "Considering adding a photo for {person} with Twitter " "user ID: {user_id}"
+            msg = (
+                "Considering adding a photo for {person} with Twitter "
+                "user ID: {user_id}"
+            )
             verbose(_(msg).format(person=person, user_id=user_id))
             self.add_twitter_image_to_queue(
                 person, self.twitter_data.user_id_to_photo_url[user_id], user_id

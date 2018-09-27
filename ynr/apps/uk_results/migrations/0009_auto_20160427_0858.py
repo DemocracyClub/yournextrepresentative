@@ -22,6 +22,7 @@ class Migration(migrations.Migration):
                 related_name="results_rejected",
                 to=settings.AUTH_USER_MODEL,
                 null=True,
+                on_delete=models.CASCADE,
             ),
         ),
         migrations.AddField(
@@ -36,6 +37,7 @@ class Migration(migrations.Migration):
                 related_name="results_confirmed",
                 to=settings.AUTH_USER_MODEL,
                 null=True,
+                on_delete=models.CASCADE,
             ),
         ),
     ]

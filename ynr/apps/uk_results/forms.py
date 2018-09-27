@@ -104,7 +104,7 @@ class ResultSetForm(forms.ModelForm):
             instance = super().save(commit=False)
             instance.post_election = self.post_election
             instance.user = (
-                request.user if request.user.is_authenticated() else None
+                request.user if request.user.is_authenticated else None
             )
             instance.ip_address = get_client_ip(request)
             instance.save()

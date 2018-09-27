@@ -32,8 +32,18 @@ class Migration(migrations.Migration):
                         blank=True,
                     ),
                 ),
-                ("post_extra", models.ForeignKey(to="candidates.PostExtra")),
-                ("user", models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                (
+                    "post_extra",
+                    models.ForeignKey(
+                        to="candidates.PostExtra", on_delete=models.CASCADE
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+                    ),
+                ),
             ],
         )
     ]

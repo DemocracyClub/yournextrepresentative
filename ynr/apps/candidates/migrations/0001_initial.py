@@ -32,7 +32,10 @@ class Migration(migrations.Migration):
                 (
                     "user",
                     models.ForeignKey(
-                        blank=True, to=settings.AUTH_USER_MODEL, null=True
+                        blank=True,
+                        to=settings.AUTH_USER_MODEL,
+                        null=True,
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],

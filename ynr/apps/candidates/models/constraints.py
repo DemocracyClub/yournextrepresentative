@@ -17,7 +17,10 @@ def check_paired_models():
         )
         extra_ids = set(extra.objects.values_list("pk", flat=True))
         if len(base_ids) != len(extra_ids):
-            msg = "There were {base_count} {base} objects, but " "{extra_count} {extra} objects"
+            msg = (
+                "There were {base_count} {base} objects, but "
+                "{extra_count} {extra} objects"
+            )
             fmt = format_kwargs.copy()
             fmt.update(
                 {"base_count": len(base_ids), "extra_count": len(extra_ids)}
@@ -25,7 +28,10 @@ def check_paired_models():
             errors.append(msg.format(**fmt))
         base_ids_with_no_extra = sorted(base_ids - base_ids_from_extra)
         for base_id in base_ids_with_no_extra:
-            msg = "The {base} object with ID {id} had no corresponding " "{extra} object"
+            msg = (
+                "The {base} object with ID {id} had no corresponding "
+                "{extra} object"
+            )
             fmt = format_kwargs.copy()
             fmt.update({"id": base_id})
             errors.append(msg.format(**fmt))
@@ -79,7 +85,10 @@ def check_no_candidancy_for_election(person, election):
         membership__person=person,
         membership__role=election.candidate_membership_role,
     ).exists():
-        msg = "There was an existing candidacy for {person} ({person_id}) " 'in the election "{election}"'
+        msg = (
+            "There was an existing candidacy for {person} ({person_id}) "
+            'in the election "{election}"'
+        )
         raise Exception(
             msg.format(
                 person=person, person_id=person.id, election=election.name

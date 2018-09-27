@@ -198,9 +198,9 @@ def mark_as_not_standing(person, election_data, post):
 def mark_as_unsure_if_standing(person, election_data, post):
     # Remove any existing candidacy:
     for membership in Membership.objects.filter(
-        extra__election=election_data,
+        post_election__election=election_data,
         role=election_data.candidate_membership_role,
-        twitterbot_add_images_to_queue=person,
+        person=person,
     ):
         raise_if_unsafe_to_delete(membership)
         membership.delete()

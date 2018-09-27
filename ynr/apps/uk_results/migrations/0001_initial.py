@@ -40,7 +40,9 @@ class Migration(migrations.Migration):
                 (
                     "person",
                     models.ForeignKey(
-                        related_name="candidate_results", to="popolo.Person"
+                        related_name="candidate_results",
+                        to="popolo.Person",
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],
@@ -81,12 +83,15 @@ class Migration(migrations.Migration):
                         related_name="result_sets_confirmed",
                         to=settings.AUTH_USER_MODEL,
                         null=True,
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 (
                     "post",
                     models.ForeignKey(
-                        related_name="result_sets", to="popolo.Post"
+                        related_name="result_sets",
+                        to="popolo.Post",
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 (
@@ -95,6 +100,7 @@ class Migration(migrations.Migration):
                         related_name="result_sets",
                         to=settings.AUTH_USER_MODEL,
                         null=True,
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],
@@ -108,7 +114,9 @@ class Migration(migrations.Migration):
             model_name="candidateresult",
             name="result_set",
             field=models.ForeignKey(
-                related_name="candidate_results", to="uk_results.ResultSet"
+                related_name="candidate_results",
+                to="uk_results.ResultSet",
+                on_delete=models.CASCADE,
             ),
         ),
         migrations.AlterUniqueTogether(

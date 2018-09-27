@@ -60,7 +60,7 @@ class TestModels(TestUserMixin, WebTest):
         with open(self.example_image_filename, "rb") as f:
             response = self.app.post(
                 upload_url,
-                {
+                params={
                     "csrfmiddlewaretoken": csrftoken,
                     "post_id": self.post.slug,
                     "document_type": OfficialDocument.NOMINATION_PAPER,

@@ -256,7 +256,11 @@ def get_versions_parent_map(versions_data):
         ]["version_id"]
         version_id_to_parent_ids[version_id].append(last_version_id_of_other)
     if (number_of_merges + 1) != number_of_person_ids:
-        msg = "It looks like there was a bogus merge version for person " "with ID {person_id}; there were {nm} merge versions and {np} " "person IDs."
+        msg = (
+            "It looks like there was a bogus merge version for person "
+            "with ID {person_id}; there were {nm} merge versions and {np} "
+            "person IDs."
+        )
         raise Exception(
             msg.format(
                 person_id=canonical_person_id,

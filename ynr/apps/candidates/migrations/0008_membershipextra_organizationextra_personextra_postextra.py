@@ -28,7 +28,9 @@ class Migration(migrations.Migration):
                 (
                     "base",
                     models.OneToOneField(
-                        related_name="extra", to="popolo.Membership"
+                        related_name="extra",
+                        to="popolo.Membership",
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 (
@@ -38,6 +40,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         to="elections.Election",
                         null=True,
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 ("party_list_position", models.IntegerField(null=True)),
@@ -60,7 +63,9 @@ class Migration(migrations.Migration):
                 (
                     "base",
                     models.OneToOneField(
-                        related_name="extra", to="popolo.Organization"
+                        related_name="extra",
+                        to="popolo.Organization",
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 ("slug", models.CharField(max_length=256, blank=True)),
@@ -84,7 +89,9 @@ class Migration(migrations.Migration):
                 (
                     "base",
                     models.OneToOneField(
-                        related_name="extra", to="popolo.Person"
+                        related_name="extra",
+                        to="popolo.Person",
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 (
@@ -133,7 +140,9 @@ class Migration(migrations.Migration):
                 (
                     "base",
                     models.OneToOneField(
-                        related_name="extra", to="popolo.Post"
+                        related_name="extra",
+                        to="popolo.Post",
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 ("slug", models.CharField(max_length=256, blank=True)),
@@ -148,7 +157,10 @@ class Migration(migrations.Migration):
                 (
                     "party_set",
                     models.ForeignKey(
-                        blank=True, to="candidates.PartySet", null=True
+                        blank=True,
+                        to="candidates.PartySet",
+                        null=True,
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],
@@ -168,7 +180,9 @@ class Migration(migrations.Migration):
                 (
                     "base",
                     models.OneToOneField(
-                        related_name="extra", to="popolo.Area"
+                        related_name="extra",
+                        to="popolo.Area",
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 (
@@ -178,6 +192,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         to="elections.AreaType",
                         null=True,
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],
@@ -204,14 +219,19 @@ class Migration(migrations.Migration):
                 (
                     "base",
                     models.OneToOneField(
-                        related_name="extra", to="images.Image"
+                        related_name="extra",
+                        to="images.Image",
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 ("md5sum", models.CharField(max_length=32, blank=True)),
                 (
                     "uploading_user",
                     models.ForeignKey(
-                        blank=True, to=settings.AUTH_USER_MODEL, null=True
+                        blank=True,
+                        to=settings.AUTH_USER_MODEL,
+                        null=True,
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 (

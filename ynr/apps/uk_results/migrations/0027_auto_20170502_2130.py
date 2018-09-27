@@ -9,6 +9,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="councilelection",
             name="council",
-            field=models.ForeignKey(to="uk_results.Council"),
+            field=models.ForeignKey(
+                to="uk_results.Council", on_delete=models.CASCADE
+            ),
         )
     ]

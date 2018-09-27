@@ -86,16 +86,14 @@ class TestAPI(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 200)
         json = response.json
 
+        self.assertEqual(json["persons"], "http://testserver/api/next/persons/")
         self.assertEqual(
-            json["persons"], "http://localhost:80/api/next/persons/"
+            json["organizations"], "http://testserver/api/next/organizations/"
         )
         self.assertEqual(
-            json["organizations"], "http://localhost:80/api/next/organizations/"
+            json["elections"], "http://testserver/api/next/elections/"
         )
-        self.assertEqual(
-            json["elections"], "http://localhost:80/api/next/elections/"
-        )
-        self.assertEqual(json["posts"], "http://localhost:80/api/next/posts/")
+        self.assertEqual(json["posts"], "http://testserver/api/next/posts/")
 
         persons_resp = self.app.get("/api/next/persons/")
         self.assertEqual(persons_resp.status_code, 200)

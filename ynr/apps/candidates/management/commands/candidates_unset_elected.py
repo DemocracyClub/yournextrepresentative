@@ -25,7 +25,10 @@ class Command(BaseCommand):
         election_slug = options["ELECTION-ID"]
         election = Election.objects.get(slug=election_slug)
         if election.election_date <= date.today() and not options["force"]:
-            msg = "The election {0.name} ({0.slug}) is in the past: run with " "-f if you really want to do this"
+            msg = (
+                "The election {0.name} ({0.slug}) is in the past: run with "
+                "-f if you really want to do this"
+            )
             raise CommandError(msg.format(election))
         Membership.objects.filter(post_election__election=election).update(
             elected=None

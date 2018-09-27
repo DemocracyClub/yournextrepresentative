@@ -13,7 +13,10 @@ class Migration(migrations.Migration):
             model_name="suggestedpostlock",
             name="postextraelection",
             field=models.ForeignKey(
-                blank=True, to="candidates.PostExtraElection", null=True
+                blank=True,
+                to="candidates.PostExtraElection",
+                null=True,
+                on_delete=models.CASCADE,
             ),
         )
     ]
