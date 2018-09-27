@@ -19,38 +19,9 @@ class ElectionQuerySet(models.QuerySet):
 
 
 class ElectionManager(models.Manager):
-    def elections_for_area_generations(self):
-        generations = defaultdict(list)
-        for election in self.current():
-            for area_type in election.area_types.all():
-                area_tuple = (area_type.name, election.area_generation)
-                generations[area_tuple].append(election)
-
-        return generations
-
     def are_upcoming_elections(self):
         today = date.today()
         return self.current().filter(election_date__gte=today).exists()
-
-
-# FIXME: shouldn't AreaType also have the MapIt generation?
-# FIXME: at the moment name is a code (like WMC); ideally that would
-# be a code field and the name field would be "Westminster Consituency"
-class AreaType(models.Model):
-    name = models.CharField(max_length=128)
-    source = models.CharField(
-        max_length=128, blank=True, help_text=_("e.g MapIt")
-    )
-
-    def __str__(self):
-        return self.name
-
-    def area_choices(self):
-        return (
-            self.areas.all()
-            .order_by("base__name")
-            .values_list("id", "base__name")
-        )
 
 
 class Election(models.Model):
@@ -64,8 +35,6 @@ class Election(models.Model):
     name = models.CharField(max_length=128)
     current = models.BooleanField()
     use_for_candidate_suggestions = models.BooleanField(default=False)
-    area_types = models.ManyToManyField(AreaType)
-    area_generation = models.CharField(max_length=128, blank=True)
     organization = models.ForeignKey(
         "popolo.Organization", null=True, blank=True
     )

@@ -173,7 +173,6 @@ class ElectionSerializer(MinimalElectionSerializer):
             "election_date",
             "current",
             "use_for_candidate_suggestions",
-            "area_generation",
             "organization",
             "party_lists_in_use",
             "default_party_list_members_to_show",

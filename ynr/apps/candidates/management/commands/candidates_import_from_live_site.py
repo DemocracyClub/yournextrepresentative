@@ -267,7 +267,6 @@ class Command(BaseCommand):
                         "for_post_role",
                         "current",
                         "use_for_candidate_suggestions",
-                        "area_generation",
                         "party_lists_in_use",
                         "default_party_list_members_to_show",
                         "show_official_documents",

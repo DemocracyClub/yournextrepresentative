@@ -3,13 +3,8 @@ from candidates.models.auth import get_constituency_lock_from_person_data
 from candidates.models.auth import get_edits_allowed
 from candidates.models.auth import is_post_locked
 
-from candidates.models.constraints import check_constraints
-from candidates.models.constraints import check_paired_models
-from candidates.models.constraints import check_membership_elections_consistent
-
 from candidates.models.merge import merge_popit_people
 
-from candidates.models.popolo_extra import AreaExtra
 from candidates.models.popolo_extra import PartySet
 from candidates.models.popolo_extra import PostExtraElection
 from candidates.models.popolo_extra import raise_if_unsafe_to_delete

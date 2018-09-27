@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
 
-from .models import AreaType, Election
+from .models import Election
 
 CAN_EDIT_ELECTIONS = getattr(settings, "CAN_EDIT_ELECTIONS", True)
 
@@ -28,10 +28,4 @@ class ElectionAdmin(admin.ModelAdmin):
             )
 
 
-class AreaTypeAdmin(admin.ModelAdmin):
-    list_display = ("name", "source")
-    search_fields = ("name", "source")
-
-
 admin.site.register(Election, ElectionAdmin)
-admin.site.register(AreaType, AreaTypeAdmin)
