@@ -610,7 +610,7 @@ class Person(Dateframeable, Timestampable, models.Model):
         """
 
         if self.primary_image:
-            return get_thumbnail(self.primary_image.path, "x64").url
+            return get_thumbnail(self.primary_image.file, "x64").url
 
         return static("candidates/img/blank-person.png")
 
