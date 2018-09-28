@@ -133,7 +133,7 @@ class Command(BaseCommand):
         data["previous"] = self.rewrite_link(endpoint, data["previous"])
 
     def get_api_results_to_directory(self, endpoint, json_directory, page_size):
-        url = "/api/v0.9/{endpoint}/?page_size={page_size}&format=json".format(
+        url = "/api/next/{endpoint}/?page_size={page_size}&format=json".format(
             page_size=page_size, endpoint=endpoint
         )
 

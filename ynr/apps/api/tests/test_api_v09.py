@@ -404,7 +404,7 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(first_person["name"], "Sheila Gilmore")
         self.assertEqual(
             first_person["url"],
-            "https://candidates.democracyclub.org.uk/api/v0.9/persons/818/?format=json",
+            "https://candidates.democracyclub.org.uk/api/next/persons/818/?format=json",
         )
         # Similarly, check that the URL of the first post is as expected:
         first_post = posts_1_data["results"][0]
@@ -414,7 +414,7 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertEqual(
             first_post["url"],
-            "https://candidates.democracyclub.org.uk/api/v0.9/posts/14419/?format=json",
+            "https://candidates.democracyclub.org.uk/api/next/posts/14419/?format=json",
         )
 
     def _setup_cached_api_directory(self, dir_list):
