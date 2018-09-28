@@ -24,7 +24,7 @@
 
                 <tr>
                     <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.election }}</a></td>
-                    <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.post.label }}</a></td>
+                    <td><a href="{{ pee.get_absolute_url }}">{{ pee.post.label }}</a></td>
                     {% if request.user.is_authenticated %}
                     <td>
                         {{ pee.membership_set.count|default:"0" }}
