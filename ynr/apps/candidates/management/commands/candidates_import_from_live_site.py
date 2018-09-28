@@ -433,7 +433,7 @@ class Command(BaseCommand):
             [
                 models.PartySet,
                 emodels.Election,
-                Image,
+                PersonImage,
                 models.ExtraField,
                 models.ComplexPopoloField,
                 pmodels.Person,
