@@ -82,7 +82,7 @@ class PostExtraElectionAdmin(admin.ModelAdmin):
     list_filter = ("election__name", "election__current")
     raw_id_fields = ("post", "election")
 
-    ordering = ("election", "post__name")
+    ordering = ("election", "post__label")
 
 
 @admin.register(ComplexPopoloField)
