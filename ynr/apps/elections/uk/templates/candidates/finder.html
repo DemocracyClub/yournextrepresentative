@@ -56,7 +56,16 @@
   <div class="finder__forms" style="margin-top:-2em">
     <div class="finder__forms__container" style="top:-1em">
 
-      {% person_tasks %}
+      <h3>Can you find contact info for your local&nbsp;party?</h3>
+      <p>In order to get the most information on candidates in the May 2019 local
+      elestions we want to contact the local parties. Can you help us find contact info for them all?</p>
+      <a href="https://docs.google.com/spreadsheets/d/17x7lxujgkB570VY8eohZj4qQrBbeBmGFHjSVnGWifHk/edit#gid=0" class="button">
+        Enter details
+      </a>
+
+
+      {# {% person_tasks %}#}
+
       <h4>or</h4>
       <form id="form-postcode" action="{% url 'person-search' %}" method="get"
             {% if show_name_form %}style="display: none"{% endif %}>
