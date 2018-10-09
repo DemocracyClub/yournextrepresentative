@@ -141,7 +141,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                     ),
                     Prefetch(
                         "person__images",
-                        Image.objects.select_related("extra__uploading_user"),
+                        PersonImage.objects.select_related("uploading_user"),
                     ),
                     "person__other_names",
                     "person__contact_details",
