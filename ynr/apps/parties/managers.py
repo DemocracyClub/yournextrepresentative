@@ -25,6 +25,7 @@ class PartyQuerySet(models.QuerySet):
         return self.active_for_date()
 
     def register(self, register):
+        register = register.upper()
         return self.filter(
             models.Q(register=register) | models.Q(register=None)
         )
