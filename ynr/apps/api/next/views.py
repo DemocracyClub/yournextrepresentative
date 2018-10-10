@@ -26,6 +26,7 @@ from elections.uk.geo_helpers import (
     get_post_elections_from_coords,
     get_post_elections_from_postcode,
 )
+from parties.models import Party
 
 from compat import text_type
 
@@ -243,28 +244,34 @@ class AllPartiesJSONView(View):
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):
-        partyset = self.request.GET.get("partyset", None)
+        register = self.request.GET.get("register", "").upper()
         status_code = 200
-        if not partyset:
-            ret = {"error": "Please provide a partyset as a GET param"}
+        if not register or register not in ["GB", "NI"]:
+            ret = {
+                "error": "Please provide a `register` as a GET param that equals either `NI` or `GB`"
+            }
+            status_code = 400
+        else:
+            ps = Party.objects.register(register)
+            ret = {"items": []}
+            qs = ps.party_choices(
+                exclude_deregistered=True, include_description_ids=True
+            )
 
-        ps = extra_models.PartySet.objects.get(slug=partyset)
-        ret = {"items": []}
-        qs = ps.party_choices(
-            exclude_deregistered=True, include_description_ids=True
-        )
-        for party in qs:
-            item = {}
-            if type(party[1]) == list:
-                item["text"] = party[0]
-                item["children"] = []
-                for child in party[1]:
-                    item["children"].append({"id": child[0], "text": child[1]})
-            else:
-                item["id"] = party[0]
-                item["text"] = party[1]
+            for party in qs:
+                item = {}
+                if type(party[1]) == list:
+                    item["text"] = party[0]
+                    item["children"] = []
+                    for child in party[1]:
+                        item["children"].append(
+                            {"id": child[0], "text": child[1]}
+                        )
+                else:
+                    item["id"] = party[0]
+                    item["text"] = party[1]
 
-            ret["items"].append(item)
+                ret["items"].append(item)
 
         return HttpResponse(
             json.dumps(ret), content_type="application/json", status=status_code
@@ -272,8 +279,6 @@ class AllPartiesJSONView(View):
 
 
 # Now the django-rest-framework based API views:
-
-
 class ResultsSetPagination(pagination.PageNumberPagination):
     page_size = 10
     page_size_query_param = "page_size"

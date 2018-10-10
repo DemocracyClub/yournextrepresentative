@@ -78,7 +78,7 @@ urlpatterns = [
     ),
     url(
         r"^all-parties.json$",
-        cache_page(60 * 60)(v09views.AllPartiesJSONView.as_view()),
+        cache_page(60 * 60)(next_views.AllPartiesJSONView.as_view()),
         name="all-parties-json-view",
     ),
     url(r"^version.json", v09views.VersionView.as_view(), name="version"),
