@@ -122,3 +122,47 @@ class TestAPI(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get("/api/next/persons/2009/")
         result_json = response.json
         self.assertTrue(result_json["images"][0]["is_primary"])
+
+    def test_all_parties_view(self):
+        # Test with no register
+        response = self.app.get("/all-parties.json", expect_errors=True)
+        self.assertEqual(response.status_code, 400)
+
+        # Test with GB register
+        response = self.app.get("/all-parties.json?register=GB")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json,
+            {
+                "items": [
+                    {"id": "", "text": ""},
+                    {"id": "PP52", "text": "Conservative Party"},
+                    {"id": "PP63", "text": "Green Party"},
+                    {"id": "ynmp-party:2", "text": "Independent"},
+                    {"id": "PP53", "text": "Labour Party"},
+                    {"id": "PP90", "text": "Liberal Democrats"},
+                    {
+                        "id": "ynmp-party:12522",
+                        "text": "Speaker seeking re-election",
+                    },
+                ]
+            },
+        )
+
+        # Test with NI register
+        response = self.app.get("/all-parties.json?register=NI")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json,
+            {
+                "items": [
+                    {"id": "", "text": ""},
+                    {"id": "ynmp-party:2", "text": "Independent"},
+                    {"id": "PP39", "text": "Sinn Féin"},
+                    {
+                        "id": "ynmp-party:12522",
+                        "text": "Speaker seeking re-election",
+                    },
+                ]
+            },
+        )

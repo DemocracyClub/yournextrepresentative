@@ -1,6 +1,7 @@
 [run]
 branch = True
 source =
+    api
     auth_helpers
     bulk_adding
     cached_counts

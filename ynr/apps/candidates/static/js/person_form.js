@@ -60,12 +60,12 @@ function setUpPartySelect2s() {
           var data = e.params.data;
           if (data.id == 0) {
             var initial_val = partySelect.val();
-            var partyset = $(this).data('partyset');
+            var partyset = $(this).data('partyset').toUpperCase();
             // partySelect.find('option[value="0"]').text('Loading…');
             data.text = "Loading…"
             partySelect.trigger('change.select2');
 
-            $.getJSON('/all-parties.json?partyset=' + partyset, function(items) {
+            $.getJSON('/all-parties.json?register=' + partyset, function(items) {
               $.each(items['items'], function(party_id, descs) {
                 var group = $('<optgroup label="' + descs.text + '" />');
                 if (descs['children']) {
