@@ -75,7 +75,7 @@ raven==6.9.0
 requests-oauthlib==1.0.0
 requests==2.19.1
 simplegeneric==0.8.1
-six==1.10.0
+six==1.11.0
 sorl-thumbnail==12.4.1
 sqlparse==0.2.4
 tox
