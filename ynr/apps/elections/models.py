@@ -1,7 +1,9 @@
 from collections import defaultdict, OrderedDict
 from datetime import date
 
+from django.contrib.admin.utils import NestedObjects
 from django.core.urlresolvers import reverse
+from django.db import connection
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
@@ -53,6 +55,7 @@ class Election(models.Model):
     description = models.CharField(max_length=500, blank=True)
 
     objects = ElectionManager.from_queryset(ElectionQuerySet)()
+    UnsafeToDelete = Exception
 
     def __str__(self):
         return self.name
@@ -208,3 +211,20 @@ class Election(models.Model):
             role["elections"].append(d)
             last_current = election.current
         return result
+
+    def safe_delete(self):
+        if self.current:
+            raise self.UnsafeToDelete(
+                "Can't delete 'current' election {}".format(self.slug)
+            )
+
+        collector = NestedObjects(using=connection.cursor().db.alias)
+        collector.collect([self])
+        if len(collector.nested()) > 1:
+            raise self.UnsafeToDelete(
+                "Can't delete election {} with related objects".format(
+                    self.slug
+                )
+            )
+
+        self.delete()

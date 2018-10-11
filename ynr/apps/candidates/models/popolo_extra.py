@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.files.storage import DefaultStorage
 from django.core.urlresolvers import reverse
+from django.db import connection
 from django.db import models
 from django.utils.translation import ugettext as _
 
@@ -65,6 +66,7 @@ class PostExtraElection(models.Model):
 
     candidates_locked = models.BooleanField(default=False)
     winner_count = models.IntegerField(blank=True, null=True)
+    UnsafeToDelete = UnsafeToDelete
 
     class Meta:
         unique_together = ("election", "post")
@@ -90,6 +92,18 @@ class PostExtraElection(models.Model):
                 slugify(self.post.short_label),
             ],
         )
+
+    def safe_delete(self):
+        collector = NestedObjects(using=connection.cursor().db.alias)
+        collector.collect([self])
+        if len(collector.nested()) > 1:
+            raise self.UnsafeToDelete(
+                "Can't delete PEE {} with related objects".format(
+                    self.ballot_paper_id
+                )
+            )
+
+        self.delete()
 
 
 class PartySet(models.Model):

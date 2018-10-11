@@ -186,6 +186,39 @@ class EEElection(dict):
             )
         return (self.post_election_object, self.post_election_created)
 
+    def delete_post_election(self):
+        try:
+            pee = PostExtraElection.objects.get(
+                ballot_paper_id=self["election_id"]
+            )
+        except PostExtraElection.DoesNotExist:
+            # if it doesn't already exist, this might be because:
+            # - we deleted it in EE before it was ever imported into YNR
+            # - we already deleted it
+            # either way, we wanted it gone and now its not there
+            return
+
+        try:
+            pee.safe_delete()
+        except PostExtraElection.UnsafeToDelete as e:
+            raise type(e)(str(e) + ". Manual review needed")
+
+    def delete_election(self):
+        try:
+            election = YNRElection.objects.get(slug=self["election_id"])
+        except YNRElection.DoesNotExist:
+            # if it doesn't already exist, job done
+            # - we deleted it in EE before it was ever imported into YNR
+            # - we already deleted it
+            # - this EE group type doesn't map to an election in YNR
+            # either way, we wanted it gone and now its not there
+            return
+
+        try:
+            election.safe_delete()
+        except YNRElection.UnsafeToDelete as e:
+            raise type(e)(str(e) + ". Manual review needed")
+
 
 def is_mayor_or_pcc_ballot(election):
     return election.is_leaf_node and election["election_type"][
@@ -234,6 +267,14 @@ class EveryElectionImporter(object):
                 # we need to be careful how we parse this data structure
                 ballots[k]["group"] = v["election_id"]
         return ballots
+
+    @property
+    def group_ids(self):
+        groups = {}
+        for k, v in self.election_tree.items():
+            if v["group_type"] in ["election", "organisation"]:
+                groups[k] = v
+        return groups
 
     def get_parent(self, election_id):
         child = self.election_tree[election_id]
