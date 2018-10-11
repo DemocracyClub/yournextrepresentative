@@ -1,23 +1,38 @@
+from mock import patch
+from datetime import date, timedelta
+
 from django_webtest import WebTest
 
-from candidates.tests.factories import MembershipFactory, PersonFactory
+from django.core.files.storage import DefaultStorage
+
+from candidates.tests.helpers import TmpMediaRootMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.tests.auth import TestUserMixin
+from candidates.tests.factories import (
+    ElectionFactory,
+    ParliamentaryChamberFactory,
+    PostFactory,
+    PersonFactory,
+    MembershipFactory,
+)
 
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from parties.tests.factories import PartyEmblemFactory, PartyDescriptionFactory
 from people.models import PersonImage
 
+from .test_upcoming_elections_api import fake_requests_for_every_election
 
-class TestAPI(TestUserMixin, UK2015ExamplesMixin, WebTest):
+
+class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
+        self.storage = DefaultStorage()
 
-        person = PersonFactory.create(id="2009", name="Tessa Jowell")
-        PersonImage.objects.update_or_create_from_file(
+        self.person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        self.person_image = PersonImage.objects.update_or_create_from_file(
             EXAMPLE_IMAGE_FILENAME,
             "images/imported.jpg",
-            person,
+            self.person,
             defaults={
                 "md5sum": "md5sum",
                 "copyright": "example-license",
@@ -39,13 +54,13 @@ class TestAPI(TestUserMixin, UK2015ExamplesMixin, WebTest):
             id="5163", name="Peter McColl"
         )
         MembershipFactory.create(
-            person=person,
+            person=self.person,
             post=self.dulwich_post,
             party=self.labour_party,
             post_election=self.dulwich_post_pee,
         )
         MembershipFactory.create(
-            person=person, post_election=self.edinburgh_east_post_pee
+            person=self.person, post_election=self.edinburgh_east_post_pee
         )
 
         MembershipFactory.create(
@@ -166,3 +181,151 @@ class TestAPI(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 ]
             },
         )
+
+    @patch("elections.uk.geo_helpers.requests")
+    def test_results_for_candidates_for_postcode(self, mock_requests):
+        one_day = timedelta(days=1)
+        self.future_date = date.today() + one_day
+        london_assembly = ParliamentaryChamberFactory.create(
+            slug="london-assembly", name="London Assembly"
+        )
+        election_lac = ElectionFactory.create(
+            slug="gla.c.2016-05-05",
+            organization=london_assembly,
+            name="2016 London Assembly Election (Constituencies)",
+            election_date=self.future_date.isoformat(),
+        )
+        self.election_gla = ElectionFactory.create(
+            slug="gla.a.2016-05-05",
+            organization=london_assembly,
+            name="2016 London Assembly Election (Additional)",
+            election_date=self.future_date.isoformat(),
+        )
+        PostFactory.create(
+            elections=(election_lac,),
+            organization=london_assembly,
+            slug="lambeth-and-southwark",
+            label="Assembly Member for Lambeth and Southwark",
+        )
+        self.post = PostFactory.create(
+            elections=(self.election_gla,),
+            organization=london_assembly,
+            slug="london",
+            label="Assembly Member",
+        )
+        self.person.memberships.all().delete()
+        MembershipFactory.create(
+            person=self.person,
+            post=self.post,
+            party=self.labour_party,
+            post_election=self.election_gla.postextraelection_set.get(
+                post=self.post
+            ),
+        )
+        membership_pk = self.person.memberships.first().pk
+
+        self.maxDiff = None
+
+        mock_requests.get.side_effect = fake_requests_for_every_election
+        response = self.app.get(
+            "/api/next/candidates_for_postcode/?postcode=SE24+0AG"
+        )
+
+        output = response.json
+        self.assertEqual(len(output), 2)
+        expected = [
+            {
+                "candidates": [],
+                "election_date": self.future_date.isoformat(),
+                "election_id": "gla.c.2016-05-05",
+                "election_name": "2016 London Assembly Election (Constituencies)",
+                "organization": "London Assembly",
+                "post": {
+                    "post_candidates": None,
+                    "post_name": "Assembly Member for Lambeth and Southwark",
+                    "post_slug": "lambeth-and-southwark",
+                },
+            },
+            {
+                "candidates": [
+                    {
+                        "birth_date": "",
+                        "contact_details": [],
+                        "death_date": "",
+                        "email": None,
+                        "extra_fields": [],
+                        "gender": "",
+                        "honorific_prefix": "",
+                        "honorific_suffix": "",
+                        "id": 2009,
+                        "identifiers": [],
+                        "images": [
+                            {
+                                "copyright": "example-license",
+                                "id": self.person_image.pk,
+                                "image_url": "/media/images/images/imported.jpg",
+                                "is_primary": True,
+                                "md5sum": "md5sum",
+                                "notes": "",
+                                "source": "Found on the candidate's Flickr feed",
+                                "uploading_user": "john",
+                                "user_copyright": "",
+                                "user_notes": "Here's an image...",
+                            }
+                        ],
+                        "links": [],
+                        "memberships": [
+                            {
+                                "elected": None,
+                                "election": {
+                                    "id": "gla.a.2016-05-05",
+                                    "name": "2016 London Assembly Election (Additional)",
+                                    "url": "http://testserver/api/next/elections/gla.a.2016-05-05/",
+                                },
+                                "end_date": None,
+                                "id": membership_pk,
+                                "label": "",
+                                "party": {
+                                    "ec_id": "PP53",
+                                    "legacy_slug": "party:53",
+                                    "name": "Labour Party",
+                                },
+                                "party_list_position": None,
+                                "person": {
+                                    "id": 2009,
+                                    "name": "Tessa Jowell",
+                                    "url": "http://testserver/api/next/persons/2009/",
+                                },
+                                "post": {
+                                    "id": "london",
+                                    "label": "Assembly Member",
+                                    "slug": "london",
+                                    "url": "http://testserver/api/next/posts/london/",
+                                },
+                                "role": "Candidate",
+                                "start_date": None,
+                                "url": "http://testserver/api/next/memberships/{}/".format(
+                                    membership_pk
+                                ),
+                            }
+                        ],
+                        "name": "Tessa Jowell",
+                        "other_names": [],
+                        "sort_name": "",
+                        "thumbnail": "http://testserver/media/cache/69/5d/695d95b49b6a6ab3aebe728d2ec5162b.jpg",
+                        "url": "http://testserver/api/next/persons/2009/",
+                    }
+                ],
+                "election_date": self.future_date.isoformat(),
+                "election_id": "gla.a.2016-05-05",
+                "election_name": "2016 London Assembly Election (Additional)",
+                "organization": "London Assembly",
+                "post": {
+                    "post_candidates": None,
+                    "post_name": "Assembly Member",
+                    "post_slug": "london",
+                },
+            },
+        ]
+
+        self.assertEqual(expected, output)
