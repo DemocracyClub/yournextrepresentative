@@ -11,16 +11,32 @@ from elections.uk.every_election import EveryElectionImporter
 class Command(BaseCommand):
     help = "Create posts and elections from a EveryElection"
 
-    def handle(self, *args, **options):
-
-        # Get all elections from EveryElection
+    def import_approved_elections(self):
+        # Get all approved elections from EveryElection
         ee_importer = EveryElectionImporter()
         ee_importer.build_election_tree()
+
+        for ballot_id, election_dict in ee_importer.ballot_ids.items():
+            parent = ee_importer.get_parent(ballot_id)
+            election_dict.get_or_create_post_election(parent=parent)
+
+    def delete_deleted_elections(self):
+        # Get all deleted elections from EE
+        ee_importer = EveryElectionImporter({"current": 1, "deleted": 1})
+        ee_importer.build_election_tree()
+
+        for ballot_id, election_dict in ee_importer.ballot_ids.items():
+            election_dict.delete_post_election()
+
+        for group_id, election_dict in ee_importer.group_ids.items():
+            election_dict.delete_election()
+
+    def handle(self, *args, **options):
 
         with transaction.atomic():
             # Mark all elections as not current, any that are current will
             # be (re)set later
             Election.objects.update(current=False)
-            for ballot_id, election_dict in ee_importer.ballot_ids.items():
-                parent = ee_importer.get_parent(ballot_id)
-                election_dict.get_or_create_post_election(parent=parent)
+
+            self.import_approved_elections()
+            self.delete_deleted_elections()

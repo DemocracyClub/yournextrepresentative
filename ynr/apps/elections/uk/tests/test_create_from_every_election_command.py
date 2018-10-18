@@ -10,44 +10,57 @@ from .ee_import_results import (
     current_elections,
     current_elections_page_2,
     each_type_of_election_on_one_day,
+    no_results,
+    local_highland,
 )
+from candidates.tests.factories import MembershipFactory, PersonFactory
 from elections.uk import every_election
 
 
-def fake_requests_for_every_election(url, *args, **kwargs):
-    """Return reduced EE output for some known URLs"""
+EE_BASE_URL = getattr(
+    settings, "EE_BASE_URL", "https://elections.democracyclub.org.uk/"
+)
 
-    EE_BASE_URL = getattr(
-        settings, "EE_BASE_URL", "https://elections.democracyclub.org.uk/"
-    )
-    result = None
 
-    if url == urljoin(EE_BASE_URL, "api/elections/?current=True"):
-        status_code = 200
-        result = current_elections
+def create_mock_with_fixtures(fixtures):
+    def mock(url):
+        try:
+            return Mock(
+                **{"json.return_value": fixtures[url], "status_code": 200}
+            )
+        except KeyError:
+            raise Exception("URL that hasn't been mocked yet: " + url)
 
-    if url == urljoin(
-        EE_BASE_URL, "/api/elections/?current=True&limit=100&offset=100"
-    ):  # noqa
-        status_code = 200
-        result = current_elections_page_2
+    return mock
 
-    if url == urljoin(
-        EE_BASE_URL, "/api/elections/?current=True&poll_open_date=2019-01-17"
-    ):  # noqa
-        status_code = 200
-        result = each_type_of_election_on_one_day
 
-    if not result:
-        raise Exception("URL that hasn't been mocked yet: " + url)
+fake_requests_current_elections = create_mock_with_fixtures(
+    {
+        urljoin(EE_BASE_URL, "/api/elections/?current=True"): current_elections,
+        urljoin(
+            EE_BASE_URL, "/api/elections/?current=True&limit=100&offset=100"
+        ): current_elections_page_2,
+        urljoin(
+            EE_BASE_URL,
+            "/api/elections/?current=True&poll_open_date=2019-01-17",
+        ): each_type_of_election_on_one_day,
+    }
+)
 
-    return Mock(**{"json.return_value": result, "status_code": status_code})
+fake_requests_each_type_of_election_on_one_day = create_mock_with_fixtures(
+    {
+        urljoin(
+            EE_BASE_URL, "/api/elections/?current=True"
+        ): each_type_of_election_on_one_day,
+        urljoin(EE_BASE_URL, "/api/elections/?current=1&deleted=1"): no_results,
+    }
+)
 
 
 class EE_ImporterTest(WebTest):
     @patch("elections.uk.every_election.requests")
     def setUp(self, mock_requests):
-        mock_requests.get.side_effect = fake_requests_for_every_election
+        mock_requests.get.side_effect = fake_requests_current_elections
 
         self.ee_importer = every_election.EveryElectionImporter()
         self.ee_importer.build_election_tree()
@@ -158,7 +171,7 @@ class EE_ImporterTest(WebTest):
 
     @patch("elections.uk.every_election.requests")
     def test_create_from_all_elections(self, mock_requests):
-        mock_requests.get.side_effect = fake_requests_for_every_election
+        mock_requests.get.side_effect = fake_requests_current_elections
         query_args = {"poll_open_date": "2019-01-17", "current": "True"}
         self.ee_importer = every_election.EveryElectionImporter(query_args)
         self.ee_importer.build_election_tree()
@@ -171,11 +184,8 @@ class EE_ImporterTest(WebTest):
 
     @patch("elections.uk.every_election.requests")
     def test_import_management_command(self, mock_requests):
-        mock_requests.get.side_effect = lambda m: Mock(
-            **{
-                "json.return_value": each_type_of_election_on_one_day,
-                "status_code": 200,
-            }
+        mock_requests.get.side_effect = (
+            fake_requests_each_type_of_election_on_one_day
         )
 
         self.assertEqual(
@@ -216,3 +226,225 @@ class EE_ImporterTest(WebTest):
             ballot_paper_id="local.adur.buckingham.2019-01-17"
         )
         self.assertEqual(pee.winner_count, 3)
+
+    @patch("elections.uk.every_election.requests")
+    def test_delete_elections_no_matches(self, mock_requests):
+        # import some data
+        # just so we've got a non-empty DB
+        mock_requests.get.side_effect = (
+            fake_requests_each_type_of_election_on_one_day
+        )
+        call_command("uk_create_elections_from_every_election")
+        self.assertEqual(
+            every_election.PostExtraElection.objects.all().count(), 15
+        )
+        self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
+
+        # now we're going to delete some stuff
+        # but none of the elections in the
+        # local_highland fixture
+        # match anything we just imported
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=True"
+                ): no_results,
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                ): local_highland,
+            }
+        )
+        # this should finish cleanly without complaining
+        call_command("uk_create_elections_from_every_election")
+
+        # nothing in our DB should have changed
+        self.assertEqual(
+            every_election.PostExtraElection.objects.all().count(), 15
+        )
+        self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
+
+    @patch("elections.uk.every_election.requests")
+    def test_delete_elections_with_matches(self, mock_requests):
+        # import some data
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=True"
+                ): local_highland,
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                ): no_results,
+            }
+        )
+        call_command("uk_create_elections_from_every_election")
+        self.assertEqual(
+            every_election.PostExtraElection.objects.all().count(), 1
+        )
+        self.assertEqual(every_election.YNRElection.objects.all().count(), 1)
+
+        # now we've switched the fixtures round
+        # so the records we just imported are deleted in EE
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=True"
+                ): no_results,
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                ): local_highland,
+            }
+        )
+        call_command("uk_create_elections_from_every_election")
+
+        # we should delete the records we just imported
+        self.assertEqual(
+            every_election.PostExtraElection.objects.all().count(), 0
+        )
+        self.assertEqual(every_election.YNRElection.objects.all().count(), 0)
+
+    @patch("elections.uk.every_election.requests")
+    def test_delete_elections_invalid_input_insert_and_delete(
+        self, mock_requests
+    ):
+        # import some data
+        # just so we've got a non-empty DB
+        mock_requests.get.side_effect = (
+            fake_requests_each_type_of_election_on_one_day
+        )
+        call_command("uk_create_elections_from_every_election")
+        self.assertEqual(
+            every_election.PostExtraElection.objects.all().count(), 15
+        )
+        self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
+
+        # this simulates a situation where EE reports
+        # the same election/s as deleted and not deleted
+        # this makes no sense and shouldn't happen but
+        # if it does we should not delete anything
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=True"
+                ): local_highland,
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                ): local_highland,
+            }
+        )
+
+        # make sure we throw an exception
+        with self.assertRaises(Exception):
+            call_command("uk_create_elections_from_every_election")
+
+        # we should also roll back the whole transaction
+        # so nothing is inserted or deleted
+        self.assertEqual(
+            every_election.PostExtraElection.objects.all().count(), 15
+        )
+        self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
+
+    @patch("elections.uk.every_election.requests")
+    def test_delete_elections_invalid_input_non_empty_election(
+        self, mock_requests
+    ):
+        # import some data
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=True"
+                ): local_highland,
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                ): no_results,
+            }
+        )
+        call_command("uk_create_elections_from_every_election")
+        self.assertEqual(
+            every_election.PostExtraElection.objects.all().count(), 1
+        )
+        self.assertEqual(every_election.YNRElection.objects.all().count(), 1)
+
+        # this simulates a situation where EE reports
+        # a ballot as current but its parent election as
+        # deleted this makes no sense and shouldn't happen
+        # but if it does we should not delete anything
+        current_elections = {
+            "count": 1,
+            "next": None,
+            "previous": None,
+            "results": [local_highland["results"][1]],
+        }
+        deleted_elections = {
+            "count": 1,
+            "next": None,
+            "previous": None,
+            "results": [local_highland["results"][0]],
+        }
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=True"
+                ): current_elections,
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                ): deleted_elections,
+            }
+        )
+
+        # make sure we throw an exception
+        with self.assertRaises(Exception):
+            call_command("uk_create_elections_from_every_election")
+
+        # we should also roll back the whole transaction
+        # so nothing is inserted or deleted
+        self.assertEqual(
+            every_election.PostExtraElection.objects.all().count(), 1
+        )
+        self.assertEqual(every_election.YNRElection.objects.all().count(), 1)
+
+    @patch("elections.uk.every_election.requests")
+    def test_delete_elections_with_related_membership(self, mock_requests):
+        # import some data
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=True"
+                ): local_highland,
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                ): no_results,
+            }
+        )
+        call_command("uk_create_elections_from_every_election")
+        self.assertEqual(
+            every_election.PostExtraElection.objects.all().count(), 1
+        )
+        self.assertEqual(every_election.YNRElection.objects.all().count(), 1)
+
+        # create a membership which references the PEE we just imported
+        MembershipFactory(
+            person=PersonFactory.create(id="2009", name="Tessa Jowell"),
+            post_election=every_election.PostExtraElection.objects.all()[0],
+        )
+
+        # now we've switched the fixtures round
+        # so the records we just imported are deleted in EE
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=True"
+                ): no_results,
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                ): local_highland,
+            }
+        )
+        # make sure we throw an exception
+        with self.assertRaises(Exception):
+            call_command("uk_create_elections_from_every_election")
+
+        # we should also roll back the whole transaction so nothing is deleted
+        self.assertEqual(
+            every_election.PostExtraElection.objects.all().count(), 1
+        )
+        self.assertEqual(every_election.YNRElection.objects.all().count(), 1)
