@@ -12,11 +12,7 @@ from django.utils.functional import cached_property
 from django.utils.six import text_type
 from django.utils.six.moves.urllib_parse import quote_plus, urljoin
 from django.utils.translation import ugettext_lazy as _
-from popolo.behaviors.models import (
-    Dateframeable,
-    GenericRelatable,
-    Timestampable,
-)
+from popolo.behaviors.models import GenericRelatable, Timestampable
 from popolo.models import (
     ComplexPopoloField,
     ContactDetail,
@@ -61,7 +57,7 @@ class PersonImage(models.Model):
     objects = PersonImageManager()
 
 
-class Person(Dateframeable, Timestampable, models.Model):
+class Person(Timestampable, models.Model):
     """
     A real person, alive or dead
     see schema at http://popoloproject.com/schemas/person.json#

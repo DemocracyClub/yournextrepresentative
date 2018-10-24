@@ -16,7 +16,7 @@ from slugify import slugify
 faker = Factory.create("it_IT")  # a factory to create fake names for tests
 
 
-class PersonTestCase(DateframeableTests, TimestampableTests, TestCase):
+class PersonTestCase(TimestampableTests, TestCase):
     model = Person
     object_name = "person"
 
