@@ -1,36 +1,35 @@
-from datetime import date
 import json
+from datetime import date
 
+from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
+from django.db import models
+from django.template import loader
+from django.templatetags.static import static
+from django.utils.functional import cached_property
+from django.utils.six import text_type
+from django.utils.six.moves.urllib_parse import quote_plus, urljoin
+from django.utils.translation import ugettext_lazy as _
+from popolo.behaviors.models import (
+    Dateframeable,
+    GenericRelatable,
+    Timestampable,
+)
+from popolo.models import (
+    ComplexPopoloField,
+    ContactDetail,
+    Identifier,
+    Membership,
+    MultipleTwitterIdentifiers,
+    PersonExtraFieldValue,
+    VersionNotFound,
+)
 from slugify import slugify
 from sorl.thumbnail import get_thumbnail
 
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.fields import GenericRelation
-from django.templatetags.static import static
-from django.utils.functional import cached_property
-from django.core.urlresolvers import reverse
-from django.template import loader
-from django.conf import settings
-from django.utils.six.moves.urllib_parse import urljoin, quote_plus
-from django.utils.six import text_type
-from django.core.exceptions import ObjectDoesNotExist
-
 from candidates.diffs import get_version_diffs
-from popolo.behaviors.models import (
-    Timestampable,
-    Dateframeable,
-    GenericRelatable,
-)
-from popolo.models import (
-    ContactDetail,
-    Membership,
-    Identifier,
-    MultipleTwitterIdentifiers,
-    VersionNotFound,
-    ComplexPopoloField,
-    PersonExtraFieldValue,
-)
 from people.managers import PersonImageManager, PersonQuerySet
 
 
