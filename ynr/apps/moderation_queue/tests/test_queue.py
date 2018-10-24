@@ -14,7 +14,7 @@ from io import BytesIO
 from django_webtest import WebTest
 from mock import patch
 
-from popolo.models import Person
+from people.models import Person
 from moderation_queue.models import (
     QueuedImage,
     PHOTO_REVIEWERS_GROUP_NAME,

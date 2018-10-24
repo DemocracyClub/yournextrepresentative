@@ -3,11 +3,11 @@ from django.utils.six.moves.urllib_parse import urlsplit
 
 from django_webtest import WebTest
 from unittest import skip
-from popolo.models import Person
+from people.models import Person
 
 from candidates.models import ComplexPopoloField
 
-from popolo.models import Person
+from people.models import Person
 
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin

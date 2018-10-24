@@ -2,7 +2,7 @@ import json
 
 from django_webtest import WebTest
 
-from popolo.models import Person
+from people.models import Person
 
 from candidates.tests import factories
 from candidates.tests.uk_examples import UK2015ExamplesMixin

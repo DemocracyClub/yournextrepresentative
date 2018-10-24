@@ -15,7 +15,7 @@ from lxml import etree
 from candidates.models import LoggedAction
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
-from popolo.models import Person
+from people.models import Person
 from parties.models import Party
 
 from . import factories

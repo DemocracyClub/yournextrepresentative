@@ -16,8 +16,8 @@ from .uk_examples import UK2015ExamplesMixin
 
 from compat import BufferDictReader
 
-from people.models import PersonImage
-from popolo.models import Membership, Person
+from people.models import PersonImage, Person
+from popolo.models import Membership
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 

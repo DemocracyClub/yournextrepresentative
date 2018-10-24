@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from popolo.models import Organization, Person, Post
+from popolo.models import Organization, Post
 from elections.models import Election
 
 

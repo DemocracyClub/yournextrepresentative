@@ -51,7 +51,7 @@ def needs_review_due_to_first_edits(logged_action_qs):
 
 
 def needs_review_due_to_subject_having_died(logged_action_qs):
-    from popolo.models import Person
+    from people.models import Person
 
     person_ids = logged_action_qs.values_list("person", flat=True)
     person_ids = {p for p in person_ids if p is not None}

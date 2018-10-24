@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from candidates.models import ExtraField
-from popolo.models import Person
+from people.models import Person
 
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin

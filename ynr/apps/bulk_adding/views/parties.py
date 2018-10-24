@@ -4,7 +4,8 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.views.generic import FormView, TemplateView
-from popolo.models import Membership, Person
+from popolo.models import Membership
+from people.models import Person
 
 from bulk_adding import forms, helpers
 from elections.models import Election

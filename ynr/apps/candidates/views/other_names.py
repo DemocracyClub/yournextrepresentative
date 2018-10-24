@@ -8,7 +8,8 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from braces.views import LoginRequiredMixin
 
 from candidates.forms import OtherNameForm
-from popolo.models import OtherName, Person
+from popolo.models import OtherName
+from people.models import Person
 
 from .version_data import get_change_metadata
 

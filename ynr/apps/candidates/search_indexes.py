@@ -1,7 +1,7 @@
 from haystack import indexes
 from celery_haystack.indexes import CelerySearchIndex
 
-from popolo.models import Person
+from people.models import Person
 
 
 class PersonIndex(CelerySearchIndex, indexes.Indexable):

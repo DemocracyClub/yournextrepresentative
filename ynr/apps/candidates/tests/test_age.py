@@ -3,10 +3,10 @@ from mock import patch
 
 from django.test import TestCase
 
-from popolo.models import Person
+from people.models import Person
 
 
-@patch("popolo.models.date")
+@patch("people.models.date")
 class TestAgeCalculation(TestCase):
     def test_age_full_obvious(self, mock_date):
         mock_date.today.return_value = date(1977, 9, 3)

@@ -8,7 +8,8 @@ from popolo.behaviors.tests.test_behaviors import (
     TimestampableTests,
     DateframeableTests,
 )
-from popolo.models import Person, Organization, Post, ContactDetail
+from popolo.models import Organization, Post, ContactDetail
+from people.models import Person
 from faker import Factory
 from slugify import slugify
 

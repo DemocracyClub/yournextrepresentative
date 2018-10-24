@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 
 from popolo.models import Membership
 
-from popolo.models import Person
+from people.models import Person
 
 
 class Command(BaseCommand):

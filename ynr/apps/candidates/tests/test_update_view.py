@@ -7,7 +7,8 @@ from webtest.forms import Text
 
 from .auth import TestUserMixin
 
-from popolo.models import Person, Membership
+from popolo.models import Membership
+from people.models import Person
 
 from candidates.models import ExtraField
 from .factories import MembershipFactory, PersonFactory

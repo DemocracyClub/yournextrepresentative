@@ -6,7 +6,8 @@ from django.db.models import F
 from django.http import HttpResponseRedirect
 from django.utils.text import slugify
 from django.views.generic import RedirectView, TemplateView
-from popolo.models import Person, Post
+from popolo.models import Post
+from people.models import Person
 from parties.models import Party
 
 from bulk_adding import forms, helpers

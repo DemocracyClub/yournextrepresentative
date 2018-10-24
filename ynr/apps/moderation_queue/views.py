@@ -41,8 +41,7 @@ from candidates.management.images import (
 from candidates.models import LoggedAction, PostExtraElection
 from candidates.views.version_data import get_client_ip, get_change_metadata
 
-from popolo.models import Person
-from people.models import PersonImage
+from people.models import PersonImage, Person
 
 
 @login_required

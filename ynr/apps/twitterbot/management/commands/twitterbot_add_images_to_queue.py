@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
 
 from popolo.models import MultipleTwitterIdentifiers
 from moderation_queue.models import QueuedImage, CopyrightOptions
-from popolo.models import Person
+from people.models import Person
 
 import requests
 

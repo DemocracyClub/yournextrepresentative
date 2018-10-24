@@ -6,8 +6,7 @@ from django.test import TestCase
 
 from candidates.models import PersonRedirect
 from candidates.csv_helpers import list_to_csv
-from popolo.models import Person
-from people.models import PersonImage
+from people.models import PersonImage, Person
 
 from . import factories
 from .auth import TestUserMixin

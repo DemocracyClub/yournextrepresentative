@@ -3,9 +3,9 @@ from django.utils.six.moves.urllib_parse import urlsplit
 from django.conf import settings
 
 from django_webtest import WebTest
-from popolo.models import Person
+from people.models import Person
 
-from popolo.models import Person
+from people.models import Person
 
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin

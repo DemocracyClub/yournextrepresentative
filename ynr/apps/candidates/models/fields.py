@@ -110,7 +110,7 @@ class PersonExtraFieldValue(models.Model):
         unique_together = ("person", "field")
 
     person = models.ForeignKey(
-        "popolo.Person", related_name="extra_field_values"
+        "people.Person", related_name="extra_field_values"
     )
     field = models.ForeignKey(ExtraField)
     value = models.TextField(blank=True)

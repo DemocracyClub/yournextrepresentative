@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 from django_webtest import WebTest
 
-from popolo.models import Person
+from people.models import Person
 
 from candidates.models import PostExtraElection
 from .auth import TestUserMixin

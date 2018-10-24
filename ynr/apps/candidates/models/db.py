@@ -45,7 +45,7 @@ class LoggedAction(models.Model):
     malicious users."""
 
     user = models.ForeignKey(User, blank=True, null=True)
-    person = models.ForeignKey("popolo.Person", blank=True, null=True)
+    person = models.ForeignKey("people.Person", blank=True, null=True)
     action_type = models.CharField(max_length=64)
     popit_person_new_version = models.CharField(max_length=32)
     created = models.DateTimeField(auto_now_add=True, db_index=True)

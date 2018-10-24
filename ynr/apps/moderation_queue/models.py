@@ -3,8 +3,6 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from popolo.models import Person
-
 from candidates.models import PostExtraElection
 
 PHOTO_REVIEWERS_GROUP_NAME = "Photo Reviewers"

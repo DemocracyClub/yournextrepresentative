@@ -2,7 +2,8 @@ from django.db import transaction
 from django.core.management.base import BaseCommand
 from django.utils.translation import ugettext as _
 
-from popolo.models import Person, MultipleTwitterIdentifiers
+from popolo.models import MultipleTwitterIdentifiers
+from people.models import Person
 
 from ..twitter import TwitterAPIData
 from twitterbot.helpers import TwitterBot

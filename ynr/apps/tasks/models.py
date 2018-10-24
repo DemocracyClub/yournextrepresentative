@@ -7,7 +7,7 @@ from django.conf import settings
 
 from django_extensions.db.models import TimeStampedModel
 
-from popolo.models import Person
+from people.models import Person
 from candidates.models import ComplexPopoloField
 
 

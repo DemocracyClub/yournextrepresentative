@@ -47,7 +47,8 @@ from results.models import ResultEvent
 from moderation_queue.forms import SuggestedPostLockForm
 from moderation_queue.models import SuggestedPostLock
 
-from popolo.models import Membership, Post, Person
+from popolo.models import Membership, Post
+from people.models import Person
 from parties.models import Party
 
 

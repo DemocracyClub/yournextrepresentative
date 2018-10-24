@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from tasks.models import PersonTask
-from popolo.models import Person
+from people.models import Person
 
 
 class Command(BaseCommand):

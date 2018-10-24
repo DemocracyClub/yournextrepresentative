@@ -18,8 +18,8 @@ from rest_framework.response import Response
 from api.v09 import serializers
 from candidates import models as extra_models
 from elections.models import Election
-from popolo.models import Membership, Person, Post, Organization
-from people.models import PersonImage
+from popolo.models import Membership, Post, Organization
+from people.models import PersonImage, Person
 from rest_framework import viewsets
 from elections.uk.geo_helpers import (
     get_post_elections_from_coords,

@@ -6,7 +6,7 @@ from haystack.query import SearchQuerySet
 from haystack.generic_views import SearchView
 from haystack.forms import SearchForm
 
-from popolo.models import Person
+from people.models import Person
 
 
 def search_person_by_name(name, sqs=None):
