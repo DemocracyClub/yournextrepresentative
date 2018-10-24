@@ -191,14 +191,6 @@ class Person(Timestampable, models.Model):
 
     objects = PersonQuerySet.as_manager()
 
-    def add_contact_detail(self, **kwargs):
-        c = ContactDetail(content_object=self, **kwargs)
-        c.save()
-
-    def add_contact_details(self, contacts):
-        for c in contacts:
-            self.add_contact_detail(**c)
-
     @cached_property
     def complex_popolo_fields(self):
         from candidates.models.fields import get_complex_popolo_fields
