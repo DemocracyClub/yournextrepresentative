@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.utils.http import urlquote
 from django.utils.six.moves.urllib_parse import urlparse
 
-from ..forms import UserTermsAgreementForm
+from candidates.forms import UserTermsAgreementForm
 
 
 class AskForCopyrightAssigment(FormView):

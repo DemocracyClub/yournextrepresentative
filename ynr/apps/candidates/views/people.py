@@ -29,7 +29,8 @@ from elections.mixins import ElectionMixin
 from ..diffs import get_version_diffs
 from ..election_specific import additional_merge_actions
 from .version_data import get_client_ip, get_change_metadata
-from ..forms import NewPersonForm, UpdatePersonForm, SingleElectionForm
+from people.forms import NewPersonForm, UpdatePersonForm
+from candidates.forms import SingleElectionForm
 from ..models import LoggedAction, PersonRedirect, TRUSTED_TO_MERGE_GROUP_NAME
 from ..models.auth import check_creation_allowed, check_update_allowed
 from ..models.versions import (

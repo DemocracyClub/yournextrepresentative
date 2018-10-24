@@ -7,7 +7,7 @@ import cgi
 
 from .models import QueuedImage, CopyrightOptions, SuggestedPostLock
 
-from candidates.forms import StrippedCharField
+from people.forms import StrippedCharField
 
 
 class UploadPersonPhotoImageForm(forms.ModelForm):

@@ -4,24 +4,9 @@ NOTE: Both views in this file are deprecated and redirects should be found
       at the moment
 """
 
-
-from django.db.models import Prefetch
-from django.http import Http404, HttpResponseBadRequest
 from django.views.generic import TemplateView
-from django.utils.translation import ugettext as _
 
-from candidates.models.auth import get_edits_allowed, is_post_locked
-
-from elections.models import Election
 from popolo.models import Post
-
-from ..forms import NewPersonForm, ToggleLockForm
-from .helpers import (
-    split_candidacies,
-    group_candidates_by_party,
-    get_person_form_fields,
-    split_by_elected,
-)
 
 
 class AreasView(TemplateView):

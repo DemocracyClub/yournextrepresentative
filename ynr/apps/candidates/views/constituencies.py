@@ -1,16 +1,9 @@
-from datetime import timedelta
-
 from slugify import slugify
 
 from django.views.decorators.cache import cache_control
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.http import (
-    HttpResponse,
-    HttpResponseRedirect,
-    Http404,
-    JsonResponse,
-)
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils.http import urlquote
 from django.utils.translation import ugettext as _
@@ -31,7 +24,8 @@ from .helpers import (
 )
 from .version_data import get_client_ip, get_change_metadata
 from ..csv_helpers import list_to_csv
-from ..forms import NewPersonForm, ToggleLockForm, ConstituencyRecordWinnerForm
+from people.forms import NewPersonForm
+from candidates.forms import ToggleLockForm, ConstituencyRecordWinnerForm
 from ..models import (
     TRUSTED_TO_LOCK_GROUP_NAME,
     get_edits_allowed,
