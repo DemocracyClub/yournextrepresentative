@@ -10,7 +10,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
 
-        tessa_jowell = PersonFactory.create(id="2009", name="Tessa Jowell")
+        tessa_jowell = PersonFactory.create(id=2009, name="Tessa Jowell")
         MembershipFactory.create(
             person=tessa_jowell,
             post=self.dulwich_post,
@@ -19,7 +19,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post_election=self.dulwich_post_pee,
         )
 
-        winner = PersonFactory.create(id="4322", name="Helen Hayes")
+        winner = PersonFactory.create(id=4322, name="Helen Hayes")
         MembershipFactory.create(
             person=winner,
             post=self.dulwich_post,
@@ -28,7 +28,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post_election=self.dulwich_post_pee,
         )
 
-        james_smith = PersonFactory.create(id="2010", name="James Smith")
+        james_smith = PersonFactory.create(id=2010, name="James Smith")
         MembershipFactory.create(
             person=james_smith,
             post=self.dulwich_post,

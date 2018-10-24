@@ -49,7 +49,7 @@ class TestResultsFeed(
 ):
     def setUp(self):
         super().setUp()
-        person = factories.PersonFactory.create(id="4322", name="Tessa Jowell")
+        person = factories.PersonFactory.create(id=4322, name="Tessa Jowell")
         example_image_filename = EXAMPLE_IMAGE_FILENAME
         self.example_image = PersonImage.objects.create_from_file(
             example_image_filename,

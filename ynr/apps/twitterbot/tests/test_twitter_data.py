@@ -116,11 +116,11 @@ class TestTwitterData(TestCase):
 
     @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN="madeuptoken")
     def test_all_screen_names(self):
-        joe = PersonFactory.create(id="1", name="Joe Bloggs")
+        joe = PersonFactory.create(id=1, name="Joe Bloggs")
         joe.contact_details.create(
             value="joenotreallyatwitteraccount", contact_type="twitter"
         )
-        jane = PersonFactory.create(id="2", name="Jane Bloggs")
+        jane = PersonFactory.create(id=2, name="Jane Bloggs")
         jane.contact_details.create(
             value="janenotreallyatwitteraccount", contact_type="twitter"
         )
@@ -132,9 +132,9 @@ class TestTwitterData(TestCase):
 
     @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN="madeuptoken")
     def tests_all_user_ids(self):
-        joe = PersonFactory.create(id="1", name="Joe Bloggs")
+        joe = PersonFactory.create(id=1, name="Joe Bloggs")
         joe.identifiers.create(identifier="246", scheme="twitter")
-        jane = PersonFactory.create(id="2", name="Jane Bloggs")
+        jane = PersonFactory.create(id=2, name="Jane Bloggs")
         jane.identifiers.create(identifier="357", scheme="twitter")
         twitter_data = TwitterAPIData()
         self.assertEqual(["246", "357"], sorted(twitter_data.all_user_ids))

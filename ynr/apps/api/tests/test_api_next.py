@@ -28,7 +28,7 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
         super().setUp()
         self.storage = DefaultStorage()
 
-        self.person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        self.person = PersonFactory.create(id=2009, name="Tessa Jowell")
         self.person_image = PersonImage.objects.update_or_create_from_file(
             EXAMPLE_IMAGE_FILENAME,
             "images/imported.jpg",
@@ -43,7 +43,7 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             },
         )
 
-        dulwich_not_stand = PersonFactory.create(id="4322", name="Helen Hayes")
+        dulwich_not_stand = PersonFactory.create(id=4322, name="Helen Hayes")
         edinburgh_candidate = PersonFactory.create(
             id="818", name="Sheila Gilmore"
         )

@@ -131,7 +131,7 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
     def test_results_for_candidates_for_postcode(self, mock_requests):
         self._setup_data()
 
-        person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        person = PersonFactory.create(id=2009, name="Tessa Jowell")
 
         MembershipFactory.create(
             person=person,

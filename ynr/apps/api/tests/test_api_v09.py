@@ -26,7 +26,7 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
 
-        person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        person = PersonFactory.create(id=2009, name="Tessa Jowell")
         PersonImage.objects.update_or_create_from_file(
             EXAMPLE_IMAGE_FILENAME,
             "images/imported.jpg",
@@ -40,7 +40,7 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
                 "source": "Found on the candidate's Flickr feed",
             },
         )
-        dulwich_not_stand = PersonFactory.create(id="4322", name="Helen Hayes")
+        dulwich_not_stand = PersonFactory.create(id=4322, name="Helen Hayes")
         edinburgh_candidate = PersonFactory.create(
             id="818", name="Sheila Gilmore"
         )

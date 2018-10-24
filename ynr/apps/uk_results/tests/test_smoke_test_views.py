@@ -22,9 +22,9 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         )
         # Create three people:
         self.people = [
-            PersonFactory.create(id="13", name="Alice"),
-            PersonFactory.create(id="14", name="Bob"),
-            PersonFactory.create(id="15", name="Carol"),
+            PersonFactory.create(id=13, name="Alice"),
+            PersonFactory.create(id=14, name="Bob"),
+            PersonFactory.create(id=15, name="Carol"),
         ]
 
         parties = [self.labour_party, self.conservative_party, self.ld_party]

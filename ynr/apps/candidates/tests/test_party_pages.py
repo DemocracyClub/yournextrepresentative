@@ -22,7 +22,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
                 label="Member of Parliament for {}".format(cons_name),
                 group=country,
             )
-        person = PersonFactory.create(id="3056", name="Ed Miliband")
+        person = PersonFactory.create(id=3056, name="Ed Miliband")
         MembershipFactory.create(
             person=person,
             post=constituencies["Doncaster North"],
@@ -31,7 +31,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
                 post=constituencies["Doncaster North"]
             ),
         )
-        person = PersonFactory.create(id="3814", name="David Miliband")
+        person = PersonFactory.create(id=3814, name="David Miliband")
         MembershipFactory.create(
             person=person,
             post=constituencies["South Shields"],

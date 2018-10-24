@@ -22,7 +22,7 @@ def membership_id_set(person):
 class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
-        person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        person = PersonFactory.create(id=2009, name="Tessa Jowell")
 
         MembershipFactory.create(
             person=person,

@@ -52,7 +52,7 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        PersonFactory.create(id="2009", name="Tessa Jowell")
+        PersonFactory.create(id=2009, name="Tessa Jowell")
         self.test_upload_user = User.objects.create_user(
             "john", "john@example.com", "notagoodpassword"
         )
@@ -124,7 +124,7 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        PersonFactory.create(id="2009", name="Tessa Jowell")
+        PersonFactory.create(id=2009, name="Tessa Jowell")
         self.test_upload_user = User.objects.create_user(
             "john", "john@example.com", "notagoodpassword"
         )

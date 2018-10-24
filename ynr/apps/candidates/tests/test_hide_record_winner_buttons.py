@@ -10,7 +10,7 @@ from .factories import MembershipFactory, PersonFactory
 class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
-        person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        person = PersonFactory.create(id=2009, name="Tessa Jowell")
         MembershipFactory.create(
             person=person,
             post=self.dulwich_post,

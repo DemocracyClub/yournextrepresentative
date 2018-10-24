@@ -62,8 +62,8 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        person_2009 = PersonFactory.create(id="2009", name="Tessa Jowell")
-        person_2007 = PersonFactory.create(id="2007", name="Tessa Jowell")
+        person_2009 = PersonFactory.create(id=2009, name="Tessa Jowell")
+        person_2007 = PersonFactory.create(id=2007, name="Tessa Jowell")
         MembershipFactory.create(
             person=person_2009,
             post=self.dulwich_post,
@@ -426,8 +426,8 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
     def setUp(self):
         super().setUp()
-        person_2009 = PersonFactory.create(id="2009", name="Tessa Jowell")
-        person_2007 = PersonFactory.create(id="2007", name="Tessa Jowell")
+        person_2009 = PersonFactory.create(id=2009, name="Tessa Jowell")
+        person_2007 = PersonFactory.create(id=2007, name="Tessa Jowell")
         MembershipFactory.create(
             person=person_2009,
             post=self.dulwich_post,
