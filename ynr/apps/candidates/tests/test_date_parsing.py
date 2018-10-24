@@ -1,11 +1,9 @@
 from django.test import TestCase
 from django.test.utils import override_settings
 
-from django.utils.translation import override
-
 from django_date_extensions.fields import ApproximateDate
 
-from popolo.person_helpers import parse_approximate_date
+from people.helpers import parse_approximate_date
 
 
 # These tests supplement the doctests; they're not done as

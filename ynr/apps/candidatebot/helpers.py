@@ -4,7 +4,7 @@ from django.db import transaction
 
 from candidates.models import LoggedAction
 from candidates.views.version_data import get_change_metadata
-from popolo.models import Person
+from people.models import Person
 
 
 class CandidateBot(object):

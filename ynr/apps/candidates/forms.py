@@ -1,4 +1,3 @@
-from collections import OrderedDict
 import re
 
 from elections.models import Election
@@ -11,8 +10,8 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from candidates.models import PartySet, ExtraField, ComplexPopoloField
-from popolo.models import Organization, OtherName, Post
-from popolo.person_helpers import parse_approximate_date
+from popolo.models import OtherName, Post
+from people.helpers import parse_approximate_date
 from parties.models import Party
 from .twitter_api import get_twitter_user_id, TwitterAPITokenMissing
 

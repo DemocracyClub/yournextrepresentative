@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from popolo.models import Person
+from people.models import Person
 
 from candidates.views.version_data import get_change_metadata
 

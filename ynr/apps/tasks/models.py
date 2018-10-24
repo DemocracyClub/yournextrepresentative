@@ -7,7 +7,7 @@ from django.conf import settings
 
 from django_extensions.db.models import TimeStampedModel
 
-from popolo.models import Person
+from people.models import Person
 from candidates.models import ComplexPopoloField
 
 
@@ -19,7 +19,7 @@ class PersonTaskManager(models.Manager):
 class PersonTask(TimeStampedModel):
     task_field = models.CharField(blank=True, max_length=100)
     task_priority = models.IntegerField(blank=True, null=True, default=1)
-    person = models.ForeignKey(Person)
+    person = models.ForeignKey("people.Person")
     finder = models.ForeignKey(User, null=True)
     found = models.BooleanField(default=False)
     bonus_points = models.IntegerField(blank=True, null=True, default=1)

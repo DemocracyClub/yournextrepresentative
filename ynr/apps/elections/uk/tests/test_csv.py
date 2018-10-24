@@ -4,7 +4,7 @@ from candidates.models import PersonRedirect
 from candidates.tests import factories
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
-from popolo.models import Person
+from people.models import Person
 
 
 class CSVTests(UK2015ExamplesMixin, TestCase):

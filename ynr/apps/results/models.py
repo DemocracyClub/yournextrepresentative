@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from popolo.models import Organization, Person, Post
+from popolo.models import Organization, Post
 from elections.models import Election
 
 
@@ -11,7 +11,7 @@ class ResultEvent(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     election = models.ForeignKey(Election, blank=True, null=True)
-    winner = models.ForeignKey(Person)
+    winner = models.ForeignKey("people.Person")
     old_post_id = models.CharField(blank=False, max_length=256)
     old_post_name = models.CharField(blank=True, null=True, max_length=1024)
     post = models.ForeignKey(Post, blank=True, null=True)

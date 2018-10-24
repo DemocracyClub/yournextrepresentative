@@ -2,7 +2,8 @@ import json
 
 from django.core.management import call_command
 from django_webtest import WebTest
-from popolo.models import Membership, Person
+from popolo.models import Membership
+from people.models import Person
 
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin

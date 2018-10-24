@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from candidates.models import ComplexPopoloField
-from popolo.models import Person
+from people.models import Person
 from tasks.models import PersonTask
 
 

@@ -3,8 +3,6 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from popolo.models import Person
-
 from candidates.models import PostExtraElection
 
 PHOTO_REVIEWERS_GROUP_NAME = "Photo Reviewers"
@@ -67,7 +65,7 @@ class QueuedImage(models.Model):
     image = models.ImageField(
         upload_to="queued-images/%Y/%m/%d", max_length=512
     )
-    person = models.ForeignKey(Person, blank=True, null=True)
+    person = models.ForeignKey("people.Person", blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True)
 
     crop_min_x = models.IntegerField(blank=True, null=True)

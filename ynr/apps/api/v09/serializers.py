@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
 
+import people.models
 from api.helpers import JSONSerializerField
 from candidates import models as candidates_models
 from people.models import PersonImage
@@ -198,7 +199,7 @@ class MinimalPostSerializer(serializers.HyperlinkedModelSerializer):
 
 class MinimalPersonSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = popolo_models.Person
+        model = people.models.Person
         fields = ("id", "url", "name")
 
 
@@ -258,7 +259,7 @@ class PersonExtraFieldSerializer(serializers.HyperlinkedModelSerializer):
 
 class PersonSerializer(MinimalPersonSerializer):
     class Meta:
-        model = popolo_models.Person
+        model = people.models.Person
         fields = (
             "id",
             "url",
@@ -305,7 +306,7 @@ class PersonSerializer(MinimalPersonSerializer):
 
 class NoVersionPersonSerializer(PersonSerializer):
     class Meta:
-        model = popolo_models.Person
+        model = people.models.Person
         fields = (
             "id",
             "url",

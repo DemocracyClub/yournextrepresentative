@@ -9,11 +9,11 @@ from django.test.utils import override_settings
 
 from django_webtest import WebTest
 
-from popolo.models import Membership, Person
+from popolo.models import Membership
 
 from candidates.models import PersonRedirect
 from candidates.models.versions import revert_person_from_version_data
-from people.models import PersonImage
+from people.models import PersonImage, Person
 from ynr.helpers import mkdir_p
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin

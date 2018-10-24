@@ -1,5 +1,5 @@
 from django_webtest import WebTest
-from popolo.models import Person
+from people.models import Person
 
 from popolo.models import Post
 
@@ -124,7 +124,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         update_lock(self.camberwell_post, self.election, True)
         post_locked = self.camberwell_post
         self.post_id = self.dulwich_post.id
-        person = PersonFactory.create(id="4170", name="Naomi Newstead")
+        person = PersonFactory.create(id=4170, name="Naomi Newstead")
 
         MembershipFactory.create(
             person=person,
@@ -135,7 +135,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ),
         )
 
-        person = PersonFactory.create(id="4322", name="Helen Hayes")
+        person = PersonFactory.create(id=4322, name="Helen Hayes")
 
         MembershipFactory.create(
             person=person,

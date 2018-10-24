@@ -1,4 +1,5 @@
-from popolo.models import Membership, Person
+from popolo.models import Membership
+from people.models import Person
 
 from candidates.models import LoggedAction, raise_if_unsafe_to_delete
 from candidates.models.auth import check_creation_allowed

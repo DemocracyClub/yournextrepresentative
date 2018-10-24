@@ -14,7 +14,7 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
     def setUp(self):
         super().setUp()
         User.objects.create(username=settings.CANDIDATE_BOT_USERNAME)
-        self.person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        self.person = PersonFactory.create(id=2009, name="Tessa Jowell")
 
     def test_user_smoke_test(self):
         bot = CandidateBot(self.person.pk)

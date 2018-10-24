@@ -9,7 +9,7 @@ from .uk_examples import UK2015ExamplesMixin
 class TestAreasOfTypeView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUpAll(self):
         super().setUp()
-        person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        person = PersonFactory.create(id=2009, name="Tessa Jowell")
         MembershipFactory.create(
             person=person,
             post=self.dulwich_post,

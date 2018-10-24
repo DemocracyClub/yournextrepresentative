@@ -423,7 +423,7 @@ class EE_ImporterTest(WebTest):
 
         # create a membership which references the PEE we just imported
         MembershipFactory(
-            person=PersonFactory.create(id="2009", name="Tessa Jowell"),
+            person=PersonFactory.create(id=2009, name="Tessa Jowell"),
             post_election=every_election.PostExtraElection.objects.all()[0],
         )
 

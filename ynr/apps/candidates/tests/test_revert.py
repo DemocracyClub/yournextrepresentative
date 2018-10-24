@@ -8,7 +8,7 @@ from django_webtest import WebTest
 from popolo.models import Membership
 
 from candidates.models import ExtraField
-from popolo.models import Person
+from people.models import Person
 
 from compat import bytes_to_unicode, deep_sort
 

@@ -14,7 +14,7 @@ from io import BytesIO
 from django_webtest import WebTest
 from mock import patch
 
-from popolo.models import Person
+from people.models import Person
 from moderation_queue.models import (
     QueuedImage,
     PHOTO_REVIEWERS_GROUP_NAME,
@@ -62,8 +62,8 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        person_2009 = PersonFactory.create(id="2009", name="Tessa Jowell")
-        person_2007 = PersonFactory.create(id="2007", name="Tessa Jowell")
+        person_2009 = PersonFactory.create(id=2009, name="Tessa Jowell")
+        person_2007 = PersonFactory.create(id=2007, name="Tessa Jowell")
         MembershipFactory.create(
             person=person_2009,
             post=self.dulwich_post,
@@ -426,8 +426,8 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
     def setUp(self):
         super().setUp()
-        person_2009 = PersonFactory.create(id="2009", name="Tessa Jowell")
-        person_2007 = PersonFactory.create(id="2007", name="Tessa Jowell")
+        person_2009 = PersonFactory.create(id=2009, name="Tessa Jowell")
+        person_2007 = PersonFactory.create(id=2007, name="Tessa Jowell")
         MembershipFactory.create(
             person=person_2009,
             post=self.dulwich_post,

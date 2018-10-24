@@ -6,8 +6,7 @@ from candidates.csv_helpers import list_to_csv
 from candidates.models import PersonRedirect
 from candidates.models.fields import get_complex_popolo_fields
 from elections.models import Election
-from popolo.models import Person
-
+from people.models import Person
 
 FETCH_AT_A_TIME = 1000
 

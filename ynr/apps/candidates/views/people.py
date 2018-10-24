@@ -43,7 +43,7 @@ from ..models import (
     ComplexPopoloField,
 )
 from .helpers import get_field_groupings, get_person_form_fields
-from popolo.models import Person
+from people.models import Person
 from tasks.forms import PersonTaskForm
 
 

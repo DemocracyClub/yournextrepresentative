@@ -8,7 +8,8 @@ from braces.views import LoginRequiredMixin
 
 from auth_helpers.views import user_in_group
 
-from popolo.models import Membership, Person, Post
+from popolo.models import Membership, Post
+from people.models import Person
 from candidates.models import raise_if_unsafe_to_delete
 from candidates.models.constraints import check_no_candidancy_for_election
 

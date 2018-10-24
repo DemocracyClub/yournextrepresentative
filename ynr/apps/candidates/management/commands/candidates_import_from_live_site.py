@@ -18,6 +18,7 @@ from django.utils.six.moves.urllib_parse import urlsplit, urlunsplit
 
 import requests
 
+import people.models
 from candidates import models
 from elections import models as emodels
 from popolo import models as pmodels
@@ -79,7 +80,7 @@ class Command(BaseCommand):
         non_empty_models = []
         for model_class in (
             # Base Popolo models that YNR uses:
-            pmodels.Person,
+            people.models.Person,
             pmodels.Membership,
             pmodels.Organization,
             pmodels.Post,
@@ -334,7 +335,7 @@ class Command(BaseCommand):
                         "death_date",
                     )
                 }
-                person = pmodels.Person.objects.create(**kwargs)
+                person = people.models.Person.objects.create(**kwargs)
                 if not ignore_images:
                     person_to_image_data[person] = person_data["images"]
                 self.add_related(
@@ -366,7 +367,7 @@ class Command(BaseCommand):
                     k: m_data[k]
                     for k in ("label", "role", "start_date", "end_date")
                 }
-                kwargs["person"] = pmodels.Person.objects.get(
+                kwargs["person"] = people.models.Person.objects.get(
                     pk=m_data["person"]["id"]
                 )
                 if m_data.get("party"):
@@ -436,7 +437,7 @@ class Command(BaseCommand):
                 PersonImage,
                 models.ExtraField,
                 models.ComplexPopoloField,
-                pmodels.Person,
+                people.models.Person,
             ],
         )
         if reset_sql_list:

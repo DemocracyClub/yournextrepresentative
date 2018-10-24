@@ -32,7 +32,7 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         self.p_no_images.identifiers.create(identifier="1001", scheme="twitter")
 
         p_existing_image = PersonFactory.create(
-            id="2", name="Person With An Existing Image"
+            id=2, name="Person With An Existing Image"
         )
         self.existing_undecided_image = p_existing_image.queuedimage_set.create(
             decision=QueuedImage.UNDECIDED, user=self.user
@@ -40,7 +40,7 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         p_existing_image.identifiers.create(identifier="1002", scheme="twitter")
 
         self.p_only_rejected_in_queue = PersonFactory.create(
-            id="3", name="Person With Only Rejected Images In The Queue"
+            id=3, name="Person With Only Rejected Images In The Queue"
         )
         self.existing_rejected_image = self.p_only_rejected_in_queue.queuedimage_set.create(
             decision=QueuedImage.REJECTED, user=self.user
@@ -49,10 +49,10 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
             identifier="1003", scheme="twitter"
         )
 
-        PersonFactory.create(id="4", name="Person With No Twitter User ID")
+        PersonFactory.create(id=4, name="Person With No Twitter User ID")
 
         self.p_accepted_image_in_queue = PersonFactory.create(
-            id="5", name="Person With An Accepted Image In The Queue"
+            id=5, name="Person With An Accepted Image In The Queue"
         )
         self.existing_accepted_image = self.p_accepted_image_in_queue.queuedimage_set.create(
             decision=QueuedImage.APPROVED, user=self.user
@@ -76,7 +76,7 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         )
 
         self.p_existing_image_but_none_in_queue = PersonFactory.create(
-            id="6", name="Person With An Existing Image But None In The Queue"
+            id=6, name="Person With An Existing Image But None In The Queue"
         )
         self.p_existing_image_but_none_in_queue.identifiers.create(
             identifier="1006", scheme="twitter"

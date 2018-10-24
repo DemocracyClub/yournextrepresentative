@@ -1,5 +1,5 @@
 from django_webtest import WebTest
-from popolo.models import Person
+from people.models import Person
 
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin

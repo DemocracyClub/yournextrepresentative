@@ -1,3 +1,54 @@
 from django.contrib import admin
 
-# Register your models here.
+from popolo.models import Membership
+from people.models import Person
+
+
+class MembershipInline(admin.StackedInline):
+    extra = 0
+    model = Membership
+
+
+class PersonAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {"fields": ("name", "gender", "birth_date", "death_date")}),
+        (
+            "Biography",
+            {
+                "classes": ("collapse",),
+                "fields": ("summary", "image", "biography"),
+            },
+        ),
+        (
+            "Honorifics",
+            {
+                "classes": ("collapse",),
+                "fields": ("honorific_prefix", "honorific_suffix"),
+            },
+        ),
+        (
+            "Demography",
+            {"classes": ("collapse",), "fields": ("national_identity",)},
+        ),
+        (
+            "Special Names",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "family_name",
+                    "given_name",
+                    "additional_name",
+                    "patronymic_name",
+                    "sort_name",
+                ),
+            },
+        ),
+        (
+            "Advanced options",
+            {"classes": ("collapse",), "fields": ("start_date", "end_date")},
+        ),
+    )
+    # inlines = generics.BASE_INLINES + [MembershipInline]
+
+
+admin.site.register(Person, PersonAdmin)

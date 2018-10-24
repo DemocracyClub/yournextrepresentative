@@ -8,7 +8,7 @@ from .factories import MembershipFactory, PersonFactory
 class TestCandidacyCreateView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
-        self.person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        self.person = PersonFactory.create(id=2009, name="Tessa Jowell")
         MembershipFactory.create(
             person=self.person,
             post=self.camberwell_post,
@@ -31,7 +31,7 @@ class TestCandidacyCreateView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 class TestCandidacyDeleteView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
-        self.person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        self.person = PersonFactory.create(id=2009, name="Tessa Jowell")
 
         MembershipFactory.create(
             person=self.person,

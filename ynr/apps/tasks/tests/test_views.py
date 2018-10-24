@@ -15,7 +15,7 @@ class TestFieldView(UK2015ExamplesMixin, TestCase):
     def setUp(self):
         super().setUp()
 
-        person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        person = PersonFactory.create(id=2009, name="Tessa Jowell")
 
         MembershipFactory.create(
             person=person,

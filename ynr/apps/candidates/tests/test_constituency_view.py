@@ -16,16 +16,16 @@ from .uk_examples import UK2015ExamplesMixin
 
 from compat import BufferDictReader
 
-from people.models import PersonImage
-from popolo.models import Membership, Person
+from people.models import PersonImage, Person
+from popolo.models import Membership
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 
 class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
-        person = PersonFactory.create(id="2009", name="Tessa Jowell")
-        dulwich_not_stand = PersonFactory.create(id="4322", name="Helen Hayes")
+        person = PersonFactory.create(id=2009, name="Tessa Jowell")
+        dulwich_not_stand = PersonFactory.create(id=4322, name="Helen Hayes")
         MembershipFactory.create(
             person=person,
             post=self.dulwich_post,

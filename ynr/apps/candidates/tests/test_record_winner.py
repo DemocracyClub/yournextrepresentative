@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 from django_webtest import WebTest
 
-from popolo.models import Person
+from people.models import Person
 
 from candidates.models import PostExtraElection
 from .auth import TestUserMixin
@@ -16,7 +16,7 @@ from results.models import ResultEvent
 class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
-        person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        person = PersonFactory.create(id=2009, name="Tessa Jowell")
         MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
@@ -24,7 +24,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post_election=self.dulwich_post_pee,
         )
 
-        self.winner = PersonFactory.create(id="4322", name="Helen Hayes")
+        self.winner = PersonFactory.create(id=4322, name="Helen Hayes")
 
         MembershipFactory.create(
             person=self.winner,
@@ -249,7 +249,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
-        person = PersonFactory.create(id="2009", name="Tessa Jowell")
+        person = PersonFactory.create(id=2009, name="Tessa Jowell")
         MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
@@ -257,7 +257,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post_election=self.dulwich_post_pee,
         )
 
-        self.winner = PersonFactory.create(id="4322", name="Helen Hayes")
+        self.winner = PersonFactory.create(id=4322, name="Helen Hayes")
 
         MembershipFactory.create(
             person=self.winner,
