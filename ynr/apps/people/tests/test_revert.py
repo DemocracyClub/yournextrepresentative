@@ -12,9 +12,9 @@ from people.models import Person
 
 from compat import bytes_to_unicode, deep_sort
 
-from .auth import TestUserMixin
-from .uk_examples import UK2015ExamplesMixin
-from . import factories
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
+from candidates.tests import factories
 
 example_timestamp = "2014-09-29T10:11:59.216159"
 example_version_id = "5aa6418325c1a0bb"

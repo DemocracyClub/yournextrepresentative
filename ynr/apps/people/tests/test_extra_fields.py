@@ -8,8 +8,8 @@ from people.models import Person
 
 from candidates.models import ExtraField, PersonExtraFieldValue
 
-from .auth import TestUserMixin
-from .uk_examples import UK2015ExamplesMixin
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
 class ExtraFieldTests(TestUserMixin, UK2015ExamplesMixin, WebTest):

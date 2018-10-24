@@ -20,7 +20,7 @@ from parties.models import Party
 
 from . import factories
 from .auth import TestUserMixin
-from .test_version_diffs import tidy_html_whitespace
+from people.tests.test_version_diffs import tidy_html_whitespace
 
 
 def random_person_id():

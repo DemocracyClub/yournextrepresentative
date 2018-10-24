@@ -3,8 +3,8 @@ import re
 from django.test import TestCase
 
 from candidates.diffs import get_version_diffs
-from . import factories
-from .uk_examples import UK2015ExamplesMixin
+from candidates.tests import factories
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
 def sort_operations_for_comparison(versions_with_diffs):

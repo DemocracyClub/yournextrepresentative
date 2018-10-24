@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from . import factories
-from .uk_examples import UK2015ExamplesMixin
+from candidates.tests import factories
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
 class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
