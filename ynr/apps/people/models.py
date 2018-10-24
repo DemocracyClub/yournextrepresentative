@@ -330,18 +330,9 @@ class Person(Timestampable, models.Model):
     """
 
     def get_elected(self, election):
-        role = election.candidate_membership_role
-        if role is None:
-            role = ""
-        membership = self.memberships.filter(
-            role=role, post_election__election=election
-        )
-
-        result = membership.first()
-        if result:
-            return result.elected
-
-        return None
+        return self.memberships.filter(
+            post_election__election=election, elected=True
+        ).exists()
 
     @property
     def twitter_identifiers(self):
