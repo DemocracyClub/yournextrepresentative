@@ -48,7 +48,7 @@ class PersonImage(models.Model):
     notes they have.
     """
 
-    person = models.ForeignKey("popolo.Person", related_name="images")
+    person = models.ForeignKey("people.Person", related_name="images")
     image = models.ImageField(upload_to=person_image_path, max_length=512)
     source = models.CharField(max_length=400)
     copyright = models.CharField(max_length=64, default="other", blank=True)

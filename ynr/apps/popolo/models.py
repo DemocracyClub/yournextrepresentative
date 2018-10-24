@@ -876,7 +876,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
 
     # reference to "http://popoloproject.com/schemas/person.json#"
     person = models.ForeignKey(
-        "Person",
+        "people.Person",
         to_field="id",
         related_name="memberships",
         help_text=_("The person who is a party to the relationship"),
