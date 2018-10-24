@@ -70,7 +70,7 @@ class Person(Timestampable, models.Model):
         _("name"), max_length=512, help_text=_("A person's preferred full name")
     )
 
-    # array of itemss referencing "http://popoloproject.com/schemas/other_name.json#"
+    # array of items referencing "http://popoloproject.com/schemas/other_name.json#"
     other_names = GenericRelation(
         "popolo.OtherName", help_text="Alternate or former names"
     )
