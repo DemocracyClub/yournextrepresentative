@@ -538,21 +538,8 @@ def copy_organization_date_fields(sender, **kwargs):
         obj.end_date = obj.dissolution_date
 
 
-## copy birth and death dates into start and end dates,
-## so that Person can extend the abstract Dateframeable behavior
-## (it's way easier than dynamic field names)
-@receiver(pre_save, sender=Person)
-def copy_person_date_fields(sender, **kwargs):
-    obj = kwargs["instance"]
-
-    if obj.birth_date:
-        obj.start_date = obj.birth_date
-    if obj.death_date:
-        obj.end_date = obj.death_date
-
-
 ## all instances are validated before being saved
-@receiver(pre_save, sender=Person)
+# @receiver(pre_save, sender=Person)
 @receiver(pre_save, sender=Organization)
 @receiver(pre_save, sender=Post)
 def validate_date_fields(sender, **kwargs):

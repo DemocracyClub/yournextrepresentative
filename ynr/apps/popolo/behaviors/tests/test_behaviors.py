@@ -62,34 +62,6 @@ class DateframeableTests(BehaviorTestCaseMixin):
             "date does not match pattern",
         )
 
-    def test_invalid_dates_are_blocked(self):
-        """Test if dates are valid (months and days range are tested)"""
-        # test invalid start dates
-        with self.assertRaises(ValidationError):
-            obj = self.create_instance(start_date="YESTERDAY")
-
-        with self.assertRaises(ValidationError):
-            obj = self.create_instance(start_date="2012-1210")
-
-        with self.assertRaises(ValidationError):
-            obj = self.create_instance(start_date="2012-13")
-
-        with self.assertRaises(ValidationError):
-            obj = self.create_instance(start_date="2012-12-34")
-
-        # test invalid end dates
-        with self.assertRaises(ValidationError):
-            obj = self.create_instance(end_date="YESTERDAY")
-
-        with self.assertRaises(ValidationError):
-            obj = self.create_instance(end_date="2012-1210")
-
-        with self.assertRaises(ValidationError):
-            obj = self.create_instance(end_date="2012-13")
-
-        with self.assertRaises(ValidationError):
-            obj = self.create_instance(end_date="2012-12-34")
-
     def test_querysets_filters(self):
         """Test current, past and future querysets"""
         past_obj = self.create_instance(

@@ -47,18 +47,6 @@ class PersonTestCase(DateframeableTests, TimestampableTests, TestCase):
         p.add_contact_details(contacts)
         self.assertEqual(p.contact_details.count(), 2)
 
-    def test_it_copies_birth_date_after_saving(self):
-        pr = Person(name=faker.name(), birth_date=faker.year())
-        self.assertIsNone(pr.start_date)
-        pr.save()
-        self.assertEqual(pr.start_date, pr.birth_date)
-
-    def test_it_copies_death_date_after_saving(self):
-        pr = Person(name=faker.name(), death_date=faker.year())
-        self.assertIsNone(pr.end_date)
-        pr.save()
-        self.assertEqual(pr.end_date, pr.death_date)
-
     def test_add_links_and_sources(self):
         p = self.create_instance()
         p.links.create(url="http://link.example.org/", note="Note")
