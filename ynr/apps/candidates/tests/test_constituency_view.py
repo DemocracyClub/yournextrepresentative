@@ -9,9 +9,9 @@ from .factories import (
     MembershipFactory,
     ElectionFactory,
     MembershipFactory,
-    PersonFactory,
     PostFactory,
 )
+from people.tests.factories import PersonFactory
 from .uk_examples import UK2015ExamplesMixin
 
 from compat import BufferDictReader

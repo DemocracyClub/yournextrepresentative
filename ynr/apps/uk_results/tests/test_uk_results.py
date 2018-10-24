@@ -1,7 +1,8 @@
 from django.test import TestCase
 
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import MembershipFactory, PersonFactory
+from candidates.tests.factories import MembershipFactory
+from people.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from uk_results.models import CandidateResult, ResultSet
 

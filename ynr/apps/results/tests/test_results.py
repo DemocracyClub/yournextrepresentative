@@ -10,6 +10,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.utils.feedgenerator import rfc3339_date
 
+import people.tests.factories
 from people.models import PersonImage
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
@@ -49,7 +50,9 @@ class TestResultsFeed(
 ):
     def setUp(self):
         super().setUp()
-        person = factories.PersonFactory.create(id=4322, name="Tessa Jowell")
+        person = people.tests.factories.PersonFactory.create(
+            id=4322, name="Tessa Jowell"
+        )
         example_image_filename = EXAMPLE_IMAGE_FILENAME
         self.example_image = PersonImage.objects.create_from_file(
             example_image_filename,
@@ -158,10 +161,10 @@ class TestResultsFeedWithRetraction(
 ):
     def setUp(self):
         super().setUp()
-        accidental_winner = factories.PersonFactory.create(
+        accidental_winner = people.tests.factories.PersonFactory.create(
             id="4322", name="Tessa Jowell"
         )
-        real_winner = factories.PersonFactory.create(
+        real_winner = people.tests.factories.PersonFactory.create(
             id="4493", name="James Barber"
         )
         ResultEvent.objects.create(

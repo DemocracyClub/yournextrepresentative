@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django_webtest import WebTest
 
 from .auth import TestUserMixin
-from .factories import PersonFactory
+from people.tests.factories import PersonFactory
 from candidates.models import LoggedAction
 
 

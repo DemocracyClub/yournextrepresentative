@@ -4,7 +4,8 @@ from people.models import Person
 from popolo.models import Post
 
 from .auth import TestUserMixin
-from .factories import MembershipFactory, PersonFactory
+from .factories import MembershipFactory
+from people.tests.factories import PersonFactory
 from .uk_examples import UK2015ExamplesMixin
 
 

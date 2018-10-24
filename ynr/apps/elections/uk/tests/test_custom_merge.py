@@ -1,4 +1,6 @@
 from django_webtest import WebTest
+
+import people.tests.factories
 from people.models import Person
 
 from candidates.tests import factories
@@ -12,10 +14,10 @@ from uk_results.models import CandidateResult, ResultSet
 class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
-        self.primary_person = factories.PersonFactory.create(
+        self.primary_person = people.tests.factories.PersonFactory.create(
             id="3885", name="Harriet Harman"
         )
-        self.secondary_person = factories.PersonFactory.create(
+        self.secondary_person = people.tests.factories.PersonFactory.create(
             id="10000", name="Harriet Ruth Harman"
         )
 

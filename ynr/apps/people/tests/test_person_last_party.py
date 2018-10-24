@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+import people.tests.factories
 from candidates.tests import factories
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
@@ -9,7 +10,9 @@ class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
         super().setUp()
 
     def test_both_elections(self):
-        person = factories.PersonFactory.create(id=1234, name="John Doe")
+        person = people.tests.factories.PersonFactory.create(
+            id=1234, name="John Doe"
+        )
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
@@ -25,7 +28,9 @@ class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
         self.assertEqual(person.last_party(), self.labour_party)
 
     def test_only_earlier(self):
-        person = factories.PersonFactory.create(id=1234, name="John Doe")
+        person = people.tests.factories.PersonFactory.create(
+            id=1234, name="John Doe"
+        )
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
@@ -35,7 +40,9 @@ class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
         self.assertEqual(person.last_party(), self.ld_party)
 
     def test_only_later(self):
-        person = factories.PersonFactory.create(id=1234, name="John Doe")
+        person = people.tests.factories.PersonFactory.create(
+            id=1234, name="John Doe"
+        )
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,

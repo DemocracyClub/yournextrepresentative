@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+import people.tests.factories
 from candidates.models import PersonRedirect
 from candidates.tests import factories
 from candidates.tests.uk_examples import UK2015ExamplesMixin
@@ -12,7 +13,7 @@ class CSVTests(UK2015ExamplesMixin, TestCase):
         super().setUp()
         # The second person's name (and party name) have diacritics in
         # them to test handling of Unicode when outputting to CSV.
-        self.gb_person = factories.PersonFactory.create(
+        self.gb_person = people.tests.factories.PersonFactory.create(
             id=2009,
             name="Tessa Jowell",
             honorific_suffix="DBE",

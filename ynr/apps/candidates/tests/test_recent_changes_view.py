@@ -1,5 +1,6 @@
 from django_webtest import WebTest
 
+import people.tests.factories
 from candidates.tests import factories
 
 from .auth import TestUserMixin
@@ -8,10 +9,10 @@ from candidates.models import LoggedAction
 
 class TestRecentChangesView(TestUserMixin, WebTest):
     def setUp(self):
-        test_person_1 = factories.PersonFactory.create(
+        test_person_1 = people.tests.factories.PersonFactory.create(
             id=9876, name="Test Candidate for Recent Changes"
         )
-        test_person_2 = factories.PersonFactory.create(
+        test_person_2 = people.tests.factories.PersonFactory.create(
             id=1234, name="Another Test Candidate for Recent Changes"
         )
         self.action1 = LoggedAction.objects.create(

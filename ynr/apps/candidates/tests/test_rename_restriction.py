@@ -2,7 +2,8 @@ from django_webtest import WebTest
 from django.test.utils import override_settings
 
 from .auth import TestUserMixin
-from .factories import PersonFactory
+from people.tests.factories import PersonFactory
+
 
 # FIXME: these pass individually but fail together because of
 # https://github.com/django-compressor/django-appconf/issues/30

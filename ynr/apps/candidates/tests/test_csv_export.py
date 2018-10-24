@@ -4,6 +4,7 @@ from os.path import join
 from django.conf import settings
 from django.test import TestCase
 
+import people.tests.factories
 from candidates.models import PersonRedirect
 from candidates.csv_helpers import list_to_csv
 from people.models import PersonImage, Person
@@ -24,7 +25,7 @@ class CSVTests(TestUserMixin, UK2015ExamplesMixin, TestCase):
         super().setUp()
         # The second person's name (and party name) have diacritics in
         # them to test handling of Unicode when outputting to CSV.
-        self.gb_person = factories.PersonFactory.create(
+        self.gb_person = people.tests.factories.PersonFactory.create(
             id=2009,
             name="Tessa Jowell",
             honorific_suffix="DBE",
@@ -45,7 +46,7 @@ class CSVTests(TestUserMixin, UK2015ExamplesMixin, TestCase):
             },
         )
 
-        self.ni_person = factories.PersonFactory.create(
+        self.ni_person = people.tests.factories.PersonFactory.create(
             id=1953, name="Daithí McKay", gender="male"
         )
         north_antrim_post = factories.PostFactory.create(

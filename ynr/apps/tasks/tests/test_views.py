@@ -4,9 +4,9 @@ from candidates.tests.factories import (
     ElectionFactory,
     MembershipFactory,
     ParliamentaryChamberFactory,
-    PersonFactory,
     PostFactory,
 )
+from people.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from parties.tests.factories import PartyFactory
 

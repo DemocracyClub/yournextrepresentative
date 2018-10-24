@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from datetime import date
 
+import people.tests.factories
 from . import factories
 from parties.tests.factories import PartyFactory
 
@@ -164,7 +165,7 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
         for party, candidates_to_create in parties_and_counts:
             for i in range(candidates_to_create):
                 person_id = int("{}00{}".format(election.pk, created + 1))
-                person = factories.PersonFactory.create(
+                person = people.tests.factories.PersonFactory.create(
                     id=person_id, name="John Doe {}".format(person_id)
                 )
                 factories.MembershipFactory.create(
