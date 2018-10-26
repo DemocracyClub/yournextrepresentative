@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('candidates', '0053_move_person_fk_to_people_app'),
-    ]
+    dependencies = [("candidates", "0053_move_person_fk_to_people_app")]
 
     operations = [
         migrations.AddField(
-            model_name='postextraelection',
-            name='cancelled',
+            model_name="postextraelection",
+            name="cancelled",
             field=models.BooleanField(default=False),
-        ),
+        )
     ]
