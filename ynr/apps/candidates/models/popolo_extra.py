@@ -66,6 +66,7 @@ class PostExtraElection(models.Model):
 
     candidates_locked = models.BooleanField(default=False)
     winner_count = models.IntegerField(blank=True, null=True)
+    cancelled = models.BooleanField(default=False)
     UnsafeToDelete = UnsafeToDelete
 
     class Meta:
