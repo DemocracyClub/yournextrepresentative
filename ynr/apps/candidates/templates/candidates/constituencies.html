@@ -30,6 +30,9 @@
     {% elif postextraelection.suggestedpostlock_set.exists %}
      <abbr title="Someone suggested locking this post">🔓</abbr>
     {% endif %}
+    {% if postextraelection.cancelled %}
+      <abbr title="The poll for this election was cancelled">❌</abbr>
+    {% endif %}
   </h3>
   <p>
     {% if postextraelection.winner_count %}

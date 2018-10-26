@@ -69,9 +69,12 @@ def post_in_election(person, election):
             ),
             cons_name=candidacy.post.short_label,
         )
-        result = '<span class="constituency-value-standing-link">{}</span>'.format(
+        result = '<span class="constituency-value-standing-link">{}'.format(
             link
         )
+        if candidacy.post_election.cancelled:
+            result += ' <abbr title="The poll for this election was cancelled">❌</abbr>'
+        result += "</span>"
         result += ' <span class="party">{}</span>'.format(candidacy.party.name)
         prefix, suffix = get_known_candidacy_prefix_and_suffix(candidacy)
         result = prefix + result + suffix

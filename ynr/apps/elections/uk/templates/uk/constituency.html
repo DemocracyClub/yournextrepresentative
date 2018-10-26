@@ -3,6 +3,13 @@
 {% block content %}
 <div class="row">
     <div class="columns large-9">
+
+        {% if post_election.cancelled %}
+        <div class="panel">
+          ❌ The poll for this election was cancelled
+        </div>
+        {% endif %}
+
         {% if not candidates_locked %}
         <div class="panel">
             <p>These candidates haven't been confirmed by the official "nomination papers"

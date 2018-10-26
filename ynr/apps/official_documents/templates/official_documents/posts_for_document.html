@@ -24,6 +24,9 @@
         {% elif document.lock_suggested %}
         - <abbr title="Someone suggested locking this post">🔓</abbr>
         {% else %}
+        {% if document.post_election.cancelled %}
+          <abbr title="The poll for this election was cancelled">❌</abbr>
+        {% endif %}
         <a href="{% url 'bulk_add_from_sopn' election=document.post_election.election.slug post_id=document.post_election.post.slug %}" class="button tiny">
         Add candidates</a>
         {% endif %}
