@@ -26,7 +26,9 @@ class BallotPaperResultsUpdateView(LoginRequiredMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         self.pee = PostExtraElection.objects.get(
-            ballot_paper_id=self.kwargs["ballot_paper_id"]
+            ballot_paper_id=self.kwargs["ballot_paper_id"],
+            # if we try to add results to a cancelled election, throw a 404
+            cancelled=False,
         )
         try:
             kwargs["instance"] = self.pee.resultset
@@ -62,6 +64,7 @@ class CurrentElectionsWithNoResuts(TemplateView):
                 election__current=True,
                 election__election_date__lt=date.today(),
                 resultset=None,
+                cancelled=False,
             )
             .select_related("post", "election")
             .order_by("election", "post__label")
