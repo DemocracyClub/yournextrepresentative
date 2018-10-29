@@ -10,6 +10,7 @@ from django.core.files.storage import DefaultStorage
 from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db import models
+from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
 
 from dateutil import parser
@@ -105,6 +106,26 @@ class PostExtraElection(models.Model):
             )
 
         self.delete()
+
+    @property
+    def cancelled_status_html(self):
+        if self.cancelled:
+            return mark_safe(
+                '<abbr title="The poll for this election was cancelled">(❌ cancelled)</abbr>'
+            )
+        return ""
+
+    @property
+    def locked_status_html(self):
+        if self.candidates_locked:
+            return mark_safe(
+                '<abbr title="Candidates verified and post locked">🔒</abbr>'
+            )
+        if self.suggestedpostlock_set.exists():
+            return mark_safe(
+                '<abbr title="Someone suggested locking this post">🔓</abbr>'
+            )
+        return ""
 
 
 class PartySet(models.Model):

@@ -73,7 +73,8 @@ def post_in_election(person, election):
             link
         )
         if candidacy.post_election.cancelled:
-            result += ' <abbr title="The poll for this election was cancelled">❌</abbr>'
+            result += " "
+            result += candidacy.post_election.cancelled_status_html
         result += "</span>"
         result += ' <span class="party">{}</span>'.format(candidacy.party.name)
         prefix, suffix = get_known_candidacy_prefix_and_suffix(candidacy)

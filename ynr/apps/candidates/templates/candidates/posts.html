@@ -24,16 +24,8 @@
               {% for p in election_data.postextraelections %}
                 <li>
                  <a href="{% url 'constituency' election=election.slug post_id=p.post.slug ignored_slug=p.post.short_label|slugify %}">{{ p.post.label }}</a>
-
-                 {% if p.candidates_locked %}
-                  - <abbr title="Candidates verified and post locked">🔒</abbr>
-                 {% elif p.suggestedpostlock_set.exists %}
-                 - <abbr title="Someone suggested locking this post">🔓</abbr>
-                 {% endif %}
-                 {% if p.cancelled %}
-                   <abbr title="The poll for this election was cancelled">❌</abbr>
-                 {% endif %}
-
+                 {{ p.cancelled_status_html }}
+                 {{ p.locked_status_html }}
                 </li>
               {% endfor %}
             </ul>

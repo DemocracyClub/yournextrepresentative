@@ -25,14 +25,8 @@
 {% for postextraelection in all_constituencies %}
   <h3>
     <a href="{{ postextraelection.get_absolute_url }}">{{ postextraelection.post.label }}</a>
-    {% if postextraelection.candidates_locked %}
-     <abbr title="Candidates verified and post locked">🔒</abbr>
-    {% elif postextraelection.suggestedpostlock_set.exists %}
-     <abbr title="Someone suggested locking this post">🔓</abbr>
-    {% endif %}
-    {% if postextraelection.cancelled %}
-      <abbr title="The poll for this election was cancelled">❌</abbr>
-    {% endif %}
+    {{ postextraelection.cancelled_status_html }}
+    {{ postextraelection.locked_status_html }}
   </h3>
   <p>
     {% if postextraelection.winner_count %}

@@ -27,7 +27,7 @@
                     {% if pee.cancelled %}
                       <td>
                         {{ pee.post.label }}
-                        <abbr title="The poll for this election was cancelled">❌</abbr>
+                        {{ pee.cancelled_status_html }}
                       </td>
                     {% else %}
                       <td><a href="{{ pee.get_absolute_url }}">{{ pee.post.label }}</a></td>
@@ -37,12 +37,10 @@
                         {{ pee.membership_set.count|default:"0" }}
                     </td>
                     <td>
-                        {% if pee.candidates_locked %}
-                            <abbr title="Candidates verified and post locked">🔒</abbr>
-                        {% elif pee.post.suggestedpostlock_set.exists %}
-                            <abbr title="Someone suggested locking this post">🔓</abbr>
+                        {% if pee.locked_status_html %}
+                          {{ pee.locked_status_html }}
                         {% else %}
-                            No
+                          No
                         {% endif %}
                     </td>
                     {% endif %}
@@ -76,7 +74,7 @@
                 {% if pee.cancelled %}
                   <td>
                     {{ pee.post.label }}
-                    <abbr title="The poll for this election was cancelled">❌</abbr>
+                    {{ pee.cancelled_status_html }}
                   </td>
                 {% else %}
                   <td><a href="{{ pee.get_absolute_url }}">{{ pee.post.label }}</a></td>
