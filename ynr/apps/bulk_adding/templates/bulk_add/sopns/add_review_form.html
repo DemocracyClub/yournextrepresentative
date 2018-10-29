@@ -7,10 +7,10 @@
 <form method=POST>
   {% csrf_token %}
   {{ formset.management_form }}
-  <table>
+
   {% for form in formset %}
     {% if form.name.value %}
-      <h2>Candidate: {{ form.name.value }}</h2>
+      <h2 style="clear:left;">Candidate: {{ form.name.value }}</h2>
       <h4><em>“{{ form.party_description.value }}”</em></h4>
       {% if form.select_person.1 %}
       <p>Some similar names have been found in our database. </p>
@@ -49,8 +49,8 @@
     {% endif %}
 
   {% endfor %}
-  </table>
-  <p>
+
+  <p style="clear:left; padding-top:1em">
     <input type="checkbox" name="suggest_locking" id="suggest_locking">
     <label for="suggest_locking">Suggest locking this area – check this box if you
       are confident that this area is complete as per an official document</label>
