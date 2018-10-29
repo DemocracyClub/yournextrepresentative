@@ -3,6 +3,7 @@ from datetime import date
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -12,6 +13,7 @@ from django.utils.functional import cached_property
 from django.utils.six import text_type
 from django.utils.six.moves.urllib_parse import quote_plus, urljoin
 from django.utils.translation import ugettext_lazy as _
+from django_extensions.db.models import TimeStampedModel
 from popolo.behaviors.models import GenericRelatable, Timestampable
 from popolo.models import (
     ComplexPopoloField,
@@ -55,6 +57,57 @@ class PersonImage(models.Model):
     is_primary = models.BooleanField(default=False)
 
     objects = PersonImageManager()
+
+
+class PersonIdentifier(TimeStampedModel):
+    """
+    This is a model for storing "identifiers" for a person.
+
+    The most simple case is a URL to another website.
+
+    In this case the "value" is "@democlub" (or it could be
+    "https"//twitter.com/democlub").
+
+    Twitter uses "vanity URLs" as well as internal identifiers so we can
+    store the internal ID that looks like "362837635" on the internal_identifier
+    field.
+
+    An identifier value or internal identifier doesn't have to be resolvable
+    over HTTP. For example a phone number or snapchat handle are both valid
+    values.
+
+    """
+
+    person = models.ForeignKey(
+        "people.Person", related_name="tmp_person_identifiers"
+    )
+    value = models.CharField(
+        max_length=800,
+        help_text="An identifier e.g a URL or username provided by a 3rd party",
+    )
+    internal_identifier = models.CharField(
+        max_length=800,
+        help_text="An optional internal identifier from the 3rd party",
+        null=True,
+    )
+    value_type = models.CharField(
+        max_length=100,
+        help_text="A label for the type of value e.g. 'Twitter', 'Person blog'",
+    )
+    extra_data = JSONField(
+        help_text="""For storing any additional data against this field. 
+                     Used by bots, not humans.""",
+        null=True,
+    )
+
+    class Meta:
+        unique_together = (
+            ("person", "value"),
+            ("person", "internal_identifier", "value_type"),
+        )
+
+    def __str__(self):
+        return "{}: {} ({})".format(self.person_id, self.value_type, self.value)
 
 
 class Person(Timestampable, models.Model):
