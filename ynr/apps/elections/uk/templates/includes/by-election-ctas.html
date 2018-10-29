@@ -81,8 +81,12 @@
                 {% endif %}
                 {% if request.user.is_authenticated %}
                 <td>
-                    <a href="{% url "ballot_paper_results_form" pee.ballot_paper_id %}">
-                    {{ pee.resultset|yesno|title }}
+                    {% if pee.cancelled %}
+                      &nbsp;
+                    {% else %}
+                      <a href="{% url "ballot_paper_results_form" pee.ballot_paper_id %}">
+                      {{ pee.resultset|yesno|title }}
+                    {% endif %}
                     </a>
                 </td>
                 {% endif %}

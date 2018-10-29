@@ -62,12 +62,14 @@
   </table>
   {% endif %}
 
-  <a class="show-new-candidate-form button tiny" href="{{ postextraelection.get_absolute_url }}">Add candidates</a>
-  {% if postextraelection.election.in_past %}
-    {% if postextraelection.resultset %}
-    <a class="button tiny" href="{% url "ballot_paper_results_form" postextraelection.ballot_paper_id %}">Edit Results</a>
-    {% else %}
-    <a class="button tiny" href="{% url "ballot_paper_results_form" postextraelection.ballot_paper_id %}">Add Results</a>
+  {% if not postextraelection.cancelled %}
+    <a class="show-new-candidate-form button tiny" href="{{ postextraelection.get_absolute_url }}">Add candidates</a>
+    {% if postextraelection.election.in_past %}
+      {% if postextraelection.resultset %}
+      <a class="button tiny" href="{% url "ballot_paper_results_form" postextraelection.ballot_paper_id %}">Edit Results</a>
+      {% else %}
+      <a class="button tiny" href="{% url "ballot_paper_results_form" postextraelection.ballot_paper_id %}">Add Results</a>
+      {% endif %}
     {% endif %}
   {% endif %}
 {% endfor %}

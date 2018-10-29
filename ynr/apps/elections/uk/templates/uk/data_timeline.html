@@ -69,22 +69,28 @@
 
 <div class="timeline_item">
     <h4>Results recorded</h4>
-    {% if not election_data.in_past %}
+    {% if post_election.cancelled %}
     <div class="status_not_started">
-        <strong>Waiting for election to happen</strong>
+        <strong>The poll for this election was cancelled</strong>
     </div>
     {% else %}
-        {% if has_elected %}
-        <div class="status_done">
-            <strong>Winner(s) recorded</strong>
-        </div>
-        {% else %}
-        <div class="status_in_progress">
-            <strong>Winner(s) unknown</strong>:
-            <a href="{% url "ballot_paper_results_form" post_election.ballot_paper_id %}">
-              Tell us who won!
-            </a>
-        </div>
-        {% endif %}
+      {% if not election_data.in_past %}
+      <div class="status_not_started">
+          <strong>Waiting for election to happen</strong>
+      </div>
+      {% else %}
+          {% if has_elected %}
+          <div class="status_done">
+              <strong>Winner(s) recorded</strong>
+          </div>
+          {% else %}
+          <div class="status_in_progress">
+              <strong>Winner(s) unknown</strong>:
+              <a href="{% url "ballot_paper_results_form" post_election.ballot_paper_id %}">
+                Tell us who won!
+              </a>
+          </div>
+          {% endif %}
+      {% endif %}
     {% endif %}
 </div>
