@@ -4,6 +4,7 @@ from os.path import dirname, join
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 
+import people.tests.factories
 from people.models import PersonImage
 
 from . import factories
@@ -19,7 +20,7 @@ def get_file_md5sum(filename):
 
 class TestImageImport(TestUserMixin, TestCase):
     def setUp(self):
-        self.person = factories.PersonFactory.create(name="Alex")
+        self.person = people.tests.factories.PersonFactory.create(name="Alex")
         self.org_ct = ContentType.objects.get_for_model(self.person)
         self.image_filename = EXAMPLE_IMAGE_FILENAME
 

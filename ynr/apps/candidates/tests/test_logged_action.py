@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+import people.tests.factories
 from candidates.models import LoggedAction, PostExtraElection
 
 from .auth import TestUserMixin
@@ -9,7 +10,7 @@ from . import factories
 
 class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
     def test_logged_action_repr(self):
-        person = factories.PersonFactory.create(
+        person = people.tests.factories.PersonFactory.create(
             id="9876", name="Test Candidate"
         )
         action = LoggedAction.objects.create(
@@ -26,7 +27,7 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
 
     def test_subject_person(self):
-        person = factories.PersonFactory.create(
+        person = people.tests.factories.PersonFactory.create(
             id="9876", name="Test Candidate"
         )
         action = LoggedAction.objects.create(

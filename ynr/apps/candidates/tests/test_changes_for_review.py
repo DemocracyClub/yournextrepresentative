@@ -12,6 +12,7 @@ from django.utils.timezone import make_aware
 
 from lxml import etree
 
+import people.tests.factories
 from candidates.models import LoggedAction
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
@@ -20,7 +21,7 @@ from parties.models import Party
 
 from . import factories
 from .auth import TestUserMixin
-from .test_version_diffs import tidy_html_whitespace
+from people.tests.test_version_diffs import tidy_html_whitespace
 
 
 def random_person_id():
@@ -73,7 +74,7 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
             u.save()
             setattr(self, username, u)
 
-        example_person = factories.PersonFactory.create(
+        example_person = people.tests.factories.PersonFactory.create(
             id="2009", name="Tessa Jowell"
         )
 
@@ -130,7 +131,7 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
         # Create a candidate with a death date, and edit of that
         # candidate:
-        dead_person = factories.PersonFactory.create(
+        dead_person = people.tests.factories.PersonFactory.create(
             id="7448",
             name="The Eurovisionary Ronnie Carroll",
             birth_date="1934-08-18",
@@ -149,7 +150,7 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
         dt = self.current_datetime - timedelta(minutes=4)
         change_updated_and_created(la, dt)
 
-        prime_minister = factories.PersonFactory.create(
+        prime_minister = people.tests.factories.PersonFactory.create(
             id="2811", name="Theresa May"
         )
         # Create a candidate on the "liable to vandalism" list.
@@ -370,7 +371,7 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
 class TestDiffHTML(TestCase):
     def test_missing_version(self):
-        person = factories.PersonFactory.create(
+        person = people.tests.factories.PersonFactory.create(
             name="John Smith", id="1234567", versions="[]"
         )
         la = LoggedAction.objects.create(
@@ -383,7 +384,7 @@ class TestDiffHTML(TestCase):
         )
 
     def test_found_version(self):
-        person = factories.PersonFactory.create(
+        person = people.tests.factories.PersonFactory.create(
             name="Sarah Jones",
             id="1234567",
             versions="""[{

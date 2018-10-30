@@ -13,7 +13,8 @@ from .ee_import_results import (
     no_results,
     local_highland,
 )
-from candidates.tests.factories import MembershipFactory, PersonFactory
+from candidates.tests.factories import MembershipFactory
+from people.tests.factories import PersonFactory
 from elections.uk import every_election
 
 

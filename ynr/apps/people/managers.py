@@ -1,11 +1,9 @@
-import re
 from os.path import join
 
 from django.db import models
 from django.core.files.storage import DefaultStorage
 from django.conf import settings
 
-from popolo.querysets import DateframeableQuerySet
 from candidates.models import (
     ComplexPopoloField,
     ExtraField,
@@ -44,7 +42,7 @@ class PersonImageManager(models.Manager):
         return image
 
 
-class PersonQuerySet(DateframeableQuerySet):
+class PersonQuerySet(models.query.QuerySet):
     def missing(self, field):
         people_in_current_elections = self.filter(
             memberships__post_election__election__current=True

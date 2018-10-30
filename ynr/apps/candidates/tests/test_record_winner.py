@@ -6,7 +6,8 @@ from people.models import Person
 
 from candidates.models import PostExtraElection
 from .auth import TestUserMixin
-from .factories import MembershipFactory, MembershipFactory, PersonFactory
+from .factories import MembershipFactory, MembershipFactory
+from people.tests.factories import PersonFactory
 from .dates import templates_after
 from .uk_examples import UK2015ExamplesMixin
 

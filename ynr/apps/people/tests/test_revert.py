@@ -5,6 +5,8 @@ from string import Template
 from django.db.models import F
 
 from django_webtest import WebTest
+
+import people.tests.factories
 from popolo.models import Membership
 
 from candidates.models import ExtraField
@@ -12,9 +14,9 @@ from people.models import Person
 
 from compat import bytes_to_unicode, deep_sort
 
-from .auth import TestUserMixin
-from .uk_examples import UK2015ExamplesMixin
-from . import factories
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
+from candidates.tests import factories
 
 example_timestamp = "2014-09-29T10:11:59.216159"
 example_version_id = "5aa6418325c1a0bb"
@@ -128,7 +130,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        person = factories.PersonFactory.create(
+        person = people.tests.factories.PersonFactory.create(
             id=2009,
             name="Tessa Jowell",
             email="jowell@example.com",

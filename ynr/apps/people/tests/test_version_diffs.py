@@ -2,9 +2,10 @@ import re
 
 from django.test import TestCase
 
+import people.tests.factories
 from candidates.diffs import get_version_diffs
-from . import factories
-from .uk_examples import UK2015ExamplesMixin
+from candidates.tests import factories
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
 def sort_operations_for_comparison(versions_with_diffs):
@@ -1331,7 +1332,7 @@ class TestSingleVersionRendering(UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
         super().setUp()
-        self.example_person = factories.PersonFactory.create(
+        self.example_person = people.tests.factories.PersonFactory.create(
             name="Sarah Jones",
             versions="""[{
                 "data": {

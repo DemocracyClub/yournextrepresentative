@@ -2,6 +2,7 @@ import json
 
 from django_webtest import WebTest
 
+import people.tests.factories
 from people.models import Person
 
 from candidates.tests import factories
@@ -33,7 +34,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
         for post in posts:
             candidacy_count = candidacy_counts[post.slug]
             for n in range(candidacy_count):
-                person = factories.PersonFactory.create(
+                person = people.tests.factories.PersonFactory.create(
                     id=str(7000 + i), name="Test Candidate {}".format(i)
                 )
                 party = parties[n % 5]

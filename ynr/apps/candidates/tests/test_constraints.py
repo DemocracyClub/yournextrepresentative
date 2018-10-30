@@ -2,7 +2,8 @@ from django.test import TestCase
 from popolo.models import Membership, Post
 
 from candidates.models.constraints import check_no_candidancy_for_election
-from .factories import ElectionFactory, MembershipFactory, PersonFactory
+from .factories import ElectionFactory, MembershipFactory
+from people.tests.factories import PersonFactory
 from .uk_examples import UK2015ExamplesMixin
 
 

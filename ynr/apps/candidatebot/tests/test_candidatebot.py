@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 from candidatebot.helpers import CandidateBot
 from candidates.models import LoggedAction
-from candidates.tests.factories import PersonFactory
+from people.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 

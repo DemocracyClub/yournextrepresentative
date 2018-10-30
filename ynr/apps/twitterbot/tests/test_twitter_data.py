@@ -4,7 +4,7 @@ from django.test import TestCase, override_settings
 
 from twitterbot.management.twitter import TwitterAPIData
 
-from candidates.tests.factories import PersonFactory
+from people.tests.factories import PersonFactory
 
 
 def fake_twitter_api_post(*args, **kwargs):

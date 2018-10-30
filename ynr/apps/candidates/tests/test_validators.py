@@ -3,9 +3,9 @@ from unittest import skip
 from django.test import TestCase
 from django.test.utils import override_settings
 
-from candidates.forms import BasePersonForm, UpdatePersonForm
+from people.forms import BasePersonForm, UpdatePersonForm
 
-from .factories import PersonFactory
+from people.tests.factories import PersonFactory
 from .uk_examples import UK2015ExamplesMixin
 
 

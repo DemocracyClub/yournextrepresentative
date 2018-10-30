@@ -9,6 +9,7 @@ from django.test.utils import override_settings
 
 from django_webtest import WebTest
 
+import people.tests.factories
 from popolo.models import Membership
 
 from candidates.models import PersonRedirect
@@ -35,7 +36,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         super().setUp()
         mkdir_p(TEST_MEDIA_ROOT)
         # Create Tessa Jowell (the primary person)
-        person = factories.PersonFactory.create(
+        person = people.tests.factories.PersonFactory.create(
             id=2009,
             name="Tessa Jowell",
             gender="female",
@@ -140,7 +141,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post_election=self.dulwich_post_pee_earlier,
         )
         # Now create Shane Collins (who we'll merge into Tessa Jowell)
-        person = factories.PersonFactory.create(
+        person = people.tests.factories.PersonFactory.create(
             id=2007,
             name="Shane Collins",
             gender="male",
@@ -380,10 +381,10 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         # Create the primary and secondary versions of Stuart Jeffrey
         # that failed from their JSON serialization.
-        stuart_primary = factories.PersonFactory.create(
+        stuart_primary = people.tests.factories.PersonFactory.create(
             id="2111", name="Stuart Jeffrey"
         )
-        stuart_secondary = factories.PersonFactory.create(
+        stuart_secondary = people.tests.factories.PersonFactory.create(
             id="12207", name="Stuart Robert Jeffrey"
         )
 

@@ -5,7 +5,8 @@ from django_webtest import WebTest
 
 from .auth import TestUserMixin
 from .dates import templates_before, templates_after
-from .factories import MembershipFactory, PersonFactory
+from .factories import MembershipFactory
+from people.tests.factories import PersonFactory
 from .uk_examples import UK2015ExamplesMixin
 
 

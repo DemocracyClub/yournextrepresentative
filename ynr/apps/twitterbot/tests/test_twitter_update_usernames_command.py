@@ -4,7 +4,7 @@ from django.core.management import call_command
 from django.test import TestCase, override_settings
 
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import PersonFactory
+from people.tests.factories import PersonFactory
 from candidates.tests.output import capture_output, split_output
 
 

@@ -7,7 +7,7 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from braces.views import LoginRequiredMixin
 
-from candidates.forms import OtherNameForm
+from people.forms import OtherNameForm
 from popolo.models import OtherName
 from people.models import Person
 

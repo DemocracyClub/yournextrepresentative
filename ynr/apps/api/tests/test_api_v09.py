@@ -14,7 +14,8 @@ from django.core.files.base import ContentFile
 from django_webtest import WebTest
 
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import MembershipFactory, PersonFactory
+from candidates.tests.factories import MembershipFactory
+from people.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.models import LoggedAction, PersonRedirect
 from candidates.tests.helpers import TmpMediaRootMixin

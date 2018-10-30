@@ -1,36 +1,31 @@
-from datetime import date
 import json
+from datetime import date
 
+from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
+from django.db import models
+from django.template import loader
+from django.templatetags.static import static
+from django.utils.functional import cached_property
+from django.utils.six import text_type
+from django.utils.six.moves.urllib_parse import quote_plus, urljoin
+from django.utils.translation import ugettext_lazy as _
+from popolo.behaviors.models import GenericRelatable, Timestampable
+from popolo.models import (
+    ComplexPopoloField,
+    ContactDetail,
+    Identifier,
+    Membership,
+    MultipleTwitterIdentifiers,
+    PersonExtraFieldValue,
+    VersionNotFound,
+)
 from slugify import slugify
 from sorl.thumbnail import get_thumbnail
 
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.fields import GenericRelation
-from django.templatetags.static import static
-from django.utils.functional import cached_property
-from django.core.urlresolvers import reverse
-from django.template import loader
-from django.conf import settings
-from django.utils.six.moves.urllib_parse import urljoin, quote_plus
-from django.utils.six import text_type
-from django.core.exceptions import ObjectDoesNotExist
-
 from candidates.diffs import get_version_diffs
-from popolo.behaviors.models import (
-    Timestampable,
-    Dateframeable,
-    GenericRelatable,
-)
-from popolo.models import (
-    ContactDetail,
-    Membership,
-    Identifier,
-    MultipleTwitterIdentifiers,
-    VersionNotFound,
-    ComplexPopoloField,
-    PersonExtraFieldValue,
-)
 from people.managers import PersonImageManager, PersonQuerySet
 
 
@@ -62,7 +57,7 @@ class PersonImage(models.Model):
     objects = PersonImageManager()
 
 
-class Person(Dateframeable, Timestampable, models.Model):
+class Person(Timestampable, models.Model):
     """
     A real person, alive or dead
     see schema at http://popoloproject.com/schemas/person.json#
@@ -75,7 +70,7 @@ class Person(Dateframeable, Timestampable, models.Model):
         _("name"), max_length=512, help_text=_("A person's preferred full name")
     )
 
-    # array of itemss referencing "http://popoloproject.com/schemas/other_name.json#"
+    # array of items referencing "http://popoloproject.com/schemas/other_name.json#"
     other_names = GenericRelation(
         "popolo.OtherName", help_text="Alternate or former names"
     )
@@ -195,14 +190,6 @@ class Person(Dateframeable, Timestampable, models.Model):
         verbose_name_plural = "People"
 
     objects = PersonQuerySet.as_manager()
-
-    def add_contact_detail(self, **kwargs):
-        c = ContactDetail(content_object=self, **kwargs)
-        c.save()
-
-    def add_contact_details(self, contacts):
-        for c in contacts:
-            self.add_contact_detail(**c)
 
     @cached_property
     def complex_popolo_fields(self):
@@ -343,18 +330,9 @@ class Person(Dateframeable, Timestampable, models.Model):
     """
 
     def get_elected(self, election):
-        role = election.candidate_membership_role
-        if role is None:
-            role = ""
-        membership = self.memberships.filter(
-            role=role, post_election__election=election
-        )
-
-        result = membership.first()
-        if result:
-            return result.elected
-
-        return None
+        return self.memberships.filter(
+            post_election__election=election, elected=True
+        ).exists()
 
     @property
     def twitter_identifiers(self):

@@ -2,6 +2,7 @@ import re
 
 from django.test import TestCase
 
+import people.tests.factories
 from candidates.views.people import get_call_to_action_flash_message
 
 from . import factories
@@ -18,7 +19,7 @@ class TestGetFlashMessage(UK2015ExamplesMixin, TestCase):
 
     def setUp(self):
         super().setUp()
-        self.fake_person = factories.PersonFactory.create(
+        self.fake_person = people.tests.factories.PersonFactory.create(
             name="Wreck-it-Ralph", id=42
         )
         post_in_2010 = self.edinburgh_east_post

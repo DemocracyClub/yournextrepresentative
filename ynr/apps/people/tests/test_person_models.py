@@ -1,7 +1,8 @@
 from django_webtest import WebTest
 from candidates.tests.helpers import TmpMediaRootMixin
 
-from candidates.tests.factories import PersonFactory, faker_factory
+from candidates.tests.factories import faker_factory
+from people.tests.factories import PersonFactory
 from people.models import PersonImage
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 

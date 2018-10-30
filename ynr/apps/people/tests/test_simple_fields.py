@@ -7,8 +7,8 @@ from people.models import Person
 
 from people.models import Person
 
-from .auth import TestUserMixin
-from .uk_examples import UK2015ExamplesMixin
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 from ynr_refactoring.helpers.popolo_fields import SimplePopoloField
 

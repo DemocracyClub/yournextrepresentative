@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+import people.tests.factories
 from candidates.models import ExtraField
 from people.models import Person
 
@@ -12,13 +13,13 @@ class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
     def setUp(self):
         super().setUp()
         slogan_field = ExtraField.objects.create(key="slogan", type="line")
-        person_old_election = factories.PersonFactory.create(
+        person_old_election = people.tests.factories.PersonFactory.create(
             id=100, name="John Past"
         )
-        person_no_details = factories.PersonFactory.create(
+        person_no_details = people.tests.factories.PersonFactory.create(
             id=101, name="Jane Doe"
         )
-        person_empty_slogan = factories.PersonFactory.create(
+        person_empty_slogan = people.tests.factories.PersonFactory.create(
             id=102, name="John Smith", birth_date="1999-12-31"
         )
         person_empty_slogan.contact_details.create(
@@ -27,7 +28,7 @@ class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
         person_empty_slogan.extra_field_values.create(
             field=slogan_field, value=""
         )
-        person_with_details = factories.PersonFactory.create(
+        person_with_details = people.tests.factories.PersonFactory.create(
             id=103, name="Joe Bloggs", birth_date="1980-01-01"
         )
         person_with_details.contact_details.create(

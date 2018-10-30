@@ -11,9 +11,9 @@ from candidates.tests.factories import (
     ElectionFactory,
     ParliamentaryChamberFactory,
     PostFactory,
-    PersonFactory,
     MembershipFactory,
 )
+from people.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from elections.uk.tests.ee_postcode_results import (
     ee_se240ag_result,

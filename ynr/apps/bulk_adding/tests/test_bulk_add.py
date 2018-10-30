@@ -2,6 +2,8 @@ import json
 
 from django.core.management import call_command
 from django_webtest import WebTest
+
+import people.tests.factories
 from popolo.models import Membership
 from people.models import Person
 
@@ -113,7 +115,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_adding_to_existing_person(self):
-        existing_person = factories.PersonFactory.create(
+        existing_person = people.tests.factories.PersonFactory.create(
             id="1234567", name="Bart Simpson"
         )
         existing_membership = factories.MembershipFactory.create(
@@ -170,7 +172,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # This could happen if someone's missed that there was the
         # same person already listed on the first page, but then
         # spotted them on the review page and said to merge them then.
-        existing_person = factories.PersonFactory.create(
+        existing_person = people.tests.factories.PersonFactory.create(
             id="1234567", name="Bart Simpson"
         )
         existing_membership = factories.MembershipFactory.create(

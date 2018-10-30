@@ -96,13 +96,6 @@ class OrganizationFactory(factory.DjangoModelFactory):
         model = "popolo.Organization"
 
 
-class PersonFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = "people.Person"
-
-    versions = "[]"
-
-
 class MembershipFactory(factory.DjangoModelFactory):
     class Meta:
         model = "popolo.Membership"

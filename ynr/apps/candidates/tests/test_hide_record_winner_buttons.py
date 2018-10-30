@@ -4,7 +4,8 @@ from django_webtest import WebTest
 from .auth import TestUserMixin
 from .dates import templates_before, templates_on_election_day, templates_after
 from .uk_examples import UK2015ExamplesMixin
-from .factories import MembershipFactory, PersonFactory
+from .factories import MembershipFactory
+from people.tests.factories import PersonFactory
 
 
 class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):

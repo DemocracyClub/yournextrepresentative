@@ -16,7 +16,7 @@ from slugify import slugify
 faker = Factory.create("it_IT")  # a factory to create fake names for tests
 
 
-class PersonTestCase(DateframeableTests, TimestampableTests, TestCase):
+class PersonTestCase(TimestampableTests, TestCase):
     model = Person
     object_name = "person"
 
@@ -24,28 +24,6 @@ class PersonTestCase(DateframeableTests, TimestampableTests, TestCase):
         if "name" not in kwargs:
             kwargs.update({"name": u"test instance"})
         return Person.objects.create(**kwargs)
-
-    def test_add_contact_detail(self):
-        p = self.create_instance()
-        p.add_contact_detail(
-            contact_type=ContactDetail.CONTACT_TYPES.email, value=faker.email()
-        )
-        self.assertEqual(p.contact_details.count(), 1)
-
-    def test_add_contact_details(self):
-        p = self.create_instance()
-        contacts = [
-            {
-                "contact_type": ContactDetail.CONTACT_TYPES.email,
-                "value": faker.email(),
-            },
-            {
-                "contact_type": ContactDetail.CONTACT_TYPES.phone,
-                "value": faker.phone_number(),
-            },
-        ]
-        p.add_contact_details(contacts)
-        self.assertEqual(p.contact_details.count(), 2)
 
     def test_add_links_and_sources(self):
         p = self.create_instance()

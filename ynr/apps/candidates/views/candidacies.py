@@ -17,7 +17,7 @@ from elections.mixins import ElectionMixin
 
 from .helpers import get_redirect_to_post
 from .version_data import get_client_ip, get_change_metadata
-from ..forms import CandidacyCreateForm, CandidacyDeleteForm
+from people.forms import CandidacyCreateForm, CandidacyDeleteForm
 from ..models import LoggedAction, TRUSTED_TO_LOCK_GROUP_NAME
 
 

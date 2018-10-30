@@ -8,7 +8,7 @@ from django.test import TestCase
 from people.models import PersonImage
 from moderation_queue.models import QueuedImage
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import PersonFactory
+from people.tests.factories import PersonFactory
 from candidates.tests.output import capture_output, split_output
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 

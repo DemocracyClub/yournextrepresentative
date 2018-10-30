@@ -24,7 +24,8 @@ from candidates.models import LoggedAction, PostExtraElection
 from official_documents.models import OfficialDocument
 from ynr.helpers import mkdir_p
 
-from candidates.tests.factories import PersonFactory, MembershipFactory
+from candidates.tests.factories import MembershipFactory
+from people.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.tests.auth import TestUserMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME

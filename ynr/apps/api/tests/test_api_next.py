@@ -12,9 +12,9 @@ from candidates.tests.factories import (
     ElectionFactory,
     ParliamentaryChamberFactory,
     PostFactory,
-    PersonFactory,
     MembershipFactory,
 )
+from people.tests.factories import PersonFactory
 
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from parties.tests.factories import PartyEmblemFactory, PartyDescriptionFactory
