@@ -22,6 +22,7 @@ EXTRA_CSV_ROW_FIELDS = [
     "theyworkforyou_url",
     "party_ec_id",
     "favourite_biscuits",
+    "cancelled_poll",
 ]
 
 
@@ -30,6 +31,8 @@ def get_extra_csv_values(person, election, post):
     parlparse_id = ""
     theyworkforyou_url = ""
     party_ec_id = ""
+    cancelled_poll = ""
+
     for i in person.identifiers.all():
         if i.scheme == "uk.org.publicwhip":
             parlparse_id = i.identifier
@@ -50,7 +53,8 @@ def get_extra_csv_values(person, election, post):
             continue
         # Now m / m_extra should be the candidacy membership:
         party_ec_id = m.party.ec_id
-        # TODO Add identifiers here
+        cancelled_poll = m.post_election.cancelled
+        # TODO Add ballot id here
         break
     favourite_biscuits = ""
     for efv in person.extra_field_values.all():
@@ -61,6 +65,7 @@ def get_extra_csv_values(person, election, post):
         "parlparse_id": parlparse_id,
         "theyworkforyou_url": theyworkforyou_url,
         "party_ec_id": party_ec_id,
+        "cancelled_poll": cancelled_poll,
         "favourite_biscuits": favourite_biscuits,
     }
 

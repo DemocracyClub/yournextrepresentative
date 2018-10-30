@@ -24,18 +24,23 @@
 
                 <tr>
                     <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.election }}</a></td>
-                    <td><a href="{{ pee.get_absolute_url }}">{{ pee.post.label }}</a></td>
+                    {% if pee.cancelled %}
+                      <td>
+                        {{ pee.post.label }}
+                        {{ pee.cancelled_status_html }}
+                      </td>
+                    {% else %}
+                      <td><a href="{{ pee.get_absolute_url }}">{{ pee.post.label }}</a></td>
+                    {% endif %}
                     {% if request.user.is_authenticated %}
                     <td>
                         {{ pee.membership_set.count|default:"0" }}
                     </td>
                     <td>
-                        {% if pee.candidates_locked %}
-                            <abbr title="Candidates verified and post locked">🔒</abbr>
-                        {% elif pee.post.suggestedpostlock_set.exists %}
-                            <abbr title="Someone suggested locking this post">🔓</abbr>
+                        {% if pee.locked_status_html %}
+                          {{ pee.locked_status_html }}
                         {% else %}
-                            No
+                          No
                         {% endif %}
                     </td>
                     {% endif %}
@@ -66,11 +71,22 @@
         {% endifchanged %}
             <tr>
                 <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.election }}</a></td>
-                <td><a href="{{ pee.election.get_absolute_url }}">{{ pee.post.label }}</a></td>
+                {% if pee.cancelled %}
+                  <td>
+                    {{ pee.post.label }}
+                    {{ pee.cancelled_status_html }}
+                  </td>
+                {% else %}
+                  <td><a href="{{ pee.get_absolute_url }}">{{ pee.post.label }}</a></td>
+                {% endif %}
                 {% if request.user.is_authenticated %}
                 <td>
-                    <a href="{% url "ballot_paper_results_form" pee.ballot_paper_id %}">
-                    {{ pee.resultset|yesno|title }}
+                    {% if pee.cancelled %}
+                      &nbsp;
+                    {% else %}
+                      <a href="{% url "ballot_paper_results_form" pee.ballot_paper_id %}">
+                      {{ pee.resultset|yesno|title }}
+                    {% endif %}
                     </a>
                 </td>
                 {% endif %}

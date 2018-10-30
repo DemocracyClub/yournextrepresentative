@@ -82,7 +82,7 @@ class PersonQuerySet(models.query.QuerySet):
             models.Prefetch(
                 "memberships",
                 Membership.objects.select_related(
-                    "post_election__election", "party", "post"
+                    "post_election", "post_election__election", "party", "post"
                 ),
             ),
             "contact_details",

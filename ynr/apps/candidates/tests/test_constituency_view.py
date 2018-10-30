@@ -125,6 +125,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             row_dicts[0],
             {
                 "birth_date": "",
+                "cancelled_poll": "False",
                 "elected": "",
                 "election": "2015",
                 "election_current": "True",

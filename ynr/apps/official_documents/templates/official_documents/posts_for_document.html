@@ -19,11 +19,9 @@
     <li>
      <a href="{{ document.post_election.get_absolute_url }}">
         {{ document.post_election.post.label }}</a>
-        {% if document.locked %}
-         - <abbr title="Candidates verified and post locked">🔒</abbr>
-        {% elif document.lock_suggested %}
-        - <abbr title="Someone suggested locking this post">🔓</abbr>
-        {% else %}
+        {{ document.post_election.cancelled_status_html }}
+        {{ document.post_election.locked_status_html }}
+        {% if not document.locked and not document.lock_suggested %}
         <a href="{% url 'bulk_add_from_sopn' election=document.post_election.election.slug post_id=document.post_election.post.slug %}" class="button tiny">
         Add candidates</a>
         {% endif %}

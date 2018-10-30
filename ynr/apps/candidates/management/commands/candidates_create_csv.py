@@ -47,7 +47,7 @@ def safely_write(output_filename, people, group_by_post):
 
     csv = list_to_csv(people, group_by_post)
     file_store = DefaultStorage()
-    with file_store.open(output_filename, "w") as out_file:
+    with file_store.open(output_filename, "wb") as out_file:
         out_file.write(csv.encode("utf-8"))
 
 

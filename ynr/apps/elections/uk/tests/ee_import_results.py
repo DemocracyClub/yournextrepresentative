@@ -59,7 +59,8 @@ current_elections = json.loads(
       "division": null,
       "voting_system": null,
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.2018-02-22",
@@ -108,7 +109,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.airyhallbroomhillgarthdee.2018-02-22",
@@ -164,7 +166,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.bridge-of-don.2018-02-22",
@@ -220,7 +223,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.dycebucksburndanestone.2018-02-22",
@@ -276,7 +280,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.george-stharbour.2018-02-22",
@@ -332,7 +337,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.hazleheadqueens-crosscountesswells.2018-02-22",
@@ -388,7 +394,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.hiltonwoodsidestockethill.2018-02-22",
@@ -444,7 +451,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.kincorthniggcove.2018-02-22",
@@ -500,7 +508,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.kingswellssheddocksleysummerhill.2018-02-22",
@@ -556,7 +565,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.lower-deeside.2018-02-22",
@@ -612,7 +622,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.midstocketrosemount.2018-02-22",
@@ -668,7 +679,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.northfieldmastrick-north.2018-02-22",
@@ -724,7 +736,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.tillydroneseatonold-aberdeen.2018-02-22",
@@ -780,7 +793,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeen-city.torryferryhill.2018-02-22",
@@ -836,7 +850,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.2018-02-22",
@@ -891,7 +906,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.aboyne-upper-deeside-and-donside.2018-02-22",
@@ -947,7 +963,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.banchory-and-mid-deeside.2018-02-22",
@@ -1003,7 +1020,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.banff-and-district.2018-02-22",
@@ -1059,7 +1077,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.central-buchan.2018-02-22",
@@ -1115,7 +1134,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.east-garioch.2018-02-22",
@@ -1171,7 +1191,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.ellon-and-district.2018-02-22",
@@ -1227,7 +1248,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.fraserburgh-and-district.2018-02-22",
@@ -1283,7 +1305,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.huntly-strathbogie-and-howe-of-alford.2018-02-22",
@@ -1339,7 +1362,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.inverurie-and-district.2018-02-22",
@@ -1395,7 +1419,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.mearns.2018-02-22",
@@ -1451,7 +1476,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.mid-formartine.2018-02-22",
@@ -1507,7 +1533,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.north-kincardine.2018-02-22",
@@ -1563,7 +1590,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.peterhead-north-and-rattray.2018-02-22",
@@ -1619,7 +1647,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.peterhead-south-and-cruden.2018-02-22",
@@ -1675,7 +1704,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.stonehaven-and-lower-deeside.2018-02-22",
@@ -1731,7 +1761,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.troup.2018-02-22",
@@ -1787,7 +1818,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.turriff-and-district.2018-02-22",
@@ -1843,7 +1875,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.west-garioch.2018-02-22",
@@ -1899,7 +1932,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.aberdeenshire.westhill-and-district.2018-02-22",
@@ -1955,7 +1989,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.2018-02-22",
@@ -2005,7 +2040,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.buckingham.2018-02-22",
@@ -2061,7 +2097,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.churchill.2018-02-22",
@@ -2117,7 +2154,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.cokeham.2018-02-22",
@@ -2173,7 +2211,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.eastbrook.2018-02-22",
@@ -2229,7 +2268,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.hillside.2018-02-22",
@@ -2285,7 +2325,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.manor.2018-02-22",
@@ -2341,7 +2382,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.marine.2018-02-22",
@@ -2397,7 +2439,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.mash-barn.2018-02-22",
@@ -2453,7 +2496,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.peverel.2018-02-22",
@@ -2509,7 +2553,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.southlands.2018-02-22",
@@ -2565,7 +2610,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.southwick-green.2018-02-22",
@@ -2621,7 +2667,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.st-marys.2018-02-22",
@@ -2677,7 +2724,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.st-nicolas.2018-02-22",
@@ -2733,7 +2781,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.widewater.2018-02-22",
@@ -2789,7 +2838,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.angus.2018-02-22",
@@ -2833,7 +2883,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.angus.arbroath-east-and-lunan.2018-02-22",
@@ -2889,7 +2940,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.angus.arbroath-west-letham-and-friockheim.2018-02-22",
@@ -2945,7 +2997,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.angus.brechin-and-edzell.2018-02-22",
@@ -3001,7 +3054,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.angus.carnoustie-and-district.2018-02-22",
@@ -3057,7 +3111,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.angus.forfar-and-district.2018-02-22",
@@ -3113,7 +3168,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.angus.kirriemuir-and-dean.2018-02-22",
@@ -3169,7 +3225,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.angus.monifieth-and-sidlaw.2018-02-22",
@@ -3225,7 +3282,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.angus.montrose-and-district.2018-02-22",
@@ -3281,7 +3339,8 @@ current_elections = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.2018-02-22",
@@ -3344,7 +3403,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.brickhill.2018-02-22",
@@ -3400,7 +3460,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.bromham-and-biddenham.2018-02-22",
@@ -3456,7 +3517,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.castle.2018-02-22",
@@ -3512,7 +3574,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.cauldwell.2018-02-22",
@@ -3568,7 +3631,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.clapham.2018-02-22",
@@ -3624,7 +3688,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.de-parys.2018-02-22",
@@ -3680,7 +3745,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.eastcotts.2018-02-22",
@@ -3736,7 +3802,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.elstow-and-stewartby.2018-02-22",
@@ -3792,7 +3859,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.goldington.2018-02-22",
@@ -3848,7 +3916,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.great-barford.2018-02-22",
@@ -3904,7 +3973,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.harpur.2018-02-22",
@@ -3960,7 +4030,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.harrold.2018-02-22",
@@ -4016,7 +4087,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.kempston-central-and-east.2018-02-22",
@@ -4072,7 +4144,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.kempston-north.2018-02-22",
@@ -4128,7 +4201,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.kempston-rural.2018-02-22",
@@ -4184,7 +4258,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.kempston-south.2018-02-22",
@@ -4240,7 +4315,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.kempston-west.2018-02-22",
@@ -4296,7 +4372,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.kingsbrook.2018-02-22",
@@ -4352,7 +4429,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.newnham.2018-02-22",
@@ -4408,7 +4486,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.oakley.2018-02-22",
@@ -4464,7 +4543,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.putnoe.2018-02-22",
@@ -4520,7 +4600,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.queens-park.2018-02-22",
@@ -4576,7 +4657,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.riseley.2018-02-22",
@@ -4632,7 +4714,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.sharnbrook.2018-02-22",
@@ -4688,7 +4771,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.wilshamstead.2018-02-22",
@@ -4744,7 +4828,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.wootton.2018-02-22",
@@ -4800,7 +4885,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bedford.wyboston.2018-02-22",
@@ -4856,7 +4942,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.2018-02-22",
@@ -4913,7 +5000,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.alperton.2018-02-22",
@@ -4969,7 +5057,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.barnhill.2018-02-22",
@@ -5025,7 +5114,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.brondesbury-park.2018-02-22",
@@ -5081,7 +5171,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.dollis-hill.2018-02-22",
@@ -5137,7 +5228,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.dudden-hill.2018-02-22",
@@ -5193,7 +5285,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.fryent.2018-02-22",
@@ -5249,7 +5342,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.harlesden.2018-02-22",
@@ -5305,7 +5399,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.kensal-green.2018-02-22",
@@ -5361,7 +5456,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.kenton.2018-02-22",
@@ -5417,7 +5513,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.kilburn.2018-02-22",
@@ -5473,7 +5570,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.mapesbury.2018-02-22",
@@ -5529,7 +5627,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.northwick-park.2018-02-22",
@@ -5585,7 +5684,8 @@ current_elections = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     }
   ]
 }
@@ -5654,7 +5754,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.queens-park.2018-02-22",
@@ -5710,7 +5811,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.queensbury.2018-02-22",
@@ -5766,7 +5868,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.stonebridge.2018-02-22",
@@ -5822,7 +5925,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.sudbury.2018-02-22",
@@ -5878,7 +5982,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.tokyngton.2018-02-22",
@@ -5934,7 +6039,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.welsh-harp.2018-02-22",
@@ -5990,7 +6096,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.wembley-central.2018-02-22",
@@ -6046,7 +6153,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.brent.willesden-green.2018-02-22",
@@ -6102,7 +6210,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.2018-02-22",
@@ -6160,7 +6269,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.bickley.2018-02-22",
@@ -6216,7 +6326,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.biggin-hill.2018-02-22",
@@ -6272,7 +6383,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.bromley-common-and-keston.2018-02-22",
@@ -6328,7 +6440,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.bromley-town.2018-02-22",
@@ -6384,7 +6497,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.chelsfield-and-pratts-bottom.2018-02-22",
@@ -6440,7 +6554,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.chislehurst.2018-02-22",
@@ -6496,7 +6611,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.clock-house.2018-02-22",
@@ -6552,7 +6668,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.copers-cope.2018-02-22",
@@ -6608,7 +6725,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.cray-valley-east.2018-02-22",
@@ -6664,7 +6782,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.cray-valley-west.2018-02-22",
@@ -6720,7 +6839,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.crystal-palace.2018-02-22",
@@ -6776,7 +6896,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.darwin.2018-02-22",
@@ -6832,7 +6953,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.farnborough-and-crofton.2018-02-22",
@@ -6888,7 +7010,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.hayes-and-coney-hall.2018-02-22",
@@ -6944,7 +7067,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.kelsey-and-eden-park.2018-02-22",
@@ -7000,7 +7124,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.mottingham-and-chislehurst-north.2018-02-22",
@@ -7056,7 +7181,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.orpington.2018-02-22",
@@ -7112,7 +7238,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.penge-and-cator.2018-02-22",
@@ -7168,7 +7295,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.petts-wood-and-knoll.2018-02-22",
@@ -7224,7 +7352,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.plaistow-and-sundridge.2018-02-22",
@@ -7280,7 +7409,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.shortlands.2018-02-22",
@@ -7336,7 +7466,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.bromley.west-wickham.2018-02-22",
@@ -7392,7 +7523,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.2018-02-22",
@@ -7444,7 +7576,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.abbey-north.2018-02-22",
@@ -7500,7 +7633,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.abbey-south.2018-02-22",
@@ -7556,7 +7690,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.barby-and-kilsby.2018-02-22",
@@ -7612,7 +7747,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.braunston-and-welton.2018-02-22",
@@ -7668,7 +7804,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.brixworth.2018-02-22",
@@ -7724,7 +7861,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.drayton.2018-02-22",
@@ -7780,7 +7918,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.hill.2018-02-22",
@@ -7836,7 +7975,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.long-buckby.2018-02-22",
@@ -7892,7 +8032,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.moulton.2018-02-22",
@@ -7948,7 +8089,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.ravensthorpe.2018-02-22",
@@ -8004,7 +8146,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.spratton.2018-02-22",
@@ -8060,7 +8203,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.walgrave.2018-02-22",
@@ -8116,7 +8260,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.weedon.2018-02-22",
@@ -8172,7 +8317,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.welford.2018-02-22",
@@ -8228,7 +8374,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.woodford.2018-02-22",
@@ -8284,7 +8431,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.daventry.yelvertoft.2018-02-22",
@@ -8340,7 +8488,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.2018-02-22",
@@ -8406,7 +8555,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.bodelwyddan.2018-02-22",
@@ -8462,7 +8612,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.corwen.2018-02-22",
@@ -8518,7 +8669,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.denbigh-central.2018-02-22",
@@ -8574,7 +8726,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.denbigh-lower.2018-02-22",
@@ -8630,7 +8783,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.denbigh-upperhenllan.2018-02-22",
@@ -8686,7 +8840,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.dyserth.2018-02-22",
@@ -8742,7 +8897,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.efenechtyd.2018-02-22",
@@ -8798,7 +8954,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.llanarmon-yn-ialllandegla.2018-02-22",
@@ -8854,7 +9011,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.llanbedr-dyffryn-clwydllangynhafal.2018-02-22",
@@ -8910,7 +9068,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.llandrillo.2018-02-22",
@@ -8966,7 +9125,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.llandyrnog.2018-02-22",
@@ -9022,7 +9182,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.llanfair-dyffryn-clwydgwyddelwern.2018-02-22",
@@ -9078,7 +9239,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.llangollen.2018-02-22",
@@ -9134,7 +9296,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.llanrhaeadr-yng-nghinmeirch.2018-02-22",
@@ -9190,7 +9353,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.prestatyn-central.2018-02-22",
@@ -9246,7 +9410,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.prestatyn-east.2018-02-22",
@@ -9302,7 +9467,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.prestatyn-meliden.2018-02-22",
@@ -9358,7 +9524,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.prestatyn-north.2018-02-22",
@@ -9414,7 +9581,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.prestatyn-south-west.2018-02-22",
@@ -9470,7 +9638,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.rhuddlan.2018-02-22",
@@ -9526,7 +9695,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.rhyl-east.2018-02-22",
@@ -9582,7 +9752,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.rhyl-south-east.2018-02-22",
@@ -9638,7 +9809,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.rhyl-south-west.2018-02-22",
@@ -9694,7 +9866,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.rhyl-south.2018-02-22",
@@ -9750,7 +9923,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.rhyl-west.2018-02-22",
@@ -9806,7 +9980,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.ruthin.2018-02-22",
@@ -9862,7 +10037,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.st-asaph-east.2018-02-22",
@@ -9918,7 +10094,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.st-asaph-west.2018-02-22",
@@ -9974,7 +10151,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.trefnant.2018-02-22",
@@ -10030,7 +10208,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.denbighshire.tremeirchion.2018-02-22",
@@ -10086,7 +10265,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.2018-02-22",
@@ -10152,7 +10332,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.alston-moor.2018-02-22",
@@ -10208,7 +10389,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.appleby-appleby.2018-02-22",
@@ -10264,7 +10446,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.appleby-bongate.2018-02-22",
@@ -10320,7 +10503,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.askham.2018-02-22",
@@ -10376,7 +10560,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.brough.2018-02-22",
@@ -10432,7 +10617,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.crosby-ravensworth.2018-02-22",
@@ -10488,7 +10674,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.dacre.2018-02-22",
@@ -10544,7 +10731,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.eamont.2018-02-22",
@@ -10600,7 +10788,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.greystoke.2018-02-22",
@@ -10656,7 +10845,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.hartside.2018-02-22",
@@ -10712,7 +10902,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.hesket.2018-02-22",
@@ -10768,7 +10959,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.kirkby-stephen.2018-02-22",
@@ -10824,7 +11016,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.kirkby-thore.2018-02-22",
@@ -10880,7 +11073,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.kirkoswald.2018-02-22",
@@ -10936,7 +11130,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.langwathby.2018-02-22",
@@ -10992,7 +11187,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.lazonby.2018-02-22",
@@ -11048,7 +11244,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.long-marton.2018-02-22",
@@ -11104,7 +11301,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.morland.2018-02-22",
@@ -11160,7 +11358,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.eden.orton-with-tebay.2018-02-22",
@@ -11216,7 +11415,8 @@ current_elections_page_2 = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     }
   ]
 }
@@ -11261,7 +11461,8 @@ each_type_of_election_on_one_day = json.loads(
       "division": null,
       "voting_system": null,
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.2019-01-17",
@@ -11298,7 +11499,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "local.adur.buckingham.2019-01-17",
@@ -11354,7 +11556,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "mayor.2019-01-17",
@@ -11378,7 +11581,8 @@ each_type_of_election_on_one_day = json.loads(
       "division": null,
       "voting_system": null,
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "mayor.greater-manchester-ca.2019-01-17",
@@ -11413,7 +11617,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "mayor.hackney.2019-01-17",
@@ -11448,7 +11653,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "naw.2019-01-17",
@@ -11482,7 +11688,8 @@ each_type_of_election_on_one_day = json.loads(
       "division": null,
       "voting_system": null,
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "naw.c.2019-01-17",
@@ -11523,7 +11730,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "naw.c.aberavon.2019-01-17",
@@ -11582,7 +11790,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "naw.c.mid-and-west-wales.2019-01-17",
@@ -11641,7 +11850,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "naw.r.2019-01-17",
@@ -11682,7 +11892,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "naw.r.aberavon.2019-01-17",
@@ -11741,7 +11952,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "naw.r.mid-and-west-wales.2019-01-17",
@@ -11800,7 +12012,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "nia.2019-01-17",
@@ -11833,7 +12046,8 @@ each_type_of_election_on_one_day = json.loads(
       "division": null,
       "voting_system": null,
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "nia.lagan-valley.2019-01-17",
@@ -11889,7 +12103,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "parl.2019-01-17",
@@ -11923,7 +12138,8 @@ each_type_of_election_on_one_day = json.loads(
       "division": null,
       "voting_system": null,
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "parl.aberavon.2019-01-17",
@@ -11979,7 +12195,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "parl.ynys-mon.2019-01-17",
@@ -12035,7 +12252,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": false
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "pcc.2019-01-17",
@@ -12058,7 +12276,8 @@ each_type_of_election_on_one_day = json.loads(
       "division": null,
       "voting_system": null,
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "pcc.avon-and-somerset.2019-01-17",
@@ -12093,7 +12312,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "sp.2019-01-17",
@@ -12127,7 +12347,8 @@ each_type_of_election_on_one_day = json.loads(
       "division": null,
       "voting_system": null,
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "sp.c.2019-01-17",
@@ -12168,7 +12389,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "sp.c.aberdeen-central.2019-01-17",
@@ -12227,7 +12449,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "sp.c.glasgow.2019-01-17",
@@ -12286,7 +12509,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "sp.r.2019-01-17",
@@ -12327,7 +12551,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "sp.r.aberdeen-central.2019-01-17",
@@ -12386,7 +12611,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     },
     {
       "election_id": "sp.r.glasgow.2019-01-17",
@@ -12445,7 +12671,8 @@ each_type_of_election_on_one_day = json.loads(
         "uses_party_lists": true
       },
       "current": true,
-      "explanation": null
+      "explanation": null,
+      "cancelled": false
     }
   ]
 }
@@ -12500,7 +12727,8 @@ local_highland = json.loads(
       "current": true,
       "explanation": null,
       "metadata": null,
-      "deleted": true
+      "deleted": true,
+      "cancelled": false
     },
     {
       "election_id": "local.highland.wester-ross-strathpeffer-and-lochalsh.by.2018-12-06",
@@ -12560,7 +12788,8 @@ local_highland = json.loads(
       "current": true,
       "explanation": null,
       "metadata": null,
-      "deleted": true
+      "deleted": true,
+      "cancelled": false
     }
   ]
 }"""

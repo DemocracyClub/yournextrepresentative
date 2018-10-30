@@ -182,6 +182,7 @@ class EEElection(dict):
                 defaults={
                     "ballot_paper_id": self["election_id"],
                     "winner_count": winner_count,
+                    "cancelled": self["cancelled"],
                 },
             )
         return (self.post_election_object, self.post_election_created)

@@ -242,6 +242,7 @@ class PostElectionSerializer(serializers.HyperlinkedModelSerializer):
             "election",
             "winner_count",
             "ballot_paper_id",
+            "cancelled",
         )
 
     post = MinimalPostSerializer(read_only=True)
@@ -339,6 +340,7 @@ class EmbeddedPostElectionSerializer(serializers.HyperlinkedModelSerializer):
             "id",
             "url",
             "ballot_paper_id",
+            "cancelled",
         )
 
     name = serializers.ReadOnlyField(source="election.name")

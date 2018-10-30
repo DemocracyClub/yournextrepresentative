@@ -1,5 +1,6 @@
-from django.test import TestCase
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.test import TestCase
 from django_webtest import WebTest
 
 from candidates.tests.auth import TestUserMixin
@@ -12,9 +13,9 @@ from uk_results.models import CandidateResult, ResultSet
 class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
     def setUp(self):
         super().setUp()
-        pee = self.local_post.postextraelection_set.get()
+        self.pee = self.local_post.postextraelection_set.get()
         self.result_set = ResultSet.objects.create(
-            post_election=pee,
+            post_election=self.pee,
             num_turnout_reported=10000,
             num_spoilt_ballots=30,
             user=self.user,
@@ -32,7 +33,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         # Create their candidacies:
         candidacies = [
             MembershipFactory.create(
-                post_election=pee,
+                post_election=self.pee,
                 person=person,
                 post=self.local_post,
                 party=party,
@@ -93,3 +94,15 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         form = resp.forms[1]
         form["memberships_13"] = 345
         form.submit()
+
+    def test_form_view_cancelled_election(self):
+        url = reverse(
+            "ballot_paper_results_form",
+            kwargs={
+                "ballot_paper_id": "local.maidstone.DIW:E05005004.2016-05-05"
+            },
+        )
+        self.pee.cancelled = True
+        self.pee.save()
+        with self.assertRaises(ObjectDoesNotExist):
+            resp = self.app.get(url, user=self.user_who_can_record_results)
