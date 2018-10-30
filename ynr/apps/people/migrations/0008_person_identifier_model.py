@@ -10,7 +10,7 @@ import django_extensions.db.fields
 
 class Migration(migrations.Migration):
 
-    dependencies = [("people", "0006_remove_dateframe")]
+    dependencies = [("people", "0007_remove_dateframe")]
 
     operations = [
         migrations.CreateModel(
