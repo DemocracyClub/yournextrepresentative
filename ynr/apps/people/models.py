@@ -13,6 +13,7 @@ from django.utils.functional import cached_property
 from django.utils.six import text_type
 from django.utils.six.moves.urllib_parse import quote_plus, urljoin
 from django.utils.translation import ugettext_lazy as _
+from django.utils.html import format_html
 from django_extensions.db.models import TimeStampedModel
 from popolo.behaviors.models import GenericRelatable, Timestampable
 from popolo.models import (
@@ -108,6 +109,34 @@ class PersonIdentifier(TimeStampedModel):
 
     def __str__(self):
         return "{}: {} ({})".format(self.person_id, self.value_type, self.value)
+
+    @property
+    def get_value_type_html(self):
+        text = self.value_type.replace("_", " ")
+        text = self.value_type.replace(" url", "")
+
+        return text.title().strip()
+
+    @property
+    def get_value_html(self):
+        url = None
+        text = "{}"
+
+        if self.value_type == "twitter":
+            if self.value.startswith("@"):
+                self.value = self.value[1:]
+            url = format_html("https://twitter.com/{}", self.value)
+
+        if self.value.startswith("http"):
+            url = format_html("{}", self.value)
+
+        if self.value_type == "email":
+            url = format_html("mailto:{}", self.value)
+
+        if url:
+            text = format_html("""<a href="{}" rel="nofollow">{{}}</a>""", url)
+
+        return format_html(text, self.value)
 
 
 class Person(Timestampable, models.Model):
