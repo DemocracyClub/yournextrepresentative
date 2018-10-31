@@ -151,7 +151,7 @@ class PersonView(TemplateView):
         person_id = self.kwargs["person_id"]
         try:
             self.person = Person.objects.prefetch_related(
-                "links", "contact_details"
+                "links", "contact_details", "tmp_person_identifiers"
             ).get(pk=person_id)
         except Person.DoesNotExist:
             try:
