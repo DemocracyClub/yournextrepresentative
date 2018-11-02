@@ -5,39 +5,36 @@ from elections.models import Election
 from django import forms, VERSION as django_version
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models import Count
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from candidates.models import PartySet, ExtraField, ComplexPopoloField
 from popolo.models import OtherName, Post
 from people.helpers import parse_approximate_date
+from people.models import Person, PersonIdentifier
 from parties.models import Party
 from candidates.twitter_api import get_twitter_user_id, TwitterAPITokenMissing
 
-if django_version[:2] < (1, 9):
 
-    class StrippedCharField(forms.CharField):
-        """A backport of the Django 1.9 ``CharField`` ``strip`` option.
+class StrippedCharField(forms.CharField):
+    """A backport of the Django 1.9 ``CharField`` ``strip`` option.
 
-        If ``strip`` is ``True`` (the default), leading and trailing
-        whitespace is removed.
-        """
+    If ``strip`` is ``True`` (the default), leading and trailing
+    whitespace is removed.
+    """
 
-        def __init__(
-            self, max_length=None, min_length=None, strip=True, *args, **kwargs
-        ):
-            self.strip = strip
-            super().__init__(max_length, min_length, *args, **kwargs)
+    def __init__(
+        self, max_length=None, min_length=None, strip=True, *args, **kwargs
+    ):
+        self.strip = strip
+        super().__init__(max_length, min_length, *args, **kwargs)
 
-        def to_python(self, value):
-            value = super().to_python(value)
-            if self.strip:
-                value = value.strip()
-            return value
-
-
-else:
-    StrippedCharField = forms.CharField
+    def to_python(self, value):
+        value = super().to_python(value)
+        if self.strip:
+            value = value.strip()
+        return value
 
 
 class BaseCandidacyForm(forms.Form):
