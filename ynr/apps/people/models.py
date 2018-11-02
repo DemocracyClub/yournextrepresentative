@@ -29,7 +29,11 @@ from slugify import slugify
 from sorl.thumbnail import get_thumbnail
 
 from candidates.diffs import get_version_diffs
-from people.managers import PersonImageManager, PersonQuerySet
+from people.managers import (
+    PersonImageManager,
+    PersonIdentifierQuerySet,
+    PersonQuerySet,
+)
 
 
 def person_image_path(instance, filename):
@@ -100,6 +104,8 @@ class PersonIdentifier(TimeStampedModel):
                      Used by bots, not humans.""",
         null=True,
     )
+
+    objects = PersonIdentifierQuerySet.as_manager()
 
     class Meta:
         unique_together = (

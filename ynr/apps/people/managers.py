@@ -9,6 +9,7 @@ from candidates.models import (
     ExtraField,
     PersonExtraFieldValue,
 )
+from ynr_refactoring.settings import PersonIdentifierFields
 
 
 class PersonImageManager(models.Manager):
@@ -40,6 +41,13 @@ class PersonImageManager(models.Manager):
                 image_filename, ideal_relative_name, defaults
             )
         return image
+
+
+class PersonIdentifierQuerySet(models.query.QuerySet):
+    def select_choices(self):
+        default_option = [(None, "")]
+        options = [(f.name, f.value) for f in PersonIdentifierFields]
+        return default_option + options
 
 
 class PersonQuerySet(models.query.QuerySet):
@@ -89,6 +97,7 @@ class PersonQuerySet(models.query.QuerySet):
             "identifiers",
             "links",
             "images__uploading_user",
+            "tmp_person_identifiers",
             models.Prefetch(
                 "extra_field_values",
                 PersonExtraFieldValue.objects.select_related("field"),
