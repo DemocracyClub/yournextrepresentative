@@ -74,7 +74,7 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         self.assertEqual(person.name, "Elizabeth Bennet")
-        self.assertEqual(person.email, "lizzie@example.com")
+        self.assertEqual(person.get_email, "lizzie@example.com")
 
         self.assertEqual(person.memberships.count(), 1)
 
