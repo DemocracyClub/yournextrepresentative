@@ -114,22 +114,15 @@ class PersonView(TemplateView):
         context["redirect_after_login"] = urlquote(path)
         context["canonical_url"] = self.request.build_absolute_uri(path)
         context["person"] = self.person
-        elections_by_date = Election.objects.by_date().order_by(
-            "-election_date"
-        )
-        # If there are lots of elections known to this site, don't
-        # show a big list of elections they're not standing in - just
-        # show those that they are standing in:
-        if len(elections_by_date) > 2:
-            context["elections_to_list"] = Election.objects.filter(
-                postextraelection__membership__person=self.person
-            ).order_by("-election_date")
-        else:
-            context["elections_to_list"] = elections_by_date
+
+        context["elections_to_list"] = Election.objects.filter(
+            postextraelection__membership__person=self.person
+        ).order_by("-election_date")
+
         context["last_candidacy"] = self.person.last_candidacy
         context["election_to_show"] = None
-        context["has_current_elections"] = any(
-            [e.current for e in context["elections_to_list"]]
+        context["has_current_elections"] = (
+            context["elections_to_list"].filter(current=True).exists()
         )
         context["simple_fields"] = [
             field.name for field in settings.SIMPLE_POPOLO_FIELDS
