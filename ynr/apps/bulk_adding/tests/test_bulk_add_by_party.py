@@ -104,7 +104,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "This field is required.")
 
         # Now submit the valid form
-        with self.assertNumQueries(56):
+        with self.assertNumQueries(48):
             form["{}-0-select_person".format(pee.pk)] = "_new"
             response = form.submit().follow()
 
