@@ -10,7 +10,7 @@ import people.tests.factories
 from popolo.models import Membership
 
 from candidates.models import ExtraField
-from people.models import Person
+from people.models import Person, PersonIdentifier
 
 from compat import bytes_to_unicode, deep_sort
 
@@ -133,10 +133,12 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         person = people.tests.factories.PersonFactory.create(
             id=2009,
             name="Tessa Jowell",
-            email="jowell@example.com",
             versions=self.version_template.substitute(
                 slug=self.labour_party.legacy_slug
             ),
+        )
+        PersonIdentifier.objects.create(
+            person=person, value="jowell@example.com", value_type="email"
         )
         person.links.create(url="", note="wikipedia")
         factories.MembershipFactory.create(
@@ -235,7 +237,10 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         self.assertEqual(person.birth_date, "1947-09-17")
-        self.assertEqual(person.homepage_url, "http://example.org/tessajowell")
+        self.assertEqual(
+            person.get_single_identifier_of_type("homepage_url"),
+            "http://example.org/tessajowell",
+        )
 
         extra_values = list(
             person.extra_field_values.order_by("field__key").values(
@@ -260,6 +265,5 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         # The homepage link should have been added and the Wikipedia
         # one removed:
-        self.assertEqual(1, person.links.count())
-        remaining_link = person.links.first()
-        self.assertEqual(remaining_link.note, "homepage")
+        self.assertEqual(2, person.tmp_person_identifiers.all().count())
+        self.assertIsNone(person.get_single_identifier_of_type("wikipedia_url"))
