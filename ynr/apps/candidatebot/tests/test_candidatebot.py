@@ -60,7 +60,7 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
         bot = CandidateBot(self.person.pk)
         bot.add_email("foo@bar.com")
         person = bot.save("a source")
-        self.assertEqual(person.email, "foo@bar.com")
+        self.assertEqual(person.get_email, "foo@bar.com")
 
     def test_cant_edit_linkedin(self):
         bot = CandidateBot(self.person.pk)

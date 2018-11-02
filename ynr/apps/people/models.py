@@ -333,6 +333,25 @@ class Person(Timestampable, models.Model):
             return identifier_object.identifier
         return ""
 
+    def get_identifiers_of_type(self, value_type=None):
+        qs = self.tmp_person_identifiers.all()
+        if value_type:
+            qs = qs.filter(value_type=value_type)
+        return qs
+
+    def get_single_identifier_of_type(self, value_type=None):
+        value = None
+        try:
+            return (
+                self.get_identifiers_of_type(value_type=value_type).get().value
+            )
+        except PersonIdentifier.DoesNotExist:
+            pass
+
+    @property
+    def get_email(self):
+        return self.get_single_identifier_of_type("email")
+
     @property
     def last_candidacy(self):
         ordered_candidacies = Membership.objects.filter(
