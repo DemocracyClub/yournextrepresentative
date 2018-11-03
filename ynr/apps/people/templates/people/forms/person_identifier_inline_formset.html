@@ -1,0 +1,19 @@
+{{ identifiers_formset.management_form }}
+{% for form in identifiers_formset %}
+  {{ form.id }}
+  <div class="large-12 columns">
+      <div class="row collapse">
+        <div class="small-9 columns">
+          {{ form.value }}
+          {{ form.value.errors }}
+        </div>
+        <div class="small-3 columns">
+          <span class="postfix">
+            {{ form.value_type }}
+          </span>
+          {{ form.value_type.errors }}
+        </div>
+      </div>
+    </div>
+
+{% endfor %}

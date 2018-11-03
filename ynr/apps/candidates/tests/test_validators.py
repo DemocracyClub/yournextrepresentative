@@ -15,6 +15,7 @@ class TestValidators(UK2015ExamplesMixin, TestCase):
         super().setUp()
         self.person = PersonFactory.create(name="John Doe")
 
+    @skip("PersonIdentifiers are on Person Form")
     def test_twitter_bad_url(self):
         form = BasePersonForm(
             {"name": "John Doe", "twitter_username": "http://example.org/blah"}
@@ -29,6 +30,7 @@ class TestValidators(UK2015ExamplesMixin, TestCase):
             },
         )
 
+    @skip("PersonIdentifiers are on Person Form")
     def test_twitter_fine(self):
         form = BasePersonForm(
             {"name": "John Doe", "twitter_username": "madeuptwitteraccount"}
@@ -39,6 +41,7 @@ class TestValidators(UK2015ExamplesMixin, TestCase):
             form.cleaned_data["twitter_username"], "madeuptwitteraccount"
         )
 
+    @skip("PersonIdentifiers are on Person Form")
     def test_twitter_full_url(self):
         form = BasePersonForm(
             {
@@ -52,6 +55,7 @@ class TestValidators(UK2015ExamplesMixin, TestCase):
             form.cleaned_data["twitter_username"], "madeuptwitteraccount"
         )
 
+    @skip("PersonIdentifiers are on Person Form")
     def test_malformed_email(self):
         form = BasePersonForm(
             {"name": "John Bercow", "email": "foo bar!"},

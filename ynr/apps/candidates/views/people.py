@@ -29,7 +29,11 @@ from elections.mixins import ElectionMixin
 from ..diffs import get_version_diffs
 from ..election_specific import additional_merge_actions
 from .version_data import get_client_ip, get_change_metadata
-from people.forms import NewPersonForm, UpdatePersonForm
+from people.forms import (
+    NewPersonForm,
+    UpdatePersonForm,
+    PersonIdentifierFormsetFactory,
+)
 from candidates.forms import SingleElectionForm
 from ..models import LoggedAction, PersonRedirect, TRUSTED_TO_MERGE_GROUP_NAME
 from ..models.auth import check_creation_allowed, check_update_allowed
@@ -37,13 +41,12 @@ from ..models.versions import (
     revert_person_from_version_data,
     get_person_as_version_data,
 )
-from ..models import (
-    merge_popit_people,
-    ExtraField,
-    PersonExtraFieldValue,
-    ComplexPopoloField,
+from ..models import merge_popit_people, ExtraField, PersonExtraFieldValue
+from .helpers import (
+    get_field_groupings,
+    get_person_form_fields,
+    ProcessInlineFormsMixin,
 )
-from .helpers import get_field_groupings, get_person_form_fields
 from people.models import Person
 from tasks.forms import PersonTaskForm
 
@@ -132,10 +135,6 @@ class PersonView(TemplateView):
             demographic in context["simple_fields"]
             for demographic in demographic_fields
         )
-        context["complex_fields"] = [
-            (field, getattr(self.person, field.name))
-            for field in ComplexPopoloField.objects.all()
-        ]
 
         context["extra_fields"] = get_extra_fields(self.person)
         return context
@@ -305,9 +304,16 @@ class MergePeopleView(GroupRequiredMixin, View):
         )
 
 
-class UpdatePersonView(LoginRequiredMixin, FormView):
+class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
     template_name = "candidates/person-edit.html"
     form_class = UpdatePersonForm
+    inline_formset_classes = {
+        "identifiers_formset": PersonIdentifierFormsetFactory
+    }
+
+    def get_inline_formset_kwargs(self, formset_name):
+        if formset_name == "identifiers_formset":
+            return {"instance": Person.objects.get(pk=self.kwargs["person_id"])}
 
     def get_initial(self):
         initial_data = super().get_initial()
@@ -341,14 +347,21 @@ class UpdatePersonView(LoginRequiredMixin, FormView):
 
         return context
 
-    def form_valid(self, form):
+    def form_valid(self, all_forms):
+        form = all_forms["form"]
 
         if not (settings.EDITS_ALLOWED or self.request.user.is_staff):
             return HttpResponseRedirect(reverse("all-edits-disallowed"))
 
+        context = self.get_context_data()
+        identifiers_formset = all_forms["identifiers_formset"]
+
         with transaction.atomic():
 
-            person = get_object_or_404(Person, id=self.kwargs["person_id"])
+            person = context["person"]
+            identifiers_formset.instance = person
+            identifiers_formset.save()
+
             old_name = person.name
             old_candidacies = person.current_candidacies
             person.update_from_form(form)
@@ -418,9 +431,14 @@ class NewPersonSelectElectionView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class NewPersonView(ElectionMixin, LoginRequiredMixin, FormView):
+class NewPersonView(
+    ProcessInlineFormsMixin, ElectionMixin, LoginRequiredMixin, FormView
+):
     template_name = "candidates/person-create.html"
     form_class = NewPersonForm
+    inline_formset_classes = {
+        "identifiers_formset": PersonIdentifierFormsetFactory
+    }
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -446,14 +464,19 @@ class NewPersonView(ElectionMixin, LoginRequiredMixin, FormView):
             )
 
         context = get_person_form_fields(context, context["add_candidate_form"])
-
         return context
 
-    def form_valid(self, form):
-
+    def form_valid(self, all_forms):
+        form = all_forms["form"]
+        identifiers_formset = all_forms["identifiers_formset"]
+        context = self.get_context_data()
         with transaction.atomic():
 
             person = Person.create_from_form(form)
+
+            identifiers_formset.instance = person
+            identifiers_formset.save()
+
             check_creation_allowed(
                 self.request.user, person.current_candidacies
             )

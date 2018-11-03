@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _l
 from django_date_extensions.fields import ApproximateDate
 
 from candidates.models import (
-    ComplexPopoloField,
     ExtraField,
     PersonExtraFieldValue,
     PartySet,
@@ -86,8 +85,6 @@ def update_person_from_form(person, form):
         form_data["birth_date"] = ""
     for field in settings.SIMPLE_POPOLO_FIELDS:
         setattr(person, field.name, form_data[field.name])
-    for field in ComplexPopoloField.objects.all():
-        person.update_complex_field(field, form_data[field.name])
     for extra_field in ExtraField.objects.all():
         if extra_field.key in form_data:
             PersonExtraFieldValue.objects.update_or_create(
