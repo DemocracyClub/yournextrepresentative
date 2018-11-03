@@ -24,7 +24,7 @@ from .helpers import (
 )
 from .version_data import get_client_ip, get_change_metadata
 from ..csv_helpers import list_to_csv
-from people.forms import NewPersonForm
+from people.forms import NewPersonForm, PersonIdentifierFormsetFactory
 from candidates.forms import ToggleLockForm, ConstituencyRecordWinnerForm
 from ..models import (
     TRUSTED_TO_LOCK_GROUP_NAME,
@@ -917,6 +917,7 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
         )
 
         context = get_person_form_fields(context, context["add_candidate_form"])
+        context["identifiers_formset"] = PersonIdentifierFormsetFactory()
         return context
 
 

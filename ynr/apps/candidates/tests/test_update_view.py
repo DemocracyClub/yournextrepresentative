@@ -66,7 +66,10 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_update_person_submission_copyright_refused(self):
         response = self.app.get("/person/2009/update", user=self.user)
         form = response.forms["person-details"]
-        form["wikipedia_url"] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
+        form[
+            "tmp_person_identifiers-0-value"
+        ] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
+        form["tmp_person_identifiers-0-value_type"] = "wikipedia_url"
         form["party_GB_2015"] = self.labour_party.ec_id
         form["source"] = "Some source of this information"
         submission_response = form.submit(user=self.user_refused)
@@ -80,7 +83,11 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/person/2009/update", user=self.user_who_can_lock
         )
         form = response.forms["person-details"]
-        form["wikipedia_url"] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
+        form[
+            "tmp_person_identifiers-0-value"
+        ] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
+        form["tmp_person_identifiers-0-value_type"] = "wikipedia_url"
+
         form["party_GB_2015"] = self.labour_party.ec_id
         form["source"] = "Some source of this information"
         submission_response = form.submit()
@@ -92,10 +99,11 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(party[0].party.legacy_slug, "party:53")
         self.assertEqual(party[0].party.ec_id, "PP53")
 
-        links = person.links.all()
-        self.assertEqual(links.count(), 1)
+        person_identifiers = person.tmp_person_identifiers.all()
+        self.assertEqual(person_identifiers.count(), 1)
         self.assertEqual(
-            links[0].url, "http://en.wikipedia.org/wiki/Tessa_Jowell"
+            person_identifiers[0].value,
+            "http://en.wikipedia.org/wiki/Tessa_Jowell",
         )
 
         # It should redirect back to the same person's page:
