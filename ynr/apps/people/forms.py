@@ -60,6 +60,48 @@ class CandidacyDeleteForm(BaseCandidacyForm):
     )
 
 
+class PersonIdentifierForm(forms.ModelForm):
+    class Meta:
+        model = PersonIdentifier
+        exclude = ("internal_identifier", "extra_data")
+
+    def has_changed(self, *args, **kwargs):
+        """
+        The `has_changed` method tells Django if it should validate and process
+        the form or not.
+
+        In a formset it's used to detect if an "extra" form has content or not,
+        so for example an empty "extra" form don't raise ValidationErrors.
+
+        This method catches the case where someone selects a value_type from
+        a drop down but doesn't add a value. As there is no new content being
+        added to the site, it's safe to assume that this is an error rather
+        than raising a ValidationError and forcing the user to unselect the
+        value in the form.
+
+        This method is undocumented in Django, but it seems to be the only way.
+        """
+        if self.changed_data == ["value_type"] and not self.cleaned_data.get(
+            "value"
+        ):
+            return False
+        else:
+            return super().has_changed(*args, **kwargs)
+
+
+PersonIdentifierFormsetFactory = forms.inlineformset_factory(
+    Person,
+    PersonIdentifier,
+    form=PersonIdentifierForm,
+    can_delete=False,
+    widgets={
+        "value_type": forms.Select(
+            choices=PersonIdentifier.objects.select_choices()
+        )
+    },
+)
+
+
 class BasePersonForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
