@@ -1,85 +1,46 @@
-Thank-you for your interest in contributing to
-YourNextRepresentative!
+# Contributing
 
-The coding standards we keep to on this project are documented
-here:
+At [DemocracyClub](https://democracyclub.org.uk/) we value contributions to our projects from volunteers and contirbutors. Please read and follow our [Code of Conduct](https://democracyclub.org.uk/code-of-conduct/).
 
-* [Coding Standards](https://mysociety.github.io/coding-standards.html)
+If you are interested in helping out, feel free to
+[contact us](https://democracyclub.org.uk/contact/)
+
+## Issues
+* To report a bug or suggest an improvement, [create an issue](https://github.com/DemocracyClub/yournextrepresentative/issues/new).
+* Clearly describe the issue including steps to reproduce if it is a bug
+
+## Pull Requests
+* If you are interested in helping out, issues tagged as [recommended for beginners](https://github.com/DemocracyClub/yournextrepresentative/issues?q=is%3Aissue+is%3Aopen+label%3A%22recommended+for+beginners%22) or [help wanted](https://github.com/DemocracyClub/yournextrepresentative/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) are the best place to start.
+* Fork the repository on GitHub.
+* Create a topic branch on your fork of the repository.
+* Make commits of logical units.
+* Use descriptive commit messages.
+* Check your work against our test suite. You can run tests locally using: `pytest`
+* Push your changes to a topic branch in your fork of the repository.
+* Submit a pull request to the repository.
+* Reference the #issue number in your pull request.
+* Keep pull requests limited to a single issue.
+* Test any front-end changes (HTML, CSS, javascript) in multiple browsers.
+* We use the [black](https://github.com/ambv/black) coding standard. Please run `black` before submitting a pull request
+
+## Waffle
 
 You can see a waffle board representing all the issues that
 we're currently working on here:
 
-* [YourNextRepresentative board at waffle.io](https://waffle.io/mysociety/yournextrepresentative)
+* [YourNextRepresentative board at waffle.io](https://waffle.io/DemocracyClub/yournextrepresentative)
 
 The names of the columns there may need some explanation:
 
-* **Icebox**: all open issues that haven't been triaged, or
+* **Backlog**: all open issues that haven't been triaged, or
   are on the back burner.
-* **Contender**: these are issues we'd like to work on at some
+* **Ready**: these are issues we'd like to work on at some
   point soon, approximately ordered so the most important are at
   the top of the column. (This is somewhat like the product
   backlog in other projects.)
-* **Current Sprint**: these are issues we're working on in the
-  current two week sprint.
-* **Now**: these are the issues that someone's actively working
-  on at the moment.
-* **Reviewing**: these are tickets for which someone's done the
+* **In Progress**: these are issues we're working on at the moment.
+* **Needs Review**: these are tickets for which someone's done the
   work, and someone else is now reviewing it (or it's waiting
   for someone to review it).
-* **Deploying**: these are tickets which have been reviewed and
-  given a thumbs-up, but we haven't deployed yet.
 * **Done**: this is for work which has been deployed and the
   issue should be closed.
-
-### Issue state and assignment
-
-Please don't just assign tickets to yourself or anyone else
-without discussing it with someone on mySociety's parliaments
-team — it's easy to miss changes in ticket assignments. You can
-contact us by commenting on the issue email us at
-<ynr@mysociety.org>. If it's agreed that you're going to work on
-a ticket, then assign it to yourself.
-
-If it's been agreed that you're going to be the main reviewer of
-a pull request, please drag it into the reviewing column in
-waffle and assign it to yourself.
-
-After you've finished your review, let the author know and they
-will either:
-
-* Move the issue to the "Deploying" column (if there are no revisions
-  to be made)
-* Move the issue back to the "Now" column (if they're going to
-  make those fixes immediately) or the "Current Sprint" column
-  (if there's some really good reason for putting off making
-  those changes)
-
-... and assign it to themself.
-
-One a change is deployed, drag the issue to the "Done" column
-and it'll be closed.
-
-Tips
-----
-
-If you create a new branch that starts with “NNN-” or “NNN_” or
-has “#NNN” anywhere in it, then pushing that branch will
-automatically move the issue with that number to "Now".
-
-When you create a pull request, if it fixes a current issue put
-either “Fixes #NNN”, “closes #NNN” or “resolves #NNN” in the
-pull request's title or description, and then the pull request
-will be linked with the issue. If it is only linked to an issue,
-but doesn’t fix it, put one of “connect #NNN”, connects #NNN” or
-“connected to #NNN” in the pull request message.
-
-New pull requests from anyone will appear in Reviewing, so we
-should notice them and leave comments pretty soon, but please
-ask if there's no sign that your pull request has been looked
-at.
-
----
-
-*This document is based on
-[TheyWorkForYou's CONTRIBUTING.md](https://github.com/mysociety/theyworkforyou/blob/master/CONTRIBUTING.md)
-with some changes for the YourNextRepresentative process.*
