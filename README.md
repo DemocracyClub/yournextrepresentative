@@ -1,5 +1,12 @@
-[![Waffle.io - Columns and their card count](https://badge.waffle.io/DemocracyClub/yournextrepresentative.png?columns=all)](https://waffle.io/DemocracyClub/yournextrepresentative?utm_source=badge) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+[![Build Status](https://travis-ci.org/DemocracyClub/yournextrepresentative.svg?branch=master)](https://travis-ci.org/DemocracyClub/yournextrepresentative)
+[![Coverage Status](https://coveralls.io/repos/github/DemocracyClub/yournextrepresentative/badge.svg)](https://coveralls.io/github/DemocracyClub/yournextrepresentative)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/DemocracyClub/yournextrepresentative.png?columns=all)](https://waffle.io/DemocracyClub/yournextrepresentative?utm_source=badge)
+
 # A website for crowd-sourcing structured election candidate data
+
+https://candidates.democracyclub.org.uk/
 
 YourNextRepresentative is a open source platform for
 crowd-sourcing information about candidates for political office
@@ -11,39 +18,23 @@ details, their social media accounts etc. The software requires
 that each change is submitted with a source, so that the
 collected information can be independently checked.
 
-This codebase was used for
-[YourNextMP](https://edit.yournextmp.com) in the UK for the 2015
-General Election, and has also been reused in Argentina, Burkina
-Faso, St Paul (Minnesota) and Costa Rica.
+# Installation
 
-The codebase is internationalized; if you want to help to
-translate the project into a new language, we use
-[Transifex to allow anyone to contribute translations](https://www.transifex.com/mysociety/yournextmp/).
+See [INSTALL.md](https://github.com/DemocracyClub/yournextrepresentative/blob/master/docs/INSTALL.md)
 
-This project is still under active development, so please
-[get in touch with us](mailto:ynr@mysociety.org) to let us know
-of your plans, and requirements you have and hopefully we can
-provide support for your project.
-
-## Known Bugs
+# Known Bugs
 
 You can find a list of known issues to work on here:
 
-* https://github.com/mysociety/yournextrepresentative/issues
+* https://github.com/DemocracyClub/yournextrepresentative/issues
 
 These are prioritized in Waffle:
 
-* https://waffle.io/mysociety/yournextrepresentative
+* https://waffle.io/DemocracyClub/yournextrepresentative
 
-# What should I read next?
+# Acknowledgements
 
-The following other documentation files may be of use to you,
-depending on what you're trying to do:
-
-* [A guide to setting up YourNextRepresentative for a new country](docs/new-instance.md)
-  This is a work-in-progress, describing what's involved in
-  setting up YourNextRepresentative in a new country.
-* [Notes on setting up a dev version of YourNextMP with vagrant](docs/vagrant.md)
-  This was created to make it easy for developers and designers
-  to get started working on YourNextMP (the UK site), and may be
-  still be of some use.
+This codebase was originally forked from
+[mysociety/yournextrepresentative](http://github.com/mysociety/yournextrepresentative)
+We no longer track the upstream but we thank [mySociety](http://mysociety.org/)
+for their work on the project which we have been able to build on.
