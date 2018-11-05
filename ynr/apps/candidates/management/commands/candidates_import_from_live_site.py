@@ -335,6 +335,7 @@ class Command(BaseCommand):
                         "death_date",
                     )
                 }
+                kwargs["versions"] = json.dumps(person_data["versions"])
                 person = people.models.Person.objects.create(**kwargs)
                 if not ignore_images:
                     person_to_image_data[person] = person_data["images"]
