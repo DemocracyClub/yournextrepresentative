@@ -351,10 +351,7 @@ class Command(BaseCommand):
                     person, pmodels.OtherName, person_data["other_names"]
                 )
                 self.add_related(person, pmodels.Link, person_data["links"])
-                kwargs = {
-                    "base": person,
-                    "versions": json.dumps(person_data["versions"]),
-                }
+
                 # Look for any data in ExtraFields
                 for extra_field_data in person_data["extra_fields"]:
                     person.extra_field_values.create(
