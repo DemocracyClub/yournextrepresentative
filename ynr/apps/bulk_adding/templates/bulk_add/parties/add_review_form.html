@@ -29,9 +29,9 @@
           <div style="display:block;float:left;width:3em">
             {{ choice.tag }}
           </div>
-          {% if choice.choice_value != '_new' %}
+          {% if choice.data.value != '_new' %}
           <div>
-            Mark <a href="{% url 'person-view' choice.choice_value %}" target="_blank">
+            Mark <a href="{% url 'person-view' choice.data.value %}" target="_blank">
             {{ choice.choice_label }}</a> as standing in {{ formset.pee.post.label }}
           </div>
           {% else %}

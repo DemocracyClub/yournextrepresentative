@@ -22,9 +22,9 @@
             <div style="display:block;float:left;width:3em">
                 {{ choice.tag }}
             </div>
-            {% if choice.choice_value != '_new' %}
+            {% if choice.data.value != '_new' %}
             <div>
-                Set <a href="{% url 'person-view' choice.choice_value %}" target="_blank">
+                Set <a href="{% url 'person-view' choice.data.value %}" target="_blank">
                 {% if choice.choice_label == form.name.value %}
                 <strong>
                 {% endif %}
