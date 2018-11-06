@@ -19,6 +19,7 @@ HAYSTACK_CONNECTIONS = {
 }
 
 SECRET_KEY = "just here for testing"
+ALLOWED_HOSTS = ["candidates.democracyclub.org.uk"]
 
 SHOW_SOPN_TRACKER = False
 SHOW_RESULTS_PROGRESS = False
