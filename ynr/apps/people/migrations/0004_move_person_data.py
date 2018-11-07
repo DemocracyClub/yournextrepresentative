@@ -42,5 +42,14 @@ class Migration(migrations.Migration):
     dependencies = [("people", "0003_add_person_model")]
 
     operations = [
-        migrations.RunPython(move_person_from_popolo, migrations.RunPython.noop)
+        migrations.RunPython(
+            move_person_from_popolo, migrations.RunPython.noop
+        ),
+        migrations.RunSQL(
+            """
+               SELECT setval('people_person_id_seq', COALESCE((SELECT MAX(id)+1
+               FROM people_person), 1));
+            """,
+            migrations.RunSQL.noop,
+        ),
     ]
