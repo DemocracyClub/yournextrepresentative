@@ -335,6 +335,7 @@ class Command(BaseCommand):
                         "death_date",
                     )
                 }
+                kwargs["versions"] = json.dumps(person_data["versions"])
                 person = people.models.Person.objects.create(**kwargs)
                 if not ignore_images:
                     person_to_image_data[person] = person_data["images"]
@@ -350,10 +351,7 @@ class Command(BaseCommand):
                     person, pmodels.OtherName, person_data["other_names"]
                 )
                 self.add_related(person, pmodels.Link, person_data["links"])
-                kwargs = {
-                    "base": person,
-                    "versions": json.dumps(person_data["versions"]),
-                }
+
                 # Look for any data in ExtraFields
                 for extra_field_data in person_data["extra_fields"]:
                     person.extra_field_values.create(
