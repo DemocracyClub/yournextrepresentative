@@ -4,10 +4,8 @@ from people.models import Person
 from candidates.models import LoggedAction, raise_if_unsafe_to_delete
 from candidates.models.auth import check_creation_allowed
 from candidates.views.version_data import get_change_metadata, get_client_ip
-from tasks.models import pause_task_signal
 
 
-@pause_task_signal
 def add_person(request, person_data):
     person = Person.objects.create(name=person_data["name"])
 
@@ -27,7 +25,6 @@ def add_person(request, person_data):
     return person
 
 
-@pause_task_signal
 def update_person(
     request=None, person=None, party=None, post_election=None, source=None
 ):

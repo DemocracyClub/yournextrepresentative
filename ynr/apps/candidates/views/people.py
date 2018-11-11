@@ -48,7 +48,6 @@ from .helpers import (
     ProcessInlineFormsMixin,
 )
 from people.models import Person
-from tasks.forms import PersonTaskForm
 
 
 def get_call_to_action_flash_message(person, new_person=False):
@@ -335,15 +334,6 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
         context["versions"] = get_version_diffs(json.loads(person.versions))
 
         context = get_person_form_fields(context, context["form"])
-
-        if "highlight_field" in self.request.GET:
-            context["couldnt_find_field_form"] = PersonTaskForm(
-                instance=person,
-                data={
-                    "task_field": self.request.GET["highlight_field"],
-                    "person": person.pk,
-                },
-            )
 
         return context
 
