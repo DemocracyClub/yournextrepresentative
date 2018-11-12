@@ -7,7 +7,6 @@ from django.db.models import Sum
 from candidates.models import PostExtraElection
 from elections.models import Election
 from popolo.models import Membership
-from tasks.models import PersonTask
 
 register = template.Library()
 
@@ -65,19 +64,6 @@ def sopn_import_progress(context):
         context["sopn_progress"] = sopn_progress_by_election(
             election_qs=election_qs
         )
-    return context
-
-
-@register.inclusion_tag("includes/tasks.html", takes_context=True)
-def person_tasks(context):
-    task_count = PersonTask.objects.unfinished_tasks().count()
-    if task_count > 0:
-        random_offset = random.randrange(min(50, task_count))
-        context["person_task"] = PersonTask.objects.unfinished_tasks()[
-            random_offset
-        ]
-    else:
-        person_task = None
     return context
 
 

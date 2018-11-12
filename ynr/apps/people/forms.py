@@ -81,9 +81,7 @@ class PersonIdentifierForm(forms.ModelForm):
 
         This method is undocumented in Django, but it seems to be the only way.
         """
-        if self.changed_data == ["value_type"] and not self.cleaned_data.get(
-            "value"
-        ):
+        if self.changed_data == ["value_type"] and not self["value"].data:
             return False
         else:
             return super().has_changed(*args, **kwargs)

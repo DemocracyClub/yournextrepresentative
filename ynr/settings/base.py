@@ -104,7 +104,6 @@ INSTALLED_APPS = (
     "popolo",
     "elections.uk",
     "candidates",
-    "tasks",
     "cached_counts",
     "moderation_queue",
     "auth_helpers",
