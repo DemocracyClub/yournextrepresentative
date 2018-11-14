@@ -334,19 +334,21 @@ class Person(Timestampable, models.Model):
             return identifier_object.identifier
         return ""
 
+    @cached_property
+    def get_all_idenfitiers(self):
+        return list(self.tmp_person_identifiers.all())
+
     def get_identifiers_of_type(self, value_type=None):
-        qs = self.tmp_person_identifiers.all()
+        id_list = self.get_all_idenfitiers
         if value_type:
-            qs = qs.filter(value_type=value_type)
-        return qs
+            id_list = [i for i in id_list if i.value_type == value_type]
+        return id_list
 
     def get_single_identifier_of_type(self, value_type=None):
         value = None
         try:
-            return (
-                self.get_identifiers_of_type(value_type=value_type).get().value
-            )
-        except PersonIdentifier.DoesNotExist:
+            return self.get_identifiers_of_type(value_type=value_type)[0].value
+        except IndexError:
             pass
 
     @property
