@@ -1,11 +1,4 @@
-from django.conf import settings
 from django.db.models import Q
-
-from candidates.models import (
-    ComplexPopoloField,
-    ExtraField,
-    PersonExtraFieldValue,
-)
 
 __author__ = "guglielmo"
 

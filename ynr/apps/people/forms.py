@@ -9,7 +9,7 @@ from django.db.models import Count
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from candidates.models import PartySet, ExtraField, ComplexPopoloField
+from candidates.models import PartySet, ExtraField
 from popolo.models import OtherName, Post
 from people.helpers import parse_approximate_date
 from people.models import Person, PersonIdentifier

@@ -17,7 +17,6 @@ from django.utils.html import format_html
 from django_extensions.db.models import TimeStampedModel
 from popolo.behaviors.models import GenericRelatable, Timestampable
 from popolo.models import (
-    ComplexPopoloField,
     ContactDetail,
     Identifier,
     Membership,
@@ -287,12 +286,6 @@ class Person(Timestampable, models.Model):
 
     objects = PersonQuerySet.as_manager()
 
-    @cached_property
-    def complex_popolo_fields(self):
-        from candidates.models.fields import get_complex_popolo_fields
-
-        return get_complex_popolo_fields()
-
     @property
     def current_candidacies(self):
         result = self.memberships.filter(
@@ -522,8 +515,6 @@ class Person(Timestampable, models.Model):
         initial_data = {}
         for field in settings.SIMPLE_POPOLO_FIELDS:
             initial_data[field.name] = getattr(self, field.name)
-        for field in ComplexPopoloField.objects.all():
-            initial_data[field.name] = getattr(self, field.name)
         for extra_field_value in PersonExtraFieldValue.objects.filter(
             person=self
         ).select_related("field"):
@@ -711,28 +702,6 @@ class Person(Timestampable, models.Model):
             return get_thumbnail(self.primary_image.file, "x64").url
 
         return static("candidates/img/blank-person.png")
-
-    def __getattr__(self, name):
-        # We don't want to trigger the population of the
-        # complex_popolo_fields property just because Django is
-        # checking whether the prefetch objects cache is there:
-        if name == "_prefetched_objects_cache":
-            return super().__getattr__(self, name)
-        field = self.complex_popolo_fields.get(name)
-        if field:
-            # Iterate rather than using filter because that would
-            # cause an extra query when the relation has already been
-            # populated via select_related:
-            for e in getattr(self, field.popolo_array).all():
-                info_type_key = getattr(e, field.info_type_key)
-                if (info_type_key == field.info_type) or (
-                    info_type_key == field.old_info_type
-                ):
-                    return getattr(e, field.info_value_key)
-            return ""
-        else:
-            message = _("'Person' object has no attribute '{name}'")
-            raise AttributeError(message.format(name=name))
 
     def __str__(self):
         return self.name
