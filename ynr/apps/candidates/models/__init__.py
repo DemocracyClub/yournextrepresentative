@@ -14,8 +14,6 @@ from candidates.models.field_mappings import CSV_ROW_FIELDS
 
 from candidates.models.fields import ExtraField
 from candidates.models.fields import PersonExtraFieldValue
-from candidates.models.fields import ComplexPopoloField
-
 
 from candidates.models.db import LoggedAction
 from candidates.models.db import PersonRedirect
