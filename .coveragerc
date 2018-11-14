@@ -13,6 +13,7 @@ source =
     results
     uk_results
     parties
+    popolo
 omit =
     */tests/*
     */test_*
