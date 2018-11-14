@@ -17,7 +17,7 @@ class Party(TimeStampedModel):
 
     1. "Independent" (standing for 0 parties) is given the ID "ynmp-party:2"
     2. Join parties (candidate standing for two parties) are each given a
-       psudo-party. These parties are guesses at by looking at the descriptions
+       pseudo-party. These parties are guesses at by looking at the descriptions
        in the source data. For example, a description might look like:
 
        "Labour and Co-operative Party (Joint Description with Labour Party)"
