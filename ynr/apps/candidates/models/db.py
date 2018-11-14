@@ -143,8 +143,7 @@ class PersonRedirect(models.Model):
             "old_person_id", "new_person_id"
         ):
             new_to_sorted_old[new].append(old)
-        for v in new_to_sorted_old.values():
-            v.sort()
+            new_to_sorted_old[new].sort()
         return new_to_sorted_old
 
 
