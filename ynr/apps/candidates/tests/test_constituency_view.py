@@ -121,7 +121,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         row_dicts = [row for row in BufferDictReader(response.content)]
         self.assertEqual(2, len(row_dicts))
-        self.assertEqual(
+        self.assertDictEqual(
             dict(row_dicts[1]),
             {
                 "birth_date": "",

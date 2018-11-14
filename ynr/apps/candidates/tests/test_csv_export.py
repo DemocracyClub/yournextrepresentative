@@ -123,7 +123,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
                 self.earlier_election.slug
             )
         self.assertEqual(len(memberships_dicts[self.earlier_election.slug]), 2)
-        membership_dict = memberships_dicts["2010"][0]
+        membership_dict = memberships_dicts["2010"][1]
         self.assertEqual(len(membership_dict.keys()), 38)
         self.assertEqual(membership_dict["id"], 2009)
 

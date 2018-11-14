@@ -87,6 +87,7 @@ class MembershipQuerySet(DateframeableQuerySet):
             .order_by(
                 "post_election__election__election_date",
                 "-post_election__election__slug",
+                "person__pk",
             )
         )
 
