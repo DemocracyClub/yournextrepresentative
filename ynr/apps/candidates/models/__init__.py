@@ -10,8 +10,6 @@ from candidates.models.popolo_extra import PostExtraElection
 from candidates.models.popolo_extra import raise_if_unsafe_to_delete
 from candidates.models.popolo_extra import UnsafeToDelete
 
-from candidates.models.field_mappings import CSV_ROW_FIELDS
-
 from candidates.models.fields import ExtraField
 from candidates.models.fields import PersonExtraFieldValue
 
