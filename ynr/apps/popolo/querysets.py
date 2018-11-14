@@ -63,7 +63,32 @@ class PostQuerySet(DateframeableQuerySet):
 
 
 class MembershipQuerySet(DateframeableQuerySet):
-    pass
+    def joins_for_csv(self):
+        from candidates.models import PersonExtraFieldValue
+
+        return (
+            self.select_related(
+                "post_election",
+                "post_election__election",
+                "post_election__post",
+                "person",
+                "party",
+            )
+            .prefetch_related(
+                "person__tmp_person_identifiers",
+                "person__images",
+                "person__images__uploading_user",
+                "person__identifiers",
+                models.Prefetch(
+                    "person__extra_field_values",
+                    PersonExtraFieldValue.objects.select_related("field"),
+                ),
+            )
+            .order_by(
+                "post_election__election__election_date",
+                "-post_election__election__slug",
+            )
+        )
 
 
 class ContactDetailQuerySet(DateframeableQuerySet):
