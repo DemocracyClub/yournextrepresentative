@@ -75,6 +75,9 @@ class Command(BaseCommand):
                 key=lambda key: key.split(".")[-1],
             )
             all_memberships = []
+            all_elected = []
             for slug in sorted_elections:
                 all_memberships += membership_by_election[slug]
+                all_elected += elected_by_election[slug]
             safely_write(self.slug_to_file_name("all"), all_memberships)
+            safely_write(self.slug_to_file_name("elected-all"), all_elected)
