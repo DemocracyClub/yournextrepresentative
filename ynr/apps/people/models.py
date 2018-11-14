@@ -1,5 +1,6 @@
 import json
 from datetime import date
+import re
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
@@ -579,115 +580,90 @@ class Person(Timestampable, models.Model):
         update_person_from_form(person, form)
         return person
 
-    def as_list_of_dicts(self, election, base_url=None, redirects=None):
-        result = []
-        if not base_url:
-            base_url = ""
-        if not redirects:
-            redirects = {}
-        # Find the list of relevant candidacies. So as not to cause
-        # extra queries, we don't use filter but instead iterate over
-        # all objects:
-        candidacies = []
-        for m in self.memberships.all():
-            if not m.post_election.election:
-                continue
-            expected_role = m.post_election.election.candidate_membership_role
-            if election is None:
-                if expected_role == m.role:
-                    candidacies.append(m)
-            else:
-                if (
-                    m.post_election.election == election
-                    and expected_role == m.role
-                ):
-                    candidacies.append(m)
-        for candidacy in candidacies:
-            party = candidacy.party
-            post = candidacy.post
-            elected = candidacy.elected
-            elected_for_csv = ""
-            image_copyright = ""
-            image_uploading_user = ""
-            image_uploading_user_notes = ""
-            proxy_image_url_template = ""
-            if elected is not None:
-                elected_for_csv = str(elected)
-            mapit_url = ""
-            primary_image = None
-            for image in self.images.all():
-                if image.is_primary:
-                    primary_image = image
-            primary_image_url = None
-            if primary_image:
-                primary_image_url = urljoin(base_url, primary_image.image.url)
-                if settings.IMAGE_PROXY_URL and base_url:
-                    encoded_url = quote_plus(primary_image_url)
-                    proxy_image_url_template = (
-                        settings.IMAGE_PROXY_URL
-                        + encoded_url
-                        + "/{height}/{width}.{extension}"
-                    )
+    def dict_for_csv(self, base_url=None):
+        elected_for_csv = ""
+        image_copyright = ""
+        image_uploading_user = ""
+        image_uploading_user_notes = ""
+        proxy_image_url_template = ""
 
-                try:
-                    image_copyright = primary_image.copyright
-                    user = primary_image.uploading_user
-                    if user is not None:
-                        image_uploading_user = (
-                            primary_image.uploading_user.username
-                        )
-                    image_uploading_user_notes = primary_image.user_notes
-                except ObjectDoesNotExist:
-                    pass
-            twitter_user_id = ""
-            for identifier in self.identifiers.all():
-                if identifier.scheme == "twitter":
-                    twitter_user_id = identifier.identifier
-            old_person_ids = ";".join(
-                text_type(i) for i in redirects.get(self.id, [])
-            )
+        primary_image = None
+        for image in self.images.all():
+            if image.is_primary:
+                primary_image = image
+        primary_image_url = None
+        if primary_image:
+            primary_image_url = urljoin(base_url, primary_image.image.url)
+            if settings.IMAGE_PROXY_URL and base_url:
+                encoded_url = quote_plus(primary_image_url)
+                proxy_image_url_template = (
+                    settings.IMAGE_PROXY_URL
+                    + encoded_url
+                    + "/{height}/{width}.{extension}"
+                )
 
-            row = {
-                "id": self.id,
-                "name": self.name,
-                "honorific_prefix": self.honorific_prefix,
-                "honorific_suffix": self.honorific_suffix,
-                "gender": self.gender,
-                "birth_date": self.birth_date,
-                "election": candidacy.post_election.election.slug,
-                "election_date": candidacy.post_election.election.election_date,
-                "election_current": candidacy.post_election.election.current,
-                "party_id": party.legacy_slug,
-                "party_lists_in_use": candidacy.post_election.election.party_lists_in_use,
-                "party_list_position": candidacy.party_list_position,
-                "party_name": party.name,
-                "post_id": post.slug,
-                "post_label": post.short_label,
-                "mapit_url": mapit_url,
-                "elected": elected_for_csv,
-                "email": self.email,
-                "twitter_username": self.twitter_username,
-                "twitter_user_id": twitter_user_id,
-                "facebook_page_url": self.facebook_page_url,
-                "linkedin_url": self.linkedin_url,
-                "party_ppc_page_url": self.party_ppc_page_url,
-                "facebook_personal_url": self.facebook_personal_url,
-                "homepage_url": self.homepage_url,
-                "wikipedia_url": self.wikipedia_url,
-                "image_url": primary_image_url,
-                "proxy_image_url_template": proxy_image_url_template,
-                "image_copyright": image_copyright,
-                "image_uploading_user": image_uploading_user,
-                "image_uploading_user_notes": image_uploading_user_notes,
-                "old_person_ids": old_person_ids,
-            }
-            from candidates.election_specific import get_extra_csv_values
+            try:
+                image_copyright = primary_image.copyright
+                user = primary_image.uploading_user
+                if user is not None:
+                    image_uploading_user = primary_image.uploading_user.username
+                image_uploading_user_notes = primary_image.user_notes
+            except ObjectDoesNotExist:
+                pass
 
-            extra_csv_data = get_extra_csv_values(self, election, post)
-            row.update(extra_csv_data)
-            result.append(row)
+        twitter_qs = self.get_identifiers_of_type("twitter_username")
+        if twitter_qs:
+            twitter_user_id = twitter_qs[0].internal_identifier
+            twitter_user_name = twitter_qs[0].value
+        else:
+            twitter_user_name = twitter_user_id = ""
 
-        return result
+        theyworkforyou_url = ""
+        parlparse_id = ""
+        for i in self.identifiers.all():
+            if i.scheme == "uk.org.publicwhip":
+                parlparse_id = i.identifier
+                m = re.search(r"^uk.org.publicwhip/person/(\d+)$", parlparse_id)
+                if not m:
+                    message = "Malformed parlparse ID found {0}"
+                    raise Exception(message.format(parlparse_id))
+                theyworkforyou_url = "http://www.theyworkforyou.com/mp/{}".format(
+                    m.group(1)
+                )
+
+        row = {
+            "id": self.id,
+            "name": self.name,
+            "honorific_prefix": self.honorific_prefix,
+            "honorific_suffix": self.honorific_suffix,
+            "gender": self.gender,
+            "birth_date": self.birth_date,
+            "email": self.email,
+            "twitter_username": twitter_user_name,
+            "twitter_user_id": twitter_user_id,
+            "facebook_page_url": self.get_single_identifier_of_type(
+                "facebook_page_url"
+            ),
+            "linkedin_url": self.get_single_identifier_of_type("linkedin_url"),
+            "party_ppc_page_url": self.get_single_identifier_of_type(
+                "party_ppc_page_url"
+            ),
+            "facebook_personal_url": self.get_single_identifier_of_type(
+                "facebook_personal_url"
+            ),
+            "homepage_url": self.get_single_identifier_of_type("homepage_url"),
+            "wikipedia_url": self.get_single_identifier_of_type(
+                "wikipedia_url"
+            ),
+            "theyworkforyou_url": theyworkforyou_url,
+            "parlparse_id": parlparse_id,
+            "image_url": primary_image_url,
+            "proxy_image_url_template": proxy_image_url_template,
+            "image_copyright": image_copyright,
+            "image_uploading_user": image_uploading_user,
+            "image_uploading_user_notes": image_uploading_user_notes,
+        }
+        return row
 
     @property
     def primary_image(self):
