@@ -120,9 +120,9 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/election/2015/post/65808/dulwich-and-west-norwood.csv"
         )
         row_dicts = [row for row in BufferDictReader(response.content)]
-        self.assertEqual(1, len(row_dicts))
+        self.assertEqual(2, len(row_dicts))
         self.assertEqual(
-            row_dicts[0],
+            dict(row_dicts[1]),
             {
                 "birth_date": "",
                 "cancelled_poll": "False",
