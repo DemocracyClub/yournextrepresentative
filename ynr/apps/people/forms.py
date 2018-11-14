@@ -188,7 +188,7 @@ class BasePersonForm(forms.Form):
     def clean_twitter_username(self):
         # Remove any URL bits around it:
         username = self.cleaned_data["twitter_username"].strip()
-        m = re.search("^.*twitter.com/(\w+)", username)
+        m = re.search(r"^.*twitter.com/(\w+)", username)
         if m:
             username = m.group(1)
         # If there's a leading '@', strip that off:
