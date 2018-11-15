@@ -63,7 +63,7 @@ class PostQuerySet(DateframeableQuerySet):
 
 
 class MembershipQuerySet(DateframeableQuerySet):
-    def joins_for_csv(self):
+    def for_csv(self):
         from candidates.models import PersonExtraFieldValue
 
         return (

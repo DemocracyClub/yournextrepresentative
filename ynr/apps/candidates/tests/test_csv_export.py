@@ -92,7 +92,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
 
     def test_as_single_dict(self):
         membership = (
-            Membership.objects.joins_for_csv()
+            Membership.objects.for_csv()
             .filter(person=self.gb_person.id)
             .first()
         )

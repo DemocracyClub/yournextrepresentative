@@ -12,14 +12,22 @@ def list_to_csv(membership_list):
     csv_fields = settings.CSV_ROW_FIELDS
     writer = BufferDictWriter(fieldnames=csv_fields)
     writer.writeheader()
-    for row in membership_list:
+    for row in sorted(membership_list, key=lambda d: (d["election_date"])):
         writer.writerow(row)
     return writer.output
 
 
+def sort_memberships(membership_list):
+    return sorted(
+        membership_list,
+        key=lambda d: (d["election_date"], d["post_id"], d["id"]),
+        reverse=True,
+    )
+
+
 def memberships_dicts_for_csv(election_slug=None, post_slug=None):
     redirects = PersonRedirect.all_redirects_dict()
-    memberships = Membership.objects.joins_for_csv()
+    memberships = Membership.objects.for_csv()
     if election_slug:
         memberships = memberships.filter(
             post_election__election__slug=election_slug
@@ -36,5 +44,10 @@ def memberships_dicts_for_csv(election_slug=None, post_slug=None):
         memberships_by_election[election_slug].append(line)
         if membership.elected:
             elected_by_election[election_slug].append(line)
+
+    for election_slug, membership_list in memberships_by_election.items():
+        sort_memberships(membership_list)
+    for election_slug, membership_list in elected_by_election.items():
+        sort_memberships(membership_list)
 
     return (memberships_by_election, elected_by_election)
