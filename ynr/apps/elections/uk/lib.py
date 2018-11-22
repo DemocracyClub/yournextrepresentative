@@ -16,16 +16,6 @@ def shorten_post_label(post_label):
     return result
 
 
-EXTRA_CSV_ROW_FIELDS = [
-    "gss_code",
-    "parlparse_id",
-    "theyworkforyou_url",
-    "party_ec_id",
-    "favourite_biscuits",
-    "cancelled_poll",
-]
-
-
 def get_extra_csv_values(person, election, post):
     gss_code = ""
     parlparse_id = ""

@@ -455,6 +455,7 @@ TWITTER_BOT_USERNAME = "TwitterBot"
 
 # import application constants
 from .constants.needs_review import *  # noqa
+from .constants.csv_fields import *  # noqa
 
 from ynr_refactoring.settings import *  # noqa
 

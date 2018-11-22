@@ -22,8 +22,8 @@ class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
         person_empty_slogan = people.tests.factories.PersonFactory.create(
             id=102, name="John Smith", birth_date="1999-12-31"
         )
-        person_empty_slogan.contact_details.create(
-            contact_type="twitter", value="anothermadeuptwitterusername"
+        person_empty_slogan.tmp_person_identifiers.create(
+            value_type="twitter_username", value="anothermadeuptwitterusername"
         )
         person_empty_slogan.extra_field_values.create(
             field=slogan_field, value=""
@@ -31,8 +31,8 @@ class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
         person_with_details = people.tests.factories.PersonFactory.create(
             id=103, name="Joe Bloggs", birth_date="1980-01-01"
         )
-        person_with_details.contact_details.create(
-            contact_type="twitter", value="madeuptwitterusername"
+        person_with_details.tmp_person_identifiers.create(
+            value_type="twitter_username", value="madeuptwitterusername"
         )
         person_with_details.extra_field_values.create(
             field=slogan_field, value="Things can only get better"

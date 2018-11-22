@@ -342,12 +342,6 @@ class ExtraFieldViewSet(viewsets.ModelViewSet):
     pagination_class = ResultsSetPagination
 
 
-class ComplexPopoloFieldViewSet(viewsets.ModelViewSet):
-    queryset = extra_models.ComplexPopoloField.objects.order_by("id")
-    serializer_class = serializers.ComplexPopoloFieldSerializer
-    pagination_class = ResultsSetPagination
-
-
 class PersonRedirectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = extra_models.PersonRedirect.objects.order_by("id")
     lookup_field = "old_person_id"

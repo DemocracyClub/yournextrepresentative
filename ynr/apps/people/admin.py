@@ -1,11 +1,7 @@
 from django.contrib import admin
 from django.forms import ModelForm
 
-from candidates.models import (
-    ComplexPopoloField,
-    PersonExtraFieldValue,
-    ExtraField,
-)
+from candidates.models import PersonExtraFieldValue, ExtraField
 from popolo.models import Membership
 from people.models import Person
 
@@ -63,12 +59,6 @@ class PersonExtraFieldValueAdminForm(ModelForm):
 
 class ExtraFieldAdminForm(ModelForm):
     pass
-
-
-@admin.register(ComplexPopoloField)
-class ComplexPopoloFieldAdmin(admin.ModelAdmin):
-    list_display = ["name", "label", "order"]
-    ordering = ("order",)
 
 
 @admin.register(PersonExtraFieldValue)

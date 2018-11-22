@@ -1,39 +1,53 @@
+from collections import defaultdict
+
 from compat import BufferDictWriter
-from .models import CSV_ROW_FIELDS
+from django.conf import settings
+
+from popolo.models import Membership
+from candidates.models import PersonRedirect
 
 
-def _candidate_sort_by_name_key(row):
-    return (
-        row["name"].split()[-1],
-        row["name"].rsplit(None, 1)[0],
-        not row["election_current"],
-        row["election_date"],
-        row["election"],
-        row["post_label"],
-    )
+def list_to_csv(membership_list):
 
-
-def _candidate_sort_by_post_key(row):
-    return (
-        not row["election_current"],
-        row["election_date"],
-        row["election"],
-        row["post_label"],
-        row["name"].split()[-1],
-        row["name"].rsplit(None, 1)[0],
-    )
-
-
-def list_to_csv(candidates_list, group_by_post=False):
-    from .election_specific import EXTRA_CSV_ROW_FIELDS
-
-    csv_fields = CSV_ROW_FIELDS + EXTRA_CSV_ROW_FIELDS
+    csv_fields = settings.CSV_ROW_FIELDS
     writer = BufferDictWriter(fieldnames=csv_fields)
     writer.writeheader()
-    if group_by_post:
-        sorted_rows = sorted(candidates_list, key=_candidate_sort_by_post_key)
-    else:
-        sorted_rows = sorted(candidates_list, key=_candidate_sort_by_name_key)
-    for row in sorted_rows:
+    for row in sorted(membership_list, key=lambda d: (d["election_date"])):
         writer.writerow(row)
     return writer.output
+
+
+def sort_memberships(membership_list):
+    return sorted(
+        membership_list,
+        key=lambda d: (d["election_date"], d["post_id"], d["id"]),
+        reverse=True,
+    )
+
+
+def memberships_dicts_for_csv(election_slug=None, post_slug=None):
+    redirects = PersonRedirect.all_redirects_dict()
+    memberships = Membership.objects.for_csv()
+    if election_slug:
+        memberships = memberships.filter(
+            post_election__election__slug=election_slug
+        )
+    if post_slug:
+        memberships = memberships.filter(post_election__post__slug=post_slug)
+
+    memberships_by_election = defaultdict(list)
+    elected_by_election = defaultdict(list)
+
+    for membership in memberships:
+        election_slug = membership.post_election.election.slug
+        line = membership.dict_for_csv(redirects=redirects)
+        memberships_by_election[election_slug].append(line)
+        if membership.elected:
+            elected_by_election[election_slug].append(line)
+
+    for election_slug, membership_list in memberships_by_election.items():
+        sort_memberships(membership_list)
+    for election_slug, membership_list in elected_by_election.items():
+        sort_memberships(membership_list)
+
+    return (memberships_by_election, elected_by_election)

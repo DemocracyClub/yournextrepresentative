@@ -4,11 +4,7 @@ from django.db import models
 from django.core.files.storage import DefaultStorage
 from django.conf import settings
 
-from candidates.models import (
-    ComplexPopoloField,
-    ExtraField,
-    PersonExtraFieldValue,
-)
+from candidates.models import ExtraField, PersonExtraFieldValue
 from ynr_refactoring.settings import PersonIdentifierFields
 
 
@@ -61,15 +57,12 @@ class PersonQuerySet(models.query.QuerySet):
         ]
         if simple_field:
             return people_in_current_elections.filter(**{field: ""})
-        complex_field = ComplexPopoloField.objects.filter(name=field).first()
-        if complex_field:
-            kwargs = {
-                "{relation}__{key}".format(
-                    relation=complex_field.popolo_array,
-                    key=complex_field.info_type_key,
-                ): complex_field.info_type
-            }
-            return people_in_current_elections.exclude(**kwargs)
+
+        if hasattr(PersonIdentifierFields, field):
+            return people_in_current_elections.exclude(
+                tmp_person_identifiers__value_type=field
+            )
+
         extra_field = ExtraField.objects.filter(key=field).first()
         if extra_field:
             # This case is a bit more complicated because the

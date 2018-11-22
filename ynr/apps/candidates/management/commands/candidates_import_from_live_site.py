@@ -103,15 +103,6 @@ class Command(BaseCommand):
             msg = "This command should only be run on an empty database"
             raise CommandError(msg)
 
-    def remove_field_objects(self):
-        # The initial migrations create ComplexPopoloField
-        # objects so that there's a useful default
-        # set of fields.  However, if the database is otherwise empty
-        # and we're running this script, the fields will be defined by
-        # those complex fields we find from the API. So
-        # remove those fields:
-        models.ComplexPopoloField.objects.all().delete()
-
     def get_api_results(self, endpoint, api_version="v0.9"):
         page = 1
 
@@ -174,12 +165,6 @@ class Command(BaseCommand):
             with show_data_on_error("extra_field", extra_field):
                 del extra_field["url"]
                 models.ExtraField.objects.update_or_create(**extra_field)
-        for complex_field in self.get_api_results("complex_fields"):
-            with show_data_on_error("complex_field", complex_field):
-                complex_field.pop("url", None)
-                models.ComplexPopoloField.objects.update_or_create(
-                    **complex_field
-                )
         party_sets_by_slug = {}
         for party_set_data in self.get_api_results("party_sets"):
             with show_data_on_error("party_set_data", party_set_data):
@@ -434,7 +419,6 @@ class Command(BaseCommand):
                 emodels.Election,
                 PersonImage,
                 models.ExtraField,
-                models.ComplexPopoloField,
                 people.models.Person,
             ],
         )
@@ -461,5 +445,4 @@ class Command(BaseCommand):
             new_url_parts[2] = "/api/"
             self.base_api_url = urlunsplit(new_url_parts)
             self.check_database_is_empty()
-            self.remove_field_objects()
             self.mirror_from_api(ignore_images=options["ignore_images"])
