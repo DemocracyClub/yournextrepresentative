@@ -169,13 +169,16 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         # We expect a CSV file per election, and one for all elections
         call_command("candidates_create_csv")
         self.assertEqual(
-            sorted(self.storage.listdir(self.storage.base_location)[1]),
-            [
-                "candidates-2010.csv",
-                "candidates-2015.csv",
-                "candidates-all.csv",
-                "candidates-elected-all.csv",
-            ],
+            set(sorted(self.storage.listdir(".")[1])),
+            set(
+                [
+                    "candidates-2010.csv",
+                    "candidates-2015.csv",
+                    "candidates-all.csv",
+                    "candidates-elected-all.csv",
+                    "candidates-local.maidstone.2016-05-05.csv",
+                ]
+            ),
         )
 
     def test_create_csv_management_command_single_election(self):
@@ -186,9 +189,15 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
 
         # We expect a single CSV file
         call_command("candidates_create_csv", "--election", "2015")
-        self.assertEqual(
-            self.storage.listdir(self.storage.base_location)[1],
-            ["candidates-2015.csv"],
+        self.assertSetEqual(
+            set(self.storage.listdir(".")[1]),
+            set(
+                [
+                    "candidates-2010.csv",
+                    "candidates-2015.csv",
+                    "candidates-local.maidstone.2016-05-05.csv",
+                ]
+            ),
         )
 
     def test_create_csv_management_command_single_election_doesnt_exist(self):
@@ -199,3 +208,41 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
 
         with self.assertRaises(CommandError):
             call_command("candidates_create_csv", "--election", "foo")
+
+    def test_create_csv_no_candidates_for_election(self):
+        # An empty media directory, apart from the images dir
+        self.assertEqual(
+            self.storage.listdir(self.storage.base_location), (["images"], [])
+        )
+
+        factories.ElectionFactory.create(
+            slug="2018",
+            name="2018 General Election",
+            for_post_role="Member of Parliament",
+            organization=self.commons,
+        )
+
+        call_command("candidates_create_csv")
+        self.assertSetEqual(
+            set(self.storage.listdir(".")[1]),
+            set(
+                [
+                    "candidates-2010.csv",
+                    "candidates-2015.csv",
+                    "candidates-2018.csv",
+                    "candidates-all.csv",
+                    "candidates-elected-all.csv",
+                    "candidates-local.maidstone.2016-05-05.csv",
+                ]
+            ),
+        )
+
+        empty_file = self.storage.open("candidates-2018.csv").read()
+        self.assertEqual(len(empty_file.splitlines()), 1)
+        self.assertEqual(
+            empty_file.splitlines()[0].decode(),
+            (",".join(settings.CSV_ROW_FIELDS)),
+        )
+
+        non_empty_file = self.storage.open("candidates-2015.csv").read()
+        self.assertEqual(len(non_empty_file.splitlines()), 3)

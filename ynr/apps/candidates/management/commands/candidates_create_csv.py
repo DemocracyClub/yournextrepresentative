@@ -64,9 +64,14 @@ class Command(BaseCommand):
             election_slug
         )
 
-        # Go through the membership_by_election dict and write each one as a CSV
-        for slug, memberships in membership_by_election.items():
-            safely_write(self.slug_to_file_name(slug), memberships)
+        # Write a file per election, optionally adding candidates
+        # We still want a file to exist if there are no candidates yet,
+        # as the files linked to as soon as the election is created
+        for election in Election.objects.all():
+            safely_write(
+                self.slug_to_file_name(election.slug),
+                membership_by_election.get(election.slug, []),
+            )
 
         # If we're not outputting a single election, output all elections
         if not election_slug:
