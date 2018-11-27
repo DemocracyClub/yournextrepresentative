@@ -282,6 +282,10 @@ class Person(Timestampable, models.Model):
         "elections.Election", related_name="persons_not_standing_tmp"
     )
 
+    favourite_biscuit = models.CharField(
+        "Favourite biscuit 🍪", max_length=255, null=True
+    )
+
     class Meta:
         verbose_name_plural = "People"
 
