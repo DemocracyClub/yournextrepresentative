@@ -147,7 +147,6 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                     "person__contact_details",
                     "person__links",
                     "person__identifiers",
-                    "person__extra_field_values",
                 )
                 .select_related("person")
             ):
@@ -385,12 +384,6 @@ class MembershipViewSet(viewsets.ModelViewSet):
 class LoggedActionViewSet(viewsets.ModelViewSet):
     queryset = extra_models.LoggedAction.objects.order_by("id")
     serializer_class = serializers.LoggedActionSerializer
-    pagination_class = ResultsSetPagination
-
-
-class ExtraFieldViewSet(viewsets.ModelViewSet):
-    queryset = extra_models.ExtraField.objects.order_by("id")
-    serializer_class = serializers.ExtraFieldSerializer
     pagination_class = ResultsSetPagination
 
 

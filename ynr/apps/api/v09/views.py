@@ -144,7 +144,6 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                     "person__contact_details",
                     "person__links",
                     "person__identifiers",
-                    "person__extra_field_values",
                 )
                 .select_related("person")
             ):
@@ -336,10 +335,28 @@ class LoggedActionViewSet(viewsets.ModelViewSet):
     pagination_class = ResultsSetPagination
 
 
-class ExtraFieldViewSet(viewsets.ModelViewSet):
-    queryset = extra_models.ExtraField.objects.order_by("id")
-    serializer_class = serializers.ExtraFieldSerializer
-    pagination_class = ResultsSetPagination
+class ExtraFieldViewSet(viewsets.ViewSet):
+    def _get_data(self):
+        return {
+            "id": 1,
+            "url": "http://candidates.democracyclub.org.uk/api/v0.9/extra_fields/1/",
+            "key": "favourite_biscuits",
+            "type": "line",
+            "label": "Favourite biscuit 🍪",
+            "order": 1,
+        }
+
+    def list(self, request, *args, **kwargs):
+        data = {
+            "count": 1,
+            "next": None,
+            "previous": None,
+            "results": [self._get_data()],
+        }
+        return Response(data)
+
+    def retrieve(self, request, pk=None):
+        return Response(self._get_data())
 
 
 class PersonRedirectViewSet(viewsets.ReadOnlyModelViewSet):

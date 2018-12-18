@@ -249,15 +249,6 @@ class PostElectionSerializer(serializers.HyperlinkedModelSerializer):
     election = MinimalElectionSerializer(read_only=True)
 
 
-class PersonExtraFieldSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = candidates_models.PersonExtraFieldValue
-        fields = ("key", "value", "type")
-
-    key = serializers.ReadOnlyField(source="field.key")
-    type = serializers.ReadOnlyField(source="field.type")
-
-
 class PersonSerializer(MinimalPersonSerializer):
     class Meta:
         model = people.models.Person
@@ -293,9 +284,7 @@ class PersonSerializer(MinimalPersonSerializer):
 
     memberships = MembershipSerializer(many=True, read_only=True)
 
-    extra_fields = PersonExtraFieldSerializer(
-        many=True, read_only=True, source="extra_field_values"
-    )
+    extra_fields = serializers.SerializerMethodField()
 
     thumbnail = HyperlinkedSorlImageField(
         "300x300",
@@ -303,6 +292,9 @@ class PersonSerializer(MinimalPersonSerializer):
         source="primary_image",
         read_only=True,
     )
+
+    def get_extra_fields(self, obj):
+        return [{"favourite_biscuits": obj.favourite_biscuit or ""}]
 
 
 class NoVersionPersonSerializer(PersonSerializer):
@@ -395,12 +387,6 @@ class LoggedActionSerializer(serializers.HyperlinkedModelSerializer):
     )
     user = serializers.ReadOnlyField(source="user.username")
     person = MinimalPersonSerializer(read_only=True)
-
-
-class ExtraFieldSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = candidates_models.ExtraField
-        fields = ("id", "url", "key", "type", "label", "order")
 
 
 class PersonRedirectSerializer(serializers.HyperlinkedModelSerializer):

@@ -19,7 +19,9 @@ v09_api_router.register(r"party_sets", v09views.PartySetViewSet)
 v09_api_router.register(r"post_elections", v09views.PostExtraElectionViewSet)
 v09_api_router.register(r"memberships", v09views.MembershipViewSet)
 v09_api_router.register(r"logged_actions", v09views.LoggedActionViewSet)
-v09_api_router.register(r"extra_fields", v09views.ExtraFieldViewSet)
+v09_api_router.register(
+    r"extra_fields", v09views.ExtraFieldViewSet, basename="extra_fields"
+)
 v09_api_router.register(r"person_redirects", v09views.PersonRedirectViewSet)
 
 v09_api_router.register(r"candidate_results", CandidateResultViewSet)
@@ -43,7 +45,6 @@ next_api_router.register(r"party_sets", next_views.PartySetViewSet)
 next_api_router.register(r"post_elections", next_views.PostExtraElectionViewSet)
 next_api_router.register(r"memberships", next_views.MembershipViewSet)
 next_api_router.register(r"logged_actions", next_views.LoggedActionViewSet)
-next_api_router.register(r"extra_fields", next_views.ExtraFieldViewSet)
 next_api_router.register(r"person_redirects", next_views.PersonRedirectViewSet)
 
 next_api_router.register(r"candidate_results", CandidateResultViewSet)
