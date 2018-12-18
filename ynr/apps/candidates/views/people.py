@@ -41,7 +41,7 @@ from ..models.versions import (
     revert_person_from_version_data,
     get_person_as_version_data,
 )
-from ..models import merge_popit_people, ExtraField, PersonExtraFieldValue
+from ..models import merge_popit_people
 from .helpers import (
     get_field_groupings,
     get_person_form_fields,
@@ -83,26 +83,6 @@ def get_call_to_action_flash_message(person, new_person=False):
     )
 
 
-def get_extra_fields(person):
-    """Get all the additional fields and their values for a person"""
-
-    extra_values = {
-        extra_value.field.key: extra_value.value
-        for extra_value in PersonExtraFieldValue.objects.filter(person=person)
-    }
-    return [
-        (
-            extra_field.key,
-            {
-                "value": extra_values.get(extra_field.key, ""),
-                "label": _(extra_field.label),
-                "type": extra_field.type,
-            },
-        )
-        for extra_field in ExtraField.objects.all()
-    ]
-
-
 class PersonView(TemplateView):
     template_name = "candidates/person-view.html"
 
@@ -135,7 +115,6 @@ class PersonView(TemplateView):
             for demographic in demographic_fields
         )
 
-        context["extra_fields"] = get_extra_fields(self.person)
         return context
 
     def get(self, request, *args, **kwargs):
@@ -445,13 +424,6 @@ class NewPersonView(
         context = super().get_context_data(**kwargs)
 
         context["add_candidate_form"] = context["form"]
-
-        context["extra_fields"] = []
-        extra_fields = ExtraField.objects.all()
-        for field in extra_fields:
-            context["extra_fields"].append(
-                context["add_candidate_form"][field.key]
-            )
 
         context = get_person_form_fields(context, context["add_candidate_form"])
         return context

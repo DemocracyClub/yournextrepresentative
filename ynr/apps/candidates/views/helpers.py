@@ -8,7 +8,7 @@ from elections.models import Election
 
 from slugify import slugify
 
-from ..models import PartySet, ExtraField
+from ..models import PartySet
 
 
 def get_field_groupings():
@@ -49,9 +49,6 @@ def get_redirect_to_post(election, post):
 
 def get_person_form_fields(context, form):
     context["extra_fields"] = []
-    extra_fields = ExtraField.objects.all()
-    for field in extra_fields:
-        context["extra_fields"].append(form[field.key])
 
     personal_fields, demographic_fields = get_field_groupings()
     context["personal_fields"] = []

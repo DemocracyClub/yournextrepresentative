@@ -118,7 +118,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
 
     def test_as_dict_2010(self):
-        with self.assertNumQueries(7):
+        with self.assertNumQueries(6):
             memberships_dicts, elected = memberships_dicts_for_csv(
                 self.earlier_election.slug
             )
@@ -153,7 +153,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             )
         )
 
-        with self.assertNumQueries(7):
+        with self.assertNumQueries(6):
             memberships_dicts, elected = memberships_dicts_for_csv()
         all_members = []
         for slug, members in memberships_dicts.items():
