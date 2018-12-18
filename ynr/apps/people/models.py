@@ -677,9 +677,11 @@ class Person(Timestampable, models.Model):
         """
         Return either the person's primary image or blank outline of a person
         """
-
         if self.primary_image:
-            return get_thumbnail(self.primary_image.file, "x64").url
+            try:
+                return get_thumbnail(self.primary_image.file, "x64").url
+            except FileNotFoundError:
+                pass
 
         return static("candidates/img/blank-person.png")
 
