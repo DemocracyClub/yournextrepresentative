@@ -305,7 +305,7 @@ class ElectionViewSet(viewsets.ModelViewSet):
     queryset = Election.objects.order_by("id")
     lookup_field = "slug"
     serializer_class = serializers.ElectionSerializer
-    filter_fields = ("current",)
+    filterset_fields = ("current",)
     pagination_class = ResultsSetPagination
 
 
