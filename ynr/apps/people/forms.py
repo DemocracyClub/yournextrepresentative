@@ -9,7 +9,7 @@ from django.db.models import Count
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from candidates.models import PartySet, ExtraField
+from candidates.models import PartySet
 from popolo.models import OtherName, Post
 from people.helpers import parse_approximate_date
 from people.models import Person, PersonIdentifier
@@ -104,36 +104,6 @@ class BasePersonForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Add any extra fields to the person form:
-        for field in ExtraField.objects.all():
-            if field.type == "line":
-                self.fields[field.key] = StrippedCharField(
-                    label=_(field.label), max_length=1024, required=False
-                )
-            elif field.type == "longer-text":
-                self.fields[field.key] = StrippedCharField(
-                    label=_(field.label), required=False, widget=forms.Textarea
-                )
-            elif field.type == "url":
-                self.fields[field.key] = forms.URLField(
-                    label=_(field.label), max_length=256, required=False
-                )
-            elif field.type == "yesno":
-                self.fields[field.key] = forms.ChoiceField(
-                    label=_(field.label),
-                    required=False,
-                    # even though these are the same labels as STANDING_CHOICES
-                    # the values of that are too specific for a generic field
-                    # so we redefine them here.
-                    choices=(
-                        ("not-sure", _("Don’t Know")),
-                        ("yes", _("Yes")),
-                        ("no", _("No")),
-                    ),
-                )
-            else:
-                raise Exception("Unknown field type: {}".format(field.type))
-
         for field in settings.SIMPLE_POPOLO_FIELDS:
             opts = {"label": _(field.label), "required": field.required}
 
@@ -160,6 +130,10 @@ class BasePersonForm(forms.Form):
                 self.fields[field.name] = StrippedCharField(**opts)
             else:
                 self.fields[field.name] = StrippedCharField(**opts)
+
+        self.fields["favourite_biscuit"] = StrippedCharField(
+            label="Favourite biscuit 🍪", required=False
+        )
 
     STANDING_CHOICES = (
         ("not-sure", _("Don’t Know")),

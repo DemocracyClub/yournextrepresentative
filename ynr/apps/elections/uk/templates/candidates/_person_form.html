@@ -128,21 +128,16 @@
 
     {% endfor %}
 
-    {% if extra_fields %}
 
       <h2>{% trans "Additional information:" %}</h2>
+      <div class="form-item {% if form.favourite_biscuit.errors %}form-item--errors{% endif %}">
+        <p>
+          {{ form.favourite_biscuit.label_tag }}
+          {{ form.favourite_biscuit }}
+        </p>
+        {{ form.favourite_biscuit.errors }}
+      </div>
 
-      {% for extra_field in extra_fields %}
-        <div class="form-item {% if extra_field.errors %}form-item--errors{% endif %}">
-          <p>
-            {{ extra_field.label_tag }}
-            {{ extra_field }}
-          </p>
-          {{ extra_field.errors }}
-        </div>
-      {% endfor %}
-
-    {% endif %}
 
     <div class="source-confirmation {% if form.source.errors %}source-confirmation--errors{% endif %}">
       <p>

@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.forms import ModelForm
 
-from candidates.models import PersonExtraFieldValue, ExtraField
 from popolo.models import Membership
 from people.models import Person
 
@@ -51,24 +50,6 @@ class PersonAdmin(admin.ModelAdmin):
         ),
     )
     # inlines = generics.BASE_INLINES + [MembershipInline]
-
-
-class PersonExtraFieldValueAdminForm(ModelForm):
-    pass
-
-
-class ExtraFieldAdminForm(ModelForm):
-    pass
-
-
-@admin.register(PersonExtraFieldValue)
-class PersonExtraFieldValueAdmin(admin.ModelAdmin):
-    form = PersonExtraFieldValueAdminForm
-
-
-@admin.register(ExtraField)
-class ExtraFieldAdmin(admin.ModelAdmin):
-    form = ExtraFieldAdminForm
 
 
 admin.site.register(Person, PersonAdmin)

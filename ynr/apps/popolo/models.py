@@ -21,8 +21,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
-from candidates.models import PersonExtraFieldValue
-
 from .behaviors.models import Timestampable, Dateframeable, GenericRelatable
 from .querysets import (
     PostQuerySet,
@@ -383,12 +381,6 @@ class Membership(Dateframeable, Timestampable, models.Model):
             membership_dict["elected"] = self.elected
         else:
             membership_dict["elected"] = ""
-
-        favourite_biscuits = ""
-        for efv in self.person.extra_field_values.all():
-            if efv.field.key == "favourite_biscuits":
-                favourite_biscuits = efv.value
-        membership_dict["favourite_biscuits"] = favourite_biscuits
 
         membership_dict.update(identifier_dict)
         membership_dict.update(self.person.dict_for_csv())
