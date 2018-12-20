@@ -4,7 +4,6 @@ from django.db import models
 from django.core.files.storage import DefaultStorage
 from django.conf import settings
 
-from candidates.models import ExtraField, PersonExtraFieldValue
 from ynr_refactoring.settings import PersonIdentifierFields
 
 
@@ -63,16 +62,6 @@ class PersonQuerySet(models.query.QuerySet):
                 tmp_person_identifiers__value_type=field
             )
 
-        extra_field = ExtraField.objects.filter(key=field).first()
-        if extra_field:
-            # This case is a bit more complicated because the
-            # PersonExtraFieldValue class allows a blank value.
-            pefv_completed = PersonExtraFieldValue.objects.filter(
-                field=extra_field
-            ).exclude(value="")
-            return people_in_current_elections.exclude(
-                id__in=[pefv.person_id for pefv in pefv_completed]
-            )
         # If we get to this point, it's a non-existent field on the person:
         raise ValueError("Unknown field '{}'".format(field))
 
@@ -91,8 +80,4 @@ class PersonQuerySet(models.query.QuerySet):
             "links",
             "images__uploading_user",
             "tmp_person_identifiers",
-            models.Prefetch(
-                "extra_field_values",
-                PersonExtraFieldValue.objects.select_related("field"),
-            ),
         )

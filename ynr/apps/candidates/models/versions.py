@@ -2,8 +2,6 @@ from collections import defaultdict
 from datetime import datetime
 import re
 
-from .fields import ExtraField
-
 from django.db.models import F
 from django.conf import settings
 from django.db.models.query import prefetch_related_objects
@@ -88,17 +86,15 @@ def get_person_as_version_data(person, new_person=False):
         for not_standing_in_election in person.not_standing.all():
             standing_in[not_standing_in_election.slug] = None
 
-        extra_values = {
-            extra_value.field.key: extra_value.value
-            for extra_value in person.extra_field_values.select_related("field")
-        }
+    # Add `favourite_biscuits` to an `extra_fields` key
+    # to re-produce the previous ExtraField model.
+    # This is done like this to save changing the version diff
+    # for exery edit to move to key to the parent object.
+    # In the future we will have to run a script to move all the
+    # keys to wherever we want them.
+    extra_fields = {"favourite_biscuits": person.favourite_biscuit or ""}
 
-    extra_fields = {
-        extra_field.key: extra_values.get(extra_field.key, "")
-        for extra_field in ExtraField.objects.all()
-    }
-    if extra_fields:
-        result["extra_fields"] = extra_fields
+    result["extra_fields"] = extra_fields
 
     result["standing_in"] = standing_in
     result["party_memberships"] = party_memberships
@@ -132,14 +128,6 @@ def revert_person_from_version_data(person, version_data, part_of_merge=False):
             PersonIdentifier.objects.update_or_create(
                 person=person, value=new_value, value_type=field.name
             )
-
-    # Remove any extra field data and create them from the JSON:
-    person.extra_field_values.all().delete()
-    extra_fields_from_version = version_data.get("extra_fields", {})
-    for extra_field in ExtraField.objects.all():
-        value = extra_fields_from_version.get(extra_field.key)
-        if value is not None:
-            person.extra_field_values.create(field=extra_field, value=value)
 
     # Remove all other names, and recreate:
     person.other_names.all().delete()

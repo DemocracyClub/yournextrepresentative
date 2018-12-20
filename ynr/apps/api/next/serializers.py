@@ -208,15 +208,6 @@ class PostElectionSerializer(serializers.HyperlinkedModelSerializer):
     election = MinimalElectionSerializer(read_only=True)
 
 
-class PersonExtraFieldSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = candidates_models.PersonExtraFieldValue
-        fields = ("key", "value", "type")
-
-    key = serializers.ReadOnlyField(source="field.key")
-    type = serializers.ReadOnlyField(source="field.type")
-
-
 class PersonSerializer(MinimalPersonSerializer):
     class Meta:
         model = people.models.Person
@@ -238,8 +229,8 @@ class PersonSerializer(MinimalPersonSerializer):
             "links",
             "memberships",
             "images",
-            "extra_fields",
             "thumbnail",
+            "favourite_biscuit",
         )
 
     contact_details = ContactDetailSerializer(many=True, read_only=True)
@@ -251,10 +242,6 @@ class PersonSerializer(MinimalPersonSerializer):
     versions = JSONSerializerField(read_only=True)
 
     memberships = MembershipSerializer(many=True, read_only=True)
-
-    extra_fields = PersonExtraFieldSerializer(
-        many=True, read_only=True, source="extra_field_values"
-    )
 
     thumbnail = HyperlinkedSorlImageField(
         "300x300",
@@ -284,7 +271,6 @@ class NoVersionPersonSerializer(PersonSerializer):
             "links",
             "memberships",
             "images",
-            "extra_fields",
             "thumbnail",
         )
 
@@ -354,12 +340,6 @@ class LoggedActionSerializer(serializers.HyperlinkedModelSerializer):
     )
     user = serializers.ReadOnlyField(source="user.username")
     person = MinimalPersonSerializer(read_only=True)
-
-
-class ExtraFieldSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = candidates_models.ExtraField
-        fields = ("id", "url", "key", "type", "label", "order")
 
 
 class PersonRedirectSerializer(serializers.HyperlinkedModelSerializer):

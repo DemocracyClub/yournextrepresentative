@@ -22,7 +22,6 @@ from popolo.models import (
     Identifier,
     Membership,
     MultipleTwitterIdentifiers,
-    PersonExtraFieldValue,
     VersionNotFound,
 )
 from slugify import slugify
@@ -282,6 +281,10 @@ class Person(Timestampable, models.Model):
         "elections.Election", related_name="persons_not_standing_tmp"
     )
 
+    favourite_biscuit = models.CharField(
+        "Favourite biscuit 🍪", max_length=255, null=True
+    )
+
     class Meta:
         verbose_name_plural = "People"
 
@@ -518,10 +521,8 @@ class Person(Timestampable, models.Model):
         initial_data = {}
         for field in settings.SIMPLE_POPOLO_FIELDS:
             initial_data[field.name] = getattr(self, field.name)
-        for extra_field_value in PersonExtraFieldValue.objects.filter(
-            person=self
-        ).select_related("field"):
-            initial_data[extra_field_value.field.key] = extra_field_value.value
+        initial_data["favourite_biscuit"] = self.favourite_biscuit
+
         not_standing_elections = list(self.not_standing.all())
         from elections.models import Election
 
@@ -644,6 +645,7 @@ class Person(Timestampable, models.Model):
             "facebook_page_url": self.get_single_identifier_of_type(
                 "facebook_page_url"
             ),
+            "favourite_biscuits": self.favourite_biscuit or "",
             "linkedin_url": self.get_single_identifier_of_type("linkedin_url"),
             "party_ppc_page_url": self.get_single_identifier_of_type(
                 "party_ppc_page_url"
@@ -675,9 +677,11 @@ class Person(Timestampable, models.Model):
         """
         Return either the person's primary image or blank outline of a person
         """
-
         if self.primary_image:
-            return get_thumbnail(self.primary_image.file, "x64").url
+            try:
+                return get_thumbnail(self.primary_image.file, "x64").url
+            except FileNotFoundError:
+                pass
 
         return static("candidates/img/blank-person.png")
 

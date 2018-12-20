@@ -9,7 +9,6 @@ from django_webtest import WebTest
 import people.tests.factories
 from popolo.models import Membership
 
-from candidates.models import ExtraField
 from people.models import Person, PersonIdentifier
 
 from compat import bytes_to_unicode, deep_sort
@@ -74,10 +73,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 }
               ],
               "email": "jowell@example.com",
-              "extra_fields": {
-                "cv": "http://example.org/cv.doc",
-                "notes": "Some updated notes here"
-              }
+              "extra_fields": {}
             }
           },
           {
@@ -118,10 +114,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 }
               ],
               "email": "tessa.jowell@example.com",
-              "extra_fields": {
-                "cv": "",
-                "notes": "Some original notes here"
-              }
+              "extra_fields": {}
             }
           }
         ]
@@ -152,10 +145,6 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.dulwich_post,
             party=self.labour_party,
             post_election=self.dulwich_post_pee_earlier,
-        )
-        ExtraField.objects.create(type="url", key="cv", label="CV or Resumé")
-        ExtraField.objects.create(
-            type="longer-text", key="notes", label="Notes"
         )
 
     @patch("candidates.views.version_data.get_current_timestamp")
@@ -220,11 +209,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     },
                 ],
                 "email": "tessa.jowell@example.com",
-                "extra_fields": {
-                    "cv": "",
-                    "notes": "Some original notes here",
-                    "favourite_biscuits": "",
-                },
+                "extra_fields": {"favourite_biscuits": ""},
             },
             "information_source": "Reverting to version 5469de7db0cbd155 for testing purposes",
             "timestamp": "2014-09-29T10:11:59.216159",
@@ -240,19 +225,6 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             person.get_single_identifier_of_type("homepage_url"),
             "http://example.org/tessajowell",
-        )
-
-        extra_values = list(
-            person.extra_field_values.order_by("field__key").values(
-                "field__key", "value"
-            )
-        )
-        self.assertEqual(
-            extra_values,
-            [
-                {"field__key": "cv", "value": ""},
-                {"field__key": "notes", "value": "Some original notes here"},
-            ],
         )
 
         candidacies = Membership.objects.filter(

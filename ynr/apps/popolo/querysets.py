@@ -64,7 +64,6 @@ class PostQuerySet(DateframeableQuerySet):
 
 class MembershipQuerySet(DateframeableQuerySet):
     def for_csv(self):
-        from candidates.models import PersonExtraFieldValue
 
         return (
             self.select_related(
@@ -79,10 +78,6 @@ class MembershipQuerySet(DateframeableQuerySet):
                 "person__images",
                 "person__images__uploading_user",
                 "person__identifiers",
-                models.Prefetch(
-                    "person__extra_field_values",
-                    PersonExtraFieldValue.objects.select_related("field"),
-                ),
             )
             .order_by(
                 "post_election__election__election_date",

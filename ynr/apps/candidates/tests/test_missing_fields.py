@@ -1,7 +1,6 @@
 from django.test import TestCase
 
 import people.tests.factories
-from candidates.models import ExtraField
 from people.models import Person
 
 from .auth import TestUserMixin
@@ -12,7 +11,6 @@ from . import factories
 class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
     def setUp(self):
         super().setUp()
-        slogan_field = ExtraField.objects.create(key="slogan", type="line")
         person_old_election = people.tests.factories.PersonFactory.create(
             id=100, name="John Past"
         )
@@ -25,18 +23,14 @@ class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
         person_empty_slogan.tmp_person_identifiers.create(
             value_type="twitter_username", value="anothermadeuptwitterusername"
         )
-        person_empty_slogan.extra_field_values.create(
-            field=slogan_field, value=""
-        )
+
         person_with_details = people.tests.factories.PersonFactory.create(
             id=103, name="Joe Bloggs", birth_date="1980-01-01"
         )
         person_with_details.tmp_person_identifiers.create(
             value_type="twitter_username", value="madeuptwitterusername"
         )
-        person_with_details.extra_field_values.create(
-            field=slogan_field, value="Things can only get better"
-        )
+
         factories.MembershipFactory.create(
             person=person_old_election,
             post=self.dulwich_post,
@@ -71,12 +65,6 @@ class TestMissingFields(TestUserMixin, UK2015ExamplesMixin, TestCase):
         qs = Person.objects.missing("twitter_username")
         self.assertEqual(qs.count(), 1)
         self.assertEqual(qs[0].name, "Jane Doe")
-
-    def test_find_those_missing_slogan(self):
-        qs = Person.objects.missing("slogan").order_by("name")
-        self.assertEqual(qs.count(), 2)
-        self.assertEqual(qs[0].name, "Jane Doe")
-        self.assertEqual(qs[1].name, "John Smith")
 
     def test_non_existent_field(self):
         with self.assertRaises(ValueError):

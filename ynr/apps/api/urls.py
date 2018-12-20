@@ -11,7 +11,7 @@ from api.next import views as next_views
 
 v09_api_router = routers.DefaultRouter()
 
-v09_api_router.register(r"persons", v09views.PersonViewSet, base_name="person")
+v09_api_router.register(r"persons", v09views.PersonViewSet, basename="person")
 v09_api_router.register(r"organizations", v09views.OrganizationViewSet)
 v09_api_router.register(r"posts", v09views.PostViewSet)
 v09_api_router.register(r"elections", v09views.ElectionViewSet)
@@ -19,7 +19,9 @@ v09_api_router.register(r"party_sets", v09views.PartySetViewSet)
 v09_api_router.register(r"post_elections", v09views.PostExtraElectionViewSet)
 v09_api_router.register(r"memberships", v09views.MembershipViewSet)
 v09_api_router.register(r"logged_actions", v09views.LoggedActionViewSet)
-v09_api_router.register(r"extra_fields", v09views.ExtraFieldViewSet)
+v09_api_router.register(
+    r"extra_fields", v09views.ExtraFieldViewSet, basename="extra_fields"
+)
 v09_api_router.register(r"person_redirects", v09views.PersonRedirectViewSet)
 
 v09_api_router.register(r"candidate_results", CandidateResultViewSet)
@@ -28,13 +30,13 @@ v09_api_router.register(r"result_sets", ResultSetViewSet)
 v09_api_router.register(
     r"candidates_for_postcode",
     v09views.CandidatesAndElectionsForPostcodeViewSet,
-    base_name="candidates-for-postcode",
+    basename="candidates-for-postcode",
 )
 
 # "Next" is the label we give to the "bleeding edge" or unstable API
 next_api_router = routers.DefaultRouter()
 next_api_router.register(
-    r"persons", next_views.PersonViewSet, base_name="person"
+    r"persons", next_views.PersonViewSet, basename="person"
 )
 next_api_router.register(r"organizations", next_views.OrganizationViewSet)
 next_api_router.register(r"posts", next_views.PostViewSet)
@@ -43,7 +45,6 @@ next_api_router.register(r"party_sets", next_views.PartySetViewSet)
 next_api_router.register(r"post_elections", next_views.PostExtraElectionViewSet)
 next_api_router.register(r"memberships", next_views.MembershipViewSet)
 next_api_router.register(r"logged_actions", next_views.LoggedActionViewSet)
-next_api_router.register(r"extra_fields", next_views.ExtraFieldViewSet)
 next_api_router.register(r"person_redirects", next_views.PersonRedirectViewSet)
 
 next_api_router.register(r"candidate_results", CandidateResultViewSet)
@@ -53,7 +54,7 @@ next_api_router.register(r"parties", PartyViewSet)
 next_api_router.register(
     r"candidates_for_postcode",
     next_views.CandidatesAndElectionsForPostcodeViewSet,
-    base_name="candidates-for-postcode",
+    basename="candidates-for-postcode",
 )
 
 
