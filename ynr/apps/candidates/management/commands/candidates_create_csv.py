@@ -1,36 +1,11 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import DefaultStorage
-from django.db import reset_queries
 
-from candidates.csv_helpers import list_to_csv
-from candidates.models import PersonRedirect
-from candidates.models.fields import get_complex_popolo_fields
+from candidates.csv_helpers import list_to_csv, memberships_dicts_for_csv
 from elections.models import Election
-from people.models import Person
-
-FETCH_AT_A_TIME = 1000
 
 
-def queryset_iterator(qs, complex_popolo_fields):
-    # To save building up a huge list of queries when DEBUG = True,
-    # call reset_queries:
-    reset_queries()
-    start_index = 0
-    while True:
-        chunk_qs = qs.order_by("pk")[
-            start_index : start_index + FETCH_AT_A_TIME
-        ]
-        empty = True
-        for person in chunk_qs.joins_for_csv_output():
-            empty = False
-            person.complex_popolo_fields = complex_popolo_fields
-            yield person
-        if empty:
-            return
-        start_index += FETCH_AT_A_TIME
-
-
-def safely_write(output_filename, people, group_by_post):
+def safely_write(output_filename, memberships_list):
     """
     Use Django's storage backend to write the CSV file to the MEDIA_ROOT.
 
@@ -45,7 +20,7 @@ def safely_write(output_filename, people, group_by_post):
     during write.
     """
 
-    csv = list_to_csv(people, group_by_post)
+    csv = list_to_csv(memberships_list)
     file_store = DefaultStorage()
     with file_store.open(output_filename, "wb") as out_file:
         out_file.write(csv.encode("utf-8"))
@@ -66,65 +41,48 @@ class Command(BaseCommand):
             help="Only output CSV for the election with this slug",
         )
 
-    def get_people(self, election, qs):
-        all_people = []
-        elected_people = []
-        for person in queryset_iterator(qs, self.complex_popolo_fields):
-            for d in person.as_list_of_dicts(
-                election,
-                base_url=self.options["site_base_url"],
-                redirects=self.redirects,
-            ):
-                all_people.append(d)
-                if d["elected"] == "True":
-                    elected_people.append(d)
-        return all_people, elected_people
+    def slug_to_file_name(self, slug):
+        return "{}-{}.csv".format(self.output_prefix, slug)
 
     def handle(self, **options):
         if options["election"]:
             try:
-                all_elections = [Election.objects.get(slug=options["election"])]
+                election = Election.objects.get(slug=options["election"])
+                election_slug = election.slug
             except Election.DoesNotExist:
                 message = "Couldn't find an election with slug {election_slug}"
                 raise CommandError(
                     message.format(election_slug=options["election"])
                 )
         else:
-            all_elections = list(Election.objects.all()) + [None]
+            election_slug = None
 
         self.options = options
-        self.complex_popolo_fields = get_complex_popolo_fields()
-        self.redirects = PersonRedirect.all_redirects_dict()
         self.output_prefix = "candidates"
 
-        for election in all_elections:
-            if election is None:
-                # Get information for every candidate in every
-                # election.
-                qs = Person.objects.all()
-                all_people, elected_people = self.get_people(election, qs)
-                output_filenames = {
-                    "all": self.output_prefix + "-all.csv",
-                    "elected": self.output_prefix + "-elected-all.csv",
-                }
-            else:
-                # Only get the candidates standing in that particular
-                # election
-                role = election.candidate_membership_role
-                qs = Person.objects.filter(
-                    memberships__post_election__election=election,
-                    memberships__role=role,
-                )
-                all_people, elected_people = self.get_people(election, qs)
-                output_filenames = {
-                    "all": self.output_prefix + "-" + election.slug + ".csv",
-                    "elected": self.output_prefix
-                    + "-elected-"
-                    + election.slug
-                    + ".csv",
-                }
-            group_by_post = election is not None
-            safely_write(output_filenames["all"], all_people, group_by_post)
+        membership_by_election, elected_by_election = memberships_dicts_for_csv(
+            election_slug
+        )
+
+        # Write a file per election, optionally adding candidates
+        # We still want a file to exist if there are no candidates yet,
+        # as the files linked to as soon as the election is created
+        for election in Election.objects.all():
             safely_write(
-                output_filenames["elected"], elected_people, group_by_post
+                self.slug_to_file_name(election.slug),
+                membership_by_election.get(election.slug, []),
             )
+
+        # If we're not outputting a single election, output all elections
+        if not election_slug:
+            sorted_elections = sorted(
+                membership_by_election.keys(),
+                key=lambda key: key.split(".")[-1],
+            )
+            all_memberships = []
+            all_elected = []
+            for slug in sorted_elections:
+                all_memberships += membership_by_election[slug]
+                all_elected += elected_by_election[slug]
+            safely_write(self.slug_to_file_name("all"), all_memberships)
+            safely_write(self.slug_to_file_name("elected-all"), all_elected)

@@ -10,7 +10,6 @@ from .auth import TestUserMixin
 from popolo.models import Membership
 from people.models import Person
 
-from candidates.models import ExtraField
 from .factories import MembershipFactory
 from people.tests.factories import PersonFactory
 from .uk_examples import UK2015ExamplesMixin
@@ -66,7 +65,10 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_update_person_submission_copyright_refused(self):
         response = self.app.get("/person/2009/update", user=self.user)
         form = response.forms["person-details"]
-        form["wikipedia_url"] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
+        form[
+            "tmp_person_identifiers-0-value"
+        ] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
+        form["tmp_person_identifiers-0-value_type"] = "wikipedia_url"
         form["party_GB_2015"] = self.labour_party.ec_id
         form["source"] = "Some source of this information"
         submission_response = form.submit(user=self.user_refused)
@@ -80,7 +82,11 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/person/2009/update", user=self.user_who_can_lock
         )
         form = response.forms["person-details"]
-        form["wikipedia_url"] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
+        form[
+            "tmp_person_identifiers-0-value"
+        ] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
+        form["tmp_person_identifiers-0-value_type"] = "wikipedia_url"
+
         form["party_GB_2015"] = self.labour_party.ec_id
         form["source"] = "Some source of this information"
         submission_response = form.submit()
@@ -92,10 +98,11 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(party[0].party.legacy_slug, "party:53")
         self.assertEqual(party[0].party.ec_id, "PP53")
 
-        links = person.links.all()
-        self.assertEqual(links.count(), 1)
+        person_identifiers = person.tmp_person_identifiers.all()
+        self.assertEqual(person_identifiers.count(), 1)
         self.assertEqual(
-            links[0].url, "http://en.wikipedia.org/wiki/Tessa_Jowell"
+            person_identifiers[0].value,
+            "http://en.wikipedia.org/wiki/Tessa_Jowell",
         )
 
         # It should redirect back to the same person's page:
@@ -123,17 +130,13 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_update_person_extra_fields(self):
         memberships_before = membership_id_set(Person.objects.get(pk=2009))
-        ExtraField.objects.create(type="url", key="cv", label="CV or Resumé")
-        ExtraField.objects.create(
-            type="longer-text", key="notes", label="Notes"
-        )
+
         response = self.app.get(
             "/person/2009/update", user=self.user_who_can_lock
         )
         form = response.forms["person-details"]
         form["birth_date"] = "1/4/1875"
         form["source"] = "An update for testing purposes"
-        form["cv"] = "http://example.org/cv.pdf"
         response = form.submit()
 
         self.assertEqual(response.status_code, 302)
@@ -144,12 +147,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(person.birth_date, "1875-04-01")
         versions_data = json.loads(person.versions)
         self.assertEqual(
-            versions_data[0]["data"]["extra_fields"],
-            {
-                "cv": "http://example.org/cv.pdf",
-                "notes": "",
-                "favourite_biscuits": "",
-            },
+            versions_data[0]["data"]["extra_fields"], {"favourite_biscuits": ""}
         )
         self.assertEqual(memberships_before, membership_id_set(person))
 

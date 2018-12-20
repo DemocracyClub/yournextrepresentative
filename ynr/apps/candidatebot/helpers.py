@@ -4,7 +4,7 @@ from django.db import transaction
 
 from candidates.models import LoggedAction
 from candidates.views.version_data import get_change_metadata
-from people.models import Person
+from people.models import Person, PersonIdentifier
 
 
 class CandidateBot(object):
@@ -45,7 +45,9 @@ class CandidateBot(object):
             if "@" in field_value:
                 if self.person.email:
                     raise ValueError("Email already exists")
-                self.person.email = field_value
+                PersonIdentifier.objects.update_or_create(
+                    person=self.person, value_type=field_name, value=field_value
+                )
             else:
                 ValueError("{} is not a valid email".format(field_value))
 

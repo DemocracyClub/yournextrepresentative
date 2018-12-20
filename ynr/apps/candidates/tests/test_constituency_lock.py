@@ -157,6 +157,10 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.post(
             "/election/2015/person/create/",
             params={
+                "tmp_person_identifiers-TOTAL_FORMS": "2",
+                "tmp_person_identifiers-INITIAL_FORMS": "0",
+                "tmp_person_identifiers-MIN_NUM_FORMS": "0",
+                "tmp_person_identifiers-MAX_NUM_FORMS": "1000",
                 "csrfmiddlewaretoken": csrftoken,
                 "name": "Imaginary Candidate",
                 "party_GB_2015": self.green_party.ec_id,

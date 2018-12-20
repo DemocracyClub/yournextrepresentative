@@ -192,17 +192,22 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
         dt = self.current_datetime - timedelta(minutes=13)
         change_updated_and_created(la, dt)
 
-        response = self.app.post(
-            "/election/{}/person/create/".format(self.election.slug),
-            params={
-                "name": "Yoshi Aarle",
-                "source": "just a test",
-                "standing_2015": "standing",
-                "constituency_2015": "65808",
-                "party_GB_2015": str(Party.objects.first().ec_id),
-            },
+        resp = self.app.get(
+            "/election/{}/post/{}/richmond-park".format(
+                self.election.slug, "65808"
+            ),
             user=self.user,
-        ).follow()
+        )
+
+        form = resp.forms["new-candidate-form"]
+
+        form["name"] = "Yoshi Aarle"
+        form["source"] = "just a test"
+        form["standing_2015"] = "standing"
+        form["constituency_2015"] = "65808"
+        form["party_GB_2015"] = str(Party.objects.first().ec_id)
+        response = form.submit().follow()
+
         person = response.context["person"]
         self.person = person
 

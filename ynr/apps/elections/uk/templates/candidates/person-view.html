@@ -155,15 +155,11 @@
   <h2>{% trans "Links and social media:" %}</h2>
 
   <dl>
-    {% for field, value in complex_fields %}
-        <dt>{{ field.label }}</dt>
-      {% if field.info_type == 'twitter' %}
-        <dd>{% if value %}<a rel="nofollow" href="https://twitter.com/{{ value }}">@{{ value }}</a>{% endif %}</dd>
-      {% elif field.field_type == 'url' %}
-        <dd>{% if value %}<a rel="nofollow" href="{{ value }}">{{ value }}</a>{% endif %}</dd>
-      {% else %}
-        <dd>{{ value }}</dt>
-      {% endif %}
+    {% for identifier in person.tmp_person_identifiers.all %}
+        <dt>{{ identifier.get_value_type_html }}</dt>
+        <dd>
+          {{ identifier.get_value_html }}
+        </dd>
     {% endfor %}
   </dl>
 
@@ -205,13 +201,11 @@
     </dl>
   {% endif %}
 
-  {% if extra_fields %}
+  {% if person.favourite_biscuit %}
     <h2>{% trans "Additional information:" %}</h2>
     <dl>
-      {% for extra_field_key, extra_field in extra_fields %}
-        <dt>{{ extra_field.label }}</dt>
-        <dd {% if extra_field.type == 'longer-text' %}class="plaintext-with-newlines"{% endif %}>{{ extra_field | extra_field_value | default:"Unknown"}}</dd>
-      {% endfor %}
+      <dt>Favourite biscuit</dt>
+      <dd>{{ person.favourite_biscuit }}</dd>
     </dl>
   {% endif %}
 

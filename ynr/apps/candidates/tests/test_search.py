@@ -29,7 +29,8 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         form = response.forms["new-candidate-form"]
         form["name"] = "Mr Darcy"
-        form["email"] = "darcy@example.com"
+        form["tmp_person_identifiers-0-value"] = "darcy@example.com"
+        form["tmp_person_identifiers-0-value_type"] = "email"
         form["source"] = "Testing adding a new person to a post"
         form["party_GB_2015"] = self.labour_party.ec_id
         form.submit()
@@ -39,7 +40,8 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         form = response.forms["new-candidate-form"]
         form["name"] = "Elizabeth Bennet"
-        form["email"] = "lizzie@example.com"
+        form["tmp_person_identifiers-0-value"] = "lizzie@example.com"
+        form["tmp_person_identifiers-0-value_type"] = "email"
         form["source"] = "Testing adding a new person to a post"
         form["party_GB_2015"] = self.labour_party.ec_id
         form.submit()
@@ -49,7 +51,8 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         form = response.forms["new-candidate-form"]
         form["name"] = "Charlotte O'Lucas"  # testers license
-        form["email"] = "charlotte@example.com"
+        form["tmp_person_identifiers-0-value"] = "charlotte@example.com"
+        form["tmp_person_identifiers-0-value_type"] = "email"
         form["source"] = "Testing adding a new person to a post"
         form["party_GB_2015"] = self.labour_party.ec_id
         form.submit()
@@ -65,7 +68,8 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         form = response.forms["new-candidate-form"]
         form["name"] = "Elizabeth Jones"
-        form["email"] = "e.jones@example.com"
+        form["tmp_person_identifiers-0-value"] = "e.jones@example.com"
+        form["tmp_person_identifiers-0-value_type"] = "email"
         form["source"] = "Testing adding a new person to a post"
         form["party_GB_2015"] = self.labour_party.ec_id
         form.submit()

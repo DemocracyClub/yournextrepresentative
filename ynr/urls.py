@@ -13,7 +13,6 @@ urlpatterns = [
     url(r"^parties/", include("parties.urls")),
     url(r"^", include("api.urls")),
     url(r"^", include("candidates.urls")),
-    url(r"^tasks/", include("tasks.urls")),
     url(r"^admin/doc/", include("django.contrib.admindocs.urls")),
     url(r"^admin/", admin.site.urls),
     url(r"^accounts/", include("allauth.urls")),

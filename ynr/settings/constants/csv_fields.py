@@ -31,4 +31,10 @@ CSV_ROW_FIELDS = [
     "party_lists_in_use",
     "party_list_position",
     "old_person_ids",
+    "gss_code",
+    "parlparse_id",
+    "theyworkforyou_url",
+    "party_ec_id",
+    "favourite_biscuits",
+    "cancelled_poll",
 ]

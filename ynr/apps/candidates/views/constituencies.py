@@ -23,8 +23,8 @@ from .helpers import (
     split_by_elected,
 )
 from .version_data import get_client_ip, get_change_metadata
-from ..csv_helpers import list_to_csv
-from people.forms import NewPersonForm
+from ..csv_helpers import list_to_csv, memberships_dicts_for_csv
+from people.forms import NewPersonForm, PersonIdentifierFormsetFactory
 from candidates.forms import ToggleLockForm, ConstituencyRecordWinnerForm
 from ..models import (
     TRUSTED_TO_LOCK_GROUP_NAME,
@@ -917,6 +917,7 @@ class ConstituencyDetailView(ElectionMixin, TemplateView):
         )
 
         context = get_person_form_fields(context, context["add_candidate_form"])
+        context["identifiers_formset"] = PersonIdentifierFormsetFactory()
         return context
 
 
@@ -925,23 +926,17 @@ class ConstituencyDetailCSVView(ElectionMixin, View):
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):
-        redirects = PersonRedirect.all_redirects_dict()
         post = Post.objects.get(slug=kwargs["post_id"])
-        all_people = []
-        for me in Membership.objects.filter(
-            post_election__election=self.election_data, post=post
-        ).select_related("person"):
-            for d in me.person.as_list_of_dicts(
-                self.election_data, redirects=redirects
-            ):
-                all_people.append(d)
+        memberships_dict, elected = memberships_dicts_for_csv(
+            election_slug=self.election_data.slug, post_slug=post.slug
+        )
 
         filename = "{election}-{constituency_slug}.csv".format(
             election=self.election, constituency_slug=slugify(post.short_label)
         )
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="%s"' % filename
-        response.write(list_to_csv(all_people))
+        response.write(list_to_csv(memberships_dict[self.election_data.slug]))
         return response
 
 

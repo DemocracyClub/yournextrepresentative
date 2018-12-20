@@ -11,8 +11,6 @@ from django.db.models import F
 
 from candidates.views.mixins import ContributorsMixin
 from candidates.models import PostExtraElection
-from tasks.models import PersonTask
-
 
 from elections.models import Election
 

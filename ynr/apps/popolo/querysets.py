@@ -1,11 +1,4 @@
-from django.conf import settings
 from django.db.models import Q
-
-from candidates.models import (
-    ComplexPopoloField,
-    ExtraField,
-    PersonExtraFieldValue,
-)
 
 __author__ = "guglielmo"
 
@@ -70,7 +63,28 @@ class PostQuerySet(DateframeableQuerySet):
 
 
 class MembershipQuerySet(DateframeableQuerySet):
-    pass
+    def for_csv(self):
+
+        return (
+            self.select_related(
+                "post_election",
+                "post_election__election",
+                "post_election__post",
+                "person",
+                "party",
+            )
+            .prefetch_related(
+                "person__tmp_person_identifiers",
+                "person__images",
+                "person__images__uploading_user",
+                "person__identifiers",
+            )
+            .order_by(
+                "post_election__election__election_date",
+                "-post_election__election__slug",
+                "person__pk",
+            )
+        )
 
 
 class ContactDetailQuerySet(DateframeableQuerySet):

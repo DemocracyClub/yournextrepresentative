@@ -33,4 +33,4 @@ class ResultSetViewSet(viewsets.ModelViewSet):
     serializer_class = ResultSetSerializer
     pagination_class = ResultsSetPagination
 
-    filter_class = ResultSetFilter
+    filterset_class = ResultSetFilter

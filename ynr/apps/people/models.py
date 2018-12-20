@@ -1,8 +1,10 @@
 import json
 from datetime import date
+import re
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -12,21 +14,25 @@ from django.utils.functional import cached_property
 from django.utils.six import text_type
 from django.utils.six.moves.urllib_parse import quote_plus, urljoin
 from django.utils.translation import ugettext_lazy as _
+from django.utils.html import format_html
+from django_extensions.db.models import TimeStampedModel
 from popolo.behaviors.models import GenericRelatable, Timestampable
 from popolo.models import (
-    ComplexPopoloField,
     ContactDetail,
     Identifier,
     Membership,
     MultipleTwitterIdentifiers,
-    PersonExtraFieldValue,
     VersionNotFound,
 )
 from slugify import slugify
 from sorl.thumbnail import get_thumbnail
 
 from candidates.diffs import get_version_diffs
-from people.managers import PersonImageManager, PersonQuerySet
+from people.managers import (
+    PersonImageManager,
+    PersonIdentifierQuerySet,
+    PersonQuerySet,
+)
 
 
 def person_image_path(instance, filename):
@@ -55,6 +61,95 @@ class PersonImage(models.Model):
     is_primary = models.BooleanField(default=False)
 
     objects = PersonImageManager()
+
+
+class PersonIdentifier(TimeStampedModel):
+    """
+    This is a model for storing "identifiers" for a person.
+
+    The most simple case is a URL to another website.
+
+    In this case the "value" is "@democlub" (or it could be
+    "https"//twitter.com/democlub").
+
+    Twitter uses "vanity URLs" as well as internal identifiers so we can
+    store the internal ID that looks like "362837635" on the internal_identifier
+    field.
+
+    An identifier value or internal identifier doesn't have to be resolvable
+    over HTTP. For example a phone number or snapchat handle are both valid
+    values.
+
+    """
+
+    person = models.ForeignKey(
+        "people.Person", related_name="tmp_person_identifiers"
+    )
+    value = models.CharField(
+        max_length=800,
+        help_text="An identifier e.g a URL or username provided by a 3rd party",
+    )
+    internal_identifier = models.CharField(
+        max_length=800,
+        help_text="An optional internal identifier from the 3rd party",
+        null=True,
+    )
+    value_type = models.CharField(
+        max_length=100,
+        help_text="A label for the type of value e.g. 'Twitter', 'Person blog'",
+    )
+    extra_data = JSONField(
+        help_text="""For storing any additional data against this field. 
+                     Used by bots, not humans.""",
+        null=True,
+    )
+
+    objects = PersonIdentifierQuerySet.as_manager()
+
+    class Meta:
+        unique_together = (
+            ("person", "value"),
+            ("person", "internal_identifier", "value_type"),
+            # TODO: Remove this.
+            # At the moemnt the version history can't deal with more than one
+            # value per value_type. This prevents creating duplicates, and
+            # therefore means we'll be able to merge and revert people.
+            # This constraint should be removed when the version history can
+            # support the data model we want
+            ("person", "value_type"),
+        )
+        ordering = ("value_type", "-modified")
+
+    def __str__(self):
+        return "{}: {} ({})".format(self.person_id, self.value_type, self.value)
+
+    @property
+    def get_value_type_html(self):
+        text = self.value_type.replace("_", " ")
+        text = self.value_type.replace(" url", "")
+
+        return text.title().strip()
+
+    @property
+    def get_value_html(self):
+        url = None
+        text = "{}"
+
+        if self.value_type == "twitter":
+            if self.value.startswith("@"):
+                self.value = self.value[1:]
+            url = format_html("https://twitter.com/{}", self.value)
+
+        if self.value.startswith("http"):
+            url = format_html("{}", self.value)
+
+        if self.value_type == "email":
+            url = format_html("mailto:{}", self.value)
+
+        if url:
+            text = format_html("""<a href="{}" rel="nofollow">{{}}</a>""", url)
+
+        return format_html(text, self.value)
 
 
 class Person(Timestampable, models.Model):
@@ -186,16 +281,14 @@ class Person(Timestampable, models.Model):
         "elections.Election", related_name="persons_not_standing_tmp"
     )
 
+    favourite_biscuit = models.CharField(
+        "Favourite biscuit 🍪", max_length=255, null=True
+    )
+
     class Meta:
         verbose_name_plural = "People"
 
     objects = PersonQuerySet.as_manager()
-
-    @cached_property
-    def complex_popolo_fields(self):
-        from candidates.models.fields import get_complex_popolo_fields
-
-        return get_complex_popolo_fields()
 
     @property
     def current_candidacies(self):
@@ -244,6 +337,27 @@ class Person(Timestampable, models.Model):
         if identifier_object:
             return identifier_object.identifier
         return ""
+
+    @cached_property
+    def get_all_idenfitiers(self):
+        return list(self.tmp_person_identifiers.all())
+
+    def get_identifiers_of_type(self, value_type=None):
+        id_list = self.get_all_idenfitiers
+        if value_type:
+            id_list = [i for i in id_list if i.value_type == value_type]
+        return id_list
+
+    def get_single_identifier_of_type(self, value_type=None):
+        value = None
+        try:
+            return self.get_identifiers_of_type(value_type=value_type)[0].value
+        except IndexError:
+            pass
+
+    @property
+    def get_email(self):
+        return self.get_single_identifier_of_type("email")
 
     @property
     def last_candidacy(self):
@@ -407,12 +521,8 @@ class Person(Timestampable, models.Model):
         initial_data = {}
         for field in settings.SIMPLE_POPOLO_FIELDS:
             initial_data[field.name] = getattr(self, field.name)
-        for field in ComplexPopoloField.objects.all():
-            initial_data[field.name] = getattr(self, field.name)
-        for extra_field_value in PersonExtraFieldValue.objects.filter(
-            person=self
-        ).select_related("field"):
-            initial_data[extra_field_value.field.key] = extra_field_value.value
+        initial_data["favourite_biscuit"] = self.favourite_biscuit
+
         not_standing_elections = list(self.not_standing.all())
         from elections.models import Election
 
@@ -471,115 +581,91 @@ class Person(Timestampable, models.Model):
         update_person_from_form(person, form)
         return person
 
-    def as_list_of_dicts(self, election, base_url=None, redirects=None):
-        result = []
-        if not base_url:
-            base_url = ""
-        if not redirects:
-            redirects = {}
-        # Find the list of relevant candidacies. So as not to cause
-        # extra queries, we don't use filter but instead iterate over
-        # all objects:
-        candidacies = []
-        for m in self.memberships.all():
-            if not m.post_election.election:
-                continue
-            expected_role = m.post_election.election.candidate_membership_role
-            if election is None:
-                if expected_role == m.role:
-                    candidacies.append(m)
-            else:
-                if (
-                    m.post_election.election == election
-                    and expected_role == m.role
-                ):
-                    candidacies.append(m)
-        for candidacy in candidacies:
-            party = candidacy.party
-            post = candidacy.post
-            elected = candidacy.elected
-            elected_for_csv = ""
-            image_copyright = ""
-            image_uploading_user = ""
-            image_uploading_user_notes = ""
-            proxy_image_url_template = ""
-            if elected is not None:
-                elected_for_csv = str(elected)
-            mapit_url = ""
-            primary_image = None
-            for image in self.images.all():
-                if image.is_primary:
-                    primary_image = image
-            primary_image_url = None
-            if primary_image:
-                primary_image_url = urljoin(base_url, primary_image.image.url)
-                if settings.IMAGE_PROXY_URL and base_url:
-                    encoded_url = quote_plus(primary_image_url)
-                    proxy_image_url_template = (
-                        settings.IMAGE_PROXY_URL
-                        + encoded_url
-                        + "/{height}/{width}.{extension}"
-                    )
+    def dict_for_csv(self, base_url=None):
+        elected_for_csv = ""
+        image_copyright = ""
+        image_uploading_user = ""
+        image_uploading_user_notes = ""
+        proxy_image_url_template = ""
 
-                try:
-                    image_copyright = primary_image.copyright
-                    user = primary_image.uploading_user
-                    if user is not None:
-                        image_uploading_user = (
-                            primary_image.uploading_user.username
-                        )
-                    image_uploading_user_notes = primary_image.user_notes
-                except ObjectDoesNotExist:
-                    pass
-            twitter_user_id = ""
-            for identifier in self.identifiers.all():
-                if identifier.scheme == "twitter":
-                    twitter_user_id = identifier.identifier
-            old_person_ids = ";".join(
-                text_type(i) for i in redirects.get(self.id, [])
-            )
+        primary_image = None
+        for image in self.images.all():
+            if image.is_primary:
+                primary_image = image
+        primary_image_url = None
+        if primary_image:
+            primary_image_url = urljoin(base_url, primary_image.image.url)
+            if settings.IMAGE_PROXY_URL and base_url:
+                encoded_url = quote_plus(primary_image_url)
+                proxy_image_url_template = (
+                    settings.IMAGE_PROXY_URL
+                    + encoded_url
+                    + "/{height}/{width}.{extension}"
+                )
 
-            row = {
-                "id": self.id,
-                "name": self.name,
-                "honorific_prefix": self.honorific_prefix,
-                "honorific_suffix": self.honorific_suffix,
-                "gender": self.gender,
-                "birth_date": self.birth_date,
-                "election": candidacy.post_election.election.slug,
-                "election_date": candidacy.post_election.election.election_date,
-                "election_current": candidacy.post_election.election.current,
-                "party_id": party.legacy_slug,
-                "party_lists_in_use": candidacy.post_election.election.party_lists_in_use,
-                "party_list_position": candidacy.party_list_position,
-                "party_name": party.name,
-                "post_id": post.slug,
-                "post_label": post.short_label,
-                "mapit_url": mapit_url,
-                "elected": elected_for_csv,
-                "email": self.email,
-                "twitter_username": self.twitter_username,
-                "twitter_user_id": twitter_user_id,
-                "facebook_page_url": self.facebook_page_url,
-                "linkedin_url": self.linkedin_url,
-                "party_ppc_page_url": self.party_ppc_page_url,
-                "facebook_personal_url": self.facebook_personal_url,
-                "homepage_url": self.homepage_url,
-                "wikipedia_url": self.wikipedia_url,
-                "image_url": primary_image_url,
-                "proxy_image_url_template": proxy_image_url_template,
-                "image_copyright": image_copyright,
-                "image_uploading_user": image_uploading_user,
-                "image_uploading_user_notes": image_uploading_user_notes,
-                "old_person_ids": old_person_ids,
-            }
-            from candidates.election_specific import get_extra_csv_values
+            try:
+                image_copyright = primary_image.copyright
+                user = primary_image.uploading_user
+                if user is not None:
+                    image_uploading_user = primary_image.uploading_user.username
+                image_uploading_user_notes = primary_image.user_notes
+            except ObjectDoesNotExist:
+                pass
 
-            extra_csv_data = get_extra_csv_values(self, election, post)
-            row.update(extra_csv_data)
-            result.append(row)
+        twitter_qs = self.get_identifiers_of_type("twitter_username")
+        if twitter_qs:
+            twitter_user_id = twitter_qs[0].internal_identifier
+            twitter_user_name = twitter_qs[0].value
+        else:
+            twitter_user_name = twitter_user_id = ""
 
-        return result
+        theyworkforyou_url = ""
+        parlparse_id = ""
+        for i in self.identifiers.all():
+            if i.scheme == "uk.org.publicwhip":
+                parlparse_id = i.identifier
+                m = re.search(r"^uk.org.publicwhip/person/(\d+)$", parlparse_id)
+                if not m:
+                    message = "Malformed parlparse ID found {0}"
+                    raise Exception(message.format(parlparse_id))
+                theyworkforyou_url = "http://www.theyworkforyou.com/mp/{}".format(
+                    m.group(1)
+                )
+
+        row = {
+            "id": self.id,
+            "name": self.name,
+            "honorific_prefix": self.honorific_prefix,
+            "honorific_suffix": self.honorific_suffix,
+            "gender": self.gender,
+            "birth_date": self.birth_date,
+            "email": self.email,
+            "twitter_username": twitter_user_name,
+            "twitter_user_id": twitter_user_id,
+            "facebook_page_url": self.get_single_identifier_of_type(
+                "facebook_page_url"
+            ),
+            "favourite_biscuits": self.favourite_biscuit or "",
+            "linkedin_url": self.get_single_identifier_of_type("linkedin_url"),
+            "party_ppc_page_url": self.get_single_identifier_of_type(
+                "party_ppc_page_url"
+            ),
+            "facebook_personal_url": self.get_single_identifier_of_type(
+                "facebook_personal_url"
+            ),
+            "homepage_url": self.get_single_identifier_of_type("homepage_url"),
+            "wikipedia_url": self.get_single_identifier_of_type(
+                "wikipedia_url"
+            ),
+            "theyworkforyou_url": theyworkforyou_url,
+            "parlparse_id": parlparse_id,
+            "image_url": primary_image_url,
+            "proxy_image_url_template": proxy_image_url_template,
+            "image_copyright": image_copyright,
+            "image_uploading_user": image_uploading_user,
+            "image_uploading_user_notes": image_uploading_user_notes,
+        }
+        return row
 
     @property
     def primary_image(self):
@@ -591,33 +677,13 @@ class Person(Timestampable, models.Model):
         """
         Return either the person's primary image or blank outline of a person
         """
-
         if self.primary_image:
-            return get_thumbnail(self.primary_image.file, "x64").url
+            try:
+                return get_thumbnail(self.primary_image.file, "x64").url
+            except FileNotFoundError:
+                pass
 
         return static("candidates/img/blank-person.png")
-
-    def __getattr__(self, name):
-        # We don't want to trigger the population of the
-        # complex_popolo_fields property just because Django is
-        # checking whether the prefetch objects cache is there:
-        if name == "_prefetched_objects_cache":
-            return super().__getattr__(self, name)
-        field = self.complex_popolo_fields.get(name)
-        if field:
-            # Iterate rather than using filter because that would
-            # cause an extra query when the relation has already been
-            # populated via select_related:
-            for e in getattr(self, field.popolo_array).all():
-                info_type_key = getattr(e, field.info_type_key)
-                if (info_type_key == field.info_type) or (
-                    info_type_key == field.old_info_type
-                ):
-                    return getattr(e, field.info_value_key)
-            return ""
-        else:
-            message = _("'Person' object has no attribute '{name}'")
-            raise AttributeError(message.format(name=name))
 
     def __str__(self):
         return self.name

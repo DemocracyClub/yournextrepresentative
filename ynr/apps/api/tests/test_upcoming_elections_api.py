@@ -172,7 +172,7 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
                         "contact_details": [],
                         "death_date": "",
                         "email": None,
-                        "extra_fields": [],
+                        "extra_fields": [{"favourite_biscuits": ""}],
                         "gender": "",
                         "honorific_prefix": "",
                         "honorific_suffix": "",

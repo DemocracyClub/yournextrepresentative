@@ -147,7 +147,6 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                     "person__contact_details",
                     "person__links",
                     "person__identifiers",
-                    "person__extra_field_values",
                 )
                 .select_related("person")
             ):
@@ -358,7 +357,7 @@ class ElectionViewSet(viewsets.ModelViewSet):
     queryset = Election.objects.order_by("id")
     lookup_field = "slug"
     serializer_class = serializers.ElectionSerializer
-    filter_fields = ("current",)
+    filterset_fields = ("current",)
     pagination_class = ResultsSetPagination
 
 
@@ -385,18 +384,6 @@ class MembershipViewSet(viewsets.ModelViewSet):
 class LoggedActionViewSet(viewsets.ModelViewSet):
     queryset = extra_models.LoggedAction.objects.order_by("id")
     serializer_class = serializers.LoggedActionSerializer
-    pagination_class = ResultsSetPagination
-
-
-class ExtraFieldViewSet(viewsets.ModelViewSet):
-    queryset = extra_models.ExtraField.objects.order_by("id")
-    serializer_class = serializers.ExtraFieldSerializer
-    pagination_class = ResultsSetPagination
-
-
-class ComplexPopoloFieldViewSet(viewsets.ModelViewSet):
-    queryset = extra_models.ComplexPopoloField.objects.order_by("id")
-    serializer_class = serializers.ComplexPopoloFieldSerializer
     pagination_class = ResultsSetPagination
 
 

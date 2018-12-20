@@ -59,11 +59,10 @@
     <p>{% trans "This is a crowd-sourced database of election candidates." %}
     </p>
     {% url 'help-api' as api_url %}
-    {% url "tasks_home" as tasks_url %}
     <p>{% blocktrans trimmed %}The database is transparently sourced and
       available as structured data, suitable for building other election
       websites. <a href="{{ api_url }}">Get the data now</a>, or
-      <a href="{{ tasks_url }}">help by contributing new candidate details.</a>
+      help by contributing new candidate details.
       {% endblocktrans %}
     </p>
     {% endblock %}

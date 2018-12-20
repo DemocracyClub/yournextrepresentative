@@ -74,7 +74,6 @@ simple_fields = [
     honorific_prefix,
     name,
     honorific_suffix,
-    email,
     gender,
     birth_date,
     biography,

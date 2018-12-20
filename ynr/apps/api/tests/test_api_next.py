@@ -253,7 +253,6 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
                         "contact_details": [],
                         "death_date": "",
                         "email": None,
-                        "extra_fields": [],
                         "gender": "",
                         "honorific_prefix": "",
                         "honorific_suffix": "",

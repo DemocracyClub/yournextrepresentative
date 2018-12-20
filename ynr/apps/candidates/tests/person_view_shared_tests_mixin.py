@@ -11,11 +11,13 @@ from .uk_examples import UK2015ExamplesMixin
 
 
 class PersonViewSharedTestsMixin(TestUserMixin, UK2015ExamplesMixin, WebTest):
+    maxDiff = None
+
     def setUp(self):
         super().setUp()
-        person = PersonFactory.create(id=2009, name="Tessa Jowell")
+        self.person = PersonFactory.create(id=2009, name="Tessa Jowell")
         MembershipFactory.create(
-            person=person,
+            person=self.person,
             post=self.dulwich_post,
             party=self.labour_party,
             post_election=self.dulwich_post_pee,

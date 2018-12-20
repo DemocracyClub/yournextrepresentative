@@ -11,9 +11,9 @@ source =
     moderation_queue
     official_documents
     results
-    tasks
     uk_results
     parties
+    popolo
 omit =
     */tests/*
     */test_*

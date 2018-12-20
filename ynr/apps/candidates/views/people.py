@@ -29,7 +29,11 @@ from elections.mixins import ElectionMixin
 from ..diffs import get_version_diffs
 from ..election_specific import additional_merge_actions
 from .version_data import get_client_ip, get_change_metadata
-from people.forms import NewPersonForm, UpdatePersonForm
+from people.forms import (
+    NewPersonForm,
+    UpdatePersonForm,
+    PersonIdentifierFormsetFactory,
+)
 from candidates.forms import SingleElectionForm
 from ..models import LoggedAction, PersonRedirect, TRUSTED_TO_MERGE_GROUP_NAME
 from ..models.auth import check_creation_allowed, check_update_allowed
@@ -37,15 +41,13 @@ from ..models.versions import (
     revert_person_from_version_data,
     get_person_as_version_data,
 )
-from ..models import (
-    merge_popit_people,
-    ExtraField,
-    PersonExtraFieldValue,
-    ComplexPopoloField,
+from ..models import merge_popit_people
+from .helpers import (
+    get_field_groupings,
+    get_person_form_fields,
+    ProcessInlineFormsMixin,
 )
-from .helpers import get_field_groupings, get_person_form_fields
 from people.models import Person
-from tasks.forms import PersonTaskForm
 
 
 def get_call_to_action_flash_message(person, new_person=False):
@@ -81,26 +83,6 @@ def get_call_to_action_flash_message(person, new_person=False):
     )
 
 
-def get_extra_fields(person):
-    """Get all the additional fields and their values for a person"""
-
-    extra_values = {
-        extra_value.field.key: extra_value.value
-        for extra_value in PersonExtraFieldValue.objects.filter(person=person)
-    }
-    return [
-        (
-            extra_field.key,
-            {
-                "value": extra_values.get(extra_field.key, ""),
-                "label": _(extra_field.label),
-                "type": extra_field.type,
-            },
-        )
-        for extra_field in ExtraField.objects.all()
-    ]
-
-
 class PersonView(TemplateView):
     template_name = "candidates/person-view.html"
 
@@ -114,22 +96,15 @@ class PersonView(TemplateView):
         context["redirect_after_login"] = urlquote(path)
         context["canonical_url"] = self.request.build_absolute_uri(path)
         context["person"] = self.person
-        elections_by_date = Election.objects.by_date().order_by(
-            "-election_date"
-        )
-        # If there are lots of elections known to this site, don't
-        # show a big list of elections they're not standing in - just
-        # show those that they are standing in:
-        if len(elections_by_date) > 2:
-            context["elections_to_list"] = Election.objects.filter(
-                postextraelection__membership__person=self.person
-            ).order_by("-election_date")
-        else:
-            context["elections_to_list"] = elections_by_date
+
+        context["elections_to_list"] = Election.objects.filter(
+            postextraelection__membership__person=self.person
+        ).order_by("-election_date")
+
         context["last_candidacy"] = self.person.last_candidacy
         context["election_to_show"] = None
-        context["has_current_elections"] = any(
-            [e.current for e in context["elections_to_list"]]
+        context["has_current_elections"] = (
+            context["elections_to_list"].filter(current=True).exists()
         )
         context["simple_fields"] = [
             field.name for field in settings.SIMPLE_POPOLO_FIELDS
@@ -139,19 +114,14 @@ class PersonView(TemplateView):
             demographic in context["simple_fields"]
             for demographic in demographic_fields
         )
-        context["complex_fields"] = [
-            (field, getattr(self.person, field.name))
-            for field in ComplexPopoloField.objects.all()
-        ]
 
-        context["extra_fields"] = get_extra_fields(self.person)
         return context
 
     def get(self, request, *args, **kwargs):
         person_id = self.kwargs["person_id"]
         try:
             self.person = Person.objects.prefetch_related(
-                "links", "contact_details"
+                "links", "contact_details", "tmp_person_identifiers"
             ).get(pk=person_id)
         except Person.DoesNotExist:
             try:
@@ -312,9 +282,16 @@ class MergePeopleView(GroupRequiredMixin, View):
         )
 
 
-class UpdatePersonView(LoginRequiredMixin, FormView):
+class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
     template_name = "candidates/person-edit.html"
     form_class = UpdatePersonForm
+    inline_formset_classes = {
+        "identifiers_formset": PersonIdentifierFormsetFactory
+    }
+
+    def get_inline_formset_kwargs(self, formset_name):
+        if formset_name == "identifiers_formset":
+            return {"instance": Person.objects.get(pk=self.kwargs["person_id"])}
 
     def get_initial(self):
         initial_data = super().get_initial()
@@ -337,25 +314,23 @@ class UpdatePersonView(LoginRequiredMixin, FormView):
 
         context = get_person_form_fields(context, context["form"])
 
-        if "highlight_field" in self.request.GET:
-            context["couldnt_find_field_form"] = PersonTaskForm(
-                instance=person,
-                data={
-                    "task_field": self.request.GET["highlight_field"],
-                    "person": person.pk,
-                },
-            )
-
         return context
 
-    def form_valid(self, form):
+    def form_valid(self, all_forms):
+        form = all_forms["form"]
 
         if not (settings.EDITS_ALLOWED or self.request.user.is_staff):
             return HttpResponseRedirect(reverse("all-edits-disallowed"))
 
+        context = self.get_context_data()
+        identifiers_formset = all_forms["identifiers_formset"]
+
         with transaction.atomic():
 
-            person = get_object_or_404(Person, id=self.kwargs["person_id"])
+            person = context["person"]
+            identifiers_formset.instance = person
+            identifiers_formset.save()
+
             old_name = person.name
             old_candidacies = person.current_candidacies
             person.update_from_form(form)
@@ -425,9 +400,14 @@ class NewPersonSelectElectionView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class NewPersonView(ElectionMixin, LoginRequiredMixin, FormView):
+class NewPersonView(
+    ProcessInlineFormsMixin, ElectionMixin, LoginRequiredMixin, FormView
+):
     template_name = "candidates/person-create.html"
     form_class = NewPersonForm
+    inline_formset_classes = {
+        "identifiers_formset": PersonIdentifierFormsetFactory
+    }
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -445,22 +425,20 @@ class NewPersonView(ElectionMixin, LoginRequiredMixin, FormView):
 
         context["add_candidate_form"] = context["form"]
 
-        context["extra_fields"] = []
-        extra_fields = ExtraField.objects.all()
-        for field in extra_fields:
-            context["extra_fields"].append(
-                context["add_candidate_form"][field.key]
-            )
-
         context = get_person_form_fields(context, context["add_candidate_form"])
-
         return context
 
-    def form_valid(self, form):
-
+    def form_valid(self, all_forms):
+        form = all_forms["form"]
+        identifiers_formset = all_forms["identifiers_formset"]
+        context = self.get_context_data()
         with transaction.atomic():
 
             person = Person.create_from_form(form)
+
+            identifiers_formset.instance = person
+            identifiers_formset.save()
+
             check_creation_allowed(
                 self.request.user, person.current_candidacies
             )

@@ -96,7 +96,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_any_constituency_page(self):
         # Just a smoke test for the moment:
-        with self.assertNumQueries(48):
+        with self.assertNumQueries(42):
             response = self.app.get(
                 "/election/2015/post/65808/dulwich-and-west-norwood",
                 user=self.user,
@@ -120,9 +120,9 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/election/2015/post/65808/dulwich-and-west-norwood.csv"
         )
         row_dicts = [row for row in BufferDictReader(response.content)]
-        self.assertEqual(1, len(row_dicts))
-        self.assertEqual(
-            row_dicts[0],
+        self.assertEqual(2, len(row_dicts))
+        self.assertDictEqual(
+            dict(row_dicts[1]),
             {
                 "birth_date": "",
                 "cancelled_poll": "False",

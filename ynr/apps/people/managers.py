@@ -4,11 +4,7 @@ from django.db import models
 from django.core.files.storage import DefaultStorage
 from django.conf import settings
 
-from candidates.models import (
-    ComplexPopoloField,
-    ExtraField,
-    PersonExtraFieldValue,
-)
+from ynr_refactoring.settings import PersonIdentifierFields
 
 
 class PersonImageManager(models.Manager):
@@ -42,6 +38,13 @@ class PersonImageManager(models.Manager):
         return image
 
 
+class PersonIdentifierQuerySet(models.query.QuerySet):
+    def select_choices(self):
+        default_option = [(None, "")]
+        options = [(f.name, f.value) for f in PersonIdentifierFields]
+        return default_option + options
+
+
 class PersonQuerySet(models.query.QuerySet):
     def missing(self, field):
         people_in_current_elections = self.filter(
@@ -53,25 +56,12 @@ class PersonQuerySet(models.query.QuerySet):
         ]
         if simple_field:
             return people_in_current_elections.filter(**{field: ""})
-        complex_field = ComplexPopoloField.objects.filter(name=field).first()
-        if complex_field:
-            kwargs = {
-                "{relation}__{key}".format(
-                    relation=complex_field.popolo_array,
-                    key=complex_field.info_type_key,
-                ): complex_field.info_type
-            }
-            return people_in_current_elections.exclude(**kwargs)
-        extra_field = ExtraField.objects.filter(key=field).first()
-        if extra_field:
-            # This case is a bit more complicated because the
-            # PersonExtraFieldValue class allows a blank value.
-            pefv_completed = PersonExtraFieldValue.objects.filter(
-                field=extra_field
-            ).exclude(value="")
+
+        if hasattr(PersonIdentifierFields, field):
             return people_in_current_elections.exclude(
-                id__in=[pefv.person_id for pefv in pefv_completed]
+                tmp_person_identifiers__value_type=field
             )
+
         # If we get to this point, it's a non-existent field on the person:
         raise ValueError("Unknown field '{}'".format(field))
 
@@ -89,8 +79,5 @@ class PersonQuerySet(models.query.QuerySet):
             "identifiers",
             "links",
             "images__uploading_user",
-            models.Prefetch(
-                "extra_field_values",
-                PersonExtraFieldValue.objects.select_related("field"),
-            ),
+            "tmp_person_identifiers",
         )

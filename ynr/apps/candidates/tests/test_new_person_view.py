@@ -34,9 +34,11 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/election/2015/post/65808/dulwich-and-west-norwood", user=self.user
         )
 
-        # make sure we've got the complex fields
+        # make sure we've got the PersonIdentifiers
         self.assertTrue(
-            response.html.find("input", {"id": "id_twitter_username"})
+            response.html.find(
+                "input", {"name": "tmp_person_identifiers-0-value"}
+            )
         )
 
         # make sure we've got the simple personal fields
@@ -47,9 +49,14 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms["new-candidate-form"]
         form["name"] = "Elizabeth Bennet"
-        form["email"] = "lizzie@example.com"
+        form["tmp_person_identifiers-0-value"] = "lizzie@example.com"
+        form["tmp_person_identifiers-0-value_type"] = "email"
+        form[
+            "tmp_person_identifiers-1-value"
+        ] = "http://en.wikipedia.org/wiki/Lizzie_Bennet"
+        form["tmp_person_identifiers-1-value_type"] = "wikipedia_url"
+
         form["party_GB_2015"] = self.labour_party.ec_id
-        form["wikipedia_url"] = "http://en.wikipedia.org/wiki/Lizzie_Bennet"
 
         submission_response = form.submit()
 
@@ -74,7 +81,7 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         self.assertEqual(person.name, "Elizabeth Bennet")
-        self.assertEqual(person.email, "lizzie@example.com")
+        self.assertEqual(person.get_email, "lizzie@example.com")
 
         self.assertEqual(person.memberships.count(), 1)
 
@@ -86,10 +93,11 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(candidacy.party.ec_id, "PP53")
         self.assertEqual(candidacy.post_election.election_id, self.election.id)
 
-        links = person.links.all()
-        self.assertEqual(links.count(), 1)
+        person_identifiers = person.tmp_person_identifiers.all()
+        self.assertEqual(person_identifiers.count(), 2)
         self.assertEqual(
-            links[0].url, "http://en.wikipedia.org/wiki/Lizzie_Bennet"
+            person_identifiers[1].value,
+            "http://en.wikipedia.org/wiki/Lizzie_Bennet",
         )
 
         self.assertNotEqual(person.versions, "[]")

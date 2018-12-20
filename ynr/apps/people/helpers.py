@@ -5,13 +5,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _l
 from django_date_extensions.fields import ApproximateDate
 
-from candidates.models import (
-    ComplexPopoloField,
-    ExtraField,
-    PersonExtraFieldValue,
-    PartySet,
-    raise_if_unsafe_to_delete,
-)
+from candidates.models import PartySet, raise_if_unsafe_to_delete
 from candidates.twitter_api import (
     update_twitter_user_id,
     TwitterAPITokenMissing,
@@ -86,15 +80,9 @@ def update_person_from_form(person, form):
         form_data["birth_date"] = ""
     for field in settings.SIMPLE_POPOLO_FIELDS:
         setattr(person, field.name, form_data[field.name])
-    for field in ComplexPopoloField.objects.all():
-        person.update_complex_field(field, form_data[field.name])
-    for extra_field in ExtraField.objects.all():
-        if extra_field.key in form_data:
-            PersonExtraFieldValue.objects.update_or_create(
-                person=person,
-                field=extra_field,
-                defaults={"value": form_data[extra_field.key]},
-            )
+
+    person.favourite_biscuit = form_data["favourite_biscuit"]
+
     person.save()
     try:
         update_twitter_user_id(person)

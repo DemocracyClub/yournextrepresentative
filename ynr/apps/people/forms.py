@@ -5,39 +5,36 @@ from elections.models import Election
 from django import forms, VERSION as django_version
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models import Count
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from candidates.models import PartySet, ExtraField, ComplexPopoloField
+from candidates.models import PartySet
 from popolo.models import OtherName, Post
 from people.helpers import parse_approximate_date
+from people.models import Person, PersonIdentifier
 from parties.models import Party
 from candidates.twitter_api import get_twitter_user_id, TwitterAPITokenMissing
 
-if django_version[:2] < (1, 9):
 
-    class StrippedCharField(forms.CharField):
-        """A backport of the Django 1.9 ``CharField`` ``strip`` option.
+class StrippedCharField(forms.CharField):
+    """A backport of the Django 1.9 ``CharField`` ``strip`` option.
 
-        If ``strip`` is ``True`` (the default), leading and trailing
-        whitespace is removed.
-        """
+    If ``strip`` is ``True`` (the default), leading and trailing
+    whitespace is removed.
+    """
 
-        def __init__(
-            self, max_length=None, min_length=None, strip=True, *args, **kwargs
-        ):
-            self.strip = strip
-            super().__init__(max_length, min_length, *args, **kwargs)
+    def __init__(
+        self, max_length=None, min_length=None, strip=True, *args, **kwargs
+    ):
+        self.strip = strip
+        super().__init__(max_length, min_length, *args, **kwargs)
 
-        def to_python(self, value):
-            value = super().to_python(value)
-            if self.strip:
-                value = value.strip()
-            return value
-
-
-else:
-    StrippedCharField = forms.CharField
+    def to_python(self, value):
+        value = super().to_python(value)
+        if self.strip:
+            value = value.strip()
+        return value
 
 
 class BaseCandidacyForm(forms.Form):
@@ -63,39 +60,49 @@ class CandidacyDeleteForm(BaseCandidacyForm):
     )
 
 
+class PersonIdentifierForm(forms.ModelForm):
+    class Meta:
+        model = PersonIdentifier
+        exclude = ("internal_identifier", "extra_data")
+
+    def has_changed(self, *args, **kwargs):
+        """
+        The `has_changed` method tells Django if it should validate and process
+        the form or not.
+
+        In a formset it's used to detect if an "extra" form has content or not,
+        so for example an empty "extra" form don't raise ValidationErrors.
+
+        This method catches the case where someone selects a value_type from
+        a drop down but doesn't add a value. As there is no new content being
+        added to the site, it's safe to assume that this is an error rather
+        than raising a ValidationError and forcing the user to unselect the
+        value in the form.
+
+        This method is undocumented in Django, but it seems to be the only way.
+        """
+        if self.changed_data == ["value_type"] and not self["value"].data:
+            return False
+        else:
+            return super().has_changed(*args, **kwargs)
+
+
+PersonIdentifierFormsetFactory = forms.inlineformset_factory(
+    Person,
+    PersonIdentifier,
+    form=PersonIdentifierForm,
+    can_delete=False,
+    widgets={
+        "value_type": forms.Select(
+            choices=PersonIdentifier.objects.select_choices()
+        )
+    },
+)
+
+
 class BasePersonForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # Add any extra fields to the person form:
-        for field in ExtraField.objects.all():
-            if field.type == "line":
-                self.fields[field.key] = StrippedCharField(
-                    label=_(field.label), max_length=1024, required=False
-                )
-            elif field.type == "longer-text":
-                self.fields[field.key] = StrippedCharField(
-                    label=_(field.label), required=False, widget=forms.Textarea
-                )
-            elif field.type == "url":
-                self.fields[field.key] = forms.URLField(
-                    label=_(field.label), max_length=256, required=False
-                )
-            elif field.type == "yesno":
-                self.fields[field.key] = forms.ChoiceField(
-                    label=_(field.label),
-                    required=False,
-                    # even though these are the same labels as STANDING_CHOICES
-                    # the values of that are too specific for a generic field
-                    # so we redefine them here.
-                    choices=(
-                        ("not-sure", _("Don’t Know")),
-                        ("yes", _("Yes")),
-                        ("no", _("No")),
-                    ),
-                )
-            else:
-                raise Exception("Unknown field type: {}".format(field.type))
 
         for field in settings.SIMPLE_POPOLO_FIELDS:
             opts = {"label": _(field.label), "required": field.required}
@@ -116,23 +123,17 @@ class BasePersonForm(forms.Form):
 
             if field.info_type_key == "url":
                 self.fields[field.name] = forms.URLField(**opts)
-            elif field.info_type_key == "email":
-                self.fields[field.name] = forms.EmailField(**opts)
+            # elif field.info_type_key == "email":
+            #     self.fields[field.name] = forms.EmailField(**opts)
             elif field.info_type_key == "text_multiline":
                 opts["widget"] = forms.Textarea
                 self.fields[field.name] = StrippedCharField(**opts)
             else:
                 self.fields[field.name] = StrippedCharField(**opts)
 
-        for field in ComplexPopoloField.objects.all():
-            opts = {"label": _(field.label), "required": False}
-
-            if field.field_type == "url":
-                self.fields[field.name] = forms.URLField(**opts)
-            elif field.field_type == "email":
-                self.fields[field.name] = forms.EmailField(**opts)
-            else:
-                self.fields[field.name] = StrippedCharField(**opts)
+        self.fields["favourite_biscuit"] = StrippedCharField(
+            label="Favourite biscuit 🍪", required=False
+        )
 
     STANDING_CHOICES = (
         ("not-sure", _("Don’t Know")),
@@ -161,7 +162,7 @@ class BasePersonForm(forms.Form):
     def clean_twitter_username(self):
         # Remove any URL bits around it:
         username = self.cleaned_data["twitter_username"].strip()
-        m = re.search("^.*twitter.com/(\w+)", username)
+        m = re.search(r"^.*twitter.com/(\w+)", username)
         if m:
             username = m.group(1)
         # If there's a leading '@', strip that off:

@@ -14,7 +14,6 @@ def default_additional_merge_actions(primary_person, secondary_person):
 # candidates.election_specific
 
 imports_and_defaults = (
-    ("EXTRA_CSV_ROW_FIELDS", []),
     ("shorten_post_label", lambda post_label: post_label),
     ("get_extra_csv_values", lambda person, election, post: {}),
     ("additional_merge_actions", default_additional_merge_actions),
