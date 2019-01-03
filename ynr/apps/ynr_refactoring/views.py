@@ -32,3 +32,13 @@ class RedirectConstituencyListView(RedirectView):
         if args and self.query_string:
             url = "%s?%s" % (url, args)
         return url
+
+
+class RedirectPostsListView(RedirectView):
+    """
+    Moves the /posts URL to /elections/
+
+    """
+
+    url = "/elections/"
+    permanent = True

@@ -6,6 +6,7 @@ from django.views.generic.base import RedirectView
 from django.views.decorators.cache import cache_page
 
 import candidates.views as views
+import elections.views
 import parties.views
 
 from .feeds import RecentChangesFeed, NeedsReviewFeed
@@ -21,11 +22,6 @@ urlpatterns = [
 ]
 
 patterns_to_format = [
-    {
-        "pattern": r"^posts$",
-        "view": views.PostListView.as_view(),
-        "name": "posts",
-    },
     {
         "pattern": r"^election/{election}/constituencies/unlocked$",
         "view": views.ConstituenciesUnlockedListView.as_view(),
