@@ -13,4 +13,9 @@ urlpatterns = [
         views.ElectionView.as_view(),
         name="election_view",
     ),
+    url(
+        r"^elections/(?P<election>[^/]+)/unlocked/",
+        views.UnlockedBallotsForElectionListView.as_view(),
+        name="constituencies-unlocked",
+    ),
 ]

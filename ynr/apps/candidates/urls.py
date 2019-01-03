@@ -23,11 +23,6 @@ urlpatterns = [
 
 patterns_to_format = [
     {
-        "pattern": r"^election/{election}/constituencies/unlocked$",
-        "view": views.ConstituenciesUnlockedListView.as_view(),
-        "name": "constituencies-unlocked",
-    },
-    {
         "pattern": r"^election/{election}/constituencies/declared$",
         "view": views.ConstituenciesDeclaredListView.as_view(),
         "name": "constituencies-declared",

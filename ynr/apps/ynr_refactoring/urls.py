@@ -12,4 +12,9 @@ urlpatterns = [
     url(
         r"^posts$", views.RedirectPostsListView.as_view(), name="posts_redirect"
     ),
+    url(
+        r"^election/(?P<election>[^/]+)/constituencies/unlocked$",
+        views.RedirectConstituenciesUnlockedView.as_view(),
+        name="constituencies_unlocked_redirect",
+    ),
 ]

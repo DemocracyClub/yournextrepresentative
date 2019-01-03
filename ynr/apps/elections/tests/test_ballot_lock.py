@@ -3,10 +3,10 @@ from people.models import Person
 
 from popolo.models import Post
 
-from .auth import TestUserMixin
-from .factories import MembershipFactory
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.factories import MembershipFactory
 from people.tests.factories import PersonFactory
-from .uk_examples import UK2015ExamplesMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
 def update_lock(post, election, lock_status):
@@ -113,7 +113,7 @@ class TestConstituencyLockAndUnlock(
         )
 
     def test_constituencies_unlocked_list(self):
-        response = self.app.get("/election/2015/constituencies/unlocked")
+        response = self.app.get("/elections/2015/unlocked/")
         self.assertEqual(response.status_code, 200)
         self.assertIn("Dulwich", response.text)
         self.assertNotIn("Camberwell", response.text)

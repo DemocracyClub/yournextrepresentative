@@ -1,5 +1,6 @@
 from django.views.generic import RedirectView
 from django.views.defaults import page_not_found
+from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
 from elections.models import Election
@@ -42,3 +43,19 @@ class RedirectPostsListView(RedirectView):
 
     url = "/elections/"
     permanent = True
+
+
+class RedirectConstituenciesUnlockedView(RedirectView):
+    """
+    Move /election/<election>/constituencies/unlocked to
+    /elections/<election>/unlocked/
+
+    """
+
+    permanent = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse(
+            "constituencies-unlocked",
+            kwargs={"election": self.kwargs["election"]},
+        )
