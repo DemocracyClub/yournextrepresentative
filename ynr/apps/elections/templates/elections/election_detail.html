@@ -1,28 +1,27 @@
-{% extends 'base.html' %}
-{% load i18n %}
+{% extends "base.html" %}
 
-{% block body_class %}constituencies{% endblock %}
+{% block title %}
+  Known candidates for each ballot in the {{ object.name }}
+{% endblock %}
 
-{% block title %}{% blocktrans trimmed with election_name=election_data.name %}
-   Candidates by post for the {{ election_name }}
-{% endblocktrans %}{% endblock %}
+{% block hero %}
+  <h1>{{ object.name }}</h1>
+{% endblock %}
 
-{% block hero %}<h1>{% blocktrans trimmed with election_name=election_data.name %}
-  All posts in the {{ election_name }}
-{% endblocktrans %}</h1>{% endblock %}
 
 {% block content %}
-
-<p>Posts in the {{ election_data.name }}</p>
-
-<a href="{{ MEDIA_URL }}candidates-{{ election_data.slug }}.csv" class="button small">
-  Download CSV of all candidates in the {{ election_data.name }}
+<a href="{{ MEDIA_URL }}candidates-{{ object.slug }}.csv" class="button small">
+  Download CSV of all candidates in the {{ object.name }}
 </a>
 
-<a href="{% url "bulk_add_party_select" election_data.slug %}" class="button small">
-    Add candidates for a single party</a>
+<a href="{% url "bulk_add_party_select" object.slug %}" class="button small">
+  Add candidates for a single party</a>
 
-{% for postextraelection in all_constituencies %}
+
+
+
+
+  {% for postextraelection in ballots %}
   <h3>
     <a href="{{ postextraelection.get_absolute_url }}">{{ postextraelection.post.label }}</a>
     {{ postextraelection.cancelled_status_html }}
@@ -73,6 +72,8 @@
     {% endif %}
   {% endif %}
 {% endfor %}
+
+
 
 
 {% endblock %}

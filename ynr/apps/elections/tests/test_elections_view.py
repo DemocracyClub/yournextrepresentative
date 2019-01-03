@@ -2,7 +2,7 @@ import re
 
 from django_webtest import WebTest
 
-from .uk_examples import UK2015ExamplesMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
 class TestConstituencyDetailView(UK2015ExamplesMixin, WebTest):

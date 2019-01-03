@@ -10,12 +10,10 @@ from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView, FormView, View
 from django.shortcuts import get_object_or_404
 from django.db import transaction
-from django.db.models import Prefetch
 
 from elections.mixins import ElectionMixin
 from auth_helpers.views import GroupRequiredMixin
 from .helpers import (
-    get_party_people_for_election_from_memberships,
     split_candidacies,
     get_redirect_to_post,
     group_candidates_by_party,
@@ -32,9 +30,7 @@ from ..models import (
     is_post_locked,
     RESULT_RECORDERS_GROUP_NAME,
     LoggedAction,
-    PartySet,
     PostExtraElection,
-    PersonRedirect,
 )
 from official_documents.models import OfficialDocument
 from results.models import ResultEvent
@@ -43,7 +39,6 @@ from moderation_queue.models import SuggestedPostLock
 
 from popolo.models import Membership, Post
 from people.models import Person
-from parties.models import Party
 
 
 def get_max_winners(post_election):
@@ -938,29 +933,6 @@ class ConstituencyDetailCSVView(ElectionMixin, View):
         response["Content-Disposition"] = 'attachment; filename="%s"' % filename
         response.write(list_to_csv(memberships_dict[self.election_data.slug]))
         return response
-
-
-class ConstituencyListView(ElectionMixin, TemplateView):
-    template_name = "candidates/constituencies.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["all_constituencies"] = (
-            PostExtraElection.objects.filter(election=self.election_data)
-            .order_by("post__label")
-            .select_related("post")
-            .select_related("election")
-            .select_related("resultset")
-            .prefetch_related("suggestedpostlock_set")
-            .prefetch_related(
-                Prefetch(
-                    "membership_set",
-                    Membership.objects.select_related("party", "person"),
-                )
-            )
-        )
-
-        return context
 
 
 class ConstituencyLockView(ElectionMixin, GroupRequiredMixin, View):
