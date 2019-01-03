@@ -27,11 +27,6 @@ patterns_to_format = [
         "name": "posts",
     },
     {
-        "pattern": r"^election/{election}/constituencies$",
-        "view": views.ConstituencyListView.as_view(),
-        "name": "constituencies",
-    },
-    {
         "pattern": r"^election/{election}/constituencies/unlocked$",
         "view": views.ConstituenciesUnlockedListView.as_view(),
         "name": "constituencies-unlocked",

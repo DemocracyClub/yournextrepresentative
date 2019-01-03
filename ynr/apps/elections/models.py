@@ -61,7 +61,7 @@ class Election(models.Model):
         return self.name
 
     def get_absolute_url(self, request=None):
-        return reverse("constituencies", kwargs={"election": self.slug})
+        return reverse("election_view", kwargs={"election": self.slug})
 
     @property
     def in_past(self):
