@@ -15,14 +15,18 @@ def logged_page_not_found_wrapper(request, *args, **kwargs):
 
 
 # Redirect views
-class RedirectConstituencyListView(RedirectView):
+
+
+class PermanentRedirectView(RedirectView):
+    permanent = True
+
+
+class RedirectConstituencyListView(PermanentRedirectView):
     """
     Moves from `/election/<election>/constituencies` URLs to
     /elections/<election>/ URLs
 
     """
-
-    permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
 
@@ -35,24 +39,21 @@ class RedirectConstituencyListView(RedirectView):
         return url
 
 
-class RedirectPostsListView(RedirectView):
+class RedirectPostsListView(PermanentRedirectView):
     """
     Moves the /posts URL to /elections/
 
     """
 
     url = "/elections/"
-    permanent = True
 
 
-class RedirectConstituenciesUnlockedView(RedirectView):
+class RedirectConstituenciesUnlockedView(PermanentRedirectView):
     """
     Move /election/<election>/constituencies/unlocked to
     /elections/<election>/unlocked/
 
     """
-
-    permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
         return reverse(
