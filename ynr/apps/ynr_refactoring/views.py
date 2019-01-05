@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
 from elections.models import Election
+from candidates.models import PostExtraElection
 
 from .models import PageNotFoundLog
 
@@ -60,3 +61,19 @@ class RedirectConstituenciesUnlockedView(PermanentRedirectView):
             "constituencies-unlocked",
             kwargs={"election": self.kwargs["election"]},
         )
+
+
+class RedirectConstituencyDetailView(PermanentRedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+
+        ballot = get_object_or_404(
+            PostExtraElection,
+            election__slug=self.kwargs["election"],
+            post__slug=self.kwargs["post_id"],
+        )
+        url = ballot.get_absolute_url()
+
+        args = self.request.META.get("QUERY_STRING", "")
+        if args and self.query_string:
+            url = "%s?%s" % (url, args)
+        return url

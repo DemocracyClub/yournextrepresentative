@@ -17,4 +17,9 @@ urlpatterns = [
         views.RedirectConstituenciesUnlockedView.as_view(),
         name="constituencies_unlocked_redirect",
     ),
+    url(
+        r"^election/(?P<election>[^/]+)/post/(?P<post_id>[^/]+)/(?P<ignored_slug>.*)$",
+        views.RedirectConstituencyDetailView.as_view(),
+        name="constituency_redirect",
+    ),
 ]

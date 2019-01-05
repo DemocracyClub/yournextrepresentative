@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
 from elections import views
+from elections.helpers import ElectionIDSwitcher
 
 urlpatterns = [
     url(
@@ -10,7 +11,9 @@ urlpatterns = [
     ),
     url(
         "elections/(?P<election>[^/]+)/$",
-        views.ElectionView.as_view(),
+        ElectionIDSwitcher(
+            election_view=views.ElectionView, ballot_view=views.BallotPaperView
+        ),
         name="election_view",
     ),
     url(

@@ -38,11 +38,6 @@ patterns_to_format = [
         "name": "constituency_csv",
     },
     {
-        "pattern": r"^election/{election}/post/{post}/(?P<ignored_slug>.*)$",
-        "view": views.ConstituencyDetailView.as_view(),
-        "name": "constituency",
-    },
-    {
         "pattern": r"^election/{election}/post/lock$",
         "view": views.ConstituencyLockView.as_view(),
         "name": "constituency-lock",
