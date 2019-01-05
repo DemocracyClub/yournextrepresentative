@@ -79,7 +79,7 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
 
             person.record_version(change_metadata)
             person.save()
-        return get_redirect_to_post(self.election, post)
+        return get_redirect_to_post(self.election_data, post)
 
 
 class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
@@ -123,7 +123,7 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
             person.save()
         if self.request.is_ajax():
             return JsonResponse({"success": True})
-        return get_redirect_to_post(self.election, post)
+        return get_redirect_to_post(self.election_data, post)
 
     def form_invalid(self, form):
         result = super(CandidacyDeleteView, self).form_invalid(form)

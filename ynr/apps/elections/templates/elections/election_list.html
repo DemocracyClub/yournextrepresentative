@@ -23,7 +23,7 @@
             <ul>
               {% for p in election_data.postextraelections %}
                 <li>
-                 <a href="{% url 'constituency' election=election.slug post_id=p.post.slug ignored_slug=p.post.short_label|slugify %}">{{ p.post.label }}</a>
+                 <a href="{{ p.get_absolute_url }}">{{ p.post.label }}</a>
                  {{ p.cancelled_status_html }}
                  {{ p.locked_status_html }}
                 </li>

@@ -85,16 +85,7 @@ class ConstituencyLockView(ElectionMixin, GroupRequiredMixin, View):
                     {"locked": extra_election.candidates_locked}
                 )
             else:
-                return HttpResponseRedirect(
-                    reverse(
-                        "constituency",
-                        kwargs={
-                            "election": self.election,
-                            "post_id": post_id,
-                            "ignored_slug": slugify(post_name),
-                        },
-                    )
-                )
+                return HttpResponseRedirect(extra_election.get_absolute_url())
         else:
             message = _("Invalid data POSTed to ConstituencyLockView")
             raise ValidationError(message)
@@ -103,7 +94,6 @@ class ConstituencyLockView(ElectionMixin, GroupRequiredMixin, View):
 class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
 
     form_class = ConstituencyRecordWinnerForm
-    # TODO: is this template ever used?
     template_name = "candidates/record-winner.html"
     required_group_name = RESULT_RECORDERS_GROUP_NAME
 
@@ -212,7 +202,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                             candidate.record_version(change_metadata)
                             candidate.save()
 
-        return get_redirect_to_post(self.election, self.post_data)
+        return get_redirect_to_post(self.election_data, self.post_data)
 
 
 class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
@@ -260,12 +250,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
                     candidate.save()
 
         return HttpResponseRedirect(
-            reverse(
-                "constituency",
-                kwargs={
-                    "post_id": post_id,
-                    "election": self.election,
-                    "ignored_slug": slugify(constituency_name),
-                },
-            )
+            self.election_data.postextraelection_set.get(
+                post__slug=post_id
+            ).get_absolute_url()
         )

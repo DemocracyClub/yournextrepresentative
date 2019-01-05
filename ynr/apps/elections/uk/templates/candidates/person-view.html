@@ -59,9 +59,9 @@
   <h1>{{ person.name }}</h1>
     {% if last_candidacy %}
       {% with election=last_candidacy.post_election.election post=last_candidacy.post %}
-        {% url 'constituency' election=election.slug post_id=post.slug ignored_slug=post.short_label|slugify as constituency_url %}
+
         <p>
-          Candidate for <a href="{{ constituency_url }}">{{ post.short_label }}</a> in <a href="{{ election.get_absolute_url }}">{{ election.name }}</a>
+          Candidate for <a href="{{ last_candidacy.post_election.get_absolute_url }}">{{ post.short_label }}</a> in <a href="{{ election.get_absolute_url }}">{{ election.name }}</a>
         </p>
       {% endwith %}
     {% endif %}

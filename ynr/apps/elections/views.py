@@ -85,6 +85,7 @@ class UnlockedBallotsForElectionListView(ElectionMixin, TemplateView):
                 {
                     "id": postextraelection.post.slug,
                     "name": postextraelection.post.short_label,
+                    "ballot": postextraelection,
                 }
             )
         for k in keys:

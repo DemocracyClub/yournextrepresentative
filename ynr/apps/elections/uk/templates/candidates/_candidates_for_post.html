@@ -6,7 +6,6 @@
   The following variables are expected in the context:
 
     election
-    election_data
 
     post_data.id
     post_data.label
@@ -52,7 +51,7 @@
 
 {% endcomment %}
 
-{% if election_data.show_official_documents %}
+{% if election.show_official_documents %}
   {% include 'official_documents/_post.html' %}
 {% endif %}
 
@@ -60,7 +59,7 @@
 
   {# Use the post label here, since multiple posts may be used on a page #}
   {% url 'constituency' election=election post_id=post_data.id ignored_slug=post_data.label|slugify as post_url %}
-  {% url 'constituencies' election=election_data.slug as election_posts_url %}
+  {% url 'constituencies' election=election.slug as election_posts_url %}
   {% if user_can_lock %}
     <form method="post" action="{% url 'constituency-lock' election=election %}">
       {% csrf_token %}
@@ -100,7 +99,7 @@
   {% endif %}
 
   {% if user_can_record_results and show_retract_result %}
-    <form action="{% url 'retract-winner' election=election post_id=post_id %}" method="post">
+    <form action="{% url 'retract-winner' election=election.slug post_id=post_id %}" method="post">
       {% csrf_token %}
       <input type="submit" class="button alert" value="{% trans "Unset the current winners, if incorrect" %}">
     </form>
@@ -108,7 +107,7 @@
 
   {% if has_elected %}
   <div class="candidates__elected">
-      <h3>{% blocktrans trimmed with post_label=post_data.label election_name=election_data.name  %}
+      <h3>{% blocktrans trimmed with post_label=post_data.label election_name=election.name  %}
         Elected candidates for <a href="{{ post_url }}">{{ post_label }}</a>
         in the <a href="{{ election_posts_url }}"> {{ election_name }}</a>{% endblocktrans %}
       </h3>
@@ -126,11 +125,11 @@
 
     <h3>
         {% if has_elected %}
-        {% blocktrans trimmed with post_label=post_data.label election_name=election_data.name  %}
+        {% blocktrans trimmed with post_label=post_data.label election_name=election.name  %}
       Unelected candidates for <a href="{{ post_url }}">{{ post_label }}</a>
       in the <a href="{{ election_posts_url }}"> {{ election_name }}</a>{% endblocktrans %}
       {% else %}
-        {% blocktrans trimmed with post_label=post_data.label election_name=election_data.name  %}
+        {% blocktrans trimmed with post_label=post_data.label election_name=election.name  %}
       Known candidates for <a href="{{ post_url }}">{{ post_label }}</a>
       in the <a href="{{ election_posts_url }}"> {{ election_name }}</a>{% endblocktrans %}
       {% endif %}
@@ -146,7 +145,7 @@
         {% include 'candidates/_party_list.html' %}
       {% empty %}
         <div class="no-candidates row">
-          <p class="medium-8 columns">{% blocktrans trimmed with post_label=post_data.label election_name=election_data.name %}
+          <p class="medium-8 columns">{% blocktrans trimmed with post_label=post_data.label election_name=election.name %}
               <strong>Oh no!</strong> We don’t know of any candidates in {{ post_label }}
           for the {{ election_name }} yet.{% endblocktrans %}</p>
           {% if candidate_list_edits_allowed %}
@@ -171,7 +170,7 @@
 
       <h4>{% trans "Add a new candidate" %}</h4>
 
-      <form id="new-candidate-form" name="new-candidate-form" action="{% url 'person-create' election=election %}" method="post">
+      <form id="new-candidate-form" name="new-candidate-form" action="{% url 'person-create' election=election.slug %}" method="post">
       {% with form=add_candidate_form identifiers_formset=identifiers_formset %}
         {% include 'candidates/_person_form.html' %}
       {% endwith %}

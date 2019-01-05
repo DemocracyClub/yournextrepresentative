@@ -86,14 +86,7 @@ class PostExtraElection(models.Model):
         )
 
     def get_absolute_url(self):
-        return reverse(
-            "constituency",
-            args=[
-                self.election.slug,
-                self.post.slug,
-                slugify(self.post.short_label),
-            ],
-        )
+        return reverse("election_view", args=[self.ballot_paper_id])
 
     def safe_delete(self):
         collector = NestedObjects(using=connection.cursor().db.alias)

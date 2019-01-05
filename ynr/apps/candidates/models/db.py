@@ -84,14 +84,7 @@ class LoggedAction(models.Model):
     def subject_url(self):
         pee = self.post_election_guess
         if pee:
-            return reverse(
-                "constituency",
-                kwargs={
-                    "election": pee.election.slug,
-                    "post_id": pee.post.slug,
-                    "ignored_slug": slugify(pee.post.short_label),
-                },
-            )
+            return pee.get_absolute_url()
         elif self.person:
             return reverse("person-view", kwargs={"person_id": self.person.id})
         return "/"

@@ -17,7 +17,7 @@
           adding them to this google spreadsheet</a>?
         {% endif %}
         {% if user_can_upload_documents %}
-          {% if election == '2015' %}
+          {% if election.slug == '2015' %}
             Or, as you have permission to upload documents, you can
             <a href="{% url 'upload_document_view' election=election post_id=post_data.id %}">
             upload it directly</a>.

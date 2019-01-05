@@ -32,7 +32,7 @@
 Yes, {{ name }} ({{ party }}) won in {{ constituency_name }}{% endblocktrans %}"/>
 
 <p>
-<a href="{% url 'constituency' election=election post_id=post_id ignored_slug=constituency_name|slugify %}" class="button">{% trans "Cancel" %}</a>
+<a href="{{ post_election.get_absolute_url }}" class="button">{% trans "Cancel" %}</a>
 </p>
 
 </form>

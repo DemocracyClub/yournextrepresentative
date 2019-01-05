@@ -22,7 +22,6 @@ from django.utils.translation import ugettext as _
 from django.views.generic import ListView, TemplateView, CreateView
 from PIL import Image as PillowImage
 from braces.views import LoginRequiredMixin
-from slugify import slugify
 
 from auth_helpers.views import GroupRequiredMixin
 
@@ -547,16 +546,7 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse(
-            "constituency",
-            kwargs={
-                "election": self.kwargs["election_id"],
-                "post_id": self.object.postextraelection.post.slug,
-                "ignored_slug": slugify(
-                    self.object.postextraelection.post.short_label
-                ),
-            },
-        )
+        return self.object.postextraelection.get_absolute_url()
 
 
 class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
