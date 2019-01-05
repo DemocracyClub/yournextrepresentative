@@ -37,7 +37,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
     @override_settings(TEMPLATES=templates_after)
     def test_record_winner_link_present(self):
         response = self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
             user=self.user_who_can_record_results,
         )
         self.assertIn("Mark candidate as elected", response.text)
@@ -48,15 +48,13 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_record_winner_link_not_present(self):
         response = self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood", user=self.user
+            self.dulwich_post_pee.get_absolute_url(), user=self.user
         )
         self.assertNotIn("This candidate won!", response.text)
 
     def test_record_winner_not_privileged(self):
         # Get the constituency page just to set the CSRF token
-        self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood", user=self.user
-        )
+        self.app.get(self.dulwich_post_pee.get_absolute_url(), user=self.user)
         csrftoken = self.app.cookies["csrftoken"]
         base_record_url = reverse(
             "record-winner", kwargs={"election": "2015", "post_id": "65808"}
@@ -93,7 +91,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
         )
 
         person = Person.objects.get(id=4322)
@@ -129,7 +127,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
         )
 
         person = Person.objects.get(id=4322)
@@ -169,7 +167,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
         )
 
         person = Person.objects.get(id=4322)
@@ -187,7 +185,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
         )
 
         person = Person.objects.get(id=2009)
@@ -218,7 +216,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
         )
 
         person = Person.objects.get(id=4322)
@@ -236,7 +234,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
             submission_response.location,
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
         )
 
         person = Person.objects.get(id=2009)
@@ -270,7 +268,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_retract_winner_link_present(self):
         response = self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
             user=self.user_who_can_record_results,
         )
         self.assertIn("Unset the current winners", response.text)
@@ -281,15 +279,13 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_retract_winner_link_not_present(self):
         response = self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood", user=self.user
+            self.dulwich_post_pee.get_absolute_url(), user=self.user
         )
         self.assertNotIn("Unset the current winners", response.text)
 
     def test_retract_winner_not_privileged(self):
         # Get the constituency page just to set the CSRF token
-        self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood", user=self.user
-        )
+        self.app.get(self.dulwich_post_pee.get_absolute_url(), user=self.user)
         csrftoken = self.app.cookies["csrftoken"]
         base_record_url = reverse(
             "retract-winner", kwargs={"election": "2015", "post_id": "65808"}
@@ -312,7 +308,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_retract_winner_privileged(self):
         self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
             user=self.user_who_can_record_results,
         )
         csrftoken = self.app.cookies["csrftoken"]
@@ -327,8 +323,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location,
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            response.location, self.dulwich_post_pee.get_absolute_url()
         )
 
         person = Person.objects.get(id=4322)

@@ -155,27 +155,27 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             [
                 (
                     "<td>2015 General Election</td>",
-                    '<td><a href="/election/2015/post/65913/camberwell-and-peckham">Camberwell and Peckham</a></td>',
+                    '<td><a href="/elections/2015.65913/">Camberwell and Peckham</a></td>',
                     "<td>0</td>",
                 ),
                 (
                     "<td>Maidstone local election</td>",
-                    '<td><a href="/election/local.maidstone.2016-05-05/post/DIW:E05005004/shepway-south-ward">Shepway South Ward</a></td>',
+                    '<td><a href="/elections/local.maidstone.DIW:E05005004.2016-05-05/">Shepway South Ward</a></td>',
                     "<td>0</td>",
                 ),
                 (
                     "<td>2015 General Election</td>",
-                    '<td><a href="/election/2015/post/14420/edinburgh-north-and-leith">Edinburgh North and Leith</a></td>',
+                    '<td><a href="/elections/2015.14420/">Edinburgh North and Leith</a></td>',
                     "<td>3</td>",
                 ),
                 (
                     "<td>2015 General Election</td>",
-                    '<td><a href="/election/2015/post/65808/dulwich-and-west-norwood">Dulwich and West Norwood</a></td>',
+                    '<td><a href="/elections/2015.65808/">Dulwich and West Norwood</a></td>',
                     "<td>5</td>",
                 ),
                 (
                     "<td>2015 General Election</td>",
-                    '<td><a href="/election/2015/post/14419/edinburgh-east">Edinburgh East</a></td>',
+                    '<td><a href="/elections/2015.14419/">Edinburgh East</a></td>',
                     "<td>10</td>",
                 ),
             ],
@@ -192,19 +192,19 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             rows,
             [
                 (
-                    '<td><a href="/election/2015/post/14419/edinburgh-east">Member of Parliament for Edinburgh East</a></td>',
+                    '<td><a href="/elections/2015.14419/">Member of Parliament for Edinburgh East</a></td>',
                     "<td>10</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/post/65808/dulwich-and-west-norwood">Member of Parliament for Dulwich and West Norwood</a></td>',
+                    '<td><a href="/elections/2015.65808/">Member of Parliament for Dulwich and West Norwood</a></td>',
                     "<td>5</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/post/14420/edinburgh-north-and-leith">Member of Parliament for Edinburgh North and Leith</a></td>',
+                    '<td><a href="/elections/2015.14420/">Member of Parliament for Edinburgh North and Leith</a></td>',
                     "<td>3</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/post/65913/camberwell-and-peckham">Member of Parliament for Camberwell and Peckham</a></td>',
+                    '<td><a href="/elections/2015.65913/">Member of Parliament for Camberwell and Peckham</a></td>',
                     "<td>0</td>",
                 ),
             ],

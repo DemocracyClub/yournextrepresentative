@@ -2,7 +2,7 @@ import re
 
 from django_webtest import WebTest
 
-from .factories import MembershipFactory, PostFactory
+from .factories import MembershipFactory, PostFactory, PostExtraElectionFactory
 from people.tests.factories import PersonFactory
 from .uk_examples import UK2015ExamplesMixin
 
@@ -23,6 +23,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
                 label="Member of Parliament for {}".format(cons_name),
                 group=country,
             )
+
         person = PersonFactory.create(id=3056, name="Ed Miliband")
         MembershipFactory.create(
             person=person,
@@ -99,7 +100,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
         self.assertTrue(
             re.search(
                 r'(?ms)<a href="/person/3056">Ed Miliband</a>\s*is standing in\s*'
-                + r'<a href="/election/2015/post/65672/doncaster-north">Doncaster North</a>\s*</li>',
+                + r'<a href="/elections/2015.65672/">Doncaster North</a>\s*</li>',
                 response.text,
             )
         )

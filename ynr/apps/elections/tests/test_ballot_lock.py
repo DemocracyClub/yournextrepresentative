@@ -26,9 +26,7 @@ class TestConstituencyLockAndUnlock(
         self.post_id = self.dulwich_post.id
 
     def test_constituency_lock_unauthorized(self):
-        self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood", user=self.user
-        )
+        self.app.get(self.dulwich_post_pee.get_absolute_url(), user=self.user)
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/post/lock",
@@ -46,7 +44,7 @@ class TestConstituencyLockAndUnlock(
         post = Post.objects.get(id=self.post_id)
         update_lock(post, self.election, False)
         self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         csrftoken = self.app.cookies["csrftoken"]
@@ -64,7 +62,7 @@ class TestConstituencyLockAndUnlock(
         post = Post.objects.get(id=self.post_id)
         postextraelection = update_lock(post, self.election, False)
         self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         csrftoken = self.app.cookies["csrftoken"]
@@ -82,15 +80,14 @@ class TestConstituencyLockAndUnlock(
         self.assertEqual(True, postextraelection.candidates_locked)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location,
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            response.location, self.dulwich_post_pee.get_absolute_url()
         )
 
     def test_constituency_unlock(self):
         post = Post.objects.get(id=self.post_id)
         postextraelection = update_lock(post, self.election, True)
         self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         csrftoken = self.app.cookies["csrftoken"]
@@ -108,8 +105,7 @@ class TestConstituencyLockAndUnlock(
         self.assertEqual(False, postextraelection.candidates_locked)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location,
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            response.location, self.dulwich_post_pee.get_absolute_url()
         )
 
     def test_constituencies_unlocked_list(self):
@@ -151,7 +147,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Just get that page for the csrftoken cookie; the form won't
         # appear on the page, since the constituency is locked:
         response = self.app.get(
-            "/election/2015/post/65913/camberwell-and-peckham", user=self.user
+            self.camberwell_post_pee.get_absolute_url(), user=self.user
         )
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
@@ -174,7 +170,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_add_when_locked_privileged_allowed(self):
         response = self.app.get(
-            "/election/2015/post/65913/camberwell-and-peckham",
+            self.camberwell_post_pee.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         form = response.forms["new-candidate-form"]
