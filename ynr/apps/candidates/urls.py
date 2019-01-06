@@ -29,11 +29,6 @@ patterns_to_format = [
         "name": "constituency_csv",
     },
     {
-        "pattern": r"^election/{election}/post/lock$",
-        "view": elections.views.LockBallotView.as_view(),
-        "name": "constituency-lock",
-    },
-    {
         "pattern": r"^election/{election}/parties/?$",
         "view": parties.views.PartyListView.as_view(),
         "name": "party-list",

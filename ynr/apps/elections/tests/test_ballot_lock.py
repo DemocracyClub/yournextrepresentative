@@ -29,7 +29,7 @@ class TestConstituencyLockAndUnlock(
         self.app.get(self.dulwich_post_pee.get_absolute_url(), user=self.user)
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            "/election/2015/post/lock",
+            "/election/2015/lock/",
             params={
                 "lock": "True",
                 "post_id": "65808",
@@ -50,7 +50,7 @@ class TestConstituencyLockAndUnlock(
         csrftoken = self.app.cookies["csrftoken"]
         with self.assertRaises(Exception) as context:
             self.app.post(
-                "/election/2015/post/lock",
+                "/election/2015/lock/",
                 params={"csrfmiddlewaretoken": csrftoken},
                 user=self.user_who_can_lock,
                 expect_errors=True,
@@ -67,7 +67,7 @@ class TestConstituencyLockAndUnlock(
         )
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            "/election/2015/post/lock",
+            "/election/2015/lock/",
             params={
                 "lock": "True",
                 "post_id": "65808",
@@ -92,7 +92,7 @@ class TestConstituencyLockAndUnlock(
         )
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            "/election/2015/post/lock",
+            "/election/2015/lock/",
             params={
                 "lock": "False",
                 "post_id": "65808",

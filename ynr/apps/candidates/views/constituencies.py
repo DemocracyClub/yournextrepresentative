@@ -1,8 +1,6 @@
 from slugify import slugify
 
-from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView, View
 from django.shortcuts import get_object_or_404
@@ -14,9 +12,8 @@ from auth_helpers.views import GroupRequiredMixin
 from .helpers import get_redirect_to_post
 from .version_data import get_client_ip, get_change_metadata
 from ..csv_helpers import list_to_csv, memberships_dicts_for_csv
-from candidates.forms import ToggleLockForm, ConstituencyRecordWinnerForm
+from candidates.forms import ConstituencyRecordWinnerForm
 from ..models import (
-    TRUSTED_TO_LOCK_GROUP_NAME,
     RESULT_RECORDERS_GROUP_NAME,
     LoggedAction,
     PostExtraElection,
@@ -44,51 +41,6 @@ class ConstituencyDetailCSVView(ElectionMixin, View):
         response["Content-Disposition"] = 'attachment; filename="%s"' % filename
         response.write(list_to_csv(memberships_dict[self.election_data.slug]))
         return response
-
-
-class ConstituencyLockView(ElectionMixin, GroupRequiredMixin, View):
-    required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
-
-    http_method_names = ["post"]
-
-    def post(self, request, *args, **kwargs):
-        form = ToggleLockForm(data=self.request.POST)
-        if form.is_valid():
-            post_id = form.cleaned_data["post_id"]
-            with transaction.atomic():
-                post = get_object_or_404(Post, slug=post_id)
-                lock = form.cleaned_data["lock"]
-                extra_election = PostExtraElection.objects.get(
-                    post=post, election__slug=self.election
-                )
-                extra_election.candidates_locked = lock
-                extra_election.save()
-                post_name = post.short_label
-                if lock:
-                    suffix = "-lock"
-                    pp = "Locked"
-                else:
-                    suffix = "-unlock"
-                    pp = "Unlocked"
-                message = pp + " constituency {} ({})".format(
-                    post_name, post.id
-                )
-
-                LoggedAction.objects.create(
-                    user=self.request.user,
-                    action_type=("constituency" + suffix),
-                    ip_address=get_client_ip(self.request),
-                    source=message,
-                )
-            if self.request.is_ajax():
-                return JsonResponse(
-                    {"locked": extra_election.candidates_locked}
-                )
-            else:
-                return HttpResponseRedirect(extra_election.get_absolute_url())
-        else:
-            message = _("Invalid data POSTed to ConstituencyLockView")
-            raise ValidationError(message)
 
 
 class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):

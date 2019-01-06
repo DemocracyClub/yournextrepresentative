@@ -21,4 +21,9 @@ urlpatterns = [
         views.UnlockedBallotsForElectionListView.as_view(),
         name="constituencies-unlocked",
     ),
+    url(
+        r"^election/(?P<election>[^/]+)/lock/",
+        views.LockBallotView.as_view(),
+        name="constituency-lock",
+    ),
 ]
