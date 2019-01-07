@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
-from django.views import View
+from django.views.generic import UpdateView
 from django.views.decorators.cache import cache_control
 from django.views.generic import DetailView, TemplateView
 
@@ -162,9 +162,9 @@ class BallotPaperView(TemplateView):
 
         context["post_data"] = {"id": mp_post.slug, "label": mp_post.label}
 
-        context["candidates_locked"] = is_post_locked(mp_post, election)
-
         pee = context["post_election"]
+
+        context["candidates_locked"] = pee.candidates_locked
 
         context["has_lock_suggestion"] = SuggestedPostLock.objects.filter(
             postextraelection=pee
@@ -948,46 +948,38 @@ class BallotPaperView(TemplateView):
         return context
 
 
-class LockBallotView(ElectionMixin, GroupRequiredMixin, View):
+class LockBallotView(GroupRequiredMixin, UpdateView):
     required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
 
     http_method_names = ["post"]
+    model = PostExtraElection
+    slug_url_kwarg = "ballot_id"
+    slug_field = "ballot_paper_id"
+    form_class = ToggleLockForm
 
-    def post(self, request, *args, **kwargs):
-        form = ToggleLockForm(data=self.request.POST)
-        if form.is_valid():
-            post_id = form.cleaned_data["post_id"]
-            with transaction.atomic():
-                post = get_object_or_404(Post, slug=post_id)
-                lock = form.cleaned_data["lock"]
-                extra_election = PostExtraElection.objects.get(
-                    post=post, election__slug=self.election
-                )
-                extra_election.candidates_locked = lock
-                extra_election.save()
-                post_name = post.short_label
-                if lock:
-                    suffix = "-lock"
-                    pp = "Locked"
-                else:
-                    suffix = "-unlock"
-                    pp = "Unlocked"
-                message = pp + " constituency {} ({})".format(
-                    post_name, post.id
-                )
-
-                LoggedAction.objects.create(
-                    user=self.request.user,
-                    action_type=("constituency" + suffix),
-                    ip_address=get_client_ip(self.request),
-                    source=message,
-                )
-            if self.request.is_ajax():
-                return JsonResponse(
-                    {"locked": extra_election.candidates_locked}
-                )
+    def form_valid(self, form):
+        with transaction.atomic():
+            pee = form.instance
+            self.object = form.save()
+            lock = self.object.candidates_locked
+            post_name = pee.post.short_label
+            if lock:
+                suffix = "-lock"
+                pp = "Locked"
             else:
-                return HttpResponseRedirect(extra_election.get_absolute_url())
+                suffix = "-unlock"
+                pp = "Unlocked"
+            message = pp + " ballot {} ({})".format(
+                post_name, pee.ballot_paper_id
+            )
+
+            LoggedAction.objects.create(
+                user=self.request.user,
+                action_type=("constituency" + suffix),
+                ip_address=get_client_ip(self.request),
+                source=message,
+            )
+        if self.request.is_ajax():
+            return JsonResponse({"locked": pee.candidates_locked})
         else:
-            message = _("Invalid data POSTed to LockBallotView")
-            raise ValidationError(message)
+            return HttpResponseRedirect(pee.get_absolute_url())

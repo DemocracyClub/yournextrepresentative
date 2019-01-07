@@ -1,3 +1,5 @@
+from django.core.urlresolvers import reverse
+
 from django_webtest import WebTest
 from people.models import Person
 
@@ -61,20 +63,21 @@ class TestConstituencyLockAndUnlock(
     def test_constituency_lock(self):
         post = Post.objects.get(id=self.post_id)
         postextraelection = update_lock(post, self.election, False)
+        self.assertEqual(False, postextraelection.candidates_locked)
+
         self.app.get(
             self.dulwich_post_pee.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            "/election/2015/lock/",
-            params={
-                "lock": "True",
-                "post_id": "65808",
-                "csrfmiddlewaretoken": csrftoken,
-            },
+            reverse(
+                "constituency-lock",
+                kwargs={"ballot_id": postextraelection.ballot_paper_id},
+            ),
+            params={"csrfmiddlewaretoken": csrftoken},
             user=self.user_who_can_lock,
-            expect_errors=True,
+            expect_errors=False,
         )
         postextraelection.refresh_from_db()
         self.assertEqual(True, postextraelection.candidates_locked)
@@ -84,25 +87,24 @@ class TestConstituencyLockAndUnlock(
         )
 
     def test_constituency_unlock(self):
-        post = Post.objects.get(id=self.post_id)
-        postextraelection = update_lock(post, self.election, True)
-        self.app.get(
+        pee = self.dulwich_post_pee
+        pee.candidates_locked = True
+        pee.save()
+        response = self.app.get(
             self.dulwich_post_pee.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         csrftoken = self.app.cookies["csrftoken"]
+        self.assertContains(response, "Unlock candidate list")
         response = self.app.post(
-            "/election/2015/lock/",
-            params={
-                "lock": "False",
-                "post_id": "65808",
-                "csrfmiddlewaretoken": csrftoken,
-            },
+            reverse(
+                "constituency-lock", kwargs={"ballot_id": pee.ballot_paper_id}
+            ),
+            params={"csrfmiddlewaretoken": csrftoken},
             user=self.user_who_can_lock,
-            expect_errors=True,
         )
-        postextraelection.refresh_from_db()
-        self.assertEqual(False, postextraelection.candidates_locked)
+        pee.refresh_from_db()
+        self.assertFalse(pee.candidates_locked)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location, self.dulwich_post_pee.get_absolute_url()

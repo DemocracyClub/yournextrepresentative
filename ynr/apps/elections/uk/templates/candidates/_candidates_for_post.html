@@ -61,9 +61,8 @@
   {% url 'constituency' election=election post_id=post_data.id ignored_slug=post_data.label|slugify as post_url %}
   {% url 'constituencies' election=election.slug as election_posts_url %}
   {% if user_can_lock %}
-    <form method="post" action="{% url 'constituency-lock' election=election %}">
+    <form method="post" action="{% url 'constituency-lock' ballot_id=post_election.ballot_paper_id %}">
       {% csrf_token %}
-      {% for field in lock_form %}{{ field }}{% endfor %}
       {% if current_user_suggested_lock %}
         <p>
           Locking disabled because you suggested locking this post.

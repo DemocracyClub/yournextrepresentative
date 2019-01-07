@@ -22,7 +22,7 @@ urlpatterns = [
         name="constituencies-unlocked",
     ),
     url(
-        r"^election/(?P<election>[^/]+)/lock/",
+        r"^election/(?P<ballot_id>[^/]+)/lock/",
         views.LockBallotView.as_view(),
         name="constituency-lock",
     ),
