@@ -73,7 +73,7 @@ class PostExtraElection(models.Model):
     class Meta:
         unique_together = ("election", "post")
 
-    def __repr__(self):
+    def __str__(self):
         fmt = "<PostExtraElection ballot_paper_id='{e}'{l}{w}>"
         return fmt.format(
             e=self.ballot_paper_id,
