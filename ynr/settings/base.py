@@ -168,7 +168,7 @@ SOCIALACCOUNT_PROVIDERS = {
 
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-SOCIALACCOUNT_ADAPTER = "ynr.account_adapter.SentryLoggingSocialAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "ynr.account_adapter.LoggingSocialAccountAdapter"
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_FORMS = {
