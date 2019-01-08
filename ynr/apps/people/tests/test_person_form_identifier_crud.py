@@ -64,6 +64,22 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
 
         self.assertEqual(PersonIdentifier.objects.get().value, "@democracyclub")
 
+    def test_form_can_delete_pi(self):
+        """
+        Test that the PersonIdentifier can be deleted by removing the value
+        """
+        resp = self.app.get(
+            reverse("person-update", kwargs={"person_id": self.person.pk}),
+            user=self.user,
+        )
+
+        form = resp.forms[1]
+        form["source"] = "They deleted their account"
+        form["tmp_person_identifiers-0-value"] = ""
+        form.submit()
+
+        self.assertFalse(PersonIdentifier.objects.exists())
+
     def test_form_valid_when_extra_value_type_selected(self):
         """
         If someone selects a value type but doesn't enter a value, it's still valid
