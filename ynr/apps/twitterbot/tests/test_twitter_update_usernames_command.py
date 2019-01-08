@@ -67,50 +67,12 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         ]:
             person = PersonFactory.create(name=person_details["name"])
             setattr(self, person_details["attr"], person)
-            if "user_id" in person_details:
-                person.identifiers.create(
-                    identifier=person_details["user_id"], scheme="twitter"
-                )
-            if "screen_name" in person_details:
-                person.contact_details.create(
-                    value=person_details["screen_name"], contact_type="twitter"
-                )
 
-    @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN="madeuptoken")
-    def test_commmand_warns_on_multiple_screen_names(self, mock_requests):
-
-        self.just_screen_name.contact_details.create(
-            value="notatwitteraccounteither", contact_type="twitter"
-        )
-
-        mock_requests.post.side_effect = fake_post_for_username_updater
-
-        with capture_output() as (out, err):
-            call_command("twitterbot_update_usernames")
-
-        self.assertIn(
-            "WARNING: Multiple Twitter screen names found for Person with "
-            "just a Twitter screen name ({}), skipping".format(
-                self.just_screen_name.id
-            ),
-            split_output(out),
-        )
-
-    @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN="madeuptoken")
-    def test_commmand_warns_on_multiple_user_ids(self, mock_requests):
-
-        self.just_userid.identifiers.create(identifier="765", scheme="twitter")
-
-        mock_requests.post.side_effect = fake_post_for_username_updater
-
-        with capture_output() as (out, err):
-            call_command("twitterbot_update_usernames")
-
-        self.assertIn(
-            "WARNING: Multiple Twitter user IDs found for Person with "
-            "just a Twitter user ID ({}), skipping".format(self.just_userid.id),
-            split_output(out),
-        )
+            person.tmp_person_identifiers.create(
+                internal_identifier=person_details.get("user_id", None),
+                value_type="twitter_username",
+                value=person_details.get("screen_name", ""),
+            )
 
     @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN="madeuptoken")
     def test_commmand_verbose_output(self, mock_requests):
@@ -142,7 +104,9 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
             call_command("twitterbot_update_usernames")
 
         self.assertEqual(
-            self.just_userid.contact_details.get(contact_type="twitter").value,
+            self.just_userid.get_single_identifier_of_type(
+                value_type="twitter_username"
+            ),
             "ascreennamewewereunawareof",
         )
 
@@ -218,9 +182,9 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
             call_command("twitterbot_update_usernames")
 
         self.assertEqual(
-            self.screen_name_and_user_id.contact_details.get(
-                contact_type="twitter"
-            ).value,
+            self.screen_name_and_user_id.get_single_identifier_of_type(
+                "twitter_username"
+            ),
             "changedscreenname",
         )
 
