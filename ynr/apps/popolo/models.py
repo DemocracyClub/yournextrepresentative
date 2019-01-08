@@ -31,10 +31,6 @@ from .querysets import (
 )
 
 
-class MultipleTwitterIdentifiers(Exception):
-    pass
-
-
 class VersionNotFound(Exception):
     pass
 

@@ -11,19 +11,12 @@ from django.db import models
 from django.template import loader
 from django.templatetags.static import static
 from django.utils.functional import cached_property
-from django.utils.six import text_type
 from django.utils.six.moves.urllib_parse import quote_plus, urljoin
 from django.utils.translation import ugettext_lazy as _
 from django.utils.html import format_html
 from django_extensions.db.models import TimeStampedModel
 from popolo.behaviors.models import GenericRelatable, Timestampable
-from popolo.models import (
-    ContactDetail,
-    Identifier,
-    Membership,
-    MultipleTwitterIdentifiers,
-    VersionNotFound,
-)
+from popolo.models import ContactDetail, Identifier, Membership, VersionNotFound
 from slugify import slugify
 from sorl.thumbnail import get_thumbnail
 
@@ -447,31 +440,6 @@ class Person(Timestampable, models.Model):
         return self.memberships.filter(
             post_election__election=election, elected=True
         ).exists()
-
-    @property
-    def twitter_identifiers(self):
-        screen_name = None
-        user_id = None
-        # Get the Twitter screen name and user ID if they exist:
-        try:
-            screen_name = self.contact_details.get(contact_type="twitter").value
-        except ContactDetail.DoesNotExist:
-            screen_name = None
-        except ContactDetail.MultipleObjectsReturned:
-            msg = "Multiple Twitter screen names found for {name} ({id})"
-            raise MultipleTwitterIdentifiers(
-                _(msg).format(name=self.name, id=self.id)
-            )
-        try:
-            user_id = self.identifiers.get(scheme="twitter").identifier
-        except Identifier.DoesNotExist:
-            user_id = None
-        except Identifier.MultipleObjectsReturned:
-            msg = "Multiple Twitter user IDs found for {name} ({id})"
-            raise MultipleTwitterIdentifiers(
-                _(msg).format(name=self.name, id=self.id)
-            )
-        return user_id, screen_name
 
     @property
     def version_diffs(self):

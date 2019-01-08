@@ -29,7 +29,9 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         self.p_no_images = PersonFactory.create(
             id="1", name="Person With No Existing Images"
         )
-        self.p_no_images.identifiers.create(identifier="1001", scheme="twitter")
+        self.p_no_images.tmp_person_identifiers.create(
+            internal_identifier="1001", value_type="twitter_username"
+        )
 
         p_existing_image = PersonFactory.create(
             id=2, name="Person With An Existing Image"
@@ -37,7 +39,9 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         self.existing_undecided_image = p_existing_image.queuedimage_set.create(
             decision=QueuedImage.UNDECIDED, user=self.user
         )
-        p_existing_image.identifiers.create(identifier="1002", scheme="twitter")
+        p_existing_image.tmp_person_identifiers.create(
+            internal_identifier="1002", value_type="twitter_username"
+        )
 
         self.p_only_rejected_in_queue = PersonFactory.create(
             id=3, name="Person With Only Rejected Images In The Queue"
@@ -45,8 +49,8 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         self.existing_rejected_image = self.p_only_rejected_in_queue.queuedimage_set.create(
             decision=QueuedImage.REJECTED, user=self.user
         )
-        self.p_only_rejected_in_queue.identifiers.create(
-            identifier="1003", scheme="twitter"
+        self.p_only_rejected_in_queue.tmp_person_identifiers.create(
+            internal_identifier="1003", value_type="twitter_username"
         )
 
         PersonFactory.create(id=4, name="Person With No Twitter User ID")
@@ -57,8 +61,8 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         self.existing_accepted_image = self.p_accepted_image_in_queue.queuedimage_set.create(
             decision=QueuedImage.APPROVED, user=self.user
         )
-        self.p_accepted_image_in_queue.identifiers.create(
-            identifier="1005", scheme="twitter"
+        self.p_accepted_image_in_queue.tmp_person_identifiers.create(
+            internal_identifier="1005", value_type="twitter_username"
         )
         # If they've had an image accepted, they'll probably have an
         # Image too, so create that:
@@ -78,8 +82,8 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         self.p_existing_image_but_none_in_queue = PersonFactory.create(
             id=6, name="Person With An Existing Image But None In The Queue"
         )
-        self.p_existing_image_but_none_in_queue.identifiers.create(
-            identifier="1006", scheme="twitter"
+        self.p_existing_image_but_none_in_queue.tmp_person_identifiers.create(
+            internal_identifier="1006", value_type="twitter_username"
         )
         self.image_create_from_queue = PersonImage.objects.create_from_file(
             self.image_filename,
@@ -139,13 +143,8 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
             "Auto imported from Twitter: https://twitter.com/intent/user?user_id=1006",
         )
 
-    def test_multiple_twitter_identifiers(
-        self, mock_twitter_data, mock_requests
-    ):
-        self.p_no_images.identifiers.create(identifier="1001", scheme="twitter")
-
+    def test_command_output(self, mock_twitter_data, mock_requests):
         mock_twitter_data.return_value.user_id_to_photo_url = {
-            "1001": "https://pbs.twimg.com/profile_images/abc/foo.jpg",
             "1002": "https://pbs.twimg.com/profile_images/def/bar.jpg",
             "1003": "https://pbs.twimg.com/profile_images/ghi/baz.jpg",
             "1005": "https://pbs.twimg.com/profile_images/jkl/quux.jpg",
@@ -172,10 +171,6 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
                 "Image But None In The Queue with Twitter user ID: 1006",
                 "  Adding that person's Twitter avatar to the moderation "
                 "queue",
-                "WARNING: Multiple Twitter user IDs found for Person "
-                "With No Existing Images ({}), skipping".format(
-                    self.p_no_images.id
-                ),
                 "Considering adding a photo for Person With Only Rejected "
                 "Images In The Queue with Twitter user ID: 1003",
                 "  That person already had an image in the queue, so skipping.",

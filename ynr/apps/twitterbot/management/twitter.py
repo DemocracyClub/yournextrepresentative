@@ -1,9 +1,9 @@
+import requests
 from django.conf import settings
 from django.utils.six import text_type
 from django.utils.translation import ugettext as _
 
-from popolo.models import ContactDetail, Identifier
-import requests
+from people.models import PersonIdentifier
 
 
 def none_found_error(parsed_result):
@@ -56,18 +56,18 @@ class TwitterAPIData(object):
     def all_screen_names(self):
         """Find all unique Twitter screen names in the database"""
         return set(
-            ContactDetail.objects.filter(contact_type="twitter").values_list(
-                "value", flat=True
-            )
+            PersonIdentifier.objects.filter(value_type="twitter_username")
+            .exclude(value="")
+            .values_list("value", flat=True)
         )
 
     @property
     def all_user_ids(self):
         """Find all unique Twitter identifiers in the database"""
         return set(
-            Identifier.objects.filter(scheme="twitter").values_list(
-                "identifier", flat=True
-            )
+            PersonIdentifier.objects.filter(value_type="twitter_username")
+            .exclude(internal_identifier=None)
+            .values_list("internal_identifier", flat=True)
         )
 
     def twitter_results(self, key, values):

@@ -1,11 +1,8 @@
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files.base import ContentFile
-from django.core.files import File
 from django.core.management.base import BaseCommand
-from django.db import transaction
 from django.utils.translation import ugettext as _
 
-from popolo.models import MultipleTwitterIdentifiers
 from moderation_queue.models import QueuedImage, CopyrightOptions
 from people.models import Person
 
@@ -82,20 +79,21 @@ class Command(BaseCommand):
         qi.save()
 
     def handle_person(self, person):
-        try:
-            user_id, screen_name = person.twitter_identifiers
-        except MultipleTwitterIdentifiers as e:
-            print("WARNING: {message}, skipping".format(message=e))
-            return
-        if user_id and user_id in self.twitter_data.user_id_to_photo_url:
-            msg = (
-                "Considering adding a photo for {person} with Twitter "
-                "user ID: {user_id}"
-            )
-            verbose(_(msg).format(person=person, user_id=user_id))
-            self.add_twitter_image_to_queue(
-                person, self.twitter_data.user_id_to_photo_url[user_id], user_id
-            )
+        twitter_identifiers = person.get_identifiers_of_type("twitter_username")
+        for identifier in twitter_identifiers:
+            user_id = identifier.internal_identifier
+
+            if user_id and user_id in self.twitter_data.user_id_to_photo_url:
+                msg = (
+                    "Considering adding a photo for {person} with Twitter "
+                    "user ID: {user_id}"
+                )
+                verbose(_(msg).format(person=person, user_id=user_id))
+                self.add_twitter_image_to_queue(
+                    person,
+                    self.twitter_data.user_id_to_photo_url[user_id],
+                    user_id,
+                )
 
     def handle(self, *args, **options):
         global VERBOSE
