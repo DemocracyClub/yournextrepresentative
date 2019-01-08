@@ -24,11 +24,6 @@ urlpatterns = [
 patterns_to_format = [
     # To move to Elections app (thing about Elections or Ballots
     {
-        "pattern": r"^election/{election}/post/{post}/(?P<ignored_slug>.*).csv$",
-        "view": views.ConstituencyDetailCSVView.as_view(),
-        "name": "constituency_csv",
-    },
-    {
         "pattern": r"^election/{election}/parties/?$",
         "view": parties.views.PartyListView.as_view(),
         "name": "party-list",

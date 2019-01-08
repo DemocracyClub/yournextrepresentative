@@ -113,9 +113,11 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response.mustcontain(no="Unset the current winners")
 
     def test_any_constituency_csv(self):
-        response = self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood.csv"
+        url = "{}.csv".format(
+            self.dulwich_post_pee.get_absolute_url().rstrip("/")
         )
+        response = self.app.get(url)
+        self.assertEqual(response.status_code, 200)
         row_dicts = [row for row in BufferDictReader(response.content)]
         self.assertEqual(2, len(row_dicts))
         self.assertDictEqual(

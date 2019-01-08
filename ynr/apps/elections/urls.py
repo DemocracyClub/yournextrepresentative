@@ -26,4 +26,9 @@ urlpatterns = [
         views.LockBallotView.as_view(),
         name="constituency-lock",
     ),
+    url(
+        r"^elections/(?P<ballot_id>[^/]+).csv",
+        views.BallotPaperCSVView.as_view(),
+        name="ballot_paper_csv",
+    ),
 ]

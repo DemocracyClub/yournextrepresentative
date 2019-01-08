@@ -1,15 +1,18 @@
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Prefetch
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
+from django.views import View
 from django.views.generic import UpdateView
 from django.views.decorators.cache import cache_control
 from django.views.generic import DetailView, TemplateView
+from slugify import slugify
 
 from auth_helpers.views import GroupRequiredMixin
+from candidates.csv_helpers import memberships_dicts_for_csv, list_to_csv
 from candidates.forms import ToggleLockForm
 from candidates.models import (
     PostExtraElection,
@@ -983,3 +986,23 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
             return JsonResponse({"locked": pee.candidates_locked})
         else:
             return HttpResponseRedirect(pee.get_absolute_url())
+
+
+class BallotPaperCSVView(DetailView):
+    queryset = PostExtraElection.objects.select_related("election", "post")
+    slug_url_kwarg = "ballot_id"
+    slug_field = "ballot_paper_id"
+
+    def get(self, request, *args, **kwargs):
+        pee = self.get_object()
+        memberships_dict, elected = memberships_dicts_for_csv(
+            election_slug=pee.election.slug, post_slug=pee.post.slug
+        )
+
+        filename = "{ballot_paper_id}.csv".format(
+            ballot_paper_id=pee.ballot_paper_id
+        )
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="%s"' % filename
+        response.write(list_to_csv(memberships_dict[pee.election.slug]))
+        return response

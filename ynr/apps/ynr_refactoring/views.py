@@ -77,3 +77,16 @@ class RedirectConstituencyDetailView(PermanentRedirectView):
         if args and self.query_string:
             url = "%s?%s" % (url, args)
         return url
+
+
+class RedirectConstituencyDetailCSVView(PermanentRedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+
+        ballot = get_object_or_404(
+            PostExtraElection,
+            election__slug=self.kwargs["election"],
+            post__slug=self.kwargs["post_id"],
+        )
+        url = "{}.csv".format(ballot.get_absolute_url().rstrip("/"))
+
+        return url

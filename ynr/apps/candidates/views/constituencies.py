@@ -1,6 +1,4 @@
-from slugify import slugify
-
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView, View
 from django.shortcuts import get_object_or_404
@@ -11,7 +9,6 @@ from elections.mixins import ElectionMixin
 from auth_helpers.views import GroupRequiredMixin
 from .helpers import get_redirect_to_post
 from .version_data import get_client_ip, get_change_metadata
-from ..csv_helpers import list_to_csv, memberships_dicts_for_csv
 from candidates.forms import ConstituencyRecordWinnerForm
 from ..models import (
     RESULT_RECORDERS_GROUP_NAME,
@@ -22,25 +19,6 @@ from results.models import ResultEvent
 
 from popolo.models import Membership, Post
 from people.models import Person
-
-
-class ConstituencyDetailCSVView(ElectionMixin, View):
-
-    http_method_names = ["get"]
-
-    def get(self, request, *args, **kwargs):
-        post = Post.objects.get(slug=kwargs["post_id"])
-        memberships_dict, elected = memberships_dicts_for_csv(
-            election_slug=self.election_data.slug, post_slug=post.slug
-        )
-
-        filename = "{election}-{constituency_slug}.csv".format(
-            election=self.election, constituency_slug=slugify(post.short_label)
-        )
-        response = HttpResponse(content_type="text/csv")
-        response["Content-Disposition"] = 'attachment; filename="%s"' % filename
-        response.write(list_to_csv(memberships_dict[self.election_data.slug]))
-        return response
 
 
 class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
