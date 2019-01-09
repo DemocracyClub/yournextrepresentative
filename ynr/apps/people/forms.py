@@ -81,17 +81,24 @@ class PersonIdentifierForm(forms.ModelForm):
 
         This method is undocumented in Django, but it seems to be the only way.
         """
+        if self.instance:
+            return True
         if self.changed_data == ["value_type"] and not self["value"].data:
             return False
         else:
             return super().has_changed(*args, **kwargs)
+
+    def clean(self):
+        if not self.cleaned_data.get("value"):
+            self.cleaned_data["DELETE"] = True
+        return self.cleaned_data
 
 
 PersonIdentifierFormsetFactory = forms.inlineformset_factory(
     Person,
     PersonIdentifier,
     form=PersonIdentifierForm,
-    can_delete=False,
+    can_delete=True,
     widgets={
         "value_type": forms.Select(
             choices=PersonIdentifier.objects.select_choices()
