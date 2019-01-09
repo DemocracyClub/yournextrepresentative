@@ -54,25 +54,6 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
             ),
         )
 
-    def test_parties_page(self):
-        response = self.app.get("/election/2015/parties/")
-        ul = response.html.find("ul", {"class": "party-list"})
-        lis = ul.find_all("li")
-        self.assertEqual(len(lis), 2)
-        for i, t in enumerate(
-            (
-                (
-                    "/election/2015/party/party:52/conservative-party",
-                    "Conservative Party",
-                ),
-                ("/election/2015/party/party:53/labour-party", "Labour Party"),
-            )
-        ):
-            expected_url = t[0]
-            expected_text = t[1]
-            self.assertEqual(lis[i].find("a")["href"], expected_url)
-            self.assertEqual(lis[i].find("a").text, expected_text)
-
     def test_single_party_page(self):
         response = self.app.get("/election/2015/party/party%3A53/labour-party")
         # There are no candidates in Scotland or Wales in our test data:

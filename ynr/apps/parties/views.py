@@ -56,17 +56,6 @@ class CandidatesByElectionForPartyView(TemplateView):
         return context
 
 
-class PartyListView(ElectionMixin, TemplateView):
-    template_name = "candidates/party-list.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["parties"] = Party.objects.filter(
-            membership__post_election__election=self.election_data
-        ).distinct()
-        return context
-
-
 class PartyDetailView(ElectionMixin, TemplateView):
     template_name = "candidates/party.html"
 
