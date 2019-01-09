@@ -353,6 +353,14 @@ class Person(Timestampable, models.Model):
         return self.get_single_identifier_of_type("email")
 
     @property
+    def get_twitter_username(self):
+        return self.get_single_identifier_of_type("twitter_username")
+
+    @property
+    def get_facebook_personal_url(self):
+        return self.get_single_identifier_of_type("facebook_personal_url")
+
+    @property
     def last_candidacy(self):
         ordered_candidacies = Membership.objects.filter(
             person=self, post_election__election__isnull=False

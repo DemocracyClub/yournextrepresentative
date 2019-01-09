@@ -1,10 +1,9 @@
-import re
-
 from django_webtest import WebTest
 
-from .factories import MembershipFactory, PostFactory, PostExtraElectionFactory
+from candidates.tests.factories import MembershipFactory, PostFactory
+from candidates.tests.uk_examples import UK2015ExamplesMixin
+from people.models import PersonIdentifier
 from people.tests.factories import PersonFactory
-from .uk_examples import UK2015ExamplesMixin
 
 
 class TestPartyPages(UK2015ExamplesMixin, WebTest):
@@ -55,33 +54,33 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
         )
 
     def test_single_party_page(self):
-        response = self.app.get("/election/2015/party/party%3A53/labour-party")
-        # There are no candidates in Scotland or Wales in our test data:
-        self.assertIn(
-            "We don't know of any Labour Party candidates in Scotland in the 2015 General Election so far.",
-            response.text,
+        response = self.app.get("/parties/PP53/elections/2015/")
+
+        self.assertEqual(
+            response.context["candidates"][0].person.name, "Ed Miliband"
         )
-        self.assertIn(
-            "We don't know of any Labour Party candidates in Wales in the 2015 General Election so far.",
-            response.text,
+
+        self.assertEqual(response.context["candidates"].count(), 1)
+
+    def test_single_party_page_shows_person_identifiers(self):
+        response = self.app.get("/parties/PP53/elections/2015/")
+
+        self.assertNotContains(response, "Ed_Miliband")
+        self.assertNotContains(response, "ed@miliband.com")
+        PersonIdentifier.objects.create(
+            value_type="twitter_username", value="Ed_Miliband", person_id="3056"
         )
-        # But this should only be showing results from the Great
-        # Britain register, so there shouldn't be a similar message
-        # for Northern Ireland:
-        self.assertNotIn(
-            "We don't know of any Labour Party candidates in Northern Ireland so far.",
-            response.text,
+        PersonIdentifier.objects.create(
+            value_type="email", value="ed@miliband.com", person_id="3056"
         )
-        # Check there's no mention of David Miliband's constituency
-        # (since he's not standing in 2015) and we've not added enough
-        # example candidates to reach the threshold where all
-        # constituencies should be shown:
-        self.assertNotIn("South Shields", response.text)
-        # But there is an Ed Miliband:
-        self.assertTrue(
-            re.search(
-                r'(?ms)<a href="/person/3056">Ed Miliband</a>\s*is standing in\s*'
-                + r'<a href="/elections/2015.65672/">Doncaster North</a>\s*</li>',
-                response.text,
-            )
+        response = self.app.get("/parties/PP53/elections/2015/")
+        self.assertContains(response, "Ed_Miliband")
+        self.assertContains(response, "ed@miliband.com")
+
+    def test_single_party_page_no_candidates(self):
+        response = self.app.get("/parties/PP63/elections/2015/")
+        self.assertFalse(response.context["candidates"].exists())
+        self.assertContains(
+            response,
+            "We don't know of any Green Party candidates in the 2015 General Election so far.",
         )

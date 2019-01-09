@@ -2,40 +2,41 @@
 
 {% block content %}
 
-<h2>All candidates for {{ party.name }} in the {{ election.name }}</h2>
 
-<p>This data powers <a href="https://whocanivotefor.co.uk">WhoCanIVoteFor.co.uk</a>,
-  where votes are looking for information about these candidates.</p>
+  {% if candidates %}
+    <h2>All candidates for {{ party.name }} in the {{ election.name }}</h2>
 
-<table>
-  <thead>
-    <tr>
-      <td>Name</td>
-      <td>Ward</td>
-      <td>Email</td>
-      <td>Twitter</td>
-      <td>Facebook</td>
-      <td>Statement</td>
-      <td>Edit link</td>
-    </tr>
-  </thead>
-  <tbody>
-    {% for membership_extra in candidates %}
-      <tr>
-        <td>
-          <a href="{{ membership_extra.base.person.get_absolute_url }}">
-            {{ membership_extra.base.person.name }}
-          </a>
-        </td>
-        <td>{{ membership_extra.post_election.post.label }}</td>
-        <td>{% include "parties/_row_item.html" with item=membership_extra.base.person.email %}</td>
-        <td>{% include "parties/_row_item.html" with item=membership_extra.base.person.twitter_username|urlize type="twitter" %}</td>
-        <td>{% include "parties/_row_item.html" with item=membership_extra.base.person.facebook_personal_url|urlize %}</td>
-        <td>{% include "parties/_row_item.html" with item=membership_extra.base.person.biography|truncatechars:30 %}</td>
-        <td><a href="{% url "person-update" membership_extra.base.person.pk %}" class="button tiny">Edit</a></td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
+    <table>
+      <thead>
+        <tr>
+          <td>Name</td>
+          <td>Ward</td>
+          <td>Email</td>
+          <td>Twitter</td>
+          <td>Facebook</td>
+          <td>Statement</td>
+          <td>Edit link</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for membership in candidates %}
+          <tr>
+            <td>
+              <a href="{{ membership.person.get_absolute_url }}">
+                {{ membership.person.name }}
+              </a>
+            </td>
+            <td>{{ membership.post_election.post.label }}</td>
+            <td>{% include "parties/_row_item.html" with item=membership.person.get_email %}</td>
+            <td>{% include "parties/_row_item.html" with item=membership.person.get_twitter_username|urlize type="twitter" %}</td>
+            <td>{% include "parties/_row_item.html" with item=membership.person.get_facebook_personal_url|urlize %}</td>
+            <td>{% include "parties/_row_item.html" with item=membership.person.biography|truncatechars:30 %}</td>
+            <td><a href="{% url "person-update" membership.person.pk %}" class="button tiny">Edit</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>We don't know of any {{ party.name }} candidates in the {{ election.name }} so far.</p>
+  {% endif %}
 {% endblock content %}
