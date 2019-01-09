@@ -5,12 +5,12 @@ from elections.helpers import ElectionIDSwitcher
 
 urlpatterns = [
     url(
-        "elections/$",
+        "^elections/$",
         views.ElectionListView.as_view(),
         name="election_list_view",
     ),
     url(
-        "elections/(?P<election>[^/]+)/$",
+        "^elections/(?P<election>[^/]+)/$",
         ElectionIDSwitcher(
             election_view=views.ElectionView, ballot_view=views.BallotPaperView
         ),
