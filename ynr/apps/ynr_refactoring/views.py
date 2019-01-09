@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from elections.models import Election
 from candidates.models import PostExtraElection
+from parties.models import Party
 
 from .models import PageNotFoundLog
 
@@ -90,3 +91,14 @@ class RedirectConstituencyDetailCSVView(PermanentRedirectView):
         url = "{}.csv".format(ballot.get_absolute_url().rstrip("/"))
 
         return url
+
+
+class RedirectPartyDetailView(PermanentRedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        election = get_object_or_404(Election, slug=self.kwargs["election"])
+        party = get_object_or_404(Party, legacy_slug=self.kwargs["legacy_slug"])
+
+        return reverse(
+            "candidates_by_election_for_party",
+            kwargs={"election": election.slug, "party_id": party.ec_id},
+        )

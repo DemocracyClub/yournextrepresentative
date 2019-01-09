@@ -27,4 +27,9 @@ urlpatterns = [
         views.RedirectConstituencyDetailCSVView.as_view(),
         name="constituency_csv_redirect",
     ),
+    url(
+        r"^election/(?P<election>[^/]+)/party/(?P<legacy_slug>[^/]+)/(?P<ignored_slug>.*)$",
+        views.RedirectPartyDetailView.as_view(),
+        name="party_redirect",
+    ),
 ]

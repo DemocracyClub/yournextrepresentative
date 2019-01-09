@@ -22,12 +22,6 @@ urlpatterns = [
 ]
 
 patterns_to_format = [
-    # To move to Elections app (thing about Elections or Ballots
-    {
-        "pattern": r"^election/{election}/party/(?P<legacy_slug>[^/]+)/(?P<ignored_slug>.*)$",
-        "view": parties.views.PartyDetailView.as_view(),
-        "name": "party",
-    },
     # To move to Person App (to do with people)
     {
         "pattern": r"^election/{election}/post/{post}/record-winner$",

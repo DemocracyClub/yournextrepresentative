@@ -19,13 +19,6 @@ urlpatterns = [
         views.GeoLocatorView.as_view(),
         name="geolocator",
     ),
-    url(
-        r"^election/{election}/party/(?P<legacy_slug>[a-z-]+:[-\d]+)/(?P<ignored_slug>.*)$".format(
-            election=r"(?P<election>[^/]+)"
-        ),
-        views.UKPartyDetailView.as_view(),
-        name="party",
-    ),
     # These should all be redirects to the new URL scheme:
     url(
         r"^constituencies(?P<list_filter>|/unlocked|/declared)$",

@@ -221,23 +221,23 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             rows,
             [
                 (
-                    '<td><a href="/election/2015/party/party:63/green-party">Green Party</a></td>',
+                    '<td><a href="/parties/PP63/elections/2015/">Green Party</a></td>',
                     "<td>4</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/party/party:53/labour-party">Labour Party</a></td>',
+                    '<td><a href="/parties/PP53/elections/2015/">Labour Party</a></td>',
                     "<td>4</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/party/party:90/liberal-democrats">Liberal Democrats</a></td>',
+                    '<td><a href="/parties/PP90/elections/2015/">Liberal Democrats</a></td>',
                     "<td>4</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/party/party:52/conservative-party">Conservative Party</a></td>',
+                    '<td><a href="/parties/PP52/elections/2015/">Conservative Party</a></td>',
                     "<td>3</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/party/party:39/sinn-fein">Sinn F\xe9in</a></td>',
+                    '<td><a href="/parties/PP39/elections/2015/">Sinn F\xe9in</a></td>',
                     "<td>3</td>",
                 ),
             ],
