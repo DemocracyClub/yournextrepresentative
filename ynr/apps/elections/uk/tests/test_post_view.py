@@ -20,13 +20,13 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
-            "/election/2015/post/14419/edinburgh-east", user=self.user
+            self.edinburgh_east_post_pee.get_absolute_url(), user=self.user
         )
         self.assertIn("suggest_lock_form", response.forms)
 
     def test_suggest_post_lock_not_offered_without_document_when_unlocked(self):
         response = self.app.get(
-            "/election/2015/post/14419/edinburgh-east", user=self.user
+            self.edinburgh_east_post_pee.get_absolute_url(), user=self.user
         )
         self.assertNotIn("suggest_lock_form", response.forms)
 
@@ -45,7 +45,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
-            "/election/2015/post/14419/edinburgh-east", user=self.user
+            self.edinburgh_east_post_pee.get_absolute_url(), user=self.user
         )
         self.assertNotIn("suggest_lock_form", response.forms)
 
@@ -59,14 +59,14 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
-            "/election/2015/post/14419/edinburgh-east", user=self.user
+            self.edinburgh_east_post_pee.get_absolute_url(), user=self.user
         )
         form = response.forms["suggest_lock_form"]
         form["justification"] = "I liked totally reviewed the SOPN"
         response = form.submit()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location, "/election/2015/post/14419/edinburgh-east"
+            response.location, self.edinburgh_east_post_pee.get_absolute_url()
         )
 
         suggested_locks = SuggestedPostLock.objects.all()
@@ -112,7 +112,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            "/election/2015/post/14419/edinburgh-east", user=self.user
+            self.edinburgh_east_post_pee.get_absolute_url(), user=self.user
         )
 
         self.assertFalse(response.context["current_user_suggested_lock"])
@@ -150,7 +150,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            "/election/2015/post/14419/edinburgh-east", user=self.user
+            self.edinburgh_east_post_pee.get_absolute_url(), user=self.user
         )
         self.assertContains(
             response, "Locking disabled because you suggested locking this post"
@@ -181,7 +181,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            "/election/2015/post/14419/edinburgh-east", user=self.user
+            self.edinburgh_east_post_pee.get_absolute_url(), user=self.user
         )
         self.assertContains(response, "Lock candidate list")
 
@@ -201,7 +201,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            "/election/2015/post/14419/edinburgh-east", user=self.user
+            self.edinburgh_east_post_pee.get_absolute_url(), user=self.user
         )
         self.assertNotContains(response, "Lock candidate list")
 
@@ -219,11 +219,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
 
-        pee = PostExtraElection.objects.get(
-            election__slug="2015", post__slug="14419"
-        )
-
         response = self.app.get(
-            "/election/2015/post/14419/edinburgh-east", user=self.user
+            self.edinburgh_east_post_pee.get_absolute_url(), user=self.user
         )
         self.assertNotContains(response, "Lock candidate list")

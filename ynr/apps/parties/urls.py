@@ -5,8 +5,8 @@ from .views import CandidatesByElectionForPartyView
 
 urlpatterns = [
     url(
-        r"^(?P<election>[^/]+)/(?P<party_id>[^/]+)/",
+        r"^(?P<party_id>[^/]+)/elections/(?P<election>[^/]+)/",
         CandidatesByElectionForPartyView.as_view(),
-        name="candadidtes_by_election_for_party",
+        name="candidates_by_election_for_party",
     )
 ]

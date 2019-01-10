@@ -6,6 +6,7 @@ from django.views.generic.base import RedirectView
 from django.views.decorators.cache import cache_page
 
 import candidates.views as views
+import elections.views
 import parties.views
 
 from .feeds import RecentChangesFeed, NeedsReviewFeed
@@ -21,26 +22,7 @@ urlpatterns = [
 ]
 
 patterns_to_format = [
-    {
-        "pattern": r"^posts$",
-        "view": views.PostListView.as_view(),
-        "name": "posts",
-    },
-    {
-        "pattern": r"^election/{election}/constituencies$",
-        "view": views.ConstituencyListView.as_view(),
-        "name": "constituencies",
-    },
-    {
-        "pattern": r"^election/{election}/constituencies/unlocked$",
-        "view": views.ConstituenciesUnlockedListView.as_view(),
-        "name": "constituencies-unlocked",
-    },
-    {
-        "pattern": r"^election/{election}/constituencies/declared$",
-        "view": views.ConstituenciesDeclaredListView.as_view(),
-        "name": "constituencies-declared",
-    },
+    # To move to Person App (to do with people)
     {
         "pattern": r"^election/{election}/post/{post}/record-winner$",
         "view": views.ConstituencyRecordWinnerView.as_view(),
@@ -51,27 +33,7 @@ patterns_to_format = [
         "view": views.ConstituencyRetractWinnerView.as_view(),
         "name": "retract-winner",
     },
-    {
-        "pattern": r"^election/{election}/post/{post}/(?P<ignored_slug>.*).csv$",
-        "view": views.ConstituencyDetailCSVView.as_view(),
-        "name": "constituency_csv",
-    },
-    {
-        "pattern": r"^election/{election}/post/{post}/(?P<ignored_slug>.*)$",
-        "view": views.ConstituencyDetailView.as_view(),
-        "name": "constituency",
-    },
-    {
-        "pattern": r"^election/{election}/party-list/{post}/(?P<legacy_slug>[^/]+)$",
-        "view": views.OrderedPartyListView.as_view(),
-        "name": "party-for-post",
-    },
-    {
-        "pattern": r"^election/{election}/post/lock$",
-        "view": views.ConstituencyLockView.as_view(),
-        "name": "constituency-lock",
-    },
-    {
+    {  # Rename to CandidacyCreateView
         "pattern": r"^election/{election}/candidacy$",
         "view": views.CandidacyView.as_view(),
         "name": "candidacy-create",
@@ -109,13 +71,6 @@ patterns_to_format = [
         "name": "update-disallowed",
     },
     {
-        "pattern": r"^all-edits-disallowed$",
-        "view": TemplateView.as_view(
-            template_name="candidates/all-edits-disallowed.html"
-        ),
-        "name": "all-edits-disallowed",
-    },
-    {
         "pattern": r"^person/(?P<person_id>\d+)/revert$",
         "view": views.RevertPersonView.as_view(),
         "name": "person-revert",
@@ -150,25 +105,13 @@ patterns_to_format = [
         "view": views.PersonView.as_view(),
         "name": "person-view",
     },
+    # General views across the site (move to a "core" type app?)
     {
-        "pattern": r"^areas/(?P<type_and_area_ids>.*?)(?:/(?P<ignored_slug>.*))?$",
-        "view": views.AreasView.as_view(),
-        "name": "areas-view",
-    },
-    {
-        "pattern": r"^posts-of-type/(?P<post_type>.*?)(?:/(?P<ignored_slug>.*))?$",
-        "view": views.PostsOfTypeView.as_view(),
-        "name": "posts-of-type-view",
-    },
-    {
-        "pattern": r"^election/{election}/party/(?P<legacy_slug>[^/]+)/(?P<ignored_slug>.*)$",
-        "view": parties.views.PartyDetailView.as_view(),
-        "name": "party",
-    },
-    {
-        "pattern": r"^election/{election}/parties/?$",
-        "view": parties.views.PartyListView.as_view(),
-        "name": "party-list",
+        "pattern": r"^all-edits-disallowed$",
+        "view": TemplateView.as_view(
+            template_name="candidates/all-edits-disallowed.html"
+        ),
+        "name": "all-edits-disallowed",
     },
     {
         "pattern": r"^recent-changes$",
@@ -233,6 +176,17 @@ patterns_to_format = [
         "pattern": r"^search$",
         "view": views.PersonSearch.as_view(),
         "name": "person-search",
+    },
+    # ----------------- Legacy redirect views
+    {
+        "pattern": r"^areas/(?P<type_and_area_ids>.*?)(?:/(?P<ignored_slug>.*))?$",
+        "view": views.AreasView.as_view(),
+        "name": "areas-view",
+    },
+    {
+        "pattern": r"^posts-of-type/(?P<post_type>.*?)(?:/(?P<ignored_slug>.*))?$",
+        "view": views.PostsOfTypeView.as_view(),
+        "name": "posts-of-type-view",
     },
 ]
 

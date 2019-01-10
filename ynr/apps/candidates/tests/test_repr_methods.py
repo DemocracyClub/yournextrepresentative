@@ -9,7 +9,7 @@ class TestReprMethods(UK2015ExamplesMixin, TestCase):
             election=self.election
         )
         self.assertEqual(
-            repr(pee),
+            str(pee),
             "<PostExtraElection ballot_paper_id='2015.65913' winner_count=1>",
         )
 
@@ -21,6 +21,6 @@ class TestReprMethods(UK2015ExamplesMixin, TestCase):
         pee.candidates_locked = True
         pee.save()
         self.assertEqual(
-            repr(pee),
+            str(pee),
             "<PostExtraElection ballot_paper_id='2015.65913' candidates_locked=True winner_count=4>",
         )

@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from elections.mixins import ElectionMixin
 
+from candidates.models import PostExtraElection
 from popolo.models import Identifier, Membership
 from elections.models import Election
 
@@ -36,92 +37,33 @@ class CandidatesByElectionForPartyView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         party = Party.objects.get(ec_id=kwargs["party_id"])
-        election = None
+
+        candidates_qs = party.membership_set.select_related(
+            "post_election", "person", "post_election__post"
+        )
+
         try:
             election = Election.objects.get(slug=kwargs["election"])
+            candidates_qs = candidates_qs.filter(
+                post_election__election=election
+            )
+            ballot = None
+
         except Election.DoesNotExist:
             # This might be a ballot paper ID
-            election = get_object_or_404(
-                Election, postextraelection__ballot_paper_id=kwargs["election"]
+            ballot = get_object_or_404(
+                PostExtraElection, ballot_paper_id=kwargs["election"]
+            )
+            election = ballot.election
+            candidates_qs = candidates_qs.filter(
+                post_election__ballot_paper_id=ballot
             )
 
-        candidates = party.membership_set.select_related(
-            "post_election", "person"
-        ).order_by("post_election__post__label")
+        candidates_qs = candidates_qs.order_by("post_election__post__label")
 
         context["party"] = party
         context["election"] = election
-        context["candidates"] = candidates
+        context["ballot"] = ballot
+        context["candidates"] = candidates_qs
 
-        return context
-
-
-class PartyListView(ElectionMixin, TemplateView):
-    template_name = "candidates/party-list.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["parties"] = Party.objects.filter(
-            membership__post_election__election=self.election_data
-        ).distinct()
-        return context
-
-
-class PartyDetailView(ElectionMixin, TemplateView):
-    template_name = "candidates/party.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        party_id = kwargs["legacy_slug"]
-        party = get_object_or_404(Party, legacy_slug=party_id)
-
-        # Make the party emblems conveniently available in the context too:
-        context["emblems"] = party.emblems.all()
-        all_post_groups = self.election_data.posts.values_list(
-            "group", flat=True
-        ).distinct()
-        by_post_group = {
-            pg: {"stats": None, "posts_with_memberships": defaultdict(list)}
-            for pg in all_post_groups
-        }
-        for membership in (
-            Membership.objects.filter(
-                party=party,
-                post_election__election=self.election_data,
-                role=self.election_data.candidate_membership_role,
-            )
-            .select_related()
-            .prefetch_related("post", "person")
-        ):
-            person = membership.person
-            post = membership.post
-            post_group = post.group
-            by_post_group[post_group]["posts_with_memberships"][post].append(
-                {"membership": membership, "person": person, "post": post}
-            )
-        # That'll only find the posts that someone from the party is
-        # actually standing for, so add any other posts...
-        for post in self.election_data.posts.all():
-            post_group = post.group
-            post_group_data = by_post_group[post_group]
-            posts_with_memberships = post_group_data["posts_with_memberships"]
-            posts_with_memberships.setdefault(post, [])
-        context["party"] = party
-        context["party_name"] = party.name
-        for post_group, data in by_post_group.items():
-            posts_with_memberships = data["posts_with_memberships"]
-            by_post_group[post_group]["stats"] = get_post_group_stats(
-                posts_with_memberships
-            )
-            data["posts_with_memberships"] = sorted(
-                posts_with_memberships.items(), key=lambda t: t[0].label
-            )
-        context["candidates_by_post_group"] = sorted(
-            [
-                (pg, data)
-                for pg, data in by_post_group.items()
-                if pg in all_post_groups
-            ],
-            key=lambda k: k[0],
-        )
         return context

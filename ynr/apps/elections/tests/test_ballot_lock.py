@@ -1,12 +1,14 @@
+from django.core.urlresolvers import reverse
+
 from django_webtest import WebTest
 from people.models import Person
 
 from popolo.models import Post
 
-from .auth import TestUserMixin
-from .factories import MembershipFactory
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.factories import MembershipFactory
 from people.tests.factories import PersonFactory
-from .uk_examples import UK2015ExamplesMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
 def update_lock(post, election, lock_status):
@@ -26,12 +28,10 @@ class TestConstituencyLockAndUnlock(
         self.post_id = self.dulwich_post.id
 
     def test_constituency_lock_unauthorized(self):
-        self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood", user=self.user
-        )
+        self.app.get(self.dulwich_post_pee.get_absolute_url(), user=self.user)
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            "/election/2015/post/lock",
+            "/election/2015/lock/",
             params={
                 "lock": "True",
                 "post_id": "65808",
@@ -46,13 +46,13 @@ class TestConstituencyLockAndUnlock(
         post = Post.objects.get(id=self.post_id)
         update_lock(post, self.election, False)
         self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         csrftoken = self.app.cookies["csrftoken"]
         with self.assertRaises(Exception) as context:
             self.app.post(
-                "/election/2015/post/lock",
+                "/election/2015/lock/",
                 params={"csrfmiddlewaretoken": csrftoken},
                 user=self.user_who_can_lock,
                 expect_errors=True,
@@ -63,57 +63,55 @@ class TestConstituencyLockAndUnlock(
     def test_constituency_lock(self):
         post = Post.objects.get(id=self.post_id)
         postextraelection = update_lock(post, self.election, False)
+        self.assertEqual(False, postextraelection.candidates_locked)
+
         self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            self.dulwich_post_pee.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            "/election/2015/post/lock",
-            params={
-                "lock": "True",
-                "post_id": "65808",
-                "csrfmiddlewaretoken": csrftoken,
-            },
+            reverse(
+                "constituency-lock",
+                kwargs={"ballot_id": postextraelection.ballot_paper_id},
+            ),
+            params={"csrfmiddlewaretoken": csrftoken},
             user=self.user_who_can_lock,
-            expect_errors=True,
+            expect_errors=False,
         )
         postextraelection.refresh_from_db()
         self.assertEqual(True, postextraelection.candidates_locked)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location,
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            response.location, self.dulwich_post_pee.get_absolute_url()
         )
 
     def test_constituency_unlock(self):
-        post = Post.objects.get(id=self.post_id)
-        postextraelection = update_lock(post, self.election, True)
-        self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+        pee = self.dulwich_post_pee
+        pee.candidates_locked = True
+        pee.save()
+        response = self.app.get(
+            self.dulwich_post_pee.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         csrftoken = self.app.cookies["csrftoken"]
+        self.assertContains(response, "Unlock candidate list")
         response = self.app.post(
-            "/election/2015/post/lock",
-            params={
-                "lock": "False",
-                "post_id": "65808",
-                "csrfmiddlewaretoken": csrftoken,
-            },
+            reverse(
+                "constituency-lock", kwargs={"ballot_id": pee.ballot_paper_id}
+            ),
+            params={"csrfmiddlewaretoken": csrftoken},
             user=self.user_who_can_lock,
-            expect_errors=True,
         )
-        postextraelection.refresh_from_db()
-        self.assertEqual(False, postextraelection.candidates_locked)
+        pee.refresh_from_db()
+        self.assertFalse(pee.candidates_locked)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location,
-            "/election/2015/post/65808/dulwich-and-west-norwood",
+            response.location, self.dulwich_post_pee.get_absolute_url()
         )
 
     def test_constituencies_unlocked_list(self):
-        response = self.app.get("/election/2015/constituencies/unlocked")
+        response = self.app.get("/elections/2015/unlocked/")
         self.assertEqual(response.status_code, 200)
         self.assertIn("Dulwich", response.text)
         self.assertNotIn("Camberwell", response.text)
@@ -151,7 +149,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Just get that page for the csrftoken cookie; the form won't
         # appear on the page, since the constituency is locked:
         response = self.app.get(
-            "/election/2015/post/65913/camberwell-and-peckham", user=self.user
+            self.camberwell_post_pee.get_absolute_url(), user=self.user
         )
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
@@ -174,7 +172,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_add_when_locked_privileged_allowed(self):
         response = self.app.get(
-            "/election/2015/post/65913/camberwell-and-peckham",
+            self.camberwell_post_pee.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         form = response.forms["new-candidate-form"]

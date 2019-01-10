@@ -27,13 +27,13 @@ class PersonViewSharedTestsMixin(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get("/person/2009/tessa-jowell")
         self.assertTrue(
             re.search(
-                r"""(?msx)
-  <h1>Tessa\s+Jowell</h1>\s*
-  <p>Candidate\s+for\s+
-  <a\s+href="/election/2015/post/65808/dulwich-and-west-norwood">Dulwich\s+
-  and\s+West\s+Norwood</a>\s+in\ <a\ href="/election/2015/constituencies">2015
-  \s+General\s+Election</a>\s*</p>""",
+                """<h1>Tessa Jowell</h1>\s+
+        <p>
+          Candidate for <a href="/elections/2015.65808/">Dulwich and West Norwood</a> in <a href="/elections/2015/">2015 General Election</a>
+        </p>
+""",
                 response.text,
+                re.MULTILINE | re.IGNORECASE,
             )
         )
 

@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     "twitterbot",
     "api",
     "people",
+    "ynr_refactoring",
 )
 
 MIDDLEWARE = (

@@ -193,10 +193,7 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
         change_updated_and_created(la, dt)
 
         resp = self.app.get(
-            "/election/{}/post/{}/richmond-park".format(
-                self.election.slug, "65808"
-            ),
-            user=self.user,
+            self.dulwich_post_pee.get_absolute_url(), user=self.user
         )
 
         form = resp.forms["new-candidate-form"]

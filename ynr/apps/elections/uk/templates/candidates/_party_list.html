@@ -70,7 +70,7 @@
             {% endif %}
 
               <li class="candidates-list__person{% if user_can_record_results %} hover-highlighting{% endif %}">
-                {% include 'candidates/_person_in_list.html' with election=election %}
+                {% include 'candidates/_person_in_list.html' with election=election.slug %}
                 {% if user.is_authenticated %}
                 <p>
                   {% if candidate_list_edits_allowed %}
@@ -82,10 +82,10 @@
                   {% include 'candidates/_source_confirmation.html' with standing='not-standing' action='candidacy-delete' %}
                 {% endif %}
                 {% endif %}
-                {% if DATE_TODAY >= election_data.election_date %}
+                {% if DATE_TODAY >= election.election_date %}
                   {% if user_can_record_results and show_confirm_result and not candidate_elected %}
-                    {% if 'local' not in election %}
-                      <form class="winner-confirm" action="{% url 'record-winner' election=election post_id=post_data.id %}" method="post">
+                    {% if 'local' not in election.slug %}
+                      <form class="winner-confirm" action="{% url 'record-winner' election=election.slug post_id=post_data.id %}" method="post">
                         {% csrf_token %}
                         <input type="hidden" name="person_id" value="{{ c.id }}">
                         <input type="hidden" name="source" value="{% trans "[Quick update from the constituency page]" %}">

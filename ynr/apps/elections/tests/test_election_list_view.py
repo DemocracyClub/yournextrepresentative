@@ -1,7 +1,7 @@
 from django_webtest import WebTest
 from django.contrib.auth.models import User
 
-from .uk_examples import UK2015ExamplesMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 from moderation_queue.models import SuggestedPostLock
 
@@ -9,7 +9,7 @@ from moderation_queue.models import SuggestedPostLock
 class TestPostsView(UK2015ExamplesMixin, WebTest):
     def test_single_election_posts_page(self):
 
-        response = self.app.get("/posts")
+        response = self.app.get("/elections/")
 
         self.assertTrue(response.html.find("h4", text="2015 General Election"))
 
@@ -21,16 +21,14 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
 
     def test_elections_link_to_constituencies_page(self):
 
-        response = self.app.get("/posts")
+        response = self.app.get("/elections/")
 
         heading = response.html.find("h4", text="2015 General Election")
         heading_children = list(heading.children)
         self.assertEqual(len(heading_children), 1)
         expected_link_element = heading_children[0]
         self.assertEqual(expected_link_element.name, "a")
-        self.assertEqual(
-            expected_link_element["href"], "/election/2015/constituencies"
-        )
+        self.assertEqual(expected_link_element["href"], "/elections/2015/")
         self.assertEqual(expected_link_element.text, "2015 General Election")
 
     def test_two_elections_posts_page(self):
@@ -38,7 +36,7 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
         self.earlier_election.current = True
         self.earlier_election.save()
 
-        response = self.app.get("/posts")
+        response = self.app.get("/elections/")
 
         self.assertTrue(response.html.find("h4", text="2010 General Election"))
 
@@ -51,7 +49,7 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
             postextraelection=pee,
             user=User.objects.create(username="locking_user"),
         )
-        response = self.app.get("/posts")
+        response = self.app.get("/elections/")
 
         self.assertTrue(response.html.find("abbr", text="🔓"))
 

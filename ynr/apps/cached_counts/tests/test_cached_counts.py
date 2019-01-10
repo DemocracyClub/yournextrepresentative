@@ -155,27 +155,27 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             [
                 (
                     "<td>2015 General Election</td>",
-                    '<td><a href="/election/2015/post/65913/camberwell-and-peckham">Camberwell and Peckham</a></td>',
+                    '<td><a href="/elections/2015.65913/">Camberwell and Peckham</a></td>',
                     "<td>0</td>",
                 ),
                 (
                     "<td>Maidstone local election</td>",
-                    '<td><a href="/election/local.maidstone.2016-05-05/post/DIW:E05005004/shepway-south-ward">Shepway South Ward</a></td>',
+                    '<td><a href="/elections/local.maidstone.DIW:E05005004.2016-05-05/">Shepway South Ward</a></td>',
                     "<td>0</td>",
                 ),
                 (
                     "<td>2015 General Election</td>",
-                    '<td><a href="/election/2015/post/14420/edinburgh-north-and-leith">Edinburgh North and Leith</a></td>',
+                    '<td><a href="/elections/2015.14420/">Edinburgh North and Leith</a></td>',
                     "<td>3</td>",
                 ),
                 (
                     "<td>2015 General Election</td>",
-                    '<td><a href="/election/2015/post/65808/dulwich-and-west-norwood">Dulwich and West Norwood</a></td>',
+                    '<td><a href="/elections/2015.65808/">Dulwich and West Norwood</a></td>',
                     "<td>5</td>",
                 ),
                 (
                     "<td>2015 General Election</td>",
-                    '<td><a href="/election/2015/post/14419/edinburgh-east">Edinburgh East</a></td>',
+                    '<td><a href="/elections/2015.14419/">Edinburgh East</a></td>',
                     "<td>10</td>",
                 ),
             ],
@@ -192,19 +192,19 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             rows,
             [
                 (
-                    '<td><a href="/election/2015/post/14419/edinburgh-east">Member of Parliament for Edinburgh East</a></td>',
+                    '<td><a href="/elections/2015.14419/">Member of Parliament for Edinburgh East</a></td>',
                     "<td>10</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/post/65808/dulwich-and-west-norwood">Member of Parliament for Dulwich and West Norwood</a></td>',
+                    '<td><a href="/elections/2015.65808/">Member of Parliament for Dulwich and West Norwood</a></td>',
                     "<td>5</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/post/14420/edinburgh-north-and-leith">Member of Parliament for Edinburgh North and Leith</a></td>',
+                    '<td><a href="/elections/2015.14420/">Member of Parliament for Edinburgh North and Leith</a></td>',
                     "<td>3</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/post/65913/camberwell-and-peckham">Member of Parliament for Camberwell and Peckham</a></td>',
+                    '<td><a href="/elections/2015.65913/">Member of Parliament for Camberwell and Peckham</a></td>',
                     "<td>0</td>",
                 ),
             ],
@@ -221,23 +221,23 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             rows,
             [
                 (
-                    '<td><a href="/election/2015/party/party:63/green-party">Green Party</a></td>',
+                    '<td><a href="/parties/PP63/elections/2015/">Green Party</a></td>',
                     "<td>4</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/party/party:53/labour-party">Labour Party</a></td>',
+                    '<td><a href="/parties/PP53/elections/2015/">Labour Party</a></td>',
                     "<td>4</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/party/party:90/liberal-democrats">Liberal Democrats</a></td>',
+                    '<td><a href="/parties/PP90/elections/2015/">Liberal Democrats</a></td>',
                     "<td>4</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/party/party:52/conservative-party">Conservative Party</a></td>',
+                    '<td><a href="/parties/PP52/elections/2015/">Conservative Party</a></td>',
                     "<td>3</td>",
                 ),
                 (
-                    '<td><a href="/election/2015/party/party:39/sinn-fein">Sinn F\xe9in</a></td>',
+                    '<td><a href="/parties/PP39/elections/2015/">Sinn F\xe9in</a></td>',
                     "<td>3</td>",
                 ),
             ],

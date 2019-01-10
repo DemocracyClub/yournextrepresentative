@@ -47,11 +47,10 @@ class TestModels(TestUserMixin, WebTest):
             label="Member of Parliament for Dulwich and West Norwood",
             party_set=gb_parties,
         )
+        self.pee = self.post.postextraelection_set.get(election=election)
 
     def test_upload_unauthorized(self):
-        response = self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood", user=self.user
-        )
+        response = self.app.get(self.pee.get_absolute_url(), user=self.user)
         csrftoken = self.app.cookies["csrftoken"]
         upload_url = reverse(
             "upload_document_view",
@@ -78,8 +77,7 @@ class TestModels(TestUserMixin, WebTest):
 
     def test_upload_authorized(self):
         response = self.app.get(
-            "/election/2015/post/65808/dulwich-and-west-norwood",
-            user=self.user_who_can_upload_documents,
+            self.pee.get_absolute_url(), user=self.user_who_can_upload_documents
         )
         self.assertIn(
             "as you have permission to upload documents", response.text

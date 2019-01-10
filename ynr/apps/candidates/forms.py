@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from people.forms import StrippedCharField, AddElectionFieldsMixin
+from candidates.models import PostExtraElection
 
 
 class UserTermsAgreementForm(forms.Form):
@@ -22,9 +23,18 @@ class UserTermsAgreementForm(forms.Form):
         return assigned_to_dc
 
 
-class ToggleLockForm(forms.Form):
-    lock = forms.BooleanField(required=False, widget=forms.HiddenInput())
-    post_id = StrippedCharField(max_length=256, widget=forms.HiddenInput())
+class ToggleLockForm(forms.ModelForm):
+    class Meta:
+        model = PostExtraElection
+        fields = ("candidates_locked",)
+
+    candidates_locked = forms.HiddenInput()
+
+    def clean(self):
+        self.cleaned_data[
+            "candidates_locked"
+        ] = not self.instance.candidates_locked
+        return self.cleaned_data
 
 
 class ConstituencyRecordWinnerForm(forms.Form):
