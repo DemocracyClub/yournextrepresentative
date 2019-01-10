@@ -22,8 +22,16 @@ def get_changed_election_slug(slug):
     return UPDATED_SLUGS.get(slug, slug)
 
 
+# Redirect views
 class PermanentRedirectView(RedirectView):
     permanent = True
+
+    def get(self, request, *args, **kwargs):
+        if "election" in self.kwargs:
+            self.kwargs["election"] = get_changed_election_slug(
+                self.kwargs["election"]
+            )
+        return super().get(request, *args, **kwargs)
 
 
 class RedirectConstituencyListView(PermanentRedirectView):
