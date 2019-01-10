@@ -71,7 +71,7 @@ python-memcached==1.59
 python-openid==2.2.5
 python-slugify==2.0.1
 PyYAML==3.13
-raven==6.9.0
+raven==6.10.0
 requests-oauthlib==1.0.0
 requests==2.20.1
 simplegeneric==0.8.1
