@@ -28,7 +28,9 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
         self.assertEqual(len(heading_children), 1)
         expected_link_element = heading_children[0]
         self.assertEqual(expected_link_element.name, "a")
-        self.assertEqual(expected_link_element["href"], "/elections/2015/")
+        self.assertEqual(
+            expected_link_element["href"], "/elections/parl.2015-05-07/"
+        )
         self.assertEqual(expected_link_element.text, "2015 General Election")
 
     def test_two_elections_posts_page(self):

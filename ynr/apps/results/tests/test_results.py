@@ -99,7 +99,7 @@ class TestResultsFeed(
     <id>http://example.com/#{item_id}</id>
     <summary type="html">A example.com volunteer recorded at {space_separated} that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
     <retraction>0</retraction>
-    <election_slug>2015</election_slug>
+    <election_slug>parl.2015-05-07</election_slug>
     <election_name>2015 General Election</election_name>
     <election_date>{election_date}</election_date>
     <post_id>65808</post_id>
@@ -219,7 +219,7 @@ class TestResultsFeedWithRetraction(
     <id>http://example.com/#{item_id[0]}</id>
     <summary type="html">A example.com volunteer recorded at {space_separated[0]} that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
     <retraction>0</retraction>
-    <election_slug>2015</election_slug>
+    <election_slug>parl.2015-05-07</election_slug>
     <election_name>2015 General Election</election_name>
     <election_date>{election_date}</election_date>
     <post_id>65808</post_id>
@@ -243,7 +243,7 @@ class TestResultsFeedWithRetraction(
     <id>http://example.com/#{item_id[1]}</id>
     <summary type="html">At {space_separated[1]}, a example.com volunteer retracted the previous assertion that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Result recorded in error, retracting'.</summary>
     <retraction>1</retraction>
-    <election_slug>2015</election_slug>
+    <election_slug>parl.2015-05-07</election_slug>
     <election_name>2015 General Election</election_name>
     <election_date>{election_date}</election_date>
     <post_id>65808</post_id>
@@ -267,7 +267,7 @@ class TestResultsFeedWithRetraction(
     <id>http://example.com/#{item_id[2]}</id>
     <summary type="html">A example.com volunteer recorded at {space_separated[2]} that James Barber (Liberal Democrats) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on Sky News'.</summary>
     <retraction>0</retraction>
-    <election_slug>2015</election_slug>
+    <election_slug>parl.2015-05-07</election_slug>
     <election_name>2015 General Election</election_name>
     <election_date>{election_date}</election_date>
     <post_id>65808</post_id>

@@ -63,13 +63,13 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
         cls.commons = factories.ParliamentaryChamberFactory.create()
         # Create the 2010 and 2015 general elections:
         cls.election = factories.ElectionFactory.create(
-            slug="2015",
+            slug="parl.2015-05-07",
             name="2015 General Election",
             for_post_role="Member of Parliament",
             organization=cls.commons,
         )
         cls.earlier_election = factories.EarlierElectionFactory.create(
-            slug="2010",
+            slug="parl.2010-05-06",
             name="2010 General Election",
             for_post_role="Member of Parliament",
             current=False,

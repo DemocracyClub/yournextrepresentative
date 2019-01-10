@@ -38,12 +38,12 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
               "id": "2009",
               "twitter_username": "",
               "standing_in": {
-                "2010": {
+                "parl.2010-05-06": {
                   "post_id": "65808",
                   "name": "Dulwich and West Norwood",
                   "mapit_url": "http://mapit.mysociety.org/area/65808"
                 },
-                "2015": {
+                "parl.2015-05-07": {
                   "post_id": "65808",
                   "name": "Dulwich and West Norwood",
                   "mapit_url": "http://mapit.mysociety.org/area/65808"
@@ -53,11 +53,11 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
               "birth_date": null,
               "wikipedia_url": "https://en.wikipedia.org/wiki/Tessa_Jowell",
               "party_memberships": {
-                "2010": {
+                "parl.2010-05-06": {
                   "id": "$slug",
                   "name": "Labour Party"
                 },
-                "2015": {
+                "parl.2015-05-07": {
                   "id": "$slug",
                   "name": "Labour Party"
                 }
@@ -87,7 +87,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
               "id": "2009",
               "twitter_username": "",
               "standing_in": {
-                "2010": {
+                "parl.2010-05-06": {
                   "post_id": "65808",
                   "name": "Dulwich and West Norwood",
                   "mapit_url": "http://mapit.mysociety.org/area/65808"
@@ -98,7 +98,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
               "biography": "",
               "wikipedia_url": "",
               "party_memberships": {
-                "2010": {
+                "parl.2010-05-06": {
                   "id": "$slug",
                   "name": "Labour Party"
                 }
@@ -185,7 +185,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "other_names": [],
                 "honorific_prefix": "",
                 "standing_in": {
-                    "2010": {
+                    "parl.2010-05-06": {
                         "post_id": "65808",
                         "name": "Dulwich and West Norwood",
                     }
@@ -194,7 +194,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "twitter_username": "",
                 "wikipedia_url": "",
                 "party_memberships": {
-                    "2010": {
+                    "parl.2010-05-06": {
                         "id": self.labour_party.legacy_slug,
                         "name": "Labour Party",
                     }
@@ -233,7 +233,9 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         ).order_by("post_election__election__election_date")
 
         self.assertEqual(len(candidacies), 1)
-        self.assertEqual(candidacies[0].post_election.election.slug, "2010")
+        self.assertEqual(
+            candidacies[0].post_election.election.slug, "parl.2010-05-06"
+        )
 
         # The homepage link should have been added and the Wikipedia
         # one removed:

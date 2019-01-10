@@ -29,7 +29,7 @@ class PersonViewSharedTestsMixin(TestUserMixin, UK2015ExamplesMixin, WebTest):
             re.search(
                 """<h1>Tessa Jowell</h1>\s+
         <p>
-          Candidate for <a href="/elections/2015.65808/">Dulwich and West Norwood</a> in <a href="/elections/2015/">2015 General Election</a>
+          Candidate for <a href="/elections/parl.65808.2015-05-07/">Dulwich and West Norwood</a> in <a href="/elections/parl.2015-05-07/">2015 General Election</a>
         </p>
 """,
                 response.text,

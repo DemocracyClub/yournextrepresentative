@@ -42,7 +42,7 @@ class TestGetFlashMessage(UK2015ExamplesMixin, TestCase):
             ' <ul> <li> <a href="/person/42/update">Edit Wreck-it-Ralph again</a> </li>'
             ' <li> Add a candidate for <a href="/numbers/attention-needed">one '
             "of the posts with fewest candidates</a> </li>"
-            ' <li> <a href="/election/2015/person/create/">Add another '
+            ' <li> <a href="/election/parl.2015-05-07/person/create/">Add another '
             "candidate in the 2015 General Election</a> </li> </ul> ",
             normalize_whitespace(
                 get_call_to_action_flash_message(
@@ -58,7 +58,7 @@ class TestGetFlashMessage(UK2015ExamplesMixin, TestCase):
             ' <ul> <li> <a href="/person/42/update">Edit Wreck-it-Ralph again</a> </li>'
             ' <li> Add a candidate for <a href="/numbers/attention-needed">one '
             "of the posts with fewest candidates</a> </li>"
-            ' <li> <a href="/election/2015/person/create/">Add another '
+            ' <li> <a href="/election/parl.2015-05-07/person/create/">Add another '
             "candidate in the 2015 General Election</a> </li> </ul> ",
             normalize_whitespace(
                 get_call_to_action_flash_message(

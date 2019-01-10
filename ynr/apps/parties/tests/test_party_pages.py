@@ -54,7 +54,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
         )
 
     def test_single_party_page(self):
-        response = self.app.get("/parties/PP53/elections/2015/")
+        response = self.app.get("/parties/PP53/elections/parl.2015-05-07/")
 
         self.assertEqual(
             response.context["candidates"][0].person.name, "Ed Miliband"
@@ -63,7 +63,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.context["candidates"].count(), 1)
 
     def test_single_party_page_shows_person_identifiers(self):
-        response = self.app.get("/parties/PP53/elections/2015/")
+        response = self.app.get("/parties/PP53/elections/parl.2015-05-07/")
 
         self.assertNotContains(response, "Ed_Miliband")
         self.assertNotContains(response, "ed@miliband.com")
@@ -73,12 +73,12 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
         PersonIdentifier.objects.create(
             value_type="email", value="ed@miliband.com", person_id="3056"
         )
-        response = self.app.get("/parties/PP53/elections/2015/")
+        response = self.app.get("/parties/PP53/elections/parl.2015-05-07/")
         self.assertContains(response, "Ed_Miliband")
         self.assertContains(response, "ed@miliband.com")
 
     def test_single_party_page_no_candidates(self):
-        response = self.app.get("/parties/PP63/elections/2015/")
+        response = self.app.get("/parties/PP63/elections/parl.2015-05-07/")
         self.assertFalse(response.context["candidates"].exists())
         self.assertContains(
             response,

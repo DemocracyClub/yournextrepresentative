@@ -56,7 +56,7 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         ] = "http://en.wikipedia.org/wiki/Lizzie_Bennet"
         form["tmp_person_identifiers-1-value_type"] = "wikipedia_url"
 
-        form["party_GB_2015"] = self.labour_party.ec_id
+        form["party_GB_parl.2015-05-07"] = self.labour_party.ec_id
 
         submission_response = form.submit()
 

@@ -37,7 +37,9 @@ class SimpleFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_create_form_has_fields(self):
-        response = self.app.get("/election/2015/person/create/", user=self.user)
+        response = self.app.get(
+            "/election/parl.2015-05-07/person/create/", user=self.user
+        )
         self.assertEqual(response.status_code, 200)
         an_label = response.html.find("label", {"for": "id_additional_name"})
         self.assertIsNotNone(an_label)
@@ -76,11 +78,13 @@ class SimpleFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(person.additional_name, "An extra name")
 
     def test_fields_are_saved_when_creating(self):
-        response = self.app.get("/election/2015/person/create/", user=self.user)
+        response = self.app.get(
+            "/election/parl.2015-05-07/person/create/", user=self.user
+        )
         form = response.forms["new-candidate-form"]
         form["name"] = "Naomi Newperson"
         form["additional_name"] = "Naomi Newcomer"
-        form["standing_2015"] = "not-standing"
+        form["standing_parl.2015-05-07"] = "not-standing"
         form["source"] = "Test creating someone with simple fields"
         submission_response = form.submit()
 

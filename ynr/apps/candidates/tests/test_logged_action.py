@@ -54,7 +54,7 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
         self.assertEqual(
             action.subject_html,
-            '<a href="/elections/2015.65913/">Camberwell and Peckham (65913)</a>',
+            '<a href="/elections/parl.65913.2015-05-07/">Camberwell and Peckham (65913)</a>',
         )
 
     def test_guess_of_postextraelection_current(self):
