@@ -1,5 +1,5 @@
 aenum==2.1.2
-beautifulsoup4==4.6.3
+beautifulsoup4==4.7.1
 black;python_version>="3.6"
 bleach==3.0.2
 boto3==1.9.40
