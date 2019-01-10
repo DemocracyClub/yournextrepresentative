@@ -69,7 +69,7 @@ python-dateutil==2.7.5
 python-magic==0.4.6
 python-memcached==1.59
 python-openid==2.2.5
-python-slugify==1.2.6
+python-slugify==2.0.1
 PyYAML==3.13
 raven==6.9.0
 requests-oauthlib==1.0.0
