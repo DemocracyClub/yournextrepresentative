@@ -8,6 +8,7 @@ from candidates.models import PostExtraElection
 from parties.models import Party
 
 from .models import PageNotFoundLog
+from .constants import UPDATED_SLUGS
 
 
 def logged_page_not_found_wrapper(request, *args, **kwargs):
@@ -17,6 +18,8 @@ def logged_page_not_found_wrapper(request, *args, **kwargs):
 
 
 # Redirect views
+def get_changed_election_slug(slug):
+    return UPDATED_SLUGS.get(slug, slug)
 
 
 class PermanentRedirectView(RedirectView):
