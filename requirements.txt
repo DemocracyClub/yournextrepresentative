@@ -48,7 +48,7 @@ lxml==4.3.0
 mock==1.0.1
 mysociety-django-images==0.0.6
 ndg-httpsclient==0.5.1
-numpy==1.15.4
+numpy==1.16.0
 oauthlib==2.1.0
 path.py==11.5.0
 pexpect==4.6.0
