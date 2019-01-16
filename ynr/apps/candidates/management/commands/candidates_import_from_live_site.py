@@ -338,9 +338,14 @@ class Command(BaseCommand):
                     k: m_data[k]
                     for k in ("label", "role", "start_date", "end_date")
                 }
-                kwargs["person"] = people.models.Person.objects.get(
-                    pk=m_data["person"]["id"]
-                )
+                try:
+                    kwargs["person"] = people.models.Person.objects.get(
+                        pk=m_data["person"]["id"]
+                    )
+                except people.models.Person.DoesNotExist:
+                    # Chances are this person was created since the last
+                    # cached person run was updated. It's ok to ignore this
+                    continue
                 if m_data.get("party"):
                     kwargs["party"] = Party.objects.get(
                         ec_id=m_data["party"]["ec_id"]
