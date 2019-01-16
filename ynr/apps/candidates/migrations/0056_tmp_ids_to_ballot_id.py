@@ -22,7 +22,7 @@ def move_tmp_ids_to_actual_ids(apps, schema_editor):
     for line in data_file:
         tmp_id, new_id = line.split(",")
         PostExtraElection.objects.filter(ballot_paper_id=tmp_id).update(
-            ballot_paper_id=new_id
+            ballot_paper_id=new_id.strip()
         )
 
 
