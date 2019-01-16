@@ -294,9 +294,7 @@ class Command(BaseCommand):
                         post=post,
                         election=election,
                         candidates_locked=election_data["candidates_locked"],
-                        ballot_paper_id="tmp_{}.{}".format(
-                            election.slug, post.slug
-                        ),
+                        ballot_paper_id=election_data["ballot_paper_id"],
                     )
         person_to_image_data = {}
         for person_data in self.get_api_results("persons"):
