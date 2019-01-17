@@ -59,7 +59,7 @@ def post_in_election(person, election):
     candidacy = get_candidacy(person, election)
     if candidacy:
         link = '<a href="{cons_url}">{cons_name}</a>'.format(
-            cons_url=candidacy.post_election.get_absolute_url,
+            cons_url=candidacy.post_election.get_absolute_url(),
             cons_name=candidacy.post.short_label,
         )
         result = '<span class="constituency-value-standing-link">{}'.format(
