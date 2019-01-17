@@ -11,7 +11,7 @@ class TestConstituencyDetailView(UK2015ExamplesMixin, WebTest):
 
     def test_constituencies_page(self):
         # Just a smoke test to check that the page loads:
-        response = self.app.get("/elections/2015/")
+        response = self.app.get("/elections/parl.2015-05-07/")
         dulwich = response.html.find(
             "a", text=re.compile(r"Dulwich and West Norwood")
         )

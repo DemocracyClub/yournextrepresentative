@@ -13,14 +13,16 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_party_select(self):
         response = self.app.get(
-            "/bulk_adding/party/2015/", user=self.user_who_can_upload_documents
+            "/bulk_adding/party/parl.2015-05-07/",
+            user=self.user_who_can_upload_documents,
         )
 
         self.assertContains(response, "GB Parties")
 
     def test_party_select_invalid_party(self):
         form = self.app.get(
-            "/bulk_adding/party/2015/", user=self.user_who_can_upload_documents
+            "/bulk_adding/party/parl.2015-05-07/",
+            user=self.user_who_can_upload_documents,
         ).forms[1]
         form["party_GB"] = ""
         response = form.submit()
@@ -28,7 +30,8 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_submit_party_redirects_to_person_form(self):
         form = self.app.get(
-            "/bulk_adding/party/2015/", user=self.user_who_can_upload_documents
+            "/bulk_adding/party/parl.2015-05-07/",
+            user=self.user_who_can_upload_documents,
         ).forms[1]
         form["party_GB"] = self.conservative_party.ec_id
         response = form.submit().follow()
@@ -52,7 +55,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_submit_name_for_area_without_source(self):
         pee = self.election.postextraelection_set.first()
         form = self.app.get(
-            "/bulk_adding/party/2015/PP52/",
+            "/bulk_adding/party/parl.2015-05-07/PP52/",
             user=self.user_who_can_upload_documents,
         ).forms[1]
 
@@ -64,7 +67,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_submit_name_for_area_without_any_names(self):
         form = self.app.get(
-            "/bulk_adding/party/2015/PP52/",
+            "/bulk_adding/party/parl.2015-05-07/PP52/",
             user=self.user_who_can_upload_documents,
         ).forms[1]
 
@@ -83,7 +86,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(LoggedAction.objects.count(), 0)
 
         form = self.app.get(
-            "/bulk_adding/party/2015/PP52/", user=self.user
+            "/bulk_adding/party/parl.2015-05-07/PP52/", user=self.user
         ).forms[1]
 
         self.assertEqual(len(form.fields), 25)

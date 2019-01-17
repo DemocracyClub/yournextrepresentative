@@ -69,7 +69,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "tmp_person_identifiers-0-value"
         ] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
         form["tmp_person_identifiers-0-value_type"] = "wikipedia_url"
-        form["party_GB_2015"] = self.labour_party.ec_id
+        form["party_GB_parl.2015-05-07"] = self.labour_party.ec_id
         form["source"] = "Some source of this information"
         submission_response = form.submit(user=self.user_refused)
         split_location = urlsplit(submission_response.location)
@@ -87,7 +87,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         ] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
         form["tmp_person_identifiers-0-value_type"] = "wikipedia_url"
 
-        form["party_GB_2015"] = self.labour_party.ec_id
+        form["party_GB_parl.2015-05-07"] = self.labour_party.ec_id
         form["source"] = "Some source of this information"
         submission_response = form.submit()
 

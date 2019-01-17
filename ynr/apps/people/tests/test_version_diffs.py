@@ -167,12 +167,12 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "standing_in": {
-                        "2010": {
+                        "parl.2010-05-06": {
                             "name": "South Cambridgeshire",
                             "post_id": "65922",
                             "mapit_url": "http://mapit.mysociety.org/area/65922",
                         },
-                        "2015": {
+                        "parl.2015-05-07": {
                             "name": "Edinburgh North and Leith",
                             "post_id": "14420",
                             "mapit_url": "http://mapit.mysociety.org/area/14420",
@@ -187,7 +187,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "standing_in": {
-                        "2010": {
+                        "parl.2010-05-06": {
                             "name": "South Cambridgeshire",
                             "post_id": "65922",
                             "mapit_url": "http://mapit.mysociety.org/area/65922",
@@ -206,11 +206,11 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "standing_in": {
-                        "2010": {
+                        "parl.2010-05-06": {
                             "name": "South Cambridgeshire",
                             "post_id": "65922",
                         },
-                        "2015": {
+                        "parl.2015-05-07": {
                             "name": "Edinburgh North and Leith",
                             "post_id": "14420",
                         },
@@ -222,7 +222,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_diff": [
                             {
                                 "op": "add",
-                                "path": "standing_in/2015",
+                                "path": "standing_in/parl.2015-05-07",
                                 "value": "is known to be standing in Edinburgh North and Leith in the 2015 General Election",
                             }
                         ],
@@ -237,7 +237,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "standing_in": {
-                        "2010": {
+                        "parl.2010-05-06": {
                             "name": "South Cambridgeshire",
                             "post_id": "65922",
                         }
@@ -273,12 +273,12 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "standing_in": {
-                        "2010": {
+                        "parl.2010-05-06": {
                             "name": "South Cambridgeshire",
                             "post_id": "65922",
                             "mapit_url": "http://mapit.mysociety.org/area/65922",
                         },
-                        "2015": None,
+                        "parl.2015-05-07": None,
                     },
                 },
             },
@@ -289,7 +289,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "standing_in": {
-                        "2010": {
+                        "parl.2010-05-06": {
                             "name": "South Cambridgeshire",
                             "post_id": "65922",
                             "mapit_url": "http://mapit.mysociety.org/area/65922",
@@ -308,11 +308,11 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "standing_in": {
-                        "2010": {
+                        "parl.2010-05-06": {
                             "name": "South Cambridgeshire",
                             "post_id": "65922",
                         },
-                        "2015": None,
+                        "parl.2015-05-07": None,
                     },
                 },
                 "diffs": [
@@ -321,7 +321,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_diff": [
                             {
                                 "op": "add",
-                                "path": "standing_in/2015",
+                                "path": "standing_in/parl.2015-05-07",
                                 "value": "is known not to be standing in the 2015 General Election",
                             }
                         ],
@@ -336,7 +336,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "standing_in": {
-                        "2010": {
+                        "parl.2010-05-06": {
                             "name": "South Cambridgeshire",
                             "post_id": "65922",
                         }
@@ -372,11 +372,14 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "party_memberships": {
-                        "2010": {
+                        "parl.2010-05-06": {
                             "id": "party:58",
                             "name": "Mebyon Kernow - The Party for Cornwall",
                         },
-                        "2015": {"id": "ynmp-party:2", "name": "Independent"},
+                        "parl.2015-05-07": {
+                            "id": "ynmp-party:2",
+                            "name": "Independent",
+                        },
                     },
                 },
             },
@@ -387,11 +390,11 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "party_memberships": {
-                        "2010": {
+                        "parl.2010-05-06": {
                             "id": "party:58",
                             "name": "Mebyon Kernow - The Party for Cornwall",
                         },
-                        "2015": {
+                        "parl.2015-05-07": {
                             "id": "party:58",
                             "name": "Mebyon Kernow - The Party for Cornwall",
                         },
@@ -409,11 +412,14 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "party_memberships": {
-                        "2010": {
+                        "parl.2010-05-06": {
                             "id": "party:58",
                             "name": "Mebyon Kernow - The Party for Cornwall",
                         },
-                        "2015": {"id": "ynmp-party:2", "name": "Independent"},
+                        "parl.2015-05-07": {
+                            "id": "ynmp-party:2",
+                            "name": "Independent",
+                        },
                     },
                 },
                 "diffs": [
@@ -422,13 +428,13 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_diff": [
                             {
                                 "op": "replace",
-                                "path": "party_memberships/2015/id",
+                                "path": "party_memberships/parl.2015-05-07/id",
                                 "previous_value": "is known to be standing for the party with ID party:58 in the 2015 General Election",
                                 "value": "is known to be standing for the party with ID ynmp-party:2 in the 2015 General Election",
                             },
                             {
                                 "op": "replace",
-                                "path": "party_memberships/2015/name",
+                                "path": "party_memberships/parl.2015-05-07/name",
                                 "previous_value": "is known to be standing for the party 'Mebyon Kernow - The Party for Cornwall' in the 2015 General Election",
                                 "value": "is known to be standing for the party 'Independent' in the 2015 General Election",
                             },
@@ -444,11 +450,11 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "party_memberships": {
-                        "2010": {
+                        "parl.2010-05-06": {
                             "id": "party:58",
                             "name": "Mebyon Kernow - The Party for Cornwall",
                         },
-                        "2015": {
+                        "parl.2015-05-07": {
                             "id": "party:58",
                             "name": "Mebyon Kernow - The Party for Cornwall",
                         },
@@ -484,7 +490,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "standing_in": {
-                        "2015": {
+                        "parl.2015-05-07": {
                             "mapit_url": "http://mapit.mysociety.org/area/65659",
                             "name": "Truro and Falmouth",
                             "post_id": "65659",
@@ -499,7 +505,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "standing_in": {
-                        "2015": {
+                        "parl.2015-05-07": {
                             "post_id": "65808",
                             "name": "Dulwich and West Norwood",
                             "mapit_url": "http://mapit.mysociety.org/area/65808",
@@ -518,7 +524,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "standing_in": {
-                        "2015": {
+                        "parl.2015-05-07": {
                             "name": "Truro and Falmouth",
                             "post_id": "65659",
                         }
@@ -530,13 +536,13 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_diff": [
                             {
                                 "op": "replace",
-                                "path": "standing_in/2015/name",
+                                "path": "standing_in/parl.2015-05-07/name",
                                 "previous_value": "is known to be standing in Dulwich and West Norwood in the 2015 General Election",
                                 "value": "is known to be standing in Truro and Falmouth in the 2015 General Election",
                             },
                             {
                                 "op": "replace",
-                                "path": "standing_in/2015/post_id",
+                                "path": "standing_in/parl.2015-05-07/post_id",
                                 "previous_value": "is known to be standing for the post with ID 65808 in the 2015 General Election",
                                 "value": "is known to be standing for the post with ID 65659 in the 2015 General Election",
                             },
@@ -552,7 +558,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "data": {
                     "id": "24680",
                     "standing_in": {
-                        "2015": {
+                        "parl.2015-05-07": {
                             "post_id": "65808",
                             "name": "Dulwich and West Norwood",
                         }

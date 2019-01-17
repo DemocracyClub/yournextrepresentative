@@ -42,7 +42,8 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertIn("Mark candidate as elected", response.text)
         record_url = reverse(
-            "record-winner", kwargs={"election": "2015", "post_id": "65808"}
+            "record-winner",
+            kwargs={"election": "parl.2015-05-07", "post_id": "65808"},
         )
         self.assertIn(record_url, response.text)
 
@@ -57,7 +58,8 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.app.get(self.dulwich_post_pee.get_absolute_url(), user=self.user)
         csrftoken = self.app.cookies["csrftoken"]
         base_record_url = reverse(
-            "record-winner", kwargs={"election": "2015", "post_id": "65808"}
+            "record-winner",
+            kwargs={"election": "parl.2015-05-07", "post_id": "65808"},
         )
         form_get_response = self.app.get(
             base_record_url + "?person=4322", expect_errors=True
@@ -77,7 +79,8 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_record_winner_privileged(self):
         base_record_url = reverse(
-            "record-winner", kwargs={"election": "2015", "post_id": "65808"}
+            "record-winner",
+            kwargs={"election": "parl.2015-05-07", "post_id": "65808"},
         )
         form_get_response = self.app.get(
             base_record_url + "?person=4322",
@@ -113,7 +116,8 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_cannot_record_multiple_winners(self):
         base_record_url = reverse(
-            "record-winner", kwargs={"election": "2015", "post_id": "65808"}
+            "record-winner",
+            kwargs={"election": "parl.2015-05-07", "post_id": "65808"},
         )
         form_get_response = self.app.get(
             base_record_url + "?person=4322",
@@ -153,7 +157,8 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.election.postextraelection_set.update(winner_count=2)
         self.election.save()
         base_record_url = reverse(
-            "record-winner", kwargs={"election": "2015", "post_id": "65808"}
+            "record-winner",
+            kwargs={"election": "parl.2015-05-07", "post_id": "65808"},
         )
         form_get_response = self.app.get(
             base_record_url + "?person=4322",
@@ -202,7 +207,8 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         post_election.winner_count = 2
         post_election.save()
         base_record_url = reverse(
-            "record-winner", kwargs={"election": "2015", "post_id": "65808"}
+            "record-winner",
+            kwargs={"election": "parl.2015-05-07", "post_id": "65808"},
         )
         form_get_response = self.app.get(
             base_record_url + "?person=4322",
@@ -273,7 +279,8 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertIn("Unset the current winners", response.text)
         record_url = reverse(
-            "retract-winner", kwargs={"election": "2015", "post_id": "65808"}
+            "retract-winner",
+            kwargs={"election": "parl.2015-05-07", "post_id": "65808"},
         )
         self.assertIn(record_url, response.text)
 
@@ -288,7 +295,8 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.app.get(self.dulwich_post_pee.get_absolute_url(), user=self.user)
         csrftoken = self.app.cookies["csrftoken"]
         base_record_url = reverse(
-            "retract-winner", kwargs={"election": "2015", "post_id": "65808"}
+            "retract-winner",
+            kwargs={"election": "parl.2015-05-07", "post_id": "65808"},
         )
         form_get_response = self.app.get(
             base_record_url + "?person=4322", expect_errors=True
@@ -313,7 +321,8 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         csrftoken = self.app.cookies["csrftoken"]
         base_record_url = reverse(
-            "retract-winner", kwargs={"election": "2015", "post_id": "65808"}
+            "retract-winner",
+            kwargs={"election": "parl.2015-05-07", "post_id": "65808"},
         )
         response = self.app.post(
             base_record_url,

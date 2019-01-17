@@ -32,7 +32,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_suggest_post_lock_not_offered_with_document_when_locked(self):
         pee = PostExtraElection.objects.get(
-            election__slug="2015", post__slug="14419"
+            election__slug="parl.2015-05-07", post__slug="14419"
         )
         pee.candidates_locked = True
         pee.save()
@@ -73,7 +73,9 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(suggested_locks.count(), 1)
         suggested_lock = suggested_locks.get()
         self.assertEqual(suggested_lock.postextraelection.post.slug, "14419")
-        self.assertEqual(suggested_lock.postextraelection.election.slug, "2015")
+        self.assertEqual(
+            suggested_lock.postextraelection.election.slug, "parl.2015-05-07"
+        )
         self.assertEqual(suggested_lock.user, self.user)
         self.assertEqual(
             suggested_lock.justification, "I liked totally reviewed the SOPN"
@@ -94,7 +96,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         pee = PostExtraElection.objects.get(
-            election__slug="2015", post__slug="14419"
+            election__slug="parl.2015-05-07", post__slug="14419"
         )
 
         SuggestedPostLock.objects.create(
@@ -105,7 +107,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         SuggestedPostLock.objects.create(
             postextraelection=PostExtraElection.objects.get(
-                election__slug="2010", post__slug="14419"
+                election__slug="parl.2010-05-06", post__slug="14419"
             ),
             user=self.user,
             justification="I liked totally reviewed the SOPN",
@@ -140,7 +142,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         pee = PostExtraElection.objects.get(
-            election__slug="2015", post__slug="14419"
+            election__slug="parl.2015-05-07", post__slug="14419"
         )
 
         SuggestedPostLock.objects.create(
@@ -171,7 +173,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         pee = PostExtraElection.objects.get(
-            election__slug="2015", post__slug="14419"
+            election__slug="parl.2015-05-07", post__slug="14419"
         )
 
         SuggestedPostLock.objects.create(
@@ -191,7 +193,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.user.save()
 
         pee = PostExtraElection.objects.get(
-            election__slug="2015", post__slug="14419"
+            election__slug="parl.2015-05-07", post__slug="14419"
         )
 
         SuggestedPostLock.objects.create(

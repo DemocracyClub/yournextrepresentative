@@ -56,12 +56,12 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "honorific_suffix": "DBE",
                       "twitter_username": "",
                       "standing_in": {
-                        "2010": {
+                        "parl.2010-05-06": {
                           "post_id": "65808",
                           "name": "Dulwich and West Norwood",
                           "mapit_url": "http://mapit.mysociety.org/area/65808"
                         },
-                        "2015": {
+                        "parl.2015-05-07": {
                           "post_id": "65808",
                           "name": "Dulwich and West Norwood",
                           "mapit_url": "http://mapit.mysociety.org/area/65808"
@@ -72,11 +72,11 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "birth_date": null,
                       "wikipedia_url": "https://en.wikipedia.org/wiki/Tessa_Jowell",
                       "party_memberships": {
-                        "2010": {
+                        "parl.2010-05-06": {
                           "id": "party:53",
                           "name": "Labour Party"
                         },
-                        "2015": {
+                        "parl.2015-05-07": {
                           "id": "party:53",
                           "name": "Labour Party"
                         }
@@ -95,7 +95,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "id": "2009",
                       "twitter_username": "",
                       "standing_in": {
-                        "2010": {
+                        "parl.2010-05-06": {
                           "post_id": "65808",
                           "name": "Dulwich and West Norwood",
                           "mapit_url": "http://mapit.mysociety.org/area/65808"
@@ -105,7 +105,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "birth_date": "1947-09-17",
                       "wikipedia_url": "",
                       "party_memberships": {
-                        "2010": {
+                        "parl.2010-05-06": {
                           "id": "party:53",
                           "name": "Labour Party"
                         }
@@ -172,7 +172,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "name": "Shane Collins",
                       "other_names": [],
                       "party_memberships": {
-                        "2010": {
+                        "parl.2010-05-06": {
                           "id": "party:63",
                           "name": "Green Party"
                         }
@@ -180,7 +180,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "party_ppc_page_url": "",
                       "proxy_image": null,
                       "standing_in": {
-                        "2010": {
+                        "parl.2010-05-06": {
                           "mapit_url": "http://mapit.mysociety.org/area/65808",
                           "name": "Dulwich and West Norwood",
                           "post_id": "65808"
@@ -212,7 +212,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       ],
                       "name": "Shane Collins",
                       "party_memberships": {
-                        "2010": {
+                        "parl.2010-05-06": {
                           "id": "party:63",
                           "name": "Green Party"
                         }
@@ -221,7 +221,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "phone": "07939 196612",
                       "slug": "shane-collins",
                       "standing_in": {
-                        "2010": {
+                        "parl.2010-05-06": {
                           "mapit_url": "http://mapit.mysociety.org/area/65808",
                           "name": "Dulwich and West Norwood",
                           "post_id": "65808"
@@ -338,7 +338,9 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         ).order_by("post_election__election__election_date")
 
         self.assertEqual(len(candidacies), 2)
-        for c, expected_election in zip(candidacies, ("2010", "2015")):
+        for c, expected_election in zip(
+            candidacies, ("parl.2010-05-06", "parl.2015-05-07")
+        ):
             self.assertEqual(c.post_election.election.slug, expected_election)
             self.assertEqual(c.post.slug, "65808")
 
@@ -427,16 +429,22 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "name": "Stuart Jeffery",
                 "other_names": [],
                 "party_memberships": {
-                    "2010": {"id": "party:63", "name": "Green Party"},
-                    "2015": {"id": "party:63", "name": "Green Party"},
+                    "parl.2010-05-06": {
+                        "id": "party:63",
+                        "name": "Green Party",
+                    },
+                    "parl.2015-05-07": {
+                        "id": "party:63",
+                        "name": "Green Party",
+                    },
                 },
                 "party_ppc_page_url": "https://my.greenparty.org.uk/candidates/105873",
                 "standing_in": {
-                    "2010": {
+                    "parl.2010-05-06": {
                         "name": "Maidstone and The Weald",
                         "post_id": "65936",
                     },
-                    "2015": {
+                    "parl.2015-05-07": {
                         "elected": False,
                         "name": "Canterbury",
                         "post_id": "65878",
@@ -510,9 +518,9 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             list(candidacies),
             [
-                ("2010", "65936", "party:63"),
-                ("2015", "65878", "party:63"),
                 ("local.maidstone.2016-05-05", "DIW:E05005004", "party:63"),
+                ("parl.2010-05-06", "65936", "party:63"),
+                ("parl.2015-05-07", "65878", "party:63"),
             ],
         )
 

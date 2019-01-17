@@ -200,9 +200,9 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
         form["name"] = "Yoshi Aarle"
         form["source"] = "just a test"
-        form["standing_2015"] = "standing"
-        form["constituency_2015"] = "65808"
-        form["party_GB_2015"] = str(Party.objects.first().ec_id)
+        form["standing_parl.2015-05-07"] = "standing"
+        form["constituency_parl.2015-05-07"] = "65808"
+        form["party_GB_parl.2015-05-07"] = str(Party.objects.first().ec_id)
         response = form.submit().follow()
 
         person = response.context["person"]

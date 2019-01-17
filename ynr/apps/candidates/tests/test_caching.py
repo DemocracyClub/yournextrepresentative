@@ -9,7 +9,7 @@ class TestCaching(TestUserMixin, UK2015ExamplesMixin, WebTest):
         super().setUp()
 
     def test_unauth_user_cache_headers(self):
-        response = self.app.get("/elections/2015.65808/")
+        response = self.app.get("/elections/parl.65808.2015-05-07/")
 
         headers = response.headerlist
         seen_cache = False
@@ -21,7 +21,9 @@ class TestCaching(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertTrue(seen_cache)
 
     def test_auth_user_cache_headers(self):
-        response = self.app.get("/elections/2015.65808/", user=self.user)
+        response = self.app.get(
+            "/elections/parl.65808.2010-05-06/", user=self.user
+        )
 
         headers = response.headerlist
         seen_cache = False

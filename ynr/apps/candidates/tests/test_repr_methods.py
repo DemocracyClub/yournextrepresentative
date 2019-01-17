@@ -10,7 +10,7 @@ class TestReprMethods(UK2015ExamplesMixin, TestCase):
         )
         self.assertEqual(
             str(pee),
-            "<PostExtraElection ballot_paper_id='2015.65913' winner_count=1>",
+            "<PostExtraElection ballot_paper_id='parl.65913.2015-05-07' winner_count=1>",
         )
 
     def test_logged_action_repr_locked_with_winner_count(self):
@@ -22,5 +22,5 @@ class TestReprMethods(UK2015ExamplesMixin, TestCase):
         pee.save()
         self.assertEqual(
             str(pee),
-            "<PostExtraElection ballot_paper_id='2015.65913' candidates_locked=True winner_count=4>",
+            "<PostExtraElection ballot_paper_id='parl.65913.2015-05-07' candidates_locked=True winner_count=4>",
         )

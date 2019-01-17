@@ -227,7 +227,7 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
 
         election_url = None
         for election in elections["results"]:
-            if election["id"] == "2015":
+            if election["id"] == "parl.2015-05-07":
                 election_url = election["url"]
                 break
 
@@ -235,7 +235,7 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(election_resp.status_code, 200)
 
         election = election_resp.json
-        self.assertEqual(election["id"], "2015")
+        self.assertEqual(election["id"], "parl.2015-05-07")
         self.assertEqual(election["name"], "2015 General Election")
 
     def test_api_posts(self):

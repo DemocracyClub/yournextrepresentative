@@ -81,7 +81,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_any_constituency_page_without_login(self):
         # Just a smoke test for the moment:
-        response = self.app.get("/elections/2015.65808/")
+        response = self.app.get("/elections/parl.65808.2015-05-07/")
         response.mustcontain(
             '<a href="/person/2009/tessa-jowell" class="candidate-name">Tessa Jowell</a> <span class="party">Labour Party</span>'
         )
@@ -126,7 +126,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "birth_date": "",
                 "cancelled_poll": "False",
                 "elected": "",
-                "election": "2015",
+                "election": "parl.2015-05-07",
                 "election_current": "True",
                 "election_date": text_type(date_in_near_future),
                 "email": "",
@@ -179,7 +179,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response.mustcontain("Unset the current winners")
 
     def test_constituency_with_may_be_standing(self):
-        response = self.app.get("/elections/2015.14419/")
+        response = self.app.get("/elections/parl.14419.2015-05-07/")
         response.mustcontain(
             "if these candidates from earlier elections are standing"
         )
@@ -217,12 +217,13 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_mark_not_standing_no_post(self):
         response = self.app.get(
-            "/election/2015/post/14419/edinburgh-east", user=self.user
+            "/election/parl.2015-05-07/post/14419/edinburgh-east",
+            user=self.user,
         )
 
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            "/election/2015/candidacy/delete",
+            "/election/parl.2015-05-07/candidacy/delete",
             params={
                 "person_id": "181",
                 "post_id": "9999",
@@ -236,12 +237,13 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_mark_standing_no_candidate(self):
         response = self.app.get(
-            "/election/2015/post/14419/edinburgh-east", user=self.user
+            "/election/parl.2015-05-07/post/14419/edinburgh-east",
+            user=self.user,
         )
 
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            "/election/2015/candidacy",
+            "/election/parl.2015-05-07/candidacy",
             params={
                 "person_id": "9999",
                 "post_id": "14419",
@@ -255,12 +257,13 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_mark_standing_no_post(self):
         response = self.app.get(
-            "/election/2015/post/14419/edinburgh-east", user=self.user
+            "/election/parl.2015-05-07/post/14419/edinburgh-east",
+            user=self.user,
         )
 
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            "/election/2015/candidacy",
+            "/election/parl.2015-05-07/candidacy",
             params={
                 "person_id": "5163",
                 "post_id": "9999",
@@ -274,12 +277,13 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_mark_candidate_not_standing(self):
         response = self.app.get(
-            "/election/2015/post/14419/edinburgh-east", user=self.user
+            "/election/parl.2015-05-07/post/14419/edinburgh-east",
+            user=self.user,
         )
 
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            "/election/2015/candidacy/delete",
+            "/election/parl.2015-05-07/candidacy/delete",
             params={
                 "person_id": "818",
                 "post_id": "14419",
@@ -312,7 +316,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            "/election/2015/candidacy",
+            "/election/parl.2015-05-07/candidacy",
             params={
                 "person_id": "5163",
                 "post_id": "14419",
@@ -325,7 +329,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         membership = Membership.objects.filter(
             person_id=5163,
             post__slug="14419",
-            post_election__election__slug="2015",
+            post_election__election__slug="parl.2015-05-07",
         )
 
         self.assertTrue(membership.exists())
@@ -342,7 +346,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            "/election/2015/candidacy/delete",
+            "/election/parl.2015-05-07/candidacy/delete",
             params={
                 "person_id": "5163",
                 "post_id": "14419",
@@ -355,7 +359,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         membership = Membership.objects.filter(
             person_id=5163,
             post__slug="14419",
-            post_election__election__slug="2015",
+            post_election__election__slug="parl.2015-05-07",
         )
         self.assertFalse(membership.exists())
 
@@ -375,7 +379,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
-            "/election/2015/candidacy",
+            "/election/parl.2015-05-07/candidacy",
             params={
                 "person_id": "4322",
                 "post_id": "65808",
@@ -388,7 +392,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         membership = Membership.objects.filter(
             person_id=4322,
             post__slug="65808",
-            post_election__election__slug="2015",
+            post_election__election__slug="parl.2015-05-07",
         )
 
         self.assertTrue(membership.exists())
@@ -407,7 +411,8 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # viewing a page with election: 2015 and post: DIW:E05005004
         # should return a 404.
         response = self.app.get(
-            "/election/2015/post/DIW:E05005004/whatever", expect_errors=True
+            "/election/parl.2015-05-07/post/DIW:E05005004/whatever",
+            expect_errors=True,
         )
         self.assertEqual(response.status_code, 404)
 
