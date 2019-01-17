@@ -92,7 +92,7 @@ class Command(BaseCommand):
             models.PartySet,
             models.LoggedAction,
             models.PersonRedirect,
-            emodels.Election,  # , models.ExtraField,
+            emodels.Election,
         ):
             if model_class.objects.exists():
                 non_empty_models.append(model_class)
@@ -161,10 +161,6 @@ class Command(BaseCommand):
         return filename
 
     def mirror_from_api(self, ignore_images):
-        for extra_field in self.get_api_results("extra_fields"):
-            with show_data_on_error("extra_field", extra_field):
-                del extra_field["url"]
-                models.ExtraField.objects.update_or_create(**extra_field)
         party_sets_by_slug = {}
         for party_set_data in self.get_api_results("party_sets"):
             with show_data_on_error("party_set_data", party_set_data):
@@ -298,11 +294,8 @@ class Command(BaseCommand):
                         post=post,
                         election=election,
                         candidates_locked=election_data["candidates_locked"],
-                        ballot_paper_id="tmp_{}.{}".format(
-                            election.slug, post.slug
-                        ),
+                        ballot_paper_id=election_data["ballot_paper_id"],
                     )
-        extra_fields = {ef.key: ef for ef in models.ExtraField.objects.all()}
         person_to_image_data = {}
         for person_data in self.get_api_results("persons"):
             with show_data_on_error("person_data", person_data):
@@ -337,22 +330,20 @@ class Command(BaseCommand):
                 )
                 self.add_related(person, pmodels.Link, person_data["links"])
 
-                # Look for any data in ExtraFields
-                for extra_field_data in person_data["extra_fields"]:
-                    person.extra_field_values.create(
-                        field=extra_fields[extra_field_data["key"]],
-                        value=extra_field_data["value"],
-                    )
-
         for m_data in self.get_api_results("memberships", "next"):
             with show_data_on_error("m_data", m_data):
                 kwargs = {
                     k: m_data[k]
                     for k in ("label", "role", "start_date", "end_date")
                 }
-                kwargs["person"] = people.models.Person.objects.get(
-                    pk=m_data["person"]["id"]
-                )
+                try:
+                    kwargs["person"] = people.models.Person.objects.get(
+                        pk=m_data["person"]["id"]
+                    )
+                except people.models.Person.DoesNotExist:
+                    # Chances are this person was created since the last
+                    # cached person run was updated. It's ok to ignore this
+                    continue
                 if m_data.get("party"):
                     kwargs["party"] = Party.objects.get(
                         ec_id=m_data["party"]["ec_id"]
@@ -418,7 +409,6 @@ class Command(BaseCommand):
                 models.PartySet,
                 emodels.Election,
                 PersonImage,
-                models.ExtraField,
                 people.models.Person,
             ],
         )
