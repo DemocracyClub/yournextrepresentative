@@ -520,3 +520,13 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
             self.assertFalse(
                 self.storage.exists(join("cached-api", dir_name, ".keep"))
             )
+
+    def test_legacy_redirects(self):
+        req = self.app.get("/api/v0.9/elections/2010/")
+        self.assertEqual(req.status_code, 301)
+        self.assertEqual(req.location, "/api/v0.9/elections/parl.2010-05-06/")
+        req = self.app.get("/api/v0.9/elections/2010.json")
+        self.assertEqual(req.status_code, 301)
+        self.assertEqual(
+            req.location, "/api/v0.9/elections/parl.2010-05-06.json"
+        )

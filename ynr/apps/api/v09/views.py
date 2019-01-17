@@ -320,7 +320,7 @@ class ElectionViewSet(viewsets.ModelViewSet):
                     kwargs={"version": "v0.9", "slug": new_slug},
                 )
                 if self.kwargs.get("format"):
-                    url = "{}.{}".format(url.strip("/"), self.kwargs["format"])
+                    url = "{}.{}".format(url.rstrip("/"), self.kwargs["format"])
                 return HttpResponsePermanentRedirect(url)
         return super().dispatch(request, *args, **kwargs)
 
