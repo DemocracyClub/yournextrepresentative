@@ -8,7 +8,7 @@ from dateutil import parser
 import django
 from django.contrib.auth.models import User
 from django.db.models import Count, Prefetch, Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponsePermanentRedirect
 from django.views.generic import View
 
 from rest_framework.reverse import reverse
@@ -25,6 +25,7 @@ from elections.uk.geo_helpers import (
     get_post_elections_from_coords,
     get_post_elections_from_postcode,
 )
+from ynr_refactoring.views import get_changed_election_slug
 
 from compat import text_type
 
@@ -307,6 +308,21 @@ class ElectionViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ElectionSerializer
     filterset_fields = ("current",)
     pagination_class = ResultsSetPagination
+
+    def dispatch(self, request, *args, **kwargs):
+        provided_slug = self.kwargs.get(self.lookup_field)
+        if provided_slug:
+            new_slug = get_changed_election_slug(provided_slug)
+            if new_slug != provided_slug:
+                # This is a changed slug
+                url = reverse(
+                    "election-detail",
+                    kwargs={"version": "v0.9", "slug": new_slug},
+                )
+                if self.kwargs.get("format"):
+                    url = "{}.{}".format(url.strip("/"), self.kwargs["format"])
+                return HttpResponsePermanentRedirect(url)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class PartySetViewSet(viewsets.ModelViewSet):
