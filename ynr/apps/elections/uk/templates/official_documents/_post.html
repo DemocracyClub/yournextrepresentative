@@ -7,7 +7,7 @@
            <a href="{{ paper.get_absolute_url }}">{{ paper.document_type }}</a><br>
         {% endfor %}
         {% if user_can_upload_documents %}
-          <a href="{% url 'upload_document_view' election=election post_id=post_data.id %}">
+          <a href="{% url 'upload_document_view' election=election.slug post_id=post_data.id %}">
           Upload an updated Statement of Persons Nominated</a>.
         {% endif %}
       {% else %}
@@ -19,7 +19,7 @@
         {% if user_can_upload_documents %}
           {% if election.slug == '2015' %}
             Or, as you have permission to upload documents, you can
-            <a href="{% url 'upload_document_view' election=election post_id=post_data.id %}">
+            <a href="{% url 'upload_document_view' election=election.slug post_id=post_data.id %}">
             upload it directly</a>.
           {% else %}
             Can you help us by
