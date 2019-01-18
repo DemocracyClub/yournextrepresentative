@@ -125,8 +125,11 @@ def by_election_ctas(context):
     )
 
     if context["SHOW_BY_ELECTION_CTA"]:
+        dates_to_ignore = getattr(settings, "SCHEDULED_ELECTION_DATES", [])
+
         all_pees = (
             PostExtraElection.objects.filter(election__current=True)
+            .exclude(election__election_date__in=dates_to_ignore)
             .order_by("election__election_date", "election")
             .select_related("election", "post")
             .prefetch_related("membership_set")
