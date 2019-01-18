@@ -23,7 +23,7 @@
             upload it directly</a>.
           {% else %}
             Can you help us by
-            <a href="{% url 'upload_document_view' election=election post_id=post_data.id %}">uploading
+            <a href="{% url 'upload_document_view' election=election.slug post_id=post_data.id %}">uploading
             the PDF of the Statement of Persons Nominated?</a>
           {% endif %}
         {% endif %}
