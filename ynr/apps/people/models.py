@@ -118,6 +118,17 @@ class PersonIdentifier(TimeStampedModel):
 
     @property
     def get_value_type_html(self):
+        STRING_TO_LABEL = {
+            "theyworkforyou": "TheyWorkForYou Profile",
+            "facebook_page_url": "Facebook Page",
+            "homepage_url": "Homepage",
+            "party_ppc_page_url": "Party candidate page",
+            "twitter_username": "Twitter",
+            "wikipedia_url": "Wikipedia",
+        }
+        if self.value_type in STRING_TO_LABEL:
+            return STRING_TO_LABEL[self.value_type]
+
         text = self.value_type.replace("_", " ")
         text = self.value_type.replace(" url", "")
 
