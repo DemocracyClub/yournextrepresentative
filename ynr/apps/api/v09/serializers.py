@@ -7,7 +7,7 @@ from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
 import people.models
 from api.helpers import JSONSerializerField
 from candidates import models as candidates_models
-from people.models import PersonImage
+from people.models import PersonImage, PersonIdentifier
 from elections import models as election_models
 from popolo import models as popolo_models
 from parties.models import Party
@@ -274,7 +274,6 @@ class PersonSerializer(MinimalPersonSerializer):
             "thumbnail",
         )
 
-    contact_details = ContactDetailSerializer(many=True, read_only=True)
     identifiers = IdentifierSerializer(many=True, read_only=True)
     links = LinkSerializer(many=True, read_only=True)
     other_names = OtherNameSerializer(many=True, read_only=True)
@@ -285,6 +284,7 @@ class PersonSerializer(MinimalPersonSerializer):
     memberships = MembershipSerializer(many=True, read_only=True)
 
     extra_fields = serializers.SerializerMethodField()
+    contact_details = serializers.SerializerMethodField()
 
     thumbnail = HyperlinkedSorlImageField(
         "300x300",
@@ -295,6 +295,19 @@ class PersonSerializer(MinimalPersonSerializer):
 
     def get_extra_fields(self, obj):
         return [{"favourite_biscuits": obj.favourite_biscuit or ""}]
+
+    def get_contact_details(self, obj):
+        ret = []
+        if obj.get_twitter_username:
+            ret.append(
+                {
+                    "contact_type": "twitter",
+                    "label": "",
+                    "note": "",
+                    "value": obj.get_twitter_username,
+                }
+            )
+        return ret
 
 
 class NoVersionPersonSerializer(PersonSerializer):
