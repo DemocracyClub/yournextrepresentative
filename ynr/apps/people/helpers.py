@@ -6,10 +6,7 @@ from django.utils.translation import ugettext_lazy as _l
 from django_date_extensions.fields import ApproximateDate
 
 from candidates.models import PartySet, raise_if_unsafe_to_delete
-from candidates.twitter_api import (
-    update_twitter_user_id,
-    TwitterAPITokenMissing,
-)
+from candidates.twitter_api import TwitterAPITokenMissing
 from popolo.models import Post, Membership
 from parties.models import Party
 
@@ -84,10 +81,7 @@ def update_person_from_form(person, form):
     person.favourite_biscuit = form_data["favourite_biscuit"]
 
     person.save()
-    try:
-        update_twitter_user_id(person)
-    except TwitterAPITokenMissing:
-        pass
+
     for election_data in form.elections_with_fields:
         # Interpret the form data relating to this election:
         post_id = form_data.get("constituency_" + election_data.slug)

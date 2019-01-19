@@ -250,7 +250,6 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "candidates": [
                     {
                         "birth_date": "",
-                        "contact_details": [],
                         "death_date": "",
                         "email": None,
                         "gender": "",

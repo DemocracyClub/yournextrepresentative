@@ -225,7 +225,6 @@ class PersonSerializer(MinimalPersonSerializer):
             "birth_date",
             "death_date",
             "versions",
-            "contact_details",
             "links",
             "memberships",
             "images",
@@ -233,7 +232,6 @@ class PersonSerializer(MinimalPersonSerializer):
             "favourite_biscuit",
         )
 
-    contact_details = ContactDetailSerializer(many=True, read_only=True)
     identifiers = IdentifierSerializer(many=True, read_only=True)
     links = LinkSerializer(many=True, read_only=True)
     other_names = OtherNameSerializer(many=True, read_only=True)
@@ -267,7 +265,6 @@ class NoVersionPersonSerializer(PersonSerializer):
             "gender",
             "birth_date",
             "death_date",
-            "contact_details",
             "links",
             "memberships",
             "images",

@@ -144,7 +144,6 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                         PersonImage.objects.select_related("uploading_user"),
                     ),
                     "person__other_names",
-                    "person__contact_details",
                     "person__links",
                     "person__identifiers",
                 )
@@ -293,7 +292,6 @@ class PersonViewSet(viewsets.ModelViewSet):
             ),
             "memberships__post_election__election",
             "other_names",
-            "contact_details",
             "images",
             "links",
             "identifiers",

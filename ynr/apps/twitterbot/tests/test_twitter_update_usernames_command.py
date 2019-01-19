@@ -234,12 +234,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         with capture_output() as (out, err):
             call_command("twitterbot_update_usernames")
 
-        self.assertEqual(
-            self.just_screen_name.contact_details.filter(
-                contact_type="twitter"
-            ).count(),
-            0,
-        )
+        self.assertEqual(self.just_screen_name.get_twitter_username, "")
         self.assertEqual(
             self.just_screen_name.identifiers.filter(scheme="twitter").count(),
             0,
@@ -293,25 +288,21 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
 
         mock_requests.post.side_effect = fake_post_user_id_disappeared
 
+        self.assertEqual(
+            self.screen_name_and_user_id.get_twitter_username,
+            "notatwitteraccounteither",
+        )
         with capture_output() as (out, err):
             call_command("twitterbot_update_usernames")
 
-        self.assertEqual(
-            self.just_userid.contact_details.filter(
-                contact_type="twitter"
-            ).count(),
-            0,
-        )
+        self.assertIsNone(self.just_userid.get_twitter_username)
         self.assertEqual(
             self.just_userid.identifiers.filter(scheme="twitter").count(), 0
         )
 
-        self.assertEqual(
-            self.screen_name_and_user_id.contact_details.filter(
-                contact_type="twitter"
-            ).count(),
-            0,
-        )
+        # Clear the cached_property for this object
+        del self.screen_name_and_user_id.get_all_idenfitiers
+        self.assertIsNone(self.screen_name_and_user_id.get_twitter_username)
         self.assertEqual(
             self.screen_name_and_user_id.identifiers.filter(
                 scheme="twitter"

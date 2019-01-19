@@ -6,7 +6,7 @@ from django.db.models import F
 from django.conf import settings
 from django.db.models.query import prefetch_related_objects
 
-from ..twitter_api import update_twitter_user_id, TwitterAPITokenMissing
+from ..twitter_api import TwitterAPITokenMissing
 from parties.models import Party
 from ynr_refactoring.settings import PersonIdentifierFields
 
@@ -189,10 +189,6 @@ def revert_person_from_version_data(person, version_data, part_of_merge=False):
             )
 
     person.save()
-    try:
-        update_twitter_user_id(person)
-    except TwitterAPITokenMissing:
-        pass
 
 
 def version_timestamp_key(version):

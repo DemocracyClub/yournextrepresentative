@@ -142,7 +142,6 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                     ),
                     "person__images",
                     "person__other_names",
-                    "person__contact_details",
                     "person__links",
                     "person__identifiers",
                 )
@@ -246,7 +245,6 @@ class PersonViewSet(viewsets.ModelViewSet):
             "memberships__post_election__election",
             "other_names",
             "images",
-            "contact_details",
             "links",
             "identifiers",
         ).order_by("id")
