@@ -251,11 +251,6 @@ class Person(Timestampable, models.Model):
         help_text=_("A national identity"),
     )
 
-    # array of items referencing "http://popoloproject.com/schemas/contact_detail.json#"
-    contact_details = GenericRelation(
-        "popolo.ContactDetail", help_text="Means of contacting the person"
-    )
-
     # array of items referencing "http://popoloproject.com/schemas/link.json#"
     links = GenericRelation(
         "popolo.Link", help_text="URLs to documents related to the person"
