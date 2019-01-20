@@ -160,13 +160,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "honorific_prefix": "Mr",
                       "honorific_suffix": "",
                       "id": "2007",
-                      "identifiers": [
-                        {
-                          "id": "547786cc737edc5252ce5af1",
-                          "identifier": "2961",
-                          "scheme": "yournextmp-candidate"
-                        }
-                      ],
+                      "identifiers": [],
                       "image": null,
                       "linkedin_url": "",
                       "name": "Shane Collins",
@@ -204,12 +198,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "gender": "male",
                       "homepage_url": null,
                       "id": "2007",
-                      "identifiers": [
-                        {
-                          "identifier": "2961",
-                          "scheme": "yournextmp-candidate"
-                        }
-                      ],
+                      "identifiers": [],
                       "name": "Shane Collins",
                       "party_memberships": {
                         "parl.2010-05-06": {
@@ -420,9 +409,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "honorific_suffix": "",
                 "id": "2111",
                 "identifiers": [
-                    {"identifier": "2111", "scheme": "popit-person"},
-                    {"identifier": "3476", "scheme": "yournextmp-candidate"},
-                    {"identifier": "15712527", "scheme": "twitter"},
+                    {"identifier": "15712527", "scheme": "twitter"}
                 ],
                 "image": "http://yournextmp.popit.mysociety.org/persons/2111/image/54bc790ecb19ebca71e2af8e",
                 "linkedin_url": "",

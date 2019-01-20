@@ -66,10 +66,6 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 {
                   "identifier": "uk.org.publicwhip/person/10326",
                   "scheme": "uk.org.publicwhip"
-                },
-                {
-                  "identifier": "2959",
-                  "scheme": "yournextmp-candidate"
                 }
               ],
               "email": "jowell@example.com",
@@ -107,10 +103,6 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 {
                   "identifier": "uk.org.publicwhip/person/10326",
                   "scheme": "uk.org.publicwhip"
-                },
-                {
-                  "identifier": "2959",
-                  "scheme": "yournextmp-candidate"
                 }
               ],
               "email": "tessa.jowell@example.com",
@@ -202,11 +194,10 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "birth_date": "1947-09-17",
                 "biography": "",
                 "identifiers": [
-                    {"identifier": "2959", "scheme": "yournextmp-candidate"},
                     {
                         "identifier": "uk.org.publicwhip/person/10326",
                         "scheme": "uk.org.publicwhip",
-                    },
+                    }
                 ],
                 "email": "tessa.jowell@example.com",
                 "extra_fields": {"favourite_biscuits": ""},

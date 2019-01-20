@@ -394,9 +394,7 @@ class TestDiffHTML(TestCase):
                     "honorific_prefix": "Mrs",
                     "honorific_suffix": "",
                     "id": "6704",
-                    "identifiers": [{"id": "552f80d0ed1c6ee164eeae51",
-                    "identifier": "13445",
-                    "scheme": "yournextmp-candidate"}],
+                    "identifiers": [],
                     "image": null,
                     "linkedin_url": "",
                     "name": "Sarah Jones",
@@ -416,11 +414,7 @@ class TestDiffHTML(TestCase):
                     "honorific_prefix": "Mrs",
                     "honorific_suffix": "",
                     "id": "6704",
-                    "identifiers": [{
-                        "id": "5477866f737edc5252ce5938",
-                        "identifier": "13445",
-                        "scheme": "yournextmp-candidate"
-                    }],
+                    "identifiers": [],
                     "image": null,
                     "linkedin_url": "",
                     "name": "Sarah Jones",
