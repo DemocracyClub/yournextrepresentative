@@ -12,10 +12,9 @@
 {% block content %}
 
 <p>
-{% url 'constituency' election=object.election.slug post_id=object.post.slug ignored_slug=post_label|slugify as url %}
-{% blocktrans trimmed with type=object.document_type %}
-{{ type }} for <a href="{{ url }}">{{ post_label }}</a>.
-{% endblocktrans %}
+
+  {{ object.document_type }} for <a href="{{ object.post_election.get_absolute_url }}">{{ post_label }}</a>.
+
 {% blocktrans trimmed with source_url=object.source_url %}
 The source URL for this document was: <a href="{{ source_url }}">{{ source_url }}</a>
 {% endblocktrans %}
