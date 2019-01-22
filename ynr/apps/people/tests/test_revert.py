@@ -125,6 +125,11 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         PersonIdentifier.objects.create(
             person=person, value="jowell@example.com", value_type="email"
         )
+        PersonIdentifier.objects.create(
+            person=person,
+            internal_identifier="10326",
+            value_type="theyworkforyou",
+        )
         person.links.create(url="", note="wikipedia")
         factories.MembershipFactory.create(
             person=person,
@@ -229,6 +234,6 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         # The homepage link should have been added and the Wikipedia
-        # one removed:
-        self.assertEqual(2, person.tmp_person_identifiers.all().count())
+        # one removed, and the theyworkforyou ID created:
+        self.assertEqual(3, person.tmp_person_identifiers.all().count())
         self.assertIsNone(person.get_single_identifier_of_type("wikipedia_url"))

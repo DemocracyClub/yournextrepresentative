@@ -21,6 +21,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
+from ynr_refactoring.settings import PersonIdentifierFields
+
 from .behaviors.models import Timestampable, Dateframeable, GenericRelatable
 from .querysets import (
     PostQuerySet,
@@ -347,7 +349,10 @@ class Membership(Dateframeable, Timestampable, models.Model):
 
     def dict_for_csv(self, redirects=None):
         identifier_dict = {}
+        id_values = [f.value for f in PersonIdentifierFields]
         for identifier in self.person.tmp_person_identifiers.all():
+            if identifier not in id_values:
+                continue
             identifier_dict[identifier.value_type] = identifier.value
 
         membership_dict = {

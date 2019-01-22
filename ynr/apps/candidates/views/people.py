@@ -301,6 +301,7 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
         return initial_data
 
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
 
         person = get_object_or_404(Person, pk=self.kwargs["person_id"])

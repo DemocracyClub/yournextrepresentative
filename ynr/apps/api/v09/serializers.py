@@ -274,7 +274,6 @@ class PersonSerializer(MinimalPersonSerializer):
             "thumbnail",
         )
 
-    identifiers = IdentifierSerializer(many=True, read_only=True)
     links = LinkSerializer(many=True, read_only=True)
     other_names = OtherNameSerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True, default=[])
@@ -285,6 +284,7 @@ class PersonSerializer(MinimalPersonSerializer):
 
     extra_fields = serializers.SerializerMethodField()
     contact_details = serializers.SerializerMethodField()
+    identifiers = serializers.SerializerMethodField()
 
     thumbnail = HyperlinkedSorlImageField(
         "300x300",
@@ -305,6 +305,28 @@ class PersonSerializer(MinimalPersonSerializer):
                     "label": "",
                     "note": "",
                     "value": obj.get_twitter_username,
+                }
+            )
+        return ret
+
+    def get_identifiers(self, obj):
+        ret = []
+        if obj.get_single_identifier_of_type("theyworkforyou"):
+            ret.append(
+                {
+                    "identifier": "uk.org.publicwhip/person/{}".format(
+                        obj.get_single_identifier_of_type("theyworkforyou")
+                    ),
+                    "scheme": "uk.org.publicwhip",
+                }
+            )
+        if obj.get_single_identifier_of_type("twitter_username"):
+            ret.append(
+                {
+                    "identifier": obj.get_identifiers_of_type(
+                        "twitter_username"
+                    )[0].internal_identifier,
+                    "scheme": "twitter",
                 }
             )
         return ret

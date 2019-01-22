@@ -174,11 +174,6 @@ class Person(Timestampable, models.Model):
         "popolo.OtherName", help_text="Alternate or former names"
     )
 
-    # array of items referencing "http://popoloproject.com/schemas/identifier.json#"
-    identifiers = GenericRelation(
-        "popolo.Identifier", help_text="Issued identifiers"
-    )
-
     family_name = models.CharField(
         _("family name"),
         max_length=128,
@@ -328,14 +323,6 @@ class Person(Timestampable, models.Model):
         if request is None:
             return path
         return request.build_absolute_uri(path)
-
-    def get_identifier(self, scheme):
-        identifier_object = self.identifiers.filter(
-            scheme="uk.org.publicwhip"
-        ).first()
-        if identifier_object:
-            return identifier_object.identifier
-        return ""
 
     @cached_property
     def get_all_idenfitiers(self):
@@ -603,16 +590,14 @@ class Person(Timestampable, models.Model):
 
         theyworkforyou_url = ""
         parlparse_id = ""
-        for i in self.identifiers.all():
-            if i.scheme == "uk.org.publicwhip":
-                parlparse_id = i.identifier
-                m = re.search(r"^uk.org.publicwhip/person/(\d+)$", parlparse_id)
-                if not m:
-                    message = "Malformed parlparse ID found {0}"
-                    raise Exception(message.format(parlparse_id))
-                theyworkforyou_url = "http://www.theyworkforyou.com/mp/{}".format(
-                    m.group(1)
-                )
+        twfy_ids = self.get_identifiers_of_type("theyworkforyou")
+        if twfy_ids:
+            parlparse_id = "uk.org.publicwhip/person/{}".format(
+                twfy_ids[0].internal_identifier
+            )
+            theyworkforyou_url = "http://www.theyworkforyou.com/mp/{}".format(
+                twfy_ids[0].internal_identifier
+            )
 
         row = {
             "id": self.id,

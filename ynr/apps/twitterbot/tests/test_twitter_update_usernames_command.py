@@ -127,7 +127,9 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
             call_command("twitterbot_update_usernames")
 
         self.assertEqual(
-            self.just_screen_name.identifiers.get(scheme="twitter").identifier,
+            self.just_screen_name.get_identifiers_of_type("twitter_username")[
+                0
+            ].internal_identifier,
             "321",
         )
 
@@ -235,10 +237,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
             call_command("twitterbot_update_usernames")
 
         self.assertEqual(self.just_screen_name.get_twitter_username, "")
-        self.assertEqual(
-            self.just_screen_name.identifiers.filter(scheme="twitter").count(),
-            0,
-        )
+        self.assertEqual(self.just_screen_name.get_twitter_username, "")
 
         self.assertEqual(
             split_output(out),
@@ -296,18 +295,13 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
             call_command("twitterbot_update_usernames")
 
         self.assertIsNone(self.just_userid.get_twitter_username)
-        self.assertEqual(
-            self.just_userid.identifiers.filter(scheme="twitter").count(), 0
-        )
+        self.assertEqual(self.just_userid.get_twitter_username, None)
 
         # Clear the cached_property for this object
         del self.screen_name_and_user_id.get_all_idenfitiers
         self.assertIsNone(self.screen_name_and_user_id.get_twitter_username)
         self.assertEqual(
-            self.screen_name_and_user_id.identifiers.filter(
-                scheme="twitter"
-            ).count(),
-            0,
+            self.screen_name_and_user_id.get_twitter_username, None
         )
 
         self.assertEqual(

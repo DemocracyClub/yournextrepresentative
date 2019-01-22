@@ -85,9 +85,9 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             party=self.labour_party,
             post_election=self.dulwich_post_pee_earlier,
         )
-        self.gb_person.identifiers.create(
-            identifier="uk.org.publicwhip/person/10326",
-            scheme="uk.org.publicwhip",
+
+        self.gb_person.tmp_person_identifiers.create(
+            internal_identifier="10326", value_type="theyworkforyou"
         )
 
     def test_as_single_dict(self):
@@ -118,7 +118,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
 
     def test_as_dict_2010(self):
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(5):
             memberships_dicts, elected = memberships_dicts_for_csv(
                 self.earlier_election.slug
             )
@@ -153,7 +153,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             )
         )
 
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(5):
             memberships_dicts, elected = memberships_dicts_for_csv()
         all_members = []
         for slug, members in memberships_dicts.items():
