@@ -302,7 +302,8 @@ class Person(Timestampable, models.Model):
         new_version["data"] = get_person_as_version_data(
             self, new_person=new_person
         )
-        versions.insert(0, new_version)
+        if not versions or new_version["data"] != versions[0]["data"]:
+            versions.insert(0, new_version)
         self.versions = json.dumps(versions)
 
     def get_slug(self):
