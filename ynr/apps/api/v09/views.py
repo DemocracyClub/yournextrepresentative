@@ -125,7 +125,9 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
             return self._error(e.message)
 
         results = []
-        pees = pees.select_related("post__organization", "election")
+        pees = pees.select_related("post__organization", "election").order_by(
+            "-ballot_paper_id"
+        )
         for pee in pees:
             candidates = []
             for membership in (
