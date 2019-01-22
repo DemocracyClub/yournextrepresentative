@@ -136,7 +136,9 @@ def revert_person_from_version_data(person, version_data, part_of_merge=False):
     # Remove old PersonIdentifier objects
     from people.models import PersonIdentifier
 
-    PersonIdentifier.objects.filter(person=person).delete()
+    PersonIdentifier.objects.filter(
+        person=person
+    ).editable_value_types().delete()
 
     # Add PersonIdentifier objects we want back again
     # TODO: https://github.com/DemocracyClub/yournextrepresentative/issues/697

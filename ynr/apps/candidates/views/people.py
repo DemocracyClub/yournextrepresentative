@@ -290,8 +290,16 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
     }
 
     def get_inline_formset_kwargs(self, formset_name):
+        kwargs = {}
+
         if formset_name == "identifiers_formset":
-            return {"instance": Person.objects.get(pk=self.kwargs["person_id"])}
+            kwargs.update(
+                {"instance": Person.objects.get(pk=self.kwargs["person_id"])}
+            )
+            model = self.inline_formset_classes["identifiers_formset"].model
+            kwargs.update({"queryset": model.objects.editable_value_types()})
+
+        return kwargs
 
     def get_initial(self):
         initial_data = super().get_initial()
