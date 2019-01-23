@@ -169,7 +169,13 @@ class SelectPartyForm(forms.Form):
                     include_descriptions=False,
                     include_non_current=False,
                 ),
-                widget=forms.Select(attrs={"class": "party-select"}),
+                widget=forms.Select(
+                    attrs={
+                        "class": "party-select",
+                        "show_load_more": 1,
+                        "data-partyset": register,
+                    }
+                ),
                 label="{} Parties".format(register),
             )
 
