@@ -1033,24 +1033,34 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_version_id": "f7cc564751d31a2b",
                         "parent_diff": [
                             {
-                                "path": "other_names/0",
-                                "value": {
-                                    "note": "",
-                                    "name": "Joey",
-                                    "end_date": "",
-                                    "start_date": "",
-                                },
                                 "op": "add",
+                                "path": "other_names/2/note",
+                                "previous_value": "",
+                                "value": "Ballot paper",
                             },
                             {
-                                "path": "other_names/3",
-                                "previous_value": {
-                                    "note": "",
-                                    "name": "Joey",
-                                    "end_date": "",
-                                    "start_date": "",
-                                },
-                                "op": "remove",
+                                "op": "replace",
+                                "path": "other_names/0/name",
+                                "previous_value": "Joseph Tribbiani",
+                                "value": "Joey",
+                            },
+                            {
+                                "op": "replace",
+                                "path": "other_names/1/name",
+                                "previous_value": "Jonathan Francis Tribbiani",
+                                "value": "Joseph Tribbiani",
+                            },
+                            {
+                                "op": "replace",
+                                "path": "other_names/1/note",
+                                "previous_value": "Ballot paper",
+                                "value": "",
+                            },
+                            {
+                                "op": "replace",
+                                "path": "other_names/2/name",
+                                "previous_value": "Joey",
+                                "value": "Jonathan Francis Tribbiani",
                             },
                         ],
                     }
@@ -1242,7 +1252,6 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_diff": [
                             {
                                 "path": "other_names/0/note",
-                                "previous_value": None,
                                 "value": "Maiden name",
                                 "op": "add",
                             }
