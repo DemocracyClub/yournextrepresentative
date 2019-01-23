@@ -240,7 +240,8 @@ def clean_version_data(data):
     for i in data.get("identifiers", []):
         identifiers_set.add(json.dumps(i, sort_keys=True))
     # now replace the identifiers list with the unique values
-    data["identifiers"] = [json.loads(i) for i in identifiers_set]
+    if identifiers_set:
+        data["identifiers"] = [json.loads(i) for i in identifiers_set]
 
     for on in data.get("other_names", []):
         on.pop("id", None)
