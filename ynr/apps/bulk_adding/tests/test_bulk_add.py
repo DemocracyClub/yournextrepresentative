@@ -116,7 +116,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "Member of Parliament for Dulwich and West Norwood",
         )
 
-    def test_adding_to_existing_person(self):
+    def _run_wizard_to_end(self):
         existing_person = people.tests.factories.PersonFactory.create(
             id="1234567", name="Bart Simpson"
         )
@@ -130,15 +130,6 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:
-        OfficialDocument.objects.create(
-            election=self.election,
-            post=self.dulwich_post,
-            source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
-            uploaded_file="sopn.pdf",
-        )
-
         response = self.app.get(
             "/bulk_adding/sopn/parl.2015-05-07/65808/", user=self.user
         )
@@ -149,7 +140,6 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         response = form.submit()
         self.assertEqual(response.status_code, 302)
-
         # This takes us to a page with a radio button for adding them
         # as a new person or alternative radio buttons if any
         # candidates with similar names were found.
@@ -171,6 +161,55 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(same_membership.post, self.local_post)
         self.assertEqual(same_membership.party, self.labour_party)
         self.assertEqual(same_membership.id, existing_membership.id)
+
+        return response
+
+    def test_adding_to_existing_person(self):
+        OfficialDocument.objects.create(
+            election=self.election,
+            post=self.dulwich_post,
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.dulwich_post_pee,
+            uploaded_file="sopn.pdf",
+        )
+        response = self._run_wizard_to_end()
+        # We expect to go to the ballot page
+        self.assertEqual(
+            response.location, self.dulwich_post_pee.get_absolute_url()
+        )
+        new_response = response.follow()
+        # Test the flash message
+        self.assertContains(
+            new_response, "There are still more documents that verifying!"
+        )
+
+    def test_flash_message_with_doc_for_multiple_ballots(self):
+        # Make a new document
+        OfficialDocument.objects.create(
+            election=self.election,
+            post=self.dulwich_post,
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.dulwich_post_pee,
+            uploaded_file="sopn.pdf",
+        )
+        OfficialDocument.objects.create(
+            election=self.election,
+            post=self.camberwell_post,
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.camberwell_post_pee,
+            uploaded_file="sopn.pdf",
+        )
+        response = self._run_wizard_to_end()
+        # We expect to get directed to the "documents for post" page
+        self.assertTrue(
+            response.location.startswith("/upload_document/posts_for_document/")
+        )
+        new_response = response.follow()
+        # Test the flash message
+        self.assertContains(new_response, "…and while you're here…")
 
     def test_adding_to_existing_person_same_election(self):
         # This could happen if someone's missed that there was the
