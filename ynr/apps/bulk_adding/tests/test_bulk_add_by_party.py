@@ -49,7 +49,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "1 seat contested.")
 
         self.assertContains(
-            response, "No Conservative Party candidates know yet."
+            response, "No Conservative Party candidates known yet."
         )
 
     def test_submit_name_for_area_without_source(self):
