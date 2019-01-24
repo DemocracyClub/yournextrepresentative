@@ -17,7 +17,7 @@ class Command(BaseCommand):
         identifiers = Identifier.objects.filter(scheme__in=schemes).values_list(
             "object_id", flat=True
         )
-        for person in Person.objects.filter(pk__in=identifiers).filter(pk=502):
+        for person in Person.objects.filter(pk__in=identifiers):
             with transaction.atomic():
                 meta_data = get_change_metadata(
                     None, "Removing legacy identifiers"
