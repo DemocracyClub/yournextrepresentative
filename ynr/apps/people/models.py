@@ -638,10 +638,16 @@ class Person(Timestampable, models.Model):
         return row
 
     @property
-    def primary_image(self):
+    def primary_image_model(self):
         images = self.images.filter(is_primary=True)
         if images.exists():
-            return images.first().image
+            return images.first()
+
+    @property
+    def primary_image(self):
+        image = self.primary_image_model
+        if image:
+            return image.image
 
     def get_display_image_url(self):
         """
