@@ -8,8 +8,7 @@
   <!-- Open Graph and Twitter card data -->
   <meta property="og:url" name="twitter:url" content="{{ request.build_absolute_uri }}"/>
   <meta property="og:title" name="twitter:title" content="{{ site.name }}"/>
-  <meta property="og:description" name="twitter:description" content="
-      {% blocktrans with election_name=election_data.name site_name=site.name %}{{ site_name }} - {{ election_name }} candidates{% endblocktrans %}">
+  <meta property="og:description" name="twitter:description" content="{{ site.name }}">
 
   <!-- Open Graph data -->
   <meta property="og:type" content="article"/>

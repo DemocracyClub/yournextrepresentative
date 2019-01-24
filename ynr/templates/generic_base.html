@@ -3,6 +3,7 @@
 <html class="no-js" lang="en-gb">
 <head>
     <meta charset="utf-8">
+    <title>{% block title %}{{ site.name }}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="alternate" type="application/atom+xml" title="RSS" href="/feeds/changes.xml">
@@ -31,10 +32,6 @@
     {% javascript 'all' %}
     {% block extra_js %}
     {% endblock %}
-
-    <title>
-      {% block title %}{{ site.name }}{% endblock %}
-    </title>
 </head>
 
 <body class="{% block body_class %}{% endblock %}">
