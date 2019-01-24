@@ -112,7 +112,7 @@ class PostExtraElection(models.Model):
     def locked_status_html(self):
         if self.candidates_locked:
             return mark_safe(
-                '<abbr title="Candidates verified and post locked">🔒</abbr>'
+                '<abbr title="Candidates verified and post locked">🔐</abbr>'
             )
         if self.suggestedpostlock_set.exists():
             return mark_safe(
