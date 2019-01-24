@@ -1,8 +1,8 @@
 {% load i18n %}
-{% with contributor=image.extra.uploading_user %}
-{% with user_reason=image.extra.user_copyright %}
-{% with mod_reason=image.extra.copyright %}
-{% with user_comment=image.extra.user_notes %}
+{% with contributor=image.uploading_user %}
+{% with user_reason=image.user_copyright %}
+{% with mod_reason=image.copyright %}
+{% with user_comment=image.user_notes %}
 
   {% if contributor %}
     {% blocktrans %}This photo was uploaded by the user ‘{{ contributor }}’.{% endblocktrans %}

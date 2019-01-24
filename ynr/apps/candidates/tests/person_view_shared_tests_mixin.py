@@ -7,10 +7,15 @@ from .auth import TestUserMixin
 from .dates import templates_before, templates_after
 from .factories import MembershipFactory
 from people.tests.factories import PersonFactory
+from people.models import PersonImage
 from .uk_examples import UK2015ExamplesMixin
+from candidates.tests.helpers import TmpMediaRootMixin
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 
-class PersonViewSharedTestsMixin(TestUserMixin, UK2015ExamplesMixin, WebTest):
+class PersonViewSharedTestsMixin(
+    TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest
+):
     maxDiff = None
 
     def setUp(self):
@@ -71,3 +76,20 @@ class PersonViewSharedTestsMixin(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_links_to_person_photo_upload_page(self):
         response = self.app.get("/person/2009/tessa-jowell", user=self.user)
         self.assertContains(response, 'href="/moderation/photo/upload/2009"')
+
+    def test_photo_credits_shown(self):
+        PersonImage.objects.create_from_file(
+            EXAMPLE_IMAGE_FILENAME,
+            "images/jowell-pilot.jpg",
+            defaults={
+                "person": self.person,
+                "is_primary": True,
+                "source": "Taken from Wikipedia",
+                "copyright": "example-license",
+                "uploading_user": self.user,
+                "user_notes": "A photo of Tessa Jowell",
+            },
+        )
+        req = self.app.get(self.person.get_absolute_url())
+        self.assertContains(req, "Photo Credit:")
+        self.assertContains(req, "Taken from Wikipedia")
