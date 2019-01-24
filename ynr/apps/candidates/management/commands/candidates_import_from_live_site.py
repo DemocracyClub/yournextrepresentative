@@ -22,7 +22,7 @@ import people.models
 from candidates import models
 from elections import models as emodels
 from popolo import models as pmodels
-from people.models import PersonImage
+from people.models import PersonImage, PersonIdentifier
 from parties.models import Party
 
 from ..images import get_image_extension
@@ -317,14 +317,18 @@ class Command(BaseCommand):
                 person = people.models.Person.objects.create(**kwargs)
                 if not ignore_images:
                     person_to_image_data[person] = person_data["images"]
-                self.add_related(
-                    person, pmodels.Identifier, person_data["identifiers"]
-                )
-                self.add_related(
-                    person,
-                    pmodels.ContactDetail,
-                    person_data["contact_details"],
-                )
+
+                value_types = [
+                    v[0] for v in PersonIdentifier.objects.select_choices()
+                ]
+                for value_type in value_types:
+                    if value_type in person_data and person_data[value_type]:
+                        PersonIdentifier.objects.update_or_create(
+                            person=person,
+                            value_type=value_type,
+                            value=person_data[value_type],
+                        )
+
                 self.add_related(
                     person, pmodels.OtherName, person_data["other_names"]
                 )
