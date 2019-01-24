@@ -65,7 +65,6 @@ class HomePageView(ContributorsMixin, FormView):
             :8
         ]
         context["recent_actions"] = self.get_recent_changes_queryset()[:5]
-        context["election_data"] = Election.objects.current().by_date().last()
         context["hide_search_form"] = True
 
         return context
