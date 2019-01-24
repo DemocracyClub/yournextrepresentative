@@ -96,7 +96,10 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 winner_party=membership_new_winner.party,
                 source=form.cleaned_data["source"],
                 user=self.request.user,
-                parlparse_id=self.person.get_identifier("uk.org.publicwhip"),
+                parlparse_id=self.person.get_single_identifier_value(
+                    "theyworkforyou"
+                )
+                or "",
             )
 
             self.person.record_version(change_metadata)
@@ -166,9 +169,10 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
                         winner_party=candidacy.party,
                         source=source,
                         user=self.request.user,
-                        parlparse_id=candidacy.person.get_identifier(
-                            "uk.org.publicwhip"
-                        ),
+                        parlparse_id=candidacy.person.get_single_identifier_value(
+                            "theyworkforyou"
+                        )
+                        or "",
                         retraction=True,
                     )
                 if candidacy.elected is not None:

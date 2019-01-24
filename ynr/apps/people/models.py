@@ -118,6 +118,17 @@ class PersonIdentifier(TimeStampedModel):
 
     @property
     def get_value_type_html(self):
+        STRING_TO_LABEL = {
+            "theyworkforyou": "TheyWorkForYou Profile",
+            "facebook_page_url": "Facebook Page",
+            "homepage_url": "Homepage",
+            "party_ppc_page_url": "Party candidate page",
+            "twitter_username": "Twitter",
+            "wikipedia_url": "Wikipedia",
+        }
+        if self.value_type in STRING_TO_LABEL:
+            return STRING_TO_LABEL[self.value_type]
+
         text = self.value_type.replace("_", " ")
         text = self.value_type.replace(" url", "")
 
@@ -161,11 +172,6 @@ class Person(Timestampable, models.Model):
     # array of items referencing "http://popoloproject.com/schemas/other_name.json#"
     other_names = GenericRelation(
         "popolo.OtherName", help_text="Alternate or former names"
-    )
-
-    # array of items referencing "http://popoloproject.com/schemas/identifier.json#"
-    identifiers = GenericRelation(
-        "popolo.Identifier", help_text="Issued identifiers"
     )
 
     family_name = models.CharField(
@@ -251,11 +257,6 @@ class Person(Timestampable, models.Model):
         help_text=_("A national identity"),
     )
 
-    # array of items referencing "http://popoloproject.com/schemas/contact_detail.json#"
-    contact_details = GenericRelation(
-        "popolo.ContactDetail", help_text="Means of contacting the person"
-    )
-
     # array of items referencing "http://popoloproject.com/schemas/link.json#"
     links = GenericRelation(
         "popolo.Link", help_text="URLs to documents related to the person"
@@ -301,7 +302,8 @@ class Person(Timestampable, models.Model):
         new_version["data"] = get_person_as_version_data(
             self, new_person=new_person
         )
-        versions.insert(0, new_version)
+        if not versions or new_version["data"] != versions[0]["data"]:
+            versions.insert(0, new_version)
         self.versions = json.dumps(versions)
 
     def get_slug(self):
@@ -323,14 +325,6 @@ class Person(Timestampable, models.Model):
             return path
         return request.build_absolute_uri(path)
 
-    def get_identifier(self, scheme):
-        identifier_object = self.identifiers.filter(
-            scheme="uk.org.publicwhip"
-        ).first()
-        if identifier_object:
-            return identifier_object.identifier
-        return ""
-
     @cached_property
     def get_all_idenfitiers(self):
         return list(self.tmp_person_identifiers.all())
@@ -342,23 +336,27 @@ class Person(Timestampable, models.Model):
         return id_list
 
     def get_single_identifier_of_type(self, value_type=None):
-        value = None
         try:
-            return self.get_identifiers_of_type(value_type=value_type)[0].value
+            return self.get_identifiers_of_type(value_type=value_type)[0]
         except IndexError:
             pass
 
+    def get_single_identifier_value(self, value_type):
+        identifier = self.get_single_identifier_of_type(value_type)
+        if identifier:
+            return identifier.value
+
     @property
     def get_email(self):
-        return self.get_single_identifier_of_type("email")
+        return self.get_single_identifier_value("email")
 
     @property
     def get_twitter_username(self):
-        return self.get_single_identifier_of_type("twitter_username")
+        return self.get_single_identifier_value("twitter_username")
 
     @property
     def get_facebook_personal_url(self):
-        return self.get_single_identifier_of_type("facebook_personal_url")
+        return self.get_single_identifier_value("facebook_personal_url")
 
     @property
     def last_candidacy(self):
@@ -588,25 +586,23 @@ class Person(Timestampable, models.Model):
             except ObjectDoesNotExist:
                 pass
 
-        twitter_qs = self.get_identifiers_of_type("twitter_username")
-        if twitter_qs:
-            twitter_user_id = twitter_qs[0].internal_identifier
-            twitter_user_name = twitter_qs[0].value
+        twitter_id = self.get_single_identifier_of_type("twitter_username")
+        if twitter_id:
+            twitter_user_id = twitter_id.internal_identifier
+            twitter_user_name = twitter_id.value
         else:
             twitter_user_name = twitter_user_id = ""
 
         theyworkforyou_url = ""
         parlparse_id = ""
-        for i in self.identifiers.all():
-            if i.scheme == "uk.org.publicwhip":
-                parlparse_id = i.identifier
-                m = re.search(r"^uk.org.publicwhip/person/(\d+)$", parlparse_id)
-                if not m:
-                    message = "Malformed parlparse ID found {0}"
-                    raise Exception(message.format(parlparse_id))
-                theyworkforyou_url = "http://www.theyworkforyou.com/mp/{}".format(
-                    m.group(1)
-                )
+        twfy_id = self.get_single_identifier_of_type("theyworkforyou")
+        if twfy_id:
+            parlparse_id = "uk.org.publicwhip/person/{}".format(
+                twfy_id.internal_identifier
+            )
+            theyworkforyou_url = "http://www.theyworkforyou.com/mp/{}".format(
+                twfy_id.internal_identifier
+            )
 
         row = {
             "id": self.id,
@@ -618,21 +614,19 @@ class Person(Timestampable, models.Model):
             "email": self.email,
             "twitter_username": twitter_user_name,
             "twitter_user_id": twitter_user_id,
-            "facebook_page_url": self.get_single_identifier_of_type(
+            "facebook_page_url": self.get_single_identifier_value(
                 "facebook_page_url"
             ),
             "favourite_biscuits": self.favourite_biscuit or "",
-            "linkedin_url": self.get_single_identifier_of_type("linkedin_url"),
-            "party_ppc_page_url": self.get_single_identifier_of_type(
+            "linkedin_url": self.get_single_identifier_value("linkedin_url"),
+            "party_ppc_page_url": self.get_single_identifier_value(
                 "party_ppc_page_url"
             ),
-            "facebook_personal_url": self.get_single_identifier_of_type(
+            "facebook_personal_url": self.get_single_identifier_value(
                 "facebook_personal_url"
             ),
-            "homepage_url": self.get_single_identifier_of_type("homepage_url"),
-            "wikipedia_url": self.get_single_identifier_of_type(
-                "wikipedia_url"
-            ),
+            "homepage_url": self.get_single_identifier_value("homepage_url"),
+            "wikipedia_url": self.get_single_identifier_value("wikipedia_url"),
             "theyworkforyou_url": theyworkforyou_url,
             "parlparse_id": parlparse_id,
             "image_url": primary_image_url,

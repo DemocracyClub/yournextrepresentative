@@ -6,7 +6,7 @@ from django.db.models import F
 from django.conf import settings
 from django.db.models.query import prefetch_related_objects
 
-from ..twitter_api import update_twitter_user_id, TwitterAPITokenMissing
+from ..twitter_api import TwitterAPITokenMissing
 from parties.models import Party
 from ynr_refactoring.settings import PersonIdentifierFields
 
@@ -39,6 +39,31 @@ def get_person_as_version_data(person, new_person=False):
     for field in settings.SIMPLE_POPOLO_FIELDS:
         result[field.name] = getattr(person, field.name) or ""
 
+    # Add legacy identifiers
+    # TODO: these should use the PersonIdenfitiers model and value types,
+    # but this code emulates the legacy way of adding IDs.
+    if person.get_single_identifier_of_type("theyworkforyou"):
+        result["identifiers"] = []
+        new_id = person.get_single_identifier_of_type(
+            "theyworkforyou"
+        ).internal_identifier
+        if not "publicwhip" in new_id:
+            new_id = "uk.org.publicwhip/person/{}".format(new_id)
+
+        result["identifiers"].append(
+            {"identifier": new_id, "scheme": "uk.org.publicwhip"}
+        )
+    if person.get_single_identifier_of_type("twitter_username"):
+        result["identifiers"] = result.get("identifiers", [])
+        result["identifiers"].append(
+            {
+                "identifier": person.get_single_identifier_of_type(
+                    "twitter_username"
+                ).internal_identifier,
+                "scheme": "twitter",
+            }
+        )
+
     extra_values = {}
     result["other_names"] = []
     standing_in = {}
@@ -56,13 +81,6 @@ def get_person_as_version_data(person, new_person=False):
                 "name", "start_date", "end_date"
             )
         ]
-
-        identifiers = list(person.identifiers.all())
-        if identifiers:
-            result["identifiers"] = [
-                {"scheme": i.scheme, "identifier": i.identifier}
-                for i in identifiers
-            ]
 
         for membership in person.memberships.filter(post__isnull=False):
             post = membership.post
@@ -118,7 +136,9 @@ def revert_person_from_version_data(person, version_data, part_of_merge=False):
     # Remove old PersonIdentifier objects
     from people.models import PersonIdentifier
 
-    PersonIdentifier.objects.filter(person=person).delete()
+    PersonIdentifier.objects.filter(
+        person=person
+    ).editable_value_types().delete()
 
     # Add PersonIdentifier objects we want back again
     # TODO: https://github.com/DemocracyClub/yournextrepresentative/issues/697
@@ -137,13 +157,6 @@ def revert_person_from_version_data(person, version_data, part_of_merge=False):
             note=on.get("note", ""),
             start_date=on.get("start_date"),
             end_date=on.get("end_date"),
-        )
-
-    # Remove all identifiers, and recreate:
-    person.identifiers.all().delete()
-    for i in version_data.get("identifiers", []):
-        person.identifiers.create(
-            scheme=i["scheme"], identifier=i["identifier"]
         )
 
     # Remove all candidacies, and recreate:
@@ -189,10 +202,6 @@ def revert_person_from_version_data(person, version_data, part_of_merge=False):
             )
 
     person.save()
-    try:
-        update_twitter_user_id(person)
-    except TwitterAPITokenMissing:
-        pass
 
 
 def version_timestamp_key(version):

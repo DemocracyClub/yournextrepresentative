@@ -121,7 +121,7 @@ class PersonView(TemplateView):
         person_id = self.kwargs["person_id"]
         try:
             self.person = Person.objects.prefetch_related(
-                "links", "contact_details", "tmp_person_identifiers"
+                "links", "tmp_person_identifiers"
             ).get(pk=person_id)
         except Person.DoesNotExist:
             try:
@@ -290,8 +290,16 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
     }
 
     def get_inline_formset_kwargs(self, formset_name):
+        kwargs = {}
+
         if formset_name == "identifiers_formset":
-            return {"instance": Person.objects.get(pk=self.kwargs["person_id"])}
+            kwargs.update(
+                {"instance": Person.objects.get(pk=self.kwargs["person_id"])}
+            )
+            model = self.inline_formset_classes["identifiers_formset"].model
+            kwargs.update({"queryset": model.objects.editable_value_types()})
+
+        return kwargs
 
     def get_initial(self):
         initial_data = super().get_initial()
@@ -301,6 +309,7 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
         return initial_data
 
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
 
         person = get_object_or_404(Person, pk=self.kwargs["person_id"])

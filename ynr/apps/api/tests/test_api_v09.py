@@ -20,7 +20,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.models import LoggedAction, PersonRedirect
 from candidates.tests.helpers import TmpMediaRootMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from people.models import PersonImage
+from people.models import PersonImage, PersonIdentifier
 
 
 class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
@@ -529,4 +529,20 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(req.status_code, 301)
         self.assertEqual(
             req.location, "/api/v0.9/elections/parl.2010-05-06.json"
+        )
+
+    def test_legacy_contact_details(self):
+        person = PersonFactory()
+        PersonIdentifier.objects.create(
+            value_type="twitter_username", value="Froglet4MP", person=person
+        )
+
+        req = self.app.get("/api/v0.9/persons/{}/".format(person.pk))
+        person_json = req.json
+        self.assertTrue("contact_details" in person_json)
+        self.assertEqual(
+            person_json["contact_details"][0]["contact_type"], "twitter"
+        )
+        self.assertEqual(
+            person_json["contact_details"][0]["value"], "Froglet4MP"
         )

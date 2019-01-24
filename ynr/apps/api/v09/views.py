@@ -125,7 +125,9 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
             return self._error(e.message)
 
         results = []
-        pees = pees.select_related("post__organization", "election")
+        pees = pees.select_related("post__organization", "election").order_by(
+            "-ballot_paper_id"
+        )
         for pee in pees:
             candidates = []
             for membership in (
@@ -142,9 +144,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                     ),
                     "person__images",
                     "person__other_names",
-                    "person__contact_details",
                     "person__links",
-                    "person__identifiers",
                 )
                 .select_related("person")
             ):
@@ -246,9 +246,7 @@ class PersonViewSet(viewsets.ModelViewSet):
             "memberships__post_election__election",
             "other_names",
             "images",
-            "contact_details",
             "links",
-            "identifiers",
         ).order_by("id")
         date_qs = self.request.query_params.get("updated_gte", None)
         if date_qs:

@@ -44,6 +44,18 @@ class PersonIdentifierQuerySet(models.query.QuerySet):
         options = [(f.name, f.value) for f in PersonIdentifierFields]
         return default_option + options
 
+    def editable_value_types(self):
+        """
+        Until we have a way to truly manage any key/value pair there are some
+        IDs that we don't want to be user editable just yet.
+
+        In that case, we need a way to exclude non-editable models from
+        the edit form and the versions diff.
+        """
+        return self.filter(
+            value_type__in=[vt[0] for vt in self.select_choices()]
+        )
+
 
 class PersonQuerySet(models.query.QuerySet):
     def missing(self, field):
@@ -75,8 +87,6 @@ class PersonQuerySet(models.query.QuerySet):
                     "post_election", "post_election__election", "party", "post"
                 ),
             ),
-            "contact_details",
-            "identifiers",
             "links",
             "images__uploading_user",
             "tmp_person_identifiers",

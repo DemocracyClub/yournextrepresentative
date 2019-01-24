@@ -594,13 +594,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "e6dcd55bb903499e",
                 "data": {
                     "id": "24680",
-                    "identifiers": [
-                        {
-                            "scheme": "yournextmp-candidate",
-                            "identifier": "2009",
-                            "id": "123456",
-                        }
-                    ],
+                    "identifiers": [],
                     "other_names": [
                         {
                             "note": "Full name",
@@ -618,13 +612,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "788a3291f1103de5",
                 "data": {
                     "id": "24680",
-                    "identifiers": [
-                        {
-                            "scheme": "yournextmp-candidate",
-                            "identifier": "2009",
-                            "id": "123457",
-                        }
-                    ],
+                    "identifiers": [],
                     "other_names": [
                         {
                             "note": "Full name",
@@ -647,9 +635,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "parent_version_ids": ["788a3291f1103de5"],
                 "data": {
                     "id": "24680",
-                    "identifiers": [
-                        {"scheme": "yournextmp-candidate", "identifier": "2009"}
-                    ],
+                    "identifiers": [],
                     "other_names": [
                         {
                             "note": "Full name",
@@ -680,9 +666,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "parent_version_ids": [],
                 "data": {
                     "id": "24680",
-                    "identifiers": [
-                        {"scheme": "yournextmp-candidate", "identifier": "2009"}
-                    ],
+                    "identifiers": [],
                     "other_names": [
                         {
                             "note": "Full name",
@@ -697,16 +681,6 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_version_id": None,
                         "parent_diff": [
                             {"op": "add", "path": "id", "value": "24680"},
-                            {
-                                "op": "add",
-                                "path": "identifiers",
-                                "value": [
-                                    {
-                                        "identifier": "2009",
-                                        "scheme": "yournextmp-candidate",
-                                    }
-                                ],
-                            },
                             {
                                 "op": "add",
                                 "path": "other_names",
@@ -739,13 +713,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "a2fd462d7b9ea219",
                 "data": {
                     "id": "24680",
-                    "identifiers": [
-                        {
-                            "scheme": "yournextmp-candidate",
-                            "identifier": "2009",
-                            "id": "123456",
-                        }
-                    ],
+                    "identifiers": [],
                     "other_names": [
                         {
                             "end_date": "",
@@ -774,13 +742,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "66b78855c5f19197",
                 "data": {
                     "id": "24680",
-                    "identifiers": [
-                        {
-                            "scheme": "yournextmp-candidate",
-                            "identifier": "2009",
-                            "id": "123457",
-                        }
-                    ],
+                    "identifiers": [],
                     "other_names": [
                         {
                             "end_date": "",
@@ -840,9 +802,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 ],
                 "data": {
                     "id": "24680",
-                    "identifiers": [
-                        {"scheme": "yournextmp-candidate", "identifier": "2009"}
-                    ],
+                    "identifiers": [],
                     "other_names": [
                         {
                             "note": "",
@@ -914,9 +874,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 ],
                 "data": {
                     "id": "24680",
-                    "identifiers": [
-                        {"scheme": "yournextmp-candidate", "identifier": "2009"}
-                    ],
+                    "identifiers": [],
                     "other_names": [
                         {
                             "note": "",
@@ -956,13 +914,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "1d33caabf421c656",
                 "data": {
                     "id": "24680",
-                    "identifiers": [
-                        {
-                            "scheme": "yournextmp-candidate",
-                            "identifier": "2009",
-                            "id": "123456",
-                        }
-                    ],
+                    "identifiers": [],
                     "other_names": [
                         {
                             "end_date": "",
@@ -991,13 +943,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "f7cc564751d31a2b",
                 "data": {
                     "id": "24680",
-                    "identifiers": [
-                        {
-                            "scheme": "yournextmp-candidate",
-                            "identifier": "2009",
-                            "id": "123457",
-                        }
-                    ],
+                    "identifiers": [],
                     "other_names": [
                         {
                             "end_date": "",
@@ -1057,9 +1003,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 ],
                 "data": {
                     "id": "24680",
-                    "identifiers": [
-                        {"scheme": "yournextmp-candidate", "identifier": "2009"}
-                    ],
+                    "identifiers": [],
                     "other_names": [
                         {
                             "note": "",
@@ -1094,16 +1038,6 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_diff": [
                             {"op": "add", "path": "id", "value": "24680"},
                             {
-                                "path": "identifiers",
-                                "value": [
-                                    {
-                                        "scheme": "yournextmp-candidate",
-                                        "identifier": "2009",
-                                    }
-                                ],
-                                "op": "add",
-                            },
-                            {
                                 "path": "other_names",
                                 "value": [
                                     {
@@ -1132,9 +1066,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 ],
                 "data": {
                     "id": "24680",
-                    "identifiers": [
-                        {"scheme": "yournextmp-candidate", "identifier": "2009"}
-                    ],
+                    "identifiers": [],
                     "other_names": [
                         {
                             "note": "",
@@ -1172,13 +1104,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                     "honorific_prefix": "Mrs",
                     "honorific_suffix": "",
                     "id": "6704",
-                    "identifiers": [
-                        {
-                            "id": "552f80d0ed1c6ee164eeae51",
-                            "identifier": "13445",
-                            "scheme": "yournextmp-candidate",
-                        }
-                    ],
+                    "identifiers": [],
                     "image": None,
                     "linkedin_url": "",
                     "name": "Sarah Jones",
@@ -1204,13 +1130,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                     "honorific_prefix": "Mrs",
                     "honorific_suffix": "",
                     "id": "6704",
-                    "identifiers": [
-                        {
-                            "id": "5477866f737edc5252ce5938",
-                            "identifier": "13445",
-                            "scheme": "yournextmp-candidate",
-                        }
-                    ],
+                    "identifiers": [],
                     "image": None,
                     "linkedin_url": "",
                     "name": "Sarah Jones",
@@ -1257,12 +1177,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                     "twitter_username": "",
                     "id": "6704",
                     "name": "Sarah Jones",
-                    "identifiers": [
-                        {
-                            "scheme": "yournextmp-candidate",
-                            "identifier": "13445",
-                        }
-                    ],
+                    "identifiers": [],
                     "other_names": [
                         {"note": "Maiden name", "name": "Sarah Smith"}
                     ],
@@ -1287,16 +1202,6 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                             },
                             {"path": "id", "value": "6704", "op": "add"},
                             {
-                                "path": "identifiers",
-                                "value": [
-                                    {
-                                        "scheme": "yournextmp-candidate",
-                                        "identifier": "13445",
-                                    }
-                                ],
-                                "op": "add",
-                            },
-                            {
                                 "path": "name",
                                 "value": "Sarah Jones",
                                 "op": "add",
@@ -1317,12 +1222,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                     "twitter_username": "",
                     "id": "6704",
                     "name": "Sarah Jones",
-                    "identifiers": [
-                        {
-                            "scheme": "yournextmp-candidate",
-                            "identifier": "13445",
-                        }
-                    ],
+                    "identifiers": [],
                     "other_names": [{"name": "Sarah Smith"}],
                     "honorific_prefix": "Mrs",
                     "wikipedia_url": "",
@@ -1345,9 +1245,7 @@ class TestSingleVersionRendering(UK2015ExamplesMixin, TestCase):
                     "honorific_prefix": "Mrs",
                     "honorific_suffix": "",
                     "id": "6704",
-                    "identifiers": [{"id": "552f80d0ed1c6ee164eeae51",
-                    "identifier": "13445",
-                    "scheme": "yournextmp-candidate"}],
+                    "identifiers": [],
                     "image": null,
                     "linkedin_url": "",
                     "name": "Sarah Jones",
@@ -1371,11 +1269,7 @@ class TestSingleVersionRendering(UK2015ExamplesMixin, TestCase):
                     "honorific_prefix": "Mrs",
                     "honorific_suffix": "",
                     "id": "6704",
-                    "identifiers": [{
-                        "id": "5477866f737edc5252ce5938",
-                        "identifier": "13445",
-                        "scheme": "yournextmp-candidate"
-                    }],
+                    "identifiers": [],
                     "image": null,
                     "linkedin_url": "",
                     "name": "Sarah Jones",
@@ -1410,7 +1304,7 @@ class TestSingleVersionRendering(UK2015ExamplesMixin, TestCase):
             tidy_html_whitespace(
                 self.example_person.diff_for_version("2f07734529a83242")
             ),
-            """<dl><dt>Changes made in initial version</dt><dd><p class="version-diff"><span class="version-op-add">Added: honorific_prefix =&gt; &quot;Mrs&quot;</span><br/><span class="version-op-add">Added: id =&gt; &quot;6704&quot;</span><br/><span class="version-op-add">Added: identifiers =&gt; [ { &quot;identifier&quot;: &quot;13445&quot;, &quot;scheme&quot;: &quot;yournextmp-candidate&quot; } ]</span><br/><span class="version-op-add">Added: name =&gt; &quot;Sarah Jones&quot;</span><br/><span class="version-op-add">Added: other_names =&gt; [ { &quot;name&quot;: &quot;Sarah Smith&quot; } ]</span><br/></p></dd></dl>""",
+            """<dl><dt>Changes made in initial version</dt><dd><p class="version-diff"><span class="version-op-add">Added: honorific_prefix =&gt; &quot;Mrs&quot;</span><br/><span class="version-op-add">Added: id =&gt; &quot;6704&quot;</span><br/><span class="version-op-add">Added: name =&gt; &quot;Sarah Jones&quot;</span><br/><span class="version-op-add">Added: other_names =&gt; [ { &quot;name&quot;: &quot;Sarah Smith&quot; } ]</span><br/></p></dd></dl>""",
         )
 
     def test_include_inline_style_colouring(self):

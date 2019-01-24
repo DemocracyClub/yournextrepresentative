@@ -250,14 +250,12 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "candidates": [
                     {
                         "birth_date": "",
-                        "contact_details": [],
                         "death_date": "",
                         "email": None,
                         "gender": "",
                         "honorific_prefix": "",
                         "honorific_suffix": "",
                         "id": 2009,
-                        "identifiers": [],
                         "images": [
                             {
                                 "copyright": "example-license",
@@ -326,5 +324,4 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
                 },
             },
         ]
-
         self.assertEqual(expected, output)

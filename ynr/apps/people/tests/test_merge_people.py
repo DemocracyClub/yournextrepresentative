@@ -357,11 +357,7 @@ class TestMergePeople(TestCase):
             "honorific_prefix": "",
             "honorific_suffix": "",
             "id": "2111",
-            "identifiers": [
-                {"identifier": "2111", "scheme": "popit-person"},
-                {"identifier": "3476", "scheme": "yournextmp-candidate"},
-                {"identifier": "15712527", "scheme": "twitter"},
-            ],
+            "identifiers": [{"identifier": "15712527", "scheme": "twitter"}],
             "image": "http://yournextmp.popit.mysociety.org/persons/2111/image/54bc790ecb19ebca71e2af8e",
             "linkedin_url": "",
             "name": "Stuart Jeffery",
@@ -398,9 +394,7 @@ class TestMergePeople(TestCase):
                 "honorific_suffix": "",
                 "id": "2111",
                 "identifiers": [
-                    {"identifier": "2111", "scheme": "popit-person"},
-                    {"identifier": "3476", "scheme": "yournextmp-candidate"},
-                    {"identifier": "15712527", "scheme": "twitter"},
+                    {"identifier": "15712527", "scheme": "twitter"}
                 ],
                 "image": "http://yournextmp.popit.mysociety.org/persons/2111/image/54bc790ecb19ebca71e2af8e",
                 "linkedin_url": "",

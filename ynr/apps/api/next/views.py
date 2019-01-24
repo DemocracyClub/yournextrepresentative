@@ -144,9 +144,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                         PersonImage.objects.select_related("uploading_user"),
                     ),
                     "person__other_names",
-                    "person__contact_details",
                     "person__links",
-                    "person__identifiers",
                 )
                 .select_related("person")
             ):
@@ -293,10 +291,8 @@ class PersonViewSet(viewsets.ModelViewSet):
             ),
             "memberships__post_election__election",
             "other_names",
-            "contact_details",
             "images",
             "links",
-            "identifiers",
         ).order_by("id")
         date_qs = self.request.query_params.get("updated_gte", None)
         if date_qs:

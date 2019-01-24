@@ -47,22 +47,3 @@ def get_twitter_user_id(twitter_screen_name):
     # that form.
     cache.set(cache_key, result, 60 * 5)
     return result
-
-
-def update_twitter_user_id(person):
-    from popolo.models import ContactDetail
-
-    try:
-        screen_name = person.contact_details.get(contact_type="twitter").value
-        user_id = get_twitter_user_id(screen_name)
-    except ContactDetail.DoesNotExist:
-        screen_name = None
-        user_id = None
-    # Remove any existing Twitter user ID identifiers. (There might be
-    # multiple such identifiers in some cases, but one only want one
-    # after setting the screen name.  Or, if the Twitter screen name
-    # has been removed, the identifier should be removed too.)
-    person.identifiers.filter(scheme="twitter").delete()
-    # If a Twitter user ID was found, create an identifier for it:
-    if user_id:
-        person.identifiers.create(scheme="twitter", identifier=user_id)

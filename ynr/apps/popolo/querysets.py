@@ -77,7 +77,6 @@ class MembershipQuerySet(DateframeableQuerySet):
                 "person__tmp_person_identifiers",
                 "person__images",
                 "person__images__uploading_user",
-                "person__identifiers",
             )
             .order_by(
                 "post_election__election__election_date",
