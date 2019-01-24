@@ -127,9 +127,9 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
             call_command("twitterbot_update_usernames")
 
         self.assertEqual(
-            self.just_screen_name.get_identifiers_of_type("twitter_username")[
-                0
-            ].internal_identifier,
+            self.just_screen_name.get_single_identifier_of_type(
+                "twitter_username"
+            ).internal_identifier,
             "321",
         )
 

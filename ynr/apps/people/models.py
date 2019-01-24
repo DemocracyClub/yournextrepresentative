@@ -335,12 +335,16 @@ class Person(Timestampable, models.Model):
             id_list = [i for i in id_list if i.value_type == value_type]
         return id_list
 
-    def get_single_identifier_value(self, value_type=None):
-        value = None
+    def get_single_identifier_of_type(self, value_type=None):
         try:
-            return self.get_identifiers_of_type(value_type=value_type)[0].value
+            return self.get_identifiers_of_type(value_type=value_type)[0]
         except IndexError:
             pass
+
+    def get_single_identifier_value(self, value_type):
+        identifier = self.get_single_identifier_of_type(value_type)
+        if identifier:
+            return identifier.value
 
     @property
     def get_email(self):
@@ -582,22 +586,22 @@ class Person(Timestampable, models.Model):
             except ObjectDoesNotExist:
                 pass
 
-        twitter_qs = self.get_identifiers_of_type("twitter_username")
-        if twitter_qs:
-            twitter_user_id = twitter_qs[0].internal_identifier
-            twitter_user_name = twitter_qs[0].value
+        twitter_id = self.get_single_identifier_of_type("twitter_username")
+        if twitter_id:
+            twitter_user_id = twitter_id.internal_identifier
+            twitter_user_name = twitter_id.value
         else:
             twitter_user_name = twitter_user_id = ""
 
         theyworkforyou_url = ""
         parlparse_id = ""
-        twfy_ids = self.get_identifiers_of_type("theyworkforyou")
-        if twfy_ids:
+        twfy_id = self.get_single_identifier_of_type("theyworkforyou")
+        if twfy_id:
             parlparse_id = "uk.org.publicwhip/person/{}".format(
-                twfy_ids[0].internal_identifier
+                twfy_id.internal_identifier
             )
             theyworkforyou_url = "http://www.theyworkforyou.com/mp/{}".format(
-                twfy_ids[0].internal_identifier
+                twfy_id.internal_identifier
             )
 
         row = {

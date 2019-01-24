@@ -42,24 +42,24 @@ def get_person_as_version_data(person, new_person=False):
     # Add legacy identifiers
     # TODO: these should use the PersonIdenfitiers model and value types,
     # but this code emulates the legacy way of adding IDs.
-    if person.get_identifiers_of_type("theyworkforyou"):
+    if person.get_single_identifier_of_type("theyworkforyou"):
         result["identifiers"] = []
-        new_id = person.get_identifiers_of_type("theyworkforyou")[
-            0
-        ].internal_identifier
+        new_id = person.get_single_identifier_of_type(
+            "theyworkforyou"
+        ).internal_identifier
         if not "publicwhip" in new_id:
             new_id = "uk.org.publicwhip/person/{}".format(new_id)
 
         result["identifiers"].append(
             {"identifier": new_id, "scheme": "uk.org.publicwhip"}
         )
-    if person.get_identifiers_of_type("twitter_username"):
+    if person.get_single_identifier_of_type("twitter_username"):
         result["identifiers"] = result.get("identifiers", [])
         result["identifiers"].append(
             {
-                "identifier": person.get_identifiers_of_type(
+                "identifier": person.get_single_identifier_of_type(
                     "twitter_username"
-                )[0].internal_identifier,
+                ).internal_identifier,
                 "scheme": "twitter",
             }
         )

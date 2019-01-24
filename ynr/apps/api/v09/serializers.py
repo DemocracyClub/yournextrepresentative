@@ -323,9 +323,9 @@ class PersonSerializer(MinimalPersonSerializer):
         if obj.get_single_identifier_value("twitter_username"):
             ret.append(
                 {
-                    "identifier": obj.get_identifiers_of_type(
+                    "identifier": obj.get_single_identifier_of_type(
                         "twitter_username"
-                    )[0].internal_identifier,
+                    ).internal_identifier,
                     "scheme": "twitter",
                 }
             )
