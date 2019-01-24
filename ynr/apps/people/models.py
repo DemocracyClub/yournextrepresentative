@@ -335,7 +335,7 @@ class Person(Timestampable, models.Model):
             id_list = [i for i in id_list if i.value_type == value_type]
         return id_list
 
-    def get_single_identifier_of_type(self, value_type=None):
+    def get_single_identifier_value(self, value_type=None):
         value = None
         try:
             return self.get_identifiers_of_type(value_type=value_type)[0].value
@@ -344,15 +344,15 @@ class Person(Timestampable, models.Model):
 
     @property
     def get_email(self):
-        return self.get_single_identifier_of_type("email")
+        return self.get_single_identifier_value("email")
 
     @property
     def get_twitter_username(self):
-        return self.get_single_identifier_of_type("twitter_username")
+        return self.get_single_identifier_value("twitter_username")
 
     @property
     def get_facebook_personal_url(self):
-        return self.get_single_identifier_of_type("facebook_personal_url")
+        return self.get_single_identifier_value("facebook_personal_url")
 
     @property
     def last_candidacy(self):
@@ -610,21 +610,19 @@ class Person(Timestampable, models.Model):
             "email": self.email,
             "twitter_username": twitter_user_name,
             "twitter_user_id": twitter_user_id,
-            "facebook_page_url": self.get_single_identifier_of_type(
+            "facebook_page_url": self.get_single_identifier_value(
                 "facebook_page_url"
             ),
             "favourite_biscuits": self.favourite_biscuit or "",
-            "linkedin_url": self.get_single_identifier_of_type("linkedin_url"),
-            "party_ppc_page_url": self.get_single_identifier_of_type(
+            "linkedin_url": self.get_single_identifier_value("linkedin_url"),
+            "party_ppc_page_url": self.get_single_identifier_value(
                 "party_ppc_page_url"
             ),
-            "facebook_personal_url": self.get_single_identifier_of_type(
+            "facebook_personal_url": self.get_single_identifier_value(
                 "facebook_personal_url"
             ),
-            "homepage_url": self.get_single_identifier_of_type("homepage_url"),
-            "wikipedia_url": self.get_single_identifier_of_type(
-                "wikipedia_url"
-            ),
+            "homepage_url": self.get_single_identifier_value("homepage_url"),
+            "wikipedia_url": self.get_single_identifier_value("wikipedia_url"),
             "theyworkforyou_url": theyworkforyou_url,
             "parlparse_id": parlparse_id,
             "image_url": primary_image_url,

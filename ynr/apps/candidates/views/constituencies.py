@@ -96,7 +96,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 winner_party=membership_new_winner.party,
                 source=form.cleaned_data["source"],
                 user=self.request.user,
-                parlparse_id=self.person.get_single_identifier_of_type(
+                parlparse_id=self.person.get_single_identifier_value(
                     "theyworkforyou"
                 )
                 or "",
@@ -169,7 +169,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
                         winner_party=candidacy.party,
                         source=source,
                         user=self.request.user,
-                        parlparse_id=candidacy.person.get_single_identifier_of_type(
+                        parlparse_id=candidacy.person.get_single_identifier_value(
                             "theyworkforyou"
                         )
                         or "",

@@ -104,7 +104,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
             call_command("twitterbot_update_usernames")
 
         self.assertEqual(
-            self.just_userid.get_single_identifier_of_type(
+            self.just_userid.get_single_identifier_value(
                 value_type="twitter_username"
             ),
             "ascreennamewewereunawareof",
@@ -184,7 +184,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
             call_command("twitterbot_update_usernames")
 
         self.assertEqual(
-            self.screen_name_and_user_id.get_single_identifier_of_type(
+            self.screen_name_and_user_id.get_single_identifier_value(
                 "twitter_username"
             ),
             "changedscreenname",

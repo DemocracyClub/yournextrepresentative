@@ -219,7 +219,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertEqual(person.birth_date, "1947-09-17")
         self.assertEqual(
-            person.get_single_identifier_of_type("homepage_url"),
+            person.get_single_identifier_value("homepage_url"),
             "http://example.org/tessajowell",
         )
 
@@ -236,4 +236,4 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # The homepage link should have been added and the Wikipedia
         # one removed, and the theyworkforyou ID created:
         self.assertEqual(3, person.tmp_person_identifiers.all().count())
-        self.assertIsNone(person.get_single_identifier_of_type("wikipedia_url"))
+        self.assertIsNone(person.get_single_identifier_value("wikipedia_url"))

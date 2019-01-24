@@ -311,16 +311,16 @@ class PersonSerializer(MinimalPersonSerializer):
 
     def get_identifiers(self, obj):
         ret = []
-        if obj.get_single_identifier_of_type("theyworkforyou"):
+        if obj.get_single_identifier_value("theyworkforyou"):
             ret.append(
                 {
                     "identifier": "uk.org.publicwhip/person/{}".format(
-                        obj.get_single_identifier_of_type("theyworkforyou")
+                        obj.get_single_identifier_value("theyworkforyou")
                     ),
                     "scheme": "uk.org.publicwhip",
                 }
             )
-        if obj.get_single_identifier_of_type("twitter_username"):
+        if obj.get_single_identifier_value("twitter_username"):
             ret.append(
                 {
                     "identifier": obj.get_identifiers_of_type(
