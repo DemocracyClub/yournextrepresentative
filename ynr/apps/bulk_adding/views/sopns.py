@@ -191,19 +191,15 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
             extra_tags="safe do-something-else",
         )
 
-        if self.remaining_posts_for_sopn().exists():
+        remaining_qs = self.remaining_posts_for_sopn().exclude(
+            pk=self.official_document.pk
+        )
+        if remaining_qs.exists():
             url = reverse(
                 "posts_for_document", kwargs={"pk": self.official_document.pk}
             )
         else:
-            url = reverse(
-                "constituency",
-                kwargs={
-                    "election": context["election"],
-                    "post_id": context["post"].slug,
-                    "ignored_slug": slugify(context["post"].label),
-                },
-            )
+            url = context["post_election"].get_absolute_url()
         return HttpResponseRedirect(url)
 
     def form_invalid(self, context):

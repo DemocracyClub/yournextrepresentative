@@ -98,6 +98,7 @@ INSTALLED_APPS = (
     "sorl.thumbnail",
     "rest_framework",
     "rest_framework.authtoken",
+    "django_filters",
     "images",
     "haystack",
     "elections",

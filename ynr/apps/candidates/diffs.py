@@ -3,6 +3,7 @@
 
 
 import re
+import json
 
 from django.conf import settings
 from django.utils.translation import ugettext as _
@@ -233,6 +234,15 @@ def clean_version_data(data):
     # We're not interested in changes of these IDs:
     for i in data.get("identifiers", []):
         i.pop("id", None)
+
+    # Remove duplicate dicts in the Identifiers
+    identifiers_set = set()
+    for i in data.get("identifiers", []):
+        identifiers_set.add(json.dumps(i, sort_keys=True))
+    # now replace the identifiers list with the unique values
+    if identifiers_set:
+        data["identifiers"] = [json.loads(i) for i in identifiers_set]
+
     for on in data.get("other_names", []):
         on.pop("id", None)
     data.pop("last_party", None)

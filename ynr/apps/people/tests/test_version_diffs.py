@@ -3,8 +3,8 @@ import re
 from django.test import TestCase
 
 import people.tests.factories
-from candidates.diffs import get_version_diffs
-from candidates.tests import factories
+from candidates.diffs import get_version_diffs, get_version_diff
+
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
@@ -979,24 +979,34 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_version_id": "f7cc564751d31a2b",
                         "parent_diff": [
                             {
-                                "path": "other_names/0",
-                                "value": {
-                                    "note": "",
-                                    "name": "Joey",
-                                    "end_date": "",
-                                    "start_date": "",
-                                },
                                 "op": "add",
+                                "path": "other_names/2/note",
+                                "previous_value": "",
+                                "value": "Ballot paper",
                             },
                             {
-                                "path": "other_names/3",
-                                "previous_value": {
-                                    "note": "",
-                                    "name": "Joey",
-                                    "end_date": "",
-                                    "start_date": "",
-                                },
-                                "op": "remove",
+                                "op": "replace",
+                                "path": "other_names/0/name",
+                                "previous_value": "Joseph Tribbiani",
+                                "value": "Joey",
+                            },
+                            {
+                                "op": "replace",
+                                "path": "other_names/1/name",
+                                "previous_value": "Jonathan Francis Tribbiani",
+                                "value": "Joseph Tribbiani",
+                            },
+                            {
+                                "op": "replace",
+                                "path": "other_names/1/note",
+                                "previous_value": "Ballot paper",
+                                "value": "",
+                            },
+                            {
+                                "op": "replace",
+                                "path": "other_names/2/name",
+                                "previous_value": "Joey",
+                                "value": "Jonathan Francis Tribbiani",
                             },
                         ],
                     }
@@ -1162,7 +1172,6 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_diff": [
                             {
                                 "path": "other_names/0/note",
-                                "previous_value": None,
                                 "value": "Maiden name",
                                 "op": "add",
                             }
@@ -1230,6 +1239,26 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
             },
         ]
         self.assertEqual(expected_result, versions_with_diffs)
+
+    def test_broken_diff(self):
+        """
+        Due to a bug in JsonPatch (https://github.com/stefankoegl/python-json-patch/issues/91)
+        a list with duplicate dicts in will raise an exception.
+
+        This is a regression test to make sure that we're dealing with
+        it ourselves.
+        """
+
+        from_v = {"foo": [{"baz": 2}, {"bar": 1}, {"bar": 1}]}
+        to_v = {"foo": [{"baz": 2}]}
+        diff = get_version_diff(from_v, to_v)
+        self.assertEqual(
+            diff,
+            [
+                {"op": "remove", "path": "foo/1", "previous_value": {"bar": 1}},
+                {"op": "remove", "path": "foo/1", "previous_value": {"bar": 1}},
+            ],
+        )
 
 
 class TestSingleVersionRendering(UK2015ExamplesMixin, TestCase):
