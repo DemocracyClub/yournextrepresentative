@@ -177,6 +177,8 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
                     "candidates-all.csv",
                     "candidates-elected-all.csv",
                     "candidates-local.maidstone.2016-05-05.csv",
+                    "candidates-2015-05-07.csv",
+                    "candidates-2010-05-06.csv",
                 ]
             ),
         )
@@ -196,6 +198,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
                     "candidates-parl.2010-05-06.csv",
                     "candidates-parl.2015-05-07.csv",
                     "candidates-local.maidstone.2016-05-05.csv",
+                    "candidates-2015-05-07.csv",
                 ]
             ),
         )
@@ -233,10 +236,11 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
                     "candidates-all.csv",
                     "candidates-elected-all.csv",
                     "candidates-local.maidstone.2016-05-05.csv",
+                    "candidates-2015-05-07.csv",
+                    "candidates-2010-05-06.csv",
                 ]
             ),
         )
-
         empty_file = self.storage.open("candidates-2018.csv").read()
         self.assertEqual(len(empty_file.splitlines()), 1)
         self.assertEqual(
