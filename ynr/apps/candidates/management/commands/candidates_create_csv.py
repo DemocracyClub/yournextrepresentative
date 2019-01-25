@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import DefaultStorage
 
@@ -63,7 +65,6 @@ class Command(BaseCommand):
         membership_by_election, elected_by_election = memberships_dicts_for_csv(
             election_slug
         )
-
         # Write a file per election, optionally adding candidates
         # We still want a file to exist if there are no candidates yet,
         # as the files linked to as soon as the election is created
@@ -72,6 +73,16 @@ class Command(BaseCommand):
                 self.slug_to_file_name(election.slug),
                 membership_by_election.get(election.slug, []),
             )
+
+        # Make a CSV file per election date
+        slugs_by_date = defaultdict(list)
+        for slug in membership_by_election.keys():
+            slugs_by_date[slug.split(".")[-1]].append(slug)
+        for date, slugs in slugs_by_date.items():
+            memberships_for_date = []
+            for slug in slugs:
+                memberships_for_date += membership_by_election[slug]
+            safely_write(self.slug_to_file_name(date), memberships_for_date)
 
         # If we're not outputting a single election, output all elections
         if not election_slug:
