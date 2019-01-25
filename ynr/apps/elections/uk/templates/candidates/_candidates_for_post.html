@@ -56,10 +56,6 @@
 {% endif %}
 
 <div id="candidates-for-post-{{ post_data.id }}" class="candidates-for-post">
-
-  {# Use the post label here, since multiple posts may be used on a page #}
-  {% url 'constituency' election=election post_id=post_data.id ignored_slug=post_data.label|slugify as post_url %}
-  {% url 'constituencies' election=election.slug as election_posts_url %}
   {% if user_can_lock %}
     <form method="post" action="{% url 'constituency-lock' ballot_id=post_election.ballot_paper_id %}">
       {% csrf_token %}
@@ -106,9 +102,9 @@
 
   {% if has_elected %}
   <div class="candidates__elected">
-      <h3>{% blocktrans trimmed with post_label=post_data.label election_name=election.name  %}
-        Elected candidates for <a href="{{ post_url }}">{{ post_label }}</a>
-        in the <a href="{{ election_posts_url }}"> {{ election_name }}</a>{% endblocktrans %}
+      <h3>
+        Elected candidates for <a href="{{ post_election.get_absolute_url }}">{{ post_label }}</a>
+        in the <a href="{{ election.get_absolute_url }}"> {{ election.name }}</a>
       </h3>
 
     {% with party_lists_in_use=elected.party_lists_in_use parties_and_people=elected.parties_and_people %}
@@ -124,13 +120,13 @@
 
     <h3>
         {% if has_elected %}
-        {% blocktrans trimmed with post_label=post_data.label election_name=election.name  %}
-      Unelected candidates for <a href="{{ post_url }}">{{ post_label }}</a>
-      in the <a href="{{ election_posts_url }}"> {{ election_name }}</a>{% endblocktrans %}
+
+      Unelected candidates for <a href="{{ post_election.get_absolute_url }}">{{ post_label }}</a>
+        in the <a href="{{ election.get_absolute_url }}"> {{ election.name }}</a>
       {% else %}
-        {% blocktrans trimmed with post_label=post_data.label election_name=election.name  %}
-      Known candidates for <a href="{{ post_url }}">{{ post_label }}</a>
-      in the <a href="{{ election_posts_url }}"> {{ election_name }}</a>{% endblocktrans %}
+
+      Known candidates for <a href="{{ post_election.get_absolute_url }}">{{ post_label }}</a>
+        in the <a href="{{ election.get_absolute_url }}"> {{ election.name }}</a>
       {% endif %}
     </h3>
 
