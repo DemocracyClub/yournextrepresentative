@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     "api",
     "people",
     "ynr_refactoring",
+    "wombles",
 )
 
 MIDDLEWARE = (

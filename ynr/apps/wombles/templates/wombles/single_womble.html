@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+  <h1>Womble {{ object }}</h1>
+  Joined {{ object.date_joined|date }}, {{ object.loggedaction_set.count|intcomma }} edits
+
+  <h3>Latest edits</h3>
+  <table>
+  <tr>
+    <td>Person</td>
+    <td>action</td>
+    <td>source</td>
+  </tr>
+  {% for la in object.loggedaction_set.all|slice:"0:3" %}
+    <tr>
+      <td>{{ la.person }}</td><td>{{ la.action_type }}</td><td>{{ la.source }}</td>
+    </tr>
+
+  {% endfor %}
+  </table>
+
+
+{% endblock %}
