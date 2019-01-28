@@ -119,7 +119,7 @@ def get_person_as_version_data(person, new_person=False):
     return result
 
 
-def revert_person_from_version_data(person, version_data, part_of_merge=False):
+def revert_person_from_version_data(person, version_data):
 
     from popolo.models import Membership, Organization, Post
     from candidates.models import raise_if_unsafe_to_delete
@@ -160,19 +160,8 @@ def revert_person_from_version_data(person, version_data, part_of_merge=False):
         )
 
     # Remove all candidacies, and recreate:
-    for membership in Membership.objects.filter(
-        person=person,
-        role=F("post_election__election__candidate_membership_role"),
-    ):
-        # At the moment the merge code has its own way of preserving
-        # the uk_results CandidateResult data (see
-        # additional_merge_actions), so they will be
-        # recreated. (FIXME: omitting this check when merging does
-        # mean that we're not checking for other models in the future
-        # that may have a foreign key to Membership when doing
-        # merges.)
-        if not part_of_merge:
-            raise_if_unsafe_to_delete(membership)
+    for membership in Membership.objects.filter(person=person):
+        raise_if_unsafe_to_delete(membership)
         membership.delete()
     # Also remove the indications of elections that this person is
     # known not to be standing in:
