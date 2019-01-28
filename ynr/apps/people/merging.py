@@ -171,18 +171,8 @@ class PersonMerger:
             self.merge_logged_actions()
             self.merge_memberships()
 
-            # Save the dest person (don't assume the methods above do this)
-
-            # TODO: Deal with change metadata
-            # self.dest_person.record_version(change_metadata)
-            self.dest_person.save()
-
             # Post merging tasks
-            self.setup_redirect()
-            if delete:
-                # Delete the old person
-                self.safe_delete(self.source_person)
-
+            # Save the dest person (don't assume the methods above do this)
             change_metadata = get_change_metadata(
                 self.request,
                 "After merging person {}".format(self.source_person.pk),
@@ -199,3 +189,12 @@ class PersonMerger:
                     person=self.dest_person,
                     source=change_metadata["information_source"],
                 )
+
+            self.dest_person.record_version(change_metadata)
+            self.dest_person.save()
+
+            self.setup_redirect()
+
+            if delete:
+                # Delete the old person
+                self.safe_delete(self.source_person)
