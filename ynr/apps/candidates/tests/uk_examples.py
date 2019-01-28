@@ -154,6 +154,8 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
             organization=cls.local_council,
         )
 
+        cls.local_pee = cls.local_post.postextraelection_set.get()
+
     def create_lots_of_candidates(self, election, parties_and_counts):
         posts = [
             self.edinburgh_east_post,
