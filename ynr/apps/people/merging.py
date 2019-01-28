@@ -112,7 +112,9 @@ class PersonMerger:
         """
         if hasattr(msource, "result"):
             if hasattr(mdest, "result"):
-                raise ValueError("Trying to merge two Memberships with results")
+                raise InvalidMergeError(
+                    "Trying to merge two Memberships with results"
+                )
             else:
                 msource.result.membership = mdest
                 mdest.result.save()

@@ -25,7 +25,7 @@ from braces.views import LoginRequiredMixin
 from auth_helpers.views import GroupRequiredMixin, user_in_group
 from elections.models import Election
 from elections.mixins import ElectionMixin
-from people.merging import PersonMerger
+from ynr.apps.people.merging import PersonMerger
 
 from ..diffs import get_version_diffs
 from .version_data import get_client_ip, get_change_metadata
@@ -37,11 +37,7 @@ from people.forms import (
 from candidates.forms import SingleElectionForm
 from ..models import LoggedAction, PersonRedirect, TRUSTED_TO_MERGE_GROUP_NAME
 from ..models.auth import check_creation_allowed, check_update_allowed
-from ..models.versions import (
-    revert_person_from_version_data,
-    get_person_as_version_data,
-)
-from ..models import merge_popit_people
+from ..models.versions import revert_person_from_version_data
 from .helpers import (
     get_field_groupings,
     get_person_form_fields,
