@@ -36,10 +36,9 @@ class PersonMerger:
     def safe_delete(self, model):
         collector = NestedObjects(using=connection.cursor().db.alias)
         collector.collect([model])
-
         if len(collector.nested()) > 1:
             related_objects = "\n\t".join(
-                [repr(m) for m in collector.nested()[1]]
+                [repr(m) for m in collector.nested()[1:]]
             )
             raise UnsafeToDelete(
                 "Can't delete '{}' with related objects: \n {}".format(
@@ -80,6 +79,9 @@ class PersonMerger:
                     self.dest_person.other_names.update_or_create(
                         name=source_value
                     )
+        for other_name in self.source_person.other_names.all():
+            self.dest_person.other_names.update_or_create(name=other_name.name)
+            other_name.delete()
 
     def merge_images(self):
         # Change the secondary person's images to point at the primary
