@@ -57,11 +57,8 @@ class LoggedAction(models.Model):
 
     objects = LoggedActionQuerySet.as_manager()
 
-    def __repr__(self):
-        fmt = str(
-            "<LoggedAction username='{username}' action_type='{action_type}'>"
-        )
-        return fmt.format(
+    def __str__(self):
+        return "username='{username}' action_type='{action_type}'".format(
             username=self.user.username, action_type=self.action_type
         )
 
