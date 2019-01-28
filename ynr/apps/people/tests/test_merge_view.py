@@ -16,9 +16,9 @@ from candidates.models import PersonRedirect, LoggedAction
 from candidates.models.versions import revert_person_from_version_data
 from people.models import PersonImage, Person
 from ynr.helpers import mkdir_p
-from .auth import TestUserMixin
-from .uk_examples import UK2015ExamplesMixin
-from . import factories
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
+from candidates.tests import factories
 from ynr.helpers import mkdir_p
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
