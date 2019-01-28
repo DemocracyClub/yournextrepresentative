@@ -220,24 +220,11 @@ class MergePeopleView(GroupRequiredMixin, View):
             ]
             primary_person = primary_person
             secondary_person = secondary_person
-            change_metadata = get_change_metadata(
-                self.request,
-                _("After merging person {0}").format(secondary_person.id),
-            )
 
-            merger = PersonMerger(primary_person, secondary_person)
+            merger = PersonMerger(
+                primary_person, secondary_person, request=self.request
+            )
             merger.merge(delete=True)
-
-            # Log that that action has taken place, and will be shown in
-            # the recent changes, leaderboards, etc.
-            LoggedAction.objects.create(
-                user=self.request.user,
-                action_type="person-merge",
-                ip_address=get_client_ip(self.request),
-                popit_person_new_version=change_metadata["version_id"],
-                person=primary_person,
-                source=change_metadata["information_source"],
-            )
 
         # And redirect to the primary person with the merged data:
         return HttpResponseRedirect(

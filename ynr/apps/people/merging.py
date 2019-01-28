@@ -1,17 +1,17 @@
 import json
 
-from django.db import transaction, IntegrityError
-from django.contrib.admin.utils import NestedObjects
-from django.db import connection
 from django.conf import settings
+from django.contrib.admin.utils import NestedObjects
+from django.db import IntegrityError, connection, transaction
 
-
-from candidates.models import merge_popit_people
-from candidates.models import UnsafeToDelete, PersonRedirect
-from candidates.models.versions import (
-    get_person_as_version_data,
-    revert_person_from_version_data,
+from candidates.models import (
+    LoggedAction,
+    PersonRedirect,
+    UnsafeToDelete,
+    merge_popit_people,
 )
+from candidates.models.versions import get_person_as_version_data
+from candidates.views.version_data import get_change_metadata, get_client_ip
 
 
 class InvalidMergeError(ValueError):
@@ -28,9 +28,10 @@ class PersonMerger:
     Deals with merging two people, ensuring that no data is lost
     """
 
-    def __init__(self, dest_person, source_person):
+    def __init__(self, dest_person, source_person, request=None):
         self.dest_person = dest_person
         self.source_person = source_person
+        self.request = request
 
     def safe_delete(self, model):
         collector = NestedObjects(using=connection.cursor().db.alias)
@@ -179,3 +180,20 @@ class PersonMerger:
             if delete:
                 # Delete the old person
                 self.safe_delete(self.source_person)
+
+            change_metadata = get_change_metadata(
+                self.request,
+                "After merging person {}".format(self.source_person.pk),
+            )
+
+            # Log that the merge has taken place, and will be shown in
+            # the recent changes, leaderboards, etc.
+            if self.request:
+                LoggedAction.objects.create(
+                    user=self.request.user,
+                    action_type="person-merge",
+                    ip_address=get_client_ip(self.request),
+                    popit_person_new_version=change_metadata["version_id"],
+                    person=self.dest_person,
+                    source=change_metadata["information_source"],
+                )
