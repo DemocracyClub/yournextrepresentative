@@ -129,9 +129,9 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         factories.MembershipFactory.create(
             person=person,
-            post=self.dulwich_post,
+            post=self.local_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.local_pee,
         )
         factories.MembershipFactory.create(
             person=person,
@@ -280,7 +280,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         primary_person = Person.objects.get(pk=2009)
         non_primary_person = Person.objects.get(pk=2007)
-
+        self.assertEqual(Membership.objects.count(), 4)
         response = self.app.get(
             "/person/2009/update", user=self.user_who_can_merge
         )
@@ -316,21 +316,21 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(merged_person.honorific_prefix, "Mr")
         self.assertEqual(merged_person.honorific_suffix, "DBE")
 
-        candidacies = Membership.objects.filter(
-            person=merged_person,
-            role=F("post_election__election__candidate_membership_role"),
-        ).order_by("post_election__election__election_date")
-
-        self.assertEqual(len(candidacies), 2)
-        for c, expected_election in zip(
-            candidacies, ("parl.2010-05-06", "parl.2015-05-07")
-        ):
-            self.assertEqual(c.post_election.election.slug, expected_election)
-            self.assertEqual(c.post.slug, "65808")
+        candidacies = Membership.objects.filter(person=merged_person)
+        self.assertEqual(len(candidacies), 3)
+        expected_ballots = {
+            "parl.65808.2010-05-06",
+            "parl.14419.2015-05-07",
+            "local.maidstone.DIW:E05005004.2016-05-05",
+        }
+        found_ballots = {
+            mem.post_election.ballot_paper_id for mem in candidacies
+        }
+        self.assertEqual(expected_ballots, found_ballots)
 
         # Check that there are only two Membership objects
         self.assertEqual(
-            2, Membership.objects.filter(person=merged_person).count()
+            3, Membership.objects.filter(person=merged_person).count()
         )
 
         other_names = list(merged_person.other_names.all())
@@ -555,6 +555,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = merge_form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
-        self.assertEqual(LoggedAction.objects.count(), 4)
+        # 5 actions, because we create a "merge" logged action
+        self.assertEqual(LoggedAction.objects.count(), 5)
         response = self.app.get("/recent-changes")
-        self.assertEqual(len(response.context["actions"].object_list), 4)
+        self.assertEqual(len(response.context["actions"].object_list), 5)
