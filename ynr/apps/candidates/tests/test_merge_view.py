@@ -12,7 +12,7 @@ from django_webtest import WebTest
 import people.tests.factories
 from popolo.models import Membership
 
-from candidates.models import PersonRedirect
+from candidates.models import PersonRedirect, LoggedAction
 from candidates.models.versions import revert_person_from_version_data
 from people.models import PersonImage, Person
 from ynr.helpers import mkdir_p
@@ -221,6 +221,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     },
                     "information_source": "Imported from YourNextMP data from 2010",
                     "timestamp": "2014-11-21T18:16:47.670167",
+                    "username": "JPCarrington",
                     "version_id": "68a452284d95d9ab"
                   }
                 ]
@@ -242,7 +243,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.green_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_pee_earlier,
         )
         factories.MembershipFactory.create(
             person=person,
@@ -516,3 +517,64 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(mock_additional_merge_actions.call_args[0][0].id, 2111)
         # The ID will be None now because the secondary has been deleted.
         self.assertEqual(mock_additional_merge_actions.call_args[0][1].id, None)
+
+    def test_merge_logged_actions(self, mock_additional_merge_actions):
+        """
+        Regression test for https://github.com/DemocracyClub/yournextrepresentative/issues/758:
+
+        > User Apexharper made four edits to two separate candidate pages at
+        > around 7am on 20 Jan - all four edits were appearing in
+        > /recent-changes.
+
+        > I then merged 46170 into 49291 and now only the two edits to the
+        > latter page are listed
+        """
+        self.assertFalse(LoggedAction.objects.exists())
+        primary_person = Person.objects.get(pk=2009)
+        non_primary_person = Person.objects.get(pk=2007)
+
+        def _do_edit_for_user(person, field, value, source):
+            response = self.app.get(
+                "/person/{}/update".format(person.pk), user=self.user
+            )
+            form = response.forms[1]
+            form[field] = value
+            form["source"] = source
+            form.submit()
+
+        _do_edit_for_user(
+            primary_person, "favourite_biscuit", "Ginger nut", "Mumsnet"
+        )
+        _do_edit_for_user(
+            primary_person,
+            "biography",
+            "Now, this is a story all about how",
+            "West Philadelphia",
+        )
+        _do_edit_for_user(
+            non_primary_person,
+            "biography",
+            "I've lived here for ages",
+            "Bel Air",
+        )
+        _do_edit_for_user(
+            non_primary_person, "birth_date", "1968-09-25", "Wikipedia"
+        )
+
+        self.assertEqual(LoggedAction.objects.count(), 4)
+        self.assertEqual(Person.objects.count(), 2)
+        response = self.app.get("/recent-changes")
+        self.assertEqual(len(response.context["actions"].object_list), 4)
+
+        response = self.app.get(
+            "/person/{}/update".format(primary_person.pk),
+            user=self.user_who_can_merge,
+        )
+        merge_form = response.forms["person-merge"]
+        merge_form["other"] = non_primary_person.pk
+        response = merge_form.submit()
+
+        self.assertEqual(Person.objects.count(), 1)
+        self.assertEqual(LoggedAction.objects.count(), 4)
+        response = self.app.get("/recent-changes")
+        self.assertEqual(len(response.context["actions"].object_list), 4)
