@@ -30,7 +30,6 @@ TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN=None)
-@patch("candidates.views.people.additional_merge_actions")
 class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
@@ -256,12 +255,11 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Delete the images we created in the test media root:
         rmtree(TEST_MEDIA_ROOT)
 
-    def test_merge_disallowed_no_form(self, mock_additional_merge_actions):
+    def test_merge_disallowed_no_form(self):
         response = self.app.get("/person/2009/update", user=self.user)
         self.assertNotIn("person-merge", response.forms)
-        self.assertEqual(mock_additional_merge_actions.call_count, 0)
 
-    def test_merge_two_people_disallowed(self, mock_additional_merge_actions):
+    def test_merge_two_people_disallowed(self):
         # Get the update page for the person just to get the CSRF token:
         response = self.app.get("/person/2009/update", user=self.user)
         csrftoken = self.app.cookies["csrftoken"]
@@ -271,15 +269,11 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             expect_errors=True,
         )
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(mock_additional_merge_actions.call_count, 0)
 
     @patch("candidates.views.version_data.get_current_timestamp")
     @patch("candidates.views.version_data.create_version_id")
     def test_merge_two_people(
-        self,
-        mock_create_version_id,
-        mock_get_current_timestamp,
-        mock_additional_merge_actions,
+        self, mock_create_version_id, mock_get_current_timestamp
     ):
         mock_get_current_timestamp.return_value = example_timestamp
         mock_create_version_id.return_value = example_version_id
@@ -354,19 +348,11 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             non_primary_image.user_notes, "A photo of Shane Collins"
         )
-        self.assertEqual(mock_additional_merge_actions.call_count, 1)
-        self.assertEqual(len(mock_additional_merge_actions.call_args), 2)
-        self.assertEqual(mock_additional_merge_actions.call_args[0][0].id, 2009)
-        # The ID will be None now because the secondary has been deleted.
-        self.assertEqual(mock_additional_merge_actions.call_args[0][1].id, None)
 
     @patch("candidates.views.version_data.get_current_timestamp")
     @patch("candidates.views.version_data.create_version_id")
     def test_merge_regression(
-        self,
-        mock_create_version_id,
-        mock_get_current_timestamp,
-        mock_additional_merge_actions,
+        self, mock_create_version_id, mock_get_current_timestamp
     ):
         mock_get_current_timestamp.return_value = example_timestamp
         mock_create_version_id.return_value = example_version_id
@@ -512,13 +498,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ],
         )
 
-        self.assertEqual(mock_additional_merge_actions.call_count, 1)
-        self.assertEqual(len(mock_additional_merge_actions.call_args), 2)
-        self.assertEqual(mock_additional_merge_actions.call_args[0][0].id, 2111)
-        # The ID will be None now because the secondary has been deleted.
-        self.assertEqual(mock_additional_merge_actions.call_args[0][1].id, None)
-
-    def test_merge_logged_actions(self, mock_additional_merge_actions):
+    def test_merge_logged_actions(self):
         """
         Regression test for https://github.com/DemocracyClub/yournextrepresentative/issues/758:
 

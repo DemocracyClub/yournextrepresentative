@@ -3,11 +3,6 @@ from contextlib import contextmanager
 from django.conf import settings
 
 
-@contextmanager
-def default_additional_merge_actions(primary_person, secondary_person):
-    yield
-
-
 # This is actually taken from Pombola's country-specific code package
 # in pombola/country/__init__.py. You should add to this list anything
 # country-specific you want to be available through an import from
@@ -16,7 +11,6 @@ def default_additional_merge_actions(primary_person, secondary_person):
 imports_and_defaults = (
     ("shorten_post_label", lambda post_label: post_label),
     ("get_extra_csv_values", lambda person, election, post: {}),
-    ("additional_merge_actions", default_additional_merge_actions),
 )
 
 # Note that one could do this without the dynamic import and use of

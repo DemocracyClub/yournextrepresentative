@@ -27,7 +27,6 @@ from elections.models import Election
 from elections.mixins import ElectionMixin
 
 from ..diffs import get_version_diffs
-from ..election_specific import additional_merge_actions
 from .version_data import get_client_ip, get_change_metadata
 from people.forms import (
     NewPersonForm,
