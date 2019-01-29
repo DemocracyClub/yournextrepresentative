@@ -25,7 +25,11 @@ class InvalidMergeError(ValueError):
 
 class PersonMerger:
     """
-    Deals with merging two people, ensuring that no data is lost
+    Deals with merging two people, ensuring that no data is lost.
+
+    The properties and related models of `source_person` are added to
+    `dest_person` and `source_person` is deleted, checking no remaining related
+    models exist.
     """
 
     def __init__(self, dest_person, source_person, request=None):
@@ -139,7 +143,7 @@ class PersonMerger:
             else:
                 membership.person = self.dest_person
                 membership.save()
-        # Check that we've not causes duplicate (membership, election) pairs.
+        # Check that we've not caused duplicate (membership, election) pairs.
         # We need to do this manually because we can't add a DB constraint
         # spanning the three tables (Membership->Ballot->Election)
         person_elections = {
@@ -165,7 +169,7 @@ class PersonMerger:
         Do everything we need in order to merge two people.
 
         At the end of this, `self.source_person` should have no related objects
-        left, as checked by `self.check_safe_to_delete()`
+        left, and is deleted safely using `self.safe_delete`
         """
         with transaction.atomic():
             # Merge all the things
