@@ -33,31 +33,25 @@ class UnsafeToDelete(Exception):
     pass
 
 
-def raise_if_unsafe_to_delete(base_object):
-    if not paired_object_safe_to_delete(base_object):
+def raise_if_unsafe_to_delete(model):
+    if model_has_related_objects(model):
         msg = (
             "Trying to delete a {model} (pk={pk}) that other "
             "objects that depend on"
         )
         raise UnsafeToDelete(
-            msg.format(
-                model=base_object._meta.model.__name__, pk=base_object.id
-            )
+            msg.format(model=model._meta.model.__name__, pk=model.id)
         )
 
 
-def paired_object_safe_to_delete(base_object):
+def model_has_related_objects(model):
     collector = NestedObjects(using="default")
-    collector.collect([base_object])
+    collector.collect([model])
     collected = collector.nested()
-    if len(collected) > 2:
-        return False
-    assert collected[0] == base_object
-    if len(collected) == 1:
+    if len(collected) >= 2:
         return True
-    if len(collected[1]) != 1:
-        return False
-    return True
+    assert collected[0] == model
+    return False
 
 
 class PostExtraElection(models.Model):
