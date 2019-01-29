@@ -6,6 +6,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import PostFactory
 from candidates.models import LoggedAction
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from people.tests.factories import PersonFactory
 from uk_results.models import CandidateResult, ResultSet
 
@@ -221,3 +222,89 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         merger = PersonMerger(self.dest_person, self.source_person)
         merger.merge()
         self.assertEqual(self.dest_person.birth_date, "1945-01-04")
+
+    def test_merge_maintain_primary_image(self):
+        PersonImage.objects.update_or_create_from_file(
+            EXAMPLE_IMAGE_FILENAME,
+            "images/image1.jpg",
+            self.dest_person,
+            defaults={
+                "md5sum": "md5sum",
+                "copyright": "example-license",
+                "uploading_user": self.user,
+                "user_notes": "Here's an image...",
+                "is_primary": True,
+                "source": "Found on the candidate's Flickr feed",
+            },
+        )
+
+        PersonImage.objects.update_or_create_from_file(
+            EXAMPLE_IMAGE_FILENAME,
+            "images/image2.jpg",
+            self.source_person,
+            defaults={
+                "md5sum": "md5sum",
+                "copyright": "example-license",
+                "uploading_user": self.user,
+                "user_notes": "Here's an image...",
+                "is_primary": True,
+                "source": "Found on the candidate's Flickr feed",
+            },
+        )
+
+        self.assertEqual(self.dest_person.images.count(), 1)
+        merger = PersonMerger(self.dest_person, self.source_person)
+        merger.merge()
+        self.assertEqual(self.dest_person.images.count(), 2)
+        self.assertEqual(
+            self.dest_person.images.filter(is_primary=True).count(), 1
+        )
+
+        self.assertTrue(
+            self.dest_person.images.get(is_primary=True).image.url.startswith(
+                "/media/images/images/image1"
+            )
+        )
+
+    def test_merge_gets_primary_image(self):
+        PersonImage.objects.update_or_create_from_file(
+            EXAMPLE_IMAGE_FILENAME,
+            "images/image1.jpg",
+            self.dest_person,
+            defaults={
+                "md5sum": "md5sum",
+                "copyright": "example-license",
+                "uploading_user": self.user,
+                "user_notes": "Here's an image...",
+                "is_primary": False,
+                "source": "Found on the candidate's Flickr feed",
+            },
+        )
+
+        PersonImage.objects.update_or_create_from_file(
+            EXAMPLE_IMAGE_FILENAME,
+            "images/image2.jpg",
+            self.source_person,
+            defaults={
+                "md5sum": "md5sum",
+                "copyright": "example-license",
+                "uploading_user": self.user,
+                "user_notes": "Here's an image...",
+                "is_primary": True,
+                "source": "Found on the candidate's Flickr feed",
+            },
+        )
+
+        self.assertEqual(self.dest_person.images.count(), 1)
+        merger = PersonMerger(self.dest_person, self.source_person)
+        merger.merge()
+        self.assertEqual(self.dest_person.images.count(), 2)
+        self.assertEqual(
+            self.dest_person.images.filter(is_primary=True).count(), 1
+        )
+
+        self.assertTrue(
+            self.dest_person.images.get(is_primary=True).image.url.startswith(
+                "/media/images/images/image2"
+            )
+        )

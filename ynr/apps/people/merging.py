@@ -89,10 +89,12 @@ class PersonMerger:
         existing_primary_image = self.dest_person.images.filter(
             is_primary=True
         ).exists()
-
-        self.source_person.images.update(
-            is_primary=False, person=self.dest_person
-        )
+        update_kwargs = {"person": self.dest_person}
+        if existing_primary_image:
+            # There's an existing primary image, so remove the other person's
+            # primary image
+            update_kwargs["is_primary"] = False
+        self.source_person.images.update(**update_kwargs)
 
     def merge_logged_actions(self):
         self.source_person.loggedaction_set.update(person=self.dest_person)
