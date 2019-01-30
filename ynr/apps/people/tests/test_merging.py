@@ -308,3 +308,28 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "/media/images/images/image2"
             )
         )
+
+    def test_person_identifier_after_merge(self):
+        self.source_person.tmp_person_identifiers.create(
+            value_type="email", value="foo@example.com"
+        )
+
+        self.assertEqual(self.dest_person.get_email, None)
+        self.assertEqual(self.source_person.get_email, "foo@example.com")
+        merger = PersonMerger(self.dest_person, self.source_person)
+        merger.merge()
+        self.assertEqual(self.dest_person.get_email, "foo@example.com")
+
+    def test_person_identifier_keep_dest_id(self):
+        self.source_person.tmp_person_identifiers.create(
+            value_type="email", value="foo@example.com"
+        )
+        self.dest_person.tmp_person_identifiers.create(
+            value_type="email", value="newer@example.com"
+        )
+
+        self.assertEqual(self.dest_person.get_email, "newer@example.com")
+        self.assertEqual(self.source_person.get_email, "foo@example.com")
+        merger = PersonMerger(self.dest_person, self.source_person)
+        merger.merge()
+        self.assertEqual(self.dest_person.get_email, "newer@example.com")

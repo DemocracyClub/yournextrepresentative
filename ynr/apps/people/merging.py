@@ -100,6 +100,31 @@ class PersonMerger:
             update_kwargs["is_primary"] = False
         self.source_person.images.update(**update_kwargs)
 
+    def merge_person_identifiers(self):
+        moved_any = False
+        for identifier in self.source_person.tmp_person_identifiers.all():
+            existing_of_type = self.dest_person.get_single_identifier_of_type(
+                identifier.value_type
+            )
+            if existing_of_type:
+                self.safe_delete(identifier)
+            else:
+                identifier.person = self.dest_person
+                identifier.save()
+                moved_any = True
+
+        # Django can store a prefetch cache on a model, meaning
+        # that `dest_person.tmp_person_identifiers.all()`
+        # wont return the newly moved IDs. To save confusion
+        # in downstream code, invalidate the cache after moving.
+        # Do the same for the `get_all_idenfitiers` cache
+        if moved_any:
+            try:
+                del self.dest_person._prefetched_objects_cache
+                del self.dest_person.get_all_idenfitiers
+            except AttributeError:
+                pass
+
     def merge_logged_actions(self):
         self.source_person.loggedaction_set.update(person=self.dest_person)
 
@@ -175,6 +200,7 @@ class PersonMerger:
             # Merge all the things
             self.merge_person_attrs()
             self.merge_versions_json()
+            self.merge_person_identifiers()
             self.merge_images()
             self.merge_logged_actions()
             self.merge_memberships()
