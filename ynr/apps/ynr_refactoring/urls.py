@@ -23,6 +23,10 @@ urlpatterns = [
         name="constituency_redirect",
     ),
     url(
+        r"^election/(?P<election>[^/]+)/post/(?P<post_id>[^/]+)/$",
+        views.RedirectConstituencyDetailView.as_view(),
+    ),
+    url(
         r"^election/(?P<election>[^/]+)/post/(?P<post_id>[^/]+)/(?P<ignored_slug>[^.]+).csv$",
         views.RedirectConstituencyDetailCSVView.as_view(),
         name="constituency_csv_redirect",
