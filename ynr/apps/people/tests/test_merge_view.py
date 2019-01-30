@@ -51,6 +51,12 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     "timestamp": "2014-10-28T14:32:36.835429",
                     "data": {
                       "name": "Tessa Jowell",
+                      "other_names": [
+                        {
+                          "name": "Tessa Palmer",
+                          "note": "maiden name"
+                        }
+                      ],
                       "id": "2009",
                       "honorific_suffix": "DBE",
                       "twitter_username": "",

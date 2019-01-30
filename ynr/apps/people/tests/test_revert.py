@@ -80,6 +80,14 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "timestamp": "2014-10-01T15:12:34.732426",
             "data": {
               "name": "Tessa Jowell",
+              "other_names": [
+                {
+                  "name": "Tessa Palmer",
+                  "note": "maiden name",
+                  "start_date": null,
+                  "end_date": null
+                }
+              ],
               "id": "2009",
               "twitter_username": "",
               "standing_in": {
@@ -179,7 +187,14 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "gender": "",
                 "linkedin_url": "",
                 "id": "2009",
-                "other_names": [],
+                "other_names": [
+                    {
+                        "name": "Tessa Palmer",
+                        "note": "maiden name",
+                        "end_date": None,
+                        "start_date": None,
+                    }
+                ],
                 "honorific_prefix": "",
                 "standing_in": {
                     "parl.2010-05-06": {
