@@ -141,17 +141,29 @@ class PersonMerger:
         self.source_person.images.update(person=self.dest_person)
 
     def merge_person_identifiers(self):
-        moved_any = False
-        for identifier in self.source_person.tmp_person_identifiers.all():
+        """
+        Beacuse we store the modified datetime for PersonIdentifiers,
+        we can just keep the latest version from either source or dest.
+        """
+
+        qs = self.source_person.tmp_person_identifiers.all()
+        moved_any = qs.exists()
+        for identifier in qs:
             existing_of_type = self.dest_person.get_single_identifier_of_type(
                 identifier.value_type
             )
+
             if existing_of_type:
-                self.safe_delete(identifier)
+                # Get the newer ID of the two
+                keep, delete = sorted(
+                    [identifier, existing_of_type], key=lambda m: m.modified
+                )
+                self.safe_delete(delete)
             else:
-                identifier.person = self.dest_person
-                identifier.save()
-                moved_any = True
+                keep = identifier
+
+            keep.person = self.dest_person
+            keep.save()
 
         # Django can store a prefetch cache on a model, meaning
         # that `dest_person.tmp_person_identifiers.all()`

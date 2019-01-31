@@ -325,14 +325,14 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_person_identifier_keep_dest_id(self):
         self.source_person.tmp_person_identifiers.create(
-            value_type="email", value="foo@example.com"
+            value_type="email", value="new_email@example.com"
         )
         self.dest_person.tmp_person_identifiers.create(
-            value_type="email", value="newer@example.com"
+            value_type="email", value="old_email@example.com"
         )
 
-        self.assertEqual(self.dest_person.get_email, "newer@example.com")
-        self.assertEqual(self.source_person.get_email, "foo@example.com")
+        self.assertEqual(self.dest_person.get_email, "old_email@example.com")
+        self.assertEqual(self.source_person.get_email, "new_email@example.com")
         merger = PersonMerger(self.dest_person, self.source_person)
         merger.merge()
-        self.assertEqual(self.dest_person.get_email, "newer@example.com")
+        self.assertEqual(self.dest_person.get_email, "new_email@example.com")
