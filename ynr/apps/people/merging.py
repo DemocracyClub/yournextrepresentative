@@ -47,12 +47,12 @@ class PersonMerger:
     1. Name: In this case, we keep the "dest name" and create an "other" name
        for dest person. We also move all "other names" from source to dest.
 
-    2. Images: The dest person's primary image is maintained, the source
-       person's images are moved.
+    2. Images: The source person's primary image is moved to the dest person's
+       primary image, all other images are moved from source to dest
 
     3. Person Identifiers: identifiers missing from dest will be added from
-       source. Where an ID of a given value type exists on both, the newer ID
-       is used
+       source. Where an ID of a given value type exists on both, the newer
+       Person Identifier is used, based on it's modified datetime.
     """
 
     def __init__(self, person_a, person_b, request=None):

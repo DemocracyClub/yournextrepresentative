@@ -300,24 +300,24 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Check that the redirect object has been made:
         self.assertEqual(
             PersonRedirect.objects.filter(
-                old_person_id=2007, new_person_id=2009
+                old_person_id=2009, new_person_id=2007
             ).count(),
             1,
         )
 
         # Check that person 2007 redirects to person 2009 in future
-        response = self.app.get("/person/2007")
+        response = self.app.get("/person/2009")
         self.assertEqual(response.status_code, 301)
 
         # Check that the other person was deleted (in the future we
         # might want to "soft delete" the person instead).
-        self.assertEqual(Person.objects.filter(id=2007).count(), 0)
+        self.assertEqual(Person.objects.filter(id=2009).count(), 0)
 
         # Get the merged person, and check that everything's as we expect:
-        merged_person = Person.objects.get(id=2009)
+        merged_person = Person.objects.get(id=2007)
 
         self.assertEqual(merged_person.birth_date, "")
-        self.assertEqual(merged_person.email, "jowell@example.com")
+        self.assertEqual(merged_person.email, "shane@gn.apc.org")
         self.assertEqual(merged_person.gender, "female")
         self.assertEqual(merged_person.honorific_prefix, "Mr")
         self.assertEqual(merged_person.honorific_suffix, "DBE")
@@ -341,7 +341,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         other_names = list(merged_person.other_names.all())
         self.assertEqual(len(other_names), 1)
-        self.assertEqual(other_names[0].name, "Shane Collins")
+        self.assertEqual(other_names[0].name, "Tessa Jowell")
 
         # Check that the remaining person now has two images, i.e. the
         # one from the person to delete is added to the existing images:
@@ -478,7 +478,9 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = merge_form.submit()
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.location, "/person/2111/stuart-jeffery")
+        self.assertEqual(
+            response.location, "/person/2111/stuart-robert-jeffery"
+        )
 
         merged_person = Person.objects.get(pk="2111")
 
