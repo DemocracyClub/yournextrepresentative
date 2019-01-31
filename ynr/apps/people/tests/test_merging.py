@@ -21,7 +21,9 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_person_merging(self):
         """
-        A small interface / smoke test for the PersonMerger class
+        A small interface / smoke test for the PersonMerger class.
+
+        Swap source and dest in the args to ensure dest is always kept
         """
 
         LoggedAction.objects.create(person=self.source_person, user=self.user)
@@ -30,10 +32,11 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(Person.objects.count(), 2)
         self.assertEqual(LoggedAction.objects.count(), 2)
 
-        merger = PersonMerger(self.dest_person, self.source_person)
+        merger = PersonMerger(self.source_person, self.dest_person)
         merger.merge()
 
         self.assertEqual(Person.objects.count(), 1)
+        self.assertEqual(Person.objects.get().pk, self.dest_person.pk)
         self.assertEqual(LoggedAction.objects.count(), 2)
 
     def test_invalid_merge(self):
@@ -207,13 +210,13 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(actual[0]["data"], expected_versions[0]["data"])
         self.assertEqual(len(actual), len(expected_versions))
 
-    def test_dest_person_keeps_properties(self):
+    def test_dest_person_gets_source_properties(self):
         self.dest_person.birth_date = "1956-01-02"
         self.source_person.birth_date = "1945-01-04"
 
         merger = PersonMerger(self.dest_person, self.source_person)
         merger.merge()
-        self.assertEqual(self.dest_person.birth_date, "1956-01-02")
+        self.assertEqual(self.dest_person.birth_date, "1945-01-04")
 
     def test_dest_person_gets_empty_values_from_source(self):
         self.dest_person.birth_date = None
@@ -262,7 +265,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertTrue(
             self.dest_person.images.get(is_primary=True).image.url.startswith(
-                "/media/images/images/image1"
+                "/media/images/images/image2"
             )
         )
 

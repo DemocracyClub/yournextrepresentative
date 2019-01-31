@@ -27,14 +27,48 @@ class PersonMerger:
     """
     Deals with merging two people, ensuring that no data is lost.
 
+    We always merge higher IDs _into_ lower IDs. That is, when merging person
+    3 and person 4, this class will move everything on person 4 to person 3 and
+    delete person 4.
+
+    We prefer lower IDs because they help maintain ID stability over time –
+    older IDs will have existed for longer so the chance someone else is using
+    it in their own data or in a URL is higher.
+
+    The lower ID is assigned to `self.dest_person` and the lower ID
+    `self.source_person`.
+
     The properties and related models of `source_person` are added to
     `dest_person` and `source_person` is deleted, checking no remaining related
     models exist.
+
+    In the case where a property exists on both, there are a few cases:
+
+    1. Name: In this case, we keep the "dest name" and create an "other" name
+       for dest person. We also move all "other names" from source to dest.
+
+    2. Images: The dest person's primary image is maintained, the source
+       person's images are moved.
+
+    3. Person Identifiers: identifiers missing from dest will be added from
+       source. Where an ID of a given value type exists on both, the newer ID
+       is used
     """
 
-    def __init__(self, dest_person, source_person, request=None):
-        self.dest_person = dest_person
-        self.source_person = source_person
+    def __init__(self, person_a, person_b, request=None):
+        """
+        The params are called person A and B because we don't yet know
+        what we'll use as source and dest.
+
+        Request it optional, and used for creating logged actions
+        :param request:
+        """
+
+        self.dest_person, self.source_person = sorted(
+            [person_a, person_b], key=lambda m: m.pk
+        )
+        assert self.dest_person.pk < self.source_person.pk
+
         self.request = request
 
     def safe_delete(self, model):
@@ -67,15 +101,15 @@ class PersonMerger:
 
     def merge_person_attrs(self):
         """
-        Merge attributes on Person from source in to dest
+        Merge attributes on Person from source in to dest.
+
+        Because source is a higher ID, and therefore newer, we assume that it's
+        attributes should be kept, replacing dest's.
         """
 
         for field in settings.SIMPLE_POPOLO_FIELDS:
             source_value = getattr(self.source_person, field.name, None)
             dest_value = getattr(self.dest_person, field.name, None)
-            # Assume we want to keep the value from dest_person
-            if not dest_value:
-                setattr(self.dest_person, field.name, source_value)
 
             # Special case "name"
             if field.name == "name":
@@ -83,22 +117,28 @@ class PersonMerger:
                     self.dest_person.other_names.update_or_create(
                         name=source_value
                     )
-        for other_name in self.source_person.other_names.all():
-            self.dest_person.other_names.update_or_create(name=other_name.name)
-            other_name.delete()
+            for other_name in self.source_person.other_names.all():
+                self.dest_person.other_names.update_or_create(
+                    name=other_name.name
+                )
+                other_name.delete()
+
+            # Assume we want to keep the value from source
+            if source_value:
+                setattr(self.dest_person, field.name, source_value)
 
     def merge_images(self):
         # Change the secondary person's images to point at the primary
         # person instead:
-        existing_primary_image = self.dest_person.images.filter(
+        source_primary_image = self.source_person.images.filter(
             is_primary=True
         ).exists()
-        update_kwargs = {"person": self.dest_person}
-        if existing_primary_image:
-            # There's an existing primary image, so remove the other person's
-            # primary image
-            update_kwargs["is_primary"] = False
-        self.source_person.images.update(**update_kwargs)
+
+        if source_primary_image:
+            # There's an existing primary image on source, so replace the dest
+            # person's primary image (assume the source image is better)
+            self.dest_person.images.update(is_primary=False)
+        self.source_person.images.update(person=self.dest_person)
 
     def merge_person_identifiers(self):
         moved_any = False
