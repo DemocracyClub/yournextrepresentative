@@ -25,9 +25,9 @@ from braces.views import LoginRequiredMixin
 from auth_helpers.views import GroupRequiredMixin, user_in_group
 from elections.models import Election
 from elections.mixins import ElectionMixin
+from ynr.apps.people.merging import PersonMerger
 
 from ..diffs import get_version_diffs
-from ..election_specific import additional_merge_actions
 from .version_data import get_client_ip, get_change_metadata
 from people.forms import (
     NewPersonForm,
@@ -37,11 +37,7 @@ from people.forms import (
 from candidates.forms import SingleElectionForm
 from ..models import LoggedAction, PersonRedirect, TRUSTED_TO_MERGE_GROUP_NAME
 from ..models.auth import check_creation_allowed, check_update_allowed
-from ..models.versions import (
-    revert_person_from_version_data,
-    get_person_as_version_data,
-)
-from ..models import merge_popit_people
+from ..models.versions import revert_person_from_version_data
 from .helpers import (
     get_field_groupings,
     get_person_form_fields,
@@ -200,35 +196,6 @@ class MergePeopleView(GroupRequiredMixin, View):
     http_method_names = ["post"]
     required_group_name = TRUSTED_TO_MERGE_GROUP_NAME
 
-    def merge(self, primary_person, secondary_person, change_metadata):
-
-        with additional_merge_actions(primary_person, secondary_person):
-            # Merge the reduced JSON representations:
-            merged_person_version_data = merge_popit_people(
-                get_person_as_version_data(primary_person),
-                get_person_as_version_data(secondary_person),
-            )
-            revert_person_from_version_data(
-                primary_person, merged_person_version_data, part_of_merge=True
-            )
-        # Make sure the secondary person's version history is appended, so it
-        # isn't lost.
-        primary_person_versions = json.loads(primary_person.versions)
-        primary_person_versions += json.loads(secondary_person.versions)
-        primary_person.versions = json.dumps(primary_person_versions)
-        primary_person.record_version(change_metadata)
-        primary_person.save()
-        # Change the secondary person's images to point at the primary
-        # person instead:
-        existing_primary_image = primary_person.images.filter(
-            is_primary=True
-        ).exists()
-        for image in secondary_person.images.all():
-            image.person = primary_person
-            if existing_primary_image:
-                image.is_primary = False
-            image.save()
-
     def post(self, request, *args, **kwargs):
         # Check that the person IDs are well-formed:
         primary_person_id = self.kwargs["person_id"]
@@ -241,6 +208,7 @@ class MergePeopleView(GroupRequiredMixin, View):
             raise ValueError(
                 message.format(primary_person_id, secondary_person_id)
             )
+
         with transaction.atomic():
             primary_person, secondary_person = [
                 get_object_or_404(Person, id=person_id)
@@ -248,28 +216,12 @@ class MergePeopleView(GroupRequiredMixin, View):
             ]
             primary_person = primary_person
             secondary_person = secondary_person
-            change_metadata = get_change_metadata(
-                self.request,
-                _("After merging person {0}").format(secondary_person.id),
+
+            merger = PersonMerger(
+                primary_person, secondary_person, request=self.request
             )
-            self.merge(primary_person, secondary_person, change_metadata)
-            # Now we delete the old person:
-            secondary_person.delete()
-            # Create a redirect from the old person to the new person:
-            PersonRedirect.objects.create(
-                old_person_id=secondary_person_id,
-                new_person_id=primary_person_id,
-            )
-            # Log that that action has taken place, and will be shown in
-            # the recent changes, leaderboards, etc.
-            LoggedAction.objects.create(
-                user=self.request.user,
-                action_type="person-merge",
-                ip_address=get_client_ip(self.request),
-                popit_person_new_version=change_metadata["version_id"],
-                person=primary_person,
-                source=change_metadata["information_source"],
-            )
+            merger.merge(delete=True)
+
         # And redirect to the primary person with the merged data:
         return HttpResponseRedirect(
             reverse(

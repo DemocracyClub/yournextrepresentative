@@ -23,7 +23,7 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
         self.assertEqual(
             repr(action),
-            str("<LoggedAction username='john' action_type='person-create'>"),
+            str("<LoggedAction: username='john' action_type='person-create'>"),
         )
 
     def test_subject_person(self):

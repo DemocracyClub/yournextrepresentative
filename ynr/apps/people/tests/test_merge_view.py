@@ -12,13 +12,13 @@ from django_webtest import WebTest
 import people.tests.factories
 from popolo.models import Membership
 
-from candidates.models import PersonRedirect
+from candidates.models import PersonRedirect, LoggedAction
 from candidates.models.versions import revert_person_from_version_data
 from people.models import PersonImage, Person
 from ynr.helpers import mkdir_p
-from .auth import TestUserMixin
-from .uk_examples import UK2015ExamplesMixin
-from . import factories
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
+from candidates.tests import factories
 from ynr.helpers import mkdir_p
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
@@ -30,7 +30,6 @@ TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN=None)
-@patch("candidates.views.people.additional_merge_actions")
 class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
@@ -52,6 +51,12 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     "timestamp": "2014-10-28T14:32:36.835429",
                     "data": {
                       "name": "Tessa Jowell",
+                      "other_names": [
+                        {
+                          "name": "Tessa Palmer",
+                          "note": "maiden name"
+                        }
+                      ],
                       "id": "2009",
                       "honorific_suffix": "DBE",
                       "twitter_username": "",
@@ -130,9 +135,9 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         factories.MembershipFactory.create(
             person=person,
-            post=self.dulwich_post,
+            post=self.local_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.local_pee,
         )
         factories.MembershipFactory.create(
             person=person,
@@ -221,6 +226,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     },
                     "information_source": "Imported from YourNextMP data from 2010",
                     "timestamp": "2014-11-21T18:16:47.670167",
+                    "username": "JPCarrington",
                     "version_id": "68a452284d95d9ab"
                   }
                 ]
@@ -242,7 +248,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.green_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_pee_earlier,
         )
         factories.MembershipFactory.create(
             person=person,
@@ -255,12 +261,11 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Delete the images we created in the test media root:
         rmtree(TEST_MEDIA_ROOT)
 
-    def test_merge_disallowed_no_form(self, mock_additional_merge_actions):
+    def test_merge_disallowed_no_form(self):
         response = self.app.get("/person/2009/update", user=self.user)
         self.assertNotIn("person-merge", response.forms)
-        self.assertEqual(mock_additional_merge_actions.call_count, 0)
 
-    def test_merge_two_people_disallowed(self, mock_additional_merge_actions):
+    def test_merge_two_people_disallowed(self):
         # Get the update page for the person just to get the CSRF token:
         response = self.app.get("/person/2009/update", user=self.user)
         csrftoken = self.app.cookies["csrftoken"]
@@ -270,22 +275,18 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             expect_errors=True,
         )
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(mock_additional_merge_actions.call_count, 0)
 
     @patch("candidates.views.version_data.get_current_timestamp")
     @patch("candidates.views.version_data.create_version_id")
     def test_merge_two_people(
-        self,
-        mock_create_version_id,
-        mock_get_current_timestamp,
-        mock_additional_merge_actions,
+        self, mock_create_version_id, mock_get_current_timestamp
     ):
         mock_get_current_timestamp.return_value = example_timestamp
         mock_create_version_id.return_value = example_version_id
 
         primary_person = Person.objects.get(pk=2009)
         non_primary_person = Person.objects.get(pk=2007)
-
+        self.assertEqual(Membership.objects.count(), 4)
         response = self.app.get(
             "/person/2009/update", user=self.user_who_can_merge
         )
@@ -299,48 +300,48 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Check that the redirect object has been made:
         self.assertEqual(
             PersonRedirect.objects.filter(
-                old_person_id=2007, new_person_id=2009
+                old_person_id=2009, new_person_id=2007
             ).count(),
             1,
         )
 
         # Check that person 2007 redirects to person 2009 in future
-        response = self.app.get("/person/2007")
+        response = self.app.get("/person/2009")
         self.assertEqual(response.status_code, 301)
 
         # Check that the other person was deleted (in the future we
         # might want to "soft delete" the person instead).
-        self.assertEqual(Person.objects.filter(id=2007).count(), 0)
+        self.assertEqual(Person.objects.filter(id=2009).count(), 0)
 
         # Get the merged person, and check that everything's as we expect:
-        merged_person = Person.objects.get(id=2009)
+        merged_person = Person.objects.get(id=2007)
 
         self.assertEqual(merged_person.birth_date, "")
-        self.assertEqual(merged_person.email, "jowell@example.com")
+        self.assertEqual(merged_person.email, "shane@gn.apc.org")
         self.assertEqual(merged_person.gender, "female")
         self.assertEqual(merged_person.honorific_prefix, "Mr")
         self.assertEqual(merged_person.honorific_suffix, "DBE")
 
-        candidacies = Membership.objects.filter(
-            person=merged_person,
-            role=F("post_election__election__candidate_membership_role"),
-        ).order_by("post_election__election__election_date")
-
-        self.assertEqual(len(candidacies), 2)
-        for c, expected_election in zip(
-            candidacies, ("parl.2010-05-06", "parl.2015-05-07")
-        ):
-            self.assertEqual(c.post_election.election.slug, expected_election)
-            self.assertEqual(c.post.slug, "65808")
+        candidacies = Membership.objects.filter(person=merged_person)
+        self.assertEqual(len(candidacies), 3)
+        expected_ballots = {
+            "parl.65808.2010-05-06",
+            "parl.14419.2015-05-07",
+            "local.maidstone.DIW:E05005004.2016-05-05",
+        }
+        found_ballots = {
+            mem.post_election.ballot_paper_id for mem in candidacies
+        }
+        self.assertEqual(expected_ballots, found_ballots)
 
         # Check that there are only two Membership objects
         self.assertEqual(
-            2, Membership.objects.filter(person=merged_person).count()
+            3, Membership.objects.filter(person=merged_person).count()
         )
 
         other_names = list(merged_person.other_names.all())
         self.assertEqual(len(other_names), 1)
-        self.assertEqual(other_names[0].name, "Shane Collins")
+        self.assertEqual(other_names[0].name, "Tessa Jowell")
 
         # Check that the remaining person now has two images, i.e. the
         # one from the person to delete is added to the existing images:
@@ -353,19 +354,11 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             non_primary_image.user_notes, "A photo of Shane Collins"
         )
-        self.assertEqual(mock_additional_merge_actions.call_count, 1)
-        self.assertEqual(len(mock_additional_merge_actions.call_args), 2)
-        self.assertEqual(mock_additional_merge_actions.call_args[0][0].id, 2009)
-        # The ID will be None now because the secondary has been deleted.
-        self.assertEqual(mock_additional_merge_actions.call_args[0][1].id, None)
 
     @patch("candidates.views.version_data.get_current_timestamp")
     @patch("candidates.views.version_data.create_version_id")
     def test_merge_regression(
-        self,
-        mock_create_version_id,
-        mock_get_current_timestamp,
-        mock_additional_merge_actions,
+        self, mock_create_version_id, mock_get_current_timestamp
     ):
         mock_get_current_timestamp.return_value = example_timestamp
         mock_create_version_id.return_value = example_version_id
@@ -485,7 +478,9 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = merge_form.submit()
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.location, "/person/2111/stuart-jeffery")
+        self.assertEqual(
+            response.location, "/person/2111/stuart-robert-jeffery"
+        )
 
         merged_person = Person.objects.get(pk="2111")
 
@@ -511,8 +506,64 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ],
         )
 
-        self.assertEqual(mock_additional_merge_actions.call_count, 1)
-        self.assertEqual(len(mock_additional_merge_actions.call_args), 2)
-        self.assertEqual(mock_additional_merge_actions.call_args[0][0].id, 2111)
-        # The ID will be None now because the secondary has been deleted.
-        self.assertEqual(mock_additional_merge_actions.call_args[0][1].id, None)
+    def test_merge_logged_actions(self):
+        """
+        Regression test for https://github.com/DemocracyClub/yournextrepresentative/issues/758:
+
+        > User Apexharper made four edits to two separate candidate pages at
+        > around 7am on 20 Jan - all four edits were appearing in
+        > /recent-changes.
+
+        > I then merged 46170 into 49291 and now only the two edits to the
+        > latter page are listed
+        """
+        self.assertFalse(LoggedAction.objects.exists())
+        primary_person = Person.objects.get(pk=2009)
+        non_primary_person = Person.objects.get(pk=2007)
+
+        def _do_edit_for_user(person, field, value, source):
+            response = self.app.get(
+                "/person/{}/update".format(person.pk), user=self.user
+            )
+            form = response.forms[1]
+            form[field] = value
+            form["source"] = source
+            form.submit()
+
+        _do_edit_for_user(
+            primary_person, "favourite_biscuit", "Ginger nut", "Mumsnet"
+        )
+        _do_edit_for_user(
+            primary_person,
+            "biography",
+            "Now, this is a story all about how",
+            "West Philadelphia",
+        )
+        _do_edit_for_user(
+            non_primary_person,
+            "biography",
+            "I've lived here for ages",
+            "Bel Air",
+        )
+        _do_edit_for_user(
+            non_primary_person, "birth_date", "1968-09-25", "Wikipedia"
+        )
+
+        self.assertEqual(LoggedAction.objects.count(), 4)
+        self.assertEqual(Person.objects.count(), 2)
+        response = self.app.get("/recent-changes")
+        self.assertEqual(len(response.context["actions"].object_list), 4)
+
+        response = self.app.get(
+            "/person/{}/update".format(primary_person.pk),
+            user=self.user_who_can_merge,
+        )
+        merge_form = response.forms["person-merge"]
+        merge_form["other"] = non_primary_person.pk
+        response = merge_form.submit()
+
+        self.assertEqual(Person.objects.count(), 1)
+        # 5 actions, because we create a "merge" logged action
+        self.assertEqual(LoggedAction.objects.count(), 5)
+        response = self.app.get("/recent-changes")
+        self.assertEqual(len(response.context["actions"].object_list), 5)
