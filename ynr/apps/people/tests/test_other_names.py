@@ -180,3 +180,10 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
             submission_response.location, "/person/5678/other-names"
         )
         self.assertEqual(2, self.person_other_names.other_names.count())
+
+    def test_other_names_on_update_page(self):
+        response = self.app.get(
+            "/person/{}/update/".format(self.person_other_names.id),
+            user=self.user,
+        )
+        self.assertContains(response, "Also known as Fozzie")
