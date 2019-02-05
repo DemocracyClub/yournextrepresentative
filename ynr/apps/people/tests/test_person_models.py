@@ -3,7 +3,7 @@ from candidates.tests.helpers import TmpMediaRootMixin
 
 from candidates.tests.factories import faker_factory
 from people.tests.factories import PersonFactory
-from people.models import PersonImage
+from people.models import PersonImage, Person
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 
 from sorl.thumbnail import get_thumbnail
@@ -33,3 +33,10 @@ class TestPersonModels(TmpMediaRootMixin, WebTest):
         url = get_thumbnail(pi.image, "x64").url
 
         self.assertEqual(person.get_display_image_url(), url)
+
+    def test_get_alive_now(self):
+        alive_person = PersonFactory(name=faker_factory.name())
+        PersonFactory(name=faker_factory.name(), death_date="2016-01-01")
+        qs = Person.objects.alive_now()
+        self.assertEqual(qs.count(), 1)
+        self.assertEqual(qs.get(), alive_person)
