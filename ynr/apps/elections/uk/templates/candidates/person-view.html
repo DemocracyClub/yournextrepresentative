@@ -186,14 +186,6 @@
       {% else %}
         <dd>Unknown</dd>
       {% endif %}
-
-
-
-
-      {% if 'national_identity' in simple_fields %}
-        <dt>{% trans "National Identity" %}</dt>
-        <dd>{% if person.national_identity %}{{ person.national_identity }}{% endif %}</dd>
-      {% endif %}
     </dl>
   {% endif %}
 
