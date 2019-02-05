@@ -10,15 +10,15 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
-        self.pe_no_other = PersonFactory.create(id=1234, name="John Smith")
-        self.pe_other_names = PersonFactory.create(id=5678, name="Fozzie")
+        self.person_no_other = PersonFactory.create(id=1234, name="John Smith")
+        self.person_other_names = PersonFactory.create(id=5678, name="Fozzie")
         self.fozziewig = OtherName.objects.create(
-            content_object=self.pe_other_names,
+            content_object=self.person_other_names,
             name="Mr Fozziewig",
             note="In a Muppet Christmas Carol",
         )
         self.fozzie_bear = OtherName.objects.create(
-            content_object=self.pe_other_names,
+            content_object=self.person_other_names,
             name="Fozzie Bear",
             note="Full name",
         )
@@ -61,9 +61,9 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.location, "/person/5678/other-names")
-        self.assertEqual(1, self.pe_other_names.other_names.count())
+        self.assertEqual(1, self.person_other_names.other_names.count())
         self.assertEqual(
-            self.pe_other_names.other_names.get().name, "Mr Fozziewig"
+            self.person_other_names.other_names.get().name, "Mr Fozziewig"
         )
 
     # Adding
@@ -116,7 +116,7 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             submission_response.location, "/person/5678/other-names"
         )
-        self.assertEqual(3, self.pe_other_names.other_names.count())
+        self.assertEqual(3, self.person_other_names.other_names.count())
 
     # Editing
 
@@ -179,4 +179,4 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             submission_response.location, "/person/5678/other-names"
         )
-        self.assertEqual(2, self.pe_other_names.other_names.count())
+        self.assertEqual(2, self.person_other_names.other_names.count())
