@@ -234,6 +234,14 @@ class PersonMerger:
                 "Merging would cause this person to be standing more than once in the same election"
             )
 
+    def merge_queued_images(self):
+        self.source_person.queuedimage_set.update(person=self.dest_person)
+
+    def merge_not_standing(self):
+        for election in self.source_person.not_standing.all():
+            self.dest_person.not_standing.add(election)
+            self.source_person.not_standing.remove(election)
+
     def setup_redirect(self):
         # Create a redirect from the old person to the new person:
         PersonRedirect.objects.create(
@@ -256,6 +264,8 @@ class PersonMerger:
             self.merge_images()
             self.merge_logged_actions()
             self.merge_memberships()
+            self.merge_queued_images()
+            self.merge_not_standing()
 
             # Post merging tasks
             # Save the dest person (don't assume the methods above do this)

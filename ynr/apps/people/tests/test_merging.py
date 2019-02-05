@@ -336,3 +336,17 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         merger = PersonMerger(self.dest_person, self.source_person)
         merger.merge()
         self.assertEqual(self.dest_person.get_email, "new_email@example.com")
+
+    def test_merge_queued_images(self):
+        self.source_person.queuedimage_set.create()
+        self.assertEqual(self.dest_person.queuedimage_set.count(), 0)
+        merger = PersonMerger(self.source_person, self.dest_person)
+        merger.merge()
+        self.assertEqual(self.dest_person.queuedimage_set.count(), 1)
+
+    def test_merge_not_standing(self):
+        self.source_person.not_standing.add(self.election)
+        self.assertEqual(self.dest_person.not_standing.count(), 0)
+        merger = PersonMerger(self.source_person, self.dest_person)
+        merger.merge()
+        self.assertEqual(self.dest_person.not_standing.count(), 1)
