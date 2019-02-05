@@ -212,6 +212,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     }
                 },
                 "birth_date": "1947-09-17",
+                "death_date": "",
                 "biography": "",
                 "identifiers": [
                     {

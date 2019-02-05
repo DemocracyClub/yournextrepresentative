@@ -44,6 +44,7 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
             "wikipedia_url": "",
             "party_memberships": {},
             "birth_date": "",
+            "death_date": "",
             "party_ppc_page_url": "",
             "other_names": [],
             "email": "tessa@example.com",

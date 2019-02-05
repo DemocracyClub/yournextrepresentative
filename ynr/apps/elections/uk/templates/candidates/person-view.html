@@ -186,6 +186,19 @@
       {% else %}
         <dd>Unknown</dd>
       {% endif %}
+
+      {% if person.death_date %}
+        {% if person.death_date|length_is:"4" %}
+          <dd>
+            Year of death: {{ person.death_date }}
+          </dd>
+        {% else %}
+          <dd>
+            Date of death: {{ person.dod_as_date|date:"jS F Y" }}
+          </dd>
+        {% endif %}
+      {% endif %}
+
     </dl>
   {% endif %}
 
