@@ -406,8 +406,8 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                         "site_name": site_name,
                         "candidate_page_url": candidate_full_url,
                         "intro": _(
-                            "Thank-you for submitting a photo to "
-                            "{site_name}; that's been uploaded now for "
+                            "Thank you for submitting a photo to "
+                            "{site_name}. It has been uploaded to "
                             "the candidate page here:"
                         ).format(site_name=site_name),
                         "signoff": _(
