@@ -46,7 +46,7 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
             **kwargs
         )
         context["official_document"] = OfficialDocument.objects.filter(
-            post__slug=context["post_id"], election__slug=context["election"]
+            post_election=context["post_election"]
         ).first()
         self.official_document = context["official_document"]
         return context
@@ -54,8 +54,8 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
     def remaining_posts_for_sopn(self):
         return OfficialDocument.objects.filter(
             source_url=self.official_document.source_url,
-            post__postextraelection__election=F("election"),
-            post__postextraelection__suggestedpostlock=None,
+            post_election__election=F("post_election__election"),
+            post_election__suggestedpostlock=None,
         )
 
     def post(self, request, *args, **kwargs):

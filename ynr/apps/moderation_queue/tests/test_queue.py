@@ -464,9 +464,7 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
             postextraelection=pee, user=self.user, justification="test data"
         )
         OfficialDocument.objects.create(
-            election=self.election,
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post=self.dulwich_post,
             post_election=pee,
             source_url="http://example.com",
         )
@@ -485,9 +483,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
     def test_sopn_review_view_with_reviews(self):
         OfficialDocument.objects.create(
-            election=self.election,
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post=self.dulwich_post,
             post_election=self.dulwich_post_pee,
             source_url="http://example.com",
         )
@@ -506,9 +502,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
             justification="test data",
         )
         OfficialDocument.objects.create(
-            election=self.election,
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post=self.dulwich_post,
             post_election=self.dulwich_post_pee,
             source_url="http://example.com",
         )
@@ -524,9 +518,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         postextraelection.candidates_locked = True
         postextraelection.save()
         OfficialDocument.objects.create(
-            election=self.election,
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post=self.dulwich_post,
             post_election=self.dulwich_post_pee,
             source_url="http://example.com",
         )

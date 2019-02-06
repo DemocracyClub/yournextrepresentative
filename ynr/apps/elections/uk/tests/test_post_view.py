@@ -12,8 +12,6 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_suggest_post_lock_offered_with_document_when_unlocked(self):
         OfficialDocument.objects.create(
-            election=self.election,
-            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
             post_election=self.edinburgh_east_post_pee,
@@ -37,8 +35,6 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         pee.candidates_locked = True
         pee.save()
         OfficialDocument.objects.create(
-            election=self.election,
-            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
             post_election=self.edinburgh_east_post_pee,
@@ -51,8 +47,6 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_create_suggested_post_lock(self):
         OfficialDocument.objects.create(
-            election=self.election,
-            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
             post_election=self.edinburgh_east_post_pee,
@@ -87,8 +81,6 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.user.save()
 
         OfficialDocument.objects.create(
-            election=self.election,
-            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
             post_election=self.edinburgh_east_post_pee,
@@ -133,8 +125,6 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.user.save()
 
         OfficialDocument.objects.create(
-            election=self.election,
-            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
             post_election=self.edinburgh_east_post_pee,
@@ -164,8 +154,6 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.user.save()
 
         OfficialDocument.objects.create(
-            election=self.election,
-            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
             post_election=self.edinburgh_east_post_pee,
@@ -213,8 +201,6 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.user.save()
 
         OfficialDocument.objects.create(
-            election=self.election,
-            post=self.edinburgh_east_post,
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
             post_election=self.edinburgh_east_post_pee,

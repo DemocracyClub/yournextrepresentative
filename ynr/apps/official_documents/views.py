@@ -61,7 +61,7 @@ class PostsForDocumentView(DetailView):
         documents = (
             OfficialDocument.objects.filter(source_url=self.object.source_url)
             .select_related("post_election__post", "post_election__election")
-            .order_by("post__label")
+            .order_by("post_election__ballot_paper_id")
             .prefetch_related("post_election__suggestedpostlock_set")
         )
 
@@ -84,17 +84,17 @@ class UnlockedWithDocumentsView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         SOPNs_qs = OfficialDocument.objects.filter(
-            election__current=True
-        ).select_related("election", "post")
+            post_election__election__current=True
+        ).select_related("post_election__election", "post_election__post")
 
         SOPNs_qs = SOPNs_qs.exclude(
-            post__in=SuggestedPostLock.objects.all().values(
+            post_election__post__in=SuggestedPostLock.objects.all().values(
                 "postextraelection__post"
             )
         )
 
         context["unlocked_sopns"] = SOPNs_qs.filter(
-            post__postextraelection__candidates_locked=False
+            post_election__candidates_locked=False
         )
 
         return context

@@ -12,7 +12,11 @@ DOCUMENT_UPLOADERS_GROUP_NAME = "Document Uploaders"
 
 
 def document_file_name(instance, filename):
-    return os.path.join("official_documents", str(instance.post_id), filename)
+    return os.path.join(
+        "official_documents",
+        str(instance.post_election.ballot_paper_id),
+        filename,
+    )
 
 
 class OfficialDocument(TimeStampedModel):
