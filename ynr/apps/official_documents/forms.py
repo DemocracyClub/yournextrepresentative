@@ -7,10 +7,8 @@ class UploadDocumentForm(forms.ModelForm):
     class Meta:
         model = OfficialDocument
         fields = (
-            "election",
             "uploaded_file",
             "source_url",
-            "post",
             "post_election",
             "document_type",
         )

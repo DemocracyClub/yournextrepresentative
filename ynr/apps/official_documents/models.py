@@ -16,14 +16,12 @@ def document_file_name(instance, filename):
 
 
 class OfficialDocument(TimeStampedModel):
-    # TODO FK to post_election and remove the Election and Post FKs
     NOMINATION_PAPER = "Nomination paper"
 
     DOCUMENT_TYPES = (
         (NOMINATION_PAPER, _("Nomination paper"), _("Nomination papers")),
     )
 
-    election = models.ForeignKey(Election)
     document_type = models.CharField(
         blank=False,
         choices=[(d[0], d[1]) for d in DOCUMENT_TYPES],
@@ -32,7 +30,6 @@ class OfficialDocument(TimeStampedModel):
     uploaded_file = models.FileField(
         upload_to=document_file_name, max_length=800
     )
-    post = models.ForeignKey(Post, blank=True, null=True)
     post_election = models.ForeignKey(
         "candidates.PostExtraElection", null=False
     )
@@ -41,7 +38,9 @@ class OfficialDocument(TimeStampedModel):
     )
 
     def __str__(self):
-        return "{} ({})".format(self.post.slug, self.source_url)
+        return "{} ({})".format(
+            self.post_election.ballot_paper_id, self.source_url
+        )
 
     @models.permalink
     def get_absolute_url(self):
