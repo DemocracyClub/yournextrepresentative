@@ -3,10 +3,10 @@ from os.path import join, realpath, dirname
 from django_webtest import WebTest
 from webtest import Upload
 
-from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from candidates.tests.auth import TestUserMixin
+from candidates.models import LoggedAction
 
 from official_documents.models import OfficialDocument
 
@@ -76,6 +76,7 @@ class TestModels(TestUserMixin, WebTest):
         )
 
     def test_upload_authorized(self):
+        self.assertFalse(LoggedAction.objects.exists())
         response = self.app.get(
             self.pee.get_absolute_url(), user=self.user_who_can_upload_documents
         )
@@ -112,3 +113,6 @@ class TestModels(TestUserMixin, WebTest):
         self.assertContains(
             response, "Member of Parliament for Dulwich and West Norwood"
         )
+        qs = LoggedAction.objects.all()
+        self.assertEqual(qs.count(), 1)
+        self.assertEqual(qs.get().source, "http://example.org/foo")
