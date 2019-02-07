@@ -209,7 +209,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 
             mock_send_mail.assert_called_once_with(
                 "example.com image upload approved",
-                "Thank-you for submitting a photo to example.com; that's been\nuploaded now for the candidate page here:\n\n  http://testserver/person/2009/tessa-jowell\n\nMany thanks from the example.com volunteers\n",
+                "Thank you for submitting a photo to example.com. It has been\nuploaded to the candidate page here:\n\n  http://testserver/person/2009/tessa-jowell\n\nMany thanks from the example.com volunteers\n",
                 "admins@example.com",
                 ["john@example.com"],
                 fail_silently=False,
