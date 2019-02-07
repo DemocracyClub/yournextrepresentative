@@ -114,6 +114,12 @@ class PostExtraElection(models.Model):
             )
         return ""
 
+    @property
+    def sopn(self):
+        return self.officialdocument_set.filter(
+            document_type=self.officialdocument_set.model.NOMINATION_PAPER
+        ).latest()
+
 
 class PartySet(models.Model):
     slug = models.CharField(max_length=256, unique=True)

@@ -41,6 +41,9 @@ class OfficialDocument(TimeStampedModel):
         help_text=_("The page that links to this document"), max_length=1000
     )
 
+    class Meta:
+        get_latest_by = "modified"
+
     def __str__(self):
         return "{} ({})".format(
             self.post_election.ballot_paper_id, self.source_url
