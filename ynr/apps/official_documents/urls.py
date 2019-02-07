@@ -14,11 +14,6 @@ urlpatterns = [
         name="posts_for_document",
     ),
     url(
-        r"^(?P<pk>\d+)/$",
-        views.DocumentView.as_view(),
-        name="uploaded_document_view",
-    ),
-    url(
         r"^uploaded/$",
         views.UnlockedWithDocumentsView.as_view(),
         name="unlocked_posts_with_documents",

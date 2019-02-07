@@ -2,6 +2,7 @@ import os
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 
 from popolo.models import Post
 from elections.models import Election
@@ -49,9 +50,11 @@ class OfficialDocument(TimeStampedModel):
             self.post_election.ballot_paper_id, self.source_url
         )
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("uploaded_document_view", (), {"pk": self.pk})
+        return reverse(
+            "ballot_paper_sopn",
+            kwargs={"ballot_id": self.post_election.ballot_paper_id},
+        )
 
     @property
     def locked(self):

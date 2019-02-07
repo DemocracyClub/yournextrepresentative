@@ -1006,3 +1006,22 @@ class BallotPaperCSVView(DetailView):
         response["Content-Disposition"] = 'attachment; filename="%s"' % filename
         response.write(list_to_csv(memberships_dict[pee.election.slug]))
         return response
+
+
+class SOPNForBallotView(DetailView):
+    """
+    A view to show a single SOPN for a ballot paper
+    """
+
+    model = PostExtraElection
+    slug_url_kwarg = "ballot_id"
+    slug_field = "ballot_paper_id"
+    template_name = "elections/sopn_for_ballot.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["documents_with_same_source"] = OfficialDocument.objects.filter(
+            source_url=self.object.sopn.source_url
+        )
+
+        return context
