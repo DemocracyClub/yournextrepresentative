@@ -29,6 +29,9 @@
       {% if simple_field.name == 'name'%}
         {% if not add_candidate_form %}
           <p class="alternative-names">
+            {% if person.other_names.exists %}
+              Also known as {{ person.other_names.all|join:", " }}<br>
+            {% endif %}
             <a href="{% url 'person-other-names' person_id=person.id %}">
               {% trans "Manage alternative names..." %}
           </a></p>
