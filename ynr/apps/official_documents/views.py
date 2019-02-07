@@ -13,20 +13,6 @@ from popolo.models import Post
 from candidates.models import is_post_locked, PostExtraElection
 
 
-class DocumentView(DetailView):
-    model = OfficialDocument
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        post = get_object_or_404(Post, id=self.object.post_id)
-        context["post_label"] = post.label
-        context["documents_with_same_source"] = OfficialDocument.objects.filter(
-            source_url=context["object"].source_url
-        )
-
-        return context
-
-
 class CreateDocumentView(ElectionMixin, GroupRequiredMixin, CreateView):
     required_group_name = DOCUMENT_UPLOADERS_GROUP_NAME
 

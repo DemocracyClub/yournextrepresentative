@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from elections.models import Election
 from candidates.models import PostExtraElection
 from parties.models import Party
+from official_documents.models import OfficialDocument
 
 from .models import PageNotFoundLog
 from .constants import UPDATED_SLUGS
@@ -113,3 +114,11 @@ class RedirectPartyDetailView(PermanentRedirectView):
             "candidates_by_election_for_party",
             kwargs={"election": election.slug, "party_id": party.ec_id},
         )
+
+
+class RedirectSOPNView(PermanentRedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        document = get_object_or_404(
+            OfficialDocument, pk=self.kwargs["document_id"]
+        )
+        return document.get_absolute_url()

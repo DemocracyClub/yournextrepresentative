@@ -19,6 +19,7 @@ from people.tests.factories import PersonFactory
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from parties.tests.factories import PartyEmblemFactory, PartyDescriptionFactory
 from people.models import PersonImage
+from official_documents.models import OfficialDocument
 
 from .test_upcoming_elections_api import fake_requests_for_every_election
 
@@ -325,3 +326,24 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             },
         ]
         self.assertEqual(expected, output)
+
+    def test_sopn_on_ballot(self):
+        OfficialDocument.objects.create(
+            post_election=self.dulwich_post_pee,
+            document_type=OfficialDocument.NOMINATION_PAPER,
+        )
+        response = self.app.get(
+            "/api/next/post_elections/{}/".format(self.dulwich_post_pee.pk)
+        )
+        result = response.json
+        self.assertEqual(
+            result["sopn"],
+            {
+                "document_type": "Nomination paper",
+                "uploaded_file": None,
+                "post_election": "http://testserver/api/next/post_elections/{}/".format(
+                    self.dulwich_post_pee.pk
+                ),
+                "source_url": "",
+            },
+        )
