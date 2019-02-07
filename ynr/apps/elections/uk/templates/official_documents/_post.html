@@ -1,23 +1,18 @@
-{% for doc_type, docs in official_documents %}
-  {% if doc_type.0 == 'Nomination paper' %}
+ {% if post_election.sopn %}
     <p>
-      {% if docs %}
-        {% for paper in docs %}
-          View the official Statement of Persons Nominated for this constituency:
-           <a href="{{ paper.get_absolute_url }}">{{ paper.document_type }}</a><br>
-        {% endfor %}
-        {% if user_can_upload_documents %}
-          <a href="{% url 'upload_document_view' election=election.slug post_id=post_data.id %}">
-          Upload an updated Statement of Persons Nominated</a>.
-        {% endif %}
-      {% else %}
-        We don't have nomination papers for {{ post_data.label }} yet.
-        {% if user_can_upload_documents %}
-          Can you help us by
-          <a href="{% url 'upload_document_view' election=election.slug post_id=post_data.id %}">uploading
-          the PDF of the Statement of Persons Nominated?</a>
-        {% endif %}
+        <a href="{{ post_election.sopn.get_absolute_url }}">
+          View the official Statement of Persons Nominated for this ballot:
+        </a>
+
+      {% if user_can_upload_documents %}
+        <a href="{% url 'upload_document_view' election=election.slug post_id=post_data.id %}" class="button tiny">
+        Upload an updated Statement of Persons Nominated</a>.
+      {% endif %}
+    {% else %}
+      {% if user_can_upload_documents %}
+
+        <a href="{% url 'upload_document_view' election=election.slug post_id=post_data.id %}" class="button tiny">
+          Upload the Statement of Persons Nominated</a>
       {% endif %}
     </p>
   {% endif %}
-{% endfor %}
