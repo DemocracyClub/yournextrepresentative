@@ -42,7 +42,7 @@ class CreateDocumentView(ElectionMixin, GroupRequiredMixin, CreateView):
         LoggedAction.objects.create(
             user=self.request.user,
             post_election=form.instance.post_election,
-            action_type="person-update",
+            action_type="sopn-upload",
             ip_address=get_client_ip(self.request),
             source=form.cleaned_data["source_url"],
         )
