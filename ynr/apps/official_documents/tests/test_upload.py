@@ -81,7 +81,7 @@ class TestModels(TestUserMixin, WebTest):
             self.pee.get_absolute_url(), user=self.user_who_can_upload_documents
         )
         self.assertIn(
-            "Upload an updated Statement of Persons Nominated", response.text
+            "Change Statement of Persons Nominated document", response.text
         )
         response = self.app.get(
             reverse(

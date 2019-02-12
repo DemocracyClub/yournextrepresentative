@@ -1,18 +1,20 @@
- {% if post_election.sopn %}
-    <p>
-        <a href="{{ post_election.sopn.get_absolute_url }}">
-          View the Statement of Persons Nominated for this ballot:
-        </a>
+{% if post_election.sopn %}
+  <p>
+    <a href="{{ post_election.sopn.get_absolute_url }}">
+      View the Statement of Persons Nominated for this ballot.
+    </a>
 
-      {% if user_can_upload_documents %}
-        <a href="{% url 'upload_document_view' election=election.slug post_id=post_data.id %}" class="button tiny">
-        Upload an updated Statement of Persons Nominated</a>.
-      {% endif %}
-    {% else %}
-      {% if user_can_upload_documents %}
-
-        <a href="{% url 'upload_document_view' election=election.slug post_id=post_data.id %}" class="button tiny">
-          Upload the Statement of Persons Nominated</a>
-      {% endif %}
-    </p>
+    {% if user_can_upload_documents %}
+      <br><a href="{% url 'upload_document_view' election=election.slug post_id=post_data.id %}" class="button tiny">
+        Change Statement of Persons Nominated document</a>
+    {% endif %}
+  </p>
+{% else %}
+  {% if user_can_upload_documents %}
+  <p>
+    <a href="{% url 'upload_document_view' election=election.slug post_id=post_data.id %}" class="button tiny">
+    Upload the Statement of Persons Nominated</a>
+  </p>
   {% endif %}
+
+{% endif %}

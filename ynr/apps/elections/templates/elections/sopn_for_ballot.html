@@ -5,13 +5,21 @@
   {% stylesheet 'official_documents' %}
 {% endblock %}
 
+{% block hero %}
+<h1>Statement of Persons Nominated</h1>
+{% endblock %}
+
 {% block content %}
-
-  <h1>Statement of Persons Nominated for <a href="{{ object.get_absolute_url }}">{{ object.post.label }} {{ object.election.election_date }}</a></h1>
-
+  <h2>
+    <a href="{{ object.get_absolute_url }}">
+      {{ object.election.name }}: <br>
+      {{ object.post.label }}
+    </a>
+  </h2>
+  <p>{{ object.election.election_date }}</p>
   {% if object.sopn %}
-    This document was first published at {{ object.sopn.source_url|urlize }}. Showing the archived copy.
-    <a href="{{ object.sopn.uploaded_file.url }}"class="button small">Download PDF</a>
+    <p>This document was first published at {{ object.sopn.source_url|urlize }}. Showing the archived copy.</p>
+    <p><a href="{{ object.sopn.uploaded_file.url }}"class="button small">Download PDF</a></p>
 
     {% if documents_with_same_source.exists and documents_with_same_source.count > 1 %}
       <p>
