@@ -1,42 +1,11 @@
 {% extends "base.html" %}
 {% load pipeline %}
+
+{% block extra_css %}
+  {% stylesheet 'official_documents' %}
+{% endblock %}
+
 {% block content %}
-
-  <style>
-    .pdf_container:not(:empty) {
-      border:1px solid #EEE;
-      max-width:100% !important;
-      width:90em !important;
-    }
-    .page_container .text_layer {
-      position: absolute;
-      left: 0;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      overflow: hidden;
-      opacity: 0.2;
-      line-height: 1.0;
-    }
-
-    .page_container .text_layer > div {
-      color: transparent;
-      position: absolute;
-      white-space: pre;
-      cursor: text;
-      transform-origin: 0% 0%;
-    }
-    .page_container .text_layer > div.highlight{
-      color: black;
-      background-color: yellow;
-      border:1em solid yellow;
-      margin:-1em;
-      position: absolute;
-      white-space: pre;
-      cursor: text;
-      transform-origin: 0% 0%;
-    }
-  </style>
 
   <h1>Statement of Persons Nominated for <a href="{{ object.get_absolute_url }}">{{ object.post.label }} {{ object.election.election_date }}</a></h1>
 

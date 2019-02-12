@@ -1,5 +1,41 @@
 .document_viewer {
-    width:100%;
-    min-height:800px;
-    height:100%;
+  width:100%;
+  min-height:800px;
+  height:100%;
+}
+
+.pdf_container:not(:empty) {
+  border:1px solid #EEE;
+  max-width:100% !important;
+  width:90em !important;
+}
+
+.page_container .text_layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  opacity: 0.2;
+  line-height: 1.0;
+}
+
+.page_container .text_layer > div {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0 0;
+}
+
+.page_container .text_layer > div.highlight{
+  color: black;
+  background-color: yellow;
+  border:1em solid yellow;
+  margin:-1em;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0 0;
 }
