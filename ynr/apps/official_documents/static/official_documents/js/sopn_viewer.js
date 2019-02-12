@@ -71,6 +71,26 @@ function ShowSOPNInline(sopn_url, ballot_paper_id, options) {
 
         load_pages_by_range(pdf, start_page, end_page);
 
+    }).then(null, function(error) {
+        window.pdf_container = document.getElementById('sopn-' + ballot_paper_id);
+        if (error.name === "MissingPDFException") {
+            window.pdf_container.innerHTML = "<h3>PDF file not found</h3>"
+        }
 
+        if (error.name === "InvalidPDFException") {
+            /*
+            Show the Google document viewer if PDFJS can't deal with this document for whatever reason
+            */
+            google_frame = document.createElement("iframe");
+            google_frame.setAttribute("frameborder", 0);
+            google_frame.setAttribute("allowfullscreen", true);
+            google_frame.className = "document_viewer";
+            url = "https://docs.google.com/viewer?url=https://candidates.democracyclub.org.uk"
+                +encodeURI(sopn_url)+"&amp;embedded=true";
+            google_frame.setAttribute("src", url);
+            window.pdf_container.append(google_frame)
+
+
+        }
     });
 }
