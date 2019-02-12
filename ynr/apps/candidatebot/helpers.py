@@ -43,7 +43,7 @@ class CandidateBot(object):
         if field_name == "email":
             # The lightest of validation
             if "@" in field_value:
-                if self.person.email:
+                if self.person.get_email:
                     raise ValueError("Email already exists")
                 PersonIdentifier.objects.update_or_create(
                     person=self.person, value_type=field_name, value=field_value

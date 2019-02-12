@@ -31,7 +31,6 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             name="Tessa Jowell",
             honorific_suffix="DBE",
             honorific_prefix="Ms",
-            email="jowell@example.com",
             gender="female",
         )
         PersonImage.objects.create_from_file(
@@ -88,6 +87,9 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
 
         self.gb_person.tmp_person_identifiers.create(
             internal_identifier="10326", value_type="theyworkforyou"
+        )
+        self.gb_person.tmp_person_identifiers.create(
+            value_type="email", value="jowell@example.com"
         )
 
     def test_as_single_dict(self):

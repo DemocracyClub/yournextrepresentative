@@ -278,6 +278,8 @@ class PersonSerializer(MinimalPersonSerializer):
     other_names = OtherNameSerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True, default=[])
 
+    email = serializers.SerializerMethodField()
+
     versions = JSONSerializerField(read_only=True)
 
     memberships = MembershipSerializer(many=True, read_only=True)
@@ -330,6 +332,9 @@ class PersonSerializer(MinimalPersonSerializer):
                 }
             )
         return ret
+
+    def get_email(self, obj):
+        return obj.get_email
 
 
 class NoVersionPersonSerializer(PersonSerializer):
