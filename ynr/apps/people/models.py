@@ -216,12 +216,7 @@ class Person(Timestampable, models.Model):
         blank=True,
         help_text=_("A name to use in an lexicographically ordered list"),
     )
-    email = models.EmailField(
-        _("email"),
-        blank=True,
-        null=True,
-        help_text=_("A preferred email address"),
-    )
+
     gender = models.CharField(
         _("gender"), max_length=128, blank=True, help_text=_("A gender")
     )
