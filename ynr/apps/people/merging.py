@@ -156,7 +156,9 @@ class PersonMerger:
             if existing_of_type:
                 # Get the newer ID of the two
                 keep, delete = sorted(
-                    [identifier, existing_of_type], key=lambda m: m.modified
+                    [identifier, existing_of_type],
+                    key=lambda m: m.modified,
+                    reverse=True,
                 )
                 self.safe_delete(delete)
             else:
