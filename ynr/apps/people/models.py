@@ -216,12 +216,7 @@ class Person(Timestampable, models.Model):
         blank=True,
         help_text=_("A name to use in an lexicographically ordered list"),
     )
-    email = models.EmailField(
-        _("email"),
-        blank=True,
-        null=True,
-        help_text=_("A preferred email address"),
-    )
+
     gender = models.CharField(
         _("gender"), max_length=128, blank=True, help_text=_("A gender")
     )
@@ -611,7 +606,7 @@ class Person(Timestampable, models.Model):
             "honorific_suffix": self.honorific_suffix,
             "gender": self.gender,
             "birth_date": self.birth_date,
-            "email": self.email,
+            "email": self.get_email,
             "twitter_username": twitter_user_name,
             "twitter_user_id": twitter_user_id,
             "facebook_page_url": self.get_single_identifier_value(

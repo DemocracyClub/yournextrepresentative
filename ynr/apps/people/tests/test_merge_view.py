@@ -40,7 +40,6 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             name="Tessa Jowell",
             gender="female",
             honorific_suffix="DBE",
-            email="jowell@example.com",
             versions="""
                 [
                   {
@@ -121,6 +120,9 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 ]
             """,
         )
+        person.tmp_person_identifiers.create(
+            value="tessa.jowell@example.com", value_type="email"
+        )
         PersonImage.objects.create_from_file(
             EXAMPLE_IMAGE_FILENAME,
             "images/jowell-pilot.jpg",
@@ -151,7 +153,6 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             name="Shane Collins",
             gender="male",
             honorific_prefix="Mr",
-            email="shane@gn.apc.org",
             versions="""
                 [
                   {
@@ -232,6 +233,10 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 ]
             """,
         )
+        person.tmp_person_identifiers.create(
+            value="shane@gn.apc.org", value_type="email"
+        )
+
         PersonImage.objects.create_from_file(
             EXAMPLE_IMAGE_FILENAME,
             "images/collins-pilot.jpg",
@@ -317,7 +322,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         merged_person = Person.objects.get(id=2007)
 
         self.assertEqual(merged_person.birth_date, "")
-        self.assertEqual(merged_person.email, "shane@gn.apc.org")
+        self.assertEqual(merged_person.get_email, "shane@gn.apc.org")
         self.assertEqual(merged_person.gender, "female")
         self.assertEqual(merged_person.honorific_prefix, "Mr")
         self.assertEqual(merged_person.honorific_suffix, "DBE")

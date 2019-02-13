@@ -11,8 +11,9 @@ from people.tests.factories import PersonFactory
 
 class TestRenameRestriction(TestUserMixin, WebTest):
     def setUp(self):
-        PersonFactory.create(
-            id=4322, name="Helen Hayes", email="hayes@example.com"
+        person = PersonFactory.create(id=4322, name="Helen Hayes")
+        person.tmp_person_identifiers.create(
+            value="hayes@example.com", value_type="email"
         )
 
     @override_settings(RESTRICT_RENAMES=True)
