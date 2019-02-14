@@ -39,3 +39,25 @@ class TestModels(TestCase):
             text_type(doc),
             "parl.dulwich-and-west-norwood.2015-05-07 (http://example.com/)",
         )
+
+    def test_relevant_pages(self):
+        doc = OfficialDocument(
+            post_election=self.ballot, source_url="http://example.com/"
+        )
+        self.assertIsNone(doc.first_page_number)
+        self.assertIsNone(doc.last_page_number)
+
+        doc.relevant_pages = "all"
+
+        self.assertIsNone(doc.first_page_number)
+        self.assertIsNone(doc.last_page_number)
+
+        doc.relevant_pages = "3,4,5,6,7"
+
+        self.assertEqual(doc.first_page_number, 3)
+        self.assertEqual(doc.last_page_number, 7)
+
+        doc.relevant_pages = "5,6,7,1"
+
+        self.assertEqual(doc.first_page_number, 1)
+        self.assertEqual(doc.last_page_number, 7)
