@@ -41,6 +41,11 @@ class OfficialDocument(TimeStampedModel):
     source_url = models.URLField(
         help_text=_("The page that links to this document"), max_length=1000
     )
+    relevant_pages = models.CharField(
+        "The pages containing information about this ballot",
+        max_length=50,
+        null=True,
+    )
 
     class Meta:
         get_latest_by = "modified"
