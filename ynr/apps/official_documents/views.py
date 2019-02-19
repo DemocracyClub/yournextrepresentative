@@ -10,21 +10,8 @@ from .forms import UploadDocumentForm
 from .models import DOCUMENT_UPLOADERS_GROUP_NAME, OfficialDocument
 
 from popolo.models import Post
-from candidates.models import is_post_locked, PostExtraElection
-
-
-class DocumentView(DetailView):
-    model = OfficialDocument
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        post = get_object_or_404(Post, id=self.object.post_id)
-        context["post_label"] = post.label
-        context["documents_with_same_source"] = OfficialDocument.objects.filter(
-            source_url=context["object"].source_url
-        )
-
-        return context
+from candidates.models import is_post_locked, PostExtraElection, LoggedAction
+from candidates.views import get_client_ip
 
 
 class CreateDocumentView(ElectionMixin, GroupRequiredMixin, CreateView):
@@ -51,6 +38,16 @@ class CreateDocumentView(ElectionMixin, GroupRequiredMixin, CreateView):
         context["post_label"] = post.label
         return context
 
+    def form_valid(self, form):
+        LoggedAction.objects.create(
+            user=self.request.user,
+            post_election=form.instance.post_election,
+            action_type="sopn-upload",
+            ip_address=get_client_ip(self.request),
+            source=form.cleaned_data["source_url"],
+        )
+        return super().form_valid(form)
+
 
 class PostsForDocumentView(DetailView):
     model = OfficialDocument
@@ -61,7 +58,7 @@ class PostsForDocumentView(DetailView):
         documents = (
             OfficialDocument.objects.filter(source_url=self.object.source_url)
             .select_related("post_election__post", "post_election__election")
-            .order_by("post__label")
+            .order_by("post_election__ballot_paper_id")
             .prefetch_related("post_election__suggestedpostlock_set")
         )
 
@@ -84,17 +81,17 @@ class UnlockedWithDocumentsView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         SOPNs_qs = OfficialDocument.objects.filter(
-            election__current=True
-        ).select_related("election", "post")
+            post_election__election__current=True
+        ).select_related("post_election__election", "post_election__post")
 
         SOPNs_qs = SOPNs_qs.exclude(
-            post__in=SuggestedPostLock.objects.all().values(
+            post_election__post__in=SuggestedPostLock.objects.all().values(
                 "postextraelection__post"
             )
         )
 
         context["unlocked_sopns"] = SOPNs_qs.filter(
-            post__postextraelection__candidates_locked=False
+            post_election__candidates_locked=False
         )
 
         return context

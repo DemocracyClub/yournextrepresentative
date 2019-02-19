@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load pipeline %}
+
+{% block extra_css %}
+  {% stylesheet 'official_documents' %}
+{% endblock %}
+
+{% block hero %}
+<h1>Statement of Persons Nominated</h1>
+{% endblock %}
+
+{% block content %}
+  <h2>
+    <a href="{{ object.get_absolute_url }}">
+      {{ object.election.name }}: <br>
+      {{ object.post.label }}
+    </a>
+  </h2>
+  <p>{{ object.election.election_date }}</p>
+  {% if object.sopn %}
+    <p>This document was first published at {{ object.sopn.source_url|urlize }}. Showing the archived copy.</p>
+    <p><a href="{{ object.sopn.uploaded_file.url }}"class="button small">Download PDF</a></p>
+
+    {% if documents_with_same_source.exists and documents_with_same_source.count > 1 %}
+      <p>
+        <strong>
+        Watch out! This document contains candidate info for {{ documents_with_same_source.count }}
+        area{{ documents_with_same_source.count|pluralize }}</strong>.
+        Make sure you're looking at the right area.
+      </p>
+    {% endif %}
+
+
+    <div id="sopn-{{ object.ballot_paper_id }}" class="pdf_container"></div>
+
+
+  {% else %}
+    No SOPN uploaded for this ballot paper yet.
+  {% endif %}
+
+
+  {% if user.is_staff and user_can_upload_documents %}
+  {% url 'admin:official_documents_officialdocument_change' object.id as url %}
+  You can <a href="{{ url }}">edit this in the admin interface</a> (e.g. to delete it)
+  {% endif %}
+
+
+  {% javascript 'sopn_viewer' %}
+  <script>
+  SOPN_VIEWER.ShowSOPNInline(
+    '{{ object.sopn.uploaded_file.url }}',
+    '{{ object.ballot_paper_id }}',
+    {
+      'start_page': '{{ object.start_page }}',
+      'end_page': '{{ object.end_page }}'
+    }
+  )
+
+  </script>
+{% endblock %}

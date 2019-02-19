@@ -273,6 +273,14 @@ PIPELINE = {
             "source_filenames": ("bulk_adding/js/bulk.js",),
             "output_filename": "js/bulk_adding.js",
         },
+        "sopn_viewer": {
+            "source_filenames": (
+                "official_documents/js/pdf.js",
+                "official_documents/js/pdf.worker.js",
+                "official_documents/js/sopn_viewer.js",
+            ),
+            "output_filename": "js/sopn_viewer.js",
+        },
         "all": {
             "source_filenames": (
                 "jquery/jquery-1.11.1.js",

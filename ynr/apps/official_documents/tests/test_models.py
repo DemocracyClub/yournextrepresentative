@@ -19,17 +19,23 @@ from compat import text_type
 class TestModels(TestCase):
     def setUp(self):
         election = ElectionFactory.create(
-            slug="2015", name="2015 General Election"
+            slug="parl.2015-05-07", name="2015 General Election"
         )
         commons = ParliamentaryChamberFactory.create()
         self.post = PostFactory.create(
             elections=(election,),
             organization=commons,
-            slug="65808",
+            slug="dulwich-and-west-norwood",
             label="Member of Parliament for Dulwich and West Norwood",
         )
+        self.ballot = self.post.postextraelection_set.get()
 
     def test_unicode(self):
-        doc = OfficialDocument(post=self.post, source_url="http://example.com/")
+        doc = OfficialDocument(
+            post_election=self.ballot, source_url="http://example.com/"
+        )
 
-        self.assertEqual(text_type(doc), "65808 (http://example.com/)")
+        self.assertEqual(
+            text_type(doc),
+            "parl.dulwich-and-west-norwood.2015-05-07 (http://example.com/)",
+        )

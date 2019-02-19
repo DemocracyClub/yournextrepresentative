@@ -2,6 +2,7 @@ import os
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 
 from popolo.models import Post
 from elections.models import Election
@@ -12,18 +13,20 @@ DOCUMENT_UPLOADERS_GROUP_NAME = "Document Uploaders"
 
 
 def document_file_name(instance, filename):
-    return os.path.join("official_documents", str(instance.post_id), filename)
+    return os.path.join(
+        "official_documents",
+        str(instance.post_election.ballot_paper_id),
+        filename,
+    )
 
 
 class OfficialDocument(TimeStampedModel):
-    # TODO FK to post_election and remove the Election and Post FKs
     NOMINATION_PAPER = "Nomination paper"
 
     DOCUMENT_TYPES = (
         (NOMINATION_PAPER, _("Nomination paper"), _("Nomination papers")),
     )
 
-    election = models.ForeignKey(Election)
     document_type = models.CharField(
         blank=False,
         choices=[(d[0], d[1]) for d in DOCUMENT_TYPES],
@@ -32,7 +35,6 @@ class OfficialDocument(TimeStampedModel):
     uploaded_file = models.FileField(
         upload_to=document_file_name, max_length=800
     )
-    post = models.ForeignKey(Post, blank=True, null=True)
     post_election = models.ForeignKey(
         "candidates.PostExtraElection", null=False
     )
@@ -40,12 +42,19 @@ class OfficialDocument(TimeStampedModel):
         help_text=_("The page that links to this document"), max_length=1000
     )
 
-    def __str__(self):
-        return "{} ({})".format(self.post.slug, self.source_url)
+    class Meta:
+        get_latest_by = "modified"
 
-    @models.permalink
+    def __str__(self):
+        return "{} ({})".format(
+            self.post_election.ballot_paper_id, self.source_url
+        )
+
     def get_absolute_url(self):
-        return ("uploaded_document_view", (), {"pk": self.pk})
+        return reverse(
+            "ballot_paper_sopn",
+            kwargs={"ballot_id": self.post_election.ballot_paper_id},
+        )
 
     @property
     def locked(self):

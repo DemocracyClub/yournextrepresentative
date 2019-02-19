@@ -8,6 +8,7 @@ from elections import models as election_models
 from people.serializers import ImageSerializer
 from popolo import models as popolo_models
 from parties.serializers import MinimalPartySerializer
+from official_documents.serializers import OfficialDocumentSerializer
 
 # These are serializer classes from the Django-REST-framework API
 #
@@ -202,10 +203,12 @@ class PostElectionSerializer(serializers.HyperlinkedModelSerializer):
             "winner_count",
             "ballot_paper_id",
             "cancelled",
+            "sopn",
         )
 
     post = MinimalPostSerializer(read_only=True)
     election = MinimalElectionSerializer(read_only=True)
+    sopn = OfficialDocumentSerializer(read_only=True)
 
 
 class PersonSerializer(MinimalPersonSerializer):

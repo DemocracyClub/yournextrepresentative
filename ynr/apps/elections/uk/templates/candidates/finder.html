@@ -137,8 +137,16 @@
             {% elif action.action_type == 'entered-results-data' %}
               entered results data for
               <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.post.label }}</a>
+            {% elif action.action_type == 'sopn-upload' %}
+              uploaded <a href="{{ action.post_election.sopn.get_absolute_url }}">a SOPN</a> for
+              <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.ballot_paper_id }}</a>
             {% else %}
-              updated <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
+              {% if action.person %}
+                updated <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
+              {% elif action.post_election %}
+                updated <a href="{{ action.post_election.get_absolute_url }}">ballot {{ action.post_election.ballot_paper_id }}</a>
+              {% endif %}
+
             {% endif %}
             <span class="when">{{ action.created|timesince }} ago</span></li>
         {% endfor %}
