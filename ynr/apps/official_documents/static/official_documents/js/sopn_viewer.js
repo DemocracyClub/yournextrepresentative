@@ -112,3 +112,6 @@ var SOPN_VIEWER = (function () {
     module.ShowSOPNInline = ShowSOPNInline;
     return module;
 }());
+/* hoist SOPN_VIEWER into the global scope
+   this allows us to minify it safely */
+window.SOPN_VIEWER = SOPN_VIEWER;
