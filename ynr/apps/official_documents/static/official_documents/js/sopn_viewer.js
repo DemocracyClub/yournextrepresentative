@@ -72,7 +72,7 @@ var SOPN_VIEWER = (function () {
         google_frame.setAttribute("allowfullscreen", true);
         google_frame.className = "document_viewer";
         var url = "https://docs.google.com/viewer?url=https://candidates.democracyclub.org.uk";
-        url = url + encodeURI(sopn_url) + "&amp;embedded=true";
+        url = url + encodeURI(sopn_url) + "&embedded=true";
         google_frame.setAttribute("src", url);
         window.pdf_container.append(google_frame);
     }
