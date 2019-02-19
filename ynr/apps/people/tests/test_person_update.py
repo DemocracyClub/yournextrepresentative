@@ -34,3 +34,18 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         self.person.name = "New Name"
         self.person.record_version(get_change_metadata(None, "Nothing changed"))
         self.assertEqual(len(json.loads(self.person.versions)), 2)
+
+    def test_set_death_date(self):
+        self.assertEqual(self.person.death_date, "")
+
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        form = response.forms[1]
+        form["death_date"] = "2017-01-01"
+        form["source"] = "BBC News"
+        form.submit()
+
+        self.person.refresh_from_db()
+        self.assertEqual(self.person.death_date, "2017-01-01")

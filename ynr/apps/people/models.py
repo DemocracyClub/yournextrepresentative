@@ -391,6 +391,16 @@ class Person(Timestampable, models.Model):
         return date(approx.year, approx.month, approx.day)
 
     @property
+    def dod_as_approximate_date(self):
+        from people.helpers import parse_approximate_date
+
+        return parse_approximate_date(self.death_date)
+
+    def dod_as_date(self):
+        approx = self.dod_as_approximate_date
+        return date(approx.year, approx.month, approx.day)
+
+    @property
     def age(self):
         """Return a string representing the person's age"""
 

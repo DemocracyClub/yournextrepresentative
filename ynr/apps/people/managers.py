@@ -77,6 +77,9 @@ class PersonQuerySet(models.query.QuerySet):
         # If we get to this point, it's a non-existent field on the person:
         raise ValueError("Unknown field '{}'".format(field))
 
+    def alive_now(self):
+        return self.filter(death_date="")
+
     def joins_for_csv_output(self):
         from popolo.models import Membership
 

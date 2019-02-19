@@ -899,6 +899,9 @@ class BallotPaperView(TemplateView):
         might_stand_candidates = {
             p for p in other_candidates if election not in p.not_standing.all()
         }
+        might_stand_candidates = {
+            p for p in might_stand_candidates if p.death_date == ""
+        }
 
         not_standing_candidacies = [
             c for c in past_candidacies if c.person in not_standing_candidates

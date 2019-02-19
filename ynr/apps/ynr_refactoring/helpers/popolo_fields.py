@@ -62,6 +62,14 @@ birth_date = SimplePopoloField(
     required=False,
 )
 
+death_date = SimplePopoloField(
+    name="death_date",
+    label="Date of death (a four digit year or a full date)",
+    info_type_key="text",
+    order=7,
+    required=False,
+)
+
 biography = SimplePopoloField(
     name="biography",
     label="Biography",
@@ -76,6 +84,7 @@ simple_fields = [
     honorific_suffix,
     gender,
     birth_date,
+    death_date,
     biography,
 ]
 

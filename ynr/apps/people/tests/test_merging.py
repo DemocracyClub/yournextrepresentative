@@ -194,6 +194,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     "honorific_suffix": "",
                     "gender": "",
                     "birth_date": "",
+                    "death_date": "",
                     "biography": "",
                     "other_names": [],
                     "extra_fields": {"favourite_biscuits": ""},
