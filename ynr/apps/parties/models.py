@@ -58,6 +58,39 @@ class Party(TimeStampedModel):
     def default_emblem(self):
         return self.emblems.first()
 
+    @property
+    def as_slack_attachment(self):
+        """
+        Format this Party in a way that can be sent to `utils.slack.SlackHelper`
+
+        :return:
+        """
+
+        attachment = {
+            "title": self.name,
+            "title_link": "http://search.electoralcommission.org.uk/English/Registrations/{}".format(
+                self.ec_id
+            ),
+        }
+        if self.default_emblem:
+            attachment[
+                "image_url"
+            ] = "http://search.electoralcommission.org.uk/Api/Registrations/Emblems/{}".format(
+                self.default_emblem.ec_emblem_id
+            )
+        if self.descriptions.exists():
+
+            attachment["fields"] = [
+                {
+                    "title": "Descriptions",
+                    "value": "\n".join(
+                        [d.description for d in self.descriptions.all()]
+                    ),
+                    "short": False,
+                }
+            ]
+        return attachment
+
 
 class PartyDescription(TimeStampedModel):
     party = models.ForeignKey(

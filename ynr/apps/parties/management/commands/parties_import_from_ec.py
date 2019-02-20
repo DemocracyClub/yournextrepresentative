@@ -5,6 +5,8 @@ from django.core.management.base import BaseCommand
 from parties.importer import ECPartyImporter
 from parties.models import PartyEmblem
 
+from utils.slack import SlackHelper
+
 
 class Command(BaseCommand):
     help = """
@@ -35,6 +37,11 @@ class Command(BaseCommand):
             action="store_true",
             help="Don't make psudo-parties from joint descriptions",
         )
+        parser.add_argument(
+            "--post-to-slack",
+            action="store_true",
+            help="Post to Slack when new parties are found",
+        )
 
     def handle(self, *args, **options):
         if options["quiet"]:
@@ -61,6 +68,22 @@ class Command(BaseCommand):
             )
             for party in importer.collector:
                 self.stdout.write(str(party))
+
+            if options["post_to_slack"]:
+                client = SlackHelper()
+                if len(importer.collector) == 1:
+                    message = "A new party is born!"
+                else:
+                    message = "{} new political parties have come in to the world!".format(
+                        len(importer.collector)
+                    )
+                client.post_message(
+                    "#candidates",
+                    message_text=message,
+                    attachments=[
+                        p.as_slack_attachment for p in importer.collector
+                    ],
+                )
         else:
             self.stdout.write(
                 self.style.SUCCESS("Up do date: No new parties found")
