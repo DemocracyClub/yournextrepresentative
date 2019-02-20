@@ -77,6 +77,10 @@ class Command(BaseCommand):
                     message = "{} new political parties have come in to the world!".format(
                         len(importer.collector)
                     )
+
+                happy = client.random_happy
+                message = "{} {} {}".format(happy, message, happy)
+
                 client.post_message(
                     "#candidates",
                     message_text=message,
