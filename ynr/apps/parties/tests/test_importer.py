@@ -90,6 +90,7 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
             **{
                 "clear_emblems": True,
                 "skip_create_joint": False,
+                "post_to_slack": False,
                 "quiet": False,
                 "no_color": True,
             }
@@ -201,6 +202,7 @@ class TestECPartyImporter(TmpMediaRootMixin, TestCase):
             **{
                 "clear_emblems": False,
                 "skip_create_joint": False,
+                "post_to_slack": False,
                 "quiet": False,
             }
         )
