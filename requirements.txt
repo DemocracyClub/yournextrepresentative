@@ -65,7 +65,7 @@ pytest-django
 pytest-env
 pytest-flakes
 pytest-pep8
-python-dateutil==2.7.5
+python-dateutil==2.8.0
 python-magic==0.4.6
 python-memcached==1.59
 python-openid==2.2.5
