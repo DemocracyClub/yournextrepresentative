@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from official_documents.models import OfficialDocument
-from sopn_parsing.helpers import SOPNDocument, NoTextInDocumentError
+from sopn_parsing.helpers.pdf_helpers import NoTextInDocumentError, SOPNDocument
 
 
 class Command(BaseCommand):

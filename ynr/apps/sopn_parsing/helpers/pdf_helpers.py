@@ -1,13 +1,11 @@
 from io import StringIO
-import re
-import unicodedata
 
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 
-from sopn_parsing.helpers.text_helpers import clean_text, NoTextInDocumentError
+from sopn_parsing.helpers.text_helpers import clean_text
 
 # Used by SOPNPageText.get_page_heading
 HEADING_SIZE = 0.3
@@ -18,32 +16,6 @@ CONTINUATION_THRESHOLD = 0.4
 
 class NoTextInDocumentError(ValueError):
     pass
-
-
-def clean_text(text, recheck=True):
-    """
-    Generally clean up text to make matching and searching easier.
-    """
-    text = str(text)
-    text = text.lower()
-    text = text.replace("\xa0", " ")
-    text = unicodedata.normalize("NFD", text).encode("ascii", "ignore").decode()
-    text = text.replace("'", "")
-    text = text.replace("`", "")
-    text = text.replace(" & ", " and ")
-    text = text.replace(".", "")
-    text = text.replace(",", "")
-    text = text.replace("-y-", "y")
-    text = text.replace("\n", " ")
-    text = text.replace("\\n", " ")
-    text = re.sub("[\s]+", " ", text)
-    text = re.sub(r"(^[a-z])\s([a-z][a-z]+)", r"\1\2", text)
-    text = re.sub(r"(^[0-9])\s", r"", text)
-    text = text.replace("*", "")
-    text = text.split("(")[0].strip()
-    if recheck:
-        return clean_text(text, recheck=False)
-    return text.strip()
 
 
 class SOPNDocument:
