@@ -1,1 +1,3 @@
-camelot
+-r base.txt
+
+camelot-py[cv]

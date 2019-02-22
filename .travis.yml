@@ -10,6 +10,9 @@ python:
 addons:
   postgresql: "9.5"
 
+before_install:
+  - sudo apt-get update && sudo apt install -y python3-tk ghostscript
+
 install:
   - pip install tox coveralls tox-travis
   # Make sure pip is at the latest version:
@@ -18,6 +21,6 @@ install:
 
 script:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then black -l 80 --check . ; fi
-  - tox
+  - tox -e travis
 after_success:
   - coveralls
