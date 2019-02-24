@@ -5,17 +5,13 @@ from pdfminer.layout import LAParams
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 
-from sopn_parsing.helpers.text_helpers import clean_text
+from sopn_parsing.helpers.text_helpers import clean_text, NoTextInDocumentError
 
 # Used by SOPNPageText.get_page_heading
 HEADING_SIZE = 0.3
 
 # Used by SOPNPageText.detect_top_page
 CONTINUATION_THRESHOLD = 0.4
-
-
-class NoTextInDocumentError(ValueError):
-    pass
 
 
 class SOPNDocument:

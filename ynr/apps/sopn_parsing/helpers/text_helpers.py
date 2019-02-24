@@ -26,3 +26,7 @@ def clean_text(text, recheck=True):
     if recheck:
         return clean_text(text, recheck=False)
     return text.strip()
+
+
+class NoTextInDocumentError(ValueError):
+    pass
