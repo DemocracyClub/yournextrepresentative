@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+  <h1>{{ object.label_html }}</h1>
+  <table>
+  <thead>
+    <tr>
+      <th>Womble Name</th>
+      <th>Total Edits</th>
+      <th>Other Tags</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for womble_profile in object.wombleprofile_set.all %}
+    <tr>
+      <td><a href="{{ womble_profile.get_absolute_url }}">{{ womble_profile.user }}</a></td>
+      <td>{{ womble_profile.user.loggedaction_set.count|intcomma }}</td>
+      <td>
+        {% for tag in womble_profile.tags.all %}
+          {% if tag.label != object.label %}
+            <a href="{{ tag.get_absolute_url }}" class="womble_tag {{ tag.label }}">{{ tag.label_html }}</a>
+          {% endif %}
+        {% endfor %}
+  </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+
+  </table>
+
+{% endblock %}

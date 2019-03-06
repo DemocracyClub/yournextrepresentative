@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Womble Tags</h1>
+  <ul>
+  {% for tag in object_list %}
+    <li><a href="{{ tag.get_absolute_url }}" class="womble_tag {{ tag.label }}">{{ tag.label_emoji }}</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}
