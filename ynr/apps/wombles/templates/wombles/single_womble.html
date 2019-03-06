@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+  <h1>Womble {{ object }}</h1>
+  <p>
+  {% for tag in object.womble_profile.tags.all %}
+    <a href="{{ tag.get_absolute_url }}" class="womble_tag {{ tag.label }}">{{ tag.label_emoji }}</a>
+  {% endfor %}
+  </p>
+  <p>Joined {{ object.date_joined|date }}, {{ object.loggedaction_set.count|intcomma }} edits</p>
+
+
+
+  <h3>Edits over time</h3>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+
+        var data = google.visualization.arrayToDataTable([
+         ['Date', 'Edits'],
+          {% for day in edits_over_time %}
+          ['{{ day.0|date:"Y-m-d" }}', {{ day.1|default_if_none:0}}],
+          {% endfor %}
+
+
+        ]);
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+        chart.draw(
+            data,
+            {
+                width: 1000,
+                height: 200,
+                showAxisLines: false,
+                showValueLabels: false,
+                textPosition: 'none',
+                labelPosition: "none",
+                legend :'none',
+                colors: ['#EC008C', '#009bd6'],
+                annotations: {'2018-04-09': {style: 'line'}},
+                hAxis: { textPosition: 'none' }
+            }
+
+        );
+      }
+    </script>
+  <style>
+  .google-visualization-sparkline-default {
+    border:0;
+  }
+  </style>
+  <div id="chart_div" style="width: 400px; height: 200px; border:0"></div>
+
+  <h3>Latest edits</h3>
+  <table>
+  <tr>
+    <td>Object</td>
+    <td>Action</td>
+    <td>Source</td>
+  </tr>
+  {% for la in object.loggedaction_set.all|slice:"0:3" %}
+    <tr>
+      <td>
+        {% if la.person %}
+          <a href="{{ la.person.get_absolute_url }}">{{ la.person }}</a>
+          {% else %}
+          <a href="{{ la.post_election.get_absolute_url }}">{{ la.post_election }}</a>
+        {% endif %}
+      </td>
+      <td>{{ la.action_type }}</td>
+      <td>{{ la.source }}</td>
+    </tr>
+
+  {% endfor %}
+  </table>
+
+
+{% endblock %}
