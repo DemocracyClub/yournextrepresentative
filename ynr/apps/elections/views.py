@@ -966,7 +966,12 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
     def form_valid(self, form):
         with transaction.atomic():
             pee = form.instance
+
             self.object = form.save()
+            if hasattr(pee, "rawballotinput"):
+                # Delete the raw import, as it's no longer useful
+                self.object.rawballotinput.delete()
+
             lock = self.object.candidates_locked
             post_name = pee.post.short_label
             if lock:
