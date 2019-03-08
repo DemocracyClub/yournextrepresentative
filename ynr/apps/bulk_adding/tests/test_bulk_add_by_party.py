@@ -124,10 +124,6 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms[1]
 
-        # Test that the form raises and error if nothing is selected
-        response = form.submit()
-        self.assertContains(response, "This field is required.")
-
         # Now submit the valid form
         with self.assertNumQueries(46):
             form["{}-0-select_person".format(pee.pk)] = "_new"

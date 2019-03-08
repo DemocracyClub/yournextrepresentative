@@ -55,28 +55,24 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         Turn the whole form in to a value string
         """
         name = suggestion.name
+        suggestion_dict = {"name": name, "object": suggestion.object}
 
-        candidacy = (
-            suggestion.object.memberships.select_related(
-                "post", "party", "post_election__election"
-            )
-            .order_by("-post_election__election__election_date")
-            .first()
-        )
-        if candidacy:
-            name = """
-                <strong>{name}</strong>
-                    (previously stood in {post} in the {election} as a
-                    {party} candidate)
-                    """.format(
-                name=name,
+        candidacies = suggestion.object.memberships.select_related(
+            "post", "party", "post_election__election"
+        ).order_by("-post_election__election__election_date")[:3]
+
+        if candidacies:
+            suggestion_dict["previous_candidacies"] = []
+
+        for candidacy in candidacies:
+            text = """{election}: {post} – {party}""".format(
                 post=candidacy.post.short_label,
                 election=candidacy.post_election.election.name,
                 party=candidacy.party.name,
             )
-            name = SafeText(name)
+            suggestion_dict["previous_candidacies"].append(SafeText(text))
 
-        return [suggestion.pk, name]
+        return [suggestion.pk, suggestion_dict]
 
     def add_fields(self, form, index):
         super().add_fields(form, index)
@@ -92,6 +88,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         form.fields["select_person"] = forms.ChoiceField(
             choices=CHOICES, widget=forms.RadioSelect()
         )
+        form.fields["select_person"].initial = "_new"
 
         if hasattr(self, "parties"):
             form.fields["party"] = forms.ChoiceField(

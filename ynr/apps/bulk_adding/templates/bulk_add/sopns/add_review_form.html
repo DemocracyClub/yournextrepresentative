@@ -1,8 +1,18 @@
 {% extends "base.html" %}
+{% load pipeline %}
 
 {% block title %}Add candidates from nomination paper{% endblock %}
 
+{% block extra_css %}
+{% stylesheet 'bulk_adding' %}
+{% endblock %}
+
 {% block content %}
+<h1>{{ election_obj.name }}: {{ post.label }}</h1>
+<h2>Review candidates</h2>
+<p>We might already have a profile for some of these candidates from previous elections.</p>
+<p>If you think someone has stood before, please select them from the tables below. If in doubt,
+  just select "create a new person".</p>
 
 <form method=POST>
   {% csrf_token %}
@@ -10,53 +20,65 @@
 
   {% for form in formset %}
     {% if form.name.value %}
-      <h2 style="clear:left;">Candidate: {{ form.name.value }}</h2>
-      <h4><em>“{{ form.party_description.value }}”</em></h4>
-      {% if form.select_person.1 %}
-      <p>Some similar names have been found in our database. </p>
-          <p>If you're sure this is a new candidate, please select 'Add {{ form.name.value }} as a new person'.
-          Otherwise, please check the similar names, and if it is the same person, select their name instead. The system will update them with the new candidacy.</p>
-      {% endif %}
-      {% for choice in form.select_person %}
-          <label for="{{ choice.id_for_label }}" style="font-size:1em;clear:both;margin-bottom:0.5em">
-            <div style="display:block;float:left;width:3em">
-                {{ choice.tag }}
-            </div>
-            {% if choice.data.value != '_new' %}
-            <div>
-                Set <a href="{% url 'person-view' choice.data.value %}" target="_blank">
-                {% if choice.choice_label == form.name.value %}
-                <strong>
-                {% endif %}
+      <div>
 
-                {{ choice.choice_label }}</a>
-                {% if choice.choice_label == form.name.value %}
-                </strong>
-                {% endif %}
+        <h3 style="clear:left;">{{ form.name.value }}</h3>
+        <h4><em>“{{ form.party_description.value }}”</em></h4>
+        <table class="sopn_adding_suggestions_table">
+          <thead>
+            <th>Action</th>
+            <th>Recent previous candidacies</th>
+          </thead>
+          <tbody>
+            {% for choice in form.select_person %}
+              <tr {% if choice.data.value == '_new' %}class="selected_action"{% endif %}>
+                <td class="multiple-choice" style="margin-left:1em">
+                  {{ choice.tag }}
+                  {% if choice.data.value == '_new' %}
+                    <label>Add a new profile "{{ form.name.value }}"</label>
+                  {% else %}
+                    <label>Same as
+                      <a href="{{ choice.choice_label.object.get_absolute_url }}"
+                         target="_blank">{{ choice.choice_label.name }}</a></label>
+                  {% endif %}
+                </td>
+                <td>
+                  {% for candidacy in choice.choice_label.previous_candidacies %}
+                    <li>{{ candidacy }}</li>
+                  {% endfor %}
 
-                 as standing in {{ election_obj.name }}: {{ post.label }}
-            </div>
-            {% else %}
-            <div>
-                Add <strong>{{ form.name.value }}</strong> as a new person
-            </div>
-            {% endif %}
-           </label>
-           {{ form.name }}
-           {{ form.source }}
-           {{ form.party }}
-      {% endfor %}
+                </td>
+              </tr>
+                 {{ form.name }}
+                 {{ form.source }}
+                 {{ form.party }}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     {% endif %}
-
   {% endfor %}
 
   <p style="clear:left; padding-top:1em">
-    <input type="checkbox" name="suggest_locking" id="suggest_locking">
+    <input type="checkbox" name="suggest_locking" id="suggest_locking" checked>
     <label for="suggest_locking">Suggest locking this area – check this box if you
       are confident that this area is complete as per an official document</label>
   </p>
   <button type=submit>Next</button>
 </form>
+
+  <script>
+  $('.sopn_adding_suggestions_table tr').click(function() {
+      var row = $(this);
+    $("tr").removeClass("selected_action", function() {
+        row.addClass("selected_action");
+        row.find('td input[type=radio]').prop('checked', true);
+    });
+
+
+  });
+
+  </script>
 
 {% endblock content %}
 

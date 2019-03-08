@@ -38,3 +38,12 @@
         }
     }
 }
+
+.sopn_adding_suggestions_table {
+    td {
+        vertical-align: top;
+    }
+    tr.selected_action {
+        background-color: #fdf2d5;
+    }
+}
