@@ -7,6 +7,7 @@ import people.tests.factories
 from popolo.models import Membership
 from people.models import Person
 
+from bulk_adding.models import RawBallotInput
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.test_update_view import membership_id_set
@@ -88,7 +89,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(45):
+        with self.assertNumQueries(46):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -135,6 +136,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["form-0-party"] = self.green_party.ec_id
 
         response = form.submit()
+        self.assertEqual(RawBallotInput.objects.count(), 1)
         self.assertEqual(response.status_code, 302)
         # This takes us to a page with a radio button for adding them
         # as a new person or alternative radio buttons if any

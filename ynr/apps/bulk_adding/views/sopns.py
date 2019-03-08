@@ -1,21 +1,23 @@
+import json
+
 from braces.views import LoginRequiredMixin
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import F
 from django.http import HttpResponseRedirect
-from django.utils.text import slugify
 from django.views.generic import RedirectView, TemplateView
-from popolo.models import Post
-from people.models import Person
-from parties.models import Party
 
 from bulk_adding import forms, helpers
+from bulk_adding.models import RawBallotInput
 from candidates.models import PostExtraElection
 from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
 from official_documents.views import get_add_from_document_cta_flash_message
+from parties.models import Party
+from people.models import Person
+from popolo.models import Post
 
 
 class BulkAddSOPNRedirectView(RedirectView):
@@ -106,7 +108,32 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
         return context
 
     def form_valid(self, context):
-        self.request.session["bulk_add_data"] = context["formset"].cleaned_data
+        raw_ballot_data = []
+        for form_data in context["formset"].cleaned_data:
+            if not form_data:
+                continue
+            if "__" in form_data["party"]:
+                party_id, description_id = form_data["party"].split("__")
+            else:
+                party_id = form_data["party"]
+                description_id = None
+
+            raw_ballot_data.append(
+                {
+                    "name": form_data["name"],
+                    "party_id": party_id,
+                    "description_id": description_id,
+                }
+            )
+
+        RawBallotInput.objects.update_or_create(
+            ballot=context["post_election"],
+            defaults={
+                "data": json.dumps(raw_ballot_data),
+                "source": context["official_document"].source_url,
+            },
+        )
+
         return HttpResponseRedirect(
             reverse(
                 "bulk_add_sopn_review",
@@ -129,18 +156,22 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
         context.update(self.add_election_and_post_to_context(context))
 
         initial = []
+        raw_ballot = context["post_election"].rawballotinput
+        raw_data = json.loads(raw_ballot.data)
 
-        for form in self.request.session["bulk_add_data"]:
-            if form:
-                if "__" in form["party"]:
-                    party_id, description_id = form["party"].split("__")
-                    party = Party.objects.get(ec_id=party_id)
-                    desc = party.descriptions.get(pk=description_id)
-                else:
-                    desc = Party.objects.get(ec_id=form["party"]).name
-
-                form["party_description"] = desc
-                initial.append(form)
+        for candidacy in raw_data:
+            form = {}
+            party = Party.objects.get(ec_id=candidacy["party_id"])
+            if candidacy.get("description_id"):
+                form["party_description"] = party.descriptions.get(
+                    pk=candidacy["description_id"]
+                ).description
+            else:
+                form["party_description"] = party.name
+            form["name"] = candidacy["name"]
+            form["party"] = party.ec_id
+            form["source"] = context["official_document"].source_url
+            initial.append(form)
 
         if self.request.POST:
             context["formset"] = forms.BulkAddReviewFormSet(
@@ -162,7 +193,6 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     person = helpers.add_person(self.request, data)
                 else:
                     person = Person.objects.get(pk=int(data["select_person"]))
-
                 helpers.update_person(
                     self.request,
                     person,
