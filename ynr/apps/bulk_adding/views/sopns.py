@@ -131,6 +131,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             defaults={
                 "data": json.dumps(raw_ballot_data),
                 "source": context["official_document"].source_url,
+                "source_type": RawBallotInput.SOURCE_BULK_ADD_FORM,
             },
         )
 

@@ -28,9 +28,24 @@ class RawBallotInput(TimeStampedModel):
 
     """
 
+    SOURCE_COUNCIL_CSV = "council_csv"
+    SOURCE_BULK_ADD_FORM = "bulk_add_form"
+
+    SOURCE_TYPES = (
+        (SOURCE_BULK_ADD_FORM, "Bulk Add form"),
+        (SOURCE_COUNCIL_CSV, "Council CSV"),
+    )
+
+    # Sources that we trust enough to just review, not ask a user
+    # to edit (edit option always there)
+    TRUSTED_SOURCES = (SOURCE_COUNCIL_CSV, SOURCE_BULK_ADD_FORM)
+
     ballot = models.OneToOneField("candidates.PostExtraElection")
     data = models.TextField()
     source = models.CharField(max_length=255)
+    source_type = models.CharField(
+        choices=SOURCE_TYPES, default=SOURCE_BULK_ADD_FORM, max_length=255
+    )
 
     def __str__(self):
         return "{} ({})".format(self.ballot.ballot_paper_id, self.source)

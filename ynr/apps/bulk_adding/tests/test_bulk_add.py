@@ -137,6 +137,10 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         response = form.submit()
         self.assertEqual(RawBallotInput.objects.count(), 1)
+        self.assertEqual(
+            RawBallotInput.objects.get().source_type,
+            RawBallotInput.SOURCE_BULK_ADD_FORM,
+        )
         self.assertEqual(response.status_code, 302)
         # This takes us to a page with a radio button for adding them
         # as a new person or alternative radio buttons if any
