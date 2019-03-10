@@ -109,6 +109,12 @@ class NameOnlyPersonForm(forms.Form):
 class QuickAddSinglePersonForm(NameOnlyPersonForm):
     source = forms.CharField(required=True)
 
+    def has_changed(self, *args, **kwargs):
+        if self.changed_data == ["source"] and not self["name"].data:
+            return False
+        else:
+            return super().has_changed(*args, **kwargs)
+
 
 class ReviewSinglePersonNameOnlyForm(forms.Form):
     name = forms.CharField(

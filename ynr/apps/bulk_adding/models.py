@@ -1,3 +1,5 @@
+import json
+
 from django.db import models
 from model_utils.models import TimeStampedModel
 
@@ -49,3 +51,28 @@ class RawBallotInput(TimeStampedModel):
 
     def __str__(self):
         return "{} ({})".format(self.ballot.ballot_paper_id, self.source)
+
+    def as_form_kwargs(self):
+        """
+        Returns a list of dicts designed for populating the BulkAddFormSet's
+        initial values
+
+        """
+        if not self.data:
+            return {}
+        initial = []
+        for candidacy in json.loads(self.data):
+            if candidacy.get("description_id"):
+                party = "{}__{}".format(
+                    candidacy["party_id"], candidacy["description_id"]
+                )
+            else:
+                party = candidacy["party_id"]
+            initial.append(
+                {
+                    "name": candidacy["name"],
+                    "party": party,
+                    "source": self.source,
+                }
+            )
+        return {"initial": initial}

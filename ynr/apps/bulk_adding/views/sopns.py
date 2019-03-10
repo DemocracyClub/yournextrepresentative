@@ -80,6 +80,11 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             "party_set": context["post"].party_set,
         }
 
+        if hasattr(context["post_election"], "rawballotinput"):
+            form_kwargs.update(
+                context["post_election"].rawballotinput.as_form_kwargs()
+            )
+
         if (
             "official_document" in context
             and context["official_document"] is not None
