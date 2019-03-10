@@ -128,7 +128,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:
         response = self.app.get(
-            "/bulk_adding/sopn/parl.2015-05-07/65808/", user=self.user
+            "/bulk_adding/sopn/parl.2015-05-07/65808/?edit=1", user=self.user
         )
 
         form = response.forms["bulk_add_form"]
@@ -268,3 +268,21 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         self.assertEqual(response.status_code, 302)
+
+    def test_redirect_to_review_form(self):
+        RawBallotInput.objects.create(
+            ballot=self.dulwich_post_pee,
+            data="""
+            [{"name": "Bart", "party_id": "PP52"}]
+            """,
+        )
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.2015-05-07/65808/", user=self.user
+        )
+        self.assertEqual(response.status_code, 302)
+        response.forms
+
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.2015-05-07/65808/?edit=1", user=self.user
+        )
+        self.assertEqual(response.status_code, 200)

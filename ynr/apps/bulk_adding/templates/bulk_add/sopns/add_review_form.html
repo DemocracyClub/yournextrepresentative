@@ -10,10 +10,13 @@
 {% block content %}
 <h1>{{ election_obj.name }}: {{ post.label }}</h1>
 <h2>Review candidates</h2>
+  {% if official_document %}
+  <a href="{{ official_document.get_absolute_url }}" target="_blank" class="button tiny">Nomination paper (SoPN)</a>
+  {% endif %}
 <p>We might already have a profile for some of these candidates from previous elections.</p>
 <p>If you think someone has stood before, please select them from the tables below. If in doubt,
   just select "create a new person".</p>
-
+<p>Alternatively you can <a href="{% url "bulk_add_from_sopn" election post.slug %}?edit=1">edit these candidates</a>.</p>
 <form method=POST>
   {% csrf_token %}
   {{ formset.management_form }}
@@ -24,7 +27,7 @@
 
         <h3 style="clear:left;">{{ form.name.value }}</h3>
         <h4><em>“{{ form.party_description.value }}”</em></h4>
-        <table class="sopn_adding_suggestions_table">
+        <table class="table sopn_adding_suggestions_table">
           <thead>
             <th>Action</th>
             <th>Recent previous candidacies</th>

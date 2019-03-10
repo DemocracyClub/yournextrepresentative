@@ -71,6 +71,18 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
 class BulkAddSOPNView(BaseSOPNBulkAddView):
     template_name = "bulk_add/sopns/add_form.html"
 
+    def get(self, request, *args, **kwargs):
+        if not request.GET.get("edit"):
+            pee = PostExtraElection.objects.filter(
+                election__slug=kwargs["election"], post__slug=kwargs["post_id"]
+            )
+            if pee.exists():
+                if hasattr(pee.get(), "rawballotinput"):
+                    return HttpResponseRedirect(
+                        reverse("bulk_add_sopn_review", kwargs=kwargs)
+                    )
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(self.add_election_and_post_to_context(context))
