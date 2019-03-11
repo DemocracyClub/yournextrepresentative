@@ -73,14 +73,16 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
 
     def get(self, request, *args, **kwargs):
         if not request.GET.get("edit"):
-            pee = PostExtraElection.objects.filter(
+            pee_qs = PostExtraElection.objects.filter(
                 election__slug=kwargs["election"], post__slug=kwargs["post_id"]
             )
-            if pee.exists():
-                if hasattr(pee.get(), "rawballotinput"):
-                    return HttpResponseRedirect(
-                        reverse("bulk_add_sopn_review", kwargs=kwargs)
-                    )
+            if pee_qs.exists():
+                pee = pee_qs.get()
+                if hasattr(pee_qs.get(), "rawballotinput"):
+                    if pee.rawballotinput.is_trusted:
+                        return HttpResponseRedirect(
+                            reverse("bulk_add_sopn_review", kwargs=kwargs)
+                        )
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

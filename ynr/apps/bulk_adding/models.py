@@ -76,3 +76,7 @@ class RawBallotInput(TimeStampedModel):
                 }
             )
         return {"initial": initial}
+
+    @property
+    def is_trusted(self):
+        return self.source_type in self.TRUSTED_SOURCES
