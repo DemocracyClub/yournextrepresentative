@@ -13,6 +13,15 @@
   {% if official_document %}
   <a href="{{ official_document.get_absolute_url }}" target="_blank" class="button tiny">Nomination paper (SoPN)</a>
   {% endif %}
+  {% if post_election.rawballotinput.source_type == "council_csv" %}
+    <div class="panel">
+    <h4>Good news!</h4>
+    <p>This candidate data below has been provided to us by the council directly. This means we trust it to
+    be correct, but it still needs checking to see if the candidates have stood in the
+    past, and to make sure the names are correctly formatted.</p>
+    </div>
+
+  {% endif %}
 <p>We might already have a profile for some of these candidates from previous elections.</p>
 <p>If you think someone has stood before, please select them from the tables below. If in doubt,
   just select "create a new person".</p>
