@@ -304,6 +304,14 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
                 new_name,
                 new_candidacies,
             )
+            if old_name != new_name:
+                person.other_names.update_or_create(
+                    name=old_name,
+                    defaults={
+                        "note": "Added when main name changed on person edit form"
+                    },
+                )
+
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data.pop("source")
             )

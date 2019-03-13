@@ -49,3 +49,16 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
 
         self.person.refresh_from_db()
         self.assertEqual(self.person.death_date, "2017-01-01")
+
+    def change_name_creates_other_names(self):
+        self.assertFalse(self.person.other_names.exists())
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        form = response.forms[1]
+        form["name"] = "Tessa Palmer"
+        form["source"] = "Mumsnet"
+        form.submit()
+        self.assertEqual(self.person.other_names.first().name, "Tessa Jowell")
+        self.assertEqual(self.person.name, "Tessa Palmer")
