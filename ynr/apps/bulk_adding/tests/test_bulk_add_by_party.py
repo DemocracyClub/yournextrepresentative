@@ -1,9 +1,13 @@
+from django.test.utils import override_settings
 from django.core.management import call_command
 from django_webtest import WebTest
 
 from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+
+from candidates.tests.factories import MembershipFactory
+from people.tests.factories import PersonFactory
 
 
 class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -27,6 +31,24 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["party_GB"] = ""
         response = form.submit()
         self.assertContains(response, "Select one and only one party")
+
+    @override_settings(CANDIDATES_REQUIRED_FOR_WEIGHTED_PARTY_LIST=0)
+    def test_party_select_non_current_party(self):
+        self.person = PersonFactory.create(id=2009, name="Tessa Jowell")
+        MembershipFactory.create(
+            person=self.person,
+            post=self.dulwich_post,
+            party=self.labour_party,
+            post_election=self.dulwich_post_pee,
+        )
+
+        form = self.app.get(
+            "/bulk_adding/party/parl.2015-05-07/",
+            user=self.user_who_can_upload_documents,
+        ).forms[1]
+        form["party_GB"].force_value("PP63")
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
 
     def test_submit_party_redirects_to_person_form(self):
         form = self.app.get(

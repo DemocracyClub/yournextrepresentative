@@ -142,6 +142,19 @@ BulkAddReviewFormSet = forms.formset_factory(
 )
 
 
+class SelectAnythingChoiceField(forms.ChoiceField):
+    """
+    Because we don't always show all parties on the initial page load (we
+    leave JavaScript to add the non-current parties sometimes), we need to
+    ignore any input value for this field type. The next page will
+    raise a 404 if the party isn't actually found, so there's no problem with
+    ignoring validation here.
+    """
+
+    def validate(self, value):
+        return True
+
+
 class BulkAddByPartyFormset(forms.BaseFormSet):
     pass
 
@@ -162,7 +175,9 @@ class SelectPartyForm(forms.Form):
 
         registers = set([p.upper() for p in party_set_qs])
         for register in registers:
-            self.fields["party_{}".format(register)] = forms.ChoiceField(
+            self.fields[
+                "party_{}".format(register)
+            ] = SelectAnythingChoiceField(
                 required=False,
                 choices=Party.objects.register(register).party_choices(
                     exclude_deregistered=True,
@@ -184,6 +199,7 @@ class SelectPartyForm(forms.Form):
         if not len([v for v in form_data.values() if v]) == 1:
             self.cleaned_data = {}
             raise forms.ValidationError("Select one and only one party")
+
         form_data["party"] = [v for v in form_data.values() if v][0]
 
 
