@@ -173,26 +173,6 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
         return Response(results)
 
 
-class CurrentElectionsView(View):
-    http_method_names = ["get"]
-
-    def get(self, request, *args, **kwargs):
-        results = {}
-        for election in Election.objects.filter(current=True).order_by("id"):
-            results[election.slug] = {
-                "election_date": text_type(election.election_date),
-                "name": election.name,
-                "url": reverse(
-                    "election-detail",
-                    kwargs={"version": "v0.9", "slug": election.slug},
-                ),
-            }
-
-        res = HttpResponse(json.dumps(results), content_type="application/json")
-        res["Expires"] = date.today() + timedelta(days=7)
-        return res
-
-
 class VersionView(View):
 
     http_method_names = ["get"]
