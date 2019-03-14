@@ -1,7 +1,9 @@
 import json
 
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 from model_utils.models import TimeStampedModel
+
 
 TRUSTED_TO_BULK_ADD_GROUP_NAME = "Trusted to bulk add"
 
@@ -43,7 +45,7 @@ class RawPeople(TimeStampedModel):
     TRUSTED_SOURCES = (SOURCE_COUNCIL_CSV, SOURCE_BULK_ADD_FORM)
 
     ballot = models.OneToOneField("candidates.PostExtraElection")
-    data = models.TextField()
+    data = JSONField()
     source = models.CharField(max_length=255)
     source_type = models.CharField(
         choices=SOURCE_TYPES, default=SOURCE_BULK_ADD_FORM, max_length=255
@@ -61,7 +63,7 @@ class RawPeople(TimeStampedModel):
         if not self.data:
             return {}
         initial = []
-        for candidacy in json.loads(self.data):
+        for candidacy in self.data:
             if candidacy.get("description_id"):
                 party = "{}__{}".format(
                     candidacy["party_id"], candidacy["description_id"]

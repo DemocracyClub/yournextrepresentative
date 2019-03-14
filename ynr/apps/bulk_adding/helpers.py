@@ -196,7 +196,7 @@ class CSVImporter:
             RawPeople.objects.update_or_create(
                 ballot=ballot_dict["ballot"],
                 defaults={
-                    "data": json.dumps(ballot_dict["data"]),
+                    "data": ballot_dict["data"],
                     "source": "CSV from Council",
                     "source_type": RawPeople.SOURCE_COUNCIL_CSV,
                 },

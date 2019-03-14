@@ -148,7 +148,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
         RawPeople.objects.update_or_create(
             ballot=context["post_election"],
             defaults={
-                "data": json.dumps(raw_ballot_data),
+                "data": raw_ballot_data,
                 "source": context["official_document"].source_url,
                 "source_type": RawPeople.SOURCE_BULK_ADD_FORM,
             },
@@ -177,9 +177,8 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
 
         initial = []
         raw_ballot = context["post_election"].rawpeople
-        raw_data = json.loads(raw_ballot.data)
 
-        for candidacy in raw_data:
+        for candidacy in raw_ballot.data:
             form = {}
             party = Party.objects.get(ec_id=candidacy["party_id"])
             if candidacy.get("description_id"):

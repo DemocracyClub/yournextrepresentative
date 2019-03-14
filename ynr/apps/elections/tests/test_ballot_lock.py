@@ -68,7 +68,7 @@ class TestConstituencyLockAndUnlock(
         self.assertEqual(False, postextraelection.candidates_locked)
 
         # Create a RawInput model
-        RawPeople.objects.create(ballot=postextraelection)
+        RawPeople.objects.create(ballot=postextraelection, data={})
 
         self.app.get(
             self.dulwich_post_pee.get_absolute_url(),
