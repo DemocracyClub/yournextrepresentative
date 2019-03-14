@@ -98,6 +98,7 @@ class CSVImporter:
         for label in POST_LABELS:
             if label in self.header_rows:
                 return label
+        raise ValueError("No post header matched")
 
     @property
     def party_description_header_name(self):
@@ -105,12 +106,14 @@ class CSVImporter:
         for description_field in DESCRIPTION_FIELDS:
             if description_field in self.header_rows:
                 return description_field
+        raise ValueError("No party description header matched")
 
     def match_division_to_ballot(self, row):
         post_name = row[self.post_header_name]
         for ballot in self.election.postextraelection_set.all():
             if ballot.post.label == post_name:
                 return ballot
+        raise ValueError("No ballot matched to {}".format(post_name))
 
     def format_name(self, row):
         FULL_NAME_FIELDS = ["Ballot Paper Name"]
@@ -127,8 +130,10 @@ class CSVImporter:
             for name_field in name_part:
                 if name_field in self.header_rows:
                     name.append(row[name_field])
+        if name:
+            return " ".join(name)
 
-        return " ".join(name)
+        raise ValueError("Blank name")
 
     def get_party_description(self, row):
         desc = row[self.party_description_header_name]
