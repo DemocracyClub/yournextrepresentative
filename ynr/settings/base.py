@@ -178,7 +178,7 @@ ACCOUNT_FORMS = {
     "login": "ynr.forms.CustomLoginForm",
     "signup": "ynr.forms.CustomSignupForm",
 }
-
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_USERNAME_VALIDATORS = "ynr.helpers.allauth_validators"
 SOCIALACCOUNT_AUTO_SIGNUP = True
