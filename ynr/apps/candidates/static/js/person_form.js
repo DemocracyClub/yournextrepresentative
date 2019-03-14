@@ -216,7 +216,7 @@ function updateFields() {
    page, if the dynamic "add new election" button is being used. */
 
 function showElectionsForm() {
-  $.getJSON("/api/current-elections/").done(function( data ) {
+  $.getJSON("/api/current-elections/?future=1").done(function( data ) {
     var select_data = $.map(data, function(obj, key) {
       return { id: key, text: obj.name + ' (' + obj.election_date + ')' };
     })

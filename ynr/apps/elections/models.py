@@ -7,11 +7,15 @@ from django.db import connection
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 
 
 class ElectionQuerySet(models.QuerySet):
     def current(self, current=True):
         return self.filter(current=current)
+
+    def future(self):
+        return self.filter(election_date__gt=timezone.now())
 
     def get_by_slug(self, election):
         return get_object_or_404(self, slug=election)

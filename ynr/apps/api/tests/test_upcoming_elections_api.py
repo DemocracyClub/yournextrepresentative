@@ -234,3 +234,22 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
         ]
 
         self.assertEqual(expected, output)
+
+
+class TestCurrentElections(UK2015ExamplesMixin, WebTest):
+    def test_future_flag(self):
+        # Make the earlier election current
+        self.earlier_election.current = True
+        self.earlier_election.save()
+        req = self.app.get("/api/current-elections/")
+        self.assertSetEqual(
+            set(req.json.keys()),
+            {
+                "parl.2015-05-07",
+                "parl.2010-05-06",
+                "local.maidstone.2016-05-05",
+            },
+        )
+
+        req = self.app.get("/api/current-elections/?future=1")
+        self.assertSetEqual(set(req.json.keys()), {"parl.2015-05-07"})

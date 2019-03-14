@@ -178,7 +178,10 @@ class CurrentElectionsView(View):
 
     def get(self, request, *args, **kwargs):
         results = {}
-        for election in Election.objects.filter(current=True).order_by("id"):
+        qs = Election.objects.filter(current=True).order_by("id")
+        if request.GET.get("future"):
+            qs = qs.future()
+        for election in qs:
             results[election.slug] = {
                 "election_date": text_type(election.election_date),
                 "name": election.name,
