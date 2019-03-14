@@ -106,7 +106,7 @@
   {% endif %}
   {% csrf_token %}
   {{ formset.management_form }}
-  <table class="table">
+  <table class="table sopn_adding_table">
     {% for form in formset %}
       {{ form.source }}
       <thead>
