@@ -12,8 +12,8 @@ class Command(BaseCommand):
         parser.add_argument("--election", action="store", required=True)
 
     def handle(self, *args, **options):
-        ballot = Election.objects.get(slug=options["election"])
+        election = Election.objects.get(slug=options["election"])
 
-        importer = CSVImporter(options["file"], ballot)
+        importer = CSVImporter(options["file"], election)
 
         importer.extract()
