@@ -162,7 +162,6 @@ class CSVImporter:
             .get(name=row[self.party_description_header_name])
             .ec_id
         )
-        # return self._get_party_description(row).party.ec_id
 
     def validate_posts(self):
         """
