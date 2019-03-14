@@ -7,7 +7,7 @@ import people.tests.factories
 from popolo.models import Membership
 from people.models import Person
 
-from bulk_adding.models import RawBallotInput
+from bulk_adding.models import RawPeople
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.test_update_view import membership_id_set
@@ -136,10 +136,9 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["form-0-party"] = self.green_party.ec_id
 
         response = form.submit()
-        self.assertEqual(RawBallotInput.objects.count(), 1)
+        self.assertEqual(RawPeople.objects.count(), 1)
         self.assertEqual(
-            RawBallotInput.objects.get().source_type,
-            RawBallotInput.SOURCE_BULK_ADD_FORM,
+            RawPeople.objects.get().source_type, RawPeople.SOURCE_BULK_ADD_FORM
         )
         self.assertEqual(response.status_code, 302)
         # This takes us to a page with a radio button for adding them
@@ -270,7 +269,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 302)
 
     def test_redirect_to_review_form(self):
-        RawBallotInput.objects.create(
+        RawPeople.objects.create(
             ballot=self.dulwich_post_pee,
             data="""
             [{"name": "Bart", "party_id": "PP52"}]

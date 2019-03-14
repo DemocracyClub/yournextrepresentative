@@ -7,11 +7,11 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [("bulk_adding", "0002_rawballotinput")]
+    dependencies = [("bulk_adding", "0002_rawpeople")]
 
     operations = [
         migrations.AddField(
-            model_name="rawballotinput",
+            model_name="rawpeople",
             name="source_type",
             field=models.CharField(
                 choices=[

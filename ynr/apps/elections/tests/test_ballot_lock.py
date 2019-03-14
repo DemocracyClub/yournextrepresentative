@@ -5,7 +5,7 @@ from people.models import Person
 
 from popolo.models import Post
 
-from bulk_adding.models import RawBallotInput
+from bulk_adding.models import RawPeople
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from people.tests.factories import PersonFactory
@@ -68,7 +68,7 @@ class TestConstituencyLockAndUnlock(
         self.assertEqual(False, postextraelection.candidates_locked)
 
         # Create a RawInput model
-        RawBallotInput.objects.create(ballot=postextraelection)
+        RawPeople.objects.create(ballot=postextraelection)
 
         self.app.get(
             self.dulwich_post_pee.get_absolute_url(),
@@ -90,8 +90,8 @@ class TestConstituencyLockAndUnlock(
         )
 
         self.assertEqual(True, postextraelection.candidates_locked)
-        self.assertFalse(RawBallotInput.objects.exists())
-        self.assertFalse(hasattr(postextraelection, "rawballotinput"))
+        self.assertFalse(RawPeople.objects.exists())
+        self.assertFalse(hasattr(postextraelection, "rawpeople"))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location, self.dulwich_post_pee.get_absolute_url()

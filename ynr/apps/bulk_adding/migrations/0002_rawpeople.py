@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="RawBallotInput",
+            name="RawPeople",
             fields=[
                 (
                     "id",

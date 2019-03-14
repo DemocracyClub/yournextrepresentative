@@ -6,7 +6,7 @@ from model_utils.models import TimeStampedModel
 TRUSTED_TO_BULK_ADD_GROUP_NAME = "Trusted to bulk add"
 
 
-class RawBallotInput(TimeStampedModel):
+class RawPeople(TimeStampedModel):
     """
     Store a JSON representation of a ballot.
 

@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import RedirectView, TemplateView
 
 from bulk_adding import forms, helpers
-from bulk_adding.models import RawBallotInput
+from bulk_adding.models import RawPeople
 from candidates.models import PostExtraElection
 from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
@@ -78,8 +78,8 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             )
             if pee_qs.exists():
                 pee = pee_qs.get()
-                if hasattr(pee_qs.get(), "rawballotinput"):
-                    if pee.rawballotinput.is_trusted:
+                if hasattr(pee_qs.get(), "rawpeople"):
+                    if pee.rawpeople.is_trusted:
                         return HttpResponseRedirect(
                             reverse("bulk_add_sopn_review", kwargs=kwargs)
                         )
@@ -94,9 +94,9 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             "party_set": context["post"].party_set,
         }
 
-        if hasattr(context["post_election"], "rawballotinput"):
+        if hasattr(context["post_election"], "rawpeople"):
             form_kwargs.update(
-                context["post_election"].rawballotinput.as_form_kwargs()
+                context["post_election"].rawpeople.as_form_kwargs()
             )
 
         if (
@@ -145,12 +145,12 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
                 }
             )
 
-        RawBallotInput.objects.update_or_create(
+        RawPeople.objects.update_or_create(
             ballot=context["post_election"],
             defaults={
                 "data": json.dumps(raw_ballot_data),
                 "source": context["official_document"].source_url,
-                "source_type": RawBallotInput.SOURCE_BULK_ADD_FORM,
+                "source_type": RawPeople.SOURCE_BULK_ADD_FORM,
             },
         )
 
@@ -176,7 +176,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
         context.update(self.add_election_and_post_to_context(context))
 
         initial = []
-        raw_ballot = context["post_election"].rawballotinput
+        raw_ballot = context["post_election"].rawpeople
         raw_data = json.loads(raw_ballot.data)
 
         for candidacy in raw_data:

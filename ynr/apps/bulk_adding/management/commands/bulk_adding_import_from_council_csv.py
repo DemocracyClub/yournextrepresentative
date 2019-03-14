@@ -5,7 +5,7 @@ from elections.models import Election
 
 
 class Command(BaseCommand):
-    help = "Create a RawBallotInput model from a council provided CSV"
+    help = "Create a RawPeople model from a council provided CSV"
 
     def add_arguments(self, parser):
         parser.add_argument("--file", action="store", required=True)

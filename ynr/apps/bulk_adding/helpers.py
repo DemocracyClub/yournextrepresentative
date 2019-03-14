@@ -5,7 +5,7 @@ from parties.models import Party, PartyDescription
 from popolo.models import Membership
 from people.models import Person
 
-from bulk_adding.models import RawBallotInput
+from bulk_adding.models import RawPeople
 
 from candidates.models import LoggedAction, raise_if_unsafe_to_delete
 from candidates.models.auth import check_creation_allowed
@@ -193,11 +193,11 @@ class CSVImporter:
             ballot_dict["data"].append(data)
 
         for ballot_id, ballot_dict in self.ballots.items():
-            RawBallotInput.objects.update_or_create(
+            RawPeople.objects.update_or_create(
                 ballot=ballot_dict["ballot"],
                 defaults={
                     "data": json.dumps(ballot_dict["data"]),
                     "source": "CSV from Council",
-                    "source_type": RawBallotInput.SOURCE_COUNCIL_CSV,
+                    "source_type": RawPeople.SOURCE_COUNCIL_CSV,
                 },
             )
