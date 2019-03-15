@@ -115,6 +115,14 @@
         font-size: 1.5em;
         line-height: 1.4em;
         margin-top: 0.7em;
+
+        &+.lead {
+          font-size: 1.2em;
+        }
+
+        a {
+          text-decoration: underline;
+        }
       }
     }
   }
