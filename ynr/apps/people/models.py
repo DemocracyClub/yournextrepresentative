@@ -304,6 +304,11 @@ class Person(Timestampable, models.Model):
     def get_slug(self):
         return slugify(self.name)
 
+    def wcivf_url(self):
+        return "https://whocanivotefor.co.uk/person/{}/{}".format(
+            self.pk, self.get_slug()
+        )
+
     @property
     def last_name_guess(self):
         try:
