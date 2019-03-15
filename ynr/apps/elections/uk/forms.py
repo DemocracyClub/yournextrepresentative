@@ -14,7 +14,9 @@ class PostcodeForm(forms.Form):
     q = forms.CharField(
         label="Enter a candidate name or postcode",
         max_length=200,
-        widget=forms.TextInput(attrs={"placeholder": "Enter a name"}),
+        widget=forms.TextInput(
+            attrs={"placeholder": "Enter a name or postcode"}
+        ),
     )
 
     def clean_q(self):
