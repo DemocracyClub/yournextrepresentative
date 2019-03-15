@@ -1,3 +1,9 @@
+.finder {
+  .content {
+    background-color: #f4f1ed
+  }
+}
+
 .finder__forms {
   text-align: center;
   max-width: 30em;
@@ -26,10 +32,6 @@
   p:last-child {
     margin-bottom: 0;
   }
-}
-
-.finder__activity {
-  margin-top: 3em;
 }
 
 .finder__activity__changes,
@@ -99,11 +101,8 @@
 
   body.finder {
     .content {
-      padding-top: 0;
-
-      .container {
-        position: relative; // so we can absolutely position .finder__forms
-      }
+      padding-top: 3em;
+      background-color: #EEE;
     }
 
     // More impactful homepage header on wide screens
@@ -116,22 +115,26 @@
         font-size: 1.5em;
         line-height: 1.4em;
         margin-top: 0.7em;
+
+        &+.lead {
+          font-size: 1.2em;
+        }
+
+        a {
+          text-decoration: underline;
+        }
       }
     }
   }
 
   .finder__forms {
-    background-color: #f4f1ed;
     max-width: 100%;
 
     .finder__forms__container {
       background-color: #FFF;
-      position: relative;
-      z-index: 1; // sit on top of following elements
-      top: -2em; // overlap into header above
       margin: 0 auto; // override auto margins from smaller screens
       padding: 2em 3em;
-      width: 40%;
+      width: 70%;
       box-shadow: 0 2px 2px rgba(0,0,0,0.1);
     }
   }
@@ -150,14 +153,15 @@
   }
 
   .finder__activity {
-    margin-top: 5em;
-    @include clearfix;
-  }
+    display: flex;
 
-  .finder__activity__changes,
-  .finder__activity__leaderboard {
-    float: left;
-    width: 45%;
+    & > div {
+      flex: 1;
+      margin: 0 0.5em;
+      box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+      background-color: white;
+      padding:1em;
+    }
 
     h2 {
       font-size: rem-calc(28);
@@ -178,45 +182,8 @@
       text-align: center;
     }
   }
-
-  .finder__activity__leaderboard {
-    float: right;
-    margin-left: 0;
-  }
 }
 
-.geolocation-link {
-  display: block;
-  margin-bottom: 1.5em; // lots of space between this link and the submit button
-
-  &:before {
-    content: "";
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    margin-right: 0.4em;
-    vertical-align: -0.1em;
-
-    background: transparent url(img/location-blue.png) 0 0 no-repeat;
-    background-size: 16px 16px;
-    @media($high_dpi_screen){
-      background-image: url(img/location-blue@2x.png);
-    }
-    background-image: url(img/location-blue.svg), none;
-  }
-}
-
-@media #{$large-up} {
-  .finder__activity__changes {
-    width: 40%;
-    margin-left: 5%;
-  }
-
-  .finder__activity__leaderboard {
-    width: 40%;
-    margin-right: 5%;
-  }
-}
 
 #form-name .errorlist, #form-postcode .errorlist {
   list-style: none;

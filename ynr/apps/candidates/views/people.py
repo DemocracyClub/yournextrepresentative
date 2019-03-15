@@ -90,7 +90,7 @@ class PersonView(TemplateView):
         context = super().get_context_data(**kwargs)
         path = self.person.get_absolute_url()
         context["redirect_after_login"] = urlquote(path)
-        context["canonical_url"] = self.request.build_absolute_uri(path)
+        context["canonical_url"] = self.person.wcivf_url()
         context["person"] = self.person
 
         context["elections_to_list"] = Election.objects.filter(
