@@ -92,6 +92,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
         form_kwargs = {
             "parties": context["parties"],
             "party_set": context["post"].party_set,
+            "ballot": context["post_election"],
         }
 
         if hasattr(context["post_election"], "rawpeople"):

@@ -283,3 +283,46 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/bulk_adding/sopn/parl.2015-05-07/65808/?edit=1", user=self.user
         )
         self.assertEqual(response.status_code, 200)
+
+    def test_invalid_with_no_memberships_or_raw_people(self):
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.dulwich_post_pee,
+            uploaded_file="sopn.pdf",
+        )
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.2015-05-07/65808/?edit=1", user=self.user
+        )
+        form = response.forms[1]
+        response = form.submit()
+        self.assertContains(
+            response, "At least one person required on this ballot"
+        )
+
+    def test_valid_with_memberships_and_no_raw_people(self):
+        existing_person = people.tests.factories.PersonFactory.create(
+            id="1234567", name="Bart Simpson"
+        )
+        existing_membership = factories.MembershipFactory.create(
+            person=existing_person,
+            # !!! This is the line that differs from the previous test:
+            post=self.dulwich_post,
+            party=self.labour_party,
+            post_election=self.election.postextraelection_set.get(
+                post=self.dulwich_post
+            ),
+        )
+
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.dulwich_post_pee,
+            uploaded_file="sopn.pdf",
+        )
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.2015-05-07/65808/?edit=1", user=self.user
+        )
+        form = response.forms[1]
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)

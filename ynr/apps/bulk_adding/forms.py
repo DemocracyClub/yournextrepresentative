@@ -1,5 +1,6 @@
 from django import forms
 from django.db.models import Count
+from django.core.exceptions import ValidationError
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
@@ -20,6 +21,11 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
         if "source" in kwargs:
             self.source = kwargs["source"]
             del kwargs["source"]
+
+        if "ballot" in kwargs:
+            self.ballot = kwargs["ballot"]
+            del kwargs["ballot"]
+
         super().__init__(*args, **kwargs)
 
     def add_fields(self, form, index):
@@ -42,6 +48,15 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
         if hasattr(self, "source"):
             form.fields["source"].initial = self.source
             form.fields["source"].widget = forms.HiddenInput()
+
+    def clean(self):
+        if not any(self.cleaned_data):
+            if not self.ballot.membership_set.exists():
+                raise ValidationError(
+                    "At least one person required on this ballot"
+                )
+
+        return super().clean()
 
 
 class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):

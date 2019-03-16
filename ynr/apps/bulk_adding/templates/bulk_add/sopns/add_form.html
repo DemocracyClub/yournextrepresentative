@@ -106,6 +106,12 @@
   {% endif %}
   {% csrf_token %}
   {{ formset.management_form }}
+  {% if formset.non_form_errors %}
+    <div class="error-message">
+    {{ formset.non_form_errors }}
+    </div>
+  {% endif %}
+
   <table class="table sopn_adding_table">
     {% for form in formset %}
       {{ form.source }}
