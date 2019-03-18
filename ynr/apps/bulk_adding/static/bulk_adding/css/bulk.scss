@@ -45,6 +45,9 @@
         &:first-child {
             width: 50%;
         }
+        &.delete_column {
+            width:2em;
+        }
     }
 }
 

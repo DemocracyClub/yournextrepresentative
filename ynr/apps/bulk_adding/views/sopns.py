@@ -130,7 +130,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
     def form_valid(self, context):
         raw_ballot_data = []
         for form_data in context["formset"].cleaned_data:
-            if not form_data:
+            if not form_data or form_data.get("DELETE"):
                 continue
             if "__" in form_data["party"]:
                 party_id, description_id = form_data["party"].split("__")

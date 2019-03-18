@@ -50,11 +50,12 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
             form.fields["source"].widget = forms.HiddenInput()
 
     def clean(self):
-        if not any(self.cleaned_data):
-            if not self.ballot.membership_set.exists():
-                raise ValidationError(
-                    "At least one person required on this ballot"
-                )
+        if hasattr(self, "cleaned_data"):
+            if not any(self.cleaned_data):
+                if not self.ballot.membership_set.exists():
+                    raise ValidationError(
+                        "At least one person required on this ballot"
+                    )
 
         return super().clean()
 
@@ -147,7 +148,10 @@ class ReviewSinglePersonForm(ReviewSinglePersonNameOnlyForm):
 
 
 BulkAddFormSet = forms.formset_factory(
-    QuickAddSinglePersonForm, extra=15, formset=BaseBulkAddFormSet
+    QuickAddSinglePersonForm,
+    extra=15,
+    formset=BaseBulkAddFormSet,
+    can_delete=True,
 )
 
 
