@@ -89,7 +89,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(49):
+        with self.assertNumQueries(51):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -149,6 +149,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["form-0-select_person"].select("1234567")
         response = form.submit()
 
+        self.assertFalse(RawPeople.objects.exists())
         person = Person.objects.get(name="Bart Simpson")
         memberships_after = membership_id_set(person)
         new_memberships = memberships_after - memberships_before
@@ -178,6 +179,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response.location, self.dulwich_post_pee.get_absolute_url()
         )
         new_response = response.follow()
+        self.assertFalse(RawPeople.objects.exists())
         # Test the flash message
         self.assertContains(
             new_response, "There are still more documents that verifying!"

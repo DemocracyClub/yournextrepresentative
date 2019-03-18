@@ -233,6 +233,9 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                 SuggestedPostLock.objects.create(
                     user=self.request.user, postextraelection=pee
                 )
+                if hasattr(pee, "rawpeople"):
+                    # Delete the raw import, as it's no longer useful
+                    pee.rawpeople.delete()
 
         messages.add_message(
             self.request,
