@@ -23,24 +23,4 @@ If you are interested in helping out, feel free to
 * Test any front-end changes (HTML, CSS, javascript) in multiple browsers.
 * We use the [black](https://github.com/ambv/black) coding standard. Please run `black` before submitting a pull request
 
-## Waffle
 
-You can see a waffle board representing all the issues that
-we're currently working on here:
-
-* [YourNextRepresentative board at waffle.io](https://waffle.io/DemocracyClub/yournextrepresentative)
-
-The names of the columns there may need some explanation:
-
-* **Backlog**: all open issues that haven't been triaged, or
-  are on the back burner.
-* **Ready**: these are issues we'd like to work on at some
-  point soon, approximately ordered so the most important are at
-  the top of the column. (This is somewhat like the product
-  backlog in other projects.)
-* **In Progress**: these are issues we're working on at the moment.
-* **Needs Review**: these are tickets for which someone's done the
-  work, and someone else is now reviewing it (or it's waiting
-  for someone to review it).
-* **Done**: this is for work which has been deployed and the
-  issue should be closed.
