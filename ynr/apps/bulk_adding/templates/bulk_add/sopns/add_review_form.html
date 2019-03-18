@@ -7,6 +7,11 @@
 {% stylesheet 'bulk_adding' %}
 {% endblock %}
 
+{% block extra_js %}
+{% javascript 'bulk_adding' %}
+{% endblock %}
+
+
 {% block content %}
 <h1>{{ election_obj.name }}: {{ post.label }}</h1>
 <h2>Review candidates</h2>
@@ -26,6 +31,10 @@
 <p>If you think someone has stood before, please select them from the tables below. If in doubt,
   just select "create a new person".</p>
 <p>Alternatively you can <a href="{% url "bulk_add_from_sopn" election post.slug %}?edit=1">edit these candidates</a>.</p>
+
+{% include "bulk_add/sopns/_known-people.html" %}
+
+
 <form method=POST>
   {% csrf_token %}
   {{ formset.management_form }}

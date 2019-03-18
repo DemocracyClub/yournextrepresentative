@@ -53,6 +53,22 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         self.official_document = context["official_document"]
         return context
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(self.add_election_and_post_to_context(context))
+
+        people_set = set()
+        for membership in context["post_election"].membership_set.all():
+            person = membership.person
+            person.party = membership.party
+
+            people_set.add(person)
+
+        known_people = list(people_set)
+        known_people.sort(key=lambda i: i.last_name_guess)
+        context["known_people"] = known_people
+        return context
+
     def remaining_posts_for_sopn(self):
         return OfficialDocument.objects.filter(
             source_url=self.official_document.source_url,
@@ -87,7 +103,6 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update(self.add_election_and_post_to_context(context))
 
         form_kwargs = {
             "parties": context["parties"],
@@ -112,18 +127,6 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             )
         else:
             context["formset"] = forms.BulkAddFormSet(**form_kwargs)
-
-        people_set = set()
-        for membership in context["post"].memberships.filter(
-            post_election__election=context["election_obj"]
-        ):
-            person = membership.person
-            person.party = membership.party
-            people_set.add(person)
-
-        known_people = list(people_set)
-        known_people.sort(key=lambda i: i.name.split(" ")[-1])
-        context["known_people"] = known_people
 
         return context
 
@@ -174,7 +177,6 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update(self.add_election_and_post_to_context(context))
 
         initial = []
         raw_ballot = context["post_election"].rawpeople

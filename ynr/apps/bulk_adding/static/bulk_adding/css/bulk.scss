@@ -1,23 +1,24 @@
 .bulk-add__known-people {
-    li {
-        & > :first-child {
-            display: block;
-            margin-bottom: 0.2em;
-        }
-
-        .button {
-            margin-right: 0.5em;
+    .actions {
+        width:20%;
+        text-align: right;
+        ul, li {
+            list-style: none;
+            margin:0;
+            padding: 0;
         }
     }
 
     .other-names {
-        font-size: 0.9em;
-        margin: 0 -0.5em 0.5em -0.5em;
+        margin: 0 -0.5em 0.5em 0.5em;
 
         li {
             list-style: none;
-            float: left;
-            margin: 0 0.5em;
+            margin: 0;
+        }
+
+        li,p {
+            font-size: 0.8em;
         }
 
         .highlight {
@@ -36,6 +37,9 @@
         .js-bulk-known-person-not-standing {
             display: inline;
         }
+    }
+    .js-row {
+        border-bottom: 1px solid black;
     }
 }
 
