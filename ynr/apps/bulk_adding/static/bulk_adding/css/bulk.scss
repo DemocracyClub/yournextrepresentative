@@ -1,16 +1,28 @@
 .bulk-add__known-people {
+
+    table tr:nth-of-type(2n), table tr {
+        background-color: transparent;
+    }
+
+    tbody + tbody::before {
+        height:auto;
+    }
+
+    table tbody:nth-of-type(2n) {
+        background-color: #F9F9F9;
+    }
+
+    .name, tbody td:first-child {
+        width:30%;
+    }
     .actions {
-        width:20%;
-        text-align: right;
-        ul, li {
-            list-style: none;
-            margin:0;
-            padding: 0;
+        .button {
+            margin:0
         }
     }
 
     .other-names {
-        margin: 0 -0.5em 0.5em 0.5em;
+        margin: 0;
 
         li {
             list-style: none;

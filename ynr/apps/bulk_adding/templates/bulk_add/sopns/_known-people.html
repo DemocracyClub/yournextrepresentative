@@ -7,49 +7,42 @@
   <table class="table sopn_adding_table">
     <thead>
       <tr>
-        <th>Name</th>
+        <th class="name">Name</th>
+        <th>Also known as</th>
         <th>Party</th>
-        <th class="actions">Actions</th>
       </tr>
     </thead>
+    {% for person in known_people %}
     <tbody>
-      {% for person in known_people %}
       <tr>
-        <td style="width:33%;">
+        <td class="name">
           <a href="{% url 'person-view' person.pk %}" target="_blank">{{ person }}</a>
+        </td>
+        <td>
           {% if person.other_names.exists %}
-          <div class="other-names">
-            <p>Also known as:</p>
-            <ul class="">
-            {% for name in person.other_names.all %}
-                <li class="other-name">{{ name }}</li>
-            {% endfor %}
-            </ul>
-          </div>
+          <ul class="other-names">
+          {% for name in person.other_names.all %}
+              <li class="other-name">{{ name }}</li>
+          {% endfor %}
+          </ul>
           {% endif %}
         </td>
         <td>
           {{ person.party.name }}
         </td>
-        <td class="actions">
-          <ul>
-            <li>
-              <a href="{% url 'person-update' person.pk %}" class="button secondary tiny">
-                Edit candidate
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'person-other-name-create' person.pk %}" class="button secondary tiny js-bulk-known-person-alternate-name">
-                Nomination paper shows different name variant
-              </a>
-            </li>
-            <li>
-              <a data-person-id="{{ person.pk }}" data-post-id="{{ post.slug }}" href="{% url 'candidacy-delete' election=election %}" class="button secondary tiny js-bulk-known-person-not-standing">
-                Not standing
-              </a>
-            </li>
-          </ul>
-
+      </tr>
+      <tr>
+        <td></td>
+        <td colspan=2 class="actions">
+          <a href="{% url 'person-update' person.pk %}" class="button secondary tiny">
+            Edit candidate
+          </a>
+          <a href="{% url 'person-other-name-create' person.pk %}" class="button secondary tiny js-bulk-known-person-alternate-name">
+            Nomination paper shows different name variant
+          </a>
+          <a data-person-id="{{ person.pk }}" data-post-id="{{ post.slug }}" href="{% url 'candidacy-delete' election=election %}" class="button secondary tiny js-bulk-known-person-not-standing">
+            Not standing
+          </a>
         </td>
 
         <script type="text/html" class="js-bulk-known-person-alternate-name-form">
@@ -93,8 +86,8 @@
 
 
       </tr>
-      {% endfor %}
     </tbody>
+    {% endfor %}
   </table>
 </section>
 {% endif %}
