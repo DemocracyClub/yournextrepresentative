@@ -171,14 +171,6 @@ function updateSelectsForElection(show, election) {
       $('.party-position-' + escapeID(election)).each(function(i) {
         setVisibility(this, $(this).attr('id') == partyPositionToShowID);
       });
-    } else {
-      /* Then just show the first party select and hide the others: */
-      $('.party-select-' + escapeID(election)).each(function(i) {
-        setSelect2Visibility($(this), i == 0);
-      });
-      $('.party-position-' + escapeID(election)).each(function(i) {
-        setVisibility(this, i == 0);
-      });
     }
   } else {
     $('.party-select-' + escapeID(election)).each(function(i) {
