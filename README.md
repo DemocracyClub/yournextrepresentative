@@ -2,7 +2,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/DemocracyClub/yournextrepresentative/badge.svg)](https://coveralls.io/github/DemocracyClub/yournextrepresentative)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
-[![Waffle.io - Columns and their card count](https://badge.waffle.io/DemocracyClub/yournextrepresentative.png?columns=all)](https://waffle.io/DemocracyClub/yournextrepresentative?utm_source=badge)
 
 # A website for crowd-sourcing structured election candidate data
 
@@ -27,10 +26,6 @@ See [INSTALL.md](https://github.com/DemocracyClub/yournextrepresentative/blob/ma
 You can find a list of known issues to work on here:
 
 * https://github.com/DemocracyClub/yournextrepresentative/issues
-
-These are prioritized in Waffle:
-
-* https://waffle.io/DemocracyClub/yournextrepresentative
 
 # Acknowledgements
 
