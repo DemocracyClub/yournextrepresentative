@@ -4,18 +4,18 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import F
 from django.http import HttpResponseRedirect
-from django.utils.text import slugify
 from django.views.generic import RedirectView, TemplateView
-from popolo.models import Post
-from people.models import Person
-from parties.models import Party
 
 from bulk_adding import forms, helpers
+from bulk_adding.models import RawPeople
 from candidates.models import PostExtraElection
 from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
 from official_documents.views import get_add_from_document_cta_flash_message
+from parties.models import Party
+from people.models import Person
+from popolo.models import Post
 
 
 class BulkAddSOPNRedirectView(RedirectView):
@@ -51,6 +51,22 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         self.official_document = context["official_document"]
         return context
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(self.add_election_and_post_to_context(context))
+
+        people_set = set()
+        for membership in context["post_election"].membership_set.all():
+            person = membership.person
+            person.party = membership.party
+
+            people_set.add(person)
+
+        known_people = list(people_set)
+        known_people.sort(key=lambda i: i.last_name_guess)
+        context["known_people"] = known_people
+        return context
+
     def remaining_posts_for_sopn(self):
         return OfficialDocument.objects.filter(
             source_url=self.official_document.source_url,
@@ -69,14 +85,33 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
 class BulkAddSOPNView(BaseSOPNBulkAddView):
     template_name = "bulk_add/sopns/add_form.html"
 
+    def get(self, request, *args, **kwargs):
+        if not request.GET.get("edit"):
+            pee_qs = PostExtraElection.objects.filter(
+                election__slug=kwargs["election"], post__slug=kwargs["post_id"]
+            )
+            if pee_qs.exists():
+                pee = pee_qs.get()
+                if hasattr(pee_qs.get(), "rawpeople"):
+                    if pee.rawpeople.is_trusted:
+                        return HttpResponseRedirect(
+                            reverse("bulk_add_sopn_review", kwargs=kwargs)
+                        )
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update(self.add_election_and_post_to_context(context))
 
         form_kwargs = {
             "parties": context["parties"],
             "party_set": context["post"].party_set,
+            "ballot": context["post_election"],
         }
+
+        if hasattr(context["post_election"], "rawpeople"):
+            form_kwargs.update(
+                context["post_election"].rawpeople.as_form_kwargs()
+            )
 
         if (
             "official_document" in context
@@ -91,22 +126,36 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
         else:
             context["formset"] = forms.BulkAddFormSet(**form_kwargs)
 
-        people_set = set()
-        for membership in context["post"].memberships.filter(
-            post_election__election=context["election_obj"]
-        ):
-            person = membership.person
-            person.party = membership.party
-            people_set.add(person)
-
-        known_people = list(people_set)
-        known_people.sort(key=lambda i: i.name.split(" ")[-1])
-        context["known_people"] = known_people
-
         return context
 
     def form_valid(self, context):
-        self.request.session["bulk_add_data"] = context["formset"].cleaned_data
+        raw_ballot_data = []
+        for form_data in context["formset"].cleaned_data:
+            if not form_data or form_data.get("DELETE"):
+                continue
+            if "__" in form_data["party"]:
+                party_id, description_id = form_data["party"].split("__")
+            else:
+                party_id = form_data["party"]
+                description_id = None
+
+            raw_ballot_data.append(
+                {
+                    "name": form_data["name"],
+                    "party_id": party_id,
+                    "description_id": description_id,
+                }
+            )
+
+        RawPeople.objects.update_or_create(
+            ballot=context["post_election"],
+            defaults={
+                "data": raw_ballot_data,
+                "source": context["official_document"].source_url,
+                "source_type": RawPeople.SOURCE_BULK_ADD_FORM,
+            },
+        )
+
         return HttpResponseRedirect(
             reverse(
                 "bulk_add_sopn_review",
@@ -126,21 +175,23 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update(self.add_election_and_post_to_context(context))
 
         initial = []
+        raw_ballot = context["post_election"].rawpeople
 
-        for form in self.request.session["bulk_add_data"]:
-            if form:
-                if "__" in form["party"]:
-                    party_id, description_id = form["party"].split("__")
-                    party = Party.objects.get(ec_id=party_id)
-                    desc = party.descriptions.get(pk=description_id)
-                else:
-                    desc = Party.objects.get(ec_id=form["party"]).name
-
-                form["party_description"] = desc
-                initial.append(form)
+        for candidacy in raw_ballot.data:
+            form = {}
+            party = Party.objects.get(ec_id=candidacy["party_id"])
+            if candidacy.get("description_id"):
+                form["party_description"] = party.descriptions.get(
+                    pk=candidacy["description_id"]
+                ).description
+            else:
+                form["party_description"] = party.name
+            form["name"] = candidacy["name"]
+            form["party"] = party.ec_id
+            form["source"] = context["official_document"].source_url
+            initial.append(form)
 
         if self.request.POST:
             context["formset"] = forms.BulkAddReviewFormSet(
@@ -162,7 +213,6 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     person = helpers.add_person(self.request, data)
                 else:
                     person = Person.objects.get(pk=int(data["select_person"]))
-
                 helpers.update_person(
                     self.request,
                     person,
@@ -181,6 +231,9 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                 SuggestedPostLock.objects.create(
                     user=self.request.user, postextraelection=pee
                 )
+                if hasattr(pee, "rawpeople"):
+                    # Delete the raw import, as it's no longer useful
+                    pee.rawpeople.delete()
 
         messages.add_message(
             self.request,

@@ -312,9 +312,9 @@ class Person(Timestampable, models.Model):
     @property
     def last_name_guess(self):
         try:
-            return self.base.name.strip().split(" ")[-1]
+            return self.name.strip().split(" ")[-1]
         except:
-            return self.base.name
+            return self.name
 
     def get_absolute_url(self, request=None):
         path = reverse(

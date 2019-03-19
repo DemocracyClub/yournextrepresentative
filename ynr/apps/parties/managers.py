@@ -145,7 +145,7 @@ class PartyQuerySet(models.QuerySet):
                         party_id_str = str(party.ec_id)
                         if include_description_ids:
                             party_id_str = "{}__{}".format(
-                                party_id_str, description.party.ec_id
+                                party_id_str, description.pk
                             )
                         if not joint_text.search(description.description):
                             names.append(

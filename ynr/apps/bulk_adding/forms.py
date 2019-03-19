@@ -1,5 +1,6 @@
 from django import forms
 from django.db.models import Count
+from django.core.exceptions import ValidationError
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
@@ -20,6 +21,11 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
         if "source" in kwargs:
             self.source = kwargs["source"]
             del kwargs["source"]
+
+        if "ballot" in kwargs:
+            self.ballot = kwargs["ballot"]
+            del kwargs["ballot"]
+
         super().__init__(*args, **kwargs)
 
     def add_fields(self, form, index):
@@ -43,6 +49,16 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
             form.fields["source"].initial = self.source
             form.fields["source"].widget = forms.HiddenInput()
 
+    def clean(self):
+        if hasattr(self, "cleaned_data"):
+            if not any(self.cleaned_data):
+                if not self.ballot.membership_set.exists():
+                    raise ValidationError(
+                        "At least one person required on this ballot"
+                    )
+
+        return super().clean()
+
 
 class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
     def suggested_people(self, person_name):
@@ -55,28 +71,24 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         Turn the whole form in to a value string
         """
         name = suggestion.name
+        suggestion_dict = {"name": name, "object": suggestion.object}
 
-        candidacy = (
-            suggestion.object.memberships.select_related(
-                "post", "party", "post_election__election"
-            )
-            .order_by("-post_election__election__election_date")
-            .first()
-        )
-        if candidacy:
-            name = """
-                <strong>{name}</strong>
-                    (previously stood in {post} in the {election} as a
-                    {party} candidate)
-                    """.format(
-                name=name,
+        candidacies = suggestion.object.memberships.select_related(
+            "post", "party", "post_election__election"
+        ).order_by("-post_election__election__election_date")[:3]
+
+        if candidacies:
+            suggestion_dict["previous_candidacies"] = []
+
+        for candidacy in candidacies:
+            text = """{election}: {post} – {party}""".format(
                 post=candidacy.post.short_label,
                 election=candidacy.post_election.election.name,
                 party=candidacy.party.name,
             )
-            name = SafeText(name)
+            suggestion_dict["previous_candidacies"].append(SafeText(text))
 
-        return [suggestion.pk, name]
+        return [suggestion.pk, suggestion_dict]
 
     def add_fields(self, form, index):
         super().add_fields(form, index)
@@ -92,6 +104,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         form.fields["select_person"] = forms.ChoiceField(
             choices=CHOICES, widget=forms.RadioSelect()
         )
+        form.fields["select_person"].initial = "_new"
 
         if hasattr(self, "parties"):
             form.fields["party"] = forms.ChoiceField(
@@ -112,6 +125,12 @@ class NameOnlyPersonForm(forms.Form):
 class QuickAddSinglePersonForm(NameOnlyPersonForm):
     source = forms.CharField(required=True)
 
+    def has_changed(self, *args, **kwargs):
+        if self.changed_data == ["source"] and not self["name"].data:
+            return False
+        else:
+            return super().has_changed(*args, **kwargs)
+
 
 class ReviewSinglePersonNameOnlyForm(forms.Form):
     name = forms.CharField(
@@ -129,7 +148,10 @@ class ReviewSinglePersonForm(ReviewSinglePersonNameOnlyForm):
 
 
 BulkAddFormSet = forms.formset_factory(
-    QuickAddSinglePersonForm, extra=15, formset=BaseBulkAddFormSet
+    QuickAddSinglePersonForm,
+    extra=15,
+    formset=BaseBulkAddFormSet,
+    can_delete=True,
 )
 
 

@@ -1,23 +1,36 @@
 .bulk-add__known-people {
-    li {
-        & > :first-child {
-            display: block;
-            margin-bottom: 0.2em;
-        }
 
+    table tr:nth-of-type(2n), table tr {
+        background-color: transparent;
+    }
+
+    tbody + tbody::before {
+        height:auto;
+    }
+
+    table tbody:nth-of-type(2n) {
+        background-color: #F9F9F9;
+    }
+
+    .name, tbody td:first-child {
+        width:30%;
+    }
+    .actions {
         .button {
-            margin-right: 0.5em;
+            margin:0
         }
     }
 
     .other-names {
-        font-size: 0.9em;
-        margin: 0 -0.5em 0.5em -0.5em;
+        margin: 0;
 
         li {
             list-style: none;
-            float: left;
-            margin: 0 0.5em;
+            margin: 0;
+        }
+
+        li,p {
+            font-size: 0.8em;
         }
 
         .highlight {
@@ -36,5 +49,32 @@
         .js-bulk-known-person-not-standing {
             display: inline;
         }
+    }
+    .js-row {
+        border-bottom: 1px solid black;
+    }
+}
+
+.sopn_adding_table {
+    td {
+        vertical-align: top;
+        &:first-child {
+            width: 50%;
+        }
+        &.delete_column {
+            width:2em;
+        }
+    }
+}
+
+.sopn_adding_suggestions_table {
+    td {
+        vertical-align: top;
+        &:first-child {
+            width: 50%;
+        }
+    }
+    tr.selected_action {
+        background-color: #fdf2d5;
     }
 }

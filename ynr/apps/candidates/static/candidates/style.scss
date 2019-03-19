@@ -76,6 +76,10 @@ $high_dpi_screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi
 @import "accounts";
 @import "wombles";
 
+table.table {
+  width:100%;
+}
+
 tbody + tbody {
   border-top:1px solid #DDD;
 
@@ -84,4 +88,10 @@ tbody + tbody {
     display: block;
     height: 2em;
   }
+}
+
+details > summary {
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: bold;
 }

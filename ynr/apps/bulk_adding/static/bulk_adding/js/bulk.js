@@ -4,14 +4,15 @@ $(function(){
     $('.js-bulk-known-person-not-standing').on('click', function(e){
         e.preventDefault();
 
-        $person = $(this).parents('li');
-        $link = $person.find('.js-bulk-known-person-not-standing')
-        $form = $person.find('form');
+        $person = $(this).parents('tr');
+        $people_table = $person.parents('table');
+        $link = $person.find('.js-bulk-known-person-not-standing');
+        var $form = $people_table.find('form').parents("tr");
         // don't add the form twice
-        if ($form.length == 0) {
-            $form = $( $('.js-bulk-known-person-not-standing-form').html() );
-            $form.appendTo($person);
-        }
+        $form.remove().end();
+        $form = $( $('.js-bulk-known-person-not-standing-form').html() );
+        $form.insertAfter($person);
+
         $form.find('input[type="text"]').focus();
 
         $form.on('submit', function(){
@@ -59,15 +60,15 @@ $(function(){
     $('.js-bulk-known-person-alternate-name').on('click', function(e){
         e.preventDefault();
 
-        $person = $(this).parents('li');
-        $link = $person.find('.js-bulk-known-person-alternate-name')
-        $form = $person.find('form');
-        // don't add the form twice
-        if ($form.length == 0) {
-            $form = $( $('.js-bulk-known-person-alternate-name-form').html() );
-            $form.appendTo($person);
-        }
-        $form.appendTo($person);
+        $person = $(this).parents('tr');
+        $people_table = $person.parents('table');
+        $link = $person.find('.js-bulk-known-person-alternate-name');
+        var $form = $people_table.find('form').parents("tr");
+        $form.remove().end();
+
+        $form = $( $('.js-bulk-known-person-alternate-name-form').html() );
+        $form.insertAfter($person);
+
         $form.find('input[type="text"]').focus();
 
         $form.on('submit', function(){

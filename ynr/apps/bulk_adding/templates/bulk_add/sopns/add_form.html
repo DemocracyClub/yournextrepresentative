@@ -15,97 +15,84 @@
 {% block content %}
 <h2>Add candidates to {{ election_obj.name }}: <a href="{{ post_election.get_absolute_url }}">{{ post.label }}</a></h2>
 {% if official_document %}
-<h3>How to add or check candidates:</h3>
-<ol>
-  <li>Open the <a href="{{ official_document.get_absolute_url }}" target="_blank" class="button tiny">nomination paper</a>
-    in a new window</li>
-  <li>Find the part of the document about {{ post.label }}</li>
-  <li>Either
-    <ol type="a">
-      <li>Add new candidates in the form below,</li>
-      <li>Or check that any list below is correct. </li>
-    </ol>
-  </li>
-  <li>Press review.
-    <ol type="a">
-      <li>If you have added candidates, this will check for duplicates. Press ‘Add new person’ if you’re happy that we don’t already have that person.</li>
-    </ol>
-  </li>
-  <li>If you think this is the complete list, check the box.</li>
-  <li>Bask in the glow of making democracy better for everyone.</li>
-  <li>Return to the home page to do another one!</li>
-</ol>
-{% if known_people %}
-<h3>There {{ known_people|pluralize:"is,are" }} {{ known_people|length|apnumber }} candidate{{ known_people|pluralize }} listed in this area already:</h3>
-<p>If {{ known_people|pluralize:"this person is,any of these people are" }} not listed on the nomination paper, please press edit and mark them as not standing in this specific election.</p>
-<ul class="bulk-add__known-people">
-  {% for person in known_people %}
-    <li>
-        <a href="{% url 'person-view' person.pk %}" target="_blank">
-            <strong>{{ person }}</strong> ({{ person.party.name }})
-        </a>
-        {% for name in person.other_names.all %}
-            {% if forloop.first %}
-            <ul class="other-names clearfix">
-              <li>Also known as:</li>
-            {% endif %}
-            <li class="other-name">{{ name }}</li>
-            {% if forloop.last %}</ul>{% endif %}
-        {% endfor %}
-        <a href="{% url 'person-update' person.pk%}" class="button secondary tiny">
-            Edit candidate
-        </a>
-        <a href="{% url 'person-other-name-create' person.pk %}" class="button secondary tiny js-bulk-known-person-alternate-name">
-            Nomination paper shows different name variant
-        </a>
-        <a data-person-id="{{ person.pk }}" data-post-id="{{ post.slug }}" href="{% url 'candidacy-delete' election=election %}" class="button secondary tiny js-bulk-known-person-not-standing">
-            Not standing
-        </a>
+  <a href="{{ official_document.get_absolute_url }}" target="_blank" class="button tiny">Nomination paper (SoPN)</a>
+  <details open class="panel">
+  <summary>How to add or check candidates</summary>
+
+  <ol>
+    <li>Open the nomination paper using the button above (opens in a new window)</li>
+    <li>Find the part of the document about {{ post.label }}</li>
+    <li>Either
+      <ol type="a">
+        <li>Add new candidates in the form below,</li>
+        <li>Or check that any list below is correct. </li>
+      </ol>
     </li>
-  {% endfor %}
-</ul>
-<script type="text/html" class="js-bulk-known-person-alternate-name-form">
-<form action="" method="post">
-        {% csrf_token %}
-        <p>
-            <label for="alt-name">Name as it appears on nomination paper:</label>
-            <input id="alt-name" name="name" type="text">
-        </p>
-        <p>
-            <input id="alt-source" name="source" type="hidden" value="{{ official_document.source_url }}">
-        </p>
-        <p>
-            <button type="button" class="button secondary js-bulk-known-person-alternate-name-cancel">Cancel</button>
-            <button type="submit" class="button primary">Add alternate name</button>
-        </p>
-    </form>
-</script>
-<script type="text/html" class="js-bulk-known-person-not-standing-form">
-<form action="" method="post">
-        {% csrf_token %}
-        <p>
-            Are you sure you want to mark this candidate as not standing?
-            <input id="alt-source" name="source" type="hidden" value="{{ official_document.source_url }}">
-        </p>
-        <p>
-            <button type="button" class="button secondary js-bulk-known-person-not-standing-cancel">Cancel</button>
-            <button type="submit" class="button primary">Mark Not Standing</button>
-        </p>
-    </form>
-</script>
-{% endif %}
-<form method=POST id="bulk_add_form">
+    <li>Press review.
+      <ol type="a">
+        <li>If you have added candidates, this will check for duplicates. Press ‘Add new person’ if you’re happy that we don’t already have that person.</li>
+      </ol>
+    </li>
+    <li>If you think this is the complete list, check the box.</li>
+    <li>Bask in the glow of making democracy better for everyone.</li>
+    <li>Return to the home page to do another one!</li>
+  </ol>
+  </details>
+
+{% include "bulk_add/sopns/_known-people.html" %}
+
+  <form method=POST id="bulk_add_form">
   {% if known_people %}
     <button type=submit>Review</button>
   {% endif %}
   {% csrf_token %}
   {{ formset.management_form }}
-  {% for form in formset %}
-    <div class="form_group">
-    <h3>Person {{ forloop.counter }}</h3>
-    {{ form.as_p }}
+  {% if formset.non_form_errors %}
+    <div class="error-message">
+    {{ formset.non_form_errors }}
     </div>
-  {% endfor %}
+  {% endif %}
+
+  <table class="table sopn_adding_table">
+    {% for form in formset %}
+      {{ form.source }}
+      <thead>
+        <tr>
+          <th colspan="3" {% if form.has_error %}class="form-error-summary"{% endif %}>
+            Person {{ forloop.counter }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <th>
+          {{ form.name.errors }}
+          <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+        </th>
+        <th>
+          {{ form.party.errors }}
+          <label for="{{ form.party.id_for_label }}">{{ form.party.label }}</label>
+        </th>
+        {% if form.name.initial %}
+          <th class="delete_column">
+          <abbr title="Select if this person is listed already">Duplicate?</abbr>
+          </th>
+        {% endif %}
+
+      </tr>
+        <tr>
+        <td>{{ form.name }}</td>
+        <td {% if not form.name.initial %}colspan="2"{% endif %}>{{ form.party }}</td>
+        {% if form.name.initial %}
+        <td class="delete_column">
+        {{ form.DELETE }}
+        </td>
+        {% endif %}
+
+      </tr>
+      </tbody>
+    {% endfor %}
+    </table>
   <button type=submit>Review</button>
 </form>
 

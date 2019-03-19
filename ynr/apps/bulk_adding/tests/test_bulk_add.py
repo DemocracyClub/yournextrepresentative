@@ -7,6 +7,7 @@ import people.tests.factories
 from popolo.models import Membership
 from people.models import Person
 
+from bulk_adding.models import RawPeople
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.test_update_view import membership_id_set
@@ -88,7 +89,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(45):
+        with self.assertNumQueries(51):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -127,7 +128,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:
         response = self.app.get(
-            "/bulk_adding/sopn/parl.2015-05-07/65808/", user=self.user
+            "/bulk_adding/sopn/parl.2015-05-07/65808/?edit=1", user=self.user
         )
 
         form = response.forms["bulk_add_form"]
@@ -135,6 +136,10 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["form-0-party"] = self.green_party.ec_id
 
         response = form.submit()
+        self.assertEqual(RawPeople.objects.count(), 1)
+        self.assertEqual(
+            RawPeople.objects.get().source_type, RawPeople.SOURCE_BULK_ADD_FORM
+        )
         self.assertEqual(response.status_code, 302)
         # This takes us to a page with a radio button for adding them
         # as a new person or alternative radio buttons if any
@@ -144,6 +149,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["form-0-select_person"].select("1234567")
         response = form.submit()
 
+        self.assertFalse(RawPeople.objects.exists())
         person = Person.objects.get(name="Bart Simpson")
         memberships_after = membership_id_set(person)
         new_memberships = memberships_after - memberships_before
@@ -173,6 +179,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response.location, self.dulwich_post_pee.get_absolute_url()
         )
         new_response = response.follow()
+        self.assertFalse(RawPeople.objects.exists())
         # Test the flash message
         self.assertContains(
             new_response, "There are still more documents that verifying!"
@@ -261,4 +268,63 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/bulk_adding/parl.2015-05-07/65808/", user=self.user
         )
 
+        self.assertEqual(response.status_code, 302)
+
+    def test_redirect_to_review_form(self):
+        RawPeople.objects.create(
+            ballot=self.dulwich_post_pee,
+            data=[{"name": "Bart", "party_id": "PP52"}],
+        )
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.2015-05-07/65808/", user=self.user
+        )
+        self.assertEqual(response.status_code, 302)
+        response.forms
+
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.2015-05-07/65808/?edit=1", user=self.user
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_invalid_with_no_memberships_or_raw_people(self):
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.dulwich_post_pee,
+            uploaded_file="sopn.pdf",
+        )
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.2015-05-07/65808/?edit=1", user=self.user
+        )
+        form = response.forms[1]
+        response = form.submit()
+        self.assertContains(
+            response, "At least one person required on this ballot"
+        )
+
+    def test_valid_with_memberships_and_no_raw_people(self):
+        existing_person = people.tests.factories.PersonFactory.create(
+            id="1234567", name="Bart Simpson"
+        )
+        existing_membership = factories.MembershipFactory.create(
+            person=existing_person,
+            # !!! This is the line that differs from the previous test:
+            post=self.dulwich_post,
+            party=self.labour_party,
+            post_election=self.election.postextraelection_set.get(
+                post=self.dulwich_post
+            ),
+        )
+
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.dulwich_post_pee,
+            uploaded_file="sopn.pdf",
+        )
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.2015-05-07/65808/?edit=1", user=self.user
+        )
+        form = response.forms[1]
+        response = form.submit()
         self.assertEqual(response.status_code, 302)
