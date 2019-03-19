@@ -1,4 +1,3 @@
-import json
 import csv
 
 from parties.models import Party, PartyDescription
@@ -145,7 +144,7 @@ class CSVImporter:
                 return PartyDescription.objects.get(
                     description__startswith="{} |".format(desc)
                 )
-            except:
+            except PartyDescription.DoesNotExist:
                 return None
 
     def get_party_id(self, row, ballot_model):

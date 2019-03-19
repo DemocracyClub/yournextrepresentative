@@ -1,5 +1,3 @@
-import json
-
 from braces.views import LoginRequiredMixin
 from django.contrib import messages
 from django.core.urlresolvers import reverse

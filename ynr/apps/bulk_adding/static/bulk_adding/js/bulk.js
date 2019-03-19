@@ -7,7 +7,7 @@ $(function(){
         $person = $(this).parents('tr');
         $people_table = $person.parents('table');
         $link = $person.find('.js-bulk-known-person-not-standing');
-        $form = $people_table.find('form').parents("tr");
+        var $form = $people_table.find('form').parents("tr");
         // don't add the form twice
         $form.remove().end();
         $form = $( $('.js-bulk-known-person-not-standing-form').html() );
@@ -63,7 +63,7 @@ $(function(){
         $person = $(this).parents('tr');
         $people_table = $person.parents('table');
         $link = $person.find('.js-bulk-known-person-alternate-name');
-        $form = $people_table.find('form').parents("tr");
+        var $form = $people_table.find('form').parents("tr");
         $form.remove().end();
 
         $form = $( $('.js-bulk-known-person-alternate-name-form').html() );

@@ -1,5 +1,3 @@
-import json
-
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 from model_utils.models import TimeStampedModel
