@@ -3,15 +3,15 @@ import json
 from django.core.management import call_command
 from django_webtest import WebTest
 
-import people.tests.factories
+from people.tests.factories import PersonFactory
 from popolo.models import Membership
 from people.models import Person
 
 from bulk_adding.models import RawPeople
-from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.test_update_view import membership_id_set
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from candidates.tests.factories import MembershipFactory
 from official_documents.models import OfficialDocument
 
 
@@ -89,7 +89,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(51):
+        with self.assertNumQueries(50):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -114,10 +114,10 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def _run_wizard_to_end(self):
-        existing_person = people.tests.factories.PersonFactory.create(
+        existing_person = PersonFactory.create(
             id="1234567", name="Bart Simpson"
         )
-        existing_membership = factories.MembershipFactory.create(
+        existing_membership = MembershipFactory.create(
             person=existing_person,
             post=self.local_post,
             party=self.labour_party,
@@ -212,10 +212,10 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # This could happen if someone's missed that there was the
         # same person already listed on the first page, but then
         # spotted them on the review page and said to merge them then.
-        existing_person = people.tests.factories.PersonFactory.create(
+        existing_person = PersonFactory.create(
             id="1234567", name="Bart Simpson"
         )
-        existing_membership = factories.MembershipFactory.create(
+        existing_membership = MembershipFactory.create(
             person=existing_person,
             # !!! This is the line that differs from the previous test:
             post=self.dulwich_post,
@@ -303,10 +303,10 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_valid_with_memberships_and_no_raw_people(self):
-        existing_person = people.tests.factories.PersonFactory.create(
+        existing_person = PersonFactory.create(
             id="1234567", name="Bart Simpson"
         )
-        existing_membership = factories.MembershipFactory.create(
+        existing_membership = MembershipFactory.create(
             person=existing_person,
             # !!! This is the line that differs from the previous test:
             post=self.dulwich_post,

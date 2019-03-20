@@ -1,6 +1,7 @@
 from abc import abstractmethod, ABCMeta
 
 from django.contrib.contenttypes.models import ContentType
+from django.core.management import call_command
 
 from datetime import date
 
@@ -179,3 +180,4 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
                     ),
                 )
                 created += 1
+        call_command("parties_update_current_candidates")

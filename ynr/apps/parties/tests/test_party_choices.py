@@ -32,8 +32,8 @@ class TestPartyChoices(TestUserMixin, UK2015ExamplesMixin, WebTest):
             party_choices,
             [
                 (u"", u""),
-                (str(self.labour_party.ec_id), u"Labour Party (16 candidates)"),
-                (str(self.ld_party.ec_id), u"Liberal Democrats (8 candidates)"),
+                (str(self.labour_party.ec_id), u"Labour Party"),
+                (str(self.ld_party.ec_id), u"Liberal Democrats"),
                 (str(self.conservative_party.ec_id), u"Conservative Party"),
                 (str(self.green_party.ec_id), u"Green Party"),
                 ("ynmp-party:2", "Independent"),
@@ -45,16 +45,14 @@ class TestPartyChoices(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.create_lots_of_candidates(
             self.election, ((self.ld_party, 30), (self.green_party, 15))
         )
+
         party_choices = Party.objects.register("GB").party_choices()
         self.assertEqual(
             party_choices,
             [
                 (u"", u""),
-                (
-                    str(self.ld_party.ec_id),
-                    u"Liberal Democrats (30 candidates)",
-                ),
-                (str(self.green_party.ec_id), u"Green Party (15 candidates)"),
+                (str(self.ld_party.ec_id), u"Liberal Democrats"),
+                (str(self.green_party.ec_id), u"Green Party"),
                 (str(self.conservative_party.ec_id), u"Conservative Party"),
                 ("ynmp-party:2", "Independent"),
                 (str(self.labour_party.ec_id), "Labour Party"),
@@ -75,7 +73,7 @@ class TestPartyChoices(TestUserMixin, UK2015ExamplesMixin, WebTest):
             [
                 (u"", u""),
                 (
-                    u"Liberal Democrats (30 candidates)",
+                    u"Liberal Democrats",
                     [
                         (self.ld_party.ec_id, u"Liberal Democrats"),
                         (
@@ -84,7 +82,7 @@ class TestPartyChoices(TestUserMixin, UK2015ExamplesMixin, WebTest):
                         ),
                     ],
                 ),
-                (str(self.green_party.ec_id), u"Green Party (15 candidates)"),
+                (str(self.green_party.ec_id), u"Green Party"),
                 (str(self.conservative_party.ec_id), u"Conservative Party"),
                 ("ynmp-party:2", "Independent"),
                 (str(self.labour_party.ec_id), u"Labour Party"),
@@ -105,14 +103,11 @@ class TestPartyChoices(TestUserMixin, UK2015ExamplesMixin, WebTest):
             party_choices,
             [
                 (u"", u""),
-                (
-                    str(self.ld_party.ec_id),
-                    u"Liberal Democrats (30 candidates)",
-                ),
-                (str(self.green_party.ec_id), u"Green Party (15 candidates)"),
                 (str(self.conservative_party.ec_id), u"Conservative Party"),
-                ("ynmp-party:2", "Independent"),
+                (str(self.ld_party.ec_id), u"Liberal Democrats"),
+                (str(self.green_party.ec_id), u"Green Party"),
                 (str(self.labour_party.ec_id), u"Labour Party"),
+                ("ynmp-party:2", "Independent"),
                 ("ynmp-party:12522", "Speaker seeking re-election"),
             ],
         )

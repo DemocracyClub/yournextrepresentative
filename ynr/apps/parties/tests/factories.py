@@ -10,6 +10,7 @@ class PartyFactory(factory.DjangoModelFactory):
     date_registered = "2001-01-01"
     legacy_slug = factory.Sequence(lambda n: "party:%d" % n)
     register = "GB"
+    current_candidates = 1
 
 
 class PartyDescriptionFactory(factory.DjangoModelFactory):
