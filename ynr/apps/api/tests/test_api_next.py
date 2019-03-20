@@ -95,7 +95,9 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         PartyEmblemFactory(party=self.labour_party)
-        PartyDescriptionFactory(party=self.labour_party)
+        PartyDescriptionFactory(
+            party=self.labour_party, description="Labour Party Candidate", pk=1
+        )
 
     def test_api_basic_response(self):
         response = self.app.get("/api/next/")
@@ -155,7 +157,13 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
                     {"id": "PP52", "text": "Conservative Party"},
                     {"id": "PP63", "text": "Green Party"},
                     {"id": "ynmp-party:2", "text": "Independent"},
-                    {"id": "PP53", "text": "Labour Party"},
+                    {
+                        "children": [
+                            {"id": "PP53", "text": "Labour Party"},
+                            {"id": "PP53__1", "text": "Labour Party Candidate"},
+                        ],
+                        "text": "Labour Party",
+                    },
                     {"id": "PP90", "text": "Liberal Democrats"},
                     {
                         "id": "ynmp-party:12522",
