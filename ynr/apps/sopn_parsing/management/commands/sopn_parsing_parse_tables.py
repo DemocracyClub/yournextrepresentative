@@ -167,6 +167,8 @@ class Command(BaseCommand):
                         "source_type": RawPeople.SOURCE_PARSED_PDF,
                     },
                 )
+                sopn.status = "parsed"
+                sopn.save()
 
     def parse_table(self, sopn, data):
         data.columns = self.clean_row(data.columns)
