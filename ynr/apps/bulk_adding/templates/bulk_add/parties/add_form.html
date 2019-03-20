@@ -15,8 +15,8 @@
       {% if post_info.existing %}
       <h5>Existing {{ party.name }} candidates</h5>
       <ul>
-      {% for me in post_info.existing %}
-        <li><a href="{{ me.base.person.get_absolute_url }}">{{ me.base.person.name }}</a></li>
+      {% for membership in post_info.existing %}
+        <li><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a></li>
       {% endfor %}
       </ul>
       {% else %}
