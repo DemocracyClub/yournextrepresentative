@@ -45,6 +45,8 @@ class Party(TimeStampedModel):
             This field will be removed in the future in favour of the ec_id, 
             but it's required until then""",
     )
+    current_candidates = models.IntegerField(default=0)
+    total_candidates = models.IntegerField(default=0)
 
     objects = PartyQuerySet.as_manager()
 
