@@ -32,10 +32,12 @@ class RawPeople(TimeStampedModel):
 
     SOURCE_COUNCIL_CSV = "council_csv"
     SOURCE_BULK_ADD_FORM = "bulk_add_form"
+    SOURCE_PARSED_PDF = "parsed_pdf"
 
     SOURCE_TYPES = (
         (SOURCE_BULK_ADD_FORM, "Bulk Add form"),
         (SOURCE_COUNCIL_CSV, "Council CSV"),
+        (SOURCE_PARSED_PDF, "Parsed from a PDF"),
     )
 
     # Sources that we trust enough to just review, not ask a user
