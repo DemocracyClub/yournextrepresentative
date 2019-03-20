@@ -32,7 +32,6 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = form.submit()
         self.assertContains(response, "Select one and only one party")
 
-    @override_settings(CANDIDATES_REQUIRED_FOR_WEIGHTED_PARTY_LIST=0)
     def test_party_select_non_current_party(self):
         self.person = PersonFactory.create(id=2009, name="Tessa Jowell")
         MembershipFactory.create(

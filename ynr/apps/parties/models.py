@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from django_extensions.db.models import TimeStampedModel
 
@@ -92,6 +93,19 @@ class Party(TimeStampedModel):
                 }
             ]
         return attachment
+
+    @property
+    def is_deregistered(self):
+        if not self.date_deregistered:
+            return False
+        return self.date_deregistered > timezone.now().date()
+
+    @property
+    def format_name(self):
+        name = self.name
+        if self.is_deregistered:
+            name = "{} (Deregistered {})".format(name, self.date_deregistered)
+        return name
 
 
 class PartyDescription(TimeStampedModel):
