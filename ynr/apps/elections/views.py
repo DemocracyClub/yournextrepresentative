@@ -977,6 +977,9 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
             if lock:
                 suffix = "-lock"
                 pp = "Locked"
+                # If we're locking this, then the suggested posts
+                # can be deleted
+                pee.suggestedpostlock_set.all().delete()
             else:
                 suffix = "-unlock"
                 pp = "Unlocked"
