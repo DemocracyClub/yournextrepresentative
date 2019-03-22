@@ -1,6 +1,5 @@
 from django_webtest import WebTest
 
-from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from parties.models import Party
@@ -13,12 +12,12 @@ class TestPartyChoices(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             party_choices,
             [
-                (u"", u""),
-                (self.conservative_party.ec_id, u"Conservative Party"),
-                (self.green_party.ec_id, u"Green Party"),
+                ("", ""),
+                (self.conservative_party.ec_id, "Conservative Party"),
+                (self.green_party.ec_id, "Green Party"),
                 ("ynmp-party:2", "Independent"),
-                (self.labour_party.ec_id, u"Labour Party"),
-                (self.ld_party.ec_id, u"Liberal Democrats"),
+                (self.labour_party.ec_id, "Labour Party"),
+                (self.ld_party.ec_id, "Liberal Democrats"),
                 ("ynmp-party:12522", "Speaker seeking re-election"),
             ],
         )
@@ -31,11 +30,11 @@ class TestPartyChoices(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             party_choices,
             [
-                (u"", u""),
-                (str(self.labour_party.ec_id), u"Labour Party"),
-                (str(self.ld_party.ec_id), u"Liberal Democrats"),
-                (str(self.conservative_party.ec_id), u"Conservative Party"),
-                (str(self.green_party.ec_id), u"Green Party"),
+                ("", ""),
+                (self.labour_party.ec_id, "Labour Party"),
+                (self.ld_party.ec_id, "Liberal Democrats"),
+                (self.conservative_party.ec_id, "Conservative Party"),
+                (self.green_party.ec_id, "Green Party"),
                 ("ynmp-party:2", "Independent"),
                 ("ynmp-party:12522", "Speaker seeking re-election"),
             ],
@@ -50,12 +49,12 @@ class TestPartyChoices(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             party_choices,
             [
-                (u"", u""),
-                (str(self.ld_party.ec_id), u"Liberal Democrats"),
-                (str(self.green_party.ec_id), u"Green Party"),
-                (str(self.conservative_party.ec_id), u"Conservative Party"),
+                ("", ""),
+                (self.ld_party.ec_id, "Liberal Democrats"),
+                (self.green_party.ec_id, "Green Party"),
+                (self.conservative_party.ec_id, "Conservative Party"),
                 ("ynmp-party:2", "Independent"),
-                (str(self.labour_party.ec_id), "Labour Party"),
+                (self.labour_party.ec_id, "Labour Party"),
                 ("ynmp-party:12522", "Speaker seeking re-election"),
             ],
         )
@@ -71,21 +70,18 @@ class TestPartyChoices(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             party_choices,
             [
-                (u"", u""),
+                ("", ""),
                 (
-                    u"Liberal Democrats",
+                    "Liberal Democrats",
                     [
-                        (self.ld_party.ec_id, u"Liberal Democrats"),
-                        (
-                            str(self.ld_party.ec_id),
-                            u"Scottish Liberal Democrats",
-                        ),
+                        (self.ld_party.ec_id, "Liberal Democrats"),
+                        (self.ld_party.ec_id, "Scottish Liberal Democrats"),
                     ],
                 ),
-                (str(self.green_party.ec_id), u"Green Party"),
-                (str(self.conservative_party.ec_id), u"Conservative Party"),
+                (self.green_party.ec_id, "Green Party"),
+                (self.conservative_party.ec_id, "Conservative Party"),
                 ("ynmp-party:2", "Independent"),
-                (str(self.labour_party.ec_id), u"Labour Party"),
+                (self.labour_party.ec_id, "Labour Party"),
                 ("ynmp-party:12522", "Speaker seeking re-election"),
             ],
         )
@@ -102,11 +98,11 @@ class TestPartyChoices(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             party_choices,
             [
-                (u"", u""),
-                (str(self.conservative_party.ec_id), u"Conservative Party"),
-                (str(self.ld_party.ec_id), u"Liberal Democrats"),
-                (str(self.green_party.ec_id), u"Green Party"),
-                (str(self.labour_party.ec_id), u"Labour Party"),
+                ("", ""),
+                (self.conservative_party.ec_id, "Conservative Party"),
+                (self.ld_party.ec_id, "Liberal Democrats"),
+                (self.green_party.ec_id, "Green Party"),
+                (self.labour_party.ec_id, "Labour Party"),
                 ("ynmp-party:2", "Independent"),
                 ("ynmp-party:12522", "Speaker seeking re-election"),
             ],
