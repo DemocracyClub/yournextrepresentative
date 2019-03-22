@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.storage import FileSystemStorage
 from django.core.management.base import BaseCommand, CommandError
+from django.core.management import call_command
 from django.core.management.color import no_style
 from django.db import connection, transaction
 from django.utils.six import string_types
@@ -440,3 +441,4 @@ class Command(BaseCommand):
             self.base_api_url = urlunsplit(new_url_parts)
             self.check_database_is_empty()
             self.mirror_from_api(ignore_images=options["ignore_images"])
+            call_command("parties_update_current_candidates")

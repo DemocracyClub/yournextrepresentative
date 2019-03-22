@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from django_extensions.db.models import TimeStampedModel
 
@@ -45,6 +46,8 @@ class Party(TimeStampedModel):
             This field will be removed in the future in favour of the ec_id, 
             but it's required until then""",
     )
+    current_candidates = models.IntegerField(default=0)
+    total_candidates = models.IntegerField(default=0)
 
     objects = PartyQuerySet.as_manager()
 
@@ -90,6 +93,19 @@ class Party(TimeStampedModel):
                 }
             ]
         return attachment
+
+    @property
+    def is_deregistered(self):
+        if not self.date_deregistered:
+            return False
+        return self.date_deregistered > timezone.now().date()
+
+    @property
+    def format_name(self):
+        name = self.name
+        if self.is_deregistered:
+            name = "{} (Deregistered {})".format(name, self.date_deregistered)
+        return name
 
 
 class PartyDescription(TimeStampedModel):
