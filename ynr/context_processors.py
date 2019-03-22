@@ -57,12 +57,13 @@ def add_notification_data(request):
 
     result = {}
     if request.user.is_authenticated:
-        result["photos_for_review"] = QueuedImage.objects.filter(
-            decision="undecided"
-        ).count()
-        result["suggestions_to_lock"] = SuggestedPostLock.objects.filter(
-            postextraelection__candidates_locked=False
-        ).count()
+        groups = set(request.user.groups.values_list("name", flat=True))
+        if PHOTO_REVIEWERS_GROUP_NAME in groups:
+            result["photos_for_review"] = QueuedImage.objects.filter(
+                decision="undecided"
+            ).count()
+        if TRUSTED_TO_LOCK_GROUP_NAME in groups:
+            result["suggestions_to_lock"] = SuggestedPostLock.objects.count()
     return result
 
 
