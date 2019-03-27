@@ -7,12 +7,15 @@ from sopn_parsing.models import ParsedSOPN
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
 
-def extract_ballot_table(document, parse_flavor="lattice"):
+def extract_ballot_table(ballot, parse_flavor="lattice"):
     """
     Given a OfficialDocument model, update or create a ParsedSOPN model with the
     contents of the table as a JSON string.
 
+    :type ballot: candidates.models.PostExtraElection
+
     """
+    document = ballot.sopn
     if not document.relevant_pages:
         raise ValueError(
             "Pages for table not known for document, extract page numbers first"

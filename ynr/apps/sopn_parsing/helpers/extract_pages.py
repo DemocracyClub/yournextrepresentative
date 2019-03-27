@@ -4,6 +4,22 @@ from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 from official_documents.models import OfficialDocument
 
 
+def extract_pages_for_ballot(ballot):
+    """
+    Try to extract the page numbers for the latest SOPN document related to this
+    ballot.
+
+    Beacuse documents can apply to more than one ballot, we also perform
+    "drive by" parsing of other ballots contained in a given document.
+
+    :type ballot: candidates.models.PostExtraElection
+
+    """
+
+    sopn = ballot.sopn
+    save_page_numbers_for_single_document(sopn)
+
+
 def extract_pages_for_single_document(document):
     other_doc_models = (
         OfficialDocument.objects.filter(source_url=document.source_url)

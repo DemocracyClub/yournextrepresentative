@@ -33,7 +33,7 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_extract_tables(self):
-        extract_ballot_table(self.doc)
+        extract_ballot_table(self.dulwich_post_pee)
         self.assertEqual(
             ParsedSOPN.objects.get().as_pandas.to_dict(),
             {

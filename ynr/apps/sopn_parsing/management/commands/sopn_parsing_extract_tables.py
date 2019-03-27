@@ -1,45 +1,30 @@
-from django.core.management.base import BaseCommand
-
-from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.extract_tables import extract_ballot_table
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
+from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 
 
-class Command(BaseCommand):
+class Command(BaseSOPNParsingCommand):
     help = """
     Parse tables out of PDFs in to ParsedSOPN models for later parsing.
     
     """
 
-    def add_arguments(self, parser):
-        parser.add_argument(
-            "--ballot", action="store", help="Document(s) for a single ballot"
-        )
-        parser.add_argument(
-            "--current",
-            action="store_true",
-            help="Only parse documents for current elections",
-        )
-
     def handle(self, *args, **options):
-        if options.get("ballot"):
-            filter_kwargs = {
-                "post_election__ballot_paper_id": options["ballot"]
-            }
-        else:
-            filter_kwargs = {}
-            if options.get("current"):
-                filter_kwargs["post_election__election__current"] = True
-            filter_kwargs["parsedsopn"] = None
+        qs = self.get_queryset(options)
+        filter_kwargs = {}
+        if not options["ballot"]:
+            if not options["reparse"]:
+                filter_kwargs["officialdocument__parsedsopn"] = None
 
-        qs = OfficialDocument.objects.filter(**filter_kwargs).exclude(
-            relevant_pages=None
-        )
+            qs = qs.filter(**filter_kwargs)
 
-        for document in qs:
+        # We can't extract tables when we don't know about the pages
+        qs = qs.exclude(officialdocument__relevant_pages=None)
+
+        for ballot in qs:
             try:
-                extract_ballot_table(document)
+                extract_ballot_table(ballot)
             except (ValueError, NoTextInDocumentError):
                 self.stdout.write(
-                    "Skipping {} due to parse error".format(document)
+                    "Skipping {} due to parse error".format(ballot)
                 )
