@@ -6,16 +6,12 @@ from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 
 class Command(BaseSOPNParsingCommand):
     help = """
-    
+    Convert the raw extracted tables on the ParsedSOPN model to a parsed 
+    RawPeople model, and set the status as parsed.
     
     """
 
     def handle(self, *args, **options):
-        """
-        TODO: Force parsing
-        TODO: Other options options
-
-        """
         filter_kwargs = {}
         if not options.get("ballot"):
 
