@@ -32,7 +32,7 @@ docutils==0.14
 elasticsearch==2.4.1
 factory-boy==2.11.1
 fake-factory==0.5.3
-futures==3.0.3
+futures==3.2.0
 git+https://github.com/dessibelle/sorl-thumbnail-serializer-field.git#egg=sorl-thumbnail-serializer-field
 html5lib==1.0.1
 idna>=2.5,<2.9
