@@ -20,3 +20,6 @@ class SiteBanner(TimeStampedModel):
 
     class Meta:
         get_latest_by = "modified"
+
+    def __str__(self):
+        return self.message
