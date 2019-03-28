@@ -78,7 +78,7 @@ TEMPLATES = [
                 "ynr.context_processors.add_site",
                 "ynr.context_processors.election_date",
                 "ynr.context_processors.locale",
-                "elections.uk.context_processors.site_wide_messages",
+                "frontend.context_processors.site_wide_banner",
             ]
         },
     }
@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     "people",
     "ynr_refactoring",
     "wombles",
+    "frontend",
 )
 
 MIDDLEWARE = (
@@ -257,6 +258,7 @@ PIPELINE = {
                 "jquery/jquery-ui.structure.css",
                 "jquery/jquery-ui.theme.css",
                 "moderation_queue/css/photo-upload.scss",
+                "frontend/css/frontend.scss",
             ),
             "output_filename": "css/all.css",
         },
@@ -369,7 +371,6 @@ RESTRICT_RENAMES = False
 # If this is set to false, then no edits of people are allowed.
 EDITS_ALLOWED = True
 
-SHOW_BANNER = False
 
 # A bearer token for the Twitter API for mapping between
 # Twitter usernames and IDs.

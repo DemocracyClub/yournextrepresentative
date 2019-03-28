@@ -124,7 +124,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms[1]
 
         # Now submit the valid form
-        with self.assertNumQueries(45):
+        with self.assertNumQueries(46):
             form["{}-0-select_person".format(pee.pk)] = "_new"
             response = form.submit().follow()
 
