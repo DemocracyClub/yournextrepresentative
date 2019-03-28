@@ -72,7 +72,7 @@ python-openid==2.2.5
 python-slugify==3.0.1
 PyYAML==5.1
 raven==6.10.0
-requests-oauthlib==1.0.0
+requests-oauthlib==1.2.0
 requests==2.21.0
 simplegeneric==0.8.1
 six==1.12.0
