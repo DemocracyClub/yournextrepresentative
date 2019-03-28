@@ -35,9 +35,6 @@
 </head>
 
 <body class="{% block body_class %}{% endblock %}">
-    {% if settings.SHOW_BANNER %}
-    {% include "banner.html" %}
-    {% endif %}
   <div class="header">
     <div class="header__masthead">
       <div class="container">
@@ -63,20 +60,7 @@
       </div>
     </div>
 
-    {% for message in site_wide_messages %}
-      <div class="site-wide-banner" style="background-color:#FDF2D5; color:#000; padding: .2em 0; border-bottom:1px solid #777" >
-        <div class=container>
-          {% if message.url %}
-            <a href="{{ message.url }}" style="text-decoration:underline">
-          {% endif %}
-            {{ message.message|safe }}
-          {% if message.url %}
-            </a>
-          {% endif %}
-        </div>
-      </div>
-    {% endfor %}
-
+    {% include "frontend/banner.html" %}
 
     <div class="header__nav">
       <div class="row">

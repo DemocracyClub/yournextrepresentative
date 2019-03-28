@@ -1,0 +1,8 @@
+{% load markdown_deux_tags %}
+{% if site_wide_banner %}
+<div class="site-wide-banner">
+  <div class=container>
+    {{ site_wide_banner.message|markdown }}
+  </div>
+</div>
+{% endif %}
