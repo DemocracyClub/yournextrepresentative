@@ -4,6 +4,15 @@
   padding: .2em 0;
   border-bottom:1px solid #777;
 
+  a {
+    text-decoration: underline;
+  }
+
+  p:last-child {
+    padding:0;
+    margin:0;
+  }
+
   h1 {
     font-size: 1.2rem;
   }
