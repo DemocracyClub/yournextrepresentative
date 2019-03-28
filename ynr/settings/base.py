@@ -135,6 +135,7 @@ INSTALLED_APPS = (
     "ynr_refactoring",
     "wombles",
     "frontend",
+    "sopn_parsing",
 )
 
 MIDDLEWARE = (

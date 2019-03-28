@@ -41,6 +41,11 @@ class OfficialDocument(TimeStampedModel):
     source_url = models.URLField(
         help_text=_("The page that links to this document"), max_length=1000
     )
+    relevant_pages = models.CharField(
+        "The pages containing information about this ballot",
+        max_length=50,
+        null=True,
+    )
 
     class Meta:
         get_latest_by = "modified"
@@ -69,3 +74,18 @@ class OfficialDocument(TimeStampedModel):
         Is there a suggested lock for this document?
         """
         return self.post_election.suggestedpostlock_set.exists()
+
+    def get_pages(self):
+        if self.relevant_pages and not self.relevant_pages == "all":
+            pages = self.relevant_pages.split(",")
+            return sorted(int(p) for p in pages)
+
+    @property
+    def first_page_number(self):
+        if self.get_pages():
+            return self.get_pages()[0]
+
+    @property
+    def last_page_number(self):
+        if self.get_pages():
+            return self.get_pages()[-1]

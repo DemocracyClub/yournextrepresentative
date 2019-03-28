@@ -32,3 +32,17 @@ Add database credentials to `DATABASES` dict in `local.py`
 git submodule init
 git submodule update
 ```
+
+## (Optional) SOPN parsing
+
+SOPNs parsing (see `ynr/apps/sopn_parsing/README.md`) is optional
+because it depends on various system packages beyond python packages.
+
+It currently requires [camelot-py](https://camelot-py.readthedocs.io/en/master/user/install.html#install)
+and that in turn requires `python-tk` and `ghostscript`.
+
+Read up on how to install them, and then install the SOPN parsing requirements:
+
+```
+pip install -r requirements/sopn_parsing.txt
+```

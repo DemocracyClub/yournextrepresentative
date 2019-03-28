@@ -53,8 +53,8 @@
     '{{ object.sopn.uploaded_file.url }}',
     '{{ object.ballot_paper_id }}',
     {
-      'start_page': '{{ object.start_page }}',
-      'end_page': '{{ object.end_page }}'
+      'start_page': {{ object.first_page_number }},
+      'end_page': {{ object.last_page_number }}
     }
   )
 
