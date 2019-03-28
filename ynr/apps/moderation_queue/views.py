@@ -22,6 +22,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic import ListView, TemplateView, CreateView
 from PIL import Image as PillowImage
 from braces.views import LoginRequiredMixin
+from sorl.thumbnail import delete as sorl_delete
 
 from auth_helpers.views import GroupRequiredMixin
 
@@ -332,6 +333,12 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 "notes": _("Approved from photo moderation queue"),
             },
         )
+
+        if make_primary:
+            sorl_delete(person.primary_image.file, delete_file=False)
+            # Update the last modified date, so this is picked up
+            # as a recent edit by API consumers
+            person.save()
 
     def form_valid(self, form):
         decision = form.cleaned_data["decision"]
