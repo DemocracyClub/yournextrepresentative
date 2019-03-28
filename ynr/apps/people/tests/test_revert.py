@@ -205,6 +205,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "homepage_url": "http://example.org/tessajowell",
                 "twitter_username": "",
                 "wikipedia_url": "",
+                "wikidata_id": "",
                 "party_memberships": {
                     "parl.2010-05-06": {
                         "id": self.labour_party.legacy_slug,
