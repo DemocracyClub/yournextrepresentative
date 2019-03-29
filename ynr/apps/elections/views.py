@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Count
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -37,6 +37,8 @@ from official_documents.models import OfficialDocument
 from people.forms import NewPersonForm, PersonIdentifierFormsetFactory
 from popolo.models import Membership, Post
 
+from .filters import BallotFilter
+
 
 class ElectionView(DetailView):
     template_name = "elections/election_detail.html"
@@ -68,9 +70,17 @@ class ElectionListView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["elections_and_posts"] = Election.group_and_order_elections(
-            include_postextraelections=True, include_noncurrent=False
+
+        qs = (
+            PostExtraElection.objects.filter(election__current=True)
+            .select_related("election", "post")
+            .prefetch_related("suggestedpostlock_set")
+            .annotate(memberships_count=Count("membership"))
+            .order_by("election__election_date", "election__name")
         )
+
+        f = BallotFilter(self.request.GET, qs)
+        context["filter"] = f
         return context
 
 

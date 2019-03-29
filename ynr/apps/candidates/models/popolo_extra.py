@@ -109,10 +109,14 @@ class PostExtraElection(models.Model):
                 '<abbr title="Candidates verified and post locked">🔐</abbr>'
             )
         if self.suggestedpostlock_set.exists():
-            return mark_safe(
-                '<abbr title="Someone suggested locking this post">🔓</abbr>'
-            )
+            self.suggested_lock_html
         return ""
+
+    @property
+    def suggested_lock_html(self):
+        return mark_safe(
+            '<abbr title="Someone suggested locking this post">🔓</abbr>'
+        )
 
     @property
     def sopn(self):
