@@ -334,8 +334,8 @@ class NewPersonForm(BasePersonForm):
             self.fields[
                 "party_" + register + "_" + election
             ] = forms.ChoiceField(
-                label=_("Party in {election}").format(
-                    election=election_data.name
+                label=_("Party in {election} ({register})").format(
+                    election=election_data.name, register=register
                 ),
                 choices=Party.objects.register(register).party_choices(),
                 required=False,
