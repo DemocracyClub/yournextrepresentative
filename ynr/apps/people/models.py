@@ -297,8 +297,19 @@ class Person(Timestampable, models.Model):
         new_version["data"] = get_person_as_version_data(
             self, new_person=new_person
         )
-        if not versions or new_version["data"] != versions[0]["data"]:
+        should_insert = True
+
+        if versions and new_version["data"] == versions[0]["data"]:
+            # Don't create empty versions
+            should_insert = False
+
+        if new_version["information_source"].startswith("After merging person"):
+            # Always create a version if this is a merge
+            should_insert = True
+
+        if should_insert:
             versions.insert(0, new_version)
+
         self.versions = json.dumps(versions)
 
     def get_slug(self):

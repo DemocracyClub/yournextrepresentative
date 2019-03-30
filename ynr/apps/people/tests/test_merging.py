@@ -351,3 +351,116 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         merger = PersonMerger(self.source_person, self.dest_person)
         merger.merge()
         self.assertEqual(self.dest_person.not_standing.count(), 1)
+
+    def test_duplicate_latest_versions_regression(self):
+        """
+        If there are identical latest versions from the old and new person
+        then a "duplicate" version is created, with a "after merging" commit
+        message.
+
+        Normally this would get de-duplicated to save filling up the versions
+        data, but in the case of a merge we *always* want to keep the merge
+        commit, so we can show a proper log message.
+
+        This is a regression test to catch that case.
+
+        https://github.com/DemocracyClub/yournextrepresentative/issues/860
+
+        """
+
+        person_1 = PersonFactory(
+            pk=50536,
+            versions=json.dumps(
+                [
+                    {
+                        "data": {
+                            "birth_date": "",
+                            "extra_fields": {"favourite_biscuits": ""},
+                            "other_names": [],
+                            "facebook_page_url": "",
+                            "email": "",
+                            "linkedin_url": "",
+                            "party_ppc_page_url": "https://www.wirralconservatives.com/helencameron",
+                            "death_date": "",
+                            "honorific_suffix": "",
+                            "honorific_prefix": "",
+                            "name": "Helen Cameron",
+                            "twitter_username": "",
+                            "id": "50537",
+                            "biography": "",
+                            "wikipedia_url": "",
+                            "standing_in": {
+                                "local.wirral.2019-05-02": {
+                                    "name": "Clatterbridge",
+                                    "post_id": "MTW:E05000958",
+                                }
+                            },
+                            "homepage_url": "",
+                            "party_memberships": {
+                                "local.wirral.2019-05-02": {
+                                    "name": "Conservative and Unionist Party",
+                                    "id": "party:52",
+                                }
+                            },
+                            "facebook_personal_url": "",
+                            "gender": "female",
+                        },
+                        "information_source": "https://www.wirralconservatives.com/helencameron",
+                        "timestamp": "2019-03-28T14:37:30.958127",
+                        "version_id": "0036d8081d566648",
+                        "username": "harry14",
+                    }
+                ]
+            ),
+        )
+        person_2 = PersonFactory(
+            pk=50537,
+            versions=json.dumps(
+                [
+                    {
+                        "data": {
+                            "birth_date": "",
+                            "extra_fields": {"favourite_biscuits": ""},
+                            "other_names": [],
+                            "facebook_page_url": "",
+                            "email": "",
+                            "linkedin_url": "",
+                            "party_ppc_page_url": "https://www.wirralconservatives.com/helencameron",
+                            "death_date": "",
+                            "honorific_suffix": "",
+                            "honorific_prefix": "",
+                            "name": "Helen Cameron",
+                            "twitter_username": "",
+                            "id": "50536",
+                            "biography": "",
+                            "wikipedia_url": "",
+                            "standing_in": {
+                                "local.wirral.2019-05-02": {
+                                    "name": "Clatterbridge",
+                                    "post_id": "MTW:E05000958",
+                                }
+                            },
+                            "homepage_url": "",
+                            "party_memberships": {
+                                "local.wirral.2019-05-02": {
+                                    "name": "Conservative and Unionist Party",
+                                    "id": "party:52",
+                                }
+                            },
+                            "facebook_personal_url": "",
+                            "gender": "female",
+                        },
+                        "information_source": "https://www.wirralconservatives.com/helencameron",
+                        "timestamp": "2019-03-28T14:37:30.958127",
+                        "version_id": "0036d8081d566648",
+                        "username": "harry14",
+                    }
+                ]
+            ),
+        )
+
+        merger = PersonMerger(person_1, person_2)
+        merger.merge()
+        person_1.refresh_from_db()
+        # This would raise if the bug existed
+        self.assertIsNotNone(person_1.version_diffs)
