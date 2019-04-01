@@ -35,25 +35,22 @@ class Command(BaseCommand):
         in_file = csv.reader(open(options["file"]))
         for line in in_file:
             person_id = line[0]
-            person_qs = Person.objects.filter(id=person_id)
-            if not person_qs.exists():
-                redirect_qs = PersonRedirect.objects.filter(
-                    old_person_id=person_id
+            person = Person.objects.get_by_id_with_redirects(person_id)
+            if not person:
+                self.stderr.write(
+                    "No person with ID {} exists".format(person_id)
                 )
-                if redirect_qs.exists():
-                    person_id = redirect_qs.get().new_person_id
-                else:
-                    continue
+                continue
 
             exists = False
             try:
                 pi = PersonIdentifier.objects.get(
-                    person_id=person_id, value_type=options["id_type"]
+                    person_id=person.pk, value_type=options["id_type"]
                 )
                 exists = True
             except PersonIdentifier.DoesNotExist:
                 pi = PersonIdentifier(
-                    person_id=person_id, value_type=options["id_type"]
+                    person_id=person.pk, value_type=options["id_type"]
                 )
 
             if not exists or exists and options["replace"]:
