@@ -5,6 +5,7 @@ from django.core.files.storage import DefaultStorage
 from django.conf import settings
 
 from ynr_refactoring.settings import PersonIdentifierFields
+from candidates.models import PersonRedirect
 
 
 class PersonImageManager(models.Manager):
@@ -94,3 +95,16 @@ class PersonQuerySet(models.query.QuerySet):
             "images__uploading_user",
             "tmp_person_identifiers",
         )
+
+    def get_by_id_with_redirects(self, person_id):
+        try:
+            person = self.get(id=person_id)
+        except self.model.DoesNotExist:
+            try:
+                person_id = PersonRedirect.objects.get(
+                    old_person_id=person_id
+                ).new_person_id
+                self.get_by_id_with_redirects(person_id)
+            except PersonRedirect.DoesNotExist:
+                person = None
+        return person
