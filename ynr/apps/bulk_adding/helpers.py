@@ -93,7 +93,7 @@ class CSVImporter:
 
     @property
     def post_header_name(self):
-        POST_LABELS = ["Electoral Area Name", "Election Area"]
+        POST_LABELS = ["Electoral Area Name", "Election Area", "AreaName"]
         for label in POST_LABELS:
             if label in self.header_rows:
                 return label
@@ -101,7 +101,11 @@ class CSVImporter:
 
     @property
     def party_description_header_name(self):
-        DESCRIPTION_FIELDS = ["Description", "Candidates Description"]
+        DESCRIPTION_FIELDS = [
+            "Description",
+            "Candidates Description",
+            "CandidateDescription",
+        ]
         for description_field in DESCRIPTION_FIELDS:
             if description_field in self.header_rows:
                 return description_field
@@ -122,8 +126,8 @@ class CSVImporter:
 
         name = []
 
-        FIRST_NAME_FIELDS = ["Forename"]
-        LAST_NAME_FIELDS = ["Surname"]
+        FIRST_NAME_FIELDS = ["Forename", "CandidateForename"]
+        LAST_NAME_FIELDS = ["Surname", "CandidateSurname"]
 
         for name_part in [FIRST_NAME_FIELDS, LAST_NAME_FIELDS]:
             for name_field in name_part:
