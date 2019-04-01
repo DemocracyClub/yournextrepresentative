@@ -1,4 +1,5 @@
 import json
+from datetime import date, timedelta
 
 from django_webtest import WebTest
 
@@ -464,3 +465,105 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         person_1.refresh_from_db()
         # This would raise if the bug existed
         self.assertIsNotNone(person_1.version_diffs)
+
+    def test_conflicting_standing_in_values_regression(self):
+        """
+        https://github.com/DemocracyClub/yournextrepresentative/issues/811
+
+        This was both a bug and a problem with the strategy of merging.
+
+        The bug was that is was possible to have party info against an election
+        in the not-standing list.
+
+        The problem was when merging two people with a not standing value and a
+        membership in the same election, we would keep both objects, leaving
+        the database in an inconsistent state.
+
+        The merging logic was changed to keep the membership and discard the
+        not-standing status.
+
+        This test checks for a regression of both cases.
+
+        """
+        self.local_election.election_date = date.today() + timedelta(days=1)
+        self.local_election.save()
+
+        other_local_post = PostFactory.create(
+            elections=(self.local_election,),
+            slug="LBW:E05000601",
+            label="Hoe Street",
+            party_set=self.gb_parties,
+            organization=self.local_council,
+        )
+        ballot = other_local_post.postextraelection_set.get()
+
+        # Create person 1
+        response = self.app.get(ballot.get_absolute_url(), user=self.user)
+        form = response.forms["new-candidate-form"]
+        form["name"] = "Imaginary Candidate"
+        form[
+            "party_GB_{}".format(self.local_election.slug)
+        ] = self.green_party.ec_id
+        form[
+            "constituency_{}".format(self.local_election.slug)
+        ] = ballot.post.slug
+        form["standing_{}".format(self.local_election.slug)] = "standing"
+        form[
+            "source"
+        ] = "Testing adding a new candidate to a locked constituency"
+        response = form.submit()
+        person_1 = response.context["object"]
+
+        # Create person 2
+        response = self.app.get(ballot.get_absolute_url(), user=self.user)
+        form = response.forms["new-candidate-form"]
+        form["name"] = "Imaginary Candidate"
+        form[
+            "party_GB_{}".format(self.local_election.slug)
+        ] = self.green_party.ec_id
+        form[
+            "constituency_{}".format(self.local_election.slug)
+        ] = ballot.post.slug
+        form["standing_{}".format(self.local_election.slug)] = "standing"
+        form[
+            "source"
+        ] = "Testing adding a new candidate to a locked constituency"
+        response = form.submit()
+        person_2 = response.context["object"]
+
+        # Remove the membership for person 2
+        response = self.app.get(
+            "/person/{}/update".format(person_2.pk), user=self.user
+        )
+        form = response.forms["person-details"]
+        form["standing_{}".format(self.local_election.slug)].force_value(
+            "not-standing"
+        )
+        form["source"] = "Mumsnet"
+        form.submit()
+
+        # Merge the two people. What do we expect?
+        # We have a standing in and a not-standing record for the same election
+        # so we decide to remove the not-standing and keep the membership
+        merger = PersonMerger(person_1, person_2)
+        merger.merge()
+        person_1.refresh_from_db()
+        version_data = json.loads(person_1.versions)[0]["data"]
+        self.assertEqual(
+            version_data["standing_in"],
+            {
+                "local.maidstone.2016-05-05": {
+                    "name": "Hoe Street",
+                    "post_id": "LBW:E05000601",
+                }
+            },
+        )
+        self.assertEqual(
+            version_data["party_memberships"],
+            {
+                "local.maidstone.2016-05-05": {
+                    "id": "party:63",
+                    "name": "Green Party",
+                }
+            },
+        )
