@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 import django_filters
 from django_filters.widgets import LinkWidget
 
@@ -76,3 +78,25 @@ class BallotFilter(django_filters.FilterSet):
     class Meta:
         model = PostExtraElection
         fields = ["review_required", "has_sopn"]
+
+
+def filter_shortcuts(request):
+    shortcuts = [
+        {
+            "name": "data_input",
+            "label": "Ready for data input",
+            "query": {"review_required": ["unlocked"], "has_sopn": ["1"]},
+        },
+        {
+            "name": "lock_required",
+            "label": "Locking required",
+            "query": {"review_required": ["suggestion"], "has_sopn": ["1"]},
+        },
+    ]
+    query = dict(request.GET)
+    for shortcut in shortcuts:
+        shortcut["querystring"] = urlencode(shortcut["query"], doseq=True)
+        if shortcut["query"] == query:
+            shortcut["active"] = True
+            shortcuts["active"] = shortcut
+    return shortcuts

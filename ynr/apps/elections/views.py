@@ -37,7 +37,7 @@ from official_documents.models import OfficialDocument
 from people.forms import NewPersonForm, PersonIdentifierFormsetFactory
 from popolo.models import Membership, Post
 
-from .filters import BallotFilter
+from .filters import BallotFilter, filter_shortcuts
 
 
 class ElectionView(DetailView):
@@ -81,6 +81,7 @@ class ElectionListView(TemplateView):
 
         f = BallotFilter(self.request.GET, qs)
         context["filter"] = f
+        context["shortcuts"] = filter_shortcuts(self.request)
         return context
 
 
