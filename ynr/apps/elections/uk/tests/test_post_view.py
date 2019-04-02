@@ -4,7 +4,11 @@ from django.contrib.auth.models import Group
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
 
-from candidates.models import PostExtraElection, TRUSTED_TO_LOCK_GROUP_NAME
+from candidates.models import (
+    PostExtraElection,
+    TRUSTED_TO_LOCK_GROUP_NAME,
+    LoggedAction,
+)
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
@@ -46,6 +50,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertNotIn("suggest_lock_form", response.forms)
 
     def test_create_suggested_post_lock(self):
+        self.assertEqual(LoggedAction.objects.count(), 0)
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
@@ -73,6 +78,19 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(suggested_lock.user, self.user)
         self.assertEqual(
             suggested_lock.justification, "I liked totally reviewed the SOPN"
+        )
+        self.assertEqual(LoggedAction.objects.count(), 1)
+        self.assertEqual(
+            LoggedAction.objects.get().source,
+            "I liked totally reviewed the SOPN",
+        )
+        response = self.app.get("/")
+
+        self.assertContains(
+            response,
+            'Suggested locking ballot\n              <a href="/elections/{ballot}/">{ballot}</a>'.format(
+                ballot=suggested_lock.postextraelection.ballot_paper_id
+            ),
         )
 
     def test_post_lock_disabled_not_shown_when_no_suggested_lock(self):

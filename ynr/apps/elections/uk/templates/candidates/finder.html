@@ -141,6 +141,9 @@
             {% elif action.action_type == 'sopn-upload' %}
               uploaded <a href="{{ action.post_election.sopn.get_absolute_url }}">a SOPN</a> for
               <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.ballot_paper_id }}</a>
+            {% elif action.action_type == 'suggest-ballot-lock' %}
+              Suggested locking ballot
+              <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.ballot_paper_id }}</a>
             {% else %}
               {% if action.person %}
                 updated <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
