@@ -7,10 +7,11 @@ import os
 from os.path import dirname, join, exists
 import requests
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.core.files.storage import DefaultStorage
 
 from official_documents.models import OfficialDocument
+from sopn_parsing.tasks import extract_and_parse_tables_for_ballot
 from candidates.models import PostExtraElection
 
 from compat import BufferDictReader
@@ -170,3 +171,4 @@ class Command(BaseCommand):
                 "Successfully added the Statement of Persons Nominated for {0}"
             )
             print(message.format(pee.ballot_paper_id))
+            extract_and_parse_tables_for_ballot.delay(pee)
