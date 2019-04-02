@@ -1,4 +1,9 @@
+import json
 import re
+from os.path import join
+
+from django.core.files.storage import DefaultStorage
+from django.core.files.base import ContentFile
 
 from sopn_parsing.helpers.text_helpers import clean_text
 from parties.models import Party, PartyDescription
@@ -197,5 +202,16 @@ def parse_raw_data_for_ballot(ballot):
                 "source_type": RawPeople.SOURCE_PARSED_PDF,
             },
         )
+        storage = DefaultStorage()
+        desired_storage_path = join(
+            "raw_people",
+            "{}.json".format(
+                parsed_sopn_model.sopn.post_election.ballot_paper_id
+            ),
+        )
+        storage.save(
+            desired_storage_path, ContentFile(json.dumps(ballot_data, indent=4))
+        )
+
         parsed_sopn_model.status = "parsed"
         parsed_sopn_model.save()
