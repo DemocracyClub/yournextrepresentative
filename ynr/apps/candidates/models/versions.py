@@ -103,6 +103,8 @@ def get_person_as_version_data(person, new_person=False):
             }
         for not_standing_in_election in person.not_standing.all():
             standing_in[not_standing_in_election.slug] = None
+            # Delete party memberships if not standing in this election
+            party_memberships.pop(not_standing_in_election.slug, None)
 
     # Add `favourite_biscuits` to an `extra_fields` key
     # to re-produce the previous ExtraField model.

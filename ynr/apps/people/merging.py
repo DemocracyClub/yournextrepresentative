@@ -241,7 +241,12 @@ class PersonMerger:
 
     def merge_not_standing(self):
         for election in self.source_person.not_standing.all():
-            self.dest_person.not_standing.add(election)
+            if not self.dest_person.memberships.filter(
+                post_election__election=election
+            ):
+                # If this election is in the dest person's memberships, we
+                # shouldn't add to their "not standing" list.
+                self.dest_person.not_standing.add(election)
             self.source_person.not_standing.remove(election)
 
     def setup_redirect(self):
