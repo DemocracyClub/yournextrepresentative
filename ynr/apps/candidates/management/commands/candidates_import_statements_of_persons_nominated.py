@@ -56,14 +56,13 @@ def get_column_header(possible_column_headers, row):
 class Command(BaseCommand):
     help = "Import official documents for posts from a URL to a CSV file"
 
-    args = "<CSV_URL>"
-
     def add_arguments(self, parser):
         parser.add_argument("--delete-existing", action="store_true")
+        parser.add_argument("url")
 
     def handle(self, *args, **options):
 
-        csv_url, = args
+        csv_url = options["url"]
 
         mime_type_magic = magic.Magic(mime=True)
         storage = DefaultStorage()
