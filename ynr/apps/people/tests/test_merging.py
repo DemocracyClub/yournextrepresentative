@@ -190,6 +190,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     "party_ppc_page_url": "",
                     "twitter_username": "",
                     "wikipedia_url": "",
+                    "wikidata_id": "",
                     "honorific_prefix": "",
                     "name": "",
                     "honorific_suffix": "",

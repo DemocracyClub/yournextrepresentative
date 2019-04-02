@@ -125,6 +125,7 @@ class PersonIdentifier(TimeStampedModel):
             "party_ppc_page_url": "Party candidate page",
             "twitter_username": "Twitter",
             "wikipedia_url": "Wikipedia",
+            "wikidata_id": "Wikidata",
         }
         if self.value_type in STRING_TO_LABEL:
             return STRING_TO_LABEL[self.value_type]

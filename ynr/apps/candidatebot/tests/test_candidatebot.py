@@ -42,6 +42,7 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
             "homepage_url": "",
             "extra_fields": {"favourite_biscuits": ""},
             "wikipedia_url": "",
+            "wikidata_id": "",
             "party_memberships": {},
             "birth_date": "",
             "death_date": "",
