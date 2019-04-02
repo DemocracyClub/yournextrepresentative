@@ -319,20 +319,25 @@ class NewPersonForm(BasePersonForm):
             post_id = kwargs["initial"]["constituency_" + election]
             specific_party_set = PartySet.objects.get(post__slug=post_id)
 
-        for party_set in PartySet.objects.all():
+        party_registers_for_election = set(
+            election_data.postextraelection_set.annotate(
+                Count("post__party_set__slug")
+            ).values_list("post__party_set__slug", flat=True)
+        )
+        for register in party_registers_for_election:
+            register = register.upper()
             if specific_party_set and (
-                party_set.slug.upper() != specific_party_set.slug.upper()
+                register != specific_party_set.slug.upper()
             ):
                 continue
+
             self.fields[
-                "party_" + party_set.slug.upper() + "_" + election
+                "party_" + register + "_" + election
             ] = forms.ChoiceField(
-                label=_("Party in {election}").format(
-                    election=election_data.name
+                label=_("Party in {election} ({register})").format(
+                    election=election_data.name, register=register
                 ),
-                choices=Party.objects.register(
-                    party_set.slug.upper()
-                ).party_choices(),
+                choices=Party.objects.register(register).party_choices(),
                 required=False,
                 widget=forms.Select(
                     attrs={"class": "party-select party-select-" + election}
@@ -342,12 +347,7 @@ class NewPersonForm(BasePersonForm):
             if election_data.party_lists_in_use:
                 # Then add a field to enter the position on the party list
                 # as an integer:
-                field_name = (
-                    "party_list_position_"
-                    + party_set.slug.upper()
-                    + "_"
-                    + election
-                )
+                field_name = "party_list_position_" + register + "_" + election
                 self.fields[field_name] = forms.IntegerField(
                     label=_(
                         "Position in party list ('1' for first, '2' for second, etc.)"

@@ -29,7 +29,8 @@ function setSelect2Visibility(select2Element, visibility) {
 /* Make all the party drop-downs into Select2 widgets */
 
 function setUpPartySelect2s() {
-  $('select.party-select').not('.select2-offscreen').not('.select2-container').each(function(i) {
+  var party_selects = $("select.party-select");
+  party_selects.not('.select2-offscreen').not('.select2-container').each(function(i) {
     var partySelect = $(this)
     var select_options = {
       width: '100%',
@@ -92,6 +93,18 @@ function setUpPartySelect2s() {
 
     partySelect.select2(select_options);
   });
+
+  var post_select_exists = $(".post-select").length;
+  if (post_select_exists && party_selects.length > 1) {
+    /* If there is more than one party list, only show GB parties by default */
+    party_selects.each(function(i, el) {
+      if (el.name.indexOf("party_GB") !== 0){
+          var select_el = $(escapeID("#" + el.dataset["select2Id"]));
+          setSelect2Visibility(select_el, false);
+      }
+    });
+  }
+
 }
 
 $(document).on('focus', '.select2', function (e) {
@@ -170,14 +183,6 @@ function updateSelectsForElection(show, election) {
       });
       $('.party-position-' + escapeID(election)).each(function(i) {
         setVisibility(this, $(this).attr('id') == partyPositionToShowID);
-      });
-    } else {
-      /* Then just show the first party select and hide the others: */
-      $('.party-select-' + escapeID(election)).each(function(i) {
-        setSelect2Visibility($(this), i == 0);
-      });
-      $('.party-position-' + escapeID(election)).each(function(i) {
-        setVisibility(this, i == 0);
       });
     }
   } else {
