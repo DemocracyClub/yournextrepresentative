@@ -152,8 +152,8 @@ class Command(BaseCommand):
                     )
                 if not recovered:
                     continue
-            filename = "official_documents/{post_id}/statement-of-persons-nominated{extension}".format(
-                post_id=pee.post.slug, extension=extension
+            filename = "official_documents/{ballot_paper_id}/statement-of-persons-nominated{extension}".format(
+                ballot_paper_id=pee.ballot_paper_id, extension=extension
             )
             with open(downloaded_filename, "rb") as f:
                 storage_filename = storage.save(filename, f)
