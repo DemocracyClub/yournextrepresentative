@@ -50,6 +50,12 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
             form.fields["source"].widget = forms.HiddenInput()
 
     def clean(self):
+        if (
+            not self.initial_form_count()
+            and self.ballot.membership_set.exists()
+        ):
+            # No extra forms exist, meaning no new people were added
+            return super().clean()
         if hasattr(self, "cleaned_data"):
             if not any(self.cleaned_data):
                 if not self.ballot.membership_set.exists():
