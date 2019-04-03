@@ -75,13 +75,20 @@ class ElectionListView(TemplateView):
             PostExtraElection.objects.filter(election__current=True)
             .select_related("election", "post")
             .prefetch_related("suggestedpostlock_set")
+            .prefetch_related("officialdocument_set")
             .annotate(memberships_count=Count("membership"))
             .order_by("election__election_date", "election__name")
         )
 
         f = BallotFilter(self.request.GET, qs)
+
         context["filter"] = f
+        context["queryset"] = f.qs
+        if f.data.get("review_required") == "suggestion":
+            context["queryset"] = context["queryset"][:10]
+
         context["shortcuts"] = filter_shortcuts(self.request)
+
         return context
 
 

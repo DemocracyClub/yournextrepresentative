@@ -92,7 +92,7 @@
 
   </section>
 
-  {% regroup filter.qs by election.election_date as ballots_by_date %}
+  {% regroup queryset by election.election_date as ballots_by_date %}
   {% for group in ballots_by_date %}
     <h3>{{ group.grouper }}</h3>
 
