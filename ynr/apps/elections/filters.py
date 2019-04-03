@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 import django_filters
 from django_filters.widgets import LinkWidget
 
-from candidates.models import PostExtraElection
+from candidates.models import PostExtraElection, TRUSTED_TO_LOCK_GROUP_NAME
 from elections.models import Election
 
 
@@ -81,20 +81,27 @@ class BallotFilter(django_filters.FilterSet):
 
 
 def filter_shortcuts(request):
-    shortcuts = [
+    shortcut_list = [
         {
             "name": "data_input",
             "label": "Ready for data input",
             "query": {"review_required": ["unlocked"], "has_sopn": ["1"]},
-        },
-        {
-            "name": "lock_required",
-            "label": "Locking required",
-            "query": {"review_required": ["suggestion"], "has_sopn": ["1"]},
-        },
+        }
     ]
+
+    if request.user.has_perm(TRUSTED_TO_LOCK_GROUP_NAME):
+        # Only offer a shortcut for a CTA that can be performed by this user
+        shortcut_list.append(
+            {
+                "name": "lock_required",
+                "label": "Locking required",
+                "query": {"review_required": ["suggestion"], "has_sopn": ["1"]},
+            }
+        )
+
     query = dict(request.GET)
-    for shortcut in shortcuts:
+    shortcuts = {"list": shortcut_list}
+    for shortcut in shortcuts["list"]:
         shortcut["querystring"] = urlencode(shortcut["query"], doseq=True)
         if shortcut["query"] == query:
             shortcut["active"] = True

@@ -74,7 +74,7 @@
       <dl class="sub-nav" role="menu" title="Filters">
         <dt>Filter:</dt>
         <dd {% if request.get_full_path == "/elections/" %}class="active" {% endif %}><a href="{% url "election_list_view" %}">All</a></dd>
-      {% for shortcut in shortcuts %}
+      {% for shortcut in shortcuts.list %}
         <dd {% if shortcut.active %}class="active" {% endif %}><a href="{% url "election_list_view" %}?{{ shortcut.querystring }}">{{ shortcut.label }}</a></dd>
       {% endfor %}
       </dl>
