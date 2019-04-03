@@ -1,15 +1,38 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load pipeline %}
+{% load staticfiles %}
 
 {% block body_class %}posts{% endblock %}
 
-{% block title %}{% trans "Candidates for all posts in current elections" %}{% endblock %}
+{% block extra_css %}
+  {% stylesheet 'official_documents' %}
+{% endblock %}
+
+{% block title %}Candidates for all ballots in current elections{% endblock %}
 
 {% block hero %}
-  <h1>{% trans "All Posts in Current Elections" %}</h1>
+  {% if shortcuts.active %}
+    {% if shortcuts.active.name == "data_input" %}
+      <h1>Ballots that need checking against the nomination paper</h1>
+      <p>For each of these ballots, we need someone to look at the document and manually add or remove candidates
+      to make our list exactly the same as the official nomination paper (<abbr title="Statement of Person's nominated">SoPN</abbr>).</p>
+    {% elif shortcuts.active.name == "lock_required"%}
+      <h1>Ballots with lock suggestions</h1>
+    {% endif %}
+  {% else %}
+    <h1>All ballots in Current Elections</h1>
+  {% endif %}
+
 {% endblock %}
 
 {% block content %}
+
+  {% if shortcuts.active.name == "lock_required" %}
+    <script src="{% static "official_documents/js/pdf.2.0.943.js" %}"></script>
+    <script src="{% static "official_documents/js/pdf.worker.2.0.943.js" %}"></script>
+    {% javascript 'sopn_viewer' %}
+    {% include "moderation_queue/includes/ajax_lock_button_js.html" %}
+  {% endif %}
 
   <style>
     .filters {
@@ -66,6 +89,9 @@
     .ballot_table td:nth-child(2) {
       width:40%;
     }
+    .ballot_table td:last-child {
+      width:15%;
+    }
   </style>
 
   <section class="filters">
@@ -106,37 +132,40 @@
         </tr>
       </thead>
       <tbody>
-        {% for ballot in group.list %}
-          <tr>
-            <td>
-              {% ifchanged %}
-                <strong>
-                  <a href="{{ ballot.election.get_absolute_url }}">
-                    {{ ballot.election.name }}
-                  </a>
-                </strong>
-              {% endifchanged %}
-            </td>
-            <td>
-              <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
-            </td>
-            <td>{{ ballot.memberships_count }}</td>
-            <td>
-              {% if ballot.cancelled %}
-                {{ ballot.cancelled }}
-              {% elif ballot.candidates_locked %}
-                {{ ballot.locked_status_html }}
+      {% for ballot in group.list %}
+        <tr>
+          <td>
+            {% ifchanged %}
+              <strong>
+                <a href="{{ ballot.election.get_absolute_url }}">
+                  {{ ballot.election.name }}
+                </a>
+              </strong>
+            {% endifchanged %}
+          </td>
+          <td>
+            <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
+          </td>
+          <td>{{ ballot.memberships_count }}</td>
+          <td>
+            {% if ballot.cancelled %}
+              {{ ballot.cancelled }}
+            {% elif ballot.candidates_locked %}
+              {{ ballot.locked_status_html }}
+            {% else %}
+              {% if ballot.officialdocument_set.exists and not ballot.suggestedpostlock_set.exists%}
+                <a href="{% url "bulk_add_from_sopn" ballot.election.slug ballot.post.slug %}" class="button tiny">Add candidates</a>
               {% else %}
-
-                {% if ballot.suggestedpostlock_set.exists %}
-                  Lock suggestion {{ ballot.suggested_lock_html }}
-                {% else %}
-                  Unlocked
-                {% endif %}
+                Unlocked
               {% endif %}
-            </td>
+
+            {% endif %}
+          </td>
         </tr>
-        {% endfor %}
+        {% if shortcuts.active.name == "lock_required" %}
+          {% include "moderation_queue/includes/inline-lock-table-view.html" with ballot=ballot %}
+        {% endif %}
+      {% endfor %}
       </tbody>
     </table>
   {% empty %}

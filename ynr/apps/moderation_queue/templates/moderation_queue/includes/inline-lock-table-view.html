@@ -1,0 +1,37 @@
+<tr>
+  <td colspan="2">
+    <table style="width:30em;">
+      <caption><strong>{{ ballot.membership_set.count }} people</strong></caption>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Party</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for membership in ballot.membership_set.all|dictsort:"person.last_name_guess"%}
+        <tr>
+          <td><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a></td>
+          <td>{{ membership.party }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% include "moderation_queue/includes/ajax_lock_button_html.html" with postextraelection=ballot %}
+  </td>
+  <td colspan="2">
+    <div id="sopn-{{ ballot.ballot_paper_id }}" class="pdf_container" style="max-width:100% !important; width: 100% !important;"></div>
+    <script>
+    SOPN_VIEWER.ShowSOPNInline(
+      '{{ ballot.sopn.uploaded_file.url }}',
+      '{{ ballot.ballot_paper_id }}',
+      {
+        'start_page': 1, //{{ ballot.first_page_number }},
+        'end_page': 2 //{{ ballot.last_page_number }}
+      }
+
+    )
+
+    </script>
+  </td>
+</tr>
