@@ -26,4 +26,4 @@ class Command(BaseSOPNParsingCommand):
             try:
                 extract_pages_for_ballot(ballot)
             except (ValueError, NoTextInDocumentError) as e:
-                self.stderr.write(e)
+                self.stderr.write(e.args[0])

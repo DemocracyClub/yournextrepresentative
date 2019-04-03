@@ -41,9 +41,7 @@ def extract_pages_for_single_document(document):
     for other_doc in other_doc_models:
         pages = sopn.get_pages_by_ward_name(other_doc.post_election.post.label)
         if not pages:
-            raise ValueError(
-                "None of the ballots fund in file {}".format(filename)
-            )
+            continue
         page_numbers = ",".join(str(p.page_number) for p in pages)
         yield other_doc, page_numbers
 
