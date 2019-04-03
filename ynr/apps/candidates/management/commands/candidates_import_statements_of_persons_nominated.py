@@ -113,7 +113,7 @@ class Command(BaseCommand):
             )
             extension = mimetypes.guess_extension(mime_type)
 
-            if mime_type in allowed_mime_types:
+            if mime_type not in allowed_mime_types:
                 recovered = False
                 # Attempt to get a PDF link form the URL
                 ignore_urls = ["drive.google.com"]
