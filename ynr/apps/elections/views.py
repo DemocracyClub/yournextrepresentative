@@ -991,6 +991,7 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
                 user=self.request.user,
                 action_type=("constituency" + suffix),
                 ip_address=get_client_ip(self.request),
+                post_election=pee,
                 source=message,
             )
         if self.request.is_ajax():
