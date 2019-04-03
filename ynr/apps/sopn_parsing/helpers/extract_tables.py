@@ -23,7 +23,7 @@ def extract_ballot_table(ballot, parse_flavor="lattice"):
 
     try:
         tables = camelot.read_pdf(
-            document.uploaded_file.path,
+            document.uploaded_file.url,
             pages=document.relevant_pages,
             flavor=parse_flavor,
         )

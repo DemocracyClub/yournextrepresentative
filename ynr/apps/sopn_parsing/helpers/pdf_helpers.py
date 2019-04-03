@@ -15,8 +15,8 @@ CONTINUATION_THRESHOLD = 0.4
 
 
 class SOPNDocument:
-    def __init__(self, file_path):
-        self.file_path = file_path
+    def __init__(self, file):
+        self.file = file
         self.pages = []
         self.parse_pages()
         self.document_heading = self.pages[0].get_page_heading_set()
@@ -34,7 +34,7 @@ class SOPNDocument:
         codec = "utf-8"
         laparams = LAParams()
 
-        fp = open(self.file_path, "rb")
+        fp = self.file
 
         for page_no, page in enumerate(
             PDFPage.get_pages(fp, check_extractable=True), start=1

@@ -220,7 +220,8 @@ def parse_raw_data_for_ballot(ballot):
             ),
         )
         storage.save(
-            desired_storage_path, ContentFile(json.dumps(ballot_data, indent=4))
+            desired_storage_path,
+            ContentFile(json.dumps(ballot_data, indent=4).encode("utf8")),
         )
 
         parsed_sopn_model.status = "parsed"

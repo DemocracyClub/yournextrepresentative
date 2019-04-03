@@ -25,17 +25,19 @@ def extract_pages_for_single_document(document):
         source_url=document.source_url
     ).select_related("post_election", "post_election__post")
 
-    filename = document.uploaded_file.path
-    if not filename:
+    doc_file = document.uploaded_file.file
+    if not doc_file:
         return
 
     if other_doc_models.count() == 1:
         yield document, "all"
         return
     try:
-        sopn = SOPNDocument(filename)
+        sopn = SOPNDocument(doc_file)
     except (NoTextInDocumentError):
-        raise NoTextInDocumentError("No text in {}, skipping".format(filename))
+        raise NoTextInDocumentError(
+            "No text in {}, skipping".format(document.uploaded_file.url)
+        )
     for other_doc in other_doc_models:
         pages = sopn.get_pages_by_ward_name(other_doc.post_election.post.label)
         if not pages:
