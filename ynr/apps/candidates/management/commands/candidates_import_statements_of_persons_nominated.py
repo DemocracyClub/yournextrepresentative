@@ -17,16 +17,16 @@ from candidates.models import PostExtraElection
 from compat import BufferDictReader
 
 allowed_mime_types = {
-    b"application/pdf",
-    b"application/msword",
-    b"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 }
 
 headers = {"User-Agent": "DemocracyClub Candidates"}
 
 
 def download_file_cached(url):
-    url_hash = hashlib.md5(url).hexdigest()
+    url_hash = hashlib.md5(url.encode("utf8")).hexdigest()
     directory = join(dirname(__file__), ".noms-cache")
     try:
         os.mkdir(directory)
@@ -45,7 +45,7 @@ def download_file_cached(url):
     except:
         print("Error downloading {}".format(url))
         raise
-    with open(filename, "w") as f:
+    with open(filename, "wb") as f:
         f.write(r.content)
     return filename
 
@@ -107,11 +107,13 @@ class Command(BaseCommand):
                     )
                 )
                 continue
-            except:
-                continue
-            mime_type = mime_type_magic.from_file(downloaded_filename)
+
+            mime_type = mime_type_magic.from_file(downloaded_filename).decode(
+                "utf8"
+            )
             extension = mimetypes.guess_extension(mime_type)
-            if mime_type not in allowed_mime_types:
+
+            if mime_type in allowed_mime_types:
                 recovered = False
                 # Attempt to get a PDF link form the URL
                 ignore_urls = ["drive.google.com"]
@@ -133,6 +135,7 @@ class Command(BaseCommand):
                             mime_type = mime_type_magic.from_file(
                                 downloaded_filename
                             )
+
                             extension = mimetypes.guess_extension(mime_type)
                             if mime_type not in allowed_mime_types:
                                 raise ValueError(
@@ -153,17 +156,19 @@ class Command(BaseCommand):
                     )
                 if not recovered:
                     continue
+
             filename = "official_documents/{ballot_paper_id}/statement-of-persons-nominated{extension}".format(
                 ballot_paper_id=pee.ballot_paper_id, extension=extension
             )
+
+            if not extension:
+                raise ValueError("unknown extension")
             with open(downloaded_filename, "rb") as f:
                 storage_filename = storage.save(filename, f)
 
             OfficialDocument.objects.create(
                 document_type=OfficialDocument.NOMINATION_PAPER,
                 uploaded_file=storage_filename,
-                election=pee.election,
-                post=pee.post,
                 post_election=pee,
                 source_url=document_url,
             )
