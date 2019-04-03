@@ -41,6 +41,30 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
                     }
                 ),
             )
+            if self.initial:
+                # If we have raw people with parties that wouldn't normally
+                # be in the party list (beacuse they have no current
+                # candidates yet) then we should manually add them,
+                # so that the dropdown isn't empty.
+                existing_ids = set(
+                    [v[0][0] for k, v in form.fields["party"].choices if v]
+                )
+                extra_parties = set()
+                for row in self.initial:
+                    if row.get("party"):
+                        party_id = row["party"].split("__")[0]
+                        if party_id in existing_ids:
+                            continue
+                        extra_parties.add(party_id)
+                party_qs = Party.objects.filter(
+                    ec_id__in=extra_parties
+                ).prefetch_related("descriptions")
+
+                for party_obj in party_qs:
+                    names = [(party_obj.ec_id, party_obj.format_name)]
+                    for description in party_obj.descriptions.all():
+                        names.append((party_obj.ec_id, description.description))
+                    form.fields["party"].choices.extend(names)
 
             if "party" in getattr(form, "_hide", []):
                 form.fields["party"].widget = forms.HiddenInput()
@@ -50,6 +74,12 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
             form.fields["source"].widget = forms.HiddenInput()
 
     def clean(self):
+        if (
+            not self.initial_form_count()
+            and self.ballot.membership_set.exists()
+        ):
+            # No extra forms exist, meaning no new people were added
+            return super().clean()
         if hasattr(self, "cleaned_data"):
             if not any(self.cleaned_data):
                 if not self.ballot.membership_set.exists():

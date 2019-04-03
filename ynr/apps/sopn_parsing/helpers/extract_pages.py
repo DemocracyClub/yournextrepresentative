@@ -21,17 +21,15 @@ def extract_pages_for_ballot(ballot):
 
 
 def extract_pages_for_single_document(document):
-    other_doc_models = (
-        OfficialDocument.objects.filter(source_url=document.source_url)
-        .exclude(pk=document.pk)
-        .select_related("post_election", "post_election__post")
-    )
+    other_doc_models = OfficialDocument.objects.filter(
+        source_url=document.source_url
+    ).select_related("post_election", "post_election__post")
 
     filename = document.uploaded_file.path
     if not filename:
         return
 
-    if not other_doc_models.exists():
+    if other_doc_models.count() == 1:
         yield document, "all"
         return
     try:
@@ -41,9 +39,7 @@ def extract_pages_for_single_document(document):
     for other_doc in other_doc_models:
         pages = sopn.get_pages_by_ward_name(other_doc.post_election.post.label)
         if not pages:
-            raise ValueError(
-                "None of the ballots fund in file {}".format(filename)
-            )
+            continue
         page_numbers = ",".join(str(p.page_number) for p in pages)
         yield other_doc, page_numbers
 

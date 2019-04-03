@@ -39,6 +39,7 @@ class Command(BaseSOPNParsingCommand):
             candidates_locked=False,  # Never parse a locked ballot
             suggestedpostlock=None,  # Never parse a ballot with lock suggestions
         )
+
         if not qs.exists():
             msg = ["No ballots to parse found."]
 
