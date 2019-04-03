@@ -4,7 +4,7 @@ var SOPN_VIEWER = (function () {
     var module = {};
 
     function load_pages_by_range(pdf, start_page, end_page) {
-        if (start_page > pdf.numPages || end_page < pdf.numPages) {
+        if (start_page > pdf.numPages || start_page === end_page + 1) {
             return;
         }
         pdf.getPage(start_page).then(function (page) {
