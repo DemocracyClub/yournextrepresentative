@@ -39,6 +39,25 @@
   </ol>
   </details>
 
+  {% if post_election.rawpeople and post_election.rawpeople.source_type == "parsed_pdf"%}
+    <div class="panel callout">
+      <details open>
+        <summary>
+          🤖 This SoPN has been parsed by a bot 🤖
+        </summary>
+        <p>
+          This is a new feature that might not work perfectly. The form fields below
+          should be popluated with the candidates on the nomination paper, but
+          they still need checking against the document.
+        </p>
+        <p>
+          Please report any errors on our <a href="https://slack.democracyclub.org.uk">Slack</a>
+          or over <a href="mailto:hello@democracyclub.org.uk">email</a>
+        </p>
+      </details>
+    </div>
+  {% endif %}
+
 {% include "bulk_add/sopns/_known-people.html" %}
 
   <form method=POST id="bulk_add_form">
