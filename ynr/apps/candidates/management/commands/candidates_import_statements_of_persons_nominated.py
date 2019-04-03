@@ -171,4 +171,4 @@ class Command(BaseCommand):
                 "Successfully added the Statement of Persons Nominated for {0}"
             )
             print(message.format(pee.ballot_paper_id))
-            extract_and_parse_tables_for_ballot.delay(pee)
+            extract_and_parse_tables_for_ballot.delay(pee.ballot_paper_id)
