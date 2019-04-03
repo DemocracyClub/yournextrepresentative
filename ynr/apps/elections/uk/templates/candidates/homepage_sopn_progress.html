@@ -1,5 +1,5 @@
 {% load humanize %}
-{% if SHOW_SOPN_TRACKER %}
+{% if SHOW_SOPN_TRACKER and sopn_progress%}
 
 {# <div class="radius progress success large-12" role="progressbar" #}
 {#     aria-valuenow="{{ sopn_progress.sopns_imported }}" #}
