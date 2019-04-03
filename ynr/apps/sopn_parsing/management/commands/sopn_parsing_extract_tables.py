@@ -19,8 +19,7 @@ class Command(BaseSOPNParsingCommand):
             qs = qs.filter(**filter_kwargs)
 
         # We can't extract tables when we don't know about the pages
-        qs = qs.exclude(officialdocument__relevant_pages=None)
-
+        qs = qs.exclude(officialdocument__relevant_pages="")
         for ballot in qs:
             try:
                 extract_ballot_table(ballot)
