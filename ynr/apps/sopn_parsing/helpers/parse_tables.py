@@ -92,18 +92,26 @@ def get_description(description, sopn):
     if description in INDEPENDENT_VALUES:
         return None
 
+    register = sopn.sopn.post_election.post.party_set.slug.upper()
     try:
         description_model = PartyDescription.objects.get(
-            description=description
+            description=description, party__register=register
         )
     except PartyDescription.DoesNotExist:
         try:
-            description_model = PartyDescription.objects.filter(
-                description__startswith=description,
-                party__register=sopn.sopn.post_election.post.party_set.slug,
+            return PartyDescription.objects.filter(
+                description__istartswith=description, party__register=register
             ).first()
         except PartyDescription.DoesNotExist:
-            return None
+            try:
+                # If this is a Welsh version of a description, it will be at
+                # the end of the description
+                return PartyDescription.objects.filter(
+                    description__endswith="| {}".format(description),
+                    party__register=register,
+                ).first()
+            except PartyDescription.DoesNotExist:
+                return None
     return description_model
 
 
@@ -112,8 +120,10 @@ def get_party(description_model, description, sopn):
         return description_model.party
 
     party_name = clean_description(description)
-    qs = Party.objects.register(sopn.sopn.post_election.post.party_set.slug)
-    if not party_name:
+    qs = Party.objects.register(
+        sopn.sopn.post_election.post.party_set.slug.upper()
+    )
+    if not party_name or party_name in INDEPENDENT_VALUES:
         return Party.objects.get(ec_id="ynmp-party:2")
 
     try:
