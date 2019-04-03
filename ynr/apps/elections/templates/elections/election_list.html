@@ -15,7 +15,7 @@
     {% if shortcuts.active.name == "data_input" %}
       <h1>Ballots that need checking against the nomination paper</h1>
       <p>For each of these ballots, we need someone to look at the document and manually add or remove candidates
-      to make our list exactly the same as the official nomination paper (<abbr title="Statement of Person's nominated">SoPN</abbr>).</p>
+      to make our list exactly the same as the official nomination paper (SoPN).</p>
     {% elif shortcuts.active.name == "lock_required"%}
       <h1>Ballots with lock suggestions</h1>
     {% endif %}
@@ -175,6 +175,8 @@
       {% else%}
         All ballots with suggested locks have been locked!
       {% endif %}
+    {% elif filter.data.review_required == "unlocked" %}
+        All ballots with documents have had data entered!
     {% else %}
       No elections match the filters given. Try removing some.
     {% endif %}
