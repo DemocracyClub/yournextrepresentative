@@ -8,7 +8,8 @@ from django.views.generic import RedirectView, TemplateView
 
 from bulk_adding import forms, helpers
 from bulk_adding.models import RawPeople
-from candidates.models import PostExtraElection
+from candidates.models import PostExtraElection, LoggedAction
+from candidates.views import get_client_ip
 from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
@@ -231,6 +232,15 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                 SuggestedPostLock.objects.create(
                     user=self.request.user, postextraelection=pee
                 )
+
+                LoggedAction.objects.create(
+                    user=self.request.user,
+                    action_type="constituency-lock",
+                    ip_address=get_client_ip(self.request),
+                    post_election=pee,
+                    source="Suggested after bulk adding",
+                )
+
                 if hasattr(pee, "rawpeople"):
                     # Delete the raw import, as it's no longer useful
                     pee.rawpeople.delete()

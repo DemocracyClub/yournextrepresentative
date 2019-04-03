@@ -989,7 +989,7 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
 
             LoggedAction.objects.create(
                 user=self.request.user,
-                action_type=("constituency" + suffix),
+                action_type="constituency-{}".format(suffix),
                 ip_address=get_client_ip(self.request),
                 post_election=pee,
                 source=message,
