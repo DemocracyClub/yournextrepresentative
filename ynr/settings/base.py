@@ -136,7 +136,10 @@ INSTALLED_APPS = (
     "wombles",
     "frontend",
     "sopn_parsing",
+    "django_celery_results",
 )
+
+CELERY_RESULT_BACKEND = "django-db"
 
 MIDDLEWARE = (
     "debug_toolbar.middleware.DebugToolbarMiddleware",
