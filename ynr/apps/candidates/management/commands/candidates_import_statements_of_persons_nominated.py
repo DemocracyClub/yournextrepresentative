@@ -95,7 +95,7 @@ class Command(BaseCommand):
             try:
                 downloaded_filename = download_file_cached(document_url)
             except requests.exceptions.ConnectionError:
-                print("Connection failed for {}".format(name))
+                print("Connection failed for {}".format(row["ballot_paper_id"]))
                 print("The URL was:", document_url)
                 continue
             except requests.exceptions.MissingSchema:
@@ -103,7 +103,7 @@ class Command(BaseCommand):
                 # column, so ignore:
                 print(
                     "Probably not a document URL for {}: {}".format(
-                        name, document_url
+                        row["ballot_paper_id"], document_url
                     )
                 )
                 continue
