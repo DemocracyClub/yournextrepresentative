@@ -610,11 +610,13 @@ class SuggestLockReviewListView(
 
         qs = qs.exclude(suggestedpostlock__user=self.request.user)
 
-        return qs[:10]
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["ballots"] = self.get_lock_suggestions()
+        all_ballots = self.get_lock_suggestions()
+        context["total_ballots"] = all_ballots.count()
+        context["ballots"] = all_ballots[:10]
 
         return context
 

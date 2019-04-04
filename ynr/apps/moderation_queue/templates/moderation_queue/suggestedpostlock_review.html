@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load pipeline %}
 {% load staticfiles %}
+{% load humanize %}
 {% block hero %}
   <h1>Ballots with lock suggestions</h1>
 {% endblock %}
@@ -19,6 +20,7 @@
 
 {% if ballots %}
   <p>Suggestions are grouped by nomination paper</p>
+  <p>Showing {{ ballots.count }} of {{ total_ballots|intcomma }} ballots with suggested locks. Reload this page to get another random set.</p>
 
   {% regroup ballots by officialdocument_set.first.source_url as ballots_by_doc_source %}
 
