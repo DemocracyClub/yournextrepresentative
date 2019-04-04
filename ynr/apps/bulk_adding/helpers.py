@@ -151,21 +151,29 @@ class CSVImporter:
 
         raise ValueError("Blank name")
 
-    def get_party_description(self, row):
+    def get_party_description(self, row, register):
         desc = row[self.party_description_header_name]
-
         try:
-            return PartyDescription.objects.get(description=desc)
+            return PartyDescription.objects.get(
+                description=desc, party__register=register
+            )
         except PartyDescription.DoesNotExist:
             try:
                 return PartyDescription.objects.get(
-                    description__startswith="{} |".format(desc)
+                    description__startswith="{} |".format(desc),
+                    party__register=register,
                 )
             except PartyDescription.DoesNotExist:
                 return None
 
     def get_party_id(self, row, ballot_model):
-        desc_model = self.get_party_description(row)
+        group = ballot_model.post.group
+        if group == "Northern Ireland":
+            register = "ni"
+        else:
+            register = "gb"
+        register = register.upper()
+        desc_model = self.get_party_description(row, register)
         if desc_model:
             return desc_model.party.ec_id
 
@@ -173,11 +181,6 @@ class CSVImporter:
             return "ynmp-party:2"
         print(repr(row[self.party_description_header_name]))
 
-        group = ballot_model.post.group
-        if group == "Northern Ireland":
-            register = "ni"
-        else:
-            register = "gb"
         return (
             Party.objects.register(register)
             .get(name=row[self.party_description_header_name])
