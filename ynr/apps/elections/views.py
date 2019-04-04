@@ -84,9 +84,6 @@ class ElectionListView(TemplateView):
 
         context["filter"] = f
         context["queryset"] = f.qs
-        if f.data.get("review_required") == "suggestion":
-            context["queryset"] = context["queryset"][:10]
-
         context["shortcuts"] = filter_shortcuts(self.request)
 
         return context
