@@ -151,7 +151,16 @@ class CSVImporter:
 
         raise ValueError("Blank name")
 
-    def get_party_description(self, row, register):
+    def get_register_for_ballot(self, ballot):
+        group = ballot.post.group
+        if group == "Northern Ireland":
+            register = "NI"
+        else:
+            register = "GB"
+        return register
+
+    def get_party_description(self, row, ballot):
+        register = self.get_register_for_ballot(ballot)
         desc = row[self.party_description_header_name]
         try:
             return PartyDescription.objects.get(
@@ -167,13 +176,8 @@ class CSVImporter:
                 return None
 
     def get_party_id(self, row, ballot_model):
-        group = ballot_model.post.group
-        if group == "Northern Ireland":
-            register = "ni"
-        else:
-            register = "gb"
-        register = register.upper()
-        desc_model = self.get_party_description(row, register)
+        register = self.get_register_for_ballot(ballot_model)
+        desc_model = self.get_party_description(row, ballot_model)
         if desc_model:
             return desc_model.party.ec_id
 
@@ -210,7 +214,7 @@ class CSVImporter:
                 "name": self.format_name(row),
                 "party_id": self.get_party_id(row, ballot_model),
             }
-            desc = self.get_party_description(row)
+            desc = self.get_party_description(row, ballot_model)
             if desc:
                 data["description_id"] = str(desc.pk)
             ballot_dict["data"].append(data)
