@@ -178,9 +178,14 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
         context = super().get_context_data(**kwargs)
 
         initial = []
-        raw_ballot = context["post_election"].rawpeople
+        if hasattr(context["post_election"], "rawpeople"):
+            # Race condition! Someone else has processes this area
+            # between page views. Best just show the data we have.
+            raw_ballot_data = context["post_election"].rawpeople.data
+        else:
+            raw_ballot_data = []
 
-        for candidacy in raw_ballot.data:
+        for candidacy in raw_ballot_data:
             form = {}
             party = Party.objects.get(ec_id=candidacy["party_id"])
             if candidacy.get("description_id"):
