@@ -38,7 +38,11 @@ from candidates.management.images import (
     ImageDownloadException,
     download_image_from_url,
 )
-from candidates.models import LoggedAction, PostExtraElection
+from candidates.models import (
+    LoggedAction,
+    PostExtraElection,
+    TRUSTED_TO_LOCK_GROUP_NAME,
+)
 from candidates.views.version_data import get_client_ip, get_change_metadata
 
 from people.models import PersonImage, Person
@@ -566,7 +570,9 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
         return self.object.postextraelection.get_absolute_url()
 
 
-class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
+class SuggestLockReviewListView(
+    GroupRequiredMixin, LoginRequiredMixin, TemplateView
+):
     """
     This is the view which lists all post lock suggestions that need review
 
@@ -575,6 +581,7 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
     """
 
     template_name = "moderation_queue/suggestedpostlock_review.html"
+    required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
 
     def get_lock_suggestions(self):
         # TODO optimize this

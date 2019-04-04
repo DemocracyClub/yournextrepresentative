@@ -452,7 +452,7 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
     def test_suggested_lock_review_view_no_suggestions(self):
         url = reverse("suggestions-to-lock-review-list")
-        response = self.app.get(url, user=self.user)
+        response = self.app.get(url, user=self.user_who_can_lock)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "<h3>")
 
@@ -469,7 +469,7 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
             source_url="http://example.com",
         )
         url = reverse("suggestions-to-lock-review-list")
-        response = self.app.get(url, user=self.user)
+        response = self.app.get(url, user=self.user_who_can_lock)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "<h3>")
 
