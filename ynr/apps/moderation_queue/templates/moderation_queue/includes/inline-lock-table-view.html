@@ -29,8 +29,8 @@
         <strong><a href="{{ ballot.sopn.get_absolute_url }}" target="_blank" class="button secondary tiny">
             View the SOPN in a new window</a></strong>
         <div id="sopn-{{ ballot.ballot_paper_id }}" class="pdf_container" style="max-width:100% !important; width: 100% !important;"></div>
+        {% if ballot.sopn.relevant_pages %}
         <script>
-          {% if ballot.sopn.relevant_pages %}
           SOPN_VIEWER.ShowSOPNInline(
             '{{ ballot.sopn.uploaded_file.url }}',
             '{{ ballot.ballot_paper_id }}',
@@ -41,8 +41,10 @@
             {% endif %}
             }
           )
-          {% endif %}
         </script>
+        {% else %}
+          (Unable to show this PDF inline, please open it in a new window)
+        {% endif %}
       {% else %}
         No SOPN uploaded
       {% endif %}
