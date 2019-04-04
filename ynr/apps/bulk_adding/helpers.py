@@ -141,7 +141,11 @@ class CSVImporter:
         for name_part in [FIRST_NAME_FIELDS, LAST_NAME_FIELDS]:
             for name_field in name_part:
                 if name_field in self.header_rows:
-                    name.append(row[name_field])
+                    name_part = row[name_field]
+                    if name_part.upper() == name_part:
+                        # This is all upper case, title case it
+                        name_part = name_part.title()
+                    name.append(name_part)
         if name:
             return " ".join(name)
 
