@@ -202,16 +202,22 @@ def parse_raw_data_for_ballot(ballot):
         return None
 
     if ballot_data:
-        RawPeople.objects.update_or_create(
-            ballot=parsed_sopn_model.sopn.post_election,
-            defaults={
-                "data": ballot_data,
-                "source": "Parsed from {}".format(
-                    parsed_sopn_model.sopn.source_url
-                ),
-                "source_type": RawPeople.SOURCE_PARSED_PDF,
-            },
-        )
+        # Check there isn't a rawpeople object from another (better) source
+        rawpeople_qs = RawPeople.objects.filter(
+            ballot=parsed_sopn_model.sopn.post_election
+        ).exclude(source_type=RawPeople.SOURCE_PARSED_PDF)
+        if not rawpeople_qs.exists():
+            RawPeople.objects.update_or_create(
+                ballot=parsed_sopn_model.sopn.post_election,
+                defaults={
+                    "data": ballot_data,
+                    "source": "Parsed from {}".format(
+                        parsed_sopn_model.sopn.source_url
+                    ),
+                    "source_type": RawPeople.SOURCE_PARSED_PDF,
+                },
+            )
+        # We've done the parsing, so let's still save the result
         storage = DefaultStorage()
         desired_storage_path = join(
             "raw_people",
