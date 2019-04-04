@@ -46,9 +46,7 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         context["parties"] = Party.objects.register(register).party_choices(
             **kwargs
         )
-        context["official_document"] = OfficialDocument.objects.filter(
-            post_election=context["post_election"]
-        ).first()
+        context["official_document"] = context["post_election"].sopn
         self.official_document = context["official_document"]
         return context
 
