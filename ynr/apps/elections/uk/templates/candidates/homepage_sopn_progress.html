@@ -8,7 +8,7 @@
 {# </div> #}
 <a class="button" href="{% url "sopn-review-required" %}?random">Start adding candidates</a>
 <br>or<br>
-<a class="button small" href="{% url "sopn-review-required" %}">See the full list of SoPNs</a>
+<a class="button small" href="{% url "election_list_view" %}?review_required=unlocked&has_sopn=1">See the full list of SoPNs</a>
 
 <h3><strong>{{ sopn_progress.posts_lock_suggested|intcomma }}</strong> areas have been entered</h3>
 <div class="radius progress success large-12" role="progressbar"
