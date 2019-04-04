@@ -209,7 +209,7 @@ class CSVImporter:
             }
             desc = self.get_party_description(row)
             if desc:
-                data["description_id"] = desc.pk
+                data["description_id"] = str(desc.pk)
             ballot_dict["data"].append(data)
 
         for ballot_id, ballot_dict in self.ballots.items():
