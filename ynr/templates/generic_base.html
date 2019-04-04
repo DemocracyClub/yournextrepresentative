@@ -44,8 +44,8 @@
             <li class="nav-links__item">{% blocktrans with username=user.username %}Signed in as <strong>{{ username }}</strong>{% endblocktrans %}</li>
             {% if user_can_lock and suggestions_to_lock > 0 %}
               <li class="nav-links__item">
-                <a href="{% url 'election_list_view' %}?review_required=suggestion&has_sopn=1">
-                  <span class="notification">{{ suggestions_to_lock }}</span> Post lock suggestions
+                <a href="{% url 'suggestions-to-lock-review-list' %}">
+                  <span class="notification">{{ suggestions_to_lock }}</span> Ballot lock suggestions
                 </a>
               </li>
             {% endif %}
