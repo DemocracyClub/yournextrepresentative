@@ -3,7 +3,7 @@ var SOPN_VIEWER = (function () {
 
     var module = {};
 
-    function load_pages_by_range(pdf, start_page, end_page) {
+    function load_pages_by_range(pdf, start_page, end_page, container) {
         if (start_page > pdf.numPages || start_page === end_page + 1) {
             return;
         }
@@ -29,7 +29,7 @@ var SOPN_VIEWER = (function () {
 
                 var renderTask = page.render(renderContext);
                 renderTask.then(function () {
-                    window.pdf_container.append(page_container);
+                    container.append(page_container);
                     return page.getTextContent({normalizeWhitespace: true});
                 }).then(function (textContent) {
                     var pdf_canvas = $(canvas),
@@ -63,7 +63,7 @@ var SOPN_VIEWER = (function () {
 
         });
     }
-    function show_google_viewer(sopn_url) {
+    function show_google_viewer(sopn_url, container) {
         /*
         Show the Google document viewer if PDFJS can't deal with this document for whatever reason
         */
@@ -74,36 +74,34 @@ var SOPN_VIEWER = (function () {
         var url = "https://docs.google.com/viewer?url=https://candidates.democracyclub.org.uk";
         url = url + encodeURI(sopn_url) + "&embedded=true";
         google_frame.setAttribute("src", url);
-        window.pdf_container.append(google_frame);
+        container.append(google_frame);
     }
 
     function ShowSOPNInline(sopn_url, ballot_paper_id, options) {
-
+        // The container element
+        var this_pdf_container = document.getElementById("sopn-" + ballot_paper_id);
 
         try {
             var loadingTask = pdfjsLib.getDocument(sopn_url);
 
             loadingTask.promise.then(function (pdf) {
-                // The container element
-                window.pdf_container = document.getElementById("sopn-" + ballot_paper_id);
-
                 // Get the end page either from the defined range, or the total number of pages
                 var start_page = options.start_page || 1;
                 var end_page = options.end_page || pdf.numPages;
-                load_pages_by_range(pdf, start_page, end_page);
+                load_pages_by_range(pdf, start_page, end_page, this_pdf_container);
 
             }).then(null, function (error) {
-                window.pdf_container = document.getElementById("sopn-" + ballot_paper_id);
+
                 if (error.name === "MissingPDFException") {
-                    window.pdf_container.innerHTML = "<h3>PDF file not found</h3>";
+                    this_pdf_container.innerHTML = "<h3>PDF file not found</h3>";
                 }
 
                 if (error.name === "InvalidPDFException") {
-                    show_google_viewer(sopn_url);
+                    show_google_viewer(sopn_url, this_pdf_container);
                 }
             });
         } catch (e) {
-            show_google_viewer(sopn_url);
+            show_google_viewer(sopn_url, this_pdf_container);
         }
 
     }

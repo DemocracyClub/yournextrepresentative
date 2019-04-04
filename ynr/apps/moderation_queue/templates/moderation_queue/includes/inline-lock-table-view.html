@@ -30,6 +30,7 @@
             View the SOPN in a new window</a></strong>
         <div id="sopn-{{ ballot.ballot_paper_id }}" class="pdf_container" style="max-width:100% !important; width: 100% !important;"></div>
         <script>
+          {% if ballot.sopn.relevant_pages %}
           SOPN_VIEWER.ShowSOPNInline(
             '{{ ballot.sopn.uploaded_file.url }}',
             '{{ ballot.ballot_paper_id }}',
@@ -40,6 +41,7 @@
             {% endif %}
             }
           )
+          {% endif %}
         </script>
       {% else %}
         No SOPN uploaded
