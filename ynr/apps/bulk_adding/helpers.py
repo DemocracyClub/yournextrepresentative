@@ -105,16 +105,25 @@ class CSVImporter:
             "Description",
             "Candidates Description",
             "CandidateDescription",
+            "CandidateLine5",
         ]
         for description_field in DESCRIPTION_FIELDS:
             if description_field in self.header_rows:
                 return description_field
         raise ValueError("No party description header matched")
 
+    def clean_area_name(self, name):
+
+        name = name.replace(" Ward", "").strip().lower()
+        name = name.replace("`", "'")
+        name = name.replace(" & ", " and ")
+        return name
+
     def match_division_to_ballot(self, row):
-        post_name = row[self.post_header_name]
+        post_name = self.clean_area_name(row[self.post_header_name])
         for ballot in self.election.postextraelection_set.all():
-            if ballot.post.label == post_name:
+            print(self.clean_area_name(ballot.post.label), post_name)
+            if self.clean_area_name(ballot.post.label) == post_name:
                 return ballot
         raise ValueError("No ballot matched to {}".format(post_name))
 
@@ -126,8 +135,8 @@ class CSVImporter:
 
         name = []
 
-        FIRST_NAME_FIELDS = ["Forename", "CandidateForename"]
-        LAST_NAME_FIELDS = ["Surname", "CandidateSurname"]
+        FIRST_NAME_FIELDS = ["Forename", "CandidateForename", "CandidateLine2"]
+        LAST_NAME_FIELDS = ["Surname", "CandidateSurname", "CandidateLine1"]
 
         for name_part in [FIRST_NAME_FIELDS, LAST_NAME_FIELDS]:
             for name_field in name_part:
