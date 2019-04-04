@@ -45,7 +45,7 @@
             {% if user_can_lock and suggestions_to_lock > 0 %}
               <li class="nav-links__item">
                 <a href="{% url 'suggestions-to-lock-review-list' %}">
-                  <span class="notification">{{ suggestions_to_lock }}</span> Post lock suggestions
+                  <span class="notification">{{ suggestions_to_lock }}</span> Ballot lock suggestions
                 </a>
               </li>
             {% endif %}

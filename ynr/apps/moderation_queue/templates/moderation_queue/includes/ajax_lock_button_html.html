@@ -1,6 +1,5 @@
 <div class="lock_button_container">
-  <form method=post action="{% url 'constituency-lock' election=postextraelection.election.slug %}">
-    <input type="hidden" name="post_id" value="{{ postextraelection.post.slug }}">
+  <form method=post action="{% url 'constituency-lock' ballot_id=postextraelection.ballot_paper_id %}">
     {% if postextraelection.candidates_locked %}
       <input type="hidden" name="lock" value="unlock">
     {% else %}

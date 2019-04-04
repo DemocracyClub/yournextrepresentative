@@ -1,38 +1,178 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load pipeline %}
+{% load staticfiles %}
 
 {% block body_class %}posts{% endblock %}
 
-{% block title %}{% trans "Candidates for all posts in current elections" %}{% endblock %}
+{% block extra_css %}
+  {% stylesheet 'official_documents' %}
+{% endblock %}
+
+{% block title %}Candidates for all ballots in current elections{% endblock %}
 
 {% block hero %}
-  <h1>{% trans "All Posts in Current Elections" %}</h1>
+  {% if shortcuts.active %}
+    {% if shortcuts.active.name == "data_input" %}
+      <h1>Ballots that need checking against the nomination paper</h1>
+      <p>For each of these ballots, we need someone to look at the document and manually add or remove candidates
+      to make our list exactly the same as the official nomination paper (SoPN).</p>
+    {% endif %}
+  {% else %}
+    <h1>All ballots in Current Elections</h1>
+  {% endif %}
+
 {% endblock %}
 
 {% block content %}
 
-  <p>{% trans "Follow one of the links below to see the known candidates for that post:" %}</p>
-  {% for era in elections_and_posts %}
-    {% for date, roles in era.dates.items %}
-      <h2>{{ date|date }}</h2>
-      {% for role_data in roles %}
-        <h3>{{ role_data.role }}</h3>
-        {% for election_data in role_data.elections %}
-          {% with election=election_data.election %}
-            <h4><a href="{{ election.get_absolute_url }}">{{ election.name }}</a></h4>
-            <ul>
-              {% for p in election_data.postextraelections %}
-                <li>
-                 <a href="{{ p.get_absolute_url }}">{{ p.post.label }}</a>
-                 {{ p.cancelled_status_html }}
-                 {{ p.locked_status_html }}
-                </li>
-              {% endfor %}
-            </ul>
-          {% endwith %}
-        {% endfor %}
+  <style>
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .filters > div {
+      flex: 1 0 15em;
+    }
+
+    .filters .advance_filters {
+      text-align: right;
+      font-size:0.8em;
+      flex: 1;
+    }
+
+
+    .filters .selected {
+      font-weight:bold;
+      text-decoration: underline;
+    }
+
+    .filters p {
+      margin: 1em 0 0 0;
+    }
+    .filters p label {
+      font-weight: bold;
+    }
+
+    .filters .filter_links {
+      border-bottom: 1px solid #4e4e4e;
+    }
+
+    .filters ul {
+      margin:0;
+      padding:0;
+      list-style-type: none;
+    }
+
+    .filters ul li {
+      display: inline-block;
+      margin: 0 0 0 1em;
+
+    }
+
+    .ballot_table {
+      width: 100%;
+    }
+
+    .ballot_table td:first-child {
+      width:33%;
+    }
+    .ballot_table td:nth-child(2) {
+      width:40%;
+    }
+    .ballot_table td:last-child {
+      width:15%;
+    }
+  </style>
+
+  <section class="filters">
+
+    <div>
+      <dl class="sub-nav" role="menu" title="Filters">
+        <dt>Filter:</dt>
+        <dd {% if request.get_full_path == "/elections/" %}class="active" {% endif %}><a href="{% url "election_list_view" %}">All</a></dd>
+      {% for shortcut in shortcuts.list %}
+        <dd {% if shortcut.active %}class="active" {% endif %}><a href="{% url "election_list_view" %}?{{ shortcut.querystring }}">{{ shortcut.label }}</a></dd>
       {% endfor %}
-    {% endfor %}
+      </dl>
+
+    </div>
+
+    <div>
+      <details class="advance_filters" {% if filter.data %}open{% endif %}>
+        <summary>Advanced filters</summary>
+        <div class="filter_links">
+          {{ filter.form.as_p }}
+        </div>
+      </details>
+    </div>
+
+  </section>
+
+  {% regroup queryset by election.election_date as ballots_by_date %}
+  {% for group in ballots_by_date %}
+    <h3>{{ group.grouper }}</h3>
+
+    <table class="ballot_table">
+      <thead>
+        <tr>
+          <th>Election</th>
+          <th>Ballot</th>
+          <th>Candidates known</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for ballot in group.list %}
+        <tr>
+          <td>
+            {% ifchanged %}
+              <strong>
+                <a href="{{ ballot.election.get_absolute_url }}">
+                  {{ ballot.election.name }}
+                </a>
+              </strong>
+            {% endifchanged %}
+          </td>
+          <td>
+            <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
+          </td>
+          <td>{{ ballot.memberships_count }}</td>
+          <td>
+            {% if ballot.cancelled %}
+              {{ ballot.cancelled }}
+            {% elif ballot.candidates_locked %}
+              {{ ballot.locked_status_html }}
+            {% else %}
+              {% if ballot.officialdocument_set.exists and not ballot.suggestedpostlock_set.exists %}
+                <a href="{% url "bulk_add_from_sopn" ballot.election.slug ballot.post.slug %}" class="button tiny">Add candidates</a>
+              {% else %}
+                {% if ballot.suggestedpostlock_set.exists %}
+                {{ ballot.suggested_lock_html }}
+                {% endif %}
+                Unlocked
+              {% endif %}
+
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% empty %}
+    {% if filter.data.review_required == "suggestion" %}
+      {% if filter.data.election_type %}
+      All ballots for this election type with suggested locks have been locked!
+      {% else%}
+        All ballots with suggested locks have been locked!
+      {% endif %}
+    {% elif filter.data.review_required == "unlocked" %}
+        All ballots with documents have had data entered!
+    {% else %}
+      No elections match the filters given. Try removing some.
+    {% endif %}
+
   {% endfor %}
+
 
 {% endblock %}

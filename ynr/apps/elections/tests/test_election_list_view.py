@@ -11,7 +11,7 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
 
         response = self.app.get("/elections/")
 
-        self.assertTrue(response.html.find("h4", text="2015 General Election"))
+        self.assertContains(response, "2015 General Election")
 
         self.assertTrue(
             response.html.find(
@@ -22,16 +22,10 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
     def test_elections_link_to_constituencies_page(self):
 
         response = self.app.get("/elections/")
-
-        heading = response.html.find("h4", text="2015 General Election")
-        heading_children = list(heading.children)
-        self.assertEqual(len(heading_children), 1)
-        expected_link_element = heading_children[0]
-        self.assertEqual(expected_link_element.name, "a")
-        self.assertEqual(
-            expected_link_element["href"], "/elections/parl.2015-05-07/"
-        )
-        self.assertEqual(expected_link_element.text, "2015 General Election")
+        self.assertEqual(response.context["filter"].qs.count(), 5)
+        self.assertContains(response, "2015 General Election")
+        self.assertContains(response, "/elections/parl.2015-05-07/")
+        self.assertFalse(response.context["filter"].data)
 
     def test_two_elections_posts_page(self):
 
@@ -40,9 +34,8 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
 
         response = self.app.get("/elections/")
 
-        self.assertTrue(response.html.find("h4", text="2010 General Election"))
-
-        self.assertTrue(response.html.find("h4", text="2015 General Election"))
+        self.assertContains(response, "2010 General Election")
+        self.assertContains(response, "2015 General Election")
 
     def test_suggested_post_lock_text(self):
         pee = self.election.postextraelection_set.first()
@@ -51,9 +44,36 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
             postextraelection=pee,
             user=User.objects.create(username="locking_user"),
         )
-        response = self.app.get("/elections/")
+        response = self.app.get("/elections/?review_required=suggestion")
 
-        self.assertTrue(response.html.find("abbr", text="🔓"))
+        self.assertContains(response, "🔓")
+
+    def test_elections_filters(self):
+        # Unfiltered
+        response = self.app.get("/elections/")
+        self.assertEqual(response.context["filter"].qs.count(), 5)
+        self.assertEqual(response.context["filter"].data, {})
+
+        # Lock suggestions, basically the same as the above test
+        pee = self.election.postextraelection_set.first()
+        pee.candidates_locked = False
+        SuggestedPostLock.objects.create(
+            postextraelection=pee,
+            user=User.objects.create(username="locking_user"),
+        )
+        response = self.app.get("/elections/?review_required=suggestion")
+        self.assertEqual(response.context["filter"].qs.count(), 1)
+        self.assertEqual(
+            dict(response.context["filter"].data),
+            {"review_required": ["suggestion"]},
+        )
+
+        # Election type
+        response = self.app.get("/elections/?election_type=local")
+        self.assertEqual(response.context["filter"].qs.count(), 1)
+        self.assertEqual(
+            dict(response.context["filter"].data), {"election_type": ["local"]}
+        )
 
 
 class TestPostIDToPartySetView(UK2015ExamplesMixin, WebTest):

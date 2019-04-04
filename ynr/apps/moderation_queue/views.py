@@ -38,10 +38,15 @@ from candidates.management.images import (
     ImageDownloadException,
     download_image_from_url,
 )
-from candidates.models import LoggedAction, PostExtraElection
+from candidates.models import (
+    LoggedAction,
+    PostExtraElection,
+    TRUSTED_TO_LOCK_GROUP_NAME,
+)
 from candidates.views.version_data import get_client_ip, get_change_metadata
 
 from people.models import PersonImage, Person
+from popolo.models import Membership
 
 
 @login_required
@@ -565,7 +570,9 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
         return self.object.postextraelection.get_absolute_url()
 
 
-class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
+class SuggestLockReviewListView(
+    GroupRequiredMixin, LoginRequiredMixin, TemplateView
+):
     """
     This is the view which lists all post lock suggestions that need review
 
@@ -574,8 +581,9 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
     """
 
     template_name = "moderation_queue/suggestedpostlock_review.html"
+    required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
 
-    def get_lock_suggestions(self, mine):
+    def get_lock_suggestions(self):
         # TODO optimize this
         qs = (
             PostExtraElection.objects.filter(
@@ -592,22 +600,23 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
                     "suggestedpostlock_set",
                     SuggestedPostLock.objects.select_related("user"),
                 ),
+                models.Prefetch(
+                    "membership_set",
+                    Membership.objects.select_related("person", "party"),
+                ),
             )
-            .order_by("officialdocument__source_url", "post__label")
+            .order_by("?", "officialdocument__source_url", "post__label")
         )
 
-        if mine:
-            qs = qs.filter(suggestedpostlock__user=self.request.user)
-        else:
-            qs = qs.exclude(suggestedpostlock__user=self.request.user)
+        qs = qs.exclude(suggestedpostlock__user=self.request.user)
 
-        return qs[:10]
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["my_suggestions"] = self.get_lock_suggestions(mine=True)
-        context["other_suggestions"] = self.get_lock_suggestions(mine=False)
-        context["test_pdf_view"] = bool(self.request.GET.get("pdfembed"))
+        all_ballots = self.get_lock_suggestions()
+        context["total_ballots"] = all_ballots.count()
+        context["ballots"] = all_ballots[:10]
 
         return context
 
