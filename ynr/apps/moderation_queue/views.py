@@ -42,6 +42,7 @@ from candidates.models import LoggedAction, PostExtraElection
 from candidates.views.version_data import get_client_ip, get_change_metadata
 
 from people.models import PersonImage, Person
+from popolo.models import Membership
 
 
 @login_required
@@ -575,7 +576,7 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
 
     template_name = "moderation_queue/suggestedpostlock_review.html"
 
-    def get_lock_suggestions(self, mine):
+    def get_lock_suggestions(self):
         # TODO optimize this
         qs = (
             PostExtraElection.objects.filter(
@@ -592,22 +593,21 @@ class SuggestLockReviewListView(LoginRequiredMixin, TemplateView):
                     "suggestedpostlock_set",
                     SuggestedPostLock.objects.select_related("user"),
                 ),
+                models.Prefetch(
+                    "membership_set",
+                    Membership.objects.select_related("person", "party"),
+                ),
             )
-            .order_by("officialdocument__source_url", "post__label")
+            .order_by("?", "officialdocument__source_url", "post__label")
         )
 
-        if mine:
-            qs = qs.filter(suggestedpostlock__user=self.request.user)
-        else:
-            qs = qs.exclude(suggestedpostlock__user=self.request.user)
+        qs = qs.exclude(suggestedpostlock__user=self.request.user)
 
         return qs[:10]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["my_suggestions"] = self.get_lock_suggestions(mine=True)
-        context["other_suggestions"] = self.get_lock_suggestions(mine=False)
-        context["test_pdf_view"] = bool(self.request.GET.get("pdfembed"))
+        context["ballots"] = self.get_lock_suggestions()
 
         return context
 

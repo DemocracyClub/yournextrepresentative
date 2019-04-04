@@ -1,5 +1,10 @@
 <tr>
-  <td colspan="2">
+  <td>
+    Suggested by<br>
+      {% for spl in ballot.suggestedpostlock_set.all %}
+        {{ spl.user }}{% if spl.justification %}: {{ spl.justification }}{% endif %}<br>
+      {% endfor %}
+
     <table style="width:30em;">
       <caption><strong>{{ ballot.membership_set.count }} people</strong></caption>
       <thead>
@@ -19,19 +24,25 @@
     </table>
     {% include "moderation_queue/includes/ajax_lock_button_html.html" with postextraelection=ballot %}
   </td>
-  <td colspan="2">
-    <div id="sopn-{{ ballot.ballot_paper_id }}" class="pdf_container" style="max-width:100% !important; width: 100% !important;"></div>
-    <script>
-    SOPN_VIEWER.ShowSOPNInline(
-      '{{ ballot.sopn.uploaded_file.url }}',
-      '{{ ballot.ballot_paper_id }}',
-      {
-        'start_page': 1, //{{ ballot.first_page_number }},
-        'end_page': 2 //{{ ballot.last_page_number }}
-      }
-
-    )
-
-    </script>
+  <td>
+    {% if ballot.sopn %}
+        <strong><a href="{{ ballot.sopn.get_absolute_url }}" target="_blank" class="button secondary tiny">
+            View the SOPN in a new window</a></strong>
+        <div id="sopn-{{ ballot.ballot_paper_id }}" class="pdf_container" style="max-width:100% !important; width: 100% !important;"></div>
+        <script>
+          SOPN_VIEWER.ShowSOPNInline(
+            '{{ ballot.sopn.uploaded_file.url }}',
+            '{{ ballot.ballot_paper_id }}',
+            {
+            {% if ballot.sopn.relevant_pages and object.sopn.relevant_pages != "all"%}
+              'start_page': {{ ballot.sopn.first_page_number }},
+              'end_page': {{ ballot.sopn.last_page_number }}
+            {% endif %}
+            }
+          )
+        </script>
+      {% else %}
+        No SOPN uploaded
+      {% endif %}
   </td>
 </tr>

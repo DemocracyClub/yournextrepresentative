@@ -1,35 +1,66 @@
 {% extends "base.html" %}
+{% load pipeline %}
+{% load staticfiles %}
+{% block hero %}
+  <h1>Ballots with lock suggestions</h1>
+{% endblock %}
+{% block extra_css %}
+  {% stylesheet 'official_documents' %}
+{% endblock %}
 
 {% block content %}
-<h1>Posts with lock suggestions</h1>
-{% if not test_pdf_view %}
-<p>
-  <strong>New!</strong>: Try out an experimental feature of putting PDFs alongside the tables.
-  We know it doesn't work in all cases, but it makes reviewing quicker in the simple cases.
-</p>
-<a class="button tiny" href="?pdfembed=1">Embed PDFs</a>
-{% else %}
-<style>
-  .content .container {
-    max-width:100% !important;
-    width:90em !important;
-  }
-</style>
-{% endif %}
 
+<script src="{% static "official_documents/js/pdf.2.0.943.js" %}"></script>
+<script src="{% static "official_documents/js/pdf.worker.2.0.943.js" %}"></script>
+{% javascript 'sopn_viewer' %}
 {% include "moderation_queue/includes/ajax_lock_button_js.html" %}
 
-{% if other_suggestions %}
-  <h2>Suggestions to review</h2>
-  {% include "moderation_queue/includes/lock_suggestions.html" with post_elections=other_suggestions show_lock_button=1%}
+
+
+{% if ballots %}
+  <p>Suggestions are grouped by nomination paper</p>
+
+  {% regroup ballots by officialdocument_set.first.source_url as ballots_by_doc_source %}
+
+  {% for ballots_by_source in ballots_by_doc_source  %}
+    <h3>{{ ballots_by_source.list.0.election.name }}</h3>
+
+    <p>
+      Source: {{ ballots_by_source.grouper|default_if_none:"No source"|urlize }}
+    </p>
+
+    {% for ballot in ballots_by_source.list %}
+
+          <h4>
+              <a href="{{ ballot.get_absolute_url }}">
+                {{ ballot.post.short_label }}
+              </a>
+          </h4>
+
+          {% if ballot.membership_set.exists %}
+            <table>
+            <thead>
+              <th>Candidates</th>
+              <th>SOPN</th>
+            </thead>
+            <tbody>
+              {% include "moderation_queue/includes/inline-lock-table-view.html" with ballot=ballot %}
+            </tbody>
+            </table>
+
+          {% endif %}
+
+
+    {% endfor %}
+  {% endfor %}
+
+
+
+
+{% else %}
+  All ballots with lock suggestions have been locked! (not including your own lock suggestions)
 {% endif %}
 
-{% if my_suggestions %}
-  <h2>My own lock suggestions</h2>
-  <p>Someone else needs to review these:</p>
-  {% include "moderation_queue/includes/lock_suggestions.html" with post_elections=my_suggestions %}
-
-{% endif %}
 
 
 
