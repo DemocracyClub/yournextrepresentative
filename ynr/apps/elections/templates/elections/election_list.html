@@ -99,7 +99,7 @@
     </div>
 
     <div>
-      <details class="advance_filters">
+      <details class="advance_filters" {% if filter.data %}open{% endif %}>
         <summary>Advanced filters</summary>
         <div class="filter_links">
           {{ filter.form.as_p }}
