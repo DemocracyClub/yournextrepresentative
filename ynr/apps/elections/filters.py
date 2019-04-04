@@ -89,16 +89,6 @@ def filter_shortcuts(request):
         }
     ]
 
-    if request.user.has_perm(TRUSTED_TO_LOCK_GROUP_NAME):
-        # Only offer a shortcut for a CTA that can be performed by this user
-        shortcut_list.append(
-            {
-                "name": "lock_required",
-                "label": "Locking required",
-                "query": {"review_required": ["suggestion"], "has_sopn": ["1"]},
-            }
-        )
-
     query = dict(request.GET)
     shortcuts = {"list": shortcut_list}
     for shortcut in shortcuts["list"]:

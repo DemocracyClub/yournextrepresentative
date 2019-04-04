@@ -16,8 +16,6 @@
       <h1>Ballots that need checking against the nomination paper</h1>
       <p>For each of these ballots, we need someone to look at the document and manually add or remove candidates
       to make our list exactly the same as the official nomination paper (SoPN).</p>
-    {% elif shortcuts.active.name == "lock_required"%}
-      <h1>Ballots with lock suggestions</h1>
     {% endif %}
   {% else %}
     <h1>All ballots in Current Elections</h1>
@@ -26,13 +24,6 @@
 {% endblock %}
 
 {% block content %}
-
-  {% if shortcuts.active.name == "lock_required" %}
-    <script src="{% static "official_documents/js/pdf.2.0.943.js" %}"></script>
-    <script src="{% static "official_documents/js/pdf.worker.2.0.943.js" %}"></script>
-    {% javascript 'sopn_viewer' %}
-    {% include "moderation_queue/includes/ajax_lock_button_js.html" %}
-  {% endif %}
 
   <style>
     .filters {
@@ -165,9 +156,6 @@
             {% endif %}
           </td>
         </tr>
-        {% if shortcuts.active.name == "lock_required" %}
-          {% include "moderation_queue/includes/inline-lock-table-view.html" with ballot=ballot %}
-        {% endif %}
       {% endfor %}
       </tbody>
     </table>
