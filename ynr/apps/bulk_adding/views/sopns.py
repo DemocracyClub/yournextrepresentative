@@ -201,11 +201,15 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
 
         if self.request.POST:
             context["formset"] = forms.BulkAddReviewFormSet(
-                self.request.POST, parties=context["parties"]
+                self.request.POST,
+                parties=context["parties"],
+                ballot=context["post_election"],
             )
         else:
             context["formset"] = forms.BulkAddReviewFormSet(
-                initial=initial, parties=context["parties"]
+                initial=initial,
+                parties=context["parties"],
+                ballot=context["post_election"],
             )
         return context
 
