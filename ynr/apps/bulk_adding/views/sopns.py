@@ -46,7 +46,10 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         context["parties"] = Party.objects.register(register).party_choices(
             **kwargs
         )
-        context["official_document"] = context["post_election"].sopn
+        try:
+            context["official_document"] = context["post_election"].sopn
+        except OfficialDocument.DoesNotExist:
+            context["official_document"] = None
         self.official_document = context["official_document"]
         return context
 
