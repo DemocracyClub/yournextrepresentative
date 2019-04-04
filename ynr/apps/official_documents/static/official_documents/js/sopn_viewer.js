@@ -56,7 +56,7 @@ var SOPN_VIEWER = (function () {
                     });
                     // Load more pages when this page is done
                     start_page++;
-                    load_pages_by_range(pdf, start_page, end_page);
+                    load_pages_by_range(pdf, start_page, end_page, container);
                 });
 
             }
