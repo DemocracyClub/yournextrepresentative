@@ -101,7 +101,10 @@
       </tr>
         <tr>
         <td>{{ form.name }}</td>
-        <td {% if not form.name.initial %}colspan="2"{% endif %}>{{ form.party }}</td>
+        <td {% if not form.name.initial %}colspan="2"{% endif %}>
+          {{ form.party }}<br>
+          If the party is blank on the SOPN, enter "Independent"
+        </td>
         {% if form.name.initial %}
         <td class="delete_column">
         {{ form.DELETE }}
