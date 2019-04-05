@@ -42,9 +42,13 @@ def update_person(
     membership, _ = Membership.objects.update_or_create(
         post=post_election.post,
         person=person,
-        role=election.candidate_membership_role,
         post_election=post_election,
-        defaults={"party": party, "party_list_position": None, "elected": None},
+        defaults={
+            "party": party,
+            "party_list_position": None,
+            "elected": None,
+            "role": election.candidate_membership_role,
+        },
     )
 
     # Now remove other memberships in this election for that
@@ -52,14 +56,26 @@ def update_person(
     # object that has a
     # ForeignKey to the membership, since that would result in
     # losing data.
-    old_memberships = Membership.objects.exclude(pk=membership.pk).filter(
-        person=person,
-        post_election=post_election,
-        role=election.candidate_membership_role,
+    old_memberships = (
+        Membership.objects.exclude(pk=membership.pk)
+        .exclude(post_election__candidates_locked=True)
+        .filter(person=person, post_election__election=post_election.election)
     )
     for old_membership in old_memberships:
         raise_if_unsafe_to_delete(old_membership)
         old_membership.delete()
+
+    memberships_for_election = Membership.objects.filter(
+        person=person, post_election__election=post_election.election
+    )
+
+    if (
+        not memberships_for_election.exists()
+        or memberships_for_election.count() > 1
+    ):
+        raise ValueError(
+            "Attempt to create invalid memberships for {}".format(person)
+        )
 
     change_metadata = get_change_metadata(request, source)
 

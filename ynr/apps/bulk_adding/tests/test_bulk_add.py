@@ -89,7 +89,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(51):
+        with self.assertNumQueries(53):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -328,3 +328,55 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms[1]
         response = form.submit()
         self.assertEqual(response.status_code, 302)
+
+    def test_remove_other_ballots_in_election(self):
+        """
+        If someone is adding this person to a ballot, we remove that person from
+        other ballots in that election
+        """
+        existing_person = PersonFactory.create(
+            id="1234567", name="Bart Simpson"
+        )
+
+        existing_membership = MembershipFactory.create(
+            person=existing_person,
+            # !!! This is the line that differs from the previous test:
+            post=self.dulwich_post,
+            party=self.labour_party,
+            post_election=self.election.postextraelection_set.get(
+                post=self.dulwich_post
+            ),
+        )
+
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            post_election=self.camberwell_post_pee,
+            uploaded_file="sopn.pdf",
+        )
+
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.2015-05-07/{}/".format(
+                self.camberwell_post.slug
+            ),
+            user=self.user,
+        )
+        print(self.camberwell_post.slug)
+
+        form = response.forms["bulk_add_form"]
+        form["form-0-name"] = "Bart Simpson"
+        form["form-0-party"] = self.green_party.ec_id
+
+        response = form.submit()
+
+        response = response.follow()
+        form = response.forms[1]
+        form["form-0-select_person"].select("1234567")
+        response = form.submit()
+
+        existing_person.refresh_from_db()
+        self.assertEqual(existing_person.memberships.all().count(), 1)
+        self.assertEqual(
+            existing_person.memberships.get().post_election,
+            self.camberwell_post_pee,
+        )
