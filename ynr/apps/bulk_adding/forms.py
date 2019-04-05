@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from candidates.views import search_person_by_name
 from parties.models import Party
+from popolo.models import Membership
 
 
 class BaseBulkAddFormSet(forms.BaseFormSet):
@@ -146,6 +147,39 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
                 ),
                 required=False,
             )
+
+    def clean(self):
+        errors = []
+        if not hasattr(self, "ballot"):
+            return super().clean()
+        for form_data in self.cleaned_data:
+
+            if (
+                "select_person" in form_data
+                and form_data["select_person"] == "_new"
+            ):
+                continue
+            qs = (
+                Membership.objects.filter(
+                    post_election__election=self.ballot.election
+                )
+                .filter(person_id=form_data["select_person"])
+                .exclude(post_election=self.ballot)
+                .exclude(post_election__candidates_locked=True)
+            )
+            if qs.exists():
+                errors.append(
+                    forms.ValidationError(
+                        "'{}' is marked as standing in another ballot for this "
+                        "election. Check you're entering the correct "
+                        "information for {}".format(
+                            form_data["name"], self.ballot.post.label
+                        )
+                    )
+                )
+        if errors:
+            raise forms.ValidationError(errors)
+        return super().clean()
 
 
 class NameOnlyPersonForm(forms.Form):

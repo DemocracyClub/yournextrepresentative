@@ -1,5 +1,5 @@
 from os.path import abspath, dirname, join
-from unittest import skipIf
+from unittest import skipIf, skip
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
@@ -12,6 +12,7 @@ from sopn_parsing.models import ParsedSOPN
 from sopn_parsing.tests import should_skip_pdf_tests
 
 
+@skip("Fix backend storage in tests")
 class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
     def setUp(self):
         example_doc_path = abspath(
