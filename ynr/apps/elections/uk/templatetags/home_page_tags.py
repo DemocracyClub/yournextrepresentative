@@ -28,8 +28,8 @@ def sopn_progress_by_election(election_qs):
         float(context["sopns_imported"]) / float(context["posts_total"]) * 100
     )
 
-    pee_qs = pee_qs.filter(candidates_locked=True)
-    context["posts_locked"] = pee_qs.count()
+    locked_pee_qs = pee_qs.filter(candidates_locked=True)
+    context["posts_locked"] = locked_pee_qs.count()
     context["posts_locked_percent"] = round(
         float(context["posts_locked"]) / float(context["posts_total"]) * 100
     )
