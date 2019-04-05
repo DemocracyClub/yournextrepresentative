@@ -57,6 +57,7 @@ class PostsForDocumentView(DetailView):
         context = super().get_context_data(**kwargs)
         documents = (
             OfficialDocument.objects.filter(source_url=self.object.source_url)
+            .filter(post_election__election=self.object.post_election.election)
             .select_related("post_election__post", "post_election__election")
             .order_by("post_election__ballot_paper_id")
             .prefetch_related("post_election__suggestedpostlock_set")
