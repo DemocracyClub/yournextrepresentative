@@ -129,7 +129,9 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         CHOICES = [("_new", "Add new person")]
         if suggestions:
             CHOICES += [
-                self.format_value(suggestion) for suggestion in suggestions
+                self.format_value(suggestion)
+                for suggestion in suggestions
+                if suggestion.object
             ]
         form.fields["select_person"] = forms.ChoiceField(
             choices=CHOICES, widget=forms.RadioSelect()
