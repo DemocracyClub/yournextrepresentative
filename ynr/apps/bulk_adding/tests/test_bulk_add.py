@@ -361,7 +361,6 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ),
             user=self.user,
         )
-        print(self.camberwell_post.slug)
 
         form = response.forms["bulk_add_form"]
         form["form-0-name"] = "Bart Simpson"
@@ -373,10 +372,15 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms[1]
         form["form-0-select_person"].select("1234567")
         response = form.submit()
-
-        existing_person.refresh_from_db()
-        self.assertEqual(existing_person.memberships.all().count(), 1)
+        self.assertEqual(response.context["formset"].is_valid(), False)
         self.assertEqual(
-            existing_person.memberships.get().post_election,
-            self.camberwell_post_pee,
+            response.context["formset"].non_form_errors(),
+            [
+                "'Bart Simpson' is marked as standing in another ballot for "
+                "this election. Check you're entering the correct information "
+                "for Member of Parliament for Camberwell and Peckham"
+            ],
+        )
+        self.assertContains(
+            response, "is marked as standing in another ballot for"
         )
