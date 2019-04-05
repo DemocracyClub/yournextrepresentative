@@ -46,7 +46,7 @@ class RawPeople(TimeStampedModel):
 
     ballot = models.OneToOneField("candidates.PostExtraElection")
     data = JSONField()
-    source = models.CharField(max_length=255)
+    source = models.CharField(max_length=512)
     source_type = models.CharField(
         choices=SOURCE_TYPES, default=SOURCE_BULK_ADD_FORM, max_length=255
     )

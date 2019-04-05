@@ -153,7 +153,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             ballot=context["post_election"],
             defaults={
                 "data": raw_ballot_data,
-                "source": context["official_document"].source_url,
+                "source": context["official_document"].source_url[:512],
                 "source_type": RawPeople.SOURCE_BULK_ADD_FORM,
             },
         )
