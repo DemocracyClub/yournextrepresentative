@@ -93,7 +93,12 @@ class CSVImporter:
 
     @property
     def post_header_name(self):
-        POST_LABELS = ["Electoral Area Name", "Election Area", "AreaName"]
+        POST_LABELS = [
+            "Electoral Area Name",
+            "Election Area",
+            "AreaName",
+            "AREA_NAME",
+        ]
         for label in POST_LABELS:
             if label in self.header_rows:
                 return label
@@ -106,6 +111,7 @@ class CSVImporter:
             "Candidates Description",
             "CandidateDescription",
             "CandidateLine5",
+            "PARTY_OFFICIAL",
         ]
         for description_field in DESCRIPTION_FIELDS:
             if description_field in self.header_rows:
@@ -135,8 +141,18 @@ class CSVImporter:
 
         name = []
 
-        FIRST_NAME_FIELDS = ["Forename", "CandidateForename", "CandidateLine2"]
-        LAST_NAME_FIELDS = ["Surname", "CandidateSurname", "CandidateLine1"]
+        FIRST_NAME_FIELDS = [
+            "Forename",
+            "CandidateForename",
+            "CandidateLine2",
+            "CAND_CFOR",
+        ]
+        LAST_NAME_FIELDS = [
+            "Surname",
+            "CandidateSurname",
+            "CandidateLine1",
+            "CAND_CSUR_CAPS",
+        ]
 
         for name_part in [FIRST_NAME_FIELDS, LAST_NAME_FIELDS]:
             for name_field in name_part:
@@ -159,9 +175,14 @@ class CSVImporter:
             register = "GB"
         return register
 
+    def clean_party_name(self, name):
+        if name == "Ukip":
+            name = "UKIP"
+        return name
+
     def get_party_description(self, row, ballot):
         register = self.get_register_for_ballot(ballot)
-        desc = row[self.party_description_header_name]
+        desc = self.clean_party_name(row[self.party_description_header_name])
         try:
             return PartyDescription.objects.get(
                 description=desc, party__register=register
@@ -181,15 +202,15 @@ class CSVImporter:
         if desc_model:
             return desc_model.party.ec_id
 
-        if row[self.party_description_header_name] in ("", None):
-            return "ynmp-party:2"
-        print(repr(row[self.party_description_header_name]))
-
-        return (
-            Party.objects.register(register)
-            .get(name=row[self.party_description_header_name])
-            .ec_id
+        party_name = self.clean_party_name(
+            row[self.party_description_header_name]
         )
+
+        if party_name in ("", None):
+            return "ynmp-party:2"
+        print(repr(party_name))
+
+        return Party.objects.register(register).get(name=party_name).ec_id
 
     def validate_posts(self):
         """
