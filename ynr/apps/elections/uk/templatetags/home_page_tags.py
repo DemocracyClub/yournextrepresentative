@@ -28,19 +28,19 @@ def sopn_progress_by_election(election_qs):
         float(context["sopns_imported"]) / float(context["posts_total"]) * 100
     )
 
-    context["posts_lock_suggested"] = pee_qs.exclude(
-        suggestedpostlock=None
-    ).count()
-    context["posts_locked_suggested_percent"] = round(
-        float(context["posts_lock_suggested"])
-        / float(context["posts_total"])
-        * 100
-    )
-
     pee_qs = pee_qs.filter(candidates_locked=True)
     context["posts_locked"] = pee_qs.count()
     context["posts_locked_percent"] = round(
         float(context["posts_locked"]) / float(context["posts_total"]) * 100
+    )
+
+    context["posts_lock_suggested"] = (
+        pee_qs.exclude(suggestedpostlock=None).count() + context["posts_locked"]
+    )
+    context["posts_locked_suggested_percent"] = round(
+        float(context["posts_lock_suggested"])
+        / float(context["posts_total"])
+        * 100
     )
 
     return context
