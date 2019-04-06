@@ -1,10 +1,11 @@
 from django import forms
-from django.db.models import Count
+from django.db.models import Count, Prefetch
 from django.core.exceptions import ValidationError
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
 from candidates.views import search_person_by_name
+from official_documents.models import OfficialDocument
 from parties.models import Party
 from popolo.models import Membership
 
@@ -104,9 +105,20 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         name = suggestion.name
         suggestion_dict = {"name": name, "object": suggestion.object}
 
-        candidacies = suggestion.object.memberships.select_related(
-            "post", "party", "post_election__election"
-        ).order_by("-post_election__election__election_date")[:3]
+        candidacies = (
+            suggestion.object.memberships.select_related(
+                "post", "party", "post_election__election"
+            )
+            .prefetch_related(
+                Prefetch(
+                    "post_election__officialdocument_set",
+                    queryset=OfficialDocument.objects.filter(
+                        document_type=OfficialDocument.NOMINATION_PAPER
+                    ).order_by("-modified"),
+                )
+            )
+            .order_by("-post_election__election__election_date")[:3]
+        )
 
         if candidacies:
             suggestion_dict["previous_candidacies"] = []
@@ -117,6 +129,11 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
                 election=candidacy.post_election.election.name,
                 party=candidacy.party.name,
             )
+            sopn = candidacy.post_election.officialdocument_set.first()
+            if sopn:
+                text += ' (<a href="{0}">SOPN</a>)'.format(
+                    sopn.get_absolute_url()
+                )
             suggestion_dict["previous_candidacies"].append(SafeText(text))
 
         return [suggestion.pk, suggestion_dict]
