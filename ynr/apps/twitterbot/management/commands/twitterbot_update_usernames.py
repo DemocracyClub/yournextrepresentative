@@ -121,7 +121,7 @@ class Command(BaseCommand):
                 person.tmp_person_identifiers.update_or_create(
                     person=person,
                     value_type="twitter_username",
-                    value=screen_name.lower(),
+                    value=screen_name,
                     defaults={
                         "internal_identifier": self.twitter_data.screen_name_to_user_id[
                             screen_name.lower()
