@@ -14,12 +14,16 @@ from django.core.files import File
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.http import (
+    HttpResponseRedirect,
+    HttpResponseBadRequest,
+    JsonResponse,
+)
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.http import urlquote
 from django.utils.translation import ugettext as _
-from django.views.generic import ListView, TemplateView, CreateView
+from django.views.generic import ListView, TemplateView, CreateView, View
 from PIL import Image as PillowImage
 from braces.views import LoginRequiredMixin
 from sorl.thumbnail import delete as sorl_delete
@@ -670,3 +674,14 @@ class PersonNameCleanupView(TemplateView):
         context["two_upper"] = [p for p in people if regex.search(p.name)]
 
         return context
+
+
+class RemoveSuggestedLocksView(LoginRequiredMixin, GroupRequiredMixin, View):
+    required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
+
+    def post(self, request, *args, **kwargs):
+        ballot = PostExtraElection.objects.get(
+            ballot_paper_id=request.POST["ballot"]
+        )
+        ballot.suggestedpostlock_set.all().delete()
+        return JsonResponse({"removed": True})

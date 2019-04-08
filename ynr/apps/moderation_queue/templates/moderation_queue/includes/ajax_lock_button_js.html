@@ -3,14 +3,17 @@
 
     LOCKED_TEXT = "Lock now";
     UNLOCKED_TEXT = "Unlock now";
+    REMOVE_SUGGESTION_TEXT = "Remove suggested lock";
 
     var form = $('.lock_button_container form');
+    var suggestion_remove_form = $('.remove-lock-suggestion_container form');
 
     var locked = form.find('input[name=lock]').val();
     if (locked === "True") {
       form.append('<button data-op="unlock">' + UNLOCKED_TEXT + '</button>')
     } else {
       form.append('<button type=submit class="ajax_lock_button" data-op="lock">' + LOCKED_TEXT + '</button>')
+      suggestion_remove_form.append('<button type=submit class="remove_suggested_lock_button alert tiny right" data-op="remove">' + REMOVE_SUGGESTION_TEXT + '</button>')
     }
 
     function csrfSafeMethod(method) {
@@ -57,8 +60,34 @@
               }
           });
 
-    })
+    });
 
+    $('.remove_suggested_lock_button').on('click', function(e) {
+      e.preventDefault();
+      var this_button = $(e.target);
+      this_button.attr("disabled", "disabled");
+      if (confirm("Are you sure you want to remove the suggested post lock for this ballot? \n " +
+          "This will put the ballot back in to the queue of ballots that need data entry")) {
+        this_button.parents('td').find('button.ajax_lock_button').attr("disabled", "disabled");;
+        var this_form = this_button.parent();
+        var post_url = this_form.attr('action');
+        $.ajax({
+          url: post_url,
+          type: 'post',
+          dataType: 'json',
+          data: {'ballot': this_form.data('ballot')},
+          success: function(data) {
+            if (data['removed']) {
+              this_button.html("Suggestion removed");
+            } else {
+              this_button.html("Error removing suggestion");
+            }
+          }
+        });
+      } else {
+       this_button.removeAttr("disabled")
+      }
+    });
 
   });
 </script>

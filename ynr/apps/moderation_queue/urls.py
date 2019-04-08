@@ -12,6 +12,7 @@ from .views import (
     SuggestLockReviewListView,
     SOPNReviewRequiredView,
     PersonNameCleanupView,
+    RemoveSuggestedLocksView,
 )
 
 urlpatterns = [
@@ -58,5 +59,10 @@ urlpatterns = [
         r"^person_name_cleanup/$",
         PersonNameCleanupView.as_view(),
         name="person_name_cleanup",
+    ),
+    url(
+        r"^sopn-review-required/remove-ajax/$",
+        RemoveSuggestedLocksView.as_view(),
+        name="remove-lock-suggestion-ajax",
     ),
 ]
