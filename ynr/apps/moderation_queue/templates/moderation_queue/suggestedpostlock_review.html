@@ -7,6 +7,11 @@
 {% endblock %}
 {% block extra_css %}
   {% stylesheet 'official_documents' %}
+  <style>
+    .container {
+      max-width: 100%;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
@@ -40,7 +45,7 @@
           </h4>
 
           {% if ballot.membership_set.exists %}
-            <table>
+            <table style="width:100%">
             <thead>
               <th>Candidates</th>
               <th>SOPN</th>

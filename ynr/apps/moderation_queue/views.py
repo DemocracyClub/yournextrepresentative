@@ -593,10 +593,8 @@ class SuggestLockReviewListView(
             PostExtraElection.objects.filter(
                 election__current=True, candidates_locked=False
             )
-            .exclude(
-                models.Q(suggestedpostlock=None)
-                | models.Q(officialdocument=None)
-            )
+            .exclude(suggestedpostlock=None)
+            .exclude(officialdocument=None)
             .select_related("election", "post")
             .prefetch_related(
                 "officialdocument_set",
@@ -606,14 +604,15 @@ class SuggestLockReviewListView(
                 ),
                 models.Prefetch(
                     "membership_set",
-                    Membership.objects.select_related("person", "party"),
+                    Membership.objects.select_related(
+                        "person", "party"
+                    ).prefetch_related("person__other_names"),
                 ),
             )
-            .order_by("?", "officialdocument__source_url", "post__label")
+            .order_by("?")
         )
 
         qs = qs.exclude(suggestedpostlock__user=self.request.user)
-
         return qs
 
     def get_context_data(self, **kwargs):
