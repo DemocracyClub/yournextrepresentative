@@ -14,12 +14,16 @@ from django.core.files import File
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.http import (
+    HttpResponseRedirect,
+    HttpResponseBadRequest,
+    JsonResponse,
+)
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.http import urlquote
 from django.utils.translation import ugettext as _
-from django.views.generic import ListView, TemplateView, CreateView
+from django.views.generic import ListView, TemplateView, CreateView, View
 from PIL import Image as PillowImage
 from braces.views import LoginRequiredMixin
 from sorl.thumbnail import delete as sorl_delete
@@ -589,10 +593,8 @@ class SuggestLockReviewListView(
             PostExtraElection.objects.filter(
                 election__current=True, candidates_locked=False
             )
-            .exclude(
-                models.Q(suggestedpostlock=None)
-                | models.Q(officialdocument=None)
-            )
+            .exclude(suggestedpostlock=None)
+            .exclude(officialdocument=None)
             .select_related("election", "post")
             .prefetch_related(
                 "officialdocument_set",
@@ -602,14 +604,15 @@ class SuggestLockReviewListView(
                 ),
                 models.Prefetch(
                     "membership_set",
-                    Membership.objects.select_related("person", "party"),
+                    Membership.objects.select_related(
+                        "person", "party"
+                    ).prefetch_related("person__other_names"),
                 ),
             )
-            .order_by("?", "officialdocument__source_url", "post__label")
+            .order_by("?")
         )
 
         qs = qs.exclude(suggestedpostlock__user=self.request.user)
-
         return qs
 
     def get_context_data(self, **kwargs):
@@ -670,3 +673,14 @@ class PersonNameCleanupView(TemplateView):
         context["two_upper"] = [p for p in people if regex.search(p.name)]
 
         return context
+
+
+class RemoveSuggestedLocksView(LoginRequiredMixin, GroupRequiredMixin, View):
+    required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
+
+    def post(self, request, *args, **kwargs):
+        ballot = PostExtraElection.objects.get(
+            ballot_paper_id=request.POST["ballot"]
+        )
+        ballot.suggestedpostlock_set.all().delete()
+        return JsonResponse({"removed": True})
