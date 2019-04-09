@@ -2,18 +2,19 @@
 {% for form in identifiers_formset %}
   {{ form.id }}
   <div class="large-12 columns">
-      <div class="row collapse">
-        <div class="small-9 columns">
-          {{ form.value }}
-          {{ form.value.errors }}
-        </div>
-        <div class="small-3 columns">
-          <span class="postfix">
-            {{ form.value_type }}
-          </span>
-          {{ form.value_type.errors }}
-        </div>
+    {% if form.non_field_errors %}
+      {{ form.non_field_errors }}
+    {% endif %}
+    <div class="row collapse">
+      <div class="small-9 columns">
+        {{ form.value }}
+      </div>
+      <div class="small-3 columns">
+        <span class="postfix">
+          {{ form.value_type }}
+        </span>
       </div>
     </div>
+  </div>
 
 {% endfor %}
