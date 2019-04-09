@@ -168,7 +168,11 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         merger.merge()
         self.assertEqual(self.dest_person.other_names.count(), 2)
         self.assertListEqual(
-            list(self.dest_person.other_names.values_list("name", flat=True)),
+            list(
+                self.dest_person.other_names.order_by("name").values_list(
+                    "name", flat=True
+                )
+            ),
             ["Ema Nymnot", "nom de plume"],
         )
 
