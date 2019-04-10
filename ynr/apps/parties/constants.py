@@ -34,6 +34,8 @@ DEFAULT_EMBLEMS = {
     "PP2707": 1204,
     # Christian Party
     "PP2893": 1292,
+    # Democratic Unionist Party D.U.P
+    "PP70": 78
 }
 
 JOINT_DESCRIPTION_REGEX = "^(.*?) \(joint descriptions? with\s?(.*)\)"
