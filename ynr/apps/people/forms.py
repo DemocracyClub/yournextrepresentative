@@ -1,8 +1,7 @@
-import re
-
 from elections.models import Election
 
-from django import forms, VERSION as django_version
+from django import forms
+from django.core.validators import validate_email
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models import Count
@@ -14,7 +13,8 @@ from popolo.models import OtherName, Post
 from people.helpers import parse_approximate_date
 from people.models import Person, PersonIdentifier
 from parties.models import Party
-from candidates.twitter_api import get_twitter_user_id, TwitterAPITokenMissing
+
+from .helpers import clean_twitter_username
 
 
 class StrippedCharField(forms.CharField):
@@ -89,9 +89,32 @@ class PersonIdentifierForm(forms.ModelForm):
             return super().has_changed(*args, **kwargs)
 
     def clean(self):
-        if not self.cleaned_data.get("value"):
+        if not self.cleaned_data.get("value", None):
             self.cleaned_data["DELETE"] = True
+            return self.cleaned_data
+
+        if (
+            "value_type" in self.cleaned_data
+            and self.cleaned_data["value_type"]
+        ):
+            attr = "clean_{}".format(self.cleaned_data["value_type"])
+            if hasattr(self, attr):
+                try:
+                    value = getattr(self, attr)(self.cleaned_data["value"])
+                    self.cleaned_data["value"] = value
+                except ValidationError as e:
+                    self.add_error(None, e)
         return self.cleaned_data
+
+    def clean_twitter_username(self, username):
+        try:
+            return clean_twitter_username(username)
+        except ValueError as e:
+            raise ValidationError(e)
+
+    def clean_email(self, email):
+        validate_email(email)
+        return email
 
 
 PersonIdentifierFormsetFactory = forms.inlineformset_factory(
@@ -165,34 +188,6 @@ class BasePersonForm(forms.Form):
                 )
             raise ValidationError(message)
         return parsed_date
-
-    def clean_twitter_username(self):
-        # Remove any URL bits around it:
-        username = self.cleaned_data["twitter_username"].strip()
-        m = re.search(r"^.*twitter.com/(\w+)", username)
-        if m:
-            username = m.group(1)
-        # If there's a leading '@', strip that off:
-        username = re.sub(r"^@", "", username)
-        if not re.search(r"^\w*$", username):
-            message = _(
-                "The Twitter username must only consist of alphanumeric characters or underscore"
-            )
-            raise ValidationError(message)
-        if username:
-            try:
-                user_id = get_twitter_user_id(username)
-                if not user_id:
-                    message = _(
-                        "The Twitter account {screen_name} doesn't exist"
-                    )
-                    raise ValidationError(message.format(screen_name=username))
-            except TwitterAPITokenMissing:
-                # If there's no API token, we can't check the screen name,
-                # but don't fail validation because the site owners
-                # haven't set that up.
-                return username
-        return username
 
     def check_party_and_constituency_are_selected(self, cleaned_data):
         """This is called by the clean method of subclasses"""

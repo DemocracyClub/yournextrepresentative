@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _l
 from django_date_extensions.fields import ApproximateDate
 
 from candidates.models import PartySet, raise_if_unsafe_to_delete
-from candidates.twitter_api import TwitterAPITokenMissing
+from candidates.twitter_api import get_twitter_user_id, TwitterAPITokenMissing
 from popolo.models import Post, Membership
 from parties.models import Party
 
@@ -198,3 +198,28 @@ def squash_whitespace(s):
     return re.sub(
         r"(?ims)\s+", lambda m: "\n" if "\n" in m.group(0) else " ", s
     )
+
+
+def clean_twitter_username(username):
+    # Remove any URL bits around it:
+    username = username.strip()
+    m = re.search(r"^.*twitter.com/(\w+)", username)
+    if m:
+        username = m.group(1)
+    # If there's a leading '@', strip that off:
+    username = re.sub(r"^@", "", username)
+    if not re.search(r"^\w*$", username):
+        message = "The Twitter username must only consist of alphanumeric characters or underscore"
+        raise ValueError(message)
+    if username:
+        try:
+            user_id = get_twitter_user_id(username)
+            if not user_id:
+                message = "The Twitter account {screen_name} doesn't exist"
+                raise ValueError(message.format(screen_name=username))
+        except TwitterAPITokenMissing:
+            # If there's no API token, we can't check the screen name,
+            # but don't fail validation because the site owners
+            # haven't set that up.
+            return username
+    return username
