@@ -92,10 +92,9 @@
     <p>{% blocktrans trimmed %}
       Uploaded by user {{ username }} with confirmed email
       <tt>{{ email }}</tt>.{% endblocktrans %}
-      {% if person.email %}
-        {% blocktrans trimmed with email=person.email %}
+      {% if person.get_email %}
         (The candidate's unconfirmed email address is
-        <tt>{{ email }}</tt>.){% endblocktrans %}
+        <tt>{{ email }}</tt>.)
       {% endif %}
       </p>
 
