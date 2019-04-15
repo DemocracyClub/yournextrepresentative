@@ -83,7 +83,7 @@
 {% endif %}
 
 <div class="person__details">
-    {% if not person.email %}
+    {% if not person.get_email %}
     <div class="missing_field">
         {% url 'person-update' person_id=person.id as url %}
         <h4>{% blocktrans trimmed with name=person.name %}
@@ -119,7 +119,7 @@
     {% endfor %}
     {% if 'email' in simple_fields %}
       <dt>{% trans "Email" %}</dt>
-      <dd>{% if person.email %}<a href="mailto:{{ person.email }}">{{ person.email }}</a>{% endif %}</dd>
+      <dd>{% if person.get_email %}<a href="mailto:{{ person.get_email }}">{{ person.get_email }}</a>{% endif %}</dd>
     {% endif %}
     {% if last_candidacy %}
       <dt>{% trans "Party" %}</dt>
