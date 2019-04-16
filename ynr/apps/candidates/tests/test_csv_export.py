@@ -108,7 +108,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             sorted(list(membership_dict.keys())),
             sorted(settings.CSV_ROW_FIELDS),
         )
-        self.assertEqual(len(membership_dict.keys()), 38)
+        self.assertEqual(len(membership_dict.keys()), 39)
         self.assertEqual(membership_dict["id"], 2009)
 
         self.assertEqual(
@@ -126,7 +126,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             )
         self.assertEqual(len(memberships_dicts[self.earlier_election.slug]), 2)
         membership_dict = memberships_dicts["parl.2010-05-06"][1]
-        self.assertEqual(len(membership_dict.keys()), 38)
+        self.assertEqual(len(membership_dict.keys()), 39)
         self.assertEqual(membership_dict["id"], 2009)
 
     def test_csv_output(self):
@@ -140,17 +140,17 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         PersonRedirect.objects.create(old_person_id=56, new_person_id=1953)
         self.maxDiff = None
         example_output = (
-            "id,name,honorific_prefix,honorific_suffix,gender,birth_date,election,party_id,party_name,post_id,post_label,mapit_url,elected,email,twitter_username,facebook_page_url,party_ppc_page_url,facebook_personal_url,homepage_url,wikipedia_url,linkedin_url,image_url,proxy_image_url_template,image_copyright,image_uploading_user,image_uploading_user_notes,twitter_user_id,election_date,election_current,party_lists_in_use,party_list_position,old_person_ids,gss_code,parlparse_id,theyworkforyou_url,party_ec_id,favourite_biscuits,cancelled_poll\r\n"
-            + "1953,Daith\xed McKay,,,male,,parl.2010-05-06,party:39,Sinn F\xe9in,66135,North Antrim,,,,,,,,,,,,,,,,,{earlier_election_date},False,False,,12;56,,,,PP39,,False\r\n".format(
+            "id,name,honorific_prefix,honorific_suffix,gender,birth_date,election,party_id,party_name,post_id,post_label,mapit_url,elected,email,twitter_username,facebook_page_url,party_ppc_page_url,facebook_personal_url,homepage_url,wikipedia_url,linkedin_url,image_url,proxy_image_url_template,image_copyright,image_uploading_user,image_uploading_user_notes,twitter_user_id,election_date,election_current,party_lists_in_use,party_list_position,old_person_ids,gss_code,parlparse_id,theyworkforyou_url,party_ec_id,favourite_biscuits,cancelled_poll,wikidata_url\r\n"
+            + "1953,Daith\xed McKay,,,male,,parl.2010-05-06,party:39,Sinn F\xe9in,66135,North Antrim,,,,,,,,,,,,,,,,,{earlier_election_date},False,False,,12;56,,,,PP39,,False,\r\n".format(
                 **d
             )
-            + "2009,Tessa Jowell,Ms,DBE,female,,parl.2010-05-06,party:53,Labour Party,65808,Dulwich and West Norwood,,,jowell@example.com,,,,,,,,{image_url},,example-license,john,A photo of Tessa Jowell,,{earlier_election_date},False,False,,,,uk.org.publicwhip/person/10326,http://www.theyworkforyou.com/mp/10326,PP53,,False\r\n".format(
+            + "2009,Tessa Jowell,Ms,DBE,female,,parl.2010-05-06,party:53,Labour Party,65808,Dulwich and West Norwood,,,jowell@example.com,,,,,,,,{image_url},,example-license,john,A photo of Tessa Jowell,,{earlier_election_date},False,False,,,,uk.org.publicwhip/person/10326,http://www.theyworkforyou.com/mp/10326,PP53,,False,\r\n".format(
                 image_url=tessa_image_url, **d
             )
-            + "1953,Daith\xed McKay,,,male,,parl.2015-05-07,party:39,Sinn F\xe9in,66135,North Antrim,,,,,,,,,,,,,,,,,{election_date},True,False,,12;56,,,,PP39,,False\r\n".format(
+            + "1953,Daith\xed McKay,,,male,,parl.2015-05-07,party:39,Sinn F\xe9in,66135,North Antrim,,,,,,,,,,,,,,,,,{election_date},True,False,,12;56,,,,PP39,,False,\r\n".format(
                 **d
             )
-            + "2009,Tessa Jowell,Ms,DBE,female,,parl.2015-05-07,party:53,Labour Party,65913,Camberwell and Peckham,,,jowell@example.com,,,,,,,,{image_url},,example-license,john,A photo of Tessa Jowell,,{election_date},True,False,,,,uk.org.publicwhip/person/10326,http://www.theyworkforyou.com/mp/10326,PP53,,False\r\n".format(
+            + "2009,Tessa Jowell,Ms,DBE,female,,parl.2015-05-07,party:53,Labour Party,65913,Camberwell and Peckham,,,jowell@example.com,,,,,,,,{image_url},,example-license,john,A photo of Tessa Jowell,,{election_date},True,False,,,,uk.org.publicwhip/person/10326,http://www.theyworkforyou.com/mp/10326,PP53,,False,\r\n".format(
                 image_url=tessa_image_url, **d
             )
         )

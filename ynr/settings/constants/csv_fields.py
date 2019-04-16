@@ -37,4 +37,5 @@ CSV_ROW_FIELDS = [
     "party_ec_id",
     "favourite_biscuits",
     "cancelled_poll",
+    "wikidata_url",
 ]

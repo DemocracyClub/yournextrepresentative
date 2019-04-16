@@ -644,6 +644,7 @@ class Person(Timestampable, models.Model):
             ),
             "homepage_url": self.get_single_identifier_value("homepage_url"),
             "wikipedia_url": self.get_single_identifier_value("wikipedia_url"),
+            "wikidata_url": self.get_single_identifier_value("wikidata_url"),
             "theyworkforyou_url": theyworkforyou_url,
             "parlparse_id": parlparse_id,
             "image_url": primary_image_url,
