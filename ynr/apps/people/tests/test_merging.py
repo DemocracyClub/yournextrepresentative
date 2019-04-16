@@ -9,6 +9,7 @@ from candidates.tests.factories import PostFactory
 from candidates.models import LoggedAction
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from people.tests.factories import PersonFactory
+from results.models import ResultEvent
 from uk_results.models import CandidateResult, ResultSet
 
 from people.merging import PersonMerger, InvalidMergeError, UnsafeToDelete
@@ -572,3 +573,16 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 }
             },
         )
+
+    def test_merge_with_result_event(self):
+        ResultEvent.objects.create(
+            winner=self.source_person,
+            post=self.local_post,
+            winner_party=self.green_party,
+        )
+
+        merger = PersonMerger(self.dest_person, self.source_person)
+        merger.merge()
+
+        result = ResultEvent.objects.get(winner=self.dest_person)
+        self.assertEqual(result.winner, self.dest_person)

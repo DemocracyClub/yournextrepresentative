@@ -12,6 +12,7 @@ from candidates.models import (
 )
 from candidates.models.versions import get_person_as_version_data
 from candidates.views.version_data import get_change_metadata, get_client_ip
+from results.models import ResultEvent
 
 
 class InvalidMergeError(ValueError):
@@ -249,6 +250,11 @@ class PersonMerger:
                 self.dest_person.not_standing.add(election)
             self.source_person.not_standing.remove(election)
 
+    def merge_result_events(self):
+        ResultEvent.objects.filter(winner=self.source_person).update(
+            winner=self.dest_person
+        )
+
     def setup_redirect(self):
         # Create a redirect from the old person to the new person:
         PersonRedirect.objects.create(
@@ -273,6 +279,7 @@ class PersonMerger:
             self.merge_memberships()
             self.merge_queued_images()
             self.merge_not_standing()
+            self.merge_result_events()
 
             # Post merging tasks
             # Save the dest person (don't assume the methods above do this)
