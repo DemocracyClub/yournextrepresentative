@@ -11,11 +11,6 @@ except ImportError:
 from popolo import models, behaviors
 
 
-class LinkAdmin(GenericTabularInline):
-    model = models.Link
-    extra = 0
-
-
 class IdentifierAdmin(GenericTabularInline):
     model = models.Identifier
     extra = 0
@@ -37,7 +32,6 @@ class SourceAdmin(GenericTabularInline):
 
 
 BASE_INLINES = [
-    LinkAdmin,
     IdentifierAdmin,
     ContactDetailAdmin,
     OtherNameAdmin,
