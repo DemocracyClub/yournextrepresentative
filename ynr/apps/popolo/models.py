@@ -125,11 +125,6 @@ class Organization(Dateframeable, Timestampable, models.Model):
     )
 
     # array of items referencing "http://popoloproject.com/schemas/link.json#"
-    links = GenericRelation(
-        "Link", help_text="URLs to documents about the organization"
-    )
-
-    # array of items referencing "http://popoloproject.com/schemas/link.json#"
     sources = GenericRelation(
         "Source", help_text="URLs to source documents about the organization"
     )
@@ -216,11 +211,6 @@ class Post(Dateframeable, Timestampable, models.Model):
     )
 
     # array of items referencing "http://popoloproject.com/schemas/link.json#"
-    links = GenericRelation(
-        "Link", help_text="URLs to documents about the post"
-    )
-
-    # array of items referencing "http://popoloproject.com/schemas/link.json#"
     sources = GenericRelation(
         "Source", help_text="URLs to source documents about the post"
     )
@@ -301,11 +291,6 @@ class Membership(Dateframeable, Timestampable, models.Model):
     contact_details = GenericRelation(
         "ContactDetail",
         help_text="Means of contacting the member of the organization",
-    )
-
-    # array of items referencing "http://popoloproject.com/schemas/link.json#"
-    links = GenericRelation(
-        "Link", help_text="URLs to documents about the membership"
     )
 
     # array of items referencing "http://popoloproject.com/schemas/link.json#"
@@ -501,24 +486,6 @@ class Identifier(GenericRelatable, models.Model):
 
     def __str__(self):
         return "{}: {}".format(self.scheme, self.identifier)
-
-
-class Link(GenericRelatable, models.Model):
-    """
-    A URL
-    see schema at http://popoloproject.com/schemas/link.json#
-    """
-
-    url = models.URLField(_("url"), max_length=350, help_text=_("A URL"))
-    note = models.CharField(
-        _("note"),
-        max_length=512,
-        blank=True,
-        help_text=_("A note, e.g. 'Wikipedia page'"),
-    )
-
-    def __str__(self):
-        return self.url
 
 
 class Source(GenericRelatable, models.Model):

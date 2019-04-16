@@ -48,12 +48,6 @@ class ContactDetailSerializer(serializers.ModelSerializer):
         fields = ("contact_type", "label", "note", "value")
 
 
-class LinkSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = popolo_models.Link
-        fields = ("note", "url")
-
-
 class SourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = popolo_models.Source
@@ -140,12 +134,15 @@ class OrganizationSerializer(MinimalOrganizationSerializer):
 
     contact_details = ContactDetailSerializer(many=True, read_only=True)
     identifiers = IdentifierSerializer(many=True, read_only=True)
-    links = LinkSerializer(many=True, read_only=True)
+    links = serializers.SerializerMethodField()
     other_names = OtherNameSerializer(many=True, read_only=True)
     sources = SourceSerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True)
 
     party_sets = PartySetSerializer(many=True, read_only=True)
+
+    def get_links(self, obj):
+        return []
 
 
 class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
@@ -274,7 +271,7 @@ class PersonSerializer(MinimalPersonSerializer):
             "thumbnail",
         )
 
-    links = LinkSerializer(many=True, read_only=True)
+    links = serializers.SerializerMethodField()
     other_names = OtherNameSerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True, default=[])
 
@@ -335,6 +332,30 @@ class PersonSerializer(MinimalPersonSerializer):
 
     def get_email(self, obj):
         return obj.get_email
+
+    def get_links(self, obj):
+        """
+        :type obj: people.models.Person
+        """
+        links = []
+        notes_tp_pi_types = {
+            "homepage": "homepage_url",
+            "facebook personal": "facebook_personal_url",
+            "party candidate page": "party_ppc_page_url",
+            "party PPC page": "party_ppc_page_url",
+            "linkedin": "linkedin_url",
+            "facebook page": "facebook_page_url",
+            "wikipedia": "wikipedia_url",
+        }
+        pi_types_to_notes = {v: k for k, v in notes_tp_pi_types.items()}
+        qs = obj.tmp_person_identifiers.filter(
+            value_type__in=pi_types_to_notes.values()
+        )
+        for pi in qs:
+            links.append(
+                {"note": pi_types_to_notes[pi.value_type], "url": pi.value}
+            )
+        return links
 
 
 class NoVersionPersonSerializer(PersonSerializer):

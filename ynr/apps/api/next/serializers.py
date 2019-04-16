@@ -46,12 +46,6 @@ class ContactDetailSerializer(serializers.ModelSerializer):
         fields = ("contact_type", "label", "note", "value")
 
 
-class LinkSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = popolo_models.Link
-        fields = ("note", "url")
-
-
 class SourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = popolo_models.Source
@@ -92,7 +86,6 @@ class OrganizationSerializer(MinimalOrganizationSerializer):
             "dissolution_date",
             "contact_details",
             "images",
-            "links",
             "sources",
             "register",
             "party_sets",
@@ -102,7 +95,6 @@ class OrganizationSerializer(MinimalOrganizationSerializer):
 
     contact_details = ContactDetailSerializer(many=True, read_only=True)
     identifiers = IdentifierSerializer(many=True, read_only=True)
-    links = LinkSerializer(many=True, read_only=True)
     other_names = OtherNameSerializer(many=True, read_only=True)
     sources = SourceSerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True)
@@ -228,7 +220,6 @@ class PersonSerializer(MinimalPersonSerializer):
             "birth_date",
             "death_date",
             "versions",
-            "links",
             "memberships",
             "images",
             "thumbnail",
@@ -236,7 +227,6 @@ class PersonSerializer(MinimalPersonSerializer):
         )
 
     identifiers = IdentifierSerializer(many=True, read_only=True)
-    links = LinkSerializer(many=True, read_only=True)
     other_names = OtherNameSerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True, default=[])
     email = serializers.SerializerMethodField()
@@ -272,7 +262,6 @@ class NoVersionPersonSerializer(PersonSerializer):
             "gender",
             "birth_date",
             "death_date",
-            "links",
             "memberships",
             "images",
             "thumbnail",

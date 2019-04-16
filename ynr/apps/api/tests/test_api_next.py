@@ -279,7 +279,6 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
                                 "user_notes": "Here's an image...",
                             }
                         ],
-                        "links": [],
                         "memberships": [
                             {
                                 "elected": None,

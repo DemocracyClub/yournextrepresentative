@@ -138,7 +138,6 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             internal_identifier="10326",
             value_type="theyworkforyou",
         )
-        person.links.create(url="", note="wikipedia")
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,

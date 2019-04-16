@@ -7,7 +7,6 @@ except ImportError:
 
 from popolo import models
 from .behaviors import admin as generics
-from django.utils.translation import ugettext_lazy as _
 
 
 class PostAdmin(admin.ModelAdmin):
@@ -22,11 +21,7 @@ class PostAdmin(admin.ModelAdmin):
             },
         ),
     )
-    inlines = [
-        generics.LinkAdmin,
-        generics.ContactDetailAdmin,
-        generics.SourceAdmin,
-    ]
+    inlines = [generics.ContactDetailAdmin, generics.SourceAdmin]
 
 
 class OrganizationAdmin(admin.ModelAdmin):

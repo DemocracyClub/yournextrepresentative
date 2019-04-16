@@ -254,11 +254,6 @@ class Person(Timestampable, models.Model):
     )
 
     # array of items referencing "http://popoloproject.com/schemas/link.json#"
-    links = GenericRelation(
-        "popolo.Link", help_text="URLs to documents related to the person"
-    )
-
-    # array of items referencing "http://popoloproject.com/schemas/link.json#"
     sources = GenericRelation(
         "popolo.Source", help_text="URLs to source documents about the person"
     )

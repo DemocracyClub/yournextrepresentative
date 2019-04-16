@@ -25,15 +25,6 @@ class PersonTestCase(TimestampableTests, TestCase):
             kwargs.update({"name": u"test instance"})
         return Person.objects.create(**kwargs)
 
-    def test_add_links_and_sources(self):
-        p = self.create_instance()
-        p.links.create(url="http://link.example.org/", note="Note")
-        p.sources.create(url="http://source.example.org/", note="Source note")
-        self.assertEqual(p.links.count(), 1)
-        self.assertEqual(
-            p.sources.filter(url="http://link.example.org/").count(), 0
-        )
-
 
 class OrganizationTestCase(DateframeableTests, TimestampableTests, TestCase):
     model = Organization
