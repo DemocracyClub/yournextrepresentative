@@ -91,7 +91,6 @@ class PersonQuerySet(models.query.QuerySet):
                     "post_election", "post_election__election", "party", "post"
                 ),
             ),
-            "links",
             "images__uploading_user",
             "tmp_person_identifiers",
         )
