@@ -7,7 +7,11 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [("popolo", "0025_move_person_fk_to_people_app")]
+    dependencies = [
+        ("popolo", "0025_move_person_fk_to_people_app"),
+        ("uk_results", "0047_auto_20180501_1359"),
+        ("results", "0026_move_person_fk_to_people_app"),
+    ]
 
     operations = [
         migrations.RemoveField(model_name="link", name="content_type"),
