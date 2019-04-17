@@ -131,12 +131,7 @@ class EEElection(dict):
             if self["division"]:
                 # Case 1, there is an organisational division relted to this
                 # post
-                slug = ":".join(
-                    [
-                        self["division"]["division_type"],
-                        self["division"]["geography_curie"].split(":")[-1],
-                    ]
-                )
+                slug = self["division"]["official_identifier"]
                 label = self["division"]["name"]
                 role = self["division"]["geography_curie"]
             else:
@@ -146,7 +141,9 @@ class EEElection(dict):
                 label = self["organisation"]["official_name"]
                 role = self["elected_role"]
             try:
-                self.post_object = Post.objects.get(slug=slug)
+                self.post_object = Post.objects.get(
+                    slug=slug, organization=self.organization_object
+                )
                 self.post_created = False
             except Post.DoesNotExist:
                 self.post_object = Post(

@@ -12794,3 +12794,227 @@ local_highland = json.loads(
   ]
 }"""
 )
+
+duplicate_post_names = json.loads(
+    """{
+    "count": 4,
+    "next": null,
+    "previous": null,
+    "results": [{
+            "election_id": "local.surrey-heath.2019-05-02",
+            "tmp_election_id": null,
+            "election_title": "Surrey Heath local election",
+            "poll_open_date": "2019-05-02",
+            "election_type": {
+                "name": "Local elections",
+                "election_type": "local"
+            },
+            "election_subtype": null,
+            "organisation": {
+                "url": "https://elections.democracyclub.org.uk/api/organisations/local-authority/SUR/1974-04-01/",
+                "official_identifier": "SUR",
+                "organisation_type": "local-authority",
+                "organisation_subtype": "NMD",
+                "official_name": "Surrey Heath Borough Council",
+                "common_name": "Surrey Heath",
+                "slug": "surrey-heath",
+                "territory_code": "ENG",
+                "election_name": "Surrey Heath local election",
+                "start_date": "1974-04-01",
+                "end_date": null
+            },
+            "group": "local.2019-05-02",
+            "group_type": "organisation",
+            "children": [
+                "local.surrey-heath.st-michaels.2019-05-02"
+            ],
+            "elected_role": "Local Councillor",
+            "seats_contested": null,
+            "division": null,
+            "voting_system": {
+                "slug": "FPTP",
+                "name": "First-past-the-post",
+                "uses_party_lists": false
+            },
+            "current": true,
+            "explanation": null,
+            "metadata": null,
+            "deleted": false,
+            "cancelled": false,
+            "replaces": null,
+            "replaced_by": null
+        },
+        {
+            "election_id": "local.surrey-heath.st-michaels.2019-05-02",
+            "tmp_election_id": null,
+            "election_title": "Surrey Heath local election St Michaels",
+            "poll_open_date": "2019-05-02",
+            "election_type": {
+                "name": "Local elections",
+                "election_type": "local"
+            },
+            "election_subtype": null,
+            "organisation": {
+                "url": "https://elections.democracyclub.org.uk/api/organisations/local-authority/SUR/1974-04-01/",
+                "official_identifier": "SUR",
+                "organisation_type": "local-authority",
+                "organisation_subtype": "NMD",
+                "official_name": "Surrey Heath Borough Council",
+                "common_name": "Surrey Heath",
+                "slug": "surrey-heath",
+                "territory_code": "ENG",
+                "election_name": "Surrey Heath local election",
+                "start_date": "1974-04-01",
+                "end_date": null
+            },
+            "group": "local.surrey-heath.2019-05-02",
+            "group_type": null,
+            "children": [],
+            "elected_role": "Local Councillor",
+            "seats_contested": 2,
+            "division": {
+                "divisionset": {
+                    "start_date": "2019-05-02",
+                    "end_date": null,
+                    "legislation_url": "http://www.legislation.gov.uk/uksi/2017/1268/contents/made",
+                    "consultation_url": "http://www.lgbce.org.uk/current-reviews/south-east/surrey/surrey-heath",
+                    "short_title": "The Surrey Heath (Electoral Changes) Order 2017",
+                    "mapit_generation_id": "",
+                    "notes": ""
+                },
+                "name": "St Michaels",
+                "official_identifier": "SUR:st-michaels",
+                "geography_curie": "SUR:st-michaels",
+                "slug": "st-michaels",
+                "division_type": "DIW",
+                "division_subtype": "",
+                "division_election_sub_type": "",
+                "seats_total": 2,
+                "mapit_generation_low": null,
+                "mapit_generation_high": null,
+                "territory_code": ""
+            },
+            "voting_system": {
+                "slug": "FPTP",
+                "name": "First-past-the-post",
+                "uses_party_lists": false
+            },
+            "current": true,
+            "explanation": null,
+            "metadata": null,
+            "deleted": false,
+            "cancelled": false,
+            "replaces": null,
+            "replaced_by": null
+        },
+        {
+            "election_id": "local.allerdale.2019-05-02",
+            "tmp_election_id": null,
+            "election_title": "Allerdale local election",
+            "poll_open_date": "2019-05-02",
+            "election_type": {
+                "name": "Local elections",
+                "election_type": "local"
+            },
+            "election_subtype": null,
+            "organisation": {
+                "url": "https://elections.democracyclub.org.uk/api/organisations/local-authority/ALL/1974-04-01/",
+                "official_identifier": "ALL",
+                "organisation_type": "local-authority",
+                "organisation_subtype": "NMD",
+                "official_name": "Allerdale Borough Council",
+                "common_name": "Allerdale",
+                "slug": "allerdale",
+                "territory_code": "ENG",
+                "election_name": "Allerdale local election",
+                "start_date": "1974-04-01",
+                "end_date": null
+            },
+            "group": "local.2019-05-02",
+            "group_type": "organisation",
+            "children": [
+                "local.allerdale.st-michaels.2019-05-02"
+            ],
+            "elected_role": "Local Councillor",
+            "seats_contested": null,
+            "division": null,
+            "voting_system": {
+                "slug": "FPTP",
+                "name": "First-past-the-post",
+                "uses_party_lists": false
+            },
+            "current": true,
+            "explanation": null,
+            "metadata": null,
+            "deleted": false,
+            "cancelled": false,
+            "replaces": null,
+            "replaced_by": null
+        },
+        {
+            "election_id": "local.allerdale.st-michaels.2019-05-02",
+            "tmp_election_id": null,
+            "election_title": "Allerdale local election St Michael's",
+            "poll_open_date": "2019-05-02",
+            "election_type": {
+                "name": "Local elections",
+                "election_type": "local"
+            },
+            "election_subtype": null,
+            "organisation": {
+                "url": "https://elections.democracyclub.org.uk/api/organisations/local-authority/ALL/1974-04-01/",
+                "official_identifier": "ALL",
+                "organisation_type": "local-authority",
+                "organisation_subtype": "NMD",
+                "official_name": "Allerdale Borough Council",
+                "common_name": "Allerdale",
+                "slug": "allerdale",
+                "territory_code": "ENG",
+                "election_name": "Allerdale local election",
+                "start_date": "1974-04-01",
+                "end_date": null
+            },
+            "group": "local.allerdale.2019-05-02",
+            "group_type": null,
+            "children": [],
+            "elected_role": "Local Councillor",
+            "seats_contested": 2,
+            "division": {
+                "divisionset": {
+                    "start_date": "2019-05-02",
+                    "end_date": null,
+                    "legislation_url": "http://www.legislation.gov.uk/uksi/2017/1067/contents/made",
+                    "consultation_url": "http://www.lgbce.org.uk/current-reviews/north-west/cumbria/allerdale",
+                    "short_title": "The Allerdale (Electoral Changes) Order 2017",
+                    "mapit_generation_id": "",
+                    "notes": ""
+                },
+                "name": "St Michael's",
+                "official_identifier": "ALL:st-michaels",
+                "geography_curie": "ALL:st-michaels",
+                "slug": "st-michaels",
+                "division_type": "DIW",
+                "division_subtype": "",
+                "division_election_sub_type": "",
+                "seats_total": 2,
+                "mapit_generation_low": null,
+                "mapit_generation_high": null,
+                "territory_code": ""
+            },
+            "voting_system": {
+                "slug": "FPTP",
+                "name": "First-past-the-post",
+                "uses_party_lists": false
+            },
+            "current": true,
+            "explanation": null,
+            "metadata": null,
+            "deleted": false,
+            "cancelled": false,
+            "replaces": null,
+            "replaced_by": null
+        }
+    ]
+}
+"""
+)
