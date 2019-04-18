@@ -10,6 +10,8 @@ from elections.models import Election as YNRElection
 from popolo.models import Post, Organization
 from candidates.models import PartySet, PostExtraElection
 
+ALWAYS_USES_LISTS = ["europarl"]
+
 
 class EEElection(dict):
     """
@@ -63,8 +65,11 @@ class EEElection(dict):
             self.election_created = False
         else:
             party_lists_in_use = False
+            election_type = self["election_id"].split(".")[0]
             if self["voting_system"]:
                 party_lists_in_use = self["voting_system"]["uses_party_lists"]
+            elif election_type in ALWAYS_USES_LISTS:
+                party_lists_in_use = True
 
             election_obj, created = YNRElection.objects.update_or_create(
                 slug=self["election_id"],
