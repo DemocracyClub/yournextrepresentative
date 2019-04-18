@@ -132,7 +132,7 @@ class PersonIdentifier(TimeStampedModel):
             return STRING_TO_LABEL[self.value_type]
 
         text = self.value_type.replace("_", " ")
-        text = self.value_type.replace(" url", "")
+        text = text(" url", "")
 
         return text.title().strip()
 
@@ -141,9 +141,7 @@ class PersonIdentifier(TimeStampedModel):
         url = None
         text = "{}"
 
-        if self.value_type == "twitter":
-            if self.value.startswith("@"):
-                self.value = self.value[1:]
+        if self.value_type == "twitter_username":
             url = format_html("https://twitter.com/{}", self.value)
 
         if self.value.startswith("http"):

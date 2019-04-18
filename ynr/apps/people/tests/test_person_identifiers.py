@@ -12,17 +12,17 @@ class TestPersonIdentifiers(TestCase):
 
         pi = PersonIdentifier.objects.create(
             person=self.person,
-            value="@democlub",
-            value_type="twitter",
+            value="democlub",
+            value_type="twitter_username",
             internal_identifier="2324",
         )
-        self.assertEqual(str(pi), "1: twitter (@democlub)")
+        self.assertEqual(str(pi), "1: twitter_username (democlub)")
 
     def test_get_value_html_twitter(self):
         pi = PersonIdentifier.objects.create(
             person=self.person,
-            value="@democlub",
-            value_type="twitter",
+            value="democlub",
+            value_type="twitter_username",
             internal_identifier="2324",
         )
 
