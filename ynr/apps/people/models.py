@@ -126,6 +126,7 @@ class PersonIdentifier(TimeStampedModel):
             "twitter_username": "Twitter",
             "wikipedia_url": "Wikipedia",
             "wikidata_id": "Wikidata",
+            "ynmep_id": "YourNextMEP ID",
         }
         if self.value_type in STRING_TO_LABEL:
             return STRING_TO_LABEL[self.value_type]
