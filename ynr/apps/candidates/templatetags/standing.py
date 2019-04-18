@@ -70,6 +70,10 @@ def post_in_election(person, election):
             result += candidacy.post_election.cancelled_status_html
         result += "</span>"
         result += ' <span class="party">{}</span>'.format(candidacy.party.name)
+        if candidacy.party_list_position:
+            result += ' <span class="party">List position {}</span>'.format(
+                candidacy.party_list_position
+            )
         prefix, suffix = get_known_candidacy_prefix_and_suffix(candidacy)
         result = prefix + result + suffix
     else:

@@ -36,6 +36,7 @@ from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
 from people.forms import NewPersonForm, PersonIdentifierFormsetFactory
 from popolo.models import Membership, Post
+from parties.models import Party
 
 from .filters import BallotFilter, filter_shortcuts
 
@@ -1051,4 +1052,21 @@ class SOPNForBallotView(DetailView):
             source_url=self.object.sopn.source_url
         )
 
+        return context
+
+
+class PartyForBallotView(DetailView):
+    model = PostExtraElection
+    slug_url_kwarg = "ballot_id"
+    slug_field = "ballot_paper_id"
+    template_name = "elections/party_for_ballot.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["party"] = get_object_or_404(
+            Party, ec_id=self.kwargs["party_id"]
+        )
+        context["candidates"] = self.object.membership_set.filter(
+            party=context["party"]
+        ).order_by("party_list_position")
         return context

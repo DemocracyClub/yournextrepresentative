@@ -32,6 +32,11 @@ urlpatterns = [
         name="ballot_paper_sopn",
     ),
     url(
+        r"^elections/(?P<ballot_id>[^/]+)/(?P<party_id>[^/]+)/",
+        views.PartyForBallotView.as_view(),
+        name="party-for-ballot",
+    ),
+    url(
         r"^elections/(?P<ballot_id>[^/]+).csv",
         views.BallotPaperCSVView.as_view(),
         name="ballot_paper_csv",

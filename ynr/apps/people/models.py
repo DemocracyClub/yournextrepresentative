@@ -126,12 +126,13 @@ class PersonIdentifier(TimeStampedModel):
             "twitter_username": "Twitter",
             "wikipedia_url": "Wikipedia",
             "wikidata_id": "Wikidata",
+            "ynmep_id": "YourNextMEP ID",
         }
         if self.value_type in STRING_TO_LABEL:
             return STRING_TO_LABEL[self.value_type]
 
         text = self.value_type.replace("_", " ")
-        text = self.value_type.replace(" url", "")
+        text = text(" url", "")
 
         return text.title().strip()
 
@@ -140,9 +141,7 @@ class PersonIdentifier(TimeStampedModel):
         url = None
         text = "{}"
 
-        if self.value_type == "twitter":
-            if self.value.startswith("@"):
-                self.value = self.value[1:]
+        if self.value_type == "twitter_username":
             url = format_html("https://twitter.com/{}", self.value)
 
         if self.value.startswith("http"):
