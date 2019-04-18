@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block body_class %}constituency{% endblock %}
+{% block title %}Candidates for {{ object.post.label }} in the {{ object.election.name }}{% endblock %}
+
+{% block hero %}
+  <h1>
+    {{ party.name }} candidates for
+    <a href="{{ object.get_absolute_url }}" id="constituency-name">{{ object.post.label }}</a>
+    in the <a href="{{ object.election.get_absolute_url }}">{{ object.election.name }}</a>
+  </h1>
+{% endblock %}
+
+
+{% block content %}
+<ul class="candidate-list">
+{% for candidate in candidates %}
+{#  <li class="candidates-list__person">#}
+{#    <span class="person-position">{{ candidate.party_list_position }}</span>#}
+{#    {{ candidate.person.name }}#}
+{#  </li>#}
+
+
+
+  <li class="candidates-list__person{% if user_can_record_results %} hover-highlighting{% endif %}">
+                {% include 'candidates/_person_in_list.html' with election=election.slug c=candidate.person position_in_list=candidate.party_list_position %}
+                {% if user.is_authenticated %}
+                <p>
+                  {% if candidate_list_edits_allowed %}
+                    <a class="button tiny js-toggle-source-confirmation not-standing">Not actually standing?</a>
+                  {% endif %}
+                  <a href="{% url 'person-update' person_id=candidate.person_id %}" class="button tiny secondary">Edit</a>
+                </p>
+                {% if candidate_list_edits_allowed %}
+                  {% include 'candidates/_source_confirmation.html' with standing='not-standing' action='candidacy-delete' %}
+                {% endif %}
+                {% endif %}
+                {% if DATE_TODAY >= election.election_date %}
+                  {% if user_can_record_results and show_confirm_result and not candidate_elected %}
+                    {% if 'local' not in election.slug %}
+                      <form class="winner-confirm" action="{% url 'record-winner' election=election.slug post_id=post_data.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="person_id" value="{{ c.id }}">
+                        <input type="hidden" name="source" value="[Quick update from the constituency page]">
+                        <input type="submit" class="button" value="Mark candidate as elected">
+                      </form>
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+              </li>
+
+{% endfor %}
+</ul>
+
+{% endblock %}
