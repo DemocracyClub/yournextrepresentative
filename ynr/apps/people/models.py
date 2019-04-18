@@ -132,7 +132,7 @@ class PersonIdentifier(TimeStampedModel):
             return STRING_TO_LABEL[self.value_type]
 
         text = self.value_type.replace("_", " ")
-        text = text(" url", "")
+        text = text.replace(" url", "")
 
         return text.title().strip()
 
