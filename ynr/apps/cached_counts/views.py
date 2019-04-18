@@ -20,6 +20,7 @@ def get_counts(for_json=True):
         )
         .values("post_election__election")
         .annotate(count=Count("post_election__election"))
+        .order_by()
     )
 
     for d in qs:

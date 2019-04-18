@@ -39,17 +39,25 @@
     <thead>
       <tr>
         <th>Name</th>
+        {% if object.party_lists_in_use %}
+        <th>List position</th>
+        {% endif %}
         <th>Party</th>
         {% if postextraelection.resultset %}
         <th>Votes</th>
         <th>Elected?</th>
         {% endif %}
+
       </tr>
     </thead>
     <tbody>
       {% for membership in postextraelection.membership_set.all %}
       <tr>
         <td><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a></td>
+        {% if object.party_lists_in_use %}
+        <td>{{ membership.party_list_position }}</td>
+        {% endif %}
+
         <td>{{ membership.party.name }}</td>
         {% if postextraelection.resultset %}
         <td>{{ membership.result.num_ballots }}</td>
