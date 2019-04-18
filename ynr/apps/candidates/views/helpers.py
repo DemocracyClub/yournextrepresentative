@@ -161,6 +161,7 @@ def order_candidates_by_name_no_grouping(election_data, candidacies):
             {
                 "id": candidacy.party.ec_id,
                 "legacy_slug": candidacy.party.legacy_slug,
+                "ec_id": candidacy.party.ec_id,
                 "name": candidacy.party.name,
                 "max_count": 0,
                 "truncated": False,
@@ -237,6 +238,7 @@ def group_candidates_by_party(election_data, candidacies, show_all=False):
                     "id": k,
                     "name": party_id_to_name[k],
                     "legacy_slug": party_id_to_legacy_slug[k],
+                    "ec_id": k,
                     "max_count": max_people,
                     "truncated": party_truncated[k],
                     "total_count": party_total[k],
