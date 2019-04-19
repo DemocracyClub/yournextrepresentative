@@ -2,53 +2,92 @@
 
 {% block content %}
 <h2>{{ election_obj.name }}: {{ party }} candidates</h2>
+
 <form method=POST>
 {% csrf_token %}
+
 {% for formset in formsets %}
-<div style="clear: both; margin-top:2em">
-  <h3>{{ formset.pee.post.label }}</h3>
-  <div style="margin-top:2em; margin-left: 1em">
   {{ formset.management_form }}
-  {% for form in formset.data %}
-    {{ form.name }}
-    <div style="margin-top:2em; margin-left: 1em">
-    {% if form.name.value %}
-      <h4>Candidate: {{ form.name.value }}</h4>
-      {% if form.select_person.1 %}
-      <p>Some similar names have been found in our database. </p>
-      <p>
-        If you're sure this is a new candidate, please select
-        'Add {{ form.name.value }} as a new person'. Otherwise, please check the
-        similar names, and if it is the same person, select their name
-        instead. The system will update them with the new candidacy.
-      </p>
-      {% endif %}
-      {{ form.select_person.errors }}
-      {% for choice in form.select_person %}
-        <label for="{{ choice.id_for_label }}" style="font-size:1em;clear:both;margin-bottom:0.5em">
-          <div style="display:block;float:left;width:3em">
-            {{ choice.tag }}
-          </div>
-          {% if choice.data.value != '_new' %}
-          <div>
-            Mark <a href="{% url 'person-view' choice.data.value %}" target="_blank">
-            {{ choice.choice_label }}</a> as standing in {{ formset.pee.post.label }}
-          </div>
-          {% else %}
-          <div>
-            Add <strong>{{ form.name.value }}</strong> as a new person
-          </div>
-          {% endif %}
-        </label>
+
+  {% if formset.non_form_errors %}
+    <div class="errorlist">
+      {% for error in formset.non_form_errors %}
+        <p>{{ error }}</p>
       {% endfor %}
-    {% endif %}
+
     </div>
+  {% endif %}
+  {% for form in formset.data %}
+    {% if form.name.value %}
+      <div>
+        <h3 style="clear:left;">{{ form.name.value }}</h3>
+        <table class="table sopn_adding_suggestions_table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Recent previous candidacies</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for choice in form.select_person %}
+              <tr {% if choice.data.value == '_new' %}class="selected_action"{% endif %}>
+                <td class="multiple-choice" style="margin-left:1em">
+                  {{ choice.tag }}
+                  {% if choice.data.value == '_new' %}
+                    <label>Add a new profile "{{ form.name.value }}"</label>
+                  {% else %}
+                    <label>Same as
+                      <a href="{{ choice.choice_label.object.get_absolute_url }}"
+                         target="_blank">{{ choice.choice_label.name }}</a></label>
+                  {% endif %}
+                </td>
+                <td>
+                  {% for candidacy in choice.choice_label.previous_candidacies %}
+                    <li>{{ candidacy }}</li>
+                  {% endfor %}
+
+                </td>
+              </tr>
+            {% endfor %}
+            {{ form.name }}
+            {% if form.party_list_position %}
+              {{ form.party_list_position }}
+            {% endif %}
+
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
   {% endfor %}
-  </div>
-</div>
 {% endfor %}
-<div style="clear: both; margin-top: 2em">
+
   <button type=submit>Next</button>
-</div>
 </form>
+
+  <script>
+  $('.sopn_adding_suggestions_table tr').click(function() {
+      var row = $(this);
+    $("tr").removeClass("selected_action", function() {
+        row.addClass("selected_action");
+        row.find('td input[type=radio]').prop('checked', true);
+    });
+
+
+  });
+
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% endblock content %}

@@ -31,7 +31,12 @@ def add_person(request, person_data):
 
 
 def update_person(
-    request=None, person=None, party=None, post_election=None, source=None
+    request=None,
+    person=None,
+    party=None,
+    post_election=None,
+    source=None,
+    list_position=None,
 ):
     election = post_election.election
 
@@ -45,7 +50,7 @@ def update_person(
         post_election=post_election,
         defaults={
             "party": party,
-            "party_list_position": None,
+            "party_list_position": list_position,
             "elected": None,
             "role": election.candidate_membership_role,
         },

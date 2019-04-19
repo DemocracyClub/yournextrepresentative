@@ -86,15 +86,13 @@ class BulkAddPartyView(BasePartyBulkAddView):
                 party=context["party"],
             )
             extra_forms = pee.winner_count or WINNER_COUNT_IF_NONE
-            factory = django_forms.formset_factory(
-                forms.NameOnlyPersonForm,
-                extra=extra_forms - existing.count(),
-                formset=forms.BulkAddByPartyFormset,
-            )
+            form_kwargs = {"ballot": pee}
             if self.request.POST:
-                formset = factory(self.request.POST, prefix=pee.pk)
+                formset = forms.BulkAddByPartyFormset(
+                    self.request.POST, **form_kwargs
+                )
             else:
-                formset = factory(prefix=pee.pk)
+                formset = forms.BulkAddByPartyFormset(**form_kwargs)
 
             post_info = {"pee": pee, "existing": existing, "formset": formset}
             posts.append(post_info)
@@ -118,12 +116,11 @@ class BulkAddPartyView(BasePartyBulkAddView):
 
         session_data = {"source": form.cleaned_data["source"], "post_data": []}
         for pee in qs:
-            factory = django_forms.formset_factory(
-                forms.NameOnlyPersonForm,
-                extra=pee.winner_count or WINNER_COUNT_IF_NONE,
-                formset=forms.BulkAddByPartyFormset,
+            form_kwargs = {"ballot": pee}
+            formset = forms.BulkAddByPartyFormset(
+                self.request.POST, **form_kwargs
             )
-            formset = factory(self.request.POST, prefix=pee.pk)
+
             session_data["post_data"].append(
                 {"pee_pk": pee.pk, "data": formset.cleaned_data}
             )
@@ -161,12 +158,15 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
             pee = election.postextraelection_set.get(pk=post["pee_pk"])
 
             if self.request.POST:
-                formset = forms.BulkAddReviewNameOnlyFormSet(
-                    self.request.POST, initial=post["data"], prefix=pee.pk
+                formset = forms.PartyBulkAddReviewNameOnlyFormSet(
+                    self.request.POST,
+                    initial=post["data"],
+                    prefix=pee.pk,
+                    ballot=pee,
                 )
             else:
-                formset = forms.BulkAddReviewNameOnlyFormSet(
-                    initial=post["data"], prefix=pee.pk
+                formset = forms.PartyBulkAddReviewNameOnlyFormSet(
+                    initial=post["data"], prefix=pee.pk, ballot=pee
                 )
             formsets.append(
                 {
@@ -187,16 +187,12 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
         pee_ids = {
             int(k.split("-")[0])
             for k in request.POST.keys()
-            if k.endswith("INITIAL_FORMS")
+            if k.endswith("-name")
         }
         for pee in qs.filter(pk__in=pee_ids):
-            factory = django_forms.formset_factory(
-                forms.ReviewSinglePersonNameOnlyForm,
-                extra=pee.winner_count or WINNER_COUNT_IF_NONE,
-                formset=forms.BulkAddReviewNameOnlyFormSet,
+            formset = forms.PartyBulkAddReviewNameOnlyFormSet(
+                self.request.POST, prefix=pee.pk, ballot=pee
             )
-            formset = factory(self.request.POST, prefix=pee.pk)
-            formset.pee = pee
 
             formsets.append(formset)
 
@@ -206,6 +202,7 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
             return self.form_invalid()
 
     def form_valid(self, formsets):
+
         source = self.request.session["bulk_add_by_party_data"].get("source")
         assert len(formsets) >= 1
 
@@ -228,14 +225,14 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                         person = Person.objects.get(
                             pk=int(data["select_person"])
                         )
-
                     # Update the person's candacies
                     helpers.update_person(
                         self.request,
                         person,
                         self.get_party(),
-                        formset.pee,
+                        formset.ballot,
                         source,
+                        list_position=data.get("party_list_position"),
                     )
 
         url = self.get_election().get_absolute_url()

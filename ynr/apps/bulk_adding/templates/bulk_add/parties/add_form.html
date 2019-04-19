@@ -4,8 +4,8 @@
 <h2>Add {{ party.name }} candidates for the {{ election_obj.name }}</h2>
 
 <form method=post>
+{{ form }}
   {% csrf_token %}
-  {{ form }}
   {% for post_info in posts %}
     <div>
       <h4>{{ post_info.pee.post.label }}</h4>
@@ -22,7 +22,30 @@
       {% else %}
       <p>No {{ party.name }} candidates known yet.</p>
       {% endif %}
-      {{ post_info.formset }}
+
+      {{ post_info.formset.management_form }}
+      <table class="table">
+        <thead>
+          <th>Person Name (style: Ali Smith, not SMITH Ali)</th>
+          {% if election_obj.party_lists_in_use %}
+          <th style="width:15%">List position</th>
+          {% endif %}
+        </thead>
+        <tbody>
+          {% for form in post_info.formset %}
+          <tr>
+            <td>
+              {{ form.name }}
+            </td>
+            {% if election_obj.party_lists_in_use %}
+            <td>{{ form.party_list_position }}</td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+
+
+        </tbody>
+      </table>
     </div>
   {% endfor %}
   <button type=submit>Next</button>

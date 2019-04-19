@@ -118,13 +118,13 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = form.submit().follow()
 
         self.assertContains(
-            response, "Add <strong>Pemphero Pasternak</strong> as a new person"
+            response, '<label>Add a new profile "Pemphero Pasternak"</label>'
         )
 
         form = response.forms[1]
 
         # Now submit the valid form
-        with self.assertNumQueries(48):
+        with self.assertNumQueries(53):
             form["{}-0-select_person".format(pee.pk)] = "_new"
             response = form.submit().follow()
 

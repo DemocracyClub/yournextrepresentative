@@ -180,7 +180,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
                 Membership.objects.filter(
                     post_election__election=self.ballot.election
                 )
-                .filter(person_id=form_data["select_person"])
+                .filter(person_id=form_data.get("select_person"))
                 .exclude(post_election=self.ballot)
                 .exclude(post_election__candidates_locked=True)
             )
@@ -260,8 +260,57 @@ class SelectAnythingChoiceField(forms.ChoiceField):
         return True
 
 
-class BulkAddByPartyFormset(forms.BaseFormSet):
-    pass
+class BaseBulkAddByPartyFormset(forms.BaseFormSet):
+    def __init__(self, *args, **kwargs):
+        self.ballot = kwargs["ballot"]
+        kwargs["prefix"] = self.ballot.pk
+        self.extra = self.ballot.winner_count
+        del kwargs["ballot"]
+
+        super().__init__(*args, **kwargs)
+
+    def add_fields(self, form, index):
+        super().add_fields(form, index)
+        if self.ballot.election.party_lists_in_use:
+            form.fields["party_list_position"] = forms.IntegerField(
+                label=_(
+                    "Position in party list ('1' for first, '2' for second, etc.)"
+                ),
+                min_value=1,
+                required=False,
+                initial=index + 1,
+                widget=forms.NumberInput(attrs={"class": "party-position"}),
+            )
+
+
+BulkAddByPartyFormset = forms.formset_factory(
+    NameOnlyPersonForm,
+    extra=15,
+    formset=BaseBulkAddByPartyFormset,
+    can_delete=False,
+)
+
+
+class PartyBulkAddReviewFormSet(BaseBulkAddReviewFormSet):
+    def __init__(self, *args, **kwargs):
+        self.ballot = kwargs["ballot"]
+        kwargs["prefix"] = self.ballot.pk
+        self.extra = self.ballot.winner_count
+        del kwargs["ballot"]
+
+        super().__init__(*args, **kwargs)
+
+    def add_fields(self, form, index):
+        super().add_fields(form, index)
+        if self.ballot.election.party_lists_in_use:
+            form.fields["party_list_position"] = forms.IntegerField(
+                min_value=1, required=False, widget=forms.HiddenInput()
+            )
+
+
+PartyBulkAddReviewNameOnlyFormSet = forms.formset_factory(
+    ReviewSinglePersonNameOnlyForm, extra=0, formset=PartyBulkAddReviewFormSet
+)
 
 
 class SelectPartyForm(forms.Form):
