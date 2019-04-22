@@ -131,7 +131,12 @@ class EEElection(dict):
             if self["division"]:
                 # Case 1, there is an organisational division relted to this
                 # post
-                slug = self["division"]["official_identifier"]
+                slug = ":".join(
+                    [
+                        self["division"]["division_type"],
+                        self["division"]["geography_curie"].split(":")[-1],
+                    ]
+                )
                 label = self["division"]["name"]
                 role = self["division"]["geography_curie"]
             else:

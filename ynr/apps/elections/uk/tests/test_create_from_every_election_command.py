@@ -471,12 +471,14 @@ class EE_ImporterTest(WebTest):
             }
         )
         call_command("uk_create_elections_from_every_election")
-        post_a, post_b = Post.objects.all().order_by("-slug")
+        post_a, post_b = Post.objects.all().order_by(
+            "-slug", "-organization__name"
+        )
 
-        self.assertEqual(post_a.slug, "SUR:st-michaels")
+        self.assertEqual(post_a.slug, "DIW:st-michaels")
         self.assertEqual(
             post_a.organization.name, "Surrey Heath Borough Council"
         )
 
-        self.assertEqual(post_b.slug, "ALL:st-michaels")
+        self.assertEqual(post_b.slug, "DIW:st-michaels")
         self.assertEqual(post_b.organization.name, "Allerdale Borough Council")
