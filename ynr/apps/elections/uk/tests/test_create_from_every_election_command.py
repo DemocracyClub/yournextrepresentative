@@ -12,10 +12,12 @@ from .ee_import_results import (
     each_type_of_election_on_one_day,
     no_results,
     local_highland,
+    duplicate_post_names,
 )
 from candidates.tests.factories import MembershipFactory
 from people.tests.factories import PersonFactory
 from elections.uk import every_election
+from popolo.models import Post
 
 
 EE_BASE_URL = getattr(
@@ -449,3 +451,34 @@ class EE_ImporterTest(WebTest):
             every_election.PostExtraElection.objects.all().count(), 1
         )
         self.assertEqual(every_election.YNRElection.objects.all().count(), 1)
+
+    @patch("elections.uk.every_election.requests")
+    def test_import_post_duplicate_slugs(self, mock_requests):
+        """
+        Regression test to check that a post with duplicate names
+
+        :param mock_requests:
+        :return:
+        """
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=True"
+                ): duplicate_post_names,
+                urljoin(
+                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                ): local_highland,
+            }
+        )
+        call_command("uk_create_elections_from_every_election")
+        post_a, post_b = Post.objects.all().order_by(
+            "-slug", "-organization__name"
+        )
+
+        self.assertEqual(post_a.slug, "DIW:st-michaels")
+        self.assertEqual(
+            post_a.organization.name, "Surrey Heath Borough Council"
+        )
+
+        self.assertEqual(post_b.slug, "DIW:st-michaels")
+        self.assertEqual(post_b.organization.name, "Allerdale Borough Council")

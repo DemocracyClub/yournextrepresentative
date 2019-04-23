@@ -146,7 +146,9 @@ class EEElection(dict):
                 label = self["organisation"]["official_name"]
                 role = self["elected_role"]
             try:
-                self.post_object = Post.objects.get(slug=slug)
+                self.post_object = Post.objects.get(
+                    slug=slug, organization=self.organization_object
+                )
                 self.post_created = False
             except Post.DoesNotExist:
                 self.post_object = Post(

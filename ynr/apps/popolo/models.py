@@ -216,7 +216,7 @@ class Post(Dateframeable, Timestampable, models.Model):
     )
 
     # PostExtra fields
-    slug = models.CharField(max_length=256, blank=True, unique=True)
+    slug = models.CharField(max_length=256, blank=True)
 
     elections = models.ManyToManyField(
         "elections.Election",
@@ -240,6 +240,9 @@ class Post(Dateframeable, Timestampable, models.Model):
 
     def __str__(self):
         return self.label
+
+    class Meta:
+        unique_together = ("slug", "organization")
 
 
 class Membership(Dateframeable, Timestampable, models.Model):
