@@ -182,12 +182,11 @@ class EEElection(dict):
 
             # Get the winner count
             winner_count = self["seats_contested"]
-
             self.post_election_object, self.post_election_created = PostExtraElection.objects.update_or_create(
-                post=self.post_object,
-                election=parent.election_object,
+                ballot_paper_id=self["election_id"],
                 defaults={
-                    "ballot_paper_id": self["election_id"],
+                    "post": self.post_object,
+                    "election": parent.election_object,
                     "winner_count": winner_count,
                     "cancelled": self["cancelled"],
                 },
