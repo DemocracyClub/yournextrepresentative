@@ -161,7 +161,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "twitter_username": "",
                 "twitter_user_id": "",
                 "wikipedia_url": "",
-                "wikidata_url": "",
+                "wikidata_id": "",
             },
         )
 
