@@ -92,7 +92,7 @@ class PersonIdentifier(TimeStampedModel):
         help_text="A label for the type of value e.g. 'Twitter', 'Person blog'",
     )
     extra_data = JSONField(
-        help_text="""For storing any additional data against this field. 
+        help_text="""For storing any additional data against this field.
                      Used by bots, not humans.""",
         null=True,
     )
@@ -643,7 +643,7 @@ class Person(Timestampable, models.Model):
             ),
             "homepage_url": self.get_single_identifier_value("homepage_url"),
             "wikipedia_url": self.get_single_identifier_value("wikipedia_url"),
-            "wikidata_url": self.get_single_identifier_value("wikidata_url"),
+            "wikidata_id": self.get_single_identifier_value("wikidata_id"),
             "theyworkforyou_url": theyworkforyou_url,
             "parlparse_id": parlparse_id,
             "image_url": primary_image_url,

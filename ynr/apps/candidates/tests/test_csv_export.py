@@ -18,6 +18,7 @@ from .auth import TestUserMixin
 from .dates import date_in_near_future, FOUR_YEARS_IN_DAYS
 from .uk_examples import UK2015ExamplesMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from ynr_refactoring.settings import PersonIdentifierFields
 
 
 class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
@@ -91,6 +92,9 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         self.gb_person.tmp_person_identifiers.create(
             value_type="email", value="jowell@example.com"
         )
+        self.gb_person.tmp_person_identifiers.create(
+            value_type=PersonIdentifierFields.wikidata_id.name, value="Q123456"
+        )
 
     def test_as_single_dict(self):
         membership = (
@@ -140,17 +144,17 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         PersonRedirect.objects.create(old_person_id=56, new_person_id=1953)
         self.maxDiff = None
         example_output = (
-            "id,name,honorific_prefix,honorific_suffix,gender,birth_date,election,party_id,party_name,post_id,post_label,mapit_url,elected,email,twitter_username,facebook_page_url,party_ppc_page_url,facebook_personal_url,homepage_url,wikipedia_url,linkedin_url,image_url,proxy_image_url_template,image_copyright,image_uploading_user,image_uploading_user_notes,twitter_user_id,election_date,election_current,party_lists_in_use,party_list_position,old_person_ids,gss_code,parlparse_id,theyworkforyou_url,party_ec_id,favourite_biscuits,cancelled_poll,wikidata_url\r\n"
+            "id,name,honorific_prefix,honorific_suffix,gender,birth_date,election,party_id,party_name,post_id,post_label,mapit_url,elected,email,twitter_username,facebook_page_url,party_ppc_page_url,facebook_personal_url,homepage_url,wikipedia_url,linkedin_url,image_url,proxy_image_url_template,image_copyright,image_uploading_user,image_uploading_user_notes,twitter_user_id,election_date,election_current,party_lists_in_use,party_list_position,old_person_ids,gss_code,parlparse_id,theyworkforyou_url,party_ec_id,favourite_biscuits,cancelled_poll,wikidata_id\r\n"
             + "1953,Daith\xed McKay,,,male,,parl.2010-05-06,party:39,Sinn F\xe9in,66135,North Antrim,,,,,,,,,,,,,,,,,{earlier_election_date},False,False,,12;56,,,,PP39,,False,\r\n".format(
                 **d
             )
-            + "2009,Tessa Jowell,Ms,DBE,female,,parl.2010-05-06,party:53,Labour Party,65808,Dulwich and West Norwood,,,jowell@example.com,,,,,,,,{image_url},,example-license,john,A photo of Tessa Jowell,,{earlier_election_date},False,False,,,,uk.org.publicwhip/person/10326,http://www.theyworkforyou.com/mp/10326,PP53,,False,\r\n".format(
+            + "2009,Tessa Jowell,Ms,DBE,female,,parl.2010-05-06,party:53,Labour Party,65808,Dulwich and West Norwood,,,jowell@example.com,,,,,,,,{image_url},,example-license,john,A photo of Tessa Jowell,,{earlier_election_date},False,False,,,,uk.org.publicwhip/person/10326,http://www.theyworkforyou.com/mp/10326,PP53,,False,Q123456\r\n".format(
                 image_url=tessa_image_url, **d
             )
             + "1953,Daith\xed McKay,,,male,,parl.2015-05-07,party:39,Sinn F\xe9in,66135,North Antrim,,,,,,,,,,,,,,,,,{election_date},True,False,,12;56,,,,PP39,,False,\r\n".format(
                 **d
             )
-            + "2009,Tessa Jowell,Ms,DBE,female,,parl.2015-05-07,party:53,Labour Party,65913,Camberwell and Peckham,,,jowell@example.com,,,,,,,,{image_url},,example-license,john,A photo of Tessa Jowell,,{election_date},True,False,,,,uk.org.publicwhip/person/10326,http://www.theyworkforyou.com/mp/10326,PP53,,False,\r\n".format(
+            + "2009,Tessa Jowell,Ms,DBE,female,,parl.2015-05-07,party:53,Labour Party,65913,Camberwell and Peckham,,,jowell@example.com,,,,,,,,{image_url},,example-license,john,A photo of Tessa Jowell,,{election_date},True,False,,,,uk.org.publicwhip/person/10326,http://www.theyworkforyou.com/mp/10326,PP53,,False,Q123456\r\n".format(
                 image_url=tessa_image_url, **d
             )
         )
