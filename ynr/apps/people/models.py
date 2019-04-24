@@ -150,6 +150,9 @@ class PersonIdentifier(TimeStampedModel):
         if self.value_type == "email":
             url = format_html("mailto:{}", self.value)
 
+        if self.value_type == "wikidata_id":
+            url = format_html("https://www.wikidata.org/wiki/{}", self.value)
+
         if url:
             text = format_html("""<a href="{}" rel="nofollow">{{}}</a>""", url)
 

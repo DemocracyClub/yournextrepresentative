@@ -14,7 +14,7 @@ from people.helpers import parse_approximate_date
 from people.models import Person, PersonIdentifier
 from parties.models import Party
 
-from .helpers import clean_twitter_username
+from .helpers import clean_twitter_username, clean_wikidata_id
 
 
 class StrippedCharField(forms.CharField):
@@ -109,6 +109,12 @@ class PersonIdentifierForm(forms.ModelForm):
     def clean_twitter_username(self, username):
         try:
             return clean_twitter_username(username)
+        except ValueError as e:
+            raise ValidationError(e)
+
+    def clean_wikidata_id(self, identifier):
+        try:
+            return clean_wikidata_id(identifier)
         except ValueError as e:
             raise ValidationError(e)
 
