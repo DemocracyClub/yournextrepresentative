@@ -223,3 +223,14 @@ def clean_twitter_username(username):
             # haven't set that up.
             return username
     return username
+
+
+def clean_wikidata_id(identifier):
+    identifier = identifier.strip().lower()
+    m = re.search(r"^.*wikidata.org/(wiki|entity)/(\w+)", identifier)
+    if m:
+        identifier = m.group(2)
+    identifier = identifier.upper()
+    if not re.match("Q[\d]+", identifier):
+        raise ValueError("Wikidata ID be a 'Q12345' type identifier")
+    return identifier

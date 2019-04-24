@@ -170,3 +170,21 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         self.assertEqual(
             form[0].non_field_errors(), ["Enter a valid email address."]
         )
+
+    def test_clean_wikidata_ids(self):
+        resp = self._submit_values("Whoops", "wikidata_id")
+        form = resp.context["identifiers_formset"]
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form[0].non_field_errors(),
+            ["Wikidata ID be a 'Q12345' type identifier"],
+        )
+
+        self._submit_values(
+            "http://www.wikidata.org/entity/Q391562", "wikidata_id"
+        )
+        self.person.refresh_from_db()
+        self.assertEqual(
+            self.person.get_single_identifier_of_type("wikidata_id").value,
+            "Q391562",
+        )
