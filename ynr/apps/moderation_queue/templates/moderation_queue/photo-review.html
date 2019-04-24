@@ -89,12 +89,11 @@
 
     <h3>{% trans "User-submitted information" %}</h3>
 
-    <p>{% blocktrans trimmed %}
-      Uploaded by user {{ username }} with confirmed email
-      <tt>{{ email }}</tt>.{% endblocktrans %}
+    <p>
+      Uploaded by user <tt>{{ username }}</tt>.
       {% if person.get_email %}
         (The candidate's unconfirmed email address is
-        <tt>{{ email }}</tt>.)
+        <tt>{{ person.get_email }}</tt>.)
       {% endif %}
       </p>
 
