@@ -104,5 +104,5 @@ needs_review_fns = [
     needs_review_due_to_first_edits,
     needs_review_due_to_subject_having_died,
     needs_review_due_to_candidate_specifically,
-    needs_review_due_to_statement_edit,
+    # needs_review_due_to_statement_edit,
 ]
