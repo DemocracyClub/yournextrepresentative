@@ -92,6 +92,9 @@
     <p>
       Uploaded by user <tt>{{ username }}</tt>.
       {% if person.get_email %}
+        {% if person.get_email == email %}
+          <strong>The uploading user's email address matches the candidate's email address</strong>
+        {% endif %}
         (The candidate's unconfirmed email address is
         <tt>{{ person.get_email }}</tt>.)
       {% endif %}
