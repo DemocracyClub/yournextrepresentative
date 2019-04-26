@@ -151,4 +151,7 @@ PEOPLE_LIABLE_TO_VANDALISM = {
     7400,  # Vanessa Helen Hudson
     986,  # Gina Dowding
     70456,  # Tommy Robinson
+    70330,  # Mark Meechan (alias CountDankula)
+    70334,  # Carl Benjamin (alias Sargon of Akkad)
+    70307,  # Andrew Adonis (alias Lord Adonis)
 }
