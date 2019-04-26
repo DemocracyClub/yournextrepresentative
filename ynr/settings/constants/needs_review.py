@@ -150,4 +150,5 @@ PEOPLE_LIABLE_TO_VANDALISM = {
     7233,  # Jenny Knight
     7400,  # Vanessa Helen Hudson
     986,  # Gina Dowding
+    70456,  # Tommy Robinson
 }
