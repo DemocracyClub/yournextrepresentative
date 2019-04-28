@@ -194,7 +194,16 @@ class RevertPersonView(LoginRequiredMixin, View):
         )
 
 
-class MergePeopleView(GroupRequiredMixin, View):
+class MergePeopleMixin:
+    def do_merge(self, primary_person, secondary_person):
+        merger = PersonMerger(
+            primary_person, secondary_person, request=self.request
+        )
+
+        return merger.merge(delete=True)
+
+
+class MergePeopleView(GroupRequiredMixin, View, MergePeopleMixin):
 
     http_method_names = ["post"]
     required_group_name = TRUSTED_TO_MERGE_GROUP_NAME
@@ -220,10 +229,18 @@ class MergePeopleView(GroupRequiredMixin, View):
             primary_person = primary_person
             secondary_person = secondary_person
 
-            merger = PersonMerger(
-                primary_person, secondary_person, request=self.request
-            )
-            merger.merge(delete=True)
+            try:
+                merged_person = self.do_merge(primary_person, secondary_person)
+            except NotStandingValidationError:
+                return HttpResponseRedirect(
+                    reverse(
+                        "person-merge-correct-not-standing",
+                        kwargs={
+                            "person_id": primary_person_id,
+                            "other_person_id": secondary_person_id,
+                        },
+                    )
+                )
 
         # And redirect to the primary person with the merged data:
         return HttpResponseRedirect(

@@ -72,6 +72,11 @@ patterns_to_format = [
         "name": "person-revert",
     },
     {
+        "pattern": r"^person/(?P<person_id>\d+)/merge_correct_not_standing/(?P<other_person_id>\d+)$",
+        "view": views.CorrectNotStandingMergeView.as_view(),
+        "name": "person-merge-correct-not-standing",
+    },
+    {
         "pattern": r"^person/(?P<person_id>\d+)/merge$",
         "view": views.MergePeopleView.as_view(),
         "name": "person-merge",
