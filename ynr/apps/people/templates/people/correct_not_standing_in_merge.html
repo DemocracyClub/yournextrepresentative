@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+
+  <h2>Not standing mix up</h2>
+  <p>Merging these profiles would cause the resulting profile to be
+    added to an election that someone has asserted the person isn't standing in.</p>
+  <p>This can sometimes happen when a duplicate profile has been created, but it could be
+  some other problem that needs investigating.</p>
+  <p>Please check that this merge is correct, and if you think everything looks ok you
+  can remove the "not standing" assertion and continue with the merge.</p>
+  <style>td {vertical-align: top;}</style>
+  <table>
+  <thead>
+    <tr>
+      <th>Election</th>
+      <th>Person Standing</th>
+      <th>Person not standing</th>
+      <th>Source</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for not_standing_election in not_standing_elections %}
+      <tr>
+        <td>
+          <a href="{{ not_standing_election.election.get_absolute_url }}">
+            {{ not_standing_election.election.name }} {{ not_standing_election.election.election_date }}
+          </a>
+        </td>
+        <td>
+          <a href="{{ not_standing_election.person_standing.get_absolute_url }}">
+            {{ not_standing_election.person_standing.name }} ({{ not_standing_election.person_standing.pk }})
+          </a>
+          <ul>
+            <li><a href="{{ not_standing_election.person_standing_ballot.get_absolute_url }}">Ballot</a></li>
+            <li><a href="{{ not_standing_election.person_standing_ballot.sopn.get_absolute_url }}">SOPN</a></li>
+          </ul>
+        </td>
+        <td>
+          <a href="{{ not_standing_election.person_not_standing.get_absolute_url }}">
+            {{ not_standing_election.person_not_standing.name }} ({{ not_standing_election.person_not_standing.pk }})
+          </a>
+        </td>
+        <td><strong>{{ not_standing_election.version.username }}</strong> asserted this person wasn't standing in an edit with the source:
+          <blockquote>{{ not_standing_election.version.information_source|urlize }}</blockquote></td>
+      </tr>
+    {% endfor %}
+
+  </tbody>
+  </table>
+
+  <form method="post">
+  {% csrf_token %}
+  <button type="submit">Remove the "not standing" flag and merge</button>
+  <a href="{{ person_a.get_absolute_url }}" class="button secondary">
+    Stop merge and return to {{ person_a.name }} ({{ person_a.pk }})</a>
+  </form>
+
+{% endblock %}

@@ -42,6 +42,7 @@ from .helpers import (
     get_person_form_fields,
 )
 from .version_data import get_change_metadata, get_client_ip
+from popolo.models import NotStandingValidationError
 
 
 def get_call_to_action_flash_message(person, new_person=False):
@@ -243,15 +244,76 @@ class MergePeopleView(GroupRequiredMixin, View, MergePeopleMixin):
                 )
 
         # And redirect to the primary person with the merged data:
-        return HttpResponseRedirect(
-            reverse(
-                "person-view",
-                kwargs={
-                    "person_id": primary_person_id,
-                    "ignored_slug": slugify(primary_person.name),
-                },
-            )
+        return HttpResponseRedirect(merged_person.get_absolute_url())
+
+
+class CorrectNotStandingMergeView(
+    GroupRequiredMixin, TemplateView, MergePeopleMixin
+):
+    template_name = "people/correct_not_standing_in_merge.html"
+    required_group_name = TRUSTED_TO_MERGE_GROUP_NAME
+
+    def extract_not_standing_edit(self, election, versions):
+        versions_json = json.loads(versions)
+        for version in versions_json:
+            try:
+                membership = version["data"]["standing_in"][election.slug]
+                if membership == None:
+                    return version
+            except KeyError:
+                continue
+        return None
+
+    def populate_not_standing_list(self, person, person_not_standing):
+        for membership in person.memberships.all():
+            if (
+                membership.post_election.election
+                in person_not_standing.not_standing.all()
+            ):
+                self.not_standing_elections.append(
+                    {
+                        "election": membership.post_election.election,
+                        "person_standing": person,
+                        "person_standing_ballot": membership.post_election,
+                        "person_not_standing": person_not_standing,
+                        "version": self.extract_not_standing_edit(
+                            membership.post_election.election,
+                            person_not_standing.versions,
+                        ),
+                    }
+                )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["person_a"] = get_object_or_404(
+            Person, id=self.kwargs["person_id"]
         )
+        context["person_b"] = get_object_or_404(
+            Person, id=self.kwargs["other_person_id"]
+        )
+
+        self.not_standing_elections = []
+        self.populate_not_standing_list(
+            context["person_a"], context["person_b"]
+        )
+        self.populate_not_standing_list(
+            context["person_b"], context["person_a"]
+        )
+        context["not_standing_elections"] = self.not_standing_elections
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data()
+
+        with transaction.atomic():
+            for pair in context["not_standing_elections"]:
+                pair["person_not_standing"].not_standing.remove(
+                    pair["election"]
+                )
+        merged_person = self.do_merge(context["person_a"], context["person_b"])
+
+        # And redirect to the primary person with the merged data:
+        return HttpResponseRedirect(merged_person.get_absolute_url())
 
 
 class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):

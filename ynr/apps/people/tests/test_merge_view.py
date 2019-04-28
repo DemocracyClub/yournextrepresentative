@@ -563,3 +563,95 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(LoggedAction.objects.count(), 5)
         response = self.app.get("/recent-changes")
         self.assertEqual(len(response.context["actions"].object_list), 5)
+
+    def test_merge_not_standing_conflict(self):
+        """
+        The following is an invalid sort of merge:
+
+        Person A: Standing in local.foo.2019-0-01
+        Person B: local.foo.2019-0-01 in their "not_standing" list
+
+        This is because a human has asserted that Person B is known not to
+        be standing in the election that person A is standing in.
+
+        It's best not to make any assumptions here, as this might indicate
+        an invalid merge.
+
+        However, in reality we commonly see this when a two people have been
+        created in the same election. Because most users can't merge, the only
+        option they have to de-duplicate is to mark one of the people as
+        not standing.
+
+        Someone else can then come along and merge the two people, and see the
+        above condition.
+
+        We now offer them a route out, by removing the not standing assertion,
+        or abandoning everything and…doing something else?
+
+        """
+        person_a = Person.objects.create(
+            pk=1,
+            name="Person A",
+            versions="""[{
+                    "data": {
+                      "birth_date": null,
+                      "email": "shane@gn.apc.org",
+                      "facebook_page_url": "",
+                      "facebook_personal_url": "",
+                      "gender": "male",
+                      "homepage_url": "",
+                      "honorific_prefix": "Mr",
+                      "honorific_suffix": "",
+                      "id": "2007",
+                      "identifiers": [],
+                      "image": null,
+                      "linkedin_url": "",
+                      "name": "Shane Collins",
+                      "other_names": [],
+                      "party_memberships": {
+                        "parl.2010-05-06": {
+                          "id": "party:63",
+                          "name": "Green Party"
+                        }
+                      },
+                      "party_ppc_page_url": "",
+                      "proxy_image": null,
+                      "standing_in": {
+                        "parl.2015-05-07": null,
+                        "2015": null
+                      },
+                      "twitter_username": "",
+                      "wikipedia_url": ""
+                    },
+                    "information_source": "http://www.lambeth.gov.uk/sites/default/files/ec-dulwich-and-west-norwood-candidates-and-notice-of-poll-2015.pdf",
+                    "timestamp": "2015-04-09T20:32:09.237610",
+                    "username": "JPCarrington",
+                    "version_id": "274e50504df330e4"
+                  }]""",
+        )
+        person_a.not_standing.add(self.dulwich_post_pee.election)
+
+        person_b = Person.objects.get(pk=2009)
+        factories.MembershipFactory.create(
+            person=person_b,
+            post=self.dulwich_post,
+            party=self.labour_party,
+            post_election=self.dulwich_post_pee,
+        )
+
+        response = self.app.get(
+            "/person/{}/update".format(person_a.pk),
+            user=self.user_who_can_merge,
+        )
+        merge_form = response.forms["person-merge"]
+        merge_form["other"] = person_b.pk
+        response = merge_form.submit()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.location, "/person/1/merge_correct_not_standing/2009"
+        )
+        response = response.follow()
+        form = response.forms[1]
+        response = form.submit()
+        response.follow()
+        self.assertEqual(response.location, "/person/1/tessa-jowell")
