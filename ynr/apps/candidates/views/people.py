@@ -18,7 +18,6 @@ from django.utils.decorators import method_decorator
 from django.utils.http import urlquote
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, TemplateView, View
-from slugify import slugify
 
 from auth_helpers.views import GroupRequiredMixin, user_in_group
 from candidates.forms import SingleElectionForm
@@ -30,6 +29,7 @@ from people.forms import (
     UpdatePersonForm,
 )
 from people.models import Person
+from popolo.models import NotStandingValidationError
 from ynr.apps.people.merging import PersonMerger
 
 from ..diffs import get_version_diffs
@@ -42,7 +42,6 @@ from .helpers import (
     get_person_form_fields,
 )
 from .version_data import get_change_metadata, get_client_ip
-from popolo.models import NotStandingValidationError
 
 
 def get_call_to_action_flash_message(person, new_person=False):
@@ -213,7 +212,7 @@ class MergePeopleView(GroupRequiredMixin, View, MergePeopleMixin):
         # Check that the person IDs are well-formed:
         primary_person_id = self.kwargs["person_id"]
         secondary_person_id = self.request.POST["other"]
-        if not re.search("^\d+$", secondary_person_id):
+        if not re.search(r"^\d+$", secondary_person_id):
             message = "Malformed person ID '{0}'"
             raise ValueError(message.format(secondary_person_id))
         if primary_person_id == secondary_person_id:
@@ -258,7 +257,7 @@ class CorrectNotStandingMergeView(
         for version in versions_json:
             try:
                 membership = version["data"]["standing_in"][election.slug]
-                if membership == None:
+                if membership is None:
                     return version
             except KeyError:
                 continue
