@@ -295,7 +295,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = merge_form.submit()
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.location, "/person/2009/tessa-jowell")
+        self.assertEqual(response.location, "/person/2007/tessa-jowell")
 
         # Check that the redirect object has been made:
         self.assertEqual(

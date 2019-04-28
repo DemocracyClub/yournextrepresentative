@@ -321,3 +321,4 @@ class PersonMerger:
             if delete:
                 # Delete the old person
                 self.safe_delete(self.source_person)
+        return self.dest_person
