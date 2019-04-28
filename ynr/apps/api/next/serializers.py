@@ -203,6 +203,15 @@ class PostElectionSerializer(serializers.HyperlinkedModelSerializer):
     sopn = OfficialDocumentSerializer(read_only=True)
 
 
+class SizeLimitedHyperlinkedSorlImageField(HyperlinkedSorlImageField):
+    def to_representation(self, value):
+        try:
+            return super().to_representation(value)
+        except ValueError:
+            # Chances are the image is too large
+            return None
+
+
 class PersonSerializer(MinimalPersonSerializer):
     class Meta:
         model = people.models.Person
@@ -235,7 +244,7 @@ class PersonSerializer(MinimalPersonSerializer):
 
     memberships = MembershipSerializer(many=True, read_only=True)
 
-    thumbnail = HyperlinkedSorlImageField(
+    thumbnail = SizeLimitedHyperlinkedSorlImageField(
         "300x300",
         options={"crop": "center"},
         source="primary_image",
