@@ -281,6 +281,7 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
                         ],
                         "memberships": [
                             {
+                                "ballot_paper_id": "gla.a.london.2016-05-05",
                                 "elected": None,
                                 "election": {
                                     "id": "gla.a.2016-05-05",
