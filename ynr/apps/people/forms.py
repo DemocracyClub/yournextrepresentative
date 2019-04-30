@@ -224,11 +224,14 @@ class BasePersonForm(forms.Form):
                     message.format(election=election_name)
                 )
             # Check that that post actually exists:
-            if not Post.objects.filter(slug=post_id).exists():
+            post_qs = Post.objects.filter(
+                slug=post_id, postextraelection__election=election_data
+            )
+            if not post_qs.exists():
                 message = _("An unknown post ID '{post_id}' was specified")
                 raise forms.ValidationError(message.format(post_id=post_id))
             try:
-                party_set = PartySet.objects.get(post__slug=post_id)
+                party_set = PartySet.objects.get(post=post_qs.get())
             except PartySet.DoesNotExist:
                 message = _(
                     "Could not find parties for the post with ID "
@@ -320,7 +323,10 @@ class NewPersonForm(BasePersonForm):
             # Then the post can't be changed, so only add the
             # particular party set relevant for that post:
             post_id = kwargs["initial"]["constituency_" + election]
-            specific_party_set = PartySet.objects.get(post__slug=post_id)
+            post_obj = Post.objects.get(
+                slug=post_id, postextraelection__election=election_data
+            )
+            specific_party_set = PartySet.objects.get(post=post_obj)
 
         party_registers_for_election = set(
             election_data.postextraelection_set.annotate(

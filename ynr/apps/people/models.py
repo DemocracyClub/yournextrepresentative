@@ -540,7 +540,9 @@ class Person(Timestampable, models.Model):
                 initial_data[constituency_key] = post_id
                 from candidates.models import PartySet
 
-                party_set = PartySet.objects.get(post__slug=post_id)
+                party_set = PartySet.objects.get(
+                    post=candidacy.post_election.post
+                )
                 party = candidacy.party
                 party_key = (
                     "party_" + party_set.slug.upper() + "_" + election_data.slug
