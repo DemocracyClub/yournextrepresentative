@@ -29,11 +29,14 @@
   {% include 'moderation_queue/_photo-policy.html' %}
 
   {% url 'person-view' person.id person.name|slugify as url %}
-  <p>{% blocktrans trimmed with name=person.name party=person.last_party.name %}
-  Please check that this is really <a href="{{ url }}">{{ name }}</a>
-  ({{ party }}) before approving the upload. This
-  <a href="{{ google_image_search_url }}">Google Image search for candidate
-  details</a> may be a good start.{% endblocktrans %}</p>
+  <p>
+    Please check that this is really <a href="{{ url }}">{{ person.name }}</a>
+    (<a href="{{ person.last_candidacy.post_election.get_absolute_url }}">
+      {{ person.last_party.name }}, {{ person.last_candidacy.post_election.ballot_paper_id }}
+    </a>) before approving the upload. This
+    <a href="{{ google_image_search_url }}">Google Image search for candidate
+    details</a> may be a good start.
+  </p>
 
   <p>{% blocktrans trimmed %}
   If you're trying to find the likely <em>source</em> of this image, you can
