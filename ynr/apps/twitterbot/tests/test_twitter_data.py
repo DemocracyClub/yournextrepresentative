@@ -185,7 +185,7 @@ class TestTwitterData(TestCase):
         mock_requests.post.side_effect = fake_twitter_api_post
         twitter_data = TwitterAPIData()
         mock_all_user_ids.return_value = ["1234", "42"]
-        mock_all_screen_names.return_value = ["mhl20", "struan", "symroe"]
+        mock_all_screen_names.return_value = ["mhl20", "struan"]
         twitter_data.user_id_to_screen_name = {"1234": "mhl20"}
         twitter_data.update_from_api()
         self.assertEqual(
@@ -193,7 +193,6 @@ class TestTwitterData(TestCase):
             [
                 call({"id": 1234, "screen_name": "mhl20"}),
                 call({"id": 5678, "screen_name": "struan"}),
-                call({"id": 9012, "screen_name": "symroe"}),
                 call({"id": 42, "screen_name": "FooBarBazQuux"}),
             ],
         )

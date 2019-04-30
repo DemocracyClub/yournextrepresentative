@@ -87,7 +87,10 @@ def update_person_from_form(person, form):
         post_id = form_data.get("constituency_" + election_data.slug)
         standing = form_data.pop("standing_" + election_data.slug, "standing")
         if post_id:
-            party_set = PartySet.objects.get(post__slug=post_id)
+            post = Post.objects.get(
+                slug=post_id, postextraelection__election=election_data
+            )
+            party_set = PartySet.objects.get(post=post)
             party_key = (
                 "party_" + party_set.slug.upper() + "_" + election_data.slug
             )
@@ -99,7 +102,7 @@ def update_person_from_form(person, form):
             )
             party = Party.objects.get(ec_id=form_data[party_key])
             party_list_position = form_data.get(position_key) or None
-            post = Post.objects.get(slug=post_id)
+
         else:
             party = None
             party_list_position = None
