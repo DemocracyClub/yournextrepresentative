@@ -19,6 +19,7 @@ from compat import BufferDictReader
 from people.models import PersonImage, Person
 from popolo.models import Membership
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from utils.testing_utils import FuzzyInt
 
 
 class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -94,7 +95,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_any_ballot_page(self):
         # Just a smoke test for the moment:
-        with self.assertNumQueries(44):
+        with self.assertNumQueries(FuzzyInt(44, 46)):
             response = self.app.get(
                 self.dulwich_post_pee.get_absolute_url(), user=self.user
             )
