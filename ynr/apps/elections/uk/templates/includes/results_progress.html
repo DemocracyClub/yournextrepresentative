@@ -1,8 +1,6 @@
 {% load humanize %}
 {% if SHOW_RESULTS_PROGRESS %}
-
-<h2>{{ election_name }} results</h2>
-<h3>Enter results as they come in</h3>
+  <h3>Enter results as they come in</h3>
 <p><a href="{% url "results-home"%}" class="button">Get started</a></p>
 
 <h3>{{ results_percent }}% of votes for {{ areas_total|intcomma }} areas in total have been entered</h3>

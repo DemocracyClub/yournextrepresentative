@@ -62,12 +62,12 @@ class CurrentElectionsWithNoResuts(TemplateView):
         context["elections"] = (
             PostExtraElection.objects.filter(
                 election__current=True,
-                election__election_date__lt=date.today(),
+                election__election_date__lte=date.today(),
                 resultset=None,
                 cancelled=False,
             )
             .select_related("post", "election")
-            .order_by("election", "post__label")
+            .order_by("election__slug", "post__label")
         )
 
         return context

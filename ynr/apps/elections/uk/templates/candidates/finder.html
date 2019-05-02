@@ -46,20 +46,20 @@
 {% block content %}
 
 
-{#  {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}#}
-{#    <div class="finder__forms">#}
-{#      <div class="finder__forms__container">#}
-{#        {% sopn_import_progress %}#}
-{#        {% current_election_stats %}#}
-{#        {% results_progress %}#}
-{#      </div>#}
-{#    </div>#}
-{#  {% endif %}#}
+  {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}
+    <div class="finder__forms">
+      <div class="finder__forms__container">
+        <h2>🗳 2019 Local election results 🗳</h2>
+        {% sopn_import_progress %}
+        {% current_election_stats %}
+        {% results_progress %}
+      </div>
+    </div>
+  {% endif %}
 
 
   <div class="finder__forms">
     <div class="finder__forms__container" style="top:-1em">
-      <h2>🗳 2019 Local elections 🗳</h2>
 {#      <h3>Can you find contact info for your local&nbsp;parties?</h3>#}
 {#      <p>In order to get the most information on candidates in the May 2019 local#}
 {#      elections we want to contact the political parties’ local branches. Can you help us find contact info for them all?</p>#}
