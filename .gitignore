@@ -18,5 +18,4 @@ ynr/media/*
 .cache
 .haystack
 .pytest_cache
-ynr/apps/resultsbot/*.json
 *.css.map
