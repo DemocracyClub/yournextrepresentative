@@ -89,7 +89,7 @@ class BaseDivision(object):
         ]
         for i, pee in enumerate(possible, start=1):
             print("\t{}\t{}".format(i, pee.post.label))
-        answer = raw_input("Pick a number or 'd' if it's deleted: ")
+        answer = input("Pick a number or 'd' if it's deleted: ")
         if answer.lower() == "d":
             self.saved_matches[key] = "--deleted--"
             self.saved_matches.save()

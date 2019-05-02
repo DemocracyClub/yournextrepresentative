@@ -5,17 +5,21 @@ import resultsbot
 
 
 class SavedMapping(dict):
-    def __init__(self, file_name):
+    def __init__(self, file_name, **kwargs):
+        super().__init__(**kwargs)
         self.file_name = file_name
-        self.path = os.path.join(
+        self.path = self._get_path()
+        self.load()
+
+    def _get_path(self):
+        return os.path.join(
             os.path.dirname(resultsbot.__file__), self.file_name
         )
-        self.load()
 
     def load(self):
         try:
             self.update(json.loads(open(self.path).read()))
-        except IOError:
+        except (IOError, json.JSONDecodeError):
             with open(self.path, "w") as f:
                 f.write("{}")
 
@@ -30,7 +34,8 @@ class SavedMapping(dict):
             )
         )
         print("This match will be saved for future in {}".format(self.path))
-        match = raw_input("New name or ID: ")
+        match = input("New name or ID: ")
+        match = match.strip()
         self.update({name: match})
         self.save()
         return match

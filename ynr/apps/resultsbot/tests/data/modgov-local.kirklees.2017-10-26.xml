@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<election>
+  <candidatecount> 5</candidatecount>
+  <electionid>397</electionid>
+  <title>Batley East Ward by-election</title>
+  <electiontype>Local</electiontype>
+  <description>
+  </description>
+  <externallink>
+  </externallink>
+  <population>0</population>
+  <electorate>13279</electorate>
+  <numballotpapersissued>0</numballotpapersissued>
+  <numproxyvotes>0</numproxyvotes>
+  <comment>
+  </comment>
+  <visiblity>Intranet and Internet</visiblity>
+  <candidates>
+    <candidate>
+      <areatagid>13065</areatagid>
+      <electionareaid>185</electionareaid>
+      <areatitle>Batley East</areatitle>
+      <candidatename>David Michael Smith</candidatename>
+      <numvotes>70</numvotes>
+      <numvotes2>0</numvotes2>
+      <politicalpartytagid>202</politicalpartytagid>
+      <politicalpartytitle>Green Party</politicalpartytitle>
+      <politicalpartycolour>Green</politicalpartycolour>
+      <votedatetime>19/04/2018, 10:52</votedatetime>
+      <iselected>False</iselected>
+    </candidate>
+    <candidate>
+      <areatagid>13065</areatagid>
+      <electionareaid>185</electionareaid>
+      <areatitle>Batley East</areatitle>
+      <candidatename>Jon Robert Bloom</candidatename>
+      <numvotes>136</numvotes>
+      <numvotes2>0</numvotes2>
+      <politicalpartytagid>22</politicalpartytagid>
+      <politicalpartytitle>Liberal Democrat</politicalpartytitle>
+      <politicalpartycolour>Yellow</politicalpartycolour>
+      <votedatetime>19/04/2018, 10:52</votedatetime>
+      <iselected>False</iselected>
+    </candidate>
+    <candidate>
+      <areatagid>13065</areatagid>
+      <electionareaid>185</electionareaid>
+      <areatitle>Batley East</areatitle>
+      <candidatename>Aleks Lukic</candidatename>
+      <numvotes>140</numvotes>
+      <numvotes2>0</numvotes2>
+      <politicalpartytagid>13508</politicalpartytagid>
+      <politicalpartytitle>Local Independents - Heavy Woollen District</politicalpartytitle>
+      <politicalpartycolour>DimGray</politicalpartycolour>
+      <votedatetime>19/04/2018, 10:52</votedatetime>
+      <iselected>False</iselected>
+    </candidate>
+    <candidate>
+      <areatagid>13065</areatagid>
+      <electionareaid>185</electionareaid>
+      <areatitle>Batley East</areatitle>
+      <candidatename>Habiban Nisa Zaman</candidatename>
+      <numvotes>2640</numvotes>
+      <numvotes2>0</numvotes2>
+      <politicalpartytagid>24</politicalpartytagid>
+      <politicalpartytitle>Labour</politicalpartytitle>
+      <politicalpartycolour>Red</politicalpartycolour>
+      <votedatetime>19/04/2018, 10:52</votedatetime>
+      <iselected>True</iselected>
+    </candidate>
+    <candidate>
+      <areatagid>13065</areatagid>
+      <electionareaid>185</electionareaid>
+      <areatitle>Batley East</areatitle>
+      <candidatename>Paul Young</candidatename>
+      <numvotes>443</numvotes>
+      <numvotes2>0</numvotes2>
+      <politicalpartytagid>23</politicalpartytagid>
+      <politicalpartytitle>Conservative</politicalpartytitle>
+      <politicalpartycolour>Blue</politicalpartycolour>
+      <votedatetime>19/04/2018, 10:52</votedatetime>
+      <iselected>False</iselected>
+    </candidate>
+  </candidates>
+  <electionareas>
+    <electionarea>
+      <electionareaid>185</electionareaid>
+      <title>Batley East</title>
+      <description>
+      </description>
+      <externallink>
+      </externallink>
+      <population>0</population>
+      <electorate>13279</electorate>
+      <numballotpapersissued>0</numballotpapersissued>
+      <numproxyvotes>0</numproxyvotes>
+      <numpostalvotessent>0</numpostalvotessent>
+      <numpostalvotesreturned>0</numpostalvotesreturned>
+      <startvotedatetime>
+      </startvotedatetime>
+      <endvotedatetime>
+      </endvotedatetime>
+      <endofcountingdatetime>
+      </endofcountingdatetime>
+      <numseats>1</numseats>
+      <status>Published</status>
+      <spoiledvotes>
+        <spoiledvote>
+          <voteid>620</voteid>
+          <description>Rejected</description>
+          <numvotes>8</numvotes>
+          <numvotes2>0</numvotes2>
+          <updatedatetime>19/04/2018, 10:52</updatedatetime>
+        </spoiledvote>
+      </spoiledvotes>
+    </electionarea>
+  </electionareas>
+</election>

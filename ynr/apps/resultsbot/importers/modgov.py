@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 from dateutil import parser
 import requests
+
+requests.packages.urllib3.disable_warnings()
 from django.utils.six.moves.urllib_parse import urljoin
 
 from elections.models import Election
@@ -88,10 +90,15 @@ class ModGovImporter(BaseImporter):
         self.saved_numseats = SavedMapping("num_seats.json")
 
     def get_data(self):
-        self.data = requests.get(self.url).content
-        self.soup = BeautifulSoup(self.data, "xml")
+        try:
+            self.data = requests.get(self.url).content
+            self.soup = BeautifulSoup(self.data, "xml")
+        except requests.RequestException:
+            print("Error getting {}".format(self.url))
 
     def divisions(self):
+        if not self.soup:
+            return []
         areas = self.soup.election.find_all("electionarea")
         for area in areas:
             division = ModGovDivision(self.election, area)
@@ -99,7 +106,7 @@ class ModGovImporter(BaseImporter):
             if area == "--deleted--":
                 continue
             if not division.local_area:
-                raise
+                raise ValueError
             if int(division.numseats) != division.local_area.winner_count:
                 if int(division.numseats) == 0:
                     # chances are this is a mistake
@@ -114,7 +121,7 @@ class ModGovImporter(BaseImporter):
                             division.numseats, division.local_area.winner_count
                         )
                         print("winner_count mismatch, update local?")
-                        answer = raw_input("y/n: ")
+                        answer = input("y/n: ")
                         if answer.lower() == "y":
                             division.local_area.winner_count = int(
                                 division.numseats
@@ -216,6 +223,8 @@ class ModGovElectionMatcher(object):
         soup = BeautifulSoup(req.text, "html5lib")
         headings = soup.find_all("h2", {"class": "mgSubTitleTxt"})
         for heading in headings:
+            if heading.get_text().lower().startswith("parish"):
+                continue
             try:
                 return parser.parse(
                     heading.get_text().split(" - ")[-1].strip()
@@ -260,11 +269,11 @@ class ModGovElectionMatcher(object):
             url = url.replace("https://", "http://")
 
         try:
-            req = requests.get(url, timeout=2)
+            req = requests.get(url, timeout=2, verify=False)
             req.raise_for_status()
         except:
             url = url.replace("https://", "http://")
-            req = requests.get(url, timeout=2)
+            req = requests.get(url, timeout=2, verify=False)
             self.http_only = True
 
         return req
@@ -283,5 +292,5 @@ class ModGovElectionMatcher(object):
             print("Found more than one election for this date!")
             for election_id, election in found_elections.items():
                 print("\t{}\t{}".format(election_id, election.title))
-            selected = int(raw_input("Pick one: "))
+            selected = int(input("Pick one: "))
             return found_elections[selected]

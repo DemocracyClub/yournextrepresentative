@@ -1,4 +1,5 @@
-from popolo.models import Identifier
+from parties.models import Party
+
 
 from resultsbot.matchers.mappings import SavedMapping
 
@@ -26,12 +27,8 @@ class CandidateMatcher(object):
 
     def get_parties(self):
         parties = [self.candidate.party]
-        if self.candidate.party.identifiers.filter(identifier="PP53"):
-            parties.append(
-                Identifier.objects.get(
-                    identifier="joint-party:53-119"
-                ).content_object
-            )
+        if self.candidate.party.ec_id == "PP53":
+            parties.append(Party.objects.get(ec_id="joint-party:53-119"))
         return parties
 
     def get_memberships(self):
@@ -41,7 +38,7 @@ class CandidateMatcher(object):
 
         candidates_for_party = (
             self.ballot_paper.local_area.membership_set.filter(
-                on_behalf_of__in=parties
+                party__in=parties
             )
             .select_related("person")
             .order_by("pk")
@@ -80,7 +77,7 @@ class CandidateMatcher(object):
                     name = name.replace("councillor", "")
                     return name
 
-                person_name = _clean_name(membership.base.person.name.lower())
+                person_name = _clean_name(membership.person.name.lower())
                 candidate_name = _clean_name(self.candidate.name.lower())
 
                 if person_name == candidate_name:
@@ -117,10 +114,8 @@ class CandidateMatcher(object):
             )
         )
         for i, membership in enumerate(qs, start=1):
-            print(
-                "\t{}\t{}".format(i, membership.base.person.name.encode("utf8"))
-            )
-        match = raw_input("Enter selection: ")
+            print("\t{}\t{}".format(i, membership.person.name.encode("utf8")))
+        match = input("Enter selection: ")
         if match == "s":
             return
         match = int(match)

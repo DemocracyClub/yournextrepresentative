@@ -1,4 +1,5 @@
 from popolo.models import Identifier, OtherName, Organization
+from parties.models import Party, PartyDescription
 
 from resultsbot.matchers.mappings import SavedMapping
 
@@ -31,21 +32,19 @@ class PartyMatacher(object):
 
     def match_party_id(self, cleaned_name):
         try:
-            return Identifier.objects.get(
-                identifier=cleaned_name
-            ).content_object
+            return Party.objects.get(ec_id=cleaned_name)
         except:
             return None
 
     def match_party_name(self, cleaned_name):
         try:
-            Organization.objects.get(name__iexact=cleaned_name)
+            Party.objects.get(name__iexact=cleaned_name)
         except:
             return None
 
     def match_party_description(self, cleaned_name):
         try:
-            OtherName.objects.get(name__iexact=cleaned_name).content_object
+            PartyDescription.objects.get(name__iexact=cleaned_name)
         except Exception as e:
             return None
 
