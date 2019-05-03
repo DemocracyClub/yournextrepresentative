@@ -43,9 +43,14 @@ class Command(BaseCommand):
                     == "local.eastleigh.eastleigh-north.2018-05-03"
                 ):
                     continue
+
+                if hasattr(div.local_area, "resultset"):
+                    continue
+
                 candidates = list(importer.candidates(div))
                 all_candidates += candidates
                 has_any_votes = any([c.votes for c in candidates])
+
                 if has_any_votes:
                     print("Adding results for {}".format(div.title))
                     bot = ResultsBot()
