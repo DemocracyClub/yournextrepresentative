@@ -955,17 +955,20 @@ class BallotPaperView(TemplateView):
         max_winners = get_max_winners(pee)
         context["show_confirm_result"] = bool(max_winners)
 
-        context["add_candidate_form"] = NewPersonForm(
-            election=election.slug,
-            initial={
-                ("constituency_" + election.slug): post_id,
-                ("standing_" + election.slug): "standing",
-            },
-            hidden_post_widget=True,
-        )
+        if not pee.candidates_locked:
+            context["add_candidate_form"] = NewPersonForm(
+                election=election.slug,
+                initial={
+                    ("constituency_" + election.slug): post_id,
+                    ("standing_" + election.slug): "standing",
+                },
+                hidden_post_widget=True,
+            )
 
-        context = get_person_form_fields(context, context["add_candidate_form"])
-        context["identifiers_formset"] = PersonIdentifierFormsetFactory()
+            context = get_person_form_fields(
+                context, context["add_candidate_form"]
+            )
+            context["identifiers_formset"] = PersonIdentifierFormsetFactory()
 
         return context
 
