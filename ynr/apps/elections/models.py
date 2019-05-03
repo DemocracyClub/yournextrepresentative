@@ -37,7 +37,7 @@ class Election(models.Model):
         max_length=128, null=True, blank=True
     )
     candidate_membership_role = models.CharField(max_length=128)
-    election_date = models.DateField()
+    election_date = models.DateField(db_index=True)
     name = models.CharField(max_length=128)
     current = models.BooleanField()
     use_for_candidate_suggestions = models.BooleanField(default=False)
