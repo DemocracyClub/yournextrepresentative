@@ -221,7 +221,9 @@ class BallotPaperView(TemplateView):
         extra_qs = Membership.objects.select_related("post_election__election")
         current_candidacies, past_candidacies = split_candidacies(
             election,
-            mp_post.memberships.select_related("person", "party").all(),
+            mp_post.memberships.select_related(
+                "person", "party", "post_election__election"
+            ).all(),
         )
 
         area_2015_map = {
