@@ -97,7 +97,7 @@ class ModGovImporter(BaseImporter):
             print("Error getting {}".format(self.url))
 
     def divisions(self):
-        if not self.soup:
+        if not self.soup or not self.soup.election:
             return []
         areas = self.soup.election.find_all("electionarea")
         for area in areas:
