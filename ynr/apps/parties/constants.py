@@ -40,6 +40,8 @@ DEFAULT_EMBLEMS = {
     "PP3960": 2380,
     # Liberal party
     "PP54": 54,
+    # Animal Welfare Party
+    "PP616": 3535,
 }
 
 JOINT_DESCRIPTION_REGEX = "^(.*?) \(joint descriptions? with\s?(.*)\)"
