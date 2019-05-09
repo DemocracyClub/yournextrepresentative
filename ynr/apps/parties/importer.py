@@ -328,8 +328,16 @@ class ECEmblem:
         existing_emblem = PartyEmblem.objects.filter(
             ec_emblem_id=self.emblem_dict["Id"], party=self.party
         )
+
         if existing_emblem.exists():
-            return (existing_emblem.first(), False)
+            emblem = existing_emblem.first()
+            if emblem.default != self.get_default():
+                # Update the default flag in case it's been changed in
+                # DEFAULT_EMBLEMS
+                emblem.default = self.get_default()
+                emblem.save()
+
+            return (emblem, False)
 
         image_file_name = self.download_emblem()
         mime_type = magic.Magic(mime=True).from_file(image_file_name)
