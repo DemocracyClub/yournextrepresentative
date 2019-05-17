@@ -122,4 +122,6 @@ class Command(BaseCommand):
                 )
             out_string = json.dumps(json_data, indent=4)
 
-        self.storage.save(output_filename, ContentFile(out_string))
+        self.storage.save(
+            output_filename, ContentFile(out_string.encode("utf8"))
+        )
