@@ -2,6 +2,8 @@ import json
 from collections import defaultdict
 
 from django.core.management.base import BaseCommand
+from django.core.files.storage import DefaultStorage
+from django.core.files.base import ContentFile
 from django.db.models import Prefetch
 
 from popolo.models import Membership
@@ -34,6 +36,11 @@ class Command(BaseCommand):
     def handle(self, **options):
         date = options["election_date"]
         format = options["format"]
+        directory_path = "csv-archives"
+        self.storage = DefaultStorage()
+        output_filename = "{}/results-{}.{}".format(
+            directory_path, date, format
+        )
 
         qs = (
             ResultSet.objects.filter(
@@ -87,7 +94,7 @@ class Command(BaseCommand):
             csv_out.writeheader()
             for row in out_data:
                 csv_out.writerow(row)
-            self.stdout.write(csv_out.output)
+            out_string = csv_out.output
         else:
             json_data = defaultdict(dict)
             for person in out_data:
@@ -113,4 +120,6 @@ class Command(BaseCommand):
                     key=lambda p: p["ballots_cast"],
                     reverse=True,
                 )
-            self.stdout.write(json.dumps(json_data, indent=4))
+            out_string = json.dumps(json_data, indent=4)
+
+        self.storage.save(output_filename, ContentFile(out_string))
