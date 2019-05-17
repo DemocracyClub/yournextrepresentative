@@ -43,7 +43,7 @@ class Command(BaseCommand):
             .prefetch_related(
                 Prefetch(
                     "post_election__membership_set",
-                    Membership.objects.select_related("person", "on_behalf_of"),
+                    Membership.objects.select_related("person", "party"),
                 )
             )
         )
@@ -60,7 +60,7 @@ class Command(BaseCommand):
                     "spoilt_ballots": result.num_spoilt_ballots,
                     "source": result.source,
                 }
-                party = membership.on_behalf_of
+                party = membership.party
                 try:
                     if party.name == "Independent":
                         party_id = "ynmp-party:2"
@@ -75,7 +75,7 @@ class Command(BaseCommand):
                 except:
                     party_id = ""
                 row["party_id"] = party_id
-                row["party_name"] = membership.on_behalf_of.name
+                row["party_name"] = party.name
                 row["person_id"] = membership.person.pk
                 row["person_name"] = membership.person.name
                 row["ballots_cast"] = membership.result.num_ballots
