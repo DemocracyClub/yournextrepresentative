@@ -52,8 +52,7 @@ class KirkleesBatleyEastMixin:
     "resultsbot.importers.modgov.requests.get", side_effect=mock_mod_gov
 )
 class TestModGov(KirkleesBatleyEastMixin, TestCase):
-    def test_ModGovElection_class(self):
-
+    def test_ModGovElection_class(self, *args):
         mg = ModGovElection(KIRKLEES_XML)
         self.assertEqual(mg.title, "Batley East Ward by-election")
         self.assertEqual(mg.num_candidates, 5)
