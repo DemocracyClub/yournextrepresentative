@@ -160,7 +160,7 @@
 
   </div>
 
-  {% if candidate_list_edits_allowed %}
+  {% if candidate_list_edits_allowed and add_candidate_form %}
     <div class="candidates__new" {% if add_candidate_form.errors %}style="display: block"{% endif %}>
 
       <h4>{% trans "Add a new candidate" %}</h4>

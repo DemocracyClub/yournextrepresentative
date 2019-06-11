@@ -182,10 +182,13 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 403)
 
     def test_add_when_locked_privileged_allowed(self):
+        self.camberwell_post_pee.candidates_locked = False
+        self.camberwell_post_pee.save()
         response = self.app.get(
             self.camberwell_post_pee.get_absolute_url(),
             user=self.user_who_can_lock,
         )
+
         form = response.forms["new-candidate-form"]
         form["name"] = "Imaginary Candidate"
         form["party_GB_parl.2015-05-07"] = self.green_party.ec_id

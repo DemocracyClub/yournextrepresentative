@@ -956,7 +956,6 @@ class BallotPaperView(TemplateView):
 
         max_winners = get_max_winners(pee)
         context["show_confirm_result"] = bool(max_winners)
-
         if not pee.candidates_locked:
             context["add_candidate_form"] = NewPersonForm(
                 election=election.slug,
