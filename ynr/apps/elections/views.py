@@ -939,12 +939,7 @@ class BallotPaperView(TemplateView):
         context["elected"] = group_candidates_by_party(
             election, elected, show_all=True
         )
-
         context["unelected"] = group_candidates_by_party(election, unelected)
-
-        context["has_elected"] = (
-            len(context["elected"]["parties_and_people"]) > 0
-        )
 
         context["show_retract_result"] = False
         number_of_winners = 0

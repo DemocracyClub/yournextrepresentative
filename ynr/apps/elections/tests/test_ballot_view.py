@@ -5,12 +5,7 @@ from sorl.thumbnail import get_thumbnail
 
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.dates import date_in_near_future
-from candidates.tests.factories import (
-    MembershipFactory,
-    ElectionFactory,
-    MembershipFactory,
-    PostFactory,
-)
+from candidates.tests.factories import MembershipFactory
 from people.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
@@ -20,6 +15,7 @@ from people.models import PersonImage, Person
 from popolo.models import Membership
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from utils.testing_utils import FuzzyInt
+from uk_results.models import ResultSet
 
 
 class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -167,10 +163,15 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_constituency_with_winner(self):
-        response = self.app.get(self.edinburgh_east_post_pee.get_absolute_url())
-        response.mustcontain('<div class="candidates__elected">')
-        response.mustcontain('<div class="candidates__known">')
-
+        ResultSet.objects.create(
+            post_election=self.edinburgh_east_post_pee_earlier
+        )
+        response = self.app.get(
+            self.edinburgh_east_post_pee_earlier.get_absolute_url()
+        )
+        response.mustcontain("Winner(s) recorded")
+        response.mustcontain(no="Winner(s) unknown")
+        response.mustcontain(no="Waiting for election to happen")
         response.mustcontain(no="Unset the current winners")
 
     def test_constituency_with_winner_record_results_user(self):

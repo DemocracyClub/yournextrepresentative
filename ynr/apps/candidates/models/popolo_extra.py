@@ -124,6 +124,14 @@ class PostExtraElection(models.Model):
             document_type=self.officialdocument_set.model.NOMINATION_PAPER
         ).latest()
 
+    @property
+    def has_results(self):
+        if getattr(self, "resultset", None):
+            return True
+        if self.membership_set.filter(elected=True).exists():
+            return True
+        return False
+
 
 class PartySet(models.Model):
     slug = models.CharField(max_length=256, unique=True)
