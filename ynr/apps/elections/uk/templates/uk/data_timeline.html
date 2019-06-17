@@ -77,12 +77,12 @@
         <strong>The poll for this election was cancelled</strong>
     </div>
     {% else %}
-      {% if not election_data.in_past %}
+      {% if not election.in_past %}
       <div class="status_not_started">
           <strong>Waiting for election to happen</strong>
       </div>
       {% else %}
-          {% if has_elected %}
+          {% if post_election.has_results %}
           <div class="status_done">
               <strong>Winner(s) recorded</strong>
           </div>
