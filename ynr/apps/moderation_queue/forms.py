@@ -1,6 +1,5 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext as _
 
 import requests
 import cgi
@@ -36,7 +35,7 @@ class UploadPersonPhotoImageForm(forms.ModelForm):
         ).strip()
         why_allowed = cleaned_data.get("why_allowed")
         if why_allowed == "other" and not justification_for_use:
-            message = _(
+            message = (
                 "If you checked 'Other' then you must provide a "
                 "justification for why we can use it."
             )
@@ -61,12 +60,12 @@ class UploadPersonPhotoURLForm(forms.Form):
         if (400 <= response.status_code < 500) or (
             500 <= response.status_code < 600
         ):
-            msg = _("That URL produced an HTTP error status code: {0}")
+            msg = "That URL produced an HTTP error status code: {0}"
             raise ValidationError(msg.format(response.status_code))
         content_type = response.headers["content-type"]
         main, sub = cgi.parse_header(content_type)
         if not main.startswith("image/"):
-            msg = _("This URL isn't for an image - it had Content-Type: {0}")
+            msg = "This URL isn't for an image - it had Content-Type: {0}"
             raise ValidationError(msg.format(main))
         return image_url
 

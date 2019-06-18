@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.utils.translation import ugettext as _
 
 # This is the number of the first edits of a user that are considered
 # to need review.
@@ -40,7 +39,7 @@ def needs_review_due_to_first_edits(logged_action_qs):
             needs_review_la_ids.add(la_id)
     return {
         la: [
-            _("One of the first {n} edits of user {username}").format(
+            "One of the first {n} edits of user {username}".format(
                 n=NEEDS_REVIEW_FIRST_EDITS,
                 username=user_id_to_user[la.user_id].username,
             )
@@ -61,7 +60,7 @@ def needs_review_due_to_subject_having_died(logged_action_qs):
         .values_list("pk", flat=True)
     )
     return {
-        la: [_("Edit of a candidate who has died")]
+        la: ["Edit of a candidate who has died"]
         for la in logged_action_qs
         if la.person_id in dead_people_ids
     }
@@ -72,9 +71,7 @@ def needs_review_due_to_candidate_specifically(logged_action_qs):
     needs_review_person_ids = person_ids & settings.PEOPLE_LIABLE_TO_VANDALISM
     return {
         la: [
-            _(
-                "Edit of a candidate whose record may be particularly liable to vandalism"
-            )
+            "Edit of a candidate whose record may be particularly liable to vandalism"
         ]
         for la in logged_action_qs
         if la.person_id in needs_review_person_ids
@@ -95,7 +92,7 @@ def needs_review_due_to_statement_edit(logged_action_qs):
                         las_with_statements_changed.append(la)
 
     return {
-        la: [_("Edit of a statement to voters")]
+        la: ["Edit of a statement to voters"]
         for la in las_with_statements_changed
     }
 

@@ -4,7 +4,6 @@ from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse
 from django.utils.feedgenerator import Atom1Feed
-from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
 from .models import LoggedAction
@@ -49,8 +48,8 @@ class ChangesMixin(object):
 
 class RecentChangesFeed(ChangesMixin, Feed):
     site_name = settings.SITE_NAME
-    title = _("{site_name} recent changes").format(site_name=site_name)
-    description = _("Changes to {site_name} candidates").format(
+    title = "{site_name} recent changes".format(site_name=site_name)
+    description = "Changes to {site_name} candidates".format(
         site_name=site_name
     )
     link = "/feeds/changes.xml"
@@ -64,7 +63,7 @@ class RecentChangesFeed(ChangesMixin, Feed):
         return self.get_title(item)
 
     def item_description(self, item):
-        updated = _("Updated at {0}").format(str(item.updated))
+        updated = "Updated at {0}".format(str(item.updated))
         description = "{}\n\n{}\n".format(item.source, updated)
 
         return description
@@ -89,7 +88,7 @@ class RecentChangesFeed(ChangesMixin, Feed):
 
 class NeedsReviewFeed(ChangesMixin, Feed):
     site_name = settings.SITE_NAME
-    title = _("{site_name} changes for review").format(site_name=site_name)
+    title = "{site_name} changes for review".format(site_name=site_name)
     link = "/feeds/needs-review.xml"
     feed_type = Atom1Feed
     id_format = "needs-review:{0}"

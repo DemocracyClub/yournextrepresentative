@@ -16,7 +16,6 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.http import urlquote
-from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, TemplateView, View
 
@@ -124,7 +123,7 @@ class PersonView(TemplateView):
                 return self.get_person_redirect(person_id)
             except PersonRedirect.DoesNotExist:
                 raise Http404(
-                    _("No person found with ID {person_id}").format(
+                    "No person found with ID {person_id}".format(
                         person_id=person_id
                     )
                 )
@@ -164,7 +163,7 @@ class RevertPersonView(LoginRequiredMixin, View):
                     break
 
             if not data_to_revert_to:
-                message = _("Couldn't find the version {0} of person {1}")
+                message = "Couldn't find the version {0} of person {1}"
                 raise Exception(message.format(version_id, person_id))
 
             change_metadata = get_change_metadata(self.request, source)
@@ -201,10 +200,10 @@ class MergePeopleView(GroupRequiredMixin, View):
         primary_person_id = self.kwargs["person_id"]
         secondary_person_id = self.request.POST["other"]
         if not re.search("^\d+$", secondary_person_id):
-            message = _("Malformed person ID '{0}'")
+            message = "Malformed person ID '{0}'"
             raise ValueError(message.format(secondary_person_id))
         if primary_person_id == secondary_person_id:
-            message = _("You can't merge a person ({0}) with themself ({1})")
+            message = "You can't merge a person ({0}) with themself ({1})"
             raise ValueError(
                 message.format(primary_person_id, secondary_person_id)
             )

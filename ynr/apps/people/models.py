@@ -12,7 +12,6 @@ from django.template import loader
 from django.templatetags.static import static
 from django.utils.functional import cached_property
 from django.utils.six.moves.urllib_parse import quote_plus, urljoin
-from django.utils.translation import ugettext_lazy as _
 from django.utils.html import format_html
 from django_extensions.db.models import TimeStampedModel
 from popolo.behaviors.models import GenericRelatable, Timestampable
@@ -169,7 +168,7 @@ class Person(Timestampable, models.Model):
     json_ld_type = "http://www.w3.org/ns/person#Person"
 
     name = models.CharField(
-        _("name"), max_length=512, help_text=_("A person's preferred full name")
+        "name", max_length=512, help_text="A person's preferred full name"
     )
 
     # array of items referencing "http://popoloproject.com/schemas/other_name.json#"
@@ -178,81 +177,75 @@ class Person(Timestampable, models.Model):
     )
 
     family_name = models.CharField(
-        _("family name"),
+        "family name",
         max_length=128,
         blank=True,
-        help_text=_("One or more family names"),
+        help_text="One or more family names",
     )
     given_name = models.CharField(
-        _("given name"),
+        "given name",
         max_length=128,
         blank=True,
-        help_text=_("One or more primary given names"),
+        help_text="One or more primary given names",
     )
     additional_name = models.CharField(
-        _("additional name"),
+        "additional name",
         max_length=128,
         blank=True,
-        help_text=_("One or more secondary given names"),
+        help_text="One or more secondary given names",
     )
     honorific_prefix = models.CharField(
-        _("honorific prefix"),
+        "honorific prefix",
         max_length=128,
         blank=True,
-        help_text=_("One or more honorifics preceding a person's name"),
+        help_text="One or more honorifics preceding a person's name",
     )
     honorific_suffix = models.CharField(
-        _("honorific suffix"),
+        "honorific suffix",
         max_length=128,
         blank=True,
-        help_text=_("One or more honorifics following a person's name"),
+        help_text="One or more honorifics following a person's name",
     )
     patronymic_name = models.CharField(
-        _("patronymic name"),
+        "patronymic name",
         max_length=128,
         blank=True,
-        help_text=_("One or more patronymic names"),
+        help_text="One or more patronymic names",
     )
     sort_name = models.CharField(
-        _("sort name"),
+        "sort name",
         max_length=128,
         blank=True,
-        help_text=_("A name to use in an lexicographically ordered list"),
+        help_text="A name to use in an lexicographically ordered list",
     )
 
     gender = models.CharField(
-        _("gender"), max_length=128, blank=True, help_text=_("A gender")
+        "gender", max_length=128, blank=True, help_text="A gender"
     )
     birth_date = models.CharField(
-        _("birth date"),
-        max_length=10,
-        blank=True,
-        help_text=_("A date of birth"),
+        "birth date", max_length=10, blank=True, help_text="A date of birth"
     )
     death_date = models.CharField(
-        _("death date"),
-        max_length=10,
-        blank=True,
-        help_text=_("A date of death"),
+        "death date", max_length=10, blank=True, help_text="A date of death"
     )
 
     summary = models.CharField(
-        _("summary"),
+        "summary",
         max_length=1024,
         blank=True,
-        help_text=_("A one-line account of a person's life"),
+        help_text="A one-line account of a person's life",
     )
     biography = models.TextField(
-        _("biography"),
+        "biography",
         blank=True,
-        help_text=_("An extended account of a person's life"),
+        help_text="An extended account of a person's life",
     )
     national_identity = models.CharField(
-        _("national identity"),
+        "national identity",
         max_length=128,
         blank=True,
         null=True,
-        help_text=_("A national identity"),
+        help_text="A national identity",
     )
 
     # array of items referencing "http://popoloproject.com/schemas/link.json#"
@@ -448,9 +441,7 @@ class Person(Timestampable, models.Model):
         if min_age == max_age:
             # We know their exact age:
             return str(min_age)
-        return _("{min_age} or {max_age}").format(
-            min_age=min_age, max_age=max_age
-        )
+        return "{min_age} or {max_age}".format(min_age=min_age, max_age=max_age)
 
     """
     Return the elected state for a person in an election.

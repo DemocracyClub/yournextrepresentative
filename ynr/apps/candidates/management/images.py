@@ -1,8 +1,6 @@
 import hashlib
 from tempfile import NamedTemporaryFile
 
-from django.utils.translation import ugettext_lazy as _
-
 from PIL import Image as PillowImage
 import requests
 
@@ -49,7 +47,7 @@ def download_image_from_url(image_url, max_size_bytes=(50 * 2 ** 20)):
     with NamedTemporaryFile(delete=False) as image_ntf:
         image_response = requests.get(image_url, stream=True)
         if image_response.status_code != 200:
-            msg = _(
+            msg = (
                 "  Ignoring an image URL with non-200 status code "
                 "({status_code}): {url}"
             )
@@ -64,12 +62,12 @@ def download_image_from_url(image_url, max_size_bytes=(50 * 2 ** 20)):
             downloaded_so_far += len(chunk)
             if downloaded_so_far > max_size_bytes:
                 raise ImageDownloadException(
-                    _("The image exceeded the maximum allowed size")
+                    "The image exceeded the maximum allowed size"
                 )
             image_ntf.write(chunk)
     # Trying to get the image extension checks that this really is
     # an image:
     if get_image_extension(image_ntf.name) is None:
-        msg = _("  The image at {url} wasn't of a known type")
+        msg = "  The image at {url} wasn't of a known type"
         raise ImageDownloadException(msg.format(url=image_url))
     return image_ntf.name

@@ -1,7 +1,6 @@
 import requests
 from django.conf import settings
 from django.utils.six import text_type
-from django.utils.translation import ugettext as _
 
 from people.models import PersonIdentifier
 
@@ -26,7 +25,7 @@ class TwitterAPIData(object):
     def __init__(self):
         self.token = settings.TWITTER_APP_ONLY_BEARER_TOKEN
         if not self.token:
-            raise Exception(_("TWITTER_APP_ONLY_BEARER_TOKEN was not set"))
+            raise Exception("TWITTER_APP_ONLY_BEARER_TOKEN was not set")
         self.headers = {
             "Authorization": "Bearer {token}".format(token=self.token)
         }

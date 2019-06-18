@@ -1,7 +1,6 @@
 import os
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
 from popolo.models import Post
@@ -24,7 +23,7 @@ class OfficialDocument(TimeStampedModel):
     NOMINATION_PAPER = "Nomination paper"
 
     DOCUMENT_TYPES = (
-        (NOMINATION_PAPER, _("Nomination paper"), _("Nomination papers")),
+        (NOMINATION_PAPER, "Nomination paper", "Nomination papers"),
     )
 
     document_type = models.CharField(
@@ -39,7 +38,7 @@ class OfficialDocument(TimeStampedModel):
         "candidates.PostExtraElection", null=False
     )
     source_url = models.URLField(
-        help_text=_("The page that links to this document"), max_length=1000
+        help_text="The page that links to this document", max_length=1000
     )
     relevant_pages = models.CharField(
         "The pages containing information about this ballot",

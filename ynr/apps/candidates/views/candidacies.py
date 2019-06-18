@@ -1,5 +1,4 @@
 from django.views.generic import FormView
-from django.utils.translation import ugettext as _
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.http import JsonResponse
@@ -28,9 +27,7 @@ def raise_if_locked(request, post, election):
         return
     # Otherwise, if the constituency is locked, raise an exception:
     if post.postextraelection_set.get(election=election).candidates_locked:
-        raise Exception(
-            _("Attempt to edit a candidacy in a locked constituency")
-        )
+        raise Exception("Attempt to edit a candidacy in a locked constituency")
 
 
 class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):

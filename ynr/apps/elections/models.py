@@ -6,7 +6,6 @@ from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db import models
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
 
@@ -47,7 +46,7 @@ class Election(models.Model):
     party_lists_in_use = models.BooleanField(default=False)
     people_elected_per_post = models.IntegerField(
         default=1,
-        help_text=_(
+        help_text=(
             "The number of people who are elected to this post in the "
             "election.  -1 means a variable number of winners"
         ),

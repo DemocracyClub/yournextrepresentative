@@ -1,6 +1,5 @@
 from django.db import transaction
 from django.core.management.base import BaseCommand
-from django.utils.translation import ugettext as _
 
 from people.models import Person
 
@@ -38,15 +37,13 @@ class Command(BaseCommand):
 
             if user_id:
                 verbose(
-                    _("{person} has a Twitter user ID: {user_id}").format(
+                    "{person} has a Twitter user ID: {user_id}".format(
                         person=person, user_id=user_id
                     )
                 )
                 if user_id not in self.twitter_data.user_id_to_screen_name:
                     print(
-                        _(
-                            "Removing user ID {user_id} for {person_name} as it is not a valid Twitter user ID. {person_url}"
-                        ).format(
+                        "Removing user ID {user_id} for {person_name} as it is not a valid Twitter user ID. {person_url}".format(
                             user_id=user_id,
                             person_name=person.name,
                             person_url=person.get_absolute_url(),
@@ -78,9 +75,9 @@ class Command(BaseCommand):
                     self.twitterbot.save(person, msg)
                 else:
                     verbose(
-                        _(
-                            "The screen name ({screen_name}) was already correct"
-                        ).format(screen_name=screen_name)
+                        "The screen name ({screen_name}) was already correct".format(
+                            screen_name=screen_name
+                        )
                     )
 
             # Otherwise, if they have a Twitter screen name (but no
@@ -90,18 +87,16 @@ class Command(BaseCommand):
             # is deleted.
             elif screen_name:
                 verbose(
-                    _(
-                        "{person} has Twitter screen name ({screen_name}) but no user ID"
-                    ).format(person=person, screen_name=screen_name)
+                    "{person} has Twitter screen name ({screen_name}) but no user ID".format(
+                        person=person, screen_name=screen_name
+                    )
                 )
                 if (
                     screen_name.lower()
                     not in self.twitter_data.screen_name_to_user_id
                 ):
                     print(
-                        _(
-                            "Removing screen name {screen_name} for {person_name} as it is not a valid Twitter screen name. {person_url}"
-                        ).format(
+                        "Removing screen name {screen_name} for {person_name} as it is not a valid Twitter screen name. {person_url}".format(
                             screen_name=screen_name,
                             person_name=person.name,
                             person_url=person.get_absolute_url(),
@@ -111,7 +106,7 @@ class Command(BaseCommand):
                     identifier.save()
                     return
                 print(
-                    _("Adding the user ID {user_id}").format(
+                    "Adding the user ID {user_id}".format(
                         user_id=self.twitter_data.screen_name_to_user_id[
                             screen_name.lower()
                         ]
@@ -131,7 +126,7 @@ class Command(BaseCommand):
                 self.twitterbot.save(person)
             else:
                 verbose(
-                    _("{person} had no Twitter account information").format(
+                    "{person} had no Twitter account information".format(
                         person=person
                     )
                 )

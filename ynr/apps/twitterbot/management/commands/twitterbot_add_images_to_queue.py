@@ -1,7 +1,6 @@
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
-from django.utils.translation import ugettext as _
 
 from moderation_queue.models import QueuedImage, CopyrightOptions
 from people.models import Person
@@ -32,21 +31,17 @@ class Command(BaseCommand):
             # not. At the moment we just want to be really careful not
             # to make people check the same Twitter avatar twice.
             verbose(
-                _(
-                    "  That person already had an image in the queue, so skipping."
-                )
+                "  That person already had an image in the queue, so skipping."
             )
             return
 
-        verbose(
-            _("  Adding that person's Twitter avatar to the moderation queue")
-        )
+        verbose("  Adding that person's Twitter avatar to the moderation queue")
         # Add a new queued image
         image_url = image_url.replace("_normal.", ".")
         img_temp = NamedTemporaryFile(delete=True)
         r = requests.get(image_url)
         if r.status_code != 200:
-            msg = _(
+            msg = (
                 "  Ignoring an image URL with non-200 status code "
                 "({status_code}): {url}"
             )
@@ -58,7 +53,7 @@ class Command(BaseCommand):
         # Trying to get the image extension checks that this really is
         # an image:
         if get_image_extension(img_temp.name) is None:
-            msg = _("  The image at {url} wasn't of a known type")
+            msg = "  The image at {url} wasn't of a known type"
             verbose(msg.format(url=image_url))
             return
 
@@ -88,7 +83,7 @@ class Command(BaseCommand):
                     "Considering adding a photo for {person} with Twitter "
                     "user ID: {user_id}"
                 )
-                verbose(_(msg).format(person=person, user_id=user_id))
+                verbose(msg.format(person=person, user_id=user_id))
                 self.add_twitter_image_to_queue(
                     person,
                     self.twitter_data.user_id_to_photo_url[user_id],

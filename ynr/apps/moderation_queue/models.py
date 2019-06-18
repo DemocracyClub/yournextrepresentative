@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 
 from candidates.models import PostExtraElection
 
@@ -17,11 +16,11 @@ class CopyrightOptions:
     WHY_ALLOWED_CHOICES = (
         (
             PUBLIC_DOMAIN,
-            _("This photograph is free of any copyright restrictions"),
+            "This photograph is free of any copyright restrictions",
         ),
         (
             COPYRIGHT_ASSIGNED,
-            _(
+            (
                 "I own copyright of this photo and I assign the copyright "
                 "to Democracy Club Limited in return for it being displayed "
                 "on this site"
@@ -29,13 +28,13 @@ class CopyrightOptions:
         ),
         (
             PROFILE_PHOTO,
-            _(
+            (
                 "This is the candidate's public profile photo from social "
                 "media (e.g. Twitter, Facebook) or their official campaign "
                 "page"
             ),
         ),
-        (OTHER, _("Other")),
+        (OTHER, "Other"),
     )
 
 
@@ -47,10 +46,10 @@ class QueuedImage(models.Model):
     IGNORE = "ignore"
 
     DECISION_CHOICES = (
-        (APPROVED, _("Approved")),
-        (REJECTED, _("Rejected")),
-        (UNDECIDED, _("Undecided")),
-        (IGNORE, _("Ignore")),
+        (APPROVED, "Approved"),
+        (REJECTED, "Rejected"),
+        (UNDECIDED, "Undecided"),
+        (IGNORE, "Ignore"),
     )
 
     why_allowed = models.CharField(
@@ -81,7 +80,7 @@ class QueuedImage(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        message = _("Image uploaded by {user} of candidate {person_id}")
+        message = "Image uploaded by {user} of candidate {person_id}"
         return message.format(
             user=self.user, person_id=(self.person.id if self.person else None)
         )

@@ -2,7 +2,6 @@ import re
 
 from dateutil import parser
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _l
 from django_date_extensions.fields import ApproximateDate
 
 from candidates.models import PartySet, raise_if_unsafe_to_delete
@@ -49,21 +48,21 @@ def parse_approximate_date(s):
 
 class localparserinfo(parser.parserinfo):
     MONTHS = [
-        ("Jan", _l("Jan"), "January", _l("January")),
-        ("Feb", _l("Feb"), "February", _l("February")),
-        ("Mar", _l("Mar"), "March", _l("March")),
-        ("Apr", _l("Apr"), "April", _l("April")),
-        ("May", _l("May"), "May", _l("May")),
-        ("Jun", _l("Jun"), "June", _l("June")),
-        ("Jul", _l("Jul"), "July", _l("July")),
-        ("Aug", _l("Aug"), "August", _l("August")),
-        ("Sep", _l("Sep"), "Sept", "September", _l("September")),
-        ("Oct", _l("Oct"), "October", _l("October")),
-        ("Nov", _l("Nov"), "November", _l("November")),
-        ("Dec", _l("Dec"), "December", _l("December")),
+        ("Jan", "Jan", "January", "January"),
+        ("Feb", "Feb", "February", "February"),
+        ("Mar", "Mar", "March", "March"),
+        ("Apr", "Apr", "April", "April"),
+        ("May", "May", "May", "May"),
+        ("Jun", "Jun", "June", "June"),
+        ("Jul", "Jul", "July", "July"),
+        ("Aug", "Aug", "August", "August"),
+        ("Sep", "Sep", "Sept", "September", "September"),
+        ("Oct", "Oct", "October", "October"),
+        ("Nov", "Nov", "November", "November"),
+        ("Dec", "Dec", "December", "December"),
     ]
 
-    PERTAIN = ["of", _l("of")]
+    PERTAIN = ["of", "of"]
 
 
 def update_person_from_form(person, form):

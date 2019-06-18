@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
 
 from people.forms import StrippedCharField, AddElectionFieldsMixin
 from candidates.models import PostExtraElection
@@ -15,7 +14,7 @@ class UserTermsAgreementForm(forms.Form):
     def clean_assigned_to_dc(self):
         assigned_to_dc = self.cleaned_data["assigned_to_dc"]
         if not assigned_to_dc:
-            message = _(
+            message = (
                 "You can only edit data on {site_name} if you agree to "
                 "this copyright assignment."
             ).format(site_name=Site.objects.get_current().name)
@@ -39,10 +38,10 @@ class ToggleLockForm(forms.ModelForm):
 
 class ConstituencyRecordWinnerForm(forms.Form):
     person_id = StrippedCharField(
-        label=_("Person ID"), max_length=256, widget=forms.HiddenInput()
+        label="Person ID", max_length=256, widget=forms.HiddenInput()
     )
     source = StrippedCharField(
-        label=_("Source of information that they won"), max_length=512
+        label="Source of information that they won", max_length=512
     )
 
 

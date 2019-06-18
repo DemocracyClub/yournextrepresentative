@@ -6,7 +6,6 @@ import re
 import json
 
 from django.conf import settings
-from django.utils.translation import ugettext as _
 from django.http import Http404
 
 import jsonpatch
@@ -41,110 +40,84 @@ def get_descriptive_value(election, attribute, value, leaf):
             # dictionary that's changed:
             if leaf == "name":
                 if current_election:
-                    message = _(
-                        "is known to be standing for the party '{party}' in the {election}"
-                    )
+                    message = "is known to be standing for the party '{party}' in the {election}"
                 else:
-                    message = _(
-                        "was known to be standing for the party '{party}' in the {election}"
-                    )
+                    message = "was known to be standing for the party '{party}' in the {election}"
                 return message.format(party=value, election=election_name)
             elif leaf == "id":
                 if current_election:
-                    message = _(
-                        "is known to be standing for the party with ID {party} in the {election}"
-                    )
+                    message = "is known to be standing for the party with ID {party} in the {election}"
                 else:
-                    message = _(
-                        "was known to be standing for the party with ID {party} in the {election}"
-                    )
+                    message = "was known to be standing for the party with ID {party} in the {election}"
                 return message.format(party=value, election=election_name)
             else:
-                message = _(
-                    "Unexpected leaf {0} (attribute: {1}, election: {2}"
-                )
+                message = "Unexpected leaf {0} (attribute: {1}, election: {2}"
                 raise Exception(message.format(leaf, attribute, election))
         else:
             if current_election:
-                message = _(
-                    'is known to be standing for the party "{party}" in the {election}'
-                )
+                message = 'is known to be standing for the party "{party}" in the {election}'
             else:
-                message = _(
-                    'was known to be standing for the party "{party}" in the {election}'
-                )
+                message = 'was known to be standing for the party "{party}" in the {election}'
             return message.format(party=value["name"], election=election_name)
     elif attribute == "standing_in":
         if value is None:
             if current_election:
-                message = _("is known not to be standing in the {election}")
+                message = "is known not to be standing in the {election}"
             else:
-                message = _("was known not to be standing in the {election}")
+                message = "was known not to be standing in the {election}"
             return message.format(election=election_name)
         else:
             if leaf:
                 if leaf == "post_id":
                     if current_election:
-                        message = _(
-                            "is known to be standing for the post with ID {post_id} in the {election}"
-                        )
+                        message = "is known to be standing for the post with ID {post_id} in the {election}"
                     else:
-                        message = _(
-                            "was known to be standing for the post with ID {post_id} in the {election}"
-                        )
+                        message = "was known to be standing for the post with ID {post_id} in the {election}"
                     return message.format(post_id=value, election=election_name)
                 elif leaf == "mapit_url":
                     if current_election:
-                        message = _(
-                            "is known to be standing in the constituency with MapIt URL {mapit_url} in the {election}"
-                        )
+                        message = "is known to be standing in the constituency with MapIt URL {mapit_url} in the {election}"
                     else:
-                        message = _(
-                            "was known to be standing in the constituency with MapIt URL {mapit_url} in the {election}"
-                        )
+                        message = "was known to be standing in the constituency with MapIt URL {mapit_url} in the {election}"
                     return message.format(
                         mapit_url=value, election=election_name
                     )
                 elif leaf == "name":
                     if current_election:
-                        message = _(
-                            "is known to be standing in {party} in the {election}"
-                        )
+                        message = "is known to be standing in {party} in the {election}"
                     else:
-                        message = _(
-                            "was known to be standing in {party} in the {election}"
-                        )
+                        message = "was known to be standing in {party} in the {election}"
                     return message.format(party=value, election=election_name)
                 elif leaf == "elected":
                     if value:
-                        return _("was elected in the {election}").format(
+                        return "was elected in the {election}".format(
                             election=election_name
                         )
                     else:
-                        return _("was not elected in the {election}").format(
+                        return "was not elected in the {election}".format(
                             election=election_name
                         )
                 elif leaf == "party_list_position":
                     if value:
-                        return _(
-                            "is at position {list_position} in their party list in the {election}"
-                        ).format(list_position=value, election=election_name)
+                        return "is at position {list_position} in their party list in the {election}".format(
+                            list_position=value, election=election_name
+                        )
                     else:
-                        return _(
-                            "has no position in their party list in the {election}"
-                        ).format(election=election_name)
+                        return "has no position in their party list in the {election}".format(
+                            election=election_name
+                        )
                 else:
-                    message = _(
+                    message = (
                         "Unexpected leaf {0} (attribute: {1}, election: {2}"
                     )
                     raise Exception(message.format(leaf, attribute, election))
             else:
                 if current_election:
-                    message = _(
+                    message = (
                         "is known to be standing in {party} in the {election}"
                     )
                 else:
-                    message = _(
+                    message = (
                         "was known to be standing in {party} in the {election}"
                     )
                 return message.format(
@@ -173,7 +146,7 @@ def explain_standing_in_and_party_memberships(
                 clauses.append(
                     get_descriptive_value(election, attribute, value, leaf)
                 )
-            operation[key] = _(" and ").join(clauses)
+            operation[key] = " and ".join(clauses)
 
 
 def get_version_diff(from_data, to_data):

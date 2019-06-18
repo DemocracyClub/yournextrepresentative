@@ -2,7 +2,6 @@ from django import forms
 from django.db.models import Count, Prefetch
 from django.core.exceptions import ValidationError
 from django.utils.safestring import SafeText
-from django.utils.translation import ugettext_lazy as _
 
 from candidates.views import search_person_by_name
 from official_documents.models import OfficialDocument
@@ -201,7 +200,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
 
 class NameOnlyPersonForm(forms.Form):
     name = forms.CharField(
-        label=_("Name (style: Ali Smith, not SMITH Ali)"), required=True
+        label="Name (style: Ali Smith, not SMITH Ali)", required=True
     )
 
 
@@ -273,9 +272,7 @@ class BaseBulkAddByPartyFormset(forms.BaseFormSet):
         super().add_fields(form, index)
         if self.ballot.election.party_lists_in_use:
             form.fields["party_list_position"] = forms.IntegerField(
-                label=_(
-                    "Position in party list ('1' for first, '2' for second, etc.)"
-                ),
+                label="Position in party list ('1' for first, '2' for second, etc.)",
                 min_value=1,
                 required=False,
                 initial=index + 1,

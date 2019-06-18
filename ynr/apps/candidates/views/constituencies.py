@@ -1,5 +1,4 @@
 from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext as _
 from django.views.generic import FormView, View
 from django.shortcuts import get_object_or_404
 from django.db import transaction
@@ -130,7 +129,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                             candidate = candidacy.person
                             change_metadata = get_change_metadata(
                                 self.request,
-                                _('Setting as "not elected" by implication'),
+                                'Setting as "not elected" by implication',
                             )
                             candidate.record_version(change_metadata)
                             candidate.save()
@@ -153,7 +152,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
                 role=self.election_data.candidate_membership_role,
                 post_election__election=self.election_data,
             )
-            source = _("Result recorded in error, retracting")
+            source = "Result recorded in error, retracting"
             for candidacy in all_candidacies.all():
                 if candidacy.elected:
                     # If elected is True then a ResultEvent will have

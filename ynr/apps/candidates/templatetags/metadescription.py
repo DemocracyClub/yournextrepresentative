@@ -2,7 +2,6 @@ import re
 
 from django import template
 from django.contrib.sites.models import Site
-from django.utils.translation import ugettext as _
 from django.utils.translation import get_language
 
 register = template.Library()
@@ -20,39 +19,29 @@ def metadescription(person, last_candidacy, today):
             "post": last_candidacy.post.label,
         }
         if is_post_election(election, today):
-            if last_party_name == _("Independent") % args:
+            if last_party_name == "Independent" % args:
                 output = (
-                    _(
-                        "%(name)s stood as an independent candidate in %(post)s in %(election)s"
-                    )
-                    % args
-                )
+                    "%(name)s stood as an independent candidate in %(post)s in %(election)s"
+                ) % args
             else:
                 output = (
-                    _(
-                        "%(name)s stood for %(party)s in %(post)s in %(election)s"
-                    )
-                    % args
-                )
+                    "%(name)s stood for %(party)s in %(post)s in %(election)s"
+                ) % args
         else:
-            if last_party_name == _("Independent") % args:
+            if last_party_name == "Independent" % args:
                 output = (
-                    _(
-                        "%(name)s is standing as an independent candidate in %(post)s in %(election)s"
-                    )
+                    "%(name)s is standing as an independent candidate in %(post)s in %(election)s"
                     % args
                 )
             else:
                 output = (
-                    _(
-                        "%(name)s is standing for %(party)s in %(post)s in %(election)s"
-                    )
+                    "%(name)s is standing for %(party)s in %(post)s in %(election)s"
                     % args
                 )
     else:
         output = person.name
 
-    output += " – " + _("find out more on {site_name}").format(
+    output += " – " + "find out more on {site_name}".format(
         site_name=Site.objects.get_current().name
     )
     return output

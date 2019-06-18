@@ -6,7 +6,6 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models import Count
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext_lazy as _
 
 from candidates.models import PartySet
 from popolo.models import OtherName, Post
@@ -38,13 +37,13 @@ class StrippedCharField(forms.CharField):
 
 
 class BaseCandidacyForm(forms.Form):
-    person_id = StrippedCharField(label=_("Person ID"), max_length=256)
-    post_id = StrippedCharField(label=_("Post ID"), max_length=256)
+    person_id = StrippedCharField(label="Person ID", max_length=256)
+    post_id = StrippedCharField(label="Post ID", max_length=256)
 
 
 class CandidacyCreateForm(BaseCandidacyForm):
     source = StrippedCharField(
-        label=_("Source of information that they're standing ({0})").format(
+        label="Source of information that they're standing ({0})".format(
             settings.SOURCE_HINTS
         ),
         max_length=512,
@@ -53,7 +52,7 @@ class CandidacyCreateForm(BaseCandidacyForm):
 
 class CandidacyDeleteForm(BaseCandidacyForm):
     source = StrippedCharField(
-        label=_("Information source for this change ({0})").format(
+        label="Information source for this change ({0})".format(
             settings.SOURCE_HINTS
         ),
         max_length=512,
@@ -143,21 +142,21 @@ class BasePersonForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         for field in settings.SIMPLE_POPOLO_FIELDS:
-            opts = {"label": _(field.label), "required": field.required}
+            opts = {"label": field.label, "required": field.required}
 
             if field.name == "biography":
-                opts["help_text"] = _(
-                    """
+                opts[
+                    "help_text"
+                ] = """
                     This must be a message from the candidate to the
                     electorate. Ideally this message will be uploaded by the
                     candidate or their agent, but crowdsourcers may find such
                     a statement on a candidate's 'About' webpage, or on
                     campaign literature."""
-                )
-                opts["label"] = _("Statement to voters")
+                opts["label"] = "Statement to voters"
 
             if field.name == "name":
-                opts["label"] = _("Name (style: Ali Smith not SMITH Ali)")
+                opts["label"] = "Name (style: Ali Smith not SMITH Ali)"
 
             if field.info_type_key == "url":
                 self.fields[field.name] = forms.URLField(**opts)
@@ -174,9 +173,9 @@ class BasePersonForm(forms.Form):
         )
 
     STANDING_CHOICES = (
-        ("not-sure", _("Don’t Know")),
-        ("standing", _("Yes")),
-        ("not-standing", _("No")),
+        ("not-sure", "Don’t Know"),
+        ("standing", "Yes"),
+        ("not-standing", "No"),
     )
 
     def clean_birth_date(self):
@@ -187,13 +186,9 @@ class BasePersonForm(forms.Form):
             parsed_date = parse_approximate_date(birth_date)
         except ValueError:
             if settings.DD_MM_DATE_FORMAT_PREFERRED:
-                message = _(
-                    "That date of birth could not be understood. Try using DD/MM/YYYY instead"
-                )
+                message = "That date of birth could not be understood. Try using DD/MM/YYYY instead"
             else:
-                message = _(
-                    "That date of birth could not be understood. Try using MM/DD/YYYY instead"
-                )
+                message = "That date of birth could not be understood. Try using MM/DD/YYYY instead"
             raise ValidationError(message)
         return parsed_date
 
@@ -216,7 +211,7 @@ class BasePersonForm(forms.Form):
             # selected constituency.
             post_id = cleaned_data["constituency_" + election]
             if not post_id:
-                message = _(
+                message = (
                     "If you mark the candidate as standing in the "
                     "{election}, you must select a post"
                 )
@@ -228,12 +223,12 @@ class BasePersonForm(forms.Form):
                 slug=post_id, postextraelection__election=election_data
             )
             if not post_qs.exists():
-                message = _("An unknown post ID '{post_id}' was specified")
+                message = "An unknown post ID '{post_id}' was specified"
                 raise forms.ValidationError(message.format(post_id=post_id))
             try:
                 party_set = PartySet.objects.get(post=post_qs.get())
             except PartySet.DoesNotExist:
-                message = _(
+                message = (
                     "Could not find parties for the post with ID "
                     "'{post_id}' in the {election}"
                 )
@@ -246,7 +241,7 @@ class BasePersonForm(forms.Form):
             except ValueError:
                 party_id = None
             if not Party.objects.filter(ec_id=party_id).exists():
-                message = _("You must specify a party for the {election}")
+                message = "You must specify a party for the {election}"
                 raise forms.ValidationError(
                     message.format(election=election_name)
                 )
@@ -264,7 +259,7 @@ class NewPersonForm(BasePersonForm):
         election_data = Election.objects.get_by_slug(election)
 
         standing_field_kwargs = {
-            "label": _("Standing in %s") % election_data.name,
+            "label": "Standing in %s" % election_data.name,
             "choices": self.STANDING_CHOICES,
         }
         if hidden_post_widget:
@@ -280,7 +275,7 @@ class NewPersonForm(BasePersonForm):
         self.elections_with_fields = [election_data]
 
         post_field_kwargs = {
-            "label": _("Post in the {election}").format(
+            "label": "Post in the {election}".format(
                 election=election_data.name
             ),
             "max_length": 256,
@@ -290,7 +285,7 @@ class NewPersonForm(BasePersonForm):
             post_field = StrippedCharField(**post_field_kwargs)
         else:
             post_field = forms.ChoiceField(
-                label=_("Post in the {election}").format(
+                label="Post in the {election}".format(
                     election=election_data.name
                 ),
                 required=False,
@@ -343,7 +338,7 @@ class NewPersonForm(BasePersonForm):
             self.fields[
                 "party_" + register + "_" + election
             ] = forms.ChoiceField(
-                label=_("Party in {election} ({register})").format(
+                label="Party in {election} ({register})".format(
                     election=election_data.name, register=register
                 ),
                 choices=Party.objects.register(register).party_choices(),
@@ -358,7 +353,7 @@ class NewPersonForm(BasePersonForm):
                 # as an integer:
                 field_name = "party_list_position_" + register + "_" + election
                 self.fields[field_name] = forms.IntegerField(
-                    label=_(
+                    label=(
                         "Position in party list ('1' for first, '2' for second, etc.)"
                     ),
                     min_value=1,
@@ -371,15 +366,15 @@ class NewPersonForm(BasePersonForm):
                 )
 
     source = StrippedCharField(
-        label=_("Source of information ({0})").format(settings.SOURCE_HINTS),
+        label="Source of information ({0})".format(settings.SOURCE_HINTS),
         max_length=512,
         error_messages={
-            "required": _("You must indicate how you know about this candidate")
+            "required": "You must indicate how you know about this candidate"
         },
         widget=forms.TextInput(
             attrs={
                 "required": "required",
-                "placeholder": _("How you know about this candidate"),
+                "placeholder": "How you know about this candidate",
             }
         ),
     )
@@ -414,12 +409,12 @@ class AddElectionFieldsMixin(object):
 
         election = election_data.slug
         self.fields["standing_" + election] = forms.ChoiceField(
-            label=_("Standing in %s") % election_data.name,
+            label="Standing in %s" % election_data.name,
             choices=BasePersonForm.STANDING_CHOICES,
             widget=forms.Select(attrs={"class": "standing-select"}),
         )
         self.fields["constituency_" + election] = forms.ChoiceField(
-            label=_("Constituency in %s") % election_data.name,
+            label="Constituency in %s" % election_data.name,
             required=False,
             choices=[("", "")]
             + sorted(
@@ -435,7 +430,7 @@ class AddElectionFieldsMixin(object):
             self.fields[
                 "party_" + party_set.slug.upper() + "_" + election
             ] = forms.ChoiceField(
-                label=_("Party in {election} ({party_set_name})").format(
+                label="Party in {election} ({party_set_name})".format(
                     election=election_data.name, party_set_name=party_set.name
                 ),
                 choices=party_choices,
@@ -454,7 +449,7 @@ class AddElectionFieldsMixin(object):
                     + election
                 )
                 self.fields[field_name] = forms.IntegerField(
-                    label=_(
+                    label=(
                         "Position in party list ('1' for first, '2' for second, etc.)"
                     ),
                     min_value=1,
@@ -483,17 +478,17 @@ class UpdatePersonForm(AddElectionFieldsMixin, BasePersonForm):
         self.add_elections_fields(self.elections_with_fields)
 
     source = StrippedCharField(
-        label=_("Source of information for this change ({0})").format(
+        label="Source of information for this change ({0})".format(
             settings.SOURCE_HINTS
         ),
         max_length=512,
         error_messages={
-            "required": _("You must indicate how you know about this candidate")
+            "required": "You must indicate how you know about this candidate"
         },
         widget=forms.TextInput(
             attrs={
                 "required": "required",
-                "placeholder": _("How you know about this candidate"),
+                "placeholder": "How you know about this candidate",
             }
         ),
     )
@@ -523,17 +518,17 @@ class OtherNameForm(forms.ModelForm):
         fields = ("name", "note", "start_date", "end_date")
         labels = {}
         help_texts = {
-            "start_date": _(
+            "start_date": (
                 "(Optional) The date from which this name would be used"
             ),
-            "end_date": _(
+            "end_date": (
                 "(Optional) The date when this name stopped being used"
             ),
         }
 
     source = StrippedCharField(
-        label=_("Source"),
-        help_text=_(
+        label="Source",
+        help_text=(
             "Please indicate how you know that this is a valid alternative name"
         ),
         max_length=512,

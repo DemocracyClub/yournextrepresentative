@@ -17,7 +17,6 @@ from slugify import slugify
 from django.core.validators import RegexValidator
 from django.db import models
 from model_utils import Choices
-from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
@@ -45,20 +44,20 @@ class Organization(Dateframeable, Timestampable, models.Model):
     """
 
     name = models.CharField(
-        _("name"),
+        "name",
         max_length=512,
-        help_text=_("A primary name, e.g. a legally recognized name"),
+        help_text="A primary name, e.g. a legally recognized name",
     )
     summary = models.CharField(
-        _("summary"),
+        "summary",
         max_length=1024,
         blank=True,
-        help_text=_("A one-line description of an organization"),
+        help_text="A one-line description of an organization",
     )
     description = models.TextField(
-        _("biography"),
+        "biography",
         blank=True,
-        help_text=_("An extended description of an organization"),
+        help_text="An extended description of an organization",
     )
 
     # array of items referencing "http://popoloproject.com/schemas/other_name.json#"
@@ -69,10 +68,10 @@ class Organization(Dateframeable, Timestampable, models.Model):
     # array of items referencing "http://popoloproject.com/schemas/identifier.json#"
     identifiers = GenericRelation("Identifier", help_text="Issued identifiers")
     classification = models.CharField(
-        _("classification"),
+        "classification",
         max_length=512,
         blank=True,
-        help_text=_("An organization category, e.g. committee"),
+        help_text="An organization category, e.g. committee",
     )
 
     # reference to "http://popoloproject.com/schemas/organization.json#"
@@ -81,11 +80,11 @@ class Organization(Dateframeable, Timestampable, models.Model):
         blank=True,
         null=True,
         related_name="children",
-        help_text=_("The organization that contains this organization"),
+        help_text="The organization that contains this organization",
     )
 
     founding_date = models.CharField(
-        _("founding date"),
+        "founding date",
         max_length=10,
         null=True,
         blank=True,
@@ -96,10 +95,10 @@ class Organization(Dateframeable, Timestampable, models.Model):
                 code="invalid_founding_date",
             )
         ],
-        help_text=_("A date of founding"),
+        help_text="A date of founding",
     )
     dissolution_date = models.CharField(
-        _("dissolution date"),
+        "dissolution date",
         max_length=10,
         null=True,
         blank=True,
@@ -110,13 +109,13 @@ class Organization(Dateframeable, Timestampable, models.Model):
                 code="invalid_dissolution_date",
             )
         ],
-        help_text=_("A date of dissolution"),
+        help_text="A date of dissolution",
     )
     image = models.URLField(
-        _("image"),
+        "image",
         blank=True,
         null=True,
-        help_text=_("A URL of an image, to identify the organization visually"),
+        help_text="A URL of an image, to identify the organization visually",
     )
 
     # array of items referencing "http://popoloproject.com/schemas/contact_detail.json#"
@@ -178,31 +177,31 @@ class Post(Dateframeable, Timestampable, models.Model):
     """
 
     label = models.CharField(
-        _("label"),
+        "label",
         max_length=512,
         blank=True,
-        help_text=_("A label describing the post"),
+        help_text="A label describing the post",
     )
     other_label = models.CharField(
-        _("other label"),
+        "other label",
         max_length=512,
         blank=True,
         null=True,
-        help_text=_("An alternate label, such as an abbreviation"),
+        help_text="An alternate label, such as an abbreviation",
     )
 
     role = models.CharField(
-        _("role"),
+        "role",
         max_length=512,
         blank=True,
-        help_text=_("The function that the holder of the post fulfills"),
+        help_text="The function that the holder of the post fulfills",
     )
 
     # reference to "http://popoloproject.com/schemas/organization.json#"
     organization = models.ForeignKey(
         "Organization",
         related_name="posts",
-        help_text=_("The organization in which the post is held"),
+        help_text="The organization in which the post is held",
     )
 
     # array of items referencing "http://popoloproject.com/schemas/contact_detail.json#"
@@ -252,16 +251,16 @@ class Membership(Dateframeable, Timestampable, models.Model):
     """
 
     label = models.CharField(
-        _("label"),
+        "label",
         max_length=512,
         blank=True,
-        help_text=_("A label describing the membership"),
+        help_text="A label describing the membership",
     )
     role = models.CharField(
-        _("role"),
+        "role",
         max_length=512,
         blank=True,
-        help_text=_("The role that the person fulfills in the organization"),
+        help_text="The role that the person fulfills in the organization",
     )
 
     # reference to "http://popoloproject.com/schemas/person.json#"
@@ -269,7 +268,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
         "people.Person",
         to_field="id",
         related_name="memberships",
-        help_text=_("The person who is a party to the relationship"),
+        help_text="The person who is a party to the relationship",
     )
 
     party = models.ForeignKey(
@@ -285,9 +284,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
         blank=True,
         null=True,
         related_name="memberships",
-        help_text=_(
-            "The post held by the person in the organization through this membership"
-        ),
+        help_text="The post held by the person in the organization through this membership",
     )
 
     # array of items referencing "http://popoloproject.com/schemas/contact_detail.json#"
@@ -386,47 +383,45 @@ class ContactDetail(
     """
 
     CONTACT_TYPES = Choices(
-        ("ADDRESS", "address", _("Address")),
-        ("EMAIL", "email", _("Email")),
-        ("URL", "url", _("Url")),
-        ("MAIL", "mail", _("Snail mail")),
-        ("TWITTER", "twitter", _("Twitter")),
-        ("FACEBOOK", "facebook", _("Facebook")),
-        ("PHONE", "phone", _("Telephone")),
-        ("MOBILE", "mobile", _("Mobile")),
-        ("TEXT", "text", _("Text")),
-        ("VOICE", "voice", _("Voice")),
-        ("FAX", "fax", _("Fax")),
-        ("CELL", "cell", _("Cell")),
-        ("VIDEO", "video", _("Video")),
-        ("PAGER", "pager", _("Pager")),
-        ("TEXTPHONE", "textphone", _("Textphone")),
+        ("ADDRESS", "address", "Address"),
+        ("EMAIL", "email", "Email"),
+        ("URL", "url", "Url"),
+        ("MAIL", "mail", "Snail mail"),
+        ("TWITTER", "twitter", "Twitter"),
+        ("FACEBOOK", "facebook", "Facebook"),
+        ("PHONE", "phone", "Telephone"),
+        ("MOBILE", "mobile", "Mobile"),
+        ("TEXT", "text", "Text"),
+        ("VOICE", "voice", "Voice"),
+        ("FAX", "fax", "Fax"),
+        ("CELL", "cell", "Cell"),
+        ("VIDEO", "video", "Video"),
+        ("PAGER", "pager", "Pager"),
+        ("TEXTPHONE", "textphone", "Textphone"),
     )
 
     label = models.CharField(
-        _("label"),
+        "label",
         max_length=512,
         blank=True,
-        help_text=_("A human-readable label for the contact detail"),
+        help_text="A human-readable label for the contact detail",
     )
     contact_type = models.CharField(
-        _("type"),
+        "type",
         max_length=12,
         choices=CONTACT_TYPES,
-        help_text=_("A type of medium, e.g. 'fax' or 'email'"),
+        help_text="A type of medium, e.g. 'fax' or 'email'",
     )
     value = models.CharField(
-        _("value"),
+        "value",
         max_length=512,
-        help_text=_("A value, e.g. a phone number or email address"),
+        help_text="A value, e.g. a phone number or email address",
     )
     note = models.CharField(
-        _("note"),
+        "note",
         max_length=512,
         blank=True,
-        help_text=_(
-            "A note, e.g. for grouping contact details by physical location"
-        ),
+        help_text="A note, e.g. for grouping contact details by physical location",
     )
 
     # array of items referencing "http://popoloproject.com/schemas/link.json#"
@@ -451,13 +446,13 @@ class OtherName(Dateframeable, GenericRelatable, models.Model):
     """
 
     name = models.CharField(
-        _("name"), max_length=512, help_text=_("An alternate or former name")
+        "name", max_length=512, help_text="An alternate or former name"
     )
     note = models.CharField(
-        _("note"),
+        "note",
         max_length=1024,
         blank=True,
-        help_text=_("A note, e.g. 'Birth name'"),
+        help_text="A note, e.g. 'Birth name'",
     )
 
     try:
@@ -477,15 +472,15 @@ class Identifier(GenericRelatable, models.Model):
     """
 
     identifier = models.CharField(
-        _("identifier"),
+        "identifier",
         max_length=512,
-        help_text=_("An issued identifier, e.g. a DUNS number"),
+        help_text="An issued identifier, e.g. a DUNS number",
     )
     scheme = models.CharField(
-        _("scheme"),
+        "scheme",
         max_length=128,
         blank=True,
-        help_text=_("An identifier scheme, e.g. DUNS"),
+        help_text="An identifier scheme, e.g. DUNS",
     )
 
     def __str__(self):
@@ -498,12 +493,12 @@ class Source(GenericRelatable, models.Model):
     see schema at http://popoloproject.com/schemas/link.json#
     """
 
-    url = models.URLField(_("url"), help_text=_("A URL"))
+    url = models.URLField("url", help_text="A URL")
     note = models.CharField(
-        _("note"),
+        "note",
         max_length=512,
         blank=True,
-        help_text=_("A note, e.g. 'Parliament website'"),
+        help_text="A note, e.g. 'Parliament website'",
     )
 
     def __str__(self):
@@ -517,11 +512,11 @@ class Language(models.Model):
     """
 
     dbpedia_resource = models.CharField(
-        max_length=255, help_text=_("DbPedia URI of the resource"), unique=True
+        max_length=255, help_text="DbPedia URI of the resource", unique=True
     )
     iso639_1_code = models.CharField(max_length=2)
     name = models.CharField(
-        max_length=128, help_text=_("English name of the language")
+        max_length=128, help_text="English name of the language"
     )
 
     def __str__(self):

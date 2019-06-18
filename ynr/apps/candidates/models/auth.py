@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.utils.translation import ugettext as _
 
 from auth_helpers.views import user_in_group
 
@@ -62,7 +61,7 @@ def check_creation_allowed(user, new_candidacies):
         dummy, edits_allowed = get_constituency_lock(user, post, election)
         if not edits_allowed:
             raise ChangeToLockedConstituencyDisallowedException(
-                _("The candidates for this post are locked now")
+                "The candidates for this post are locked now"
             )
 
 
@@ -75,9 +74,7 @@ def check_update_allowed(
         allowed_by_group = user_in_group(user, TRUSTED_TO_RENAME_GROUP_NAME)
         name_the_same = old_name == new_name
         if not (allowed_by_group or name_the_same):
-            message = _(
-                "Name change from '{0}' to '{1}' by user {2} disallowed"
-            )
+            message = "Name change from '{0}' to '{1}' by user {2} disallowed"
             raise NameChangeDisallowedException(
                 message.format(old_name, new_name, user.username)
             )
@@ -89,7 +86,7 @@ def check_update_allowed(
         dummy, edits_allowed = get_constituency_lock(user, post, election)
         if not edits_allowed:
             raise ChangeToLockedConstituencyDisallowedException(
-                _(
+                (
                     "That update isn't allowed because candidates for a locked "
                     "post ({post_label}) would be changed"
                 ).format(post_label=post.label)
@@ -102,7 +99,7 @@ def check_update_allowed(
         dummy, edits_allowed = get_constituency_lock(user, post, election)
         if not edits_allowed and (old_party != new_party):
             raise ChangeToLockedConstituencyDisallowedException(
-                _(
+                (
                     "That update isn't allowed because you can't change the party "
                     "(in this case from {old_party} to {new_party}) for a candidate "
                     "in a locked post ({post_label})"
