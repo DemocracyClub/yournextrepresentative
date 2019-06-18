@@ -1,16 +1,18 @@
 {% extends 'base.html' %}
 
-{% load i18n %}
+
 {% load thumbnail %}
 
 {% block body_class %}party{% endblock %}
 
-{% block title %}{% blocktrans with election_name=election_data.name %}{{ party_name }} &#8212; Candidates by constituency for the {{ election_name }}{% endblocktrans %}{% endblock %}
+{% block title %}
+    {{ party_name }} &#8212; Candidates by constituency for the {{ election_data.name }}
+{% endblock %}
 
 {% block hero %}
-  <h1>{% blocktrans trimmed with election_name=election_data.name %}
-    {{ party_name }} candidates in the {{ election_name }}
-  {% endblocktrans %}</h1>
+  <h1>
+    {{ party_name }} candidates in the {{ election_data.name }}
+  </h1>
 {% endblock %}
 
 {% block content %}
@@ -19,24 +21,25 @@
 
   {% if party_name == 'Independent' %}
 
-    <p>{% blocktrans trimmed with election_name=election_data.name %}This shows
-      all the constituencies that have independent candidates standing in them
-      at the {{ election_name }}{% endblocktrans %}</p>
+    <p>
+      This shows all the constituencies that have independent candidates standing in them
+      at the {{ election_data.name }}
+    </p>
 
   {% elif party_name == 'Speaker seeking re-election' %}
 
-    <p>{% blocktrans trimmed %}The Speaker of the House of Commons stands as a "The
+    <p>The Speaker of the House of Commons stands as a "The
       Speaker seeking re-election" rather than a particular party
       at a general election; for more information, please
       see <a href="http://www.parliament.uk/about/faqs/house-of-commons-faqs/speakers-election/">Parliament's
-      website</a>.{% endblocktrans %}</p>
+      website</a>.</p>
 
   {% elif register %}
 
-    <p>{% blocktrans %}{{ party_name }} is on the Electoral Commission's register for {{ register }}.{% endblocktrans %}</p>
+    <p>{{ party_name }} is on the Electoral Commission's register for {{ register }}.</p>
 
-    <p>{% blocktrans trimmed %}You can find more data about the party's registration at the
-      <a href="{{ ec_url }}">Electoral Commission page for {{ party_name }}</a>.{% endblocktrans %}</p>
+    <p>You can find more data about the party's registration at the
+      <a href="{{ ec_url }}">Electoral Commission page for {{ party_name }}</a>.</p>
     <p></p>
 
   {% endif %}
@@ -55,9 +58,9 @@
                 <ul>
                   {% for member_data in post_members %}
                     {% url 'person-view' person_id=member_data.person.id as person_url %}
-                      <li>{% blocktrans trimmed with name=member_data.person.name post_short_label=post.short_label ballot_url=member_data.membership.post_election.get_absolute_url %}
-                        <a href="{{ person_url }}">{{ name }}</a> is standing in
-                        <a href="{{ ballot_url }}">{{ post_short_label }}</a>{% endblocktrans %}
+                      <li>
+                        <a href="{{ person_url }}">{{ member_data.person.name }}</a> is standing in
+                        <a href="{{ member_data.membership.post_election.get_absolute_url }}">{{ post.short_label }}</a>
                       </li>
                   {% endfor %}
                 </ul>
@@ -65,16 +68,16 @@
               {% else %}
                 {% if stats.show_all %}
                   <li>
-                    {% blocktrans trimmed with post_short_label=post.short_label %}
-                      No candidate in <a href="{{ post_url }}">{{ post_short_label }}</a>
-                    {% endblocktrans %}
+                      No candidate in <a href="{{ post_url }}">{{ post.short_label }}</a>
                   </li>
                 {% endif %}
               {% endif %}
           {% endfor %}
         </ul>
       {% else %}
-        <p>{% blocktrans with election_name=election_data.name %}We don't know of any {{ party_name }} candidates in {{ post_group }} in the {{ election_name }} so far.{% endblocktrans %}</p>
+        <p>
+          We don't know of any {{ party_name }} candidates in {{ post_group }} in the {{ election_data.name }} so far.
+        </p>
       {% endif %}
     {% endwith %}
   {% endfor %}

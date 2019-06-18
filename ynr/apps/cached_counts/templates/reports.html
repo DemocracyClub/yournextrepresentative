@@ -3,28 +3,26 @@
 
 {% block hero %}
   <div class="person__hero">
-    <h1>{% trans "Reports" %}</h1>
+    <h1>Reports</h1>
   </div>
 {% endblock hero %}
 
 {% block content %}
 
-  <h2>{% trans 'Which posts have fewest candidates so far?' %}</h2>
+  <h2>Which posts have fewest candidates so far?</h2>
 
   <p>{% url 'attention_needed' as url %}
-    {% blocktrans trimmed %}
       You can see a list of all the posts in current elections
       <a href="{{ url }}">ordered starting with those with the fewest
         candidates</a>.
-    {% endblocktrans %}
   </p>
 
   {% for era in all_elections %}
     <div class="statistics-elections {% if era.current %}current{% else %}past{% endif %}">
       <h2>{% if era.current %}
-        {% trans "Current Elections" %}
+        Current Elections
       {% else %}
-        {% trans "Past Elections" %}
+        Past Elections
       {% endif %}</h2>
 
       {% for date, elections in era.dates.items %}
@@ -34,16 +32,16 @@
           {% for election in role_data.elections %}
             <div id="statistics-election-{{ election.html_id }}">
               {% with election_name=election.name %}
-                <h4>{% blocktrans %}Statistics for the {{ election_name }}{% endblocktrans %}</h4>
+                <h4>Statistics for the {{ election_name }}</h4>
                 <ul>
-                  <li>{% blocktrans %}Total candidates:{% endblocktrans %} {{ election.total }}</li>
-                  <li><a href="{% url "posts_counts" election=election.id %}">{% trans "Candidates per post" %}</a></li>
+                  <li>Total candidates: {{ election.total }}</li>
+                  <li><a href="{% url "posts_counts" election=election.id %}">Candidates per post</a></li>
                   <li>
-                    <a href="{% url "parties_counts" election=election.id %}">{% trans "Candidates per party" %}</a>
+                    <a href="{% url "parties_counts" election=election.id %}">Candidates per party</a>
                   </li>
                   <li>
                     <a href="{% url "constituencies-unlocked" election=election.id %}">
-                      {% trans "See progress towards locking all posts" %}
+                      See progress towards locking all posts
                     </a>
                   </li>
                 </ul>

@@ -271,7 +271,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 
             mock_send_mail.assert_called_once_with(
                 "example.com image moderation results",
-                "Thank-you for uploading a photo of Tessa Jowell to example.com,\nbut unfortunately we can't use that image because:\n\n  There's no clear source or copyright statement\n\nYou can just reply to this email if you want to discuss that\nfurther, or you can try uploading a photo with a different\nreason or justification for its use using this link:\n\n  http://testserver/moderation/photo/upload/2009\n\nMany thanks from the example.com volunteers\n\n-- \nFor administrators' use: http://testserver/moderation/photo/review/{}\n".format(
+                "Thank-you for uploading a photo of Tessa Jowell to example.com,\nbut unfortunately we can't use that image because:\n\n  There's no clear source or copyright statement\n\nYou can just reply to this email if you want to discuss that\nfurther, or you can try uploading a photo with a different\nreason or justification for its use using this link:\n\n  http://testserver/moderation/photo/upload/2009\n\nMany thanks from the example.com volunteers\n\n--\nFor administrators' use: http://testserver/moderation/photo/review/{}\n".format(
                     self.q1.id
                 ),
                 "admins@example.com",

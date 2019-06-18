@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load i18n %}
+
 {% load pipeline %}
 {% load thumbnail %}
 
@@ -14,10 +14,10 @@
 
 {% block body_class %}{% endblock %}
 
-{% block title %}{% trans "Review and crop the photo" %}{% endblock %}
+{% block title %}Review and crop the photo{% endblock %}
 
 {% block hero %}
-  <h1>{% trans "Review and crop the photo" %}</h1>
+  <h1>Review and crop the photo</h1>
 {% endblock %}
 
 {% block content %}
@@ -38,15 +38,15 @@
     details</a> may be a good start.
   </p>
 
-  <p>{% blocktrans trimmed %}
+  <p>
   If you're trying to find the likely <em>source</em> of this image, you can
   also do a <a href="{{ google_reverse_image_search_url }}">reverse image
-  search</a> on the uploaded image.{% endblocktrans %}</p>
+  search</a> on the uploaded image.</p>
 
-  <h3>{% trans "Click and drag in the image to crop" %}</h3>
+  <h3>Click and drag in the image to crop</h3>
 
-  <p>{% blocktrans trimmed %}Please crop to just around the candidate's head, since
-  they're displayed in thumbnail form on the site.{% endblocktrans %}</p>
+  <p>Please crop to just around the candidate's head, since
+  they're displayed in thumbnail form on the site.</p>
 
   <div class="image-for-review-container">
     <img id="image-for-review"
@@ -70,27 +70,27 @@
     <div class="crop-coordinates">
       <p>
         {{ form.x_min.errors }}
-        <label for="{{ form.x_min.id_for_label }}">{% trans "Minimum X co-ordinate:" %}</label>
+        <label for="{{ form.x_min.id_for_label }}">Minimum X co-ordinate:</label>
         {{ form.x_min }}
       </p>
       <p>
         {{ form.x_max.errors }}
-        <label for="{{ form.x_max.id_for_label }}">{% trans "Maximum X co-ordinate:" %}</label>
+        <label for="{{ form.x_max.id_for_label }}">Maximum X co-ordinate:</label>
         {{ form.x_max }}
       </p>
       <p>
         {{ form.y_min.errors }}
-        <label for="{{ form.y_min.id_for_label }}">{% trans "Minimum Y co-ordinate:" %}</label>
+        <label for="{{ form.y_min.id_for_label }}">Minimum Y co-ordinate:</label>
         {{ form.y_min }}
       </p>
       <p>
         {{ form.y_max.errors }}
-        <label for="{{ form.y_max.id_for_label }}">{% trans "Maximum Y co-ordinate:" %}</label>
+        <label for="{{ form.y_max.id_for_label }}">Maximum Y co-ordinate:</label>
         {{ form.y_max }}
       </p>
     </div>
 
-    <h3>{% trans "User-submitted information" %}</h3>
+    <h3>User-submitted information</h3>
 
     <p>
       Uploaded by user <tt>{{ username }}</tt>.
@@ -105,29 +105,27 @@
 
     {% if why_allowed == 'public-domain' %}
       <p>
-        {% blocktrans %}{{ username }} asserted that photo is free of copyright restrictions{% endblocktrans %}
+        {{ username }} asserted that photo is free of copyright restrictions
       </p>
     {% elif why_allowed == 'copyright-assigned' %}
       <p>
-        {% blocktrans with copyright_holder=settings.COPYRIGHT_HOLDER trimmed %}
-          {{ username }} assigned the copyright to {{ copyright_holder }}
-        {% endblocktrans %}
+        {{ username }} assigned the copyright to {{ settings.COPYRIGHT_HOLDER }}
       </p>
     {% elif why_allowed == 'profile-photo' %}
-      <p>{% blocktrans trimmed %}
+      <p>
         {{ username }} said that this is the candidate's public profile
         photo from social media or their official campaign page
-      {% endblocktrans %}</p>
+      </p>
     {% endif %}
 
     {% if justification_for_use %}
-      <p>{% blocktrans trimmed with justification=justification_for_use|safe %}
+      <p>
         {{ username }}'s justification for use of this photo was:
-        &#8220;{{ justification }}&#8221;
-      {% endblocktrans %}</p>
+        &#8220;{{ justification_for_use|safe }}&#8221;
+      </p>
     {% endif %}
 
-    <h3>{% trans "Your decision" %}</h3>
+    <h3>Your decision</h3>
 
     <div id="moderator-photo-decision">
 
@@ -142,7 +140,7 @@
       </fieldset>
 
       <fieldset class="moderator-reason">
-        <h4>{% trans "Why <em>you</em> think it's allowed" %}</h4>
+        <h4>Why <em>you</em> think it's allowed</h4>
           {{ form.moderator_why_allowed.errors }}
           {# <label for="{{ moderator_why_allowed.id_for_label }}"> #}
           {# </label> #}
@@ -155,7 +153,7 @@
 
           <div class="make-primary multiple-choice">
             {{ form.make_primary }}
-            <label for="{{ form.make_primary.id_for_label }}">{% trans "Make this the primary image of the candidate?" %}</label>
+            <label for="{{ form.make_primary.id_for_label }}">Make this the primary image of the candidate?</label>
           </div>
 
       </fieldset>
@@ -163,9 +161,9 @@
       {% if queued_image.user %}
         <fieldset class="rejection_reason">
             {{ form.rejection_reason.errors }}
-            <label for="{{ form.rejection_reason.id_for_label }}">{% blocktrans trimmed %}
+            <label for="{{ form.rejection_reason.id_for_label }}">
               Reason for rejection (<strong>Warning:</strong> this will be
-              emailed to the user):{% endblocktrans %}
+              emailed to the user):
             </label>
             {{ form.rejection_reason }}
         </fieldset>
@@ -173,16 +171,16 @@
         <input type="hidden" id="id_rejection_reason" name="rejection_reason" value="">
       {% endif %}
 
-      <input type="submit" id="decision-submit" class="button" value="{% trans "Submit" %}">
+      <input type="submit" id="decision-submit" class="button" value="Submit">
 
-      <a href="{% url 'photo-review-list' %}" class="button">{% trans "Cancel" %}</a>
+      <a href="{% url 'photo-review-list' %}" class="button">Cancel</a>
     </div>
   </form>
 </div>
 
 <div class="photo-review__secondary">
 
-  <h4>{% trans "Existing candidate images" %}</h4>
+  <h4>Existing candidate images</h4>
 
   {% with images=person.images.all %}
 
@@ -195,7 +193,7 @@
         {% endthumbnail %}
       {% endfor %}
     {% else %}
-      <p>{% trans "There were no existing images for this candidate." %}</p>
+      <p>There were no existing images for this candidate.</p>
     {% endif %}
 
   {% endwith %}

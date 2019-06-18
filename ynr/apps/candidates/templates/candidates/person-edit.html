@@ -1,28 +1,27 @@
 {% extends 'base.html' %}
 
-{% load i18n %}
+
 {% load staticfiles %}
 {% load thumbnail %}
 
 {% block body_class %}person{% endblock %}
 
-{% block title %}{% blocktrans with name=person.name %}Editing: {{ name }}{% endblocktrans %}{% endblock %}
+{% block title %}Editing: {{ person.name }}{% endblock %}
 
 {% block hero %}
 <div class="person__hero">
   <div class="person__photo">
     <img class="person-avatar" src="{{ person.get_display_image_url }}"/>
     <a class="upload-photo" href="{% url 'photo-upload' person.id %}">
-      {% trans 'Upload photo' %}
+      Upload photo
     </a>
   </div>
-  <h1>{% blocktrans with name=person.name %}Editing: {{ name }}{% endblocktrans %}</h1>
+  <h1>Editing: {{ person.name }}</h1>
   {% with last_candidacy=person.last_candidacy %}
     {% if last_candidacy %}
-      {% with post=last_candidacy.post %}
-        {% url 'constituency' election=last_candidacy.post_election.election.slug post_id=post.slug ignored_slug=post.short_label|slugify as url %}
-          <p>{% blocktrans with election=last_candidacy.post_election.election.name post_name=post.short_label %}Candidate for <a href="{{ url }}">{{ post_name }}</a> in {{ election }}{% endblocktrans %}</p>
-      {% endwith %}
+      <p>
+        Candidate for <a href="{{ last_candidacy.post_election.get_absolute_url }}">{{ last_candidacy.post.short_label  }}</a> in {{ last_candidacy.post_election.election.name }}
+      </p>
     {% endif %}
   {% endwith %}
 </div>
@@ -42,29 +41,30 @@
   <div class="person__actions">
 
     <div class="person__actions__action person__actions__sourcing">
-      <h2>{% trans "Thanks for helping out!" %}</h2>
-      <p>{% blocktrans trimmed %}
+      <h2>Thanks for helping out!</h2>
+      <p>
         Please make sure you read our <a href="https://docs.google.com/document/d/1lqC15-FUZl_mNzpEEoHG0mX8wyQ5GHZNUj61LE2KmoA/edit">guidance on sourcing fields</a>.
-        {% endblocktrans %}</p>
+      </p>
     </div>
 
     <div class="person__actions__action person__actions__photo">
-      <h2>{% trans "Trying to upload a photo?" %}</h2>
+      <h2>Trying to upload a photo?</h2>
       {% url 'photo-upload' person.id as url %}
-      <p>{% blocktrans trimmed with name=person.name %}There’s a separate page for
-        <a href="{{ url }}">uploading a photo of {{ name }}</a>.
-        {% endblocktrans %}</p>
+      <p>
+        There’s a separate page for
+        <a href="{{ url }}">uploading a photo of {{ person.name }}</a>.
+      </p>
     </div>
 
     {% if user_can_merge %}
       <form class="person__actions__action person__actions__merge" id="person-merge" action="{% url 'person-merge' person_id=person.id %}" method="post">
         {% csrf_token %}
-        <h2>{% trans "Is this a duplicate person?" %}</h2>
+        <h2>Is this a duplicate person?</h2>
         <p>
-          <label for="other">{% trans "Merge another person into this one:" %}</label>
-          <input id="other" name="other" placeholder="{% trans "Other person ID" %}" type="text"></input>
+          <label for="other">Merge another person into this one:</label>
+          <input id="other" name="other" placeholder="Other person ID" type="text"></input>
         </p>
-        <input type="submit" class="button alert" value="{% trans "Merge people" %}">
+        <input type="submit" class="button alert" value="Merge people">
       </form>
     {% endif %}
 

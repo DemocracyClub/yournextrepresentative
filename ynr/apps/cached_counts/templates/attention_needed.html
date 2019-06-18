@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% load i18n %}
+
 
 {% block content %}
-  <h2>{% trans 'Posts needing most attention' %}</h2>
+  <h2>Posts needing most attention</h2>
   <table class="counts_table">
     <thead>
-    <th>{% trans "Election" %}</th>
-    <th>{% trans "Post Name" %}</th>
-    <th>{% trans "Number of Candidates" %}</th>
+    <th>Election</th>
+    <th>Post Name</th>
+    <th>Number of Candidates</th>
     </thead>
     <tbody>
     {% for pee in post_counts %}

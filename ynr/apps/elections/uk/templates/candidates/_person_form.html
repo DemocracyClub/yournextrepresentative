@@ -1,20 +1,20 @@
-{% load i18n %}
+
 
     {% csrf_token %}
 
     {% if form.errors %}
       <div class="form-error-summary">
-        <h2>{% trans "Oops!" %}</h2>
-        <p>{% trans "We could not accept some of the changes you made." %}</p>
+        <h2>Oops!</h2>
+        <p>We could not accept some of the changes you made.</p>
         {% if form.non_field_errors %}
           {{ form.non_field_errors.as_ul }}
         {% else %}
-          <p>{% trans "Please check your information matches our requirements, below." %}</p>
+          <p>Please check your information matches our requirements, below.</p>
         {% endif %}
       </div>
     {% endif %}
 
-    <h2>{% trans "Personal details:" %}</h2>
+    <h2>Personal details:</h2>
 
     {% for simple_field in personal_fields %}
     <div class="form-item {% if simple_field.errors %}form-item--errors{% endif %}">
@@ -33,7 +33,7 @@
               Also known as {{ person.other_names.all|join:", " }}<br>
             {% endif %}
             <a href="{% url 'person-other-names' person_id=person.id %}">
-              {% trans "Manage alternative names..." %}
+              Manage alternative names...
           </a></p>
         {% endif %}
       {% endif %}
@@ -43,7 +43,7 @@
     {% endfor %}
 
     <div>
-      <h2>{% trans "Candidacy:" %}</h2>
+      <h2>Candidacy:</h2>
 
         {% for constituency_fields in constituencies_form_fields %}
 
@@ -115,10 +115,10 @@
 
     </div>
 
-    <h2>{% trans "Links and social media:" %}</h2>
+    <h2>Links and social media:</h2>
     {% include "people/forms/person_identifier_inline_formset.html" %}
 
-    <h2>{% trans "Demographics:" %}</h2>
+    <h2>Demographics:</h2>
 
     {% for simple_field in demographic_fields %}
     <div class="form-item {% if simple_field.errors %}form-item--errors{% endif %}">
@@ -132,7 +132,7 @@
     {% endfor %}
 
 
-      <h2>{% trans "Additional information:" %}</h2>
+      <h2>Additional information:</h2>
       <div class="form-item {% if form.favourite_biscuit.errors %}form-item--errors{% endif %}">
         <p>
           {{ form.favourite_biscuit.label_tag }}
@@ -146,13 +146,13 @@
       <p>
         <label for="{{ form.source.id_for_label }}">
           {% if form.source.errors %}
-            {% trans "<strong>You forgot to reference a source!</strong> Can you show us <em>where</em> you got this information?" %}
+            <strong>You forgot to reference a source!</strong> Can you show us <em>where</em> you got this information?
           {% else %}
-            {% trans "What’s your <strong>source of information</strong> for this candidate?" %}
+            What’s your <strong>source of information</strong> for this candidate?
           {% endif %}
           {{ settings.SOURCE_HINTS }}
         </label>
         {{ form.source }}
       </p>
     </div>
-    <input type="submit" class="button" value="{% trans "Save changes" %}">
+    <input type="submit" class="button" value="Save changes">

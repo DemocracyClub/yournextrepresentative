@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% load absolute %}
-{% load i18n %}
+
 {% load staticfiles %}
 {% load standing %}
 {% load metadescription %}
@@ -13,7 +13,7 @@
 
     <!-- Open Graph and Twitter card data -->
     <meta property="og:url" name="twitter:url" content="{{ canonical_url }}" />
-    <meta property="og:title" name="twitter:title" content="{{ person.name }}{% if last_candidacy %} - {% blocktrans with post=last_candidacy.post.short_label election=last_candidacy.post_election.election.name %}Candidate for {{ post }} in {{ election }}{% endblocktrans %}{% endif %}" />
+    <meta property="og:title" name="twitter:title" content="{{ person.name }}{% if last_candidacy %} - Candidate for {{ last_candidacy.post.short_label }} in {{ last_candidacy.post_election.election.name }}{% endif %}" />
     <meta property="og:description" name="twitter:description" content="{% metadescription person last_candidacy DATE_TODAY %}">
 
     <!-- Just Open Graph metadata -->
@@ -38,9 +38,7 @@
 
 {% block title %}{{ person.name }}
   {% if last_candidacy %}
-    - {% blocktrans trimmed with post=last_candidacy.post.short_label election=last_candidacy.post_election.election.name %}
-        Candidate for {{ post }} in {{ election }}
-      {% endblocktrans %}
+    - Candidate for {{ last_candidacy.post.short_label }} in {{ last_candidacy.post_election.election.name }}
   {% endif %}
 {% endblock %}
 
@@ -52,7 +50,7 @@
     <img class="person-avatar" src="{{ person.get_display_image_url }}"/>
     {% if not person.primary_image and user.is_authenticated %}
       <a class="upload-photo" href="{% url 'photo-upload' person.id %}">
-        {% trans 'Upload photo' %}
+        Upload photo
       </a>
     {% endif %}
   </div>
@@ -74,9 +72,9 @@
   {% if person|election_decision_known:election_to_show %}
     <div class="person__details__result">
     {% if person|was_elected:election_to_show %}
-      <h3>{% blocktrans with name=person.name %}{{ name }} was elected{% endblocktrans %}</h3>
+      <h3>{{ person.name }} was elected</h3>
     {% else %}
-      <h3>{% blocktrans with name=person.name %}{{ name }} was not elected{% endblocktrans %}</h3>
+      <h3>{{ person.name }} was not elected</h3>
     {% endif %}
     </div>
   {% endif %}
@@ -86,56 +84,56 @@
     {% if not person.get_email %}
     <div class="missing_field">
         {% url 'person-update' person_id=person.id as url %}
-        <h4>{% blocktrans trimmed with name=person.name %}
-            We don’t have an email address for {{ name }},
-            <a href="{{ url }}">help out by adding one</a>!
-            {% endblocktrans %}</h4>
+        <h4>
+          We don’t have an email address for {{ person.name }},
+          <a href="{{ url }}">help out by adding one</a>!
+        </h4>
     </div>
     {% endif %}
 
     {% if not has_current_elections %}
     <div class="missing_field">
         {% url 'person-update' person_id=person.id as person_edit_url %}
-        <h4 class="panel">{% blocktrans %}
-            These are the last details we have for this candidate.
-                They may not be current. Please <a href="{{ person_edit_url }} ">edit the details</a>
-                 if you have new information.
-            {% endblocktrans %}</h4>
+        <h4 class="panel">
+          These are the last details we have for this candidate.
+          They may not be current. Please <a href="{{ person_edit_url }} ">edit the details</a>
+          if you have new information.
+        </h4>
     </div>
     {% endif %}
-  <h2>{% trans "Personal details:" %}</h2>
+  <h2>Personal details:</h2>
 
   <dl>
-    <dt>{% trans "Name" %}</dt>
+    <dt>Name</dt>
     <dd>{{ person.name_with_honorifics }}</dd>
     {% if person.other_names.exists or 'additional_name' in simple_fields and person.additional_name %}
-      <dt>{% trans "Also known as" %}</dt>
+      <dt>Also known as</dt>
     {% endif %}
     {% if 'additional_name' in simple_fields and person.additional_name %}
-      <dd>{{ person.additional_name }} ({% trans 'additional name' %})</dd>
+      <dd>{{ person.additional_name }} (additional name)</dd>
     {% endif %}
     {% for other_name in person.other_names.all %}
       <dd>{{ other_name.name }}{% if other_name.note %} ({{ other_name.note }}){% endif %}</dd>
     {% endfor %}
     {% if 'email' in simple_fields %}
-      <dt>{% trans "Email" %}</dt>
+      <dt>Email</dt>
       <dd>{% if person.get_email %}<a href="mailto:{{ person.get_email }}">{{ person.get_email }}</a>{% endif %}</dd>
     {% endif %}
     {% if last_candidacy %}
-      <dt>{% trans "Party" %}</dt>
+      <dt>Party</dt>
       <dd>{{ last_candidacy.party.name }}</dd>
     {% endif %}
     {% if 'summary' in simple_fields %}
-      <dt>{% trans "Summary" %}</dt>
+      <dt>Summary</dt>
       <dd>{% if person.summary %}{{ person.summary }}{% endif %}</dd>
     {% endif %}
     {% if 'biography' in simple_fields %}
-      <dt>{% trans "Statement to voters" %}</dt>
+      <dt>Statement to voters</dt>
       <dd class="person_biography">{% if person.biography %}{{ person.biography|linebreaks }}{% endif %}</dd>
     {% endif %}
   </dl>
 
-  <h2>{% trans "Candidacies:" %}</h2>
+  <h2>Candidacies:</h2>
 
   <dl>
     {% for election_data in elections_to_list %}
@@ -146,11 +144,11 @@
         {% endif %}</dt>
       <dd>{{ person|post_in_election:election_data }}</dd>
     {% empty %}
-      <p>{% trans "No candidacies known at the moment." %}</p>
+      <p>No candidacies known at the moment.</p>
     {% endfor %}
   </dl>
 
-  <h2>{% trans "Links and social media:" %}</h2>
+  <h2>Links and social media:</h2>
 
   <dl>
     {% for identifier in person.tmp_person_identifiers.all %}
@@ -162,16 +160,16 @@
   </dl>
 
   {% if has_demographics %}
-    <h2>{% trans "Demographics:" %}</h2>
+    <h2>Demographics:</h2>
 
     <dl>
       {% if 'gender' in simple_fields %}
-        <dt>{% trans "Gender" %}</dt>
-        <dd>{% if person.gender %}{{ person.gender|title }}{% else %}{% trans "Unknown" %}{% endif %}</dd>
+        <dt>Gender</dt>
+        <dd>{% if person.gender %}{{ person.gender|title }}{% else %}Unknown{% endif %}</dd>
       {% endif %}
 
 
-      <dt>{% trans "Age" %}</dt>
+      <dt>Age</dt>
       {% if person.birth_date %}
         {% if person.birth_date|length_is:"4" %}
           <dd>
@@ -203,7 +201,7 @@
   {% endif %}
 
   {% if person.favourite_biscuit %}
-    <h2>{% trans "Additional information:" %}</h2>
+    <h2>Additional information:</h2>
     <dl>
       <dt>Favourite biscuit</dt>
       <dd>{{ person.favourite_biscuit }}</dd>
@@ -211,7 +209,7 @@
   {% endif %}
 
   {% if person.primary_image %}
-  <h2>{% trans "Photo Credit:" %}</h2>
+  <h2>Photo Credit:</h2>
   <p class="person__photo-credit">
     {% include 'candidates/_photo-credit.html' with image=person.primary_image_model %}
   </p>
@@ -230,15 +228,15 @@
   {% endif %}
 
   <div class="person__actions__action person__actions__edit">
-    <h2>{% trans "Improve this data!" %}</h2>
+    <h2>Improve this data!</h2>
     {% if user_can_edit %}
-      <p>{% trans "Our database is built by people like you." %}</p>
-      <p>{% trans "Please do add extra details about this candidate – it only takes a moment." %}</p>
+      <p>Our database is built by people like you.</p>
+      <p>Please do add extra details about this candidate – it only takes a moment.</p>
       {% if user.is_authenticated %}
-        <a href="{% url 'person-update' person_id=person.id %}" class="button">{% trans "Edit candidate" %}</a>
-        <a href="{% url 'photo-upload' person.id %}" class="button">{% trans "Upload candidate photo" %}</a>
+        <a href="{% url 'person-update' person_id=person.id %}" class="button">Edit candidate</a>
+        <a href="{% url 'photo-upload' person.id %}" class="button">Upload candidate photo</a>
       {% else %}
-        <a href="{% url 'account_login' %}?next={{ redirect_after_login }}" class="button">{% trans "Log in to edit" %}</a>
+        <a href="{% url 'account_login' %}?next={{ redirect_after_login }}" class="button">Log in to edit</a>
       {% endif %}
     {% else %}
       {% include 'candidates/_edits_disallowed_message.html' %}
@@ -256,16 +254,16 @@
   {% endif %}
 
   <div class="person__actions__action person__actions__data">
-    <h2>{% trans "Use this data!" %}</h2>
-    <p>{% trans "Open data JSON API:" %}</p>
+    <h2>Use this data!</h2>
+    <p>Open data JSON API:</p>
     {% url 'person-detail' version='v0.9' pk=person.id format='json' as person_json_api_url %}
     <p><input type="text" value="{{ person_json_api_url|absolute_url:request }}" onclick="this.select();"></p>
     {% url 'help-api' as api_url %}
     {% url 'help-about' as about_url %}
-    <p>{% blocktrans trimmed %}
+    <p>
       More details about getting <a href="{{ api_url }}">the data</a>
       and <a href="{{ about_url }}">its licence</a>.
-      {% endblocktrans %}</p>
+    </p>
   </div>
 
   <div class="person__actions__action person__actions__data">
@@ -273,7 +271,7 @@
     <p>View <a href="{{ person.wcivf_url }}">{{ person.name }}'s page on WhoCanIVoteFor.co.uk</a></p>
     <p>
         This website is designed for maintaining election candidate profile data. The data is used on our public-facing website,
-        WhoCanIVoteFor.co.uk, and by other information providers, such as The Electoral Commission and news media companies. 
+        WhoCanIVoteFor.co.uk, and by other information providers, such as The Electoral Commission and news media companies.
     </p>
   </div>
 

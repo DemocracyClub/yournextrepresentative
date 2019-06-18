@@ -1,6 +1,6 @@
-{% load i18n %}
 
-<h2>{% trans 'Upload a photo from a URL' %}</h2>
+
+<h2>Upload a photo from a URL</h2>
 
 <form id="person-upload-photo-url" action="{% url 'photo-upload-url' person_id %}" method="post" enctype="multipart/form-data">
 
@@ -8,11 +8,10 @@
   {% csrf_token %}
 
   <p>
-    {% if queued_images %}{% blocktrans trimmed with name=person.name %}
-    If you still want to upload another photo of {{ name }}, you can also paste a URL for the image (maximum size: 50 MB):
-    {% endblocktrans %}
+    {% if queued_images %}
+    If you still want to upload another photo of {{ person.name }}, you can also paste a URL for the image (maximum size: 50 MB):
     {% else %}
-    {% trans "Alternatively, you can paste a URL for the image (maximum size: 50 MB):" %}
+    Alternatively, you can paste a URL for the image (maximum size: 50 MB):
     {% endif %}
   </p>
   <p>
@@ -22,19 +21,19 @@
     {{ url_form.image_url }}
   </p>
 
-  <p>{% blocktrans trimmed %}
+  <p>
   Now let us know about the copyright of this image by selecting one of
-    these options or explaining why we can use it:{% endblocktrans %}</p>
+    these options or explaining why we can use it:</p>
   <div class="photo-why-allowed-radio-buttons">
     {{ url_form.why_allowed_url.errors }}
     {{ url_form.why_allowed_url }}
   </div>
   <p>
     {{ url_form.justification_for_use_url.errors }}
-    <label for="{{ url_form.justification_for_use_url.id_for_label }}">{% blocktrans trimmed %}
+    <label for="{{ url_form.justification_for_use_url.id_for_label }}">
     Here is my justification for why this photo may be reasonably used on the
-    website, including URL of the page that embeds the image:{% endblocktrans %}</label>
+    website, including URL of the page that embeds the image:</label>
     {{ url_form.justification_for_use_url }}
   </p>
-  <input type="submit" class="button" value="{% trans "Upload" %}">
+  <input type="submit" class="button" value="Upload">
 </form>

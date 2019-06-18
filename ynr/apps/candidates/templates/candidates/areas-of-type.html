@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n %}
+
 
 {% load metadescription %}
 {% load standing %}
@@ -7,10 +7,10 @@
 
 {% block body_class %}areas-of-type{% endblock %}
 
-{% block title %}{% blocktrans %}{{ area_type.name }}{% endblocktrans %}{% endblock %}
+{% block title %}{{ area_type.name }}{% endblock %}
 
 {% block hero %}
-  <h1>{% blocktrans with area_type_name=area_type.name %}{{ area_type_name }}{% endblocktrans %}</h1>
+  <h1>{{ area_type.name }}</h1>
 {% endblock %}
 
 {% block content %}
@@ -25,9 +25,7 @@
     {% endif %}
   {% empty %}
     <p>
-      {% blocktrans trimmed with area_type_name=area_type.name %}
-        No areas found of type {{ area_type_name }}.
-      {% endblocktrans %}
+        No areas found of type {{ area_type.name }}.
     </p>
   {% endfor %}
 

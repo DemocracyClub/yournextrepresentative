@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
-{% load i18n %}
+
 {% load thumbnail %}
 
 {% block body_class %}{% endblock %}
 
-{% block title %}{% trans "Uploaded photos for review" %}{% endblock %}
+{% block title %}Uploaded photos for review{% endblock %}
 
 {% block hero %}
-  <h1>{% trans "Uploaded photos for review" %}</h1>
+  <h1>Uploaded photos for review</h1>
 {% endblock %}
 
 {% block content %}
@@ -17,10 +17,10 @@
       <thead>
         <tr>
           <th></th>
-          <th>{% trans "Date uploaded" %}</th>
-          <th>{% trans "Uploading user" %}</th>
-          <th>{% trans "Candidate ID" %}</th>
-          <th>{% trans "Action" %}</th>
+          <th>Date uploaded</th>
+          <th>Uploading user</th>
+          <th>Candidate ID</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -34,13 +34,13 @@
           <td>{{ queued_image.created }}</td>
           <td>{% if queued_image.user %}{{ queued_image.user.username }}{% else %}a robot 🤖{% endif %}</td>
           <td>{{ queued_image.person.id }}</td>
-          <td><a href="{% url 'photo-review' queued_image_id=queued_image.id %}">{% trans "Review" %}</a></td>
+          <td><a href="{% url 'photo-review' queued_image_id=queued_image.id %}">Review</a></td>
         </tr>
       {% endfor %}
       <tbody>
     </table>
   {% else %}
-    <p>{% trans "<strong>Congratulations!</strong> There are no more photos to review." %}</p>
+    <p><strong>Congratulations!</strong> There are no more photos to review.</p>
   {% endif %}
 
 {% endblock %}

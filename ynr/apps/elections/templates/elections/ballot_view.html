@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load absolute %}
-{% load i18n %}
+
 {% load metadescription %}
 {% load standing %}
 {% load exists %}
@@ -8,8 +8,8 @@
 {% block extra_head %}
     <!-- Open Graph and Twitter card data -->
     <meta property="og:url" name="twitter:url" content="{{ request.build_absolute_uri }}" />
-    <meta property="og:title" name="twitter:title" content="{% blocktrans with election_name=election.name %}Candidates for {{ post_label_shorter }} in the {{ election_name }}{% endblocktrans %}" />
-    <meta property="og:description" name="twitter:description" content="{% blocktrans with election=election.name %}List of Candidates for {{ post_label_shorter }} in the {{ election }}{% endblocktrans %} - {% blocktrans with site_name=site.name %}find out more on {{ site_name }}{% endblocktrans %}">
+    <meta property="og:title" name="twitter:title" content="Candidates for {{ post_label_shorter }} in the {{ election.name }}" />
+    <meta property="og:description" name="twitter:description" content="List of Candidates for {{ post_label_shorter }} in the {{ election.name }} - find out more on {{ site.name }}">
 
     <!-- Open Graph data -->
     <meta property="og:type" content="article" />
@@ -31,10 +31,10 @@
 
 {% block body_class %}constituency{% endblock %}
 
-{% block title %}{% blocktrans with election_name=election.name %}Candidates for {{ post_label_shorter }} in the {{ election_name }}{% endblocktrans %}{% endblock %}
+{% block title %}Candidates for {{ post_label_shorter }} in the {{ election.name }}{% endblock %}
 
 {% block hero %}
-  <h1>{% blocktrans %}Candidates for <span id="constituency-name">{{ post_label_shorter }}</span>{% endblocktrans %}</h1>
+  <h1>Candidates for <span id="constituency-name">{{ post_label_shorter }}</span></h1>
 {% endblock %}
 
 
