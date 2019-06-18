@@ -13,7 +13,6 @@ from official_documents.models import DOCUMENT_UPLOADERS_GROUP_NAME
 from bulk_adding.models import TRUSTED_TO_BULK_ADD_GROUP_NAME
 
 from moderation_queue.models import SuggestedPostLock
-from django.utils.translation import to_locale, get_language
 
 SETTINGS_TO_ADD = (
     "ELECTION_APP",
@@ -43,12 +42,6 @@ def election_date(request):
     """Add knowledge of the election date to the context"""
 
     return {"DATE_TODAY": date.today()}
-
-
-def locale(request):
-    """Convert the language string to a locale"""
-    """Copied from: http://stackoverflow.com/a/6362929 """
-    return {"LOCALE": to_locale(get_language())}
 
 
 def add_notification_data(request):

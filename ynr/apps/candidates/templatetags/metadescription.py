@@ -2,7 +2,6 @@ import re
 
 from django import template
 from django.contrib.sites.models import Site
-from django.utils.translation import get_language
 
 register = template.Library()
 
@@ -53,12 +52,11 @@ def is_post_election(election, today):
 
 def format_party_name(party_name):
     party_name = party_name.strip()
-    if get_language()[0:2] == "en":
-        # otherwise we end up with "the Independent", which sounds like
-        # they're standing for a newspaper
-        if party_name != "Independent":
-            party_name = re.sub("^The ", "the ", party_name)
-            party_words = party_name.split()
-            if party_words[0] != "the":
-                return "the %s" % party_name
+    # otherwise we end up with "the Independent", which sounds like
+    # they're standing for a newspaper
+    if party_name != "Independent":
+        party_name = re.sub("^The ", "the ", party_name)
+        party_words = party_name.split()
+        if party_words[0] != "the":
+            return "the %s" % party_name
     return party_name
