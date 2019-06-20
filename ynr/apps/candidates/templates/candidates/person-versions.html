@@ -1,31 +1,31 @@
 {% load prettyjson %}
-{% load i18n %}
+
 
 <div class="person__versions">
-    <h2>{% trans "All versions" %}</h2>
+    <h2>All versions</h2>
     {% for version in person.version_diffs %}
       <div class="version" id="version-{{ version.version_id }}" data-parent-version-ids="{{ version.parent_version_ids|join:' ' }}">
         <dl>
-          <dt>{% trans "Version" %}</dt>
+          <dt>Version</dt>
           <dd>
-            {{ version.version_id }} <a class="button tiny js-toggle-full-version-json">{% trans "Hide full version" %}</a>
+            {{ version.version_id }} <a class="button tiny js-toggle-full-version-json">Hide full version</a>
             <pre class="full-version-json">{{ version.data|prettyjson }}</pre>
           </dd>
-          <dt>{% trans "Username" %}</dt>
+          <dt>Username</dt>
           <dd>{{ version.username }}</dd>
-          <dt>{% trans "Timestamp" %}</dt>
+          <dt>Timestamp</dt>
           <dd>{{ version.timestamp }}</dd>
-          <dt>{% trans "Source" %}</dt>
+          <dt>Source</dt>
           <dd>{{ version.information_source }}</dd>
           {% include 'candidates/_diffs_against_parents.html' with diffs_against_all_parents=version.diffs inline_style=False %}
           {% if user.is_authenticated and not forloop.first %}
-          <dt>{% trans "Revert to this" %}</dt>
+          <dt>Revert to this</dt>
           <dd>
             <form id="revert-form-{{ version.version_id }}" action="{% url 'person-revert' person_id=person.id %}" method="post" class="version-revert">
               {% csrf_token %}
               <input type="hidden" name="version_id" value="{{ version.version_id }}"/>
-              <input type="text" name="source" id="id_source" maxlength="512" required="required" value="{% blocktrans with id=version.version_id %}Reverting to version {{ id }} because…{% endblocktrans %}"/>
-              <input type="submit" class="button tiny alert" value="{% trans "Revert" %}" />
+              <input type="text" name="source" id="id_source" maxlength="512" required="required" value="Reverting to version {{ version.version_id }} because…"/>
+              <input type="submit" class="button tiny alert" value="Revert" />
             </form>
           </dd>
           {% endif %}

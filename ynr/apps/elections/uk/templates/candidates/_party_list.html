@@ -1,5 +1,5 @@
 {% load standing %}
-{% load i18n %}
+
 
 {% comment %}
 
@@ -58,10 +58,10 @@
             <h4 class="party-list-header">{{ party.name }}</h4>
             <p class="party-list-description">
               {% if party.truncated %}
-                {% trans "Showing the top candidates." %} <a href="{% url 'party-for-post' election=election post_id=post_data.id legacy_slug=party.legacy_slug %}">{% blocktrans with count=party.total_count %}See all {{ count }} members on the party list{% endblocktrans %} &rarr;</a>
+                Showing the top candidates. <a href="{% url 'party-for-post' election=election post_id=post_data.id legacy_slug=party.legacy_slug %}">See all {{ party.total_count }} members on the party list &rarr;</a>
               {% else %}
 
-                <a href="{% url 'party-for-ballot' ballot_id=post_election.ballot_paper_id party_id=party.ec_id %}">{% blocktrans with count=party.total_count %}See just this party list{% endblocktrans %} &rarr;</a>
+                <a href="{% url 'party-for-ballot' ballot_id=post_election.ballot_paper_id party_id=party.ec_id %}">See just this party list &rarr;</a>
               {% endif %}
           {% endif %}
 
@@ -75,9 +75,9 @@
                 {% if user.is_authenticated %}
                 <p>
                   {% if candidate_list_edits_allowed %}
-                    <a class="button tiny js-toggle-source-confirmation not-standing">{% trans "Not actually standing?" %}</a>
+                    <a class="button tiny js-toggle-source-confirmation not-standing">Not actually standing?</a>
                   {% endif %}
-                  <a href="{% url 'person-update' person_id=c.id %}" class="button tiny secondary">{% trans "Edit" %}</a>
+                  <a href="{% url 'person-update' person_id=c.id %}" class="button tiny secondary">Edit</a>
                 </p>
                 {% if candidate_list_edits_allowed %}
                   {% include 'candidates/_source_confirmation.html' with standing='not-standing' action='candidacy-delete' %}
@@ -89,8 +89,8 @@
                       <form class="winner-confirm" action="{% url 'record-winner' election=election.slug post_id=post_data.id %}" method="post">
                         {% csrf_token %}
                         <input type="hidden" name="person_id" value="{{ c.id }}">
-                        <input type="hidden" name="source" value="{% trans "[Quick update from the constituency page]" %}">
-                        <input type="submit" class="button" value="{% trans "Mark candidate as elected" %}">
+                        <input type="hidden" name="source" value="[Quick update from the constituency page]">
+                        <input type="submit" class="button" value="Mark candidate as elected">
                       </form>
                     {% endif %}
                   {% endif %}

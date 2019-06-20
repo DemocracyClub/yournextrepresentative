@@ -3,7 +3,6 @@ from datetime import timedelta
 from django.contrib.auth.models import User
 from django.db.models import Count, F
 from django.utils import timezone
-from django.utils.translation import ugettext as _
 
 
 from dateutil.parser import parse
@@ -16,18 +15,18 @@ class ContributorsMixin(object):
         result = []
         boards = [
             (
-                _("In the last week"),
+                "In the last week",
                 timezone.now() - timedelta(days=7),
                 timezone.now(),
             ),
             (
-                _("2019 local elections"),
+                "2019 local elections",
                 timezone.make_aware(parse("2019-03-01")),
                 timezone.make_aware(parse("2019-05-10")),
             ),
         ]
         if all_time:
-            boards.insert(0, (_("All Time"), None, None))
+            boards.insert(0, ("All Time", None, None))
 
         for title, since, until in boards:
             interesting_actions = LoggedAction.objects.exclude(

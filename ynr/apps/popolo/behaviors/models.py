@@ -8,7 +8,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 from model_utils.fields import AutoCreatedField, AutoLastModifiedField
 from datetime import datetime
 
@@ -59,20 +58,20 @@ class Dateframeable(models.Model):
     )
 
     start_date = models.CharField(
-        _("start date"),
+        "start date",
         max_length=10,
         blank=True,
         null=True,
         validators=[partial_date_validator, validate_partial_date],
-        help_text=_("The date when the validity of the item starts"),
+        help_text="The date when the validity of the item starts",
     )
     end_date = models.CharField(
-        _("end date"),
+        "end date",
         max_length=10,
         blank=True,
         null=True,
         validators=[partial_date_validator, validate_partial_date],
-        help_text=_("The date when the validity of the item ends"),
+        help_text="The date when the validity of the item ends",
     )
 
     class Meta:
@@ -85,8 +84,8 @@ class Timestampable(models.Model):
     ``created`` and ``modified`` fields.
     """
 
-    created_at = AutoCreatedField(_("creation time"))
-    updated_at = AutoLastModifiedField(_("last modification time"))
+    created_at = AutoCreatedField("creation time")
+    updated_at = AutoLastModifiedField("last modification time")
 
     class Meta:
         abstract = True

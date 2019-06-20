@@ -10,7 +10,6 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils.http import urlquote
 from django.utils.six.moves.urllib_parse import urljoin
-from django.utils.translation import ugettext as _
 
 from candidates.models import PostExtraElection
 
@@ -56,16 +55,16 @@ def get_post_elections(url, cache_key, exception):
         ee_result = r.json()
         raise exception(ee_result["detail"])
     elif r.status_code == 404:
-        raise exception(_('The url "{}" couldn’t be found').format(url))
+        raise exception('The url "{}" couldn’t be found'.format(url))
     else:
-        raise UnknownGeoException(_('Unknown error for "{0}"').format(url))
+        raise UnknownGeoException('Unknown error for "{0}"'.format(url))
 
 
 def get_post_elections_from_postcode(original_postcode):
     postcode = re.sub(r"(?ms)\s*", "", original_postcode.lower())
     if re.search(r"[^a-z0-9]", postcode):
         raise BadPostcodeException(
-            _('There were disallowed characters in "{0}"').format(
+            'There were disallowed characters in "{0}"'.format(
                 original_postcode
             )
         )

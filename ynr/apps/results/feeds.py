@@ -2,7 +2,6 @@ from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.utils.six.moves.urllib_parse import urlunsplit
-from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
 from compat import text_type
@@ -12,11 +11,11 @@ from .models import ResultEvent
 
 class BasicResultEventsFeed(Feed):
     feed_type = Atom1Feed
-    title = _("Election results from {site_name}").format(
+    title = "Election results from {site_name}".format(
         site_name=settings.SITE_NAME
     )
     link = "/"
-    description = _("A basic feed of election results")
+    description = "A basic feed of election results"
 
     def items(self):
         return (
@@ -31,12 +30,10 @@ class BasicResultEventsFeed(Feed):
 
     def item_title(self, item):
         if item.retraction:
-            msg = _(
-                "Correction: retracting the statement that {name} "
-                "({party}) won in {cons}"
-            )
+            msg = "Correction: retracting the statement that {name} ({party}) won in {cons}"
+
         else:
-            msg = _("{name} ({party}) won in {cons}")
+            msg = "{name} ({party}) won in {cons}"
         return msg.format(
             name=item.winner.name,
             party=item.winner_party.name,
@@ -45,13 +42,14 @@ class BasicResultEventsFeed(Feed):
 
     def item_description(self, item):
         if item.retraction:
-            message = _(
+            message = (
                 "At {datetime}, a {site_name} volunteer retracted the "
                 "previous assertion that {name} ({party}) won the "
                 "ballot in {cons}, quoting the source '{source}'."
             )
+
         else:
-            message = _(
+            message = (
                 "A {site_name} volunteer recorded at {datetime} that "
                 "{name} ({party}) won the ballot in {cons}, quoting "
                 "the source '{source}'."
@@ -108,10 +106,10 @@ class ResultEventsAtomFeedGenerator(Atom1Feed):
 
 class ResultEventsFeed(BasicResultEventsFeed):
     feed_type = ResultEventsAtomFeedGenerator
-    title = _("Election results from {site_name} (with extra data)").format(
+    title = "Election results from {site_name} (with extra data)".format(
         site_name=settings.SITE_NAME
     )
-    description = _(
+    description = (
         "A feed of results from the UK 2015 General Election (with extra data)"
     )
 

@@ -1,12 +1,12 @@
 {% extends "account/base.html" %}
 
-{% load i18n %}
+
 {% load account socialaccount %}
 
-{% block head_title %}{% trans "Sign In" %}{% endblock %}
+{% block head_title %}Sign In{% endblock %}
 
 {% block hero %}
-  <h1>{% trans "Sign in" %}</h1>
+  <h1>Sign in</h1>
 {% endblock %}
 
 {% block content %}
@@ -18,7 +18,7 @@
     <ul class="socialaccount_providers">
       {% include "socialaccount/snippets/provider_list.html" with process="login" %}
     </ul>
-    <p class="login-or"><span>{% trans 'Or' %}</span></p>
+    <p class="login-or"><span>Or</span></p>
   </div>
   {% include "socialaccount/snippets/login_extra.html" %}
 {% endif %}
@@ -35,8 +35,8 @@
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
   <p>
-    <button class="button" type="submit">{% trans "Sign in" %}</button>
-    <a class="button secondary" href="{% url 'account_reset_password' %}">{% trans "Forgot password?" %}</a>
+    <button class="button" type="submit">Sign in</button>
+    <a class="button secondary" href="{% url 'account_reset_password' %}">Forgot password?</a>
   </p>
 </form>
 

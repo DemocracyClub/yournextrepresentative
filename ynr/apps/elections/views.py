@@ -4,7 +4,6 @@ from django.db.models import Prefetch, Count
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext as _
 from django.views import View
 from django.views.generic import UpdateView
 from django.views.decorators.cache import cache_control

@@ -11,7 +11,6 @@ from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db import models
 from django.utils.html import mark_safe
-from django.utils.translation import ugettext as _
 
 from dateutil import parser
 from slugify import slugify

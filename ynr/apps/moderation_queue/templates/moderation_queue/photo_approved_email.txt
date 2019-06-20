@@ -1,4 +1,4 @@
-{% load i18n %}{% autoescape off %}{{ intro|wordwrap:64 }}
+{% autoescape off %}{{ intro|wordwrap:64 }}
 
   {{ candidate_page_url }}
 

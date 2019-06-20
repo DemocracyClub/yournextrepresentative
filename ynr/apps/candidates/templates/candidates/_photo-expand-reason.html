@@ -1,21 +1,13 @@
-{% load i18n %}
+
 {% if reason == 'public-domain' %}
-{% blocktrans trimmed %}
   the photo is free of copyright restrictions (i.e. has explictly
   been placed in the public domain)
-{% endblocktrans %}
 {% elif reason == 'copyright-assigned' %}
-{% blocktrans with site_owner=settings.SITE_OWNER trimmed %}
-  they have assigned the copyright of the image to {{ site_owner }}
+  they have assigned the copyright of the image to {{ settings.SITE_OWNER }}
   so that we may use it on the site
-{% endblocktrans %}
 {% elif reason == 'profile-photo' %}
-{% blocktrans trimmed %}
   this photo is the candidate's profile on social media, or is used
   to promote their candidacy on an official candidate or party website
-{% endblocktrans %}
 {% elif reason == 'other' %}
-{% blocktrans trimmed %}
   there is some reasonable justification for its use
-{% endblocktrans %}
 {% endif %}

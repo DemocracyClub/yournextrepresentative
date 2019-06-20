@@ -22,7 +22,6 @@ from django.http import (
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.http import urlquote
-from django.utils.translation import ugettext as _
 from django.views.generic import ListView, TemplateView, CreateView, View
 from PIL import Image as PillowImage
 from braces.views import LoginRequiredMixin
@@ -322,10 +321,10 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         if self.queued_image.user:
             uploaded_by = self.queued_image.user.username
         else:
-            uploaded_by = _("a script")
-        source = _(
-            "Uploaded by {uploaded_by}: Approved from photo moderation queue"
-        ).format(uploaded_by=uploaded_by)
+            uploaded_by = "a script"
+        source = "Uploaded by {uploaded_by}: Approved from photo moderation queue".format(
+            uploaded_by=uploaded_by
+        )
 
         PersonImage.objects.create_from_file(
             ntf.name,
@@ -339,7 +338,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 "user_notes": self.queued_image.justification_for_use,
                 "copyright": moderator_why_allowed,
                 "user_copyright": self.queued_image.why_allowed,
-                "notes": _("Approved from photo moderation queue"),
+                "notes": "Approved from photo moderation queue",
             },
         )
 
@@ -371,7 +370,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         if self.queued_image.user:
             uploaded_by = self.queued_image.user.username
         else:
-            uploaded_by = _("a script")
+            uploaded_by = "a script"
 
         if decision == "approved":
             # Crop the image...
@@ -392,7 +391,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             sentence = "Approved a photo upload from {uploading_user}"
             ' who provided the message: "{message}"'
 
-            update_message = _(sentence).format(
+            update_message = sentence.format(
                 uploading_user=uploaded_by,
                 message=self.queued_image.justification_for_use,
             )
@@ -413,20 +412,18 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             )
 
             self.send_mail(
-                _("{site_name} image upload approved").format(
-                    site_name=site_name
-                ),
+                "{site_name} image upload approved".format(site_name=site_name),
                 render_to_string(
                     "moderation_queue/photo_approved_email.txt",
                     {
                         "site_name": site_name,
                         "candidate_page_url": candidate_full_url,
-                        "intro": _(
+                        "intro": (
                             "Thank you for submitting a photo to "
                             "{site_name}. It has been uploaded to "
                             "the candidate page here:"
                         ).format(site_name=site_name),
-                        "signoff": _(
+                        "signoff": (
                             "Many thanks from the {site_name} volunteers"
                         ).format(site_name=site_name),
                     },
@@ -434,7 +431,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             )
             flash(
                 messages.SUCCESS,
-                _("You approved a photo upload for %s") % candidate_link,
+                "You approved a photo upload for %s" % candidate_link,
             )
         elif decision == "rejected":
             self.queued_image.decision = "rejected"
@@ -442,7 +439,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
 
             sentence = "Rejected a photo upload from {uploading_user}"
 
-            update_message = _(sentence).format(uploading_user=uploaded_by)
+            update_message = sentence.format(uploading_user=uploaded_by)
             LoggedAction.objects.create(
                 user=self.request.user,
                 action_type="photo-reject",
@@ -458,7 +455,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 )
             )
             self.send_mail(
-                _("{site_name} image moderation results").format(
+                "{site_name} image moderation results".format(
                     site_name=Site.objects.get_current().name
                 ),
                 render_to_string(
@@ -467,20 +464,20 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                         "reason": form.cleaned_data["rejection_reason"],
                         "retry_upload_link": retry_upload_link,
                         "photo_review_url": photo_review_url,
-                        "intro": _(
+                        "intro": (
                             "Thank-you for uploading a photo of "
                             "{candidate_name} to {site_name}, "
                             "but unfortunately we can't use that image because:"
                         ).format(
                             candidate_name=candidate_name, site_name=site_name
                         ),
-                        "possible_actions": _(
+                        "possible_actions": (
                             "You can just reply to this email if you want to "
                             "discuss that further, or you can try uploading a "
                             "photo with a different reason or justification "
                             "for its use using this link:"
                         ),
-                        "signoff": _(
+                        "signoff": (
                             "Many thanks from the {site_name} volunteers"
                         ).format(site_name=site_name),
                     },
@@ -489,14 +486,14 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             )
             flash(
                 messages.INFO,
-                _("You rejected a photo upload for %s") % candidate_link,
+                "You rejected a photo upload for %s" % candidate_link,
             )
         elif decision == "undecided":
             # If it's left as undecided, just redirect back to the
             # photo review queue...
             flash(
                 messages.INFO,
-                _("You left a photo upload for {0} in the queue").format(
+                "You left a photo upload for {0} in the queue".format(
                     candidate_link
                 ),
             )
@@ -507,7 +504,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             sentence = "Ignored a photo upload from {uploading_user}"
             " (This usually means it was a duplicate)"
 
-            update_message = _(sentence).format(uploading_user=uploaded_by)
+            update_message = sentence.format(uploading_user=uploaded_by)
             LoggedAction.objects.create(
                 user=self.request.user,
                 action_type="photo-ignore",
@@ -518,9 +515,9 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             )
             flash(
                 messages.INFO,
-                _(
-                    "You indicated a photo upload for {0} should be ignored"
-                ).format(candidate_link),
+                "You indicated a photo upload for {0} should be ignored".format(
+                    candidate_link
+                ),
             )
         else:
             raise Exception("BUG: unexpected decision {}".format(decision))

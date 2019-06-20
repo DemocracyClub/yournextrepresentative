@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% load i18n %}
+
 
 {% block content %}
-<h2>{% blocktrans trimmed with election_name=election_data.name %}
-    Number of known {{ election_name }} candidates per post
-    {% endblocktrans %}</h2>
+<h2>
+  Number of known {{ election_data.name }} candidates per post
+</h2>
     <table class="counts_table">
         <thead>
-            <th>{% trans "Post Name" %}</th>
-            <th>{% trans "Number of Candidates" %}</th>
+            <th>Post Name</th>
+            <th>Number of Candidates</th>
         </thead>
         <tbody>
         {% for pee in post_counts %}

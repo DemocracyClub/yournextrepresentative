@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
-{% load i18n %}
+
 
 {% block body_class %}constituencies{% endblock %}
 
-{% block title %}{% blocktrans trimmed with election_name=election_data.name %}
-  Unlocked constituencies for the {{ election_name }}
-{% endblocktrans %}{% endblock %}
+{% block title %}
+  Unlocked constituencies for the {{ election_data.name }}
+{% endblock %}
 
-{% block hero %}<h1>{% blocktrans trimmed with election_name=election_data.name %}
-  Unlocked Constituencies for the {{ election_name }}
-{% endblocktrans %}</h1>{% endblock %}
+{% block hero %}
+  <h1>Unlocked Constituencies for the {{ election_data.name }}</h1>
+{% endblock %}
 
 {% block content %}
 
-<h2>{% trans "Still Unlocked Constituencies" %}</h2>
+<h2>Still Unlocked Constituencies</h2>
 {% if total_constituencies %}
-  <h4>{% blocktrans %}{{ total_left }} left to do ({{ percent_done }}% done){% endblocktrans %}</h4>
+  <h4>{{ total_left }} left to do ({{ percent_done }}% done)</h4>
   <ul>
     {% for c in unlocked %}
       <li>
@@ -24,9 +24,9 @@
     {% endfor %}
   </ul>
 {% else %}
-  <h4>{% blocktrans trimmed with election_name=election_data.name %}
-    No constituencies found in {{ election_name }}
-  {% endblocktrans %}</h4>
+  <h4>
+    No constituencies found in {{ election_data.name }}
+  </h4>
 {% endif %}
 
 {% endblock %}

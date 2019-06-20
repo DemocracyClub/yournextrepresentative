@@ -77,7 +77,6 @@ TEMPLATES = [
                 "ynr.context_processors.add_settings",
                 "ynr.context_processors.add_site",
                 "ynr.context_processors.election_date",
-                "ynr.context_processors.locale",
                 "frontend.context_processors.site_wide_banner",
             ]
         },
@@ -145,7 +144,6 @@ MIDDLEWARE = (
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -209,7 +207,6 @@ DEBUG_TOOLBAR_PANELS = [
 INTERNAL_IPS = ["127.0.0.1"]
 
 # Language settings (calculated above):
-LOCALE_PATHS = [root("../locale")]
 LANGUAGES = [("en", "English")]
 LANGUAGE_CODE = "en-gb"
 TIME_ZONE = "Europe/London"

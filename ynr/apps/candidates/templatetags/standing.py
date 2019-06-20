@@ -5,7 +5,6 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.models import Prefetch
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
 
 from popolo.models import Membership
 
@@ -81,23 +80,23 @@ def post_in_election(person, election):
             if election.current:
                 result = (
                     '<span class="constituency-value-not-standing">%s</span>'
-                    % _("Not standing")
+                    % "Not standing"
                 )
             else:
                 result = (
                     '<span class="constituency-value-not-standing">%s</span>'
-                    % _("Did not stand")
+                    % "Did not stand"
                 )
         else:
             if election.current:
                 result = (
                     '<span class="constituency-value-unknown">%s</span>'
-                    % _("No information yet")
+                    % "No information yet"
                 )
             else:
                 result = (
                     '<span class="constituency-not-standing">%s</span>'
-                    % _("Did not stand")
+                    % "Did not stand"
                 )
     return mark_safe(result)
 

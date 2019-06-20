@@ -1,4 +1,4 @@
-{% load i18n %}{% autoescape off %}{{ intro|wordwrap:64 }}
+{% autoescape off %}{{ intro|wordwrap:64 }}
 
   {{ reason }}
 
@@ -8,5 +8,5 @@
 
 {{ signoff|wordwrap:64 }}
 
--- 
-{% blocktrans trimmed %}For administrators' use: {{ photo_review_url }}{% endblocktrans %}{% endautoescape %}
+--
+For administrators' use: {{ photo_review_url }}{% endautoescape %}

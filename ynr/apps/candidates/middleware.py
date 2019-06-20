@@ -12,7 +12,6 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import render
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.http import urlquote
-from django.utils.translation import ugettext as _
 
 from django.utils.cache import add_never_cache_headers
 
@@ -32,16 +31,15 @@ class DisallowedUpdateMiddleware:
 
     def process_exception(self, request, exc):
         if isinstance(exc, NameChangeDisallowedException):
-            intro = _("As a precaution, an update was blocked:")
-            outro = _(
-                "If this update is appropriate, someone should apply it manually."
-            )
+            intro = "As a precaution, an update was blocked:"
+            outro = "If this update is appropriate, someone should apply it manually."
+
             # Then email the support address about the name change...
             message = "{intro}\n\n  {message}\n\n{outro}".format(
                 intro=intro, message=exc, outro=outro
             )
             send_mail(
-                _("Disallowed {site_name} update for checking").format(
+                "Disallowed {site_name} update for checking".format(
                     site_name=Site.objects.get_current().name
                 ),
                 message,

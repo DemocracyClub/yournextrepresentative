@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-{% load i18n %}
+
 
 {% block body_class %}person{% endblock %}
 
 {% block hero %}
-  <h1>{% trans "Add a new candidate" %}</h1>
+  <h1>Add a new candidate</h1>
 {% endblock %}
 
 {% block content %}
@@ -19,10 +19,10 @@
 <div class="person__actions">
 
   <div class="person__actions__action person__actions__sourcing">
-    <h2>{% trans "Thanks for helping out!" %}</h2>
-    <p>{% blocktrans trimmed %}
+    <h2>Thanks for helping out!</h2>
+    <p>
       Please make sure you read our <a href="https://docs.google.com/document/d/1lqC15-FUZl_mNzpEEoHG0mX8wyQ5GHZNUj61LE2KmoA/edit">guidance on sourcing fields</a>.
-      {% endblocktrans %}</p>
+    </p>
   </div>
 </div>
 

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n %}
+
 
 {% block content %}
-<h2>{% blocktrans %}Select the election that "{{ name }}" is standing in{% endblocktrans %}</p>
+<h2>Select the election that "{{ name }}" is standing in</p>
 {% regroup elections by type_name as election_list %}
 
 {% for election_type in election_list %}
@@ -11,9 +11,7 @@
     {% for election in election_type.list %}
       <p role="listitem">
         <a href="{% url 'person-create' election=election.slug%}?name={{ name }}" class="button">
-          {% blocktrans  with election_name=election.name %}
-            Add {{ name }} to the {{ election_name }}
-          {% endblocktrans %}
+          Add {{ name }} to the {{ election.name }}
         </a>
       </p>
     {% endfor %}
