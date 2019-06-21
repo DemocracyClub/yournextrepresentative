@@ -100,7 +100,7 @@
     </form>
   {% endif %}
 
-  {% if has_elected %}
+  {% if post_election.has_results %}
   <div class="candidates__elected">
       <h3>
         Elected candidates for <a href="{{ post_election.get_absolute_url }}">{{ post_label }}</a>
@@ -119,7 +119,7 @@
   <div class="candidates__known">
 
     <h3>
-        {% if has_elected %}
+        {% if post_election.has_results %}
 
       Unelected candidates for <a href="{{ post_election.get_absolute_url }}">{{ post_label }}</a>
         in the <a href="{{ election.get_absolute_url }}"> {{ election.name }}</a>

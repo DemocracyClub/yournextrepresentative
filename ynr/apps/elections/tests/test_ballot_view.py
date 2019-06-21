@@ -91,7 +91,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_any_ballot_page(self):
         # Just a smoke test for the moment:
-        with self.assertNumQueries(FuzzyInt(40, 43)):
+        with self.assertNumQueries(FuzzyInt(42, 46)):
             response = self.app.get(
                 self.dulwich_post_pee.get_absolute_url(), user=self.user
             )
