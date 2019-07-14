@@ -2,7 +2,7 @@ from compat import BufferDictWriter
 
 from django.core.management.base import BaseCommand
 
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 
 
 class Command(BaseCommand):
@@ -36,7 +36,7 @@ class Command(BaseCommand):
         out_csv.writeheader()
 
         qs = (
-            PostExtraElection.objects.filter(
+            Ballot.objects.filter(
                 election__election_date=options["election_date"]
             )
             .select_related("election", "postextra", "post")

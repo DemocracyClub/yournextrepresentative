@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 import people.tests.factories
-from candidates.models import LoggedAction, PostExtraElection
+from candidates.models import LoggedAction, Ballot
 
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
@@ -68,7 +68,7 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
         self.assertEqual(
             action.post_election_guess,
-            PostExtraElection.objects.get(
+            Ballot.objects.get(
                 election=self.election, post=self.camberwell_post
             ),
         )
@@ -99,5 +99,5 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
         self.assertEqual(
             action.post_election_guess,
-            PostExtraElection.objects.get(election=past_election, post=post),
+            Ballot.objects.get(election=past_election, post=post),
         )

@@ -10,7 +10,7 @@ from .forms import UploadDocumentForm
 from .models import DOCUMENT_UPLOADERS_GROUP_NAME, OfficialDocument
 
 from popolo.models import Post
-from candidates.models import is_post_locked, PostExtraElection, LoggedAction
+from candidates.models import is_post_locked, Ballot, LoggedAction
 from candidates.views import get_client_ip
 
 
@@ -22,14 +22,12 @@ class CreateDocumentView(ElectionMixin, GroupRequiredMixin, CreateView):
 
     def get_initial(self):
         post = get_object_or_404(Post, slug=self.kwargs["post_id"])
-        pee = PostExtraElection.objects.get(
-            post=post, election=self.election_data
-        )
+        ballot = Ballot.objects.get(post=post, election=self.election_data)
         return {
             "election": self.election_data,
             "document_type": OfficialDocument.NOMINATION_PAPER,
             "post": post,
-            "post_election": pee,
+            "post_election": ballot,
         }
 
     def get_context_data(self, **kwargs):
@@ -87,7 +85,7 @@ class UnlockedWithDocumentsView(TemplateView):
 
         SOPNs_qs = SOPNs_qs.exclude(
             post_election__post__in=SuggestedPostLock.objects.all().values(
-                "postextraelection__post"
+                "ballot__post"
             )
         )
 

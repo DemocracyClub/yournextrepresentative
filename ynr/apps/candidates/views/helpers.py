@@ -32,7 +32,7 @@ def get_field_groupings():
 
 
 def get_redirect_to_post(election, post):
-    pee = election.postextraelection_set.get(post=post)
+    pee = election.ballot_set.get(post=post)
     return HttpResponseRedirect(pee.get_absolute_url())
 
 
@@ -355,7 +355,7 @@ def get_max_winners(post_election):
     Setting the winner_count to 0 will prevent things like setting winners or
     showing winners.
 
-    TODO: move this on to the PostExtraElection model, or set it as a default
+    TODO: move this on to the Ballot model, or set it as a default
           in the database, TBD, see comment in
           https://github.com/DemocracyClub/yournextrepresentative/pull/621#issuecomment-417252565
 

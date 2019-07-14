@@ -17,7 +17,7 @@ class ChangeToLockedConstituencyDisallowedException(Exception):
 
 
 def is_post_locked(post, election):
-    return post.postextraelection_set.filter(
+    return post.ballot_set.filter(
         election=election, candidates_locked=True
     ).exists()
 

@@ -10,7 +10,7 @@ from .factories import ElectionFactory
 
 
 def get_election_extra(post, election):
-    return post.postextraelection_set.get(election=election)
+    return post.ballot_set.get(election=election)
 
 
 class TestElectionGrouping(UK2015ExamplesMixin, TestCase):

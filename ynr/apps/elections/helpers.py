@@ -1,6 +1,6 @@
 from functools import update_wrapper
 
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 
 
 class ElectionIDSwitcher:
@@ -10,7 +10,7 @@ class ElectionIDSwitcher:
         self.election_view = election_view
 
     def __call__(self, request, *args, **kwargs):
-        ballot_qs = PostExtraElection.objects.filter(
+        ballot_qs = Ballot.objects.filter(
             ballot_paper_id=kwargs[self.election_id_kwarg]
         )
 

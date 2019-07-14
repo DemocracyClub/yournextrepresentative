@@ -88,7 +88,7 @@ class PostFactory(factory.DjangoModelFactory):
 
 class PostExtraElectionFactory(factory.DjangoModelFactory):
     class Meta:
-        model = "candidates.PostExtraElection"
+        model = "candidates.Ballot"
 
 
 class OrganizationFactory(factory.DjangoModelFactory):

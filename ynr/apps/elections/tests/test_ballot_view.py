@@ -55,9 +55,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=winner_post,
             party=self.labour_party,
             elected=True,
-            post_election=self.election.postextraelection_set.get(
-                post=winner_post
-            ),
+            post_election=self.election.ballot_set.get(post=winner_post),
         )
 
         MembershipFactory.create(
@@ -71,7 +69,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=edinburgh_may_stand,
             post=winner_post,
             party=self.labour_party,
-            post_election=self.earlier_election.postextraelection_set.get(
+            post_election=self.earlier_election.ballot_set.get(
                 post=winner_post
             ),
         )

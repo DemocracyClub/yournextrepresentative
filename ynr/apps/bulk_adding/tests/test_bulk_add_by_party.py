@@ -74,7 +74,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_submit_name_for_area_without_source(self):
-        pee = self.election.postextraelection_set.first()
+        pee = self.election.ballot_set.first()
         form = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/PP52/",
             user=self.user_who_can_upload_documents,
@@ -98,7 +98,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "Please enter at least one name")
 
     def test_submit_name_for_area(self):
-        pee = self.election.postextraelection_set.first()
+        pee = self.election.ballot_set.first()
         pee.winner_count = 3
         pee.save()
 

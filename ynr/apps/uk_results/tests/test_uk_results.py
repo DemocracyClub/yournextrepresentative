@@ -10,7 +10,7 @@ from uk_results.models import CandidateResult, ResultSet
 class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
     def setUp(self):
         super().setUp()
-        pee = self.local_post.postextraelection_set.get()
+        pee = self.local_post.ballot_set.get()
         self.result_set = ResultSet.objects.create(
             post_election=pee,
             num_turnout_reported=10000,

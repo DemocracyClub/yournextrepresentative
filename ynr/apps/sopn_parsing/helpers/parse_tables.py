@@ -162,7 +162,7 @@ def parse_table(sopn, data):
 def parse_raw_data_for_ballot(ballot):
     """
 
-    :type ballot: candidates.models.PostExtraElection
+    :type ballot: candidates.models.Ballot
     """
 
     if ballot.candidates_locked:

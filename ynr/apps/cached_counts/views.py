@@ -4,7 +4,7 @@ from django.db.models import Count, F
 from django.http import HttpResponse
 from django.views.generic import TemplateView
 
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from popolo.models import Membership, Organization
@@ -82,9 +82,9 @@ class ConstituencyCountsView(ElectionMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qs = PostExtraElection.objects.filter(
-            election=self.election_data
-        ).annotate(count=Count("membership"))
+        qs = Ballot.objects.filter(election=self.election_data).annotate(
+            count=Count("membership")
+        )
         qs = qs.select_related("post", "election")
         qs = qs.order_by("-count")
 

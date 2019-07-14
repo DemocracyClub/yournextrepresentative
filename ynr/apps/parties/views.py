@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from elections.mixins import ElectionMixin
 
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 from popolo.models import Identifier, Membership
 from elections.models import Election
 
@@ -52,7 +52,7 @@ class CandidatesByElectionForPartyView(TemplateView):
         except Election.DoesNotExist:
             # This might be a ballot paper ID
             ballot = get_object_or_404(
-                PostExtraElection, ballot_paper_id=kwargs["election"]
+                Ballot, ballot_paper_id=kwargs["election"]
             )
             election = ballot.election
             candidates_qs = candidates_qs.filter(

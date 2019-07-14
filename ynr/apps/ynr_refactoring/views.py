@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
 from elections.models import Election
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 from parties.models import Party
 from official_documents.models import OfficialDocument
 
@@ -80,7 +80,7 @@ class RedirectConstituencyDetailView(PermanentRedirectView):
     def get_redirect_url(self, *args, **kwargs):
 
         ballot = get_object_or_404(
-            PostExtraElection,
+            Ballot,
             election__slug=self.kwargs["election"],
             post__slug=self.kwargs["post_id"],
         )
@@ -96,7 +96,7 @@ class RedirectConstituencyDetailCSVView(PermanentRedirectView):
     def get_redirect_url(self, *args, **kwargs):
 
         ballot = get_object_or_404(
-            PostExtraElection,
+            Ballot,
             election__slug=self.kwargs["election"],
             post__slug=self.kwargs["post_id"],
         )

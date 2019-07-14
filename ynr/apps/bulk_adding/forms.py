@@ -318,7 +318,7 @@ class SelectPartyForm(forms.Form):
 
         self.election = election
         party_set_qs = (
-            election.postextraelection_set.all()
+            election.ballot_set.all()
             .order_by("post__party_set")
             .values_list("post__party_set__slug", flat=True)
             .annotate(Count("post__party_set"))

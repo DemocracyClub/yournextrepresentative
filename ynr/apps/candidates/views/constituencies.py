@@ -9,11 +9,7 @@ from auth_helpers.views import GroupRequiredMixin
 from .helpers import get_redirect_to_post
 from .version_data import get_client_ip, get_change_metadata
 from candidates.forms import ConstituencyRecordWinnerForm
-from ..models import (
-    RESULT_RECORDERS_GROUP_NAME,
-    LoggedAction,
-    PostExtraElection,
-)
+from ..models import RESULT_RECORDERS_GROUP_NAME, LoggedAction, Ballot
 from results.models import ResultEvent
 
 from popolo.models import Membership, Post
@@ -34,7 +30,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
         self.election_data = self.get_election()
         self.person = get_object_or_404(Person, id=person_id)
         self.post_data = get_object_or_404(Post, slug=self.kwargs["post_id"])
-        self.post_election = PostExtraElection.objects.get(
+        self.post_election = Ballot.objects.get(
             election=self.election_data, post=self.post_data
         )
         return super().dispatch(request, *args, **kwargs)
@@ -183,7 +179,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
                     candidate.save()
 
         return HttpResponseRedirect(
-            self.election_data.postextraelection_set.get(
+            self.election_data.ballot_set.get(
                 post__slug=post_id
             ).get_absolute_url()
         )

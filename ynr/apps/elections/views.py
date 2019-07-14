@@ -14,7 +14,7 @@ from auth_helpers.views import GroupRequiredMixin
 from candidates.csv_helpers import memberships_dicts_for_csv, list_to_csv
 from candidates.forms import ToggleLockForm
 from candidates.models import (
-    PostExtraElection,
+    Ballot,
     get_edits_allowed,
     TRUSTED_TO_LOCK_GROUP_NAME,
     LoggedAction,
@@ -48,7 +48,7 @@ class ElectionView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["ballots"] = (
-            PostExtraElection.objects.filter(election=self.object)
+            Ballot.objects.filter(election=self.object)
             .order_by("post__label")
             .select_related("post")
             .select_related("election")
@@ -72,7 +72,7 @@ class ElectionListView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         qs = (
-            PostExtraElection.objects.filter(election__current=True)
+            Ballot.objects.filter(election__current=True)
             .select_related("election", "post")
             .prefetch_related("suggestedpostlock_set")
             .prefetch_related("officialdocument_set")
@@ -99,23 +99,23 @@ class UnlockedBallotsForElectionListView(ElectionMixin, TemplateView):
         keys = ("locked", "unlocked")
         for k in keys:
             context[k] = []
-        postextraelections = (
-            PostExtraElection.objects.filter(election=self.election_data)
+        ballots = (
+            Ballot.objects.filter(election=self.election_data)
             .select_related("post")
             .all()
         )
-        for postextraelection in postextraelections:
+        for ballot in ballots:
             total_constituencies += 1
-            if postextraelection.candidates_locked:
+            if ballot.candidates_locked:
                 context_field = "locked"
                 total_locked += 1
             else:
                 context_field = "unlocked"
             context[context_field].append(
                 {
-                    "id": postextraelection.post.slug,
-                    "name": postextraelection.post.short_label,
-                    "ballot": postextraelection,
+                    "id": ballot.post.slug,
+                    "name": ballot.post.short_label,
+                    "ballot": ballot,
                 }
             )
         for k in keys:
@@ -144,7 +144,7 @@ class BallotPaperView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["post_election"] = get_object_or_404(
-            PostExtraElection.objects.all().select_related("post", "election"),
+            Ballot.objects.all().select_related("post", "election"),
             ballot_paper_id=context["election"],
         )
 
@@ -180,30 +180,30 @@ class BallotPaperView(TemplateView):
 
         context["post_data"] = {"id": mp_post.slug, "label": mp_post.label}
 
-        pee = context["post_election"]
+        ballot = context["post_election"]
 
-        context["candidates_locked"] = pee.candidates_locked
+        context["candidates_locked"] = ballot.candidates_locked
 
         context["has_lock_suggestion"] = SuggestedPostLock.objects.filter(
-            postextraelection=pee
+            ballot=ballot
         ).exists()
 
         if self.request.user.is_authenticated:
             context[
                 "current_user_suggested_lock"
             ] = SuggestedPostLock.objects.filter(
-                user=self.request.user, postextraelection=pee
+                user=self.request.user, ballot=ballot
             ).exists()
 
         context["suggest_lock_form"] = SuggestedPostLockForm(
-            initial={"postextraelection": pee}
+            initial={"ballot": ballot}
         )
 
         if self.request.user.is_authenticated:
             context[
                 "user_has_suggested_lock"
             ] = SuggestedPostLock.objects.filter(
-                user=self.request.user, postextraelection=pee
+                user=self.request.user, ballot=ballot
             ).exists()
 
         context["lock_form"] = ToggleLockForm(
@@ -948,9 +948,9 @@ class BallotPaperView(TemplateView):
             if c.elected is not None:
                 context["show_retract_result"] = True
 
-        max_winners = get_max_winners(pee)
+        max_winners = get_max_winners(ballot)
         context["show_confirm_result"] = bool(max_winners)
-        if not pee.candidates_locked:
+        if not ballot.candidates_locked:
             context["add_candidate_form"] = NewPersonForm(
                 election=election.slug,
                 initial={
@@ -972,50 +972,50 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
     required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
 
     http_method_names = ["post"]
-    model = PostExtraElection
+    model = Ballot
     slug_url_kwarg = "ballot_id"
     slug_field = "ballot_paper_id"
     form_class = ToggleLockForm
 
     def form_valid(self, form):
         with transaction.atomic():
-            pee = form.instance
+            ballot = form.instance
 
             self.object = form.save()
-            if hasattr(pee, "rawpeople"):
+            if hasattr(ballot, "rawpeople"):
                 # Delete the raw import, as it's no longer useful
                 self.object.rawpeople.delete()
 
             lock = self.object.candidates_locked
-            post_name = pee.post.short_label
+            post_name = ballot.post.short_label
             if lock:
                 suffix = "-lock"
                 pp = "Locked"
                 # If we're locking this, then the suggested posts
                 # can be deleted
-                pee.suggestedpostlock_set.all().delete()
+                ballot.suggestedpostlock_set.all().delete()
             else:
                 suffix = "-unlock"
                 pp = "Unlocked"
             message = pp + " ballot {} ({})".format(
-                post_name, pee.ballot_paper_id
+                post_name, ballot.ballot_paper_id
             )
 
             LoggedAction.objects.create(
                 user=self.request.user,
                 action_type="constituency-{}".format(suffix),
                 ip_address=get_client_ip(self.request),
-                post_election=pee,
+                post_election=ballot,
                 source=message,
             )
         if self.request.is_ajax():
-            return JsonResponse({"locked": pee.candidates_locked})
+            return JsonResponse({"locked": ballot.candidates_locked})
         else:
-            return HttpResponseRedirect(pee.get_absolute_url())
+            return HttpResponseRedirect(ballot.get_absolute_url())
 
 
 class BallotPaperCSVView(DetailView):
-    queryset = PostExtraElection.objects.select_related("election", "post")
+    queryset = Ballot.objects.select_related("election", "post")
     slug_url_kwarg = "ballot_id"
     slug_field = "ballot_paper_id"
 
@@ -1039,7 +1039,7 @@ class SOPNForBallotView(DetailView):
     A view to show a single SOPN for a ballot paper
     """
 
-    model = PostExtraElection
+    model = Ballot
     slug_url_kwarg = "ballot_id"
     slug_field = "ballot_paper_id"
     template_name = "elections/sopn_for_ballot.html"
@@ -1054,7 +1054,7 @@ class SOPNForBallotView(DetailView):
 
 
 class PartyForBallotView(DetailView):
-    model = PostExtraElection
+    model = Ballot
     slug_url_kwarg = "ballot_id"
     slug_field = "ballot_paper_id"
     template_name = "elections/party_for_ballot.html"

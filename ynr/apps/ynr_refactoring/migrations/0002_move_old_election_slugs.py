@@ -104,7 +104,7 @@ def _merge_election(Election, old_list):
             # is nothing to merge
             continue
 
-        source_model.postextraelection_set.update(election=dest_model)
+        source_model.ballot_set.update(election=dest_model)
         source_model.officialdocument_set.update(election=dest_model)
         source_model.resultevent_set.update(election=dest_model)
 

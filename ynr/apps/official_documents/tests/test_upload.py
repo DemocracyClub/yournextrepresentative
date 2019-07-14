@@ -47,7 +47,7 @@ class TestModels(TestUserMixin, WebTest):
             label="Member of Parliament for Dulwich and West Norwood",
             party_set=gb_parties,
         )
-        self.pee = self.post.postextraelection_set.get(election=self.election)
+        self.pee = self.post.ballot_set.get(election=self.election)
 
     def test_upload_unauthorized(self):
         response = self.app.get(self.pee.get_absolute_url(), user=self.user)

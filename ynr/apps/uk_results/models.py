@@ -4,7 +4,7 @@ from django_extensions.db.models import TimeStampedModel
 
 
 class ResultSet(TimeStampedModel):
-    post_election = models.OneToOneField("candidates.PostExtraElection")
+    post_election = models.OneToOneField("candidates.Ballot")
 
     num_turnout_reported = models.IntegerField(
         null=True, verbose_name="Reported Turnout"

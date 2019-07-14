@@ -190,7 +190,7 @@ class MembershipSerializer(serializers.HyperlinkedModelSerializer):
 
 class PostElectionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = candidates_models.PostExtraElection
+        model = candidates_models.Ballot
         fields = (
             "id",
             "url",
@@ -283,7 +283,7 @@ class NoVersionPersonSerializer(PersonSerializer):
 
 class EmbeddedPostElectionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = candidates_models.PostExtraElection
+        model = candidates_models.Ballot
         fields = (
             "winner_count",
             "candidates_locked",
@@ -322,7 +322,7 @@ class PostSerializer(MinimalPostSerializer):
     organization = MinimalOrganizationSerializer()
 
     elections = EmbeddedPostElectionSerializer(
-        many=True, read_only=True, source="postextraelection_set"
+        many=True, read_only=True, source="ballot_set"
     )
 
 

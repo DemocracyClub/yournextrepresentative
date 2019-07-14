@@ -28,7 +28,7 @@ class TestModels(TestCase):
             slug="dulwich-and-west-norwood",
             label="Member of Parliament for Dulwich and West Norwood",
         )
-        self.ballot = self.post.postextraelection_set.get()
+        self.ballot = self.post.ballot_set.get()
 
     def test_unicode(self):
         doc = OfficialDocument(

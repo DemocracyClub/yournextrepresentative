@@ -218,9 +218,7 @@ class Post(Dateframeable, Timestampable, models.Model):
     slug = models.CharField(max_length=256, blank=True)
 
     elections = models.ManyToManyField(
-        "elections.Election",
-        related_name="posts",
-        through="candidates.PostExtraElection",
+        "elections.Election", related_name="posts", through="candidates.Ballot"
     )
     group = models.CharField(max_length=1024, blank=True)
     party_set = models.ForeignKey("candidates.PartySet", blank=True, null=True)
@@ -301,7 +299,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
     # Moved from MembeshipExtra
     elected = models.NullBooleanField()
     party_list_position = models.IntegerField(null=True)
-    post_election = models.ForeignKey("candidates.PostExtraElection")
+    post_election = models.ForeignKey("candidates.Ballot")
 
     def save(self, *args, **kwargs):
         if self.post_election and getattr(self, "check_for_broken", True):

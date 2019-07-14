@@ -4,7 +4,7 @@ from django import template
 from django.conf import settings
 from django.db.models import Sum
 
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 from elections.models import Election
 from popolo.models import Membership
 
@@ -20,7 +20,7 @@ def sopn_progress_by_election(election_qs):
     context = {}
     if not election_qs.exists():
         return context
-    pee_qs = PostExtraElection.objects.filter(election__in=election_qs)
+    pee_qs = Ballot.objects.filter(election__in=election_qs)
     context["posts_total"] = pee_qs.count()
 
     context["sopns_imported"] = pee_qs.exclude(officialdocument=None).count()
@@ -81,7 +81,7 @@ def current_election_stats(context):
 
         stats = {
             "elections": election_qs.count(),
-            "seats_contested": PostExtraElection.objects.filter(
+            "seats_contested": Ballot.objects.filter(
                 election__in=election_qs
             ).aggregate(count=Sum("winner_count"))["count"],
             "candidates": Membership.objects.filter(
@@ -103,9 +103,7 @@ def results_progress(context):
         election_date = settings.SOPN_TRACKER_INFO["election_date"]
 
         context["election_name"] = settings.SOPN_TRACKER_INFO["election_name"]
-        pee_qs = PostExtraElection.objects.filter(
-            election__election_date=election_date
-        )
+        pee_qs = Ballot.objects.filter(election__election_date=election_date)
 
         context["results_entered"] = pee_qs.exclude(resultset=None).count()
         context["areas_total"] = pee_qs.count()
@@ -128,7 +126,7 @@ def by_election_ctas(context):
         dates_to_ignore = getattr(settings, "SCHEDULED_ELECTION_DATES", [])
 
         all_pees = (
-            PostExtraElection.objects.filter(election__current=True)
+            Ballot.objects.filter(election__current=True)
             .exclude(election__election_date__in=dates_to_ignore)
             .order_by("election__election_date", "election")
             .select_related("election", "post")

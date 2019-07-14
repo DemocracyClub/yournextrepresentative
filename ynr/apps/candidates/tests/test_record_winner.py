@@ -4,7 +4,7 @@ from django_webtest import WebTest
 
 from people.models import Person
 
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 from .auth import TestUserMixin
 from .factories import MembershipFactory, MembershipFactory
 from people.tests.factories import PersonFactory
@@ -154,7 +154,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_record_multiple_winners(self):
         self.election.people_elected_per_post = 2
-        self.election.postextraelection_set.update(winner_count=2)
+        self.election.ballot_set.update(winner_count=2)
         self.election.save()
         base_record_url = reverse(
             "record-winner",
@@ -201,7 +201,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_record_multiple_winners_per_post_setting(self):
-        post_election = PostExtraElection.objects.get(
+        post_election = Ballot.objects.get(
             post=self.dulwich_post, election=self.election
         )
         post_election.winner_count = 2

@@ -106,7 +106,7 @@ class CSVImporter:
         self.validate_posts()
 
         self.ballots = {}
-        for ballot in self.election.postextraelection_set.all():
+        for ballot in self.election.ballot_set.all():
             self.ballots[ballot.ballot_paper_id] = {
                 "ballot": ballot,
                 "data": [],
@@ -148,7 +148,7 @@ class CSVImporter:
 
     def match_division_to_ballot(self, row):
         post_name = self.clean_area_name(row[self.post_header_name])
-        for ballot in self.election.postextraelection_set.all():
+        for ballot in self.election.ballot_set.all():
             print(self.clean_area_name(ballot.post.label), post_name)
             if self.clean_area_name(ballot.post.label) == post_name:
                 return ballot
@@ -241,7 +241,7 @@ class CSVImporter:
         unique_posts = set(
             [row[self.post_header_name] for row in self.csv_data]
         )
-        if len(unique_posts) != self.election.postextraelection_set.count():
+        if len(unique_posts) != self.election.ballot_set.count():
             raise ValueError("Number of posts don't match")
 
         return True

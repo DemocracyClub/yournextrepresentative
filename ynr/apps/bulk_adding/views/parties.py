@@ -28,7 +28,7 @@ class BasePartyBulkAddView(LoginRequiredMixin, TemplateView):
         return Party.objects.get(ec_id=self.kwargs["party_id"])
 
     def get_pee_qs(self, election):
-        qs = election.postextraelection_set.all()
+        qs = election.ballot_set.all()
         qs = qs.order_by("post__label")
         return qs
 
@@ -155,7 +155,7 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                 # This post election might not have any names, that's ok.
                 continue
 
-            pee = election.postextraelection_set.get(pk=post["pee_pk"])
+            pee = election.ballot_set.get(pk=post["pee_pk"])
 
             if self.request.POST:
                 formset = forms.PartyBulkAddReviewNameOnlyFormSet(

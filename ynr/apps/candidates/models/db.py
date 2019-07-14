@@ -53,7 +53,7 @@ class LoggedAction(models.Model):
     ip_address = models.CharField(max_length=50, blank=True, null=True)
     source = models.TextField()
     post = models.ForeignKey("popolo.Post", blank=True, null=True)
-    post_election = models.ForeignKey("candidates.PostExtraElection", null=True)
+    post_election = models.ForeignKey("candidates.Ballot", null=True)
 
     objects = LoggedActionQuerySet.as_manager()
 
@@ -67,15 +67,13 @@ class LoggedAction(models.Model):
         """
         FIXME: Note that this won't always be correct because
         LoggedAction objects only reference Post at the moment,
-        rather than a Post and an Election (or a PostExtraElection).
+        rather than a Post and an Election (or a Ballot).
         """
-        from candidates.models import PostExtraElection
+        from candidates.models import Ballot
 
         if self.post:
             election = self.post.elections.order_by("-current").first()
-            return PostExtraElection.objects.get(
-                election=election, post=self.post
-            )
+            return Ballot.objects.get(election=election, post=self.post)
 
     @property
     def subject_url(self):

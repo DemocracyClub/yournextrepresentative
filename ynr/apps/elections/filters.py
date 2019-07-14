@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 import django_filters
 from django_filters.widgets import LinkWidget
 
-from candidates.models import PostExtraElection, TRUSTED_TO_LOCK_GROUP_NAME
+from candidates.models import Ballot, TRUSTED_TO_LOCK_GROUP_NAME
 from elections.models import Election
 
 
@@ -76,7 +76,7 @@ class BallotFilter(django_filters.FilterSet):
     )
 
     class Meta:
-        model = PostExtraElection
+        model = Ballot
         fields = ["review_required", "has_sopn"]
 
 

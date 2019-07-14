@@ -512,7 +512,7 @@ class Person(Timestampable, models.Model):
 
         for election_data in (
             Election.objects.current()
-            .filter(postextraelection__membership__person=self)
+            .filter(ballot__membership__person=self)
             .by_date()
         ):
             constituency_key = "constituency_" + election_data.slug

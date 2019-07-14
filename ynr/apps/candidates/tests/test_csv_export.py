@@ -61,15 +61,13 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             person=self.ni_person,
             post=north_antrim_post,
             party=self.sinn_fein,
-            post_election=self.election.postextraelection_set.get(
-                post=north_antrim_post
-            ),
+            post_election=self.election.ballot_set.get(post=north_antrim_post),
         )
         factories.MembershipFactory.create(
             person=self.ni_person,
             post=north_antrim_post,
             party=self.sinn_fein,
-            post_election=self.earlier_election.postextraelection_set.get(
+            post_election=self.earlier_election.ballot_set.get(
                 post=north_antrim_post
             ),
         )

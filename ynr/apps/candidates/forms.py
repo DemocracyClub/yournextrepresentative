@@ -3,7 +3,7 @@ from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 
 from people.forms import StrippedCharField, AddElectionFieldsMixin
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 
 
 class UserTermsAgreementForm(forms.Form):
@@ -24,7 +24,7 @@ class UserTermsAgreementForm(forms.Form):
 
 class ToggleLockForm(forms.ModelForm):
     class Meta:
-        model = PostExtraElection
+        model = Ballot
         fields = ("candidates_locked",)
 
     candidates_locked = forms.HiddenInput()

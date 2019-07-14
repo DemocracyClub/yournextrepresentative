@@ -280,10 +280,8 @@ class PostViewSet(viewsets.ModelViewSet):
         Post.objects.select_related("organization", "party_set")
         .prefetch_related(
             Prefetch(
-                "postextraelection_set",
-                extra_models.PostExtraElection.objects.select_related(
-                    "election"
-                ),
+                "ballot_set",
+                extra_models.Ballot.objects.select_related("election"),
             ),
             Prefetch(
                 "memberships",
@@ -330,7 +328,7 @@ class PartySetViewSet(viewsets.ModelViewSet):
 
 
 class PostExtraElectionViewSet(viewsets.ModelViewSet):
-    queryset = extra_models.PostExtraElection.objects.select_related(
+    queryset = extra_models.Ballot.objects.select_related(
         "election", "post"
     ).order_by("id")
     serializer_class = serializers.PostElectionSerializer

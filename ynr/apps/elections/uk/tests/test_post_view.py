@@ -4,11 +4,7 @@ from django.contrib.auth.models import Group
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
 
-from candidates.models import (
-    PostExtraElection,
-    TRUSTED_TO_LOCK_GROUP_NAME,
-    LoggedAction,
-)
+from candidates.models import Ballot, TRUSTED_TO_LOCK_GROUP_NAME, LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
@@ -33,11 +29,11 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertNotIn("suggest_lock_form", response.forms)
 
     def test_suggest_post_lock_not_offered_with_document_when_locked(self):
-        pee = PostExtraElection.objects.get(
+        ballot = Ballot.objects.get(
             election__slug="parl.2015-05-07", post__slug="14419"
         )
-        pee.candidates_locked = True
-        pee.save()
+        ballot.candidates_locked = True
+        ballot.save()
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
@@ -71,10 +67,8 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         suggested_locks = SuggestedPostLock.objects.all()
         self.assertEqual(suggested_locks.count(), 1)
         suggested_lock = suggested_locks.get()
-        self.assertEqual(suggested_lock.postextraelection.post.slug, "14419")
-        self.assertEqual(
-            suggested_lock.postextraelection.election.slug, "parl.2015-05-07"
-        )
+        self.assertEqual(suggested_lock.ballot.post.slug, "14419")
+        self.assertEqual(suggested_lock.ballot.election.slug, "parl.2015-05-07")
         self.assertEqual(suggested_lock.user, self.user)
         self.assertEqual(
             suggested_lock.justification, "I liked totally reviewed the SOPN"
@@ -89,7 +83,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(
             response,
             'Suggested locking ballot\n              <a href="/elections/{ballot}/">{ballot}</a>'.format(
-                ballot=suggested_lock.postextraelection.ballot_paper_id
+                ballot=suggested_lock.ballot.ballot_paper_id
             ),
         )
 
@@ -105,18 +99,18 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
 
-        pee = PostExtraElection.objects.get(
+        ballot = Ballot.objects.get(
             election__slug="parl.2015-05-07", post__slug="14419"
         )
 
         SuggestedPostLock.objects.create(
-            postextraelection=pee,
+            ballot=ballot,
             user=self.users_to_delete[-1],
             justification="I liked totally reviewed the SOPN",
         )
 
         SuggestedPostLock.objects.create(
-            postextraelection=PostExtraElection.objects.get(
+            ballot=Ballot.objects.get(
                 election__slug="parl.2010-05-06", post__slug="14419"
             ),
             user=self.user,
@@ -149,12 +143,12 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
 
-        pee = PostExtraElection.objects.get(
+        ballot = Ballot.objects.get(
             election__slug="parl.2015-05-07", post__slug="14419"
         )
 
         SuggestedPostLock.objects.create(
-            postextraelection=pee,
+            ballot=ballot,
             user=self.user,
             justification="I liked totally reviewed the SOPN",
         )
@@ -178,12 +172,12 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
 
-        pee = PostExtraElection.objects.get(
+        ballot = Ballot.objects.get(
             election__slug="parl.2015-05-07", post__slug="14419"
         )
 
         SuggestedPostLock.objects.create(
-            postextraelection=pee,
+            ballot=ballot,
             user=self.users_to_delete[-1],
             justification="I liked totally reviewed the SOPN",
         )
@@ -198,12 +192,12 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.user.groups.add(group)
         self.user.save()
 
-        pee = PostExtraElection.objects.get(
+        ballot = Ballot.objects.get(
             election__slug="parl.2015-05-07", post__slug="14419"
         )
 
         SuggestedPostLock.objects.create(
-            postextraelection=pee,
+            ballot=ballot,
             user=self.users_to_delete[-1],
             justification="I liked totally reviewed the SOPN",
         )

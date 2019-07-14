@@ -10,11 +10,11 @@ from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from people.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 
 
 def update_lock(post, election, lock_status):
-    postextraelection = post.postextraelection_set.get(election=election)
+    postextraelection = post.ballot_set.get(election=election)
     postextraelection.candidates_locked = lock_status
     postextraelection.save()
 
@@ -85,7 +85,7 @@ class TestConstituencyLockAndUnlock(
             expect_errors=False,
         )
 
-        postextraelection = PostExtraElection.objects.get(
+        postextraelection = Ballot.objects.get(
             ballot_paper_id="parl.65808.2015-05-07"
         )
 
@@ -140,9 +140,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=post_locked,
             party=self.green_party,
-            post_election=post_locked.postextraelection_set.get(
-                election=self.election
-            ),
+            post_election=post_locked.ballot_set.get(election=self.election),
         )
 
         person = PersonFactory.create(id=4322, name="Helen Hayes")
@@ -151,7 +149,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.green_party,
-            post_election=self.dulwich_post.postextraelection_set.get(
+            post_election=self.dulwich_post.ballot_set.get(
                 election=self.election
             ),
         )

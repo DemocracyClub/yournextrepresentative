@@ -121,7 +121,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=existing_person,
             post=self.local_post,
             party=self.labour_party,
-            post_election=self.local_election.postextraelection_set.get(
+            post_election=self.local_election.ballot_set.get(
                 post=self.local_post
             ),
         )
@@ -220,9 +220,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             # !!! This is the line that differs from the previous test:
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.election.postextraelection_set.get(
-                post=self.dulwich_post
-            ),
+            post_election=self.election.ballot_set.get(post=self.dulwich_post),
         )
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:
@@ -311,9 +309,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             # !!! This is the line that differs from the previous test:
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.election.postextraelection_set.get(
-                post=self.dulwich_post
-            ),
+            post_election=self.election.ballot_set.get(post=self.dulwich_post),
         )
 
         OfficialDocument.objects.create(
@@ -343,9 +339,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             # !!! This is the line that differs from the previous test:
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.election.postextraelection_set.get(
-                post=self.dulwich_post
-            ),
+            post_election=self.election.ballot_set.get(post=self.dulwich_post),
         )
 
         OfficialDocument.objects.create(

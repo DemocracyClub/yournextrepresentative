@@ -12,7 +12,7 @@ from django.core.files.storage import DefaultStorage
 
 from official_documents.models import OfficialDocument
 from sopn_parsing.tasks import extract_and_parse_tables_for_ballot
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 
 from compat import BufferDictReader
 
@@ -72,9 +72,7 @@ class Command(BaseCommand):
         r.encoding = "utf-8"
         reader = BufferDictReader(r.text)
         for row in reader:
-            pee = PostExtraElection.objects.get(
-                ballot_paper_id=row["ballot_paper_id"]
-            )
+            ballot = Ballot.objects.get(ballot_paper_id=row["ballot_paper_id"])
             document_url = row["Link to PDF"]
 
             if not document_url:
@@ -82,7 +80,7 @@ class Command(BaseCommand):
                 continue
             existing_documents = OfficialDocument.objects.filter(
                 document_type=OfficialDocument.NOMINATION_PAPER,
-                post_election=pee,
+                post_election=ballot,
             )
             if existing_documents.count() > 0:
                 if options["delete_existing"]:
@@ -140,7 +138,7 @@ class Command(BaseCommand):
                             if mime_type not in allowed_mime_types:
                                 raise ValueError(
                                     "Recovery failed to get a PDF for {}".format(
-                                        pee.ballot_paper_id
+                                        ballot.ballot_paper_id
                                     )
                                 )
                             else:
@@ -151,14 +149,14 @@ class Command(BaseCommand):
                 else:
                     print(
                         "Ignoring unknown MIME type {} for {}".format(
-                            mime_type, pee.ballot_paper_id
+                            mime_type, ballot.ballot_paper_id
                         )
                     )
                 if not recovered:
                     continue
 
             filename = "official_documents/{ballot_paper_id}/statement-of-persons-nominated{extension}".format(
-                ballot_paper_id=pee.ballot_paper_id, extension=extension
+                ballot_paper_id=ballot.ballot_paper_id, extension=extension
             )
 
             if not extension:
@@ -169,11 +167,11 @@ class Command(BaseCommand):
             OfficialDocument.objects.create(
                 document_type=OfficialDocument.NOMINATION_PAPER,
                 uploaded_file=storage_filename,
-                post_election=pee,
+                post_election=ballot,
                 source_url=document_url,
             )
             message = (
                 "Successfully added the Statement of Persons Nominated for {0}"
             )
-            print(message.format(pee.ballot_paper_id))
-            extract_and_parse_tables_for_ballot.delay(pee.ballot_paper_id)
+            print(message.format(ballot.ballot_paper_id))
+            extract_and_parse_tables_for_ballot.delay(ballot.ballot_paper_id)

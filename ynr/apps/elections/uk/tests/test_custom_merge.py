@@ -6,7 +6,7 @@ from people.models import Person
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 
 from uk_results.models import CandidateResult, ResultSet
 
@@ -32,7 +32,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.secondary_person,
             post=self.local_post,
             party=self.labour_party,
-            post_election=self.local_election.postextraelection_set.get(
+            post_election=self.local_election.ballot_set.get(
                 post=self.local_post
             ),
         )
@@ -87,7 +87,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.secondary_person,
             post=self.local_post,
             party=self.labour_party,
-            post_election=self.local_election.postextraelection_set.get(
+            post_election=self.local_election.ballot_set.get(
                 post=self.local_post
             ),
         )

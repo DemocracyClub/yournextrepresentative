@@ -12,7 +12,7 @@ def extract_pages_for_ballot(ballot):
     Beacuse documents can apply to more than one ballot, we also perform
     "drive by" parsing of other ballots contained in a given document.
 
-    :type ballot: candidates.models.PostExtraElection
+    :type ballot: candidates.models.Ballot
 
     """
 

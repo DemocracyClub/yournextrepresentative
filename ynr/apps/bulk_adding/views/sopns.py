@@ -8,7 +8,7 @@ from django.views.generic import RedirectView, TemplateView
 
 from bulk_adding import forms, helpers
 from bulk_adding.models import RawPeople
-from candidates.models import PostExtraElection, LoggedAction
+from candidates.models import Ballot, LoggedAction
 from candidates.views import get_client_ip
 from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
@@ -36,9 +36,9 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
     def add_election_and_post_to_context(self, context):
         context["post"] = Post.objects.get(slug=context["post_id"])
         context["election_obj"] = Election.objects.get(slug=context["election"])
-        context["post_election"] = context[
-            "election_obj"
-        ].postextraelection_set.get(post=context["post"])
+        context["post_election"] = context["election_obj"].ballot_set.get(
+            post=context["post"]
+        )
         kwargs = {"exclude_deregistered": True, "include_description_ids": True}
         if not self.request.POST:
             kwargs["include_non_current"] = False
@@ -89,7 +89,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
 
     def get(self, request, *args, **kwargs):
         if not request.GET.get("edit"):
-            pee_qs = PostExtraElection.objects.filter(
+            pee_qs = Ballot.objects.filter(
                 election__slug=kwargs["election"], post__slug=kwargs["post_id"]
             )
             if pee_qs.exists():
@@ -235,25 +235,25 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                 )
 
             if self.request.POST.get("suggest_locking") == "on":
-                pee = PostExtraElection.objects.get(
+                ballot = Ballot.objects.get(
                     post=context["post"],
                     election=Election.objects.get(slug=context["election"]),
                 )
                 SuggestedPostLock.objects.create(
-                    user=self.request.user, postextraelection=pee
+                    user=self.request.user, ballot=ballot
                 )
 
                 LoggedAction.objects.create(
                     user=self.request.user,
                     action_type="suggest-ballot-lock",
                     ip_address=get_client_ip(self.request),
-                    post_election=pee,
+                    post_election=ballot,
                     source="Suggested after bulk adding",
                 )
 
-                if hasattr(pee, "rawpeople"):
+                if hasattr(ballot, "rawpeople"):
                     # Delete the raw import, as it's no longer useful
-                    pee.rawpeople.delete()
+                    ballot.rawpeople.delete()
 
         messages.add_message(
             self.request,

@@ -41,11 +41,7 @@ from candidates.management.images import (
     ImageDownloadException,
     download_image_from_url,
 )
-from candidates.models import (
-    LoggedAction,
-    PostExtraElection,
-    TRUSTED_TO_LOCK_GROUP_NAME,
-)
+from candidates.models import LoggedAction, Ballot, TRUSTED_TO_LOCK_GROUP_NAME
 from candidates.views.version_data import get_client_ip, get_change_metadata
 
 from people.models import PersonImage, Person
@@ -545,7 +541,7 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
     """This handles creating a SuggestedPostLock from a form submission"""
 
     model = SuggestedPostLock
-    fields = ["justification", "postextraelection"]
+    fields = ["justification", "ballot"]
 
     def form_valid(self, form):
         user = self.request.user
@@ -554,7 +550,7 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
         LoggedAction.objects.create(
             user=self.request.user,
             action_type="suggest-ballot-lock",
-            post_election=form.cleaned_data["postextraelection"],
+            post_election=form.cleaned_data["ballot"],
             ip_address=get_client_ip(self.request),
             source=form.cleaned_data["justification"],
         )
@@ -568,7 +564,7 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return self.object.postextraelection.get_absolute_url()
+        return self.object.ballot.get_absolute_url()
 
 
 class SuggestLockReviewListView(
@@ -587,7 +583,7 @@ class SuggestLockReviewListView(
     def get_lock_suggestions(self):
         # TODO optimize this
         qs = (
-            PostExtraElection.objects.filter(
+            Ballot.objects.filter(
                 election__current=True, candidates_locked=False
             )
             .exclude(suggestedpostlock=None)
@@ -642,10 +638,10 @@ class SOPNReviewRequiredView(ListView):
 
     def get_queryset(self):
         """
-        PostExtraElection objects with a document but no lock suggestion
+        Ballot objects with a document but no lock suggestion
         """
         qs = (
-            PostExtraElection.objects.filter(
+            Ballot.objects.filter(
                 suggestedpostlock__isnull=True,
                 candidates_locked=False,
                 election__current=True,
@@ -676,8 +672,6 @@ class RemoveSuggestedLocksView(LoginRequiredMixin, GroupRequiredMixin, View):
     required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
 
     def post(self, request, *args, **kwargs):
-        ballot = PostExtraElection.objects.get(
-            ballot_paper_id=request.POST["ballot"]
-        )
+        ballot = Ballot.objects.get(ballot_paper_id=request.POST["ballot"])
         ballot.suggestedpostlock_set.all().delete()
         return JsonResponse({"removed": True})

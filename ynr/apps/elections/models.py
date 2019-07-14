@@ -157,7 +157,7 @@ class Election(models.Model):
         ]
 
         """
-        from candidates.models import PostExtraElection
+        from candidates.models import Ballot
 
         result = [{"current": True, "dates": OrderedDict()}]
         if include_noncurrent:
@@ -172,8 +172,8 @@ class Election(models.Model):
         if include_postextraelections:
             qs = qs.prefetch_related(
                 models.Prefetch(
-                    "postextraelection_set",
-                    PostExtraElection.objects.select_related("post")
+                    "ballot_set",
+                    Ballot.objects.select_related("post")
                     .order_by("post__label")
                     .prefetch_related("suggestedpostlock_set"),
                 )
@@ -208,9 +208,7 @@ class Election(models.Model):
                 roles.append(role)
             d = {"election": election}
             if include_postextraelections:
-                d["postextraelections"] = list(
-                    election.postextraelection_set.all()
-                )
+                d["postextraelections"] = list(election.ballot_set.all())
             role["elections"].append(d)
             last_current = election.current
         return result

@@ -10,7 +10,7 @@ from django.views.generic import FormView, TemplateView
 from django.db.models import F
 
 from candidates.views.mixins import ContributorsMixin
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 
 from elections.models import Election
 

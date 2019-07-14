@@ -52,7 +52,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.dest_person.memberships.create(post_election=self.local_pee)
         self.source_person.memberships.create(
-            post_election=other_local_post.postextraelection_set.get()
+            post_election=other_local_post.ballot_set.get()
         )
 
         self.assertEqual(Person.objects.count(), 2)
@@ -501,7 +501,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
             party_set=self.gb_parties,
             organization=self.local_council,
         )
-        ballot = other_local_post.postextraelection_set.get()
+        ballot = other_local_post.ballot_set.get()
 
         # Create person 1
         response = self.app.get(ballot.get_absolute_url(), user=self.user)

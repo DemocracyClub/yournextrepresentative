@@ -34,9 +34,7 @@ class OfficialDocument(TimeStampedModel):
     uploaded_file = models.FileField(
         upload_to=document_file_name, max_length=800
     )
-    post_election = models.ForeignKey(
-        "candidates.PostExtraElection", null=False
-    )
+    post_election = models.ForeignKey("candidates.Ballot", null=False)
     source_url = models.URLField(
         help_text="The page that links to this document", max_length=1000
     )

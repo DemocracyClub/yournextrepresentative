@@ -87,7 +87,7 @@ def update_person_from_form(person, form):
         standing = form_data.pop("standing_" + election_data.slug, "standing")
         if post_id:
             post = Post.objects.get(
-                slug=post_id, postextraelection__election=election_data
+                slug=post_id, ballot__election=election_data
             )
             party_set = PartySet.objects.get(post=post)
             party_key = (
@@ -144,7 +144,7 @@ def mark_as_standing(person, election_data, post, party, party_list_position):
             post=post,
             person=person,
             role=election_data.candidate_membership_role,
-            post_election=election_data.postextraelection_set.get(post=post),
+            post_election=election_data.ballot_set.get(post=post),
         )
     # Update the party list position in case it's changed:
     membership.party_list_position = party_list_position

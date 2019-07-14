@@ -11,7 +11,7 @@ from django.core.cache import cache
 from django.utils.http import urlquote
 from django.utils.six.moves.urllib_parse import urljoin
 
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 
 
 class BaseMapItException(Exception):
@@ -46,7 +46,7 @@ def get_post_elections(url, cache_key, exception):
             for e in ee_result["results"]
             if not e["group_type"]
         ]
-        pee_qs = PostExtraElection.objects.filter(
+        pee_qs = Ballot.objects.filter(
             ballot_paper_id__in=ballot_paper_ids, election__current=True
         )
         cache.set(cache_key, pee_qs, settings.EE_CACHE_SECONDS)

@@ -227,9 +227,7 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.person,
             post=self.post,
             party=self.labour_party,
-            post_election=self.election_gla.postextraelection_set.get(
-                post=self.post
-            ),
+            post_election=self.election_gla.ballot_set.get(post=self.post),
         )
         membership_pk = self.person.memberships.first().pk
 

@@ -27,7 +27,7 @@ class Command(BaseCommand):
             importer = ModGovImporter(election_id, url=url)
             pee_with_result = [
                 hasattr(pee, "resultset")
-                for pee in importer.election.postextraelection_set.all()
+                for pee in importer.election.ballot_set.all()
             ]
             if all(pee_with_result):
                 continue
