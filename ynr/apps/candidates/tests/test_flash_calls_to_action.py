@@ -27,12 +27,12 @@ class TestGetFlashMessage(UK2015ExamplesMixin, TestCase):
         factories.MembershipFactory.create(
             person=self.fake_person,
             post=post_in_2010,
-            post_election=self.edinburgh_east_post_pee,
+            post_election=self.edinburgh_east_post_ballot,
         )
         factories.MembershipFactory.create(
             person=self.fake_person,
             post=post_in_2015,
-            post_election=self.edinburgh_north_post_pee,
+            post_election=self.edinburgh_north_post_ballot,
         )
 
     def test_get_flash_message_new_person(self):

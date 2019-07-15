@@ -15,7 +15,7 @@ class TestAreasOfTypeView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
         )
 
         PostFactory.create(

@@ -16,8 +16,8 @@ from elections.models import Election
 
 from ..forms import PostcodeForm
 from elections.uk.geo_helpers import (
-    get_post_elections_from_postcode,
-    get_post_elections_from_coords,
+    get_ballots_from_postcode,
+    get_ballots_from_coords,
 )
 
 
@@ -74,7 +74,7 @@ class PostcodeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["pees"] = get_post_elections_from_postcode(kwargs["postcode"])
+        context["ballots"] = get_ballots_from_postcode(kwargs["postcode"])
         return context
 
 
@@ -87,7 +87,7 @@ class GeoLocatorView(TemplateView):
         latitude = kwargs["latitude"]
         longitude = kwargs["longitude"]
         coords = ",".join((latitude, longitude))
-        context["pees"] = get_post_elections_from_coords(coords)
+        context["ballots"] = get_ballots_from_coords(coords)
         # populate the postcode template var with None so the template
         # knows it's a geo-lookup
         context["postcode"] = None

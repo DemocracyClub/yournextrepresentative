@@ -46,11 +46,11 @@ class Command(BaseCommand):
         if not options["non_current"]:
             qs = qs.filter(election__current=True)
 
-        for pee in qs:
+        for ballot in qs:
             row = {
-                "ballot_paper_id": pee.ballot_paper_id,
-                "Election name": pee.election.name,
-                "Area name": pee.post.label,
+                "ballot_paper_id": ballot.ballot_paper_id,
+                "Election name": ballot.election.name,
+                "Area name": ballot.post.label,
                 "Council webpage likely to link to SOPN": "",
                 "Link to PDF": "",
                 "Notes": "",

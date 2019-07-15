@@ -139,13 +139,13 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.local_post,
             party=self.labour_party,
-            post_election=self.local_pee,
+            post_election=self.local_ballot,
         )
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee_earlier,
+            post_election=self.dulwich_post_ballot_earlier,
         )
         # Now create Shane Collins (who we'll merge into Tessa Jowell)
         person = people.tests.factories.PersonFactory.create(
@@ -253,13 +253,13 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.green_party,
-            post_election=self.dulwich_post_pee_earlier,
+            post_election=self.dulwich_post_ballot_earlier,
         )
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
             party=self.green_party,
-            post_election=self.edinburgh_east_post_pee,
+            post_election=self.edinburgh_east_post_ballot,
         )
 
     def tearDown(self):

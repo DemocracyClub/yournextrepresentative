@@ -13,8 +13,8 @@ from .models import ResultSet
 def mark_candidates_as_winner(request, instance):
     for candidate_result in instance.candidate_results.all():
         membership = candidate_result.membership
-        post_election = instance.post_election
-        election = post_election.election
+        ballot = instance.post_election
+        election = ballot.election
 
         source = instance.source
 
@@ -27,9 +27,9 @@ def mark_candidates_as_winner(request, instance):
             ResultEvent.objects.create(
                 election=election,
                 winner=membership.person,
-                post=post_election.post,
-                old_post_id=post_election.post.slug,
-                old_post_name=post_election.post.label,
+                post=ballot.post,
+                old_post_id=ballot.post.slug,
+                old_post_name=ballot.post.label,
                 winner_party=membership.party,
                 source=source,
                 user=request.user,
@@ -60,8 +60,8 @@ class ResultSetForm(forms.ModelForm):
         fields = ("num_turnout_reported", "num_spoilt_ballots", "source")
         widgets = {"source": forms.Textarea(attrs={"rows": 1, "columns": 72})}
 
-    def __init__(self, post_election, *args, **kwargs):
-        self.post_election = post_election
+    def __init__(self, ballot, *args, **kwargs):
+        self.ballot = ballot
         self.memberships = []
 
         super().__init__(*args, **kwargs)
@@ -73,7 +73,7 @@ class ResultSetForm(forms.ModelForm):
 
         existing_fields = self.fields
         fields = OrderedDict()
-        memberships = post_election.membership_set.all()
+        memberships = ballot.membership_set.all()
         memberships = sorted(
             memberships, key=lambda member: member.person.name.split(" ")[-1]
         )
@@ -102,14 +102,14 @@ class ResultSetForm(forms.ModelForm):
     def save(self, request):
         with transaction.atomic():
             instance = super().save(commit=False)
-            instance.post_election = self.post_election
+            instance.post_election = self.ballot
             instance.user = (
                 request.user if request.user.is_authenticated else None
             )
             instance.ip_address = get_client_ip(request)
             instance.save()
 
-            winner_count = self.post_election.winner_count
+            winner_count = self.ballot.winner_count
             if winner_count:
                 winners = dict(
                     sorted(

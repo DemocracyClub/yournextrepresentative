@@ -34,13 +34,13 @@ class BallotPaperResultsUpdateView(LoginRequiredMixin, FormView):
             kwargs["instance"] = self.ballot.resultset
         except:
             pass
-        kwargs["post_election"] = self.ballot
+        kwargs["ballot"] = self.ballot
         return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context["post_election"] = self.ballot
+        context["ballot"] = self.ballot
         context["resultset"] = getattr(self.ballot, "resultset", None)
         return context
 

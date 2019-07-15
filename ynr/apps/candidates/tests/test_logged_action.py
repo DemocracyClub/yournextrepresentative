@@ -57,7 +57,7 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
             '<a href="/elections/parl.65913.2015-05-07/">Camberwell and Peckham (65913)</a>',
         )
 
-    def test_guess_of_postextraelection_current(self):
+    def test_guess_of_ballot_current(self):
         action = LoggedAction.objects.create(
             user=self.user,
             action_type="constituency-lock",
@@ -73,7 +73,7 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
             ),
         )
 
-    def test_guess_of_postextraelection_past(self):
+    def test_guess_of_ballots_past(self):
         past_election = factories.ElectionFactory.create(
             current=False,
             name="2017 Essex County Council local election",

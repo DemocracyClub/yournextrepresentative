@@ -221,10 +221,10 @@ class EE_ImporterTest(WebTest):
         )
 
         # Check we set the winner count value
-        pee = every_election.Ballot.objects.get(
+        ballot = every_election.Ballot.objects.get(
             ballot_paper_id="local.adur.buckingham.2019-01-17"
         )
-        self.assertEqual(pee.winner_count, 3)
+        self.assertEqual(ballot.winner_count, 3)
 
     @patch("elections.uk.every_election.requests")
     def test_delete_elections_no_matches(self, mock_requests):

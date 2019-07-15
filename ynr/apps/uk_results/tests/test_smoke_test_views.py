@@ -13,9 +13,9 @@ from uk_results.models import CandidateResult, ResultSet
 class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
     def setUp(self):
         super().setUp()
-        self.pee = self.local_post.ballot_set.get()
+        self.ballot = self.local_post.ballot_set.get()
         self.result_set = ResultSet.objects.create(
-            post_election=self.pee,
+            post_election=self.ballot,
             num_turnout_reported=10000,
             num_spoilt_ballots=30,
             user=self.user,
@@ -33,7 +33,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         # Create their candidacies:
         candidacies = [
             MembershipFactory.create(
-                post_election=self.pee,
+                post_election=self.ballot,
                 person=person,
                 post=self.local_post,
                 party=party,
@@ -102,7 +102,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
                 "ballot_paper_id": "local.maidstone.DIW:E05005004.2016-05-05"
             },
         )
-        self.pee.cancelled = True
-        self.pee.save()
+        self.ballot.cancelled = True
+        self.ballot.save()
         with self.assertRaises(ObjectDoesNotExist):
             resp = self.app.get(url, user=self.user_who_can_record_results)

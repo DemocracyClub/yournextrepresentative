@@ -69,13 +69,13 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             person=person_2009,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
         )
         MembershipFactory.create(
             person=person_2007,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
         )
 
         self.test_upload_user = User.objects.create_user(
@@ -433,13 +433,13 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
             person=person_2009,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
         )
         MembershipFactory.create(
             person=person_2007,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
         )
 
     def test_login_required(self):
@@ -484,7 +484,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
     def test_sopn_review_view_with_reviews(self):
         OfficialDocument.objects.create(
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
             source_url="http://example.com",
         )
         url = reverse("sopn-review-required")
@@ -499,7 +499,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         )
         OfficialDocument.objects.create(
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
             source_url="http://example.com",
         )
         url = reverse("sopn-review-required")
@@ -513,7 +513,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         ballot.save()
         OfficialDocument.objects.create(
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
             source_url="http://example.com",
         )
         url = reverse("sopn-review-required")

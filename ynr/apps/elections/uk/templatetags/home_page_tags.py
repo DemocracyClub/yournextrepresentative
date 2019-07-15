@@ -20,22 +20,23 @@ def sopn_progress_by_election(election_qs):
     context = {}
     if not election_qs.exists():
         return context
-    pee_qs = Ballot.objects.filter(election__in=election_qs)
-    context["posts_total"] = pee_qs.count()
+    ballot_qs = Ballot.objects.filter(election__in=election_qs)
+    context["posts_total"] = ballot_qs.count()
 
-    context["sopns_imported"] = pee_qs.exclude(officialdocument=None).count()
+    context["sopns_imported"] = ballot_qs.exclude(officialdocument=None).count()
     context["sopns_imported_percent"] = round(
         float(context["sopns_imported"]) / float(context["posts_total"]) * 100
     )
 
-    locked_pee_qs = pee_qs.filter(candidates_locked=True)
-    context["posts_locked"] = locked_pee_qs.count()
+    locked_ballot_qs = ballot_qs.filter(candidates_locked=True)
+    context["posts_locked"] = locked_ballot_qs.count()
     context["posts_locked_percent"] = round(
         float(context["posts_locked"]) / float(context["posts_total"]) * 100
     )
 
     context["posts_lock_suggested"] = (
-        pee_qs.exclude(suggestedpostlock=None).count() + context["posts_locked"]
+        ballot_qs.exclude(suggestedpostlock=None).count()
+        + context["posts_locked"]
     )
     context["posts_locked_suggested_percent"] = round(
         float(context["posts_lock_suggested"])
@@ -103,10 +104,10 @@ def results_progress(context):
         election_date = settings.SOPN_TRACKER_INFO["election_date"]
 
         context["election_name"] = settings.SOPN_TRACKER_INFO["election_name"]
-        pee_qs = Ballot.objects.filter(election__election_date=election_date)
+        ballot_qs = Ballot.objects.filter(election__election_date=election_date)
 
-        context["results_entered"] = pee_qs.exclude(resultset=None).count()
-        context["areas_total"] = pee_qs.count()
+        context["results_entered"] = ballot_qs.exclude(resultset=None).count()
+        context["areas_total"] = ballot_qs.count()
         context["results_percent"] = round(
             float(context["results_entered"])
             / float(context["areas_total"])
@@ -125,15 +126,17 @@ def by_election_ctas(context):
     if context["SHOW_BY_ELECTION_CTA"]:
         dates_to_ignore = getattr(settings, "SCHEDULED_ELECTION_DATES", [])
 
-        all_pees = (
+        all_ballots = (
             Ballot.objects.filter(election__current=True)
             .exclude(election__election_date__in=dates_to_ignore)
             .order_by("election__election_date", "election")
             .select_related("election", "post")
             .prefetch_related("membership_set")
         )
-        context["upcoming_pees"] = [
-            pee for pee in all_pees if not pee.election.in_past
+        context["upcoming_ballots"] = [
+            ballot for ballot in all_ballots if not ballot.election.in_past
         ]
-        context["past_pees"] = [pee for pee in all_pees if pee.election.in_past]
+        context["past_ballots"] = [
+            ballot for ballot in all_ballots if ballot.election.in_past
+        ]
     return context

@@ -7,7 +7,7 @@ from resultsbot.importers.modgov import ModGovElection, ModGovImporter
 from candidates.tests.factories import (
     ElectionFactory,
     PostFactory,
-    PostExtraElectionFactory,
+    BallotPaperFactory,
     OrganizationFactory,
 )
 
@@ -36,7 +36,7 @@ class KirkleesBatleyEastMixin:
         self.batley_east_ward = PostFactory(
             label="Batley East", organization=self.kirklees_council
         )
-        self.batley_east_ballot = PostExtraElectionFactory(
+        self.batley_east_ballot = BallotPaperFactory(
             ballot_paper_id="local.kirklees.batley-east.2017-10-26",
             post=self.batley_east_ward,
             election=self.kirklees_eletion,

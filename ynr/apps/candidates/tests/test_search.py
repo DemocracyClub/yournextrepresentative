@@ -25,7 +25,7 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertFalse(re.search(r"""<a[^>]*>Mr Darcy""", response.text))
 
         response = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(), user=self.user
+            self.dulwich_post_ballot.get_absolute_url(), user=self.user
         )
         form = response.forms["new-candidate-form"]
         form["name"] = "Mr Darcy"
@@ -36,7 +36,7 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form.submit()
 
         response = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(), user=self.user
+            self.dulwich_post_ballot.get_absolute_url(), user=self.user
         )
         form = response.forms["new-candidate-form"]
         form["name"] = "Elizabeth Bennet"
@@ -47,7 +47,7 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form.submit()
 
         response = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(), user=self.user
+            self.dulwich_post_ballot.get_absolute_url(), user=self.user
         )
         form = response.forms["new-candidate-form"]
         form["name"] = "Charlotte O'Lucas"  # testers license
@@ -64,7 +64,7 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertFalse(re.search(r"""<a[^>]*>Mr Darcy""", response.text))
 
         response = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(), user=self.user
+            self.dulwich_post_ballot.get_absolute_url(), user=self.user
         )
         form = response.forms["new-candidate-form"]
         form["name"] = "Elizabeth Jones"

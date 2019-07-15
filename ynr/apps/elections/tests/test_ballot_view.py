@@ -27,7 +27,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
         )
 
         winner_post = self.edinburgh_east_post
@@ -46,7 +46,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=dulwich_not_stand,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee_earlier,
+            post_election=self.dulwich_post_ballot_earlier,
         )
         dulwich_not_stand.not_standing.add(self.election)
 
@@ -62,7 +62,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=edinburgh_candidate,
             post=winner_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
         )
 
         MembershipFactory.create(
@@ -91,7 +91,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Just a smoke test for the moment:
         with self.assertNumQueries(FuzzyInt(42, 46)):
             response = self.app.get(
-                self.dulwich_post_pee.get_absolute_url(), user=self.user
+                self.dulwich_post_ballot.get_absolute_url(), user=self.user
             )
         response.mustcontain(
             '<a href="/person/2009/tessa-jowell" class="candidate-name">Tessa Jowell</a> <span class="party">Labour Party</span>'
@@ -102,14 +102,14 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_constituency_with_no_winner_record_results_user(self):
         response = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(),
+            self.dulwich_post_ballot.get_absolute_url(),
             user=self.user_who_can_record_results,
         )
         response.mustcontain(no="Unset the current winners")
 
     def test_any_constituency_csv(self):
         url = "{}.csv".format(
-            self.dulwich_post_pee.get_absolute_url().rstrip("/")
+            self.dulwich_post_ballot.get_absolute_url().rstrip("/")
         )
         response = self.app.get(url)
         self.assertEqual(response.status_code, 200)
@@ -162,10 +162,10 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_constituency_with_winner(self):
         ResultSet.objects.create(
-            post_election=self.edinburgh_east_post_pee_earlier
+            post_election=self.edinburgh_east_post_ballot_earlier
         )
         response = self.app.get(
-            self.edinburgh_east_post_pee_earlier.get_absolute_url()
+            self.edinburgh_east_post_ballot_earlier.get_absolute_url()
         )
         response.mustcontain("Winner(s) recorded")
         response.mustcontain(no="Winner(s) unknown")
@@ -174,7 +174,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_constituency_with_winner_record_results_user(self):
         response = self.app.get(
-            self.edinburgh_east_post_pee.get_absolute_url(),
+            self.edinburgh_east_post_ballot.get_absolute_url(),
             user=self.user_who_can_record_results,
         )
         response.mustcontain("Unset the current winners")
@@ -189,7 +189,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_constituency_with_not_standing(self):
-        response = self.app.get(self.dulwich_post_pee.get_absolute_url())
+        response = self.app.get(self.dulwich_post_ballot.get_absolute_url())
         response.mustcontain(
             "These candidates from earlier elections are known not to be standing again"
         )
@@ -199,7 +199,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_mark_not_standing_no_candidate(self):
         response = self.app.get(
-            self.edinburgh_east_post_pee.get_absolute_url(), user=self.user
+            self.edinburgh_east_post_ballot.get_absolute_url(), user=self.user
         )
 
         csrftoken = self.app.cookies["csrftoken"]
@@ -307,12 +307,13 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location, self.edinburgh_east_post_pee.get_absolute_url()
+            response.location,
+            self.edinburgh_east_post_ballot.get_absolute_url(),
         )
 
     def test_mark_may_stand_actually_standing(self):
         response = self.app.get(
-            self.edinburgh_east_post_pee.get_absolute_url(), user=self.user
+            self.edinburgh_east_post_ballot.get_absolute_url(), user=self.user
         )
 
         csrftoken = self.app.cookies["csrftoken"]
@@ -337,12 +338,13 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location, self.edinburgh_east_post_pee.get_absolute_url()
+            response.location,
+            self.edinburgh_east_post_ballot.get_absolute_url(),
         )
 
     def test_mark_may_stand_not_standing_again(self):
         response = self.app.get(
-            self.edinburgh_east_post_pee.get_absolute_url(), user=self.user
+            self.edinburgh_east_post_ballot.get_absolute_url(), user=self.user
         )
 
         csrftoken = self.app.cookies["csrftoken"]
@@ -370,12 +372,13 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location, self.edinburgh_east_post_pee.get_absolute_url()
+            response.location,
+            self.edinburgh_east_post_ballot.get_absolute_url(),
         )
 
     def test_mark_not_standing_standing_again(self):
         response = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(), user=self.user
+            self.dulwich_post_ballot.get_absolute_url(), user=self.user
         )
 
         csrftoken = self.app.cookies["csrftoken"]
@@ -404,7 +407,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location, self.dulwich_post_pee.get_absolute_url()
+            response.location, self.dulwich_post_ballot.get_absolute_url()
         )
 
     def test_return_404_when_post_not_associated_with_election(self):
@@ -433,5 +436,5 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             },
         )
         expected_url = get_thumbnail(im.image, "x64").url
-        response = self.app.get(self.dulwich_post_pee.get_absolute_url())
+        response = self.app.get(self.dulwich_post_ballot.get_absolute_url())
         response.mustcontain(expected_url)

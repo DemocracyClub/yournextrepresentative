@@ -77,21 +77,21 @@ class LoggedAction(models.Model):
 
     @property
     def subject_url(self):
-        pee = self.post_election_guess
-        if pee:
-            return pee.get_absolute_url()
+        ballot = self.post_election_guess
+        if ballot:
+            return ballot.get_absolute_url()
         elif self.person:
             return reverse("person-view", kwargs={"person_id": self.person.id})
         return "/"
 
     @property
     def subject_html(self):
-        pee = self.post_election_guess
-        if pee:
+        ballot = self.post_election_guess
+        if ballot:
             return '<a href="{url}">{text} ({post_slug})</a>'.format(
                 url=self.subject_url,
-                text=pee.post.short_label,
-                post_slug=pee.post.slug,
+                text=ballot.post.short_label,
+                post_slug=ballot.post.slug,
             )
         elif self.person:
             return '<a href="{url}">{text} ({person_id})</a>'.format(

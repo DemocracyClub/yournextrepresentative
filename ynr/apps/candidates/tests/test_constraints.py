@@ -23,7 +23,7 @@ class PreventCreatingBadMemberships(UK2015ExamplesMixin, TestCase):
                 person=new_candidate,
                 party=self.green_party,
                 post=self.camberwell_post,
-                post_election=self.camberwell_post_pee,
+                post_election=self.camberwell_post_ballot,
             )
 
     def test_raise_if_candidacy_exists(self):

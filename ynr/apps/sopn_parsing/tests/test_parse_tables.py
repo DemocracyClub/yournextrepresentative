@@ -17,7 +17,7 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
     def test_basic_parsing(self):
         self.assertFalse(RawPeople.objects.exists())
         doc = OfficialDocument.objects.create(
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
             document_type=OfficialDocument.NOMINATION_PAPER,
             source_url="example.com",
             relevant_pages="all",

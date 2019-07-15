@@ -32,8 +32,8 @@ def get_field_groupings():
 
 
 def get_redirect_to_post(election, post):
-    pee = election.ballot_set.get(post=post)
-    return HttpResponseRedirect(pee.get_absolute_url())
+    ballot = election.ballot_set.get(post=post)
+    return HttpResponseRedirect(ballot.get_absolute_url())
 
 
 def get_person_form_fields(context, form):

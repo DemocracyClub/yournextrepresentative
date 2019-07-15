@@ -166,8 +166,8 @@ class EEElection(dict):
         return (self.post_object, self.post_created)
 
     def get_or_create_post_election(self, parent):
-        if hasattr(self, "post_election_object"):
-            self.post_election_created = False
+        if hasattr(self, "ballot_object"):
+            self.ballot_created = False
         else:
             # First, set up the Post and Election with related objects
             self.get_or_create_post()
@@ -182,7 +182,7 @@ class EEElection(dict):
 
             # Get the winner count
             winner_count = self["seats_contested"]
-            self.post_election_object, self.post_election_created = Ballot.objects.update_or_create(
+            self.ballot_object, self.ballot_created = Ballot.objects.update_or_create(
                 ballot_paper_id=self["election_id"],
                 defaults={
                     "post": self.post_object,
@@ -191,7 +191,7 @@ class EEElection(dict):
                     "cancelled": self["cancelled"],
                 },
             )
-        return (self.post_election_object, self.post_election_created)
+        return (self.ballot_object, self.ballot_created)
 
     def delete_post_election(self):
         try:

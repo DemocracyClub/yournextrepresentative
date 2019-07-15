@@ -78,7 +78,7 @@ class PostFactory(factory.DjangoModelFactory):
                 else:
                     ballot_paper_id = "{}.{}".format(election.slug, self.slug)
 
-                PostExtraElectionFactory.create(
+                BallotPaperFactory.create(
                     post=self,
                     election=election,
                     ballot_paper_id=ballot_paper_id,
@@ -86,7 +86,7 @@ class PostFactory(factory.DjangoModelFactory):
                 )
 
 
-class PostExtraElectionFactory(factory.DjangoModelFactory):
+class BallotPaperFactory(factory.DjangoModelFactory):
     class Meta:
         model = "candidates.Ballot"
 

@@ -27,7 +27,7 @@ class BasePartyBulkAddView(LoginRequiredMixin, TemplateView):
     def get_party(self):
         return Party.objects.get(ec_id=self.kwargs["party_id"])
 
-    def get_pee_qs(self, election):
+    def get_ballot_qs(self, election):
         qs = election.ballot_set.all()
         qs = qs.order_by("post__label")
         return qs
@@ -78,15 +78,15 @@ class BulkAddPartyView(BasePartyBulkAddView):
             "form", forms.AddByPartyForm(self.request.POST)
         )
         posts = []
-        qs = self.get_pee_qs(context["election_obj"])
-        for pee in qs:
+        qs = self.get_ballot_qs(context["election_obj"])
+        for ballot in qs:
             existing = Membership.objects.filter(
-                post_election__election=pee.election,
-                post=pee.post,
+                post_election__election=ballot.election,
+                post=ballot.post,
                 party=context["party"],
             )
-            extra_forms = pee.winner_count or WINNER_COUNT_IF_NONE
-            form_kwargs = {"ballot": pee}
+            extra_forms = ballot.winner_count or WINNER_COUNT_IF_NONE
+            form_kwargs = {"ballot": ballot}
             if self.request.POST:
                 formset = forms.BulkAddByPartyFormset(
                     self.request.POST, **form_kwargs
@@ -94,7 +94,11 @@ class BulkAddPartyView(BasePartyBulkAddView):
             else:
                 formset = forms.BulkAddByPartyFormset(**form_kwargs)
 
-            post_info = {"pee": pee, "existing": existing, "formset": formset}
+            post_info = {
+                "ballot": ballot,
+                "existing": existing,
+                "formset": formset,
+            }
             posts.append(post_info)
 
         context["posts"] = posts
@@ -102,7 +106,7 @@ class BulkAddPartyView(BasePartyBulkAddView):
         return context
 
     def post(self, *args, **kwargs):
-        qs = self.get_pee_qs(self.get_election())
+        qs = self.get_ballot_qs(self.get_election())
         form = forms.AddByPartyForm(self.request.POST)
 
         has_some_data = any(
@@ -115,14 +119,14 @@ class BulkAddPartyView(BasePartyBulkAddView):
             return self.render_to_response(self.get_context_data(form=form))
 
         session_data = {"source": form.cleaned_data["source"], "post_data": []}
-        for pee in qs:
-            form_kwargs = {"ballot": pee}
+        for ballot in qs:
+            form_kwargs = {"ballot": ballot}
             formset = forms.BulkAddByPartyFormset(
                 self.request.POST, **form_kwargs
             )
 
             session_data["post_data"].append(
-                {"pee_pk": pee.pk, "data": formset.cleaned_data}
+                {"ballot_pk": ballot.pk, "data": formset.cleaned_data}
             )
         self.request.session["bulk_add_by_party_data"] = session_data
         self.request.session.save()
@@ -155,22 +159,22 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                 # This post election might not have any names, that's ok.
                 continue
 
-            pee = election.ballot_set.get(pk=post["pee_pk"])
+            ballot = election.ballot_set.get(pk=post["ballot_pk"])
 
             if self.request.POST:
                 formset = forms.PartyBulkAddReviewNameOnlyFormSet(
                     self.request.POST,
                     initial=post["data"],
-                    prefix=pee.pk,
-                    ballot=pee,
+                    prefix=ballot.pk,
+                    ballot=ballot,
                 )
             else:
                 formset = forms.PartyBulkAddReviewNameOnlyFormSet(
-                    initial=post["data"], prefix=pee.pk, ballot=pee
+                    initial=post["data"], prefix=ballot.pk, ballot=ballot
                 )
             formsets.append(
                 {
-                    "pee": pee,
+                    "ballot": ballot,
                     "data": formset,
                     "management_form": formset.management_form,
                 }
@@ -182,16 +186,16 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
         return context
 
     def post(self, request, *args, **kwargs):
-        qs = self.get_pee_qs(self.get_election())
+        qs = self.get_ballot_qs(self.get_election())
         formsets = []
-        pee_ids = {
+        ballot_ids = {
             int(k.split("-")[0])
             for k in request.POST.keys()
             if k.endswith("-name")
         }
-        for pee in qs.filter(pk__in=pee_ids):
+        for ballot in qs.filter(pk__in=ballot_ids):
             formset = forms.PartyBulkAddReviewNameOnlyFormSet(
-                self.request.POST, prefix=pee.pk, ballot=pee
+                self.request.POST, prefix=ballot.pk, ballot=ballot
             )
 
             formsets.append(formset)
@@ -213,7 +217,7 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
 
                     # Ignore blank extra forms with no name
                     # This happens when we have fewer names
-                    # than the winner_count for this pee
+                    # than the winner_count for this ballot
                     if not data.get("select_person"):
                         continue
 

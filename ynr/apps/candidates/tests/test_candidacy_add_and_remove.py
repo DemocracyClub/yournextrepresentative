@@ -14,13 +14,13 @@ class TestCandidacyCreateView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.person,
             post=self.camberwell_post,
             party=self.labour_party,
-            post_election=self.camberwell_post_pee_earlier,
+            post_election=self.camberwell_post_ballot_earlier,
         )
 
     def test_create_candidacy_from_earlier_election(self):
         self.assertEqual(self.person.memberships.count(), 1)
         response = self.app.get(
-            self.camberwell_post_pee.get_absolute_url(),
+            self.camberwell_post_ballot.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         form = response.forms["candidacy-create"]
@@ -38,13 +38,13 @@ class TestCandidacyDeleteView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.person,
             post=self.dulwich_post,
             party=self.green_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
         )
 
     def test_delete_candidacy(self):
         self.assertEqual(self.person.memberships.count(), 1)
         response = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(),
+            self.dulwich_post_ballot.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         form = response.forms["candidacy-delete"]

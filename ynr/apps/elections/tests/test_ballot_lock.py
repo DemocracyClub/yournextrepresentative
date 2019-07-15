@@ -14,11 +14,11 @@ from candidates.models import Ballot
 
 
 def update_lock(post, election, lock_status):
-    postextraelection = post.ballot_set.get(election=election)
-    postextraelection.candidates_locked = lock_status
-    postextraelection.save()
+    ballot = post.ballot_set.get(election=election)
+    ballot.candidates_locked = lock_status
+    ballot.save()
 
-    return postextraelection
+    return ballot
 
 
 class TestConstituencyLockAndUnlock(
@@ -30,7 +30,9 @@ class TestConstituencyLockAndUnlock(
         self.post_id = self.dulwich_post.id
 
     def test_constituency_lock_unauthorized(self):
-        self.app.get(self.dulwich_post_pee.get_absolute_url(), user=self.user)
+        self.app.get(
+            self.dulwich_post_ballot.get_absolute_url(), user=self.user
+        )
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             "/election/2015/lock/",
@@ -48,7 +50,7 @@ class TestConstituencyLockAndUnlock(
         post = Post.objects.get(id=self.post_id)
         update_lock(post, self.election, False)
         self.app.get(
-            self.dulwich_post_pee.get_absolute_url(),
+            self.dulwich_post_ballot.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         csrftoken = self.app.cookies["csrftoken"]
@@ -64,61 +66,60 @@ class TestConstituencyLockAndUnlock(
 
     def test_constituency_lock(self):
         post = Post.objects.get(id=self.post_id)
-        postextraelection = update_lock(post, self.election, False)
-        self.assertEqual(False, postextraelection.candidates_locked)
+        ballot = update_lock(post, self.election, False)
+        self.assertEqual(False, ballot.candidates_locked)
 
         # Create a RawInput model
-        RawPeople.objects.create(ballot=postextraelection, data={})
+        RawPeople.objects.create(ballot=ballot, data={})
 
         self.app.get(
-            self.dulwich_post_pee.get_absolute_url(),
+            self.dulwich_post_ballot.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
             reverse(
                 "constituency-lock",
-                kwargs={"ballot_id": postextraelection.ballot_paper_id},
+                kwargs={"ballot_id": ballot.ballot_paper_id},
             ),
             params={"csrfmiddlewaretoken": csrftoken},
             user=self.user_who_can_lock,
             expect_errors=False,
         )
 
-        postextraelection = Ballot.objects.get(
-            ballot_paper_id="parl.65808.2015-05-07"
-        )
+        ballot = Ballot.objects.get(ballot_paper_id="parl.65808.2015-05-07")
 
-        self.assertEqual(True, postextraelection.candidates_locked)
+        self.assertEqual(True, ballot.candidates_locked)
         self.assertFalse(RawPeople.objects.exists())
-        self.assertFalse(hasattr(postextraelection, "rawpeople"))
+        self.assertFalse(hasattr(ballot, "rawpeople"))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location, self.dulwich_post_pee.get_absolute_url()
+            response.location, self.dulwich_post_ballot.get_absolute_url()
         )
 
     def test_constituency_unlock(self):
-        pee = self.dulwich_post_pee
-        pee.candidates_locked = True
-        pee.save()
+        ballot = self.dulwich_post_ballot
+        ballot.candidates_locked = True
+        ballot.save()
         response = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(),
+            self.dulwich_post_ballot.get_absolute_url(),
             user=self.user_who_can_lock,
         )
         csrftoken = self.app.cookies["csrftoken"]
         self.assertContains(response, "Unlock candidate list")
         response = self.app.post(
             reverse(
-                "constituency-lock", kwargs={"ballot_id": pee.ballot_paper_id}
+                "constituency-lock",
+                kwargs={"ballot_id": ballot.ballot_paper_id},
             ),
             params={"csrfmiddlewaretoken": csrftoken},
             user=self.user_who_can_lock,
         )
-        pee.refresh_from_db()
-        self.assertFalse(pee.candidates_locked)
+        ballot.refresh_from_db()
+        self.assertFalse(ballot.candidates_locked)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location, self.dulwich_post_pee.get_absolute_url()
+            response.location, self.dulwich_post_ballot.get_absolute_url()
         )
 
     def test_constituencies_unlocked_list(self):
@@ -158,7 +159,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Just get that page for the csrftoken cookie; the form won't
         # appear on the page, since the constituency is locked:
         response = self.app.get(
-            self.camberwell_post_pee.get_absolute_url(), user=self.user
+            self.camberwell_post_ballot.get_absolute_url(), user=self.user
         )
         csrftoken = self.app.cookies["csrftoken"]
         response = self.app.post(
@@ -180,10 +181,10 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 403)
 
     def test_add_when_locked_privileged_allowed(self):
-        self.camberwell_post_pee.candidates_locked = False
-        self.camberwell_post_pee.save()
+        self.camberwell_post_ballot.candidates_locked = False
+        self.camberwell_post_ballot.save()
         response = self.app.get(
-            self.camberwell_post_pee.get_absolute_url(),
+            self.camberwell_post_ballot.get_absolute_url(),
             user=self.user_who_can_lock,
         )
 

@@ -57,7 +57,7 @@
 
 <div id="candidates-for-post-{{ post_data.id }}" class="candidates-for-post">
   {% if user_can_lock %}
-    <form method="post" action="{% url 'constituency-lock' ballot_id=post_election.ballot_paper_id %}">
+    <form method="post" action="{% url 'constituency-lock' ballot_id=ballot.ballot_paper_id %}">
       {% csrf_token %}
       {% if current_user_suggested_lock %}
         <p>
@@ -100,10 +100,10 @@
     </form>
   {% endif %}
 
-  {% if post_election.has_results %}
+  {% if ballot.has_results %}
   <div class="candidates__elected">
       <h3>
-        Elected candidates for <a href="{{ post_election.get_absolute_url }}">{{ post_label }}</a>
+        Elected candidates for <a href="{{ ballot.get_absolute_url }}">{{ post_label }}</a>
         in the <a href="{{ election.get_absolute_url }}"> {{ election.name }}</a>
       </h3>
 
@@ -119,13 +119,13 @@
   <div class="candidates__known">
 
     <h3>
-        {% if post_election.has_results %}
+        {% if ballot.has_results %}
 
-      Unelected candidates for <a href="{{ post_election.get_absolute_url }}">{{ post_label }}</a>
+      Unelected candidates for <a href="{{ ballot.get_absolute_url }}">{{ post_label }}</a>
         in the <a href="{{ election.get_absolute_url }}"> {{ election.name }}</a>
       {% else %}
 
-      Known candidates for <a href="{{ post_election.get_absolute_url }}">{{ post_label }}</a>
+      Known candidates for <a href="{{ ballot.get_absolute_url }}">{{ post_label }}</a>
         in the <a href="{{ election.get_absolute_url }}"> {{ election.name }}</a>
       {% endif %}
     </h3>

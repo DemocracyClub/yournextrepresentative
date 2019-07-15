@@ -47,10 +47,10 @@ class TestModels(TestUserMixin, WebTest):
             label="Member of Parliament for Dulwich and West Norwood",
             party_set=gb_parties,
         )
-        self.pee = self.post.ballot_set.get(election=self.election)
+        self.ballot = self.post.ballot_set.get(election=self.election)
 
     def test_upload_unauthorized(self):
-        response = self.app.get(self.pee.get_absolute_url(), user=self.user)
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
         csrftoken = self.app.cookies["csrftoken"]
         upload_url = reverse(
             "upload_document_view",
@@ -78,7 +78,8 @@ class TestModels(TestUserMixin, WebTest):
     def test_upload_authorized(self):
         self.assertFalse(LoggedAction.objects.exists())
         response = self.app.get(
-            self.pee.get_absolute_url(), user=self.user_who_can_upload_documents
+            self.ballot.get_absolute_url(),
+            user=self.user_who_can_upload_documents,
         )
         self.assertIn(
             "Change Statement of Persons Nominated document", response.text

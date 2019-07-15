@@ -30,7 +30,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
         self.election_data = self.get_election()
         self.person = get_object_or_404(Person, id=person_id)
         self.post_data = get_object_or_404(Post, slug=self.kwargs["post_id"])
-        self.post_election = Ballot.objects.get(
+        self.ballot = Ballot.objects.get(
             election=self.election_data, post=self.post_data
         )
         return super().dispatch(request, *args, **kwargs)
@@ -43,7 +43,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["post_id"] = self.kwargs["post_id"]
-        context["post_election"] = self.post_election
+        context["ballot"] = self.ballot
         context["constituency_name"] = self.post_data.label
         context["person"] = self.person
         return context
@@ -57,7 +57,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
             number_of_existing_winners = self.post_data.memberships.filter(
                 elected=True, post_election__election=self.election_data
             ).count()
-            max_winners = get_max_winners(self.post_election)
+            max_winners = get_max_winners(self.ballot)
             if max_winners >= 0 and number_of_existing_winners >= max_winners:
                 msg = (
                     "There were already {n} winners of {post_label}"

@@ -143,13 +143,13 @@ class BallotPaperView(TemplateView):
 
         context = super().get_context_data(**kwargs)
 
-        context["post_election"] = get_object_or_404(
+        context["ballot"] = get_object_or_404(
             Ballot.objects.all().select_related("post", "election"),
             ballot_paper_id=context["election"],
         )
 
-        mp_post = context["post_election"].post
-        context["election"] = election = context["post_election"].election
+        mp_post = context["ballot"].post
+        context["election"] = election = context["ballot"].election
         context["post_id"] = post_id = mp_post.slug
         context["post_obj"] = mp_post
 
@@ -162,7 +162,7 @@ class BallotPaperView(TemplateView):
         for t in doc_lookup.values():
             documents_by_type[t] = []
         documents_for_post = OfficialDocument.objects.filter(
-            post_election=context["post_election"]
+            post_election=context["ballot"]
         )
         for od in documents_for_post:
             documents_by_type[doc_lookup[od.document_type]].append(od)
@@ -174,13 +174,11 @@ class BallotPaperView(TemplateView):
             context["post_label"]
         )
 
-        context["redirect_after_login"] = context[
-            "post_election"
-        ].get_absolute_url()
+        context["redirect_after_login"] = context["ballot"].get_absolute_url()
 
         context["post_data"] = {"id": mp_post.slug, "label": mp_post.label}
 
-        ballot = context["post_election"]
+        ballot = context["ballot"]
 
         context["candidates_locked"] = ballot.candidates_locked
 
@@ -1020,17 +1018,17 @@ class BallotPaperCSVView(DetailView):
     slug_field = "ballot_paper_id"
 
     def get(self, request, *args, **kwargs):
-        pee = self.get_object()
+        ballot = self.get_object()
         memberships_dict, elected = memberships_dicts_for_csv(
-            election_slug=pee.election.slug, post_slug=pee.post.slug
+            election_slug=ballot.election.slug, post_slug=ballot.post.slug
         )
 
         filename = "{ballot_paper_id}.csv".format(
-            ballot_paper_id=pee.ballot_paper_id
+            ballot_paper_id=ballot.ballot_paper_id
         )
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="%s"' % filename
-        response.write(list_to_csv(memberships_dict[pee.election.slug]))
+        response.write(list_to_csv(memberships_dict[ballot.election.slug]))
         return response
 
 

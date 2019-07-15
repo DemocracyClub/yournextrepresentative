@@ -75,13 +75,13 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             person=self.gb_person,
             post=self.camberwell_post,
             party=self.labour_party,
-            post_election=self.camberwell_post_pee,
+            post_election=self.camberwell_post_ballot,
         )
         factories.MembershipFactory.create(
             person=self.gb_person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee_earlier,
+            post_election=self.dulwich_post_ballot_earlier,
         )
 
         self.gb_person.tmp_person_identifiers.create(

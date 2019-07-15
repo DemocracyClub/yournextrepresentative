@@ -26,7 +26,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.primary_person,
             post=self.camberwell_post,
             party=self.labour_party,
-            post_election=self.camberwell_post_pee_earlier,
+            post_election=self.camberwell_post_ballot_earlier,
         )
         factories.MembershipFactory.create(
             person=self.secondary_person,
@@ -40,13 +40,13 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.secondary_person,
             post=self.camberwell_post,
             party=self.labour_party,
-            post_election=self.camberwell_post_pee,
+            post_election=self.camberwell_post_ballot,
         )
 
         # Now attach a vote count to the secondary person's candidacy:
 
         result_set = ResultSet.objects.create(
-            post_election=self.camberwell_post_pee,
+            post_election=self.camberwell_post_ballot,
             num_turnout_reported=51561,
             num_spoilt_ballots=42,
             ip_address="127.0.0.1",
@@ -81,7 +81,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.primary_person,
             post=self.camberwell_post,
             party=self.labour_party,
-            post_election=self.camberwell_post_pee_earlier,
+            post_election=self.camberwell_post_ballot_earlier,
         )
         factories.MembershipFactory.create(
             person=self.secondary_person,
@@ -95,12 +95,12 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.secondary_person,
             post=self.camberwell_post,
             party=self.labour_party,
-            post_election=self.camberwell_post_pee,
+            post_election=self.camberwell_post_ballot,
         )
 
         # Now attach a vote count to the primary person's candidacy:
         result_set = ResultSet.objects.create(
-            post_election=self.camberwell_post_pee_earlier,
+            post_election=self.camberwell_post_ballot_earlier,
             num_turnout_reported=46659,
             num_spoilt_ballots=42,
             ip_address="127.0.0.1",

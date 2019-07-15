@@ -31,7 +31,7 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_new_person_submission(self):
         response = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(), user=self.user
+            self.dulwich_post_ballot.get_absolute_url(), user=self.user
         )
 
         # make sure we've got the PersonIdentifiers

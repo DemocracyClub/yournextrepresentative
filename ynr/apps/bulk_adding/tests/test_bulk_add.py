@@ -38,7 +38,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
 
@@ -59,7 +59,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
 
@@ -170,13 +170,13 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self._run_wizard_to_end()
         # We expect to go to the ballot page
         self.assertEqual(
-            response.location, self.dulwich_post_pee.get_absolute_url()
+            response.location, self.dulwich_post_ballot.get_absolute_url()
         )
         new_response = response.follow()
         self.assertFalse(RawPeople.objects.exists())
@@ -190,13 +190,13 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.camberwell_post_pee,
+            post_election=self.camberwell_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self._run_wizard_to_end()
@@ -227,7 +227,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
 
@@ -270,7 +270,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_redirect_to_review_form(self):
         RawPeople.objects.create(
-            ballot=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             data=[{"name": "Bart", "party_id": "PP52"}],
         )
         response = self.app.get(
@@ -288,7 +288,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
@@ -315,7 +315,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
@@ -345,7 +345,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.camberwell_post_pee,
+            post_election=self.camberwell_post_ballot,
             uploaded_file="sopn.pdf",
         )
 

@@ -17,13 +17,13 @@ class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
         )
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
             party=self.ld_party,
-            post_election=self.dulwich_post_pee_earlier,
+            post_election=self.dulwich_post_ballot_earlier,
         )
         self.assertEqual(person.last_party(), self.labour_party)
 
@@ -35,7 +35,7 @@ class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
             person=person,
             post=self.dulwich_post,
             party=self.ld_party,
-            post_election=self.dulwich_post_pee_earlier,
+            post_election=self.dulwich_post_ballot_earlier,
         )
         self.assertEqual(person.last_party(), self.ld_party)
 
@@ -47,6 +47,6 @@ class TestPersonLastParty(UK2015ExamplesMixin, TestCase):
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
         )
         self.assertEqual(person.last_party(), self.labour_party)

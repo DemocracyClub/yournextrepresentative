@@ -72,10 +72,7 @@ class Election(models.Model):
 
     @classmethod
     def group_and_order_elections(
-        cls,
-        include_postextraelections=False,
-        include_noncurrent=True,
-        for_json=False,
+        cls, include_ballots=False, include_noncurrent=True, for_json=False
     ):
         """Group elections in a helpful order
 
@@ -86,8 +83,8 @@ class Election(models.Model):
               Group by for_post_role (ordered alphabetically)
                 Order by election name
 
-        If the parameter include_postextraelections is set to True, then
-        the postextraelections will be included as well. If for_json is
+        If the parameter include_ballots is set to True, then
+        the ballots will be included as well. If for_json is
         True, the returned data should be safe to serialize to JSON (e.g.
         the election dates will be ISO 8601 date strings (i.e. YYYY-MM-DD)
         rather than datetime.date objects).
@@ -103,7 +100,7 @@ class Election(models.Model):
                 'elections': [
                   {
                     'election': <Election: 2015 General Election>,
-                    'postextraelections': [
+                    'ballots': [
                       <Post: Member of Parliament for Aberavon>,
                       <Post: Member of Parliament for Aberconwy>,
                       ...
@@ -118,7 +115,7 @@ class Election(models.Model):
                 'elections': [
                   {
                     'election': <Election: 2016 Scottish Parliament Election (Regions)>,
-                     'postextraelections': [
+                     'ballots': [
                        <Post: Member of the Scottish Parliament for Central Scotland>,
                        <Post: Member of the Scottish Parliament for Glasgow>,
                        ...
@@ -126,7 +123,7 @@ class Election(models.Model):
                   },
                   {
                     'election': <Election: 2016 Scottish Parliament Election (Constituencies)>,
-                    'postextraelections': [
+                    'ballots': [
                       <Post: Member of the Scottish Parliament for Aberdeen Central>,
                       <Post: Member of the Scottish Parliament for Aberdeen Donside>,
                       ...
@@ -144,7 +141,7 @@ class Election(models.Model):
                 'elections': [
                   {
                     'election': <Election: 2010 General Election>,
-                    'postextraelections': [
+                    'ballots': [
                       <Post: Member of Parliament for Aberavon>,
                       <Post: Member of Parliament for Aberconwy>,
                       ...
@@ -167,9 +164,9 @@ class Election(models.Model):
         qs = cls.objects.order_by(
             "election_date", "-current", "for_post_role", "name"
         )
-        # If we've been asked to include postextraelections as well, add a prefetch
+        # If we've been asked to include ballots as well, add a prefetch
         # to the queryset:
-        if include_postextraelections:
+        if include_ballots:
             qs = qs.prefetch_related(
                 models.Prefetch(
                     "ballot_set",
@@ -180,7 +177,7 @@ class Election(models.Model):
             )
         if not include_noncurrent:
             qs = qs.filter(current=True)
-        # The elections and postextraelections are already sorted into the right
+        # The elections and ballots are already sorted into the right
         # order, but now need to be grouped into the useful
         # data structure described in the docstring.
         last_current = None
@@ -207,8 +204,8 @@ class Election(models.Model):
                 role = {"role": election.for_post_role, "elections": []}
                 roles.append(role)
             d = {"election": election}
-            if include_postextraelections:
-                d["postextraelections"] = list(election.ballot_set.all())
+            if include_ballots:
+                d["ballots"] = list(election.ballot_set.all())
             role["elections"].append(d)
             last_current = election.current
         return result

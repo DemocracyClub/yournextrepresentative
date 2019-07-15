@@ -38,7 +38,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
         )
 
         form = self.app.get(
@@ -74,13 +74,13 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_submit_name_for_area_without_source(self):
-        pee = self.election.ballot_set.first()
+        ballot = self.election.ballot_set.first()
         form = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/PP52/",
             user=self.user_who_can_upload_documents,
         ).forms[1]
 
-        form["{}-0-name".format(pee.pk)] = "Pemphero Pasternak"
+        form["{}-0-name".format(ballot.pk)] = "Pemphero Pasternak"
 
         response = form.submit()
         self.assertContains(response, "This field is required")
@@ -98,12 +98,12 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "Please enter at least one name")
 
     def test_submit_name_for_area(self):
-        pee = self.election.ballot_set.first()
-        pee.winner_count = 3
-        pee.save()
+        ballot = self.election.ballot_set.first()
+        ballot.winner_count = 3
+        ballot.save()
 
         # Make sure we have no people or logged actions
-        self.assertEqual(pee.post.memberships.count(), 0)
+        self.assertEqual(ballot.post.memberships.count(), 0)
         self.assertEqual(LoggedAction.objects.count(), 0)
 
         form = self.app.get(
@@ -113,7 +113,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(len(form.fields), 25)
 
         form["source"] = "https://example.com/candidates/"
-        form["{}-0-name".format(pee.pk)] = "Pemphero Pasternak"
+        form["{}-0-name".format(ballot.pk)] = "Pemphero Pasternak"
 
         response = form.submit().follow()
 
@@ -125,17 +125,17 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         # Now submit the valid form
         with self.assertNumQueries(53):
-            form["{}-0-select_person".format(pee.pk)] = "_new"
+            form["{}-0-select_person".format(ballot.pk)] = "_new"
             response = form.submit().follow()
 
         # We should have a new person and membership
         self.assertTrue(
-            pee.post.memberships.first().person.name, "Pemphero Pasternak"
+            ballot.post.memberships.first().person.name, "Pemphero Pasternak"
         )
 
         # We should have a new person and membership
         self.assertTrue(
-            pee.post.memberships.first().person.name, "Pemphero Pasternak"
+            ballot.post.memberships.first().person.name, "Pemphero Pasternak"
         )
 
         # We should have created 2 logged actions, one for person-create

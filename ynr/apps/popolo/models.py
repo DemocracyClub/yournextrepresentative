@@ -328,7 +328,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
         return self.label
 
     class Meta:
-        unique_together = ("person", "post_election")
+        unique_together = ("person", "ballot")
         ordering = ("party__name", "party_list_position", "person__name")
 
     def dict_for_csv(self, redirects=None):

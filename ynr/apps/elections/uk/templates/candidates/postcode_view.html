@@ -8,9 +8,9 @@
 
 {% block content %}
 
-{% for pee in pees %}
-  <h2>{{ pee.election.name }}</h2>
-  <a href="{{ pee.get_absolute_url }}">{{ pee.post.label }}</a>
+{% for ballot in ballots %}
+  <h2>{{ ballot.election.name }}</h2>
+  <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
 
 {% empty %}
   {% if postcode %}

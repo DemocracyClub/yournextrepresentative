@@ -55,17 +55,17 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            post_election=self.dulwich_post_ballot,
         )
         MembershipFactory.create(
-            person=person, post_election=self.edinburgh_east_post_pee
+            person=person, post_election=self.edinburgh_east_post_ballot
         )
 
         MembershipFactory.create(
             person=dulwich_not_stand,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee_earlier,
+            post_election=self.dulwich_post_ballot_earlier,
         )
         dulwich_not_stand.not_standing.add(self.election)
 
@@ -74,21 +74,21 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
             post=self.edinburgh_east_post,
             party=self.labour_party,
             elected=True,
-            post_election=self.edinburgh_east_post_pee,
+            post_election=self.edinburgh_east_post_ballot,
         )
 
         MembershipFactory.create(
             person=edinburgh_candidate,
             post=self.edinburgh_east_post,
             party=self.labour_party,
-            post_election=self.edinburgh_east_post_pee,
+            post_election=self.edinburgh_east_post_ballot,
         )
 
         MembershipFactory.create(
             person=edinburgh_may_stand,
             post=self.edinburgh_east_post,
             party=self.labour_party,
-            post_election=self.edinburgh_east_post_pee_earlier,
+            post_election=self.edinburgh_east_post_ballot_earlier,
         )
 
         self.storage = DefaultStorage()
