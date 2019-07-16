@@ -152,11 +152,11 @@ class EE_ImporterTest(WebTest):
         election = self.ee_importer.election_tree[self.child_id]
 
         parent = self.ee_importer.get_parent(self.child_id)
-        election.get_or_create_post_election(parent=parent)
+        election.get_or_create_ballot(parent=parent)
 
         self.assertTrue(election.post_created)
         with self.assertNumQueries(0):
-            election.get_or_create_post_election(parent=parent)
+            election.get_or_create_ballot(parent=parent)
             election.get_or_create_post()
         self.assertFalse(election.post_created)
 
@@ -168,7 +168,7 @@ class EE_ImporterTest(WebTest):
     def test_create_many_elections_and_posts(self):
         for ballot_id, election_dict in self.ee_importer.ballot_ids.items():
             parent = self.ee_importer.get_parent(ballot_id)
-            election_dict.get_or_create_post_election(parent=parent)
+            election_dict.get_or_create_ballot(parent=parent)
         self.assertEqual(every_election.Post.objects.all().count(), 189)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
 
@@ -181,7 +181,7 @@ class EE_ImporterTest(WebTest):
 
         for ballot_id, election_dict in self.ee_importer.ballot_ids.items():
             parent = self.ee_importer.get_parent(ballot_id)
-            election_dict.get_or_create_post_election(parent=parent)
+            election_dict.get_or_create_ballot(parent=parent)
         self.assertEqual(every_election.Post.objects.all().count(), 11)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
 

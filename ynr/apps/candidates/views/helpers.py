@@ -104,7 +104,7 @@ def get_party_people_for_election_from_memberships(
         memberships.select_related("person")
         .filter(
             role=election_data.candidate_membership_role,
-            post_election__election=election_data,
+            ballot__election=election_data,
             party__ec_id=party_id,
         )
         .order_by("party_list_position")
@@ -343,7 +343,7 @@ class ProcessInlineFormsMixin:
         return super().get_context_data(**kwargs)
 
 
-def get_max_winners(post_election):
+def get_max_winners(ballot):
     """
     If we know the winner count for this ballot, return it, otherwise return 0
 
@@ -360,8 +360,8 @@ def get_max_winners(post_election):
           https://github.com/DemocracyClub/yournextrepresentative/pull/621#issuecomment-417252565
 
     """
-    if post_election.winner_count:
+    if ballot.winner_count:
 
-        return post_election.winner_count
+        return ballot.winner_count
 
     return 0

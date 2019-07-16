@@ -63,7 +63,7 @@ class LoggedAction(models.Model):
         )
 
     @property
-    def post_election_guess(self):
+    def ballot_guess(self):
         """
         FIXME: Note that this won't always be correct because
         LoggedAction objects only reference Post at the moment,
@@ -77,7 +77,7 @@ class LoggedAction(models.Model):
 
     @property
     def subject_url(self):
-        ballot = self.post_election_guess
+        ballot = self.ballot_guess
         if ballot:
             return ballot.get_absolute_url()
         elif self.person:
@@ -86,7 +86,7 @@ class LoggedAction(models.Model):
 
     @property
     def subject_html(self):
-        ballot = self.post_election_guess
+        ballot = self.ballot_guess
         if ballot:
             return '<a href="{url}">{text} ({post_slug})</a>'.format(
                 url=self.subject_url,

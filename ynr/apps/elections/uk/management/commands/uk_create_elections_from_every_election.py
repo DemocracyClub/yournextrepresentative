@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
         for ballot_id, election_dict in ee_importer.ballot_ids.items():
             parent = ee_importer.get_parent(ballot_id)
-            election_dict.get_or_create_post_election(parent=parent)
+            election_dict.get_or_create_ballot(parent=parent)
 
     def delete_deleted_elections(self):
         # Get all deleted elections from EE
@@ -26,7 +26,7 @@ class Command(BaseCommand):
         ee_importer.build_election_tree()
 
         for ballot_id, election_dict in ee_importer.ballot_ids.items():
-            election_dict.delete_post_election()
+            election_dict.delete_ballot()
 
         for group_id, election_dict in ee_importer.group_ids.items():
             election_dict.delete_election()

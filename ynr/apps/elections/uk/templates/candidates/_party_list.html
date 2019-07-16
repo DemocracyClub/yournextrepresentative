@@ -61,7 +61,7 @@
                 Showing the top candidates. <a href="{% url 'party-for-post' election=election post_id=post_data.id legacy_slug=party.legacy_slug %}">See all {{ party.total_count }} members on the party list &rarr;</a>
               {% else %}
 
-                <a href="{% url 'party-for-ballot' ballot_id=post_election.ballot_paper_id party_id=party.ec_id %}">See just this party list &rarr;</a>
+                <a href="{% url 'party-for-ballot' ballot_id=ballot.ballot_paper_id party_id=party.ec_id %}">See just this party list &rarr;</a>
               {% endif %}
           {% endif %}
 

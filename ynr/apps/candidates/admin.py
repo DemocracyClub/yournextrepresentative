@@ -52,7 +52,7 @@ class PartySetAdmin(admin.ModelAdmin):
 
 
 @admin.register(Ballot)
-class PostExtraElectionAdmin(admin.ModelAdmin):
+class BallotAdmin(admin.ModelAdmin):
     list_display = ["post", "election", "winner_count"]
     list_filter = ("election__name", "election__current")
     raw_id_fields = ("post", "election")

@@ -18,9 +18,9 @@ class CandidateResultViewSet(viewsets.ModelViewSet):
 
 
 class ResultSetFilter(filterset.FilterSet):
-    election_id = filters.CharFilter(field_name="post_election__election__slug")
+    election_id = filters.CharFilter(field_name="ballot__election__slug")
     election_date = filters.DateFilter(
-        field_name="post_election__election__election_date"
+        field_name="ballot__election__election_date"
     )
 
     class Meta:
@@ -30,8 +30,8 @@ class ResultSetFilter(filterset.FilterSet):
 
 class ResultSetViewSet(viewsets.ModelViewSet):
     queryset = ResultSet.objects.prefetch_related(
-        "post_election__post",
-        "post_election__election",
+        "ballot__post",
+        "ballot__election",
         "user",
         Prefetch(
             "candidate_results",

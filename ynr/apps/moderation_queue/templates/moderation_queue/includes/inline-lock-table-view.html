@@ -54,7 +54,7 @@
         {% endfor %}
       </tbody>
     </table>
-    {% include "moderation_queue/includes/ajax_lock_button_html.html" with postextraelection=ballot %}
+    {% include "moderation_queue/includes/ajax_lock_button_html.html" with ballot=ballot %}
   </td>
   <td>
     {% if ballot.sopn %}

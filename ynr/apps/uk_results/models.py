@@ -25,7 +25,7 @@ class ResultSet(TimeStampedModel):
     ip_address = models.GenericIPAddressField(null=True)
 
     def __str__(self):
-        return "Result for {}".format(self.post_election.ballot_paper_id)
+        return "Result for {}".format(self.ballot.ballot_paper_id)
 
     def as_dict(self):
         """

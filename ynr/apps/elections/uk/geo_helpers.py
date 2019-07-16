@@ -37,7 +37,7 @@ EE_BASE_URL = getattr(
 )
 
 
-def get_post_elections(url, cache_key, exception):
+def get_ballots(url, cache_key, exception):
     r = requests.get(url)
     if r.status_code == 200:
         ee_result = r.json()
@@ -77,7 +77,7 @@ def get_ballots_from_postcode(original_postcode):
         EE_BASE_URL, "/api/elections/?postcode={}".format(urlquote(postcode))
     )
     try:
-        areas = get_post_elections(url, cache_key, BadPostcodeException)
+        areas = get_ballots(url, cache_key, BadPostcodeException)
     except BadPostcodeException:
         # Give a nicer error message, as this is used on the frontend
         raise BadPostcodeException(
@@ -96,4 +96,4 @@ def get_ballots_from_coords(coords):
     if cached_result:
         return cached_result
 
-    return get_post_elections(url, cache_key, BadCoordinatesException)
+    return get_ballots(url, cache_key, BadCoordinatesException)

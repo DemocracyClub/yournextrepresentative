@@ -67,7 +67,7 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
             source="Just for tests...",
         )
         self.assertEqual(
-            action.post_election_guess,
+            action.ballot_guess,
             Ballot.objects.get(
                 election=self.election, post=self.camberwell_post
             ),
@@ -98,6 +98,6 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
             source="Just for tests...",
         )
         self.assertEqual(
-            action.post_election_guess,
+            action.ballot_guess,
             Ballot.objects.get(election=past_election, post=post),
         )

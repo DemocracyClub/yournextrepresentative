@@ -10,11 +10,11 @@
     <th>Number of Candidates</th>
     </thead>
     <tbody>
-    {% for pee in post_counts %}
-      <tr {% if pee.count == 0 %}class="no_known"{% endif %}>
-        <td>{{ pee.election.name }}</td>
-        <td><a href="{{ pee.get_absolute_url }}">{{ pee.post.short_label }}</a></td>
-        <td>{{ pee.count }}</td>
+    {% for ballot in post_counts %}
+      <tr {% if ballot.count == 0 %}class="no_known"{% endif %}>
+        <td>{{ ballot.election.name }}</td>
+        <td><a href="{{ ballot.get_absolute_url }}">{{ ballot.post.short_label }}</a></td>
+        <td>{{ ballot.count }}</td>
       </tr>
     {% endfor %}
     </tbody>

@@ -165,7 +165,7 @@ class EEElection(dict):
             self.post_object.save()
         return (self.post_object, self.post_created)
 
-    def get_or_create_post_election(self, parent):
+    def get_or_create_ballot(self, parent):
         if hasattr(self, "ballot_object"):
             self.ballot_created = False
         else:
@@ -193,7 +193,7 @@ class EEElection(dict):
             )
         return (self.ballot_object, self.ballot_created)
 
-    def delete_post_election(self):
+    def delete_ballot(self):
         try:
             ballot = Ballot.objects.get(ballot_paper_id=self["election_id"])
         except Ballot.DoesNotExist:
