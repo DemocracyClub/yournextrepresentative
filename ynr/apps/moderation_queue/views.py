@@ -550,7 +550,7 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
         LoggedAction.objects.create(
             user=self.request.user,
             action_type="suggest-ballot-lock",
-            post_election=form.cleaned_data["ballot"],
+            ballot=form.cleaned_data["ballot"],
             ip_address=get_client_ip(self.request),
             source=form.cleaned_data["justification"],
         )

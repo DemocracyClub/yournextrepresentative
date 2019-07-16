@@ -39,7 +39,7 @@ class CreateDocumentView(ElectionMixin, GroupRequiredMixin, CreateView):
     def form_valid(self, form):
         LoggedAction.objects.create(
             user=self.request.user,
-            post_election=form.instance.ballot,
+            ballot=form.instance.ballot,
             action_type="sopn-upload",
             ip_address=get_client_ip(self.request),
             source=form.cleaned_data["source_url"],

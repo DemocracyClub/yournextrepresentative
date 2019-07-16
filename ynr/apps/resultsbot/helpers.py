@@ -23,7 +23,7 @@ class ResultsBot(object):
     def _mark_candidates_as_winner(self, instance):
         for candidate_result in instance.candidate_results.all():
             membership = candidate_result.membership
-            ballot = instance.post_election
+            ballot = instance.ballot
             election = ballot.election
 
             source = instance.source
@@ -119,5 +119,5 @@ class ResultsBot(object):
                     user=instance.user,
                     action_type="entered-results-data",
                     source=instance.source,
-                    post_election=instance.post_election,
+                    ballot=instance.ballot,
                 )

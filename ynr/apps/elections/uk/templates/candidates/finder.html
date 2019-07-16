@@ -137,17 +137,17 @@
               removed candidacy for
               <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
             {% elif action.action_type == 'constituency-lock' %}
-              locked <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.ballot_paper_id }}</a>
+              locked <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.ballot_paper_id }}</a>
             {% elif action.action_type == 'constituency-unlock' %}
-              unlocked <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.ballot_paper_id }}</a>
+              unlocked <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.ballot_paper_id }}</a>
             {% elif action.action_type == 'record-council-result' %}
               recorded a result for
-              <a href="{% url 'post-results-view' post_election_id=action.post_election_guess.id %}">{{ action.post.label }}</a>
+              <a href="{% url 'post-results-view' ballot_id=action.ballot_guess.id %}">{{ action.post.label }}</a>
             {% elif action.action_type == 'record-council-control' %}
               recorded overall control for a council
             {% elif action.action_type == 'confirm-council-result' %}
               reviewed a result for
-              <a href="{% url 'post-results-view' post_election_id=action.post_election_guess.id %}">{{ action.post.label }}</a>
+              <a href="{% url 'post-results-view' ballot_id=action.ballot_guess.id %}">{{ action.post.label }}</a>
             {% elif action.action_type == 'confirm-council-control' %}
               reviewed overall control for a council
             {% elif action.action_type == 'set-candidate-elected' %}
@@ -155,18 +155,18 @@
               as the winner
             {% elif action.action_type == 'entered-results-data' %}
               entered results data for
-              <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.post.label }}</a>
+              <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.post.label }}</a>
             {% elif action.action_type == 'sopn-upload' %}
-              uploaded <a href="{{ action.post_election.sopn.get_absolute_url }}">a SOPN</a> for
-              <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.ballot_paper_id }}</a>
+              uploaded <a href="{{ action.ballot.sopn.get_absolute_url }}">a SOPN</a> for
+              <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.ballot_paper_id }}</a>
             {% elif action.action_type == 'suggest-ballot-lock' %}
               Suggested locking ballot
-              <a href="{{ action.post_election.get_absolute_url }}">{{ action.post_election.ballot_paper_id }}</a>
+              <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.ballot_paper_id }}</a>
             {% else %}
               {% if action.person %}
                 updated <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-              {% elif action.post_election %}
-                updated <a href="{{ action.post_election.get_absolute_url }}">ballot {{ action.post_election.ballot_paper_id }}</a>
+              {% elif action.ballot %}
+                updated <a href="{{ action.ballot.get_absolute_url }}">ballot {{ action.ballot.ballot_paper_id }}</a>
               {% endif %}
 
             {% endif %}

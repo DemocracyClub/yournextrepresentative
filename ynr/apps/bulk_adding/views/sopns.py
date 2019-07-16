@@ -245,7 +245,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     user=self.request.user,
                     action_type="suggest-ballot-lock",
                     ip_address=get_client_ip(self.request),
-                    post_election=ballot,
+                    ballot=ballot,
                     source="Suggested after bulk adding",
                 )
 
