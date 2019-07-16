@@ -72,8 +72,8 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
     def remaining_posts_for_sopn(self):
         return OfficialDocument.objects.filter(
             source_url=self.official_document.source_url,
-            post_election__election=F("post_election__election"),
-            post_election__suggestedpostlock=None,
+            ballot__election=F("ballot__election"),
+            ballot__suggestedpostlock=None,
         )
 
     def post(self, request, *args, **kwargs):

@@ -11,8 +11,8 @@
 {% for nomination_paper_with_pees in pee_list %}
 
   {% with nomination_paper_with_pees.list.0.officialdocument_set.first as nomination_paper %}
-  <a href="{{ nomination_paper.post_election.get_absolute_url }}">
-    <p><strong>Nomination paper for {{ nomination_paper.post_election.election.name }}</strong></p>
+  <a href="{{ nomination_paper.ballot.get_absolute_url }}">
+    <p><strong>Nomination paper for {{ nomination_paper.ballot.election.name }}</strong></p>
   </a>
   {% endwith %}
 

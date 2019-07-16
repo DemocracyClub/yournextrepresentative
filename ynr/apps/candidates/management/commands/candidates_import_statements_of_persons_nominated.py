@@ -79,8 +79,7 @@ class Command(BaseCommand):
                 # print("No URL for {0}".format(name))
                 continue
             existing_documents = OfficialDocument.objects.filter(
-                document_type=OfficialDocument.NOMINATION_PAPER,
-                post_election=ballot,
+                document_type=OfficialDocument.NOMINATION_PAPER, ballot=ballot
             )
             if existing_documents.count() > 0:
                 if options["delete_existing"]:
@@ -167,7 +166,7 @@ class Command(BaseCommand):
             OfficialDocument.objects.create(
                 document_type=OfficialDocument.NOMINATION_PAPER,
                 uploaded_file=storage_filename,
-                post_election=ballot,
+                ballot=ballot,
                 source_url=document_url,
             )
             message = (

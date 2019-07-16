@@ -6,13 +6,8 @@ from .models import OfficialDocument
 class UploadDocumentForm(forms.ModelForm):
     class Meta:
         model = OfficialDocument
-        fields = (
-            "uploaded_file",
-            "source_url",
-            "post_election",
-            "document_type",
-        )
+        fields = ("uploaded_file", "source_url", "ballot", "document_type")
 
-        widgets = {"post_election": forms.HiddenInput()}
+        widgets = {"ballot": forms.HiddenInput()}
 
     document_type = forms.CharField(widget=forms.HiddenInput())

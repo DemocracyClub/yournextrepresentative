@@ -45,9 +45,9 @@ class Command(BaseCommand):
 
     def check_doc(self, doc):
         line = {
-            "ballot_paper_id": doc.post_election.ballot_paper_id,
-            "Election name": doc.post_election.election.name,
-            "Area name": doc.post_election.post.label,
+            "ballot_paper_id": doc.ballot.ballot_paper_id,
+            "Election name": doc.ballot.election.name,
+            "Area name": doc.ballot.post.label,
             "Source URL": doc.source_url,
         }
 

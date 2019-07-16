@@ -465,7 +465,7 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
         )
         OfficialDocument.objects.create(
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=ballot,
+            ballot=ballot,
             source_url="http://example.com",
         )
         url = reverse("suggestions-to-lock-review-list")
@@ -484,7 +484,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
     def test_sopn_review_view_with_reviews(self):
         OfficialDocument.objects.create(
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
             source_url="http://example.com",
         )
         url = reverse("sopn-review-required")
@@ -499,7 +499,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         )
         OfficialDocument.objects.create(
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
             source_url="http://example.com",
         )
         url = reverse("sopn-review-required")
@@ -513,7 +513,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         ballot.save()
         OfficialDocument.objects.create(
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
             source_url="http://example.com",
         )
         url = reverse("sopn-review-required")

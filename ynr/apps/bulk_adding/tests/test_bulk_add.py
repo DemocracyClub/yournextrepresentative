@@ -38,7 +38,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
 
@@ -59,7 +59,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
 
@@ -168,7 +168,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self._run_wizard_to_end()
@@ -188,13 +188,13 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.camberwell_post_ballot,
+            ballot=self.camberwell_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self._run_wizard_to_end()
@@ -225,7 +225,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
 
@@ -286,7 +286,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
@@ -313,7 +313,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
@@ -343,7 +343,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.camberwell_post_ballot,
+            ballot=self.camberwell_post_ballot,
             uploaded_file="sopn.pdf",
         )
 

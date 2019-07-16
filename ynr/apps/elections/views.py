@@ -162,7 +162,7 @@ class BallotPaperView(TemplateView):
         for t in doc_lookup.values():
             documents_by_type[t] = []
         documents_for_post = OfficialDocument.objects.filter(
-            post_election=context["ballot"]
+            ballot=context["ballot"]
         )
         for od in documents_for_post:
             documents_by_type[doc_lookup[od.document_type]].append(od)

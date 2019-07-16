@@ -335,7 +335,7 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_sopn_on_ballot(self):
         OfficialDocument.objects.create(
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
             document_type=OfficialDocument.NOMINATION_PAPER,
         )
         response = self.app.get(
@@ -347,7 +347,7 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             {
                 "document_type": "Nomination paper",
                 "uploaded_file": None,
-                "post_election": "http://testserver/api/next/post_elections/{}/".format(
+                "ballot": "http://testserver/api/next/post_elections/{}/".format(
                     self.dulwich_post_ballot.pk
                 ),
                 "source_url": "",

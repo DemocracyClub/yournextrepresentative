@@ -14,7 +14,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_ballot,
+            ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
@@ -37,7 +37,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_ballot,
+            ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
@@ -50,7 +50,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_ballot,
+            ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
@@ -96,7 +96,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_ballot,
+            ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )
 
@@ -140,7 +140,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_ballot,
+            ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )
 
@@ -169,7 +169,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_ballot,
+            ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )
 
@@ -216,7 +216,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.edinburgh_east_post_ballot,
+            ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )
 

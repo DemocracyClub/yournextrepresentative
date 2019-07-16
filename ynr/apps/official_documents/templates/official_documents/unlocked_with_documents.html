@@ -4,8 +4,8 @@
 <h2>Unlocked posts with nomination papers</h2>
 {% for doc in unlocked_sopns %}
   <li>
-    <a href="{% url 'bulk_add_from_sopn' election=doc.post_election.election.slug post_id=doc.post_election.post.slug %}?source={{ doc.source_url }}">
-    {{ doc.post_election.post.label }}</a>
+    <a href="{% url 'bulk_add_from_sopn' election=doc.ballot.election.slug post_id=doc.ballot.post.slug %}?source={{ doc.source_url }}">
+    {{ doc.ballot.post.label }}</a>
   </li>
 {% endfor %}
 {% endblock content %}

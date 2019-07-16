@@ -102,7 +102,7 @@ class TestModels(TestUserMixin, WebTest):
         od = ods[0]
         self.assertEqual(od.source_url, "http://example.org/foo")
         self.assertEqual(
-            od.post_election.ballot_paper_id,
+            od.ballot.ballot_paper_id,
             "parl.dulwich-and-west-norwood.2015-05-07",
         )
 

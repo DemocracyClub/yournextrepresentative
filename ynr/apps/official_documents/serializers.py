@@ -6,9 +6,4 @@ from official_documents.models import OfficialDocument
 class OfficialDocumentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = OfficialDocument
-        fields = (
-            "document_type",
-            "uploaded_file",
-            "post_election",
-            "source_url",
-        )
+        fields = ("document_type", "uploaded_file", "ballot", "source_url")
