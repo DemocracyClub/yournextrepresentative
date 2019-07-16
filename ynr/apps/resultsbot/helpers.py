@@ -71,7 +71,7 @@ class ResultsBot(object):
 
         with transaction.atomic():
             instance, _ = ResultSet.objects.update_or_create(
-                post_election=ballot,
+                ballot=ballot,
                 defaults={
                     "source": source,
                     "num_spoilt_ballots": division.spoiled_votes,

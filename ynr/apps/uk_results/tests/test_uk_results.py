@@ -12,7 +12,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         super().setUp()
         ballot = self.local_post.ballot_set.get()
         self.result_set = ResultSet.objects.create(
-            post_election=ballot,
+            ballot=ballot,
             num_turnout_reported=10000,
             num_spoilt_ballots=30,
             user=self.user,

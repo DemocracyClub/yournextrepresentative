@@ -159,9 +159,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_constituency_with_winner(self):
-        ResultSet.objects.create(
-            post_election=self.edinburgh_east_post_ballot_earlier
-        )
+        ResultSet.objects.create(ballot=self.edinburgh_east_post_ballot_earlier)
         response = self.app.get(
             self.edinburgh_east_post_ballot_earlier.get_absolute_url()
         )

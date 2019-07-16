@@ -13,7 +13,7 @@ from .models import ResultSet
 def mark_candidates_as_winner(request, instance):
     for candidate_result in instance.candidate_results.all():
         membership = candidate_result.membership
-        ballot = instance.post_election
+        ballot = instance.ballot
         election = ballot.election
 
         source = instance.source
@@ -102,7 +102,7 @@ class ResultSetForm(forms.ModelForm):
     def save(self, request):
         with transaction.atomic():
             instance = super().save(commit=False)
-            instance.post_election = self.ballot
+            instance.ballot = self.ballot
             instance.user = (
                 request.user if request.user.is_authenticated else None
             )
@@ -140,7 +140,7 @@ class ResultSetForm(forms.ModelForm):
                 user=instance.user,
                 action_type="entered-results-data",
                 source=instance.source,
-                post_election=instance.post_election,
+                ballot=instance.ballot,
             )
 
         return instance

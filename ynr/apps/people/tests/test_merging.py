@@ -80,7 +80,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.dest_person.memberships.create(ballot=self.local_ballot)
 
         result_set = ResultSet.objects.create(
-            post_election=self.local_ballot,
+            ballot=self.local_ballot,
             num_turnout_reported=10000,
             num_spoilt_ballots=30,
             user=self.user,
@@ -107,7 +107,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.dest_person.memberships.create(ballot=self.local_ballot)
 
         result_set = ResultSet.objects.create(
-            post_election=self.local_ballot,
+            ballot=self.local_ballot,
             num_turnout_reported=10000,
             num_spoilt_ballots=30,
             user=self.user,
