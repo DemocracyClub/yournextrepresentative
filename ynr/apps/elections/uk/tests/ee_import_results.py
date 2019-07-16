@@ -145,19 +145,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/265/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeen_city/",
           "short_title": "The Aberdeen City (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Airyhall/Broomhill/Garthdee",
         "official_identifier": "ABE:airyhallbroomhillgarthdee",
-        "geography_curie": "ABE:airyhallbroomhillgarthdee",
         "slug": "airyhallbroomhillgarthdee",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -202,19 +198,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/265/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeen_city/",
           "short_title": "The Aberdeen City (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Bridge of Don",
         "official_identifier": "ABE:bridge-of-don",
-        "geography_curie": "ABE:bridge-of-don",
         "slug": "bridge-of-don",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -259,19 +251,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/265/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeen_city/",
           "short_title": "The Aberdeen City (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Dyce/Bucksburn/Danestone",
         "official_identifier": "ABE:dycebucksburndanestone",
-        "geography_curie": "ABE:dycebucksburndanestone",
         "slug": "dycebucksburndanestone",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -316,19 +304,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/265/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeen_city/",
           "short_title": "The Aberdeen City (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "George St/Harbour",
         "official_identifier": "ABE:george-stharbour",
-        "geography_curie": "ABE:george-stharbour",
         "slug": "george-stharbour",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -373,19 +357,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/265/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeen_city/",
           "short_title": "The Aberdeen City (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Hazlehead/Queens Cross/Countesswells",
         "official_identifier": "ABE:hazleheadqueens-crosscountesswells",
-        "geography_curie": "ABE:hazleheadqueens-crosscountesswells",
         "slug": "hazleheadqueens-crosscountesswells",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -430,19 +410,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/265/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeen_city/",
           "short_title": "The Aberdeen City (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Hilton/Woodside/Stockethill",
         "official_identifier": "ABE:hiltonwoodsidestockethill",
-        "geography_curie": "ABE:hiltonwoodsidestockethill",
         "slug": "hiltonwoodsidestockethill",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -487,19 +463,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/265/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeen_city/",
           "short_title": "The Aberdeen City (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Kincorth/Nigg/Cove",
         "official_identifier": "ABE:kincorthniggcove",
-        "geography_curie": "ABE:kincorthniggcove",
         "slug": "kincorthniggcove",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -544,19 +516,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/265/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeen_city/",
           "short_title": "The Aberdeen City (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Kingswells/Sheddocksley/Summerhill",
         "official_identifier": "ABE:kingswellssheddocksleysummerhill",
-        "geography_curie": "ABE:kingswellssheddocksleysummerhill",
         "slug": "kingswellssheddocksleysummerhill",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -601,19 +569,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/265/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeen_city/",
           "short_title": "The Aberdeen City (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Lower Deeside",
         "official_identifier": "ABE:lower-deeside",
-        "geography_curie": "ABE:lower-deeside",
         "slug": "lower-deeside",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -658,19 +622,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/265/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeen_city/",
           "short_title": "The Aberdeen City (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Midstocket/Rosemount",
         "official_identifier": "ABE:midstocketrosemount",
-        "geography_curie": "ABE:midstocketrosemount",
         "slug": "midstocketrosemount",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -715,19 +675,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/265/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeen_city/",
           "short_title": "The Aberdeen City (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Northfield/Mastrick North",
         "official_identifier": "ABE:northfieldmastrick-north",
-        "geography_curie": "ABE:northfieldmastrick-north",
         "slug": "northfieldmastrick-north",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -772,19 +728,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/265/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeen_city/",
           "short_title": "The Aberdeen City (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Tillydrone/Seaton/Old Aberdeen",
         "official_identifier": "ABE:tillydroneseatonold-aberdeen",
-        "geography_curie": "ABE:tillydroneseatonold-aberdeen",
         "slug": "tillydroneseatonold-aberdeen",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -829,19 +781,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/265/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeen_city/",
           "short_title": "The Aberdeen City (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Torry/Ferryhill",
         "official_identifier": "ABE:torryferryhill",
-        "geography_curie": "ABE:torryferryhill",
         "slug": "torryferryhill",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -942,19 +890,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Aboyne, Upper Deeside and Donside",
         "official_identifier": "ABD:aboyne-upper-deeside-and-donside",
-        "geography_curie": "ABD:aboyne-upper-deeside-and-donside",
         "slug": "aboyne-upper-deeside-and-donside",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -999,19 +943,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Banchory and Mid Deeside",
         "official_identifier": "ABD:banchory-and-mid-deeside",
-        "geography_curie": "ABD:banchory-and-mid-deeside",
         "slug": "banchory-and-mid-deeside",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1056,19 +996,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Banff and District",
         "official_identifier": "ABD:banff-and-district",
-        "geography_curie": "ABD:banff-and-district",
         "slug": "banff-and-district",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1113,19 +1049,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Central Buchan",
         "official_identifier": "ABD:central-buchan",
-        "geography_curie": "ABD:central-buchan",
         "slug": "central-buchan",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1170,19 +1102,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "East Garioch",
         "official_identifier": "ABD:east-garioch",
-        "geography_curie": "ABD:east-garioch",
         "slug": "east-garioch",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1227,19 +1155,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Ellon and District",
         "official_identifier": "ABD:ellon-and-district",
-        "geography_curie": "ABD:ellon-and-district",
         "slug": "ellon-and-district",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1284,19 +1208,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Fraserburgh and District",
         "official_identifier": "ABD:fraserburgh-and-district",
-        "geography_curie": "ABD:fraserburgh-and-district",
         "slug": "fraserburgh-and-district",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1341,19 +1261,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Huntly, Strathbogie and Howe of Alford",
         "official_identifier": "ABD:huntly-strathbogie-and-howe-of-alford",
-        "geography_curie": "ABD:huntly-strathbogie-and-howe-of-alford",
         "slug": "huntly-strathbogie-and-howe-of-alford",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1398,19 +1314,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Inverurie and District",
         "official_identifier": "ABD:inverurie-and-district",
-        "geography_curie": "ABD:inverurie-and-district",
         "slug": "inverurie-and-district",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1455,19 +1367,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Mearns",
         "official_identifier": "ABD:mearns",
-        "geography_curie": "ABD:mearns",
         "slug": "mearns",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1512,19 +1420,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Mid Formartine",
         "official_identifier": "ABD:mid-formartine",
-        "geography_curie": "ABD:mid-formartine",
         "slug": "mid-formartine",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1569,19 +1473,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "North Kincardine",
         "official_identifier": "ABD:north-kincardine",
-        "geography_curie": "ABD:north-kincardine",
         "slug": "north-kincardine",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1626,19 +1526,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Peterhead North and Rattray",
         "official_identifier": "ABD:peterhead-north-and-rattray",
-        "geography_curie": "ABD:peterhead-north-and-rattray",
         "slug": "peterhead-north-and-rattray",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1683,19 +1579,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Peterhead South and Cruden",
         "official_identifier": "ABD:peterhead-south-and-cruden",
-        "geography_curie": "ABD:peterhead-south-and-cruden",
         "slug": "peterhead-south-and-cruden",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1740,19 +1632,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Stonehaven and Lower Deeside",
         "official_identifier": "ABD:stonehaven-and-lower-deeside",
-        "geography_curie": "ABD:stonehaven-and-lower-deeside",
         "slug": "stonehaven-and-lower-deeside",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1797,19 +1685,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Troup",
         "official_identifier": "ABD:troup",
-        "geography_curie": "ABD:troup",
         "slug": "troup",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1854,19 +1738,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Turriff and District",
         "official_identifier": "ABD:turriff-and-district",
-        "geography_curie": "ABD:turriff-and-district",
         "slug": "turriff-and-district",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1911,19 +1791,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "West Garioch",
         "official_identifier": "ABD:west-garioch",
-        "geography_curie": "ABD:west-garioch",
         "slug": "west-garioch",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -1968,19 +1844,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/266/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/aberdeenshire/",
           "short_title": "The Aberdeenshire (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Westhill and District",
         "official_identifier": "ABD:westhill-and-district",
-        "geography_curie": "ABD:westhill-and-district",
         "slug": "westhill-and-district",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -2076,19 +1948,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Buckingham",
         "official_identifier": "gss:E05007562",
-        "geography_curie": "gss:E05007562",
         "slug": "buckingham",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2133,19 +2001,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Churchill",
         "official_identifier": "gss:E05007563",
-        "geography_curie": "gss:E05007563",
         "slug": "churchill",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2190,19 +2054,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Cokeham",
         "official_identifier": "gss:E05007564",
-        "geography_curie": "gss:E05007564",
         "slug": "cokeham",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2247,19 +2107,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Eastbrook",
         "official_identifier": "gss:E05007565",
-        "geography_curie": "gss:E05007565",
         "slug": "eastbrook",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2304,19 +2160,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Hillside",
         "official_identifier": "gss:E05007566",
-        "geography_curie": "gss:E05007566",
         "slug": "hillside",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2361,19 +2213,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Manor",
         "official_identifier": "gss:E05007567",
-        "geography_curie": "gss:E05007567",
         "slug": "manor",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2418,19 +2266,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Marine",
         "official_identifier": "gss:E05007568",
-        "geography_curie": "gss:E05007568",
         "slug": "marine",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2475,19 +2319,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Mash Barn",
         "official_identifier": "gss:E05007569",
-        "geography_curie": "gss:E05007569",
         "slug": "mash-barn",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2532,19 +2372,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Peverel",
         "official_identifier": "gss:E05007570",
-        "geography_curie": "gss:E05007570",
         "slug": "peverel",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2589,19 +2425,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Southlands",
         "official_identifier": "gss:E05007573",
-        "geography_curie": "gss:E05007573",
         "slug": "southlands",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2646,19 +2478,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Southwick Green",
         "official_identifier": "gss:E05007574",
-        "geography_curie": "gss:E05007574",
         "slug": "southwick-green",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2703,19 +2531,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "St Mary's",
         "official_identifier": "gss:E05007571",
-        "geography_curie": "gss:E05007571",
         "slug": "st-marys",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2760,19 +2584,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "St Nicolas",
         "official_identifier": "gss:E05007572",
-        "geography_curie": "gss:E05007572",
         "slug": "st-nicolas",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2817,19 +2637,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Widewater",
         "official_identifier": "gss:E05007575",
-        "geography_curie": "gss:E05007575",
         "slug": "widewater",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -2919,19 +2735,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/267/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/angus/",
           "short_title": "The Angus (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Arbroath East and Lunan",
         "official_identifier": "ANS:arbroath-east-and-lunan",
-        "geography_curie": "ANS:arbroath-east-and-lunan",
         "slug": "arbroath-east-and-lunan",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -2976,19 +2788,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/267/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/angus/",
           "short_title": "The Angus (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Arbroath West, Letham and Friockheim",
         "official_identifier": "ANS:arbroath-west-letham-and-friockheim",
-        "geography_curie": "ANS:arbroath-west-letham-and-friockheim",
         "slug": "arbroath-west-letham-and-friockheim",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -3033,19 +2841,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/267/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/angus/",
           "short_title": "The Angus (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Brechin and Edzell",
         "official_identifier": "ANS:brechin-and-edzell",
-        "geography_curie": "ANS:brechin-and-edzell",
         "slug": "brechin-and-edzell",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -3090,19 +2894,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/267/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/angus/",
           "short_title": "The Angus (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Carnoustie and District",
         "official_identifier": "ANS:carnoustie-and-district",
-        "geography_curie": "ANS:carnoustie-and-district",
         "slug": "carnoustie-and-district",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -3147,19 +2947,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/267/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/angus/",
           "short_title": "The Angus (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Forfar and District",
         "official_identifier": "ANS:forfar-and-district",
-        "geography_curie": "ANS:forfar-and-district",
         "slug": "forfar-and-district",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -3204,19 +3000,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/267/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/angus/",
           "short_title": "The Angus (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Kirriemuir and Dean",
         "official_identifier": "ANS:kirriemuir-and-dean",
-        "geography_curie": "ANS:kirriemuir-and-dean",
         "slug": "kirriemuir-and-dean",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -3261,19 +3053,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/267/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/angus/",
           "short_title": "The Angus (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Monifieth and Sidlaw",
         "official_identifier": "ANS:monifieth-and-sidlaw",
-        "geography_curie": "ANS:monifieth-and-sidlaw",
         "slug": "monifieth-and-sidlaw",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -3318,19 +3106,15 @@ current_elections = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/267/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/angus/",
           "short_title": "The Angus (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Montrose and District",
         "official_identifier": "ANS:montrose-and-district",
-        "geography_curie": "ANS:montrose-and-district",
         "slug": "montrose-and-district",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -3439,19 +3223,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Brickhill",
         "official_identifier": "gss:E05008751",
-        "geography_curie": "gss:E05008751",
         "slug": "brickhill",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -3496,19 +3276,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Bromham and Biddenham",
         "official_identifier": "gss:E05008752",
-        "geography_curie": "gss:E05008752",
         "slug": "bromham-and-biddenham",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -3553,19 +3329,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Castle",
         "official_identifier": "gss:E05008753",
-        "geography_curie": "gss:E05008753",
         "slug": "castle",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -3610,19 +3382,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Cauldwell",
         "official_identifier": "gss:E05008754",
-        "geography_curie": "gss:E05008754",
         "slug": "cauldwell",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -3667,19 +3435,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Clapham",
         "official_identifier": "gss:E05008755",
-        "geography_curie": "gss:E05008755",
         "slug": "clapham",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -3724,19 +3488,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "De Parys",
         "official_identifier": "gss:E05008756",
-        "geography_curie": "gss:E05008756",
         "slug": "de-parys",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -3781,19 +3541,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Eastcotts",
         "official_identifier": "gss:E05008757",
-        "geography_curie": "gss:E05008757",
         "slug": "eastcotts",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -3838,19 +3594,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Elstow and Stewartby",
         "official_identifier": "gss:E05008758",
-        "geography_curie": "gss:E05008758",
         "slug": "elstow-and-stewartby",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -3895,19 +3647,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Goldington",
         "official_identifier": "gss:E05008759",
-        "geography_curie": "gss:E05008759",
         "slug": "goldington",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -3952,19 +3700,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Great Barford",
         "official_identifier": "gss:E05008760",
-        "geography_curie": "gss:E05008760",
         "slug": "great-barford",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4009,19 +3753,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Harpur",
         "official_identifier": "gss:E05008761",
-        "geography_curie": "gss:E05008761",
         "slug": "harpur",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4066,19 +3806,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Harrold",
         "official_identifier": "gss:E05008762",
-        "geography_curie": "gss:E05008762",
         "slug": "harrold",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4123,19 +3859,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Kempston Central and East",
         "official_identifier": "gss:E05008763",
-        "geography_curie": "gss:E05008763",
         "slug": "kempston-central-and-east",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4180,19 +3912,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Kempston North",
         "official_identifier": "gss:E05008764",
-        "geography_curie": "gss:E05008764",
         "slug": "kempston-north",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4237,19 +3965,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Kempston Rural",
         "official_identifier": "gss:E05008765",
-        "geography_curie": "gss:E05008765",
         "slug": "kempston-rural",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4294,19 +4018,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Kempston South",
         "official_identifier": "gss:E05008766",
-        "geography_curie": "gss:E05008766",
         "slug": "kempston-south",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4351,19 +4071,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Kempston West",
         "official_identifier": "gss:E05008767",
-        "geography_curie": "gss:E05008767",
         "slug": "kempston-west",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4408,19 +4124,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Kingsbrook",
         "official_identifier": "gss:E05008768",
-        "geography_curie": "gss:E05008768",
         "slug": "kingsbrook",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4465,19 +4177,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Newnham",
         "official_identifier": "gss:E05008769",
-        "geography_curie": "gss:E05008769",
         "slug": "newnham",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4522,19 +4230,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Oakley",
         "official_identifier": "gss:E05008770",
-        "geography_curie": "gss:E05008770",
         "slug": "oakley",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4579,19 +4283,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Putnoe",
         "official_identifier": "gss:E05008771",
-        "geography_curie": "gss:E05008771",
         "slug": "putnoe",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4636,19 +4336,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Queens Park",
         "official_identifier": "gss:E05008772",
-        "geography_curie": "gss:E05008772",
         "slug": "queens-park",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4693,19 +4389,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Riseley",
         "official_identifier": "gss:E05008773",
-        "geography_curie": "gss:E05008773",
         "slug": "riseley",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4750,19 +4442,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Sharnbrook",
         "official_identifier": "gss:E05008774",
-        "geography_curie": "gss:E05008774",
         "slug": "sharnbrook",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4807,19 +4495,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Wilshamstead",
         "official_identifier": "gss:E05008775",
-        "geography_curie": "gss:E05008775",
         "slug": "wilshamstead",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4864,19 +4548,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Wootton",
         "official_identifier": "gss:E05008776",
-        "geography_curie": "gss:E05008776",
         "slug": "wootton",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -4921,19 +4601,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2011 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/15",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Wyboston",
         "official_identifier": "gss:E05008777",
-        "geography_curie": "gss:E05008777",
         "slug": "wyboston",
         "division_type": "UTW",
         "division_subtype": "Unitary Authority ward (UTW)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5036,19 +4712,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Alperton",
         "official_identifier": "gss:E05000085",
-        "geography_curie": "gss:E05000085",
         "slug": "alperton",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5093,19 +4765,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Barnhill",
         "official_identifier": "gss:E05000086",
-        "geography_curie": "gss:E05000086",
         "slug": "barnhill",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5150,19 +4818,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Brondesbury Park",
         "official_identifier": "gss:E05000087",
-        "geography_curie": "gss:E05000087",
         "slug": "brondesbury-park",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5207,19 +4871,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Dollis Hill",
         "official_identifier": "gss:E05000088",
-        "geography_curie": "gss:E05000088",
         "slug": "dollis-hill",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5264,19 +4924,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Dudden Hill",
         "official_identifier": "gss:E05000089",
-        "geography_curie": "gss:E05000089",
         "slug": "dudden-hill",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5321,19 +4977,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Fryent",
         "official_identifier": "gss:E05000090",
-        "geography_curie": "gss:E05000090",
         "slug": "fryent",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5378,19 +5030,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Harlesden",
         "official_identifier": "gss:E05000091",
-        "geography_curie": "gss:E05000091",
         "slug": "harlesden",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5435,19 +5083,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Kensal Green",
         "official_identifier": "gss:E05000092",
-        "geography_curie": "gss:E05000092",
         "slug": "kensal-green",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5492,19 +5136,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Kenton",
         "official_identifier": "gss:E05000093",
-        "geography_curie": "gss:E05000093",
         "slug": "kenton",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5549,19 +5189,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Kilburn",
         "official_identifier": "gss:E05000094",
-        "geography_curie": "gss:E05000094",
         "slug": "kilburn",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5606,19 +5242,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Mapesbury",
         "official_identifier": "gss:E05000095",
-        "geography_curie": "gss:E05000095",
         "slug": "mapesbury",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5663,19 +5295,15 @@ current_elections = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Northwick Park",
         "official_identifier": "gss:E05000096",
-        "geography_curie": "gss:E05000096",
         "slug": "northwick-park",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5691,8 +5319,6 @@ current_elections = json.loads(
 }
 """
 )  # noqa
-
-
 current_elections_page_2 = json.loads(
     """
 {
@@ -5733,19 +5359,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Preston",
         "official_identifier": "gss:E05000097",
-        "geography_curie": "gss:E05000097",
         "slug": "preston",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5790,19 +5412,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Queens Park",
         "official_identifier": "gss:E05000098",
-        "geography_curie": "gss:E05000098",
         "slug": "queens-park",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5847,19 +5465,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Queensbury",
         "official_identifier": "gss:E05000099",
-        "geography_curie": "gss:E05000099",
         "slug": "queensbury",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5904,19 +5518,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Stonebridge",
         "official_identifier": "gss:E05000100",
-        "geography_curie": "gss:E05000100",
         "slug": "stonebridge",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -5961,19 +5571,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Sudbury",
         "official_identifier": "gss:E05000101",
-        "geography_curie": "gss:E05000101",
         "slug": "sudbury",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6018,19 +5624,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Tokyngton",
         "official_identifier": "gss:E05000102",
-        "geography_curie": "gss:E05000102",
         "slug": "tokyngton",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6075,19 +5677,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Welsh Harp",
         "official_identifier": "gss:E05000103",
-        "geography_curie": "gss:E05000103",
         "slug": "welsh-harp",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6132,19 +5730,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Wembley Central",
         "official_identifier": "gss:E05000104",
-        "geography_curie": "gss:E05000104",
         "slug": "wembley-central",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6189,19 +5783,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Willesden Green",
         "official_identifier": "gss:E05000105",
-        "geography_curie": "gss:E05000105",
         "slug": "willesden-green",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6305,19 +5895,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Bickley",
         "official_identifier": "gss:E05000106",
-        "geography_curie": "gss:E05000106",
         "slug": "bickley",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6362,19 +5948,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Biggin Hill",
         "official_identifier": "gss:E05000107",
-        "geography_curie": "gss:E05000107",
         "slug": "biggin-hill",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6419,19 +6001,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Bromley Common and Keston",
         "official_identifier": "gss:E05000108",
-        "geography_curie": "gss:E05000108",
         "slug": "bromley-common-and-keston",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6476,19 +6054,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Bromley Town",
         "official_identifier": "gss:E05000109",
-        "geography_curie": "gss:E05000109",
         "slug": "bromley-town",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6533,19 +6107,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Chelsfield and Pratts Bottom",
         "official_identifier": "gss:E05000110",
-        "geography_curie": "gss:E05000110",
         "slug": "chelsfield-and-pratts-bottom",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6590,19 +6160,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Chislehurst",
         "official_identifier": "gss:E05000111",
-        "geography_curie": "gss:E05000111",
         "slug": "chislehurst",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6647,19 +6213,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Clock House",
         "official_identifier": "gss:E05000112",
-        "geography_curie": "gss:E05000112",
         "slug": "clock-house",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6704,19 +6266,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Copers Cope",
         "official_identifier": "gss:E05000113",
-        "geography_curie": "gss:E05000113",
         "slug": "copers-cope",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6761,19 +6319,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Cray Valley East",
         "official_identifier": "gss:E05000114",
-        "geography_curie": "gss:E05000114",
         "slug": "cray-valley-east",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6818,19 +6372,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Cray Valley West",
         "official_identifier": "gss:E05000115",
-        "geography_curie": "gss:E05000115",
         "slug": "cray-valley-west",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6875,19 +6425,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Crystal Palace",
         "official_identifier": "gss:E05000116",
-        "geography_curie": "gss:E05000116",
         "slug": "crystal-palace",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6932,19 +6478,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Darwin",
         "official_identifier": "gss:E05000117",
-        "geography_curie": "gss:E05000117",
         "slug": "darwin",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -6989,19 +6531,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Farnborough and Crofton",
         "official_identifier": "gss:E05000118",
-        "geography_curie": "gss:E05000118",
         "slug": "farnborough-and-crofton",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7046,19 +6584,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Hayes and Coney Hall",
         "official_identifier": "gss:E05000119",
-        "geography_curie": "gss:E05000119",
         "slug": "hayes-and-coney-hall",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7103,19 +6637,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Kelsey and Eden Park",
         "official_identifier": "gss:E05000120",
-        "geography_curie": "gss:E05000120",
         "slug": "kelsey-and-eden-park",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7160,19 +6690,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Mottingham and Chislehurst North",
         "official_identifier": "gss:E05000121",
-        "geography_curie": "gss:E05000121",
         "slug": "mottingham-and-chislehurst-north",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7217,19 +6743,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Orpington",
         "official_identifier": "gss:E05000122",
-        "geography_curie": "gss:E05000122",
         "slug": "orpington",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7274,19 +6796,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Penge and Cator",
         "official_identifier": "gss:E05000123",
-        "geography_curie": "gss:E05000123",
         "slug": "penge-and-cator",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7331,19 +6849,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Petts Wood and Knoll",
         "official_identifier": "gss:E05000124",
-        "geography_curie": "gss:E05000124",
         "slug": "petts-wood-and-knoll",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7388,19 +6902,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Plaistow and Sundridge",
         "official_identifier": "gss:E05000125",
-        "geography_curie": "gss:E05000125",
         "slug": "plaistow-and-sundridge",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7445,19 +6955,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Shortlands",
         "official_identifier": "gss:E05000126",
-        "geography_curie": "gss:E05000126",
         "slug": "shortlands",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7502,19 +7008,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "West Wickham",
         "official_identifier": "gss:E05000127",
-        "geography_curie": "gss:E05000127",
         "slug": "west-wickham",
         "division_type": "LBW",
         "division_subtype": "London borough ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7612,19 +7114,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Abbey North",
         "official_identifier": "gss:E05009012",
-        "geography_curie": "gss:E05009012",
         "slug": "abbey-north",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7669,19 +7167,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Abbey South",
         "official_identifier": "gss:E05009013",
-        "geography_curie": "gss:E05009013",
         "slug": "abbey-south",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7726,19 +7220,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Barby and Kilsby",
         "official_identifier": "gss:E05009014",
-        "geography_curie": "gss:E05009014",
         "slug": "barby-and-kilsby",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7783,19 +7273,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Braunston and Welton",
         "official_identifier": "gss:E05009015",
-        "geography_curie": "gss:E05009015",
         "slug": "braunston-and-welton",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7840,19 +7326,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Brixworth",
         "official_identifier": "gss:E05009016",
-        "geography_curie": "gss:E05009016",
         "slug": "brixworth",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7897,19 +7379,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Drayton",
         "official_identifier": "gss:E05009017",
-        "geography_curie": "gss:E05009017",
         "slug": "drayton",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -7954,19 +7432,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Hill",
         "official_identifier": "gss:E05009018",
-        "geography_curie": "gss:E05009018",
         "slug": "hill",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -8011,19 +7485,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Long Buckby",
         "official_identifier": "gss:E05009019",
-        "geography_curie": "gss:E05009019",
         "slug": "long-buckby",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -8068,19 +7538,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Moulton",
         "official_identifier": "gss:E05009020",
-        "geography_curie": "gss:E05009020",
         "slug": "moulton",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -8125,19 +7591,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Ravensthorpe",
         "official_identifier": "gss:E05009021",
-        "geography_curie": "gss:E05009021",
         "slug": "ravensthorpe",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -8182,19 +7644,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Spratton",
         "official_identifier": "gss:E05009022",
-        "geography_curie": "gss:E05009022",
         "slug": "spratton",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -8239,19 +7697,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Walgrave",
         "official_identifier": "gss:E05009023",
-        "geography_curie": "gss:E05009023",
         "slug": "walgrave",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -8296,19 +7750,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Weedon",
         "official_identifier": "gss:E05009024",
-        "geography_curie": "gss:E05009024",
         "slug": "weedon",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -8353,19 +7803,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Welford",
         "official_identifier": "gss:E05009025",
-        "geography_curie": "gss:E05009025",
         "slug": "welford",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -8410,19 +7856,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Woodford",
         "official_identifier": "gss:E05009026",
-        "geography_curie": "gss:E05009026",
         "slug": "woodford",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -8467,19 +7909,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2012 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/17",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Yelvertoft",
         "official_identifier": "gss:E05009027",
-        "geography_curie": "gss:E05009027",
         "slug": "yelvertoft",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 17,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -8591,19 +8029,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Bodelwyddan",
         "official_identifier": "gss:W05000150",
-        "geography_curie": "gss:W05000150",
         "slug": "bodelwyddan",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -8648,19 +8082,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Corwen",
         "official_identifier": "gss:W05000151",
-        "geography_curie": "gss:W05000151",
         "slug": "corwen",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -8705,19 +8135,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Denbigh Central",
         "official_identifier": "gss:W05000152",
-        "geography_curie": "gss:W05000152",
         "slug": "denbigh-central",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -8762,19 +8188,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Denbigh Lower",
         "official_identifier": "gss:W05000153",
-        "geography_curie": "gss:W05000153",
         "slug": "denbigh-lower",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -8819,19 +8241,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Denbigh Upper/Henllan",
         "official_identifier": "gss:W05000154",
-        "geography_curie": "gss:W05000154",
         "slug": "denbigh-upperhenllan",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -8876,19 +8294,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Dyserth",
         "official_identifier": "gss:W05000155",
-        "geography_curie": "gss:W05000155",
         "slug": "dyserth",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -8933,19 +8347,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Efenechtyd",
         "official_identifier": "gss:W05000156",
-        "geography_curie": "gss:W05000156",
         "slug": "efenechtyd",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -8990,19 +8400,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Llanarmon-yn-Ial/Llandegla",
         "official_identifier": "gss:W05000157",
-        "geography_curie": "gss:W05000157",
         "slug": "llanarmon-yn-ialllandegla",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9047,19 +8453,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Llanbedr Dyffryn Clwyd/Llangynhafal",
         "official_identifier": "gss:W05000158",
-        "geography_curie": "gss:W05000158",
         "slug": "llanbedr-dyffryn-clwydllangynhafal",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9104,19 +8506,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Llandrillo",
         "official_identifier": "gss:W05000159",
-        "geography_curie": "gss:W05000159",
         "slug": "llandrillo",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9161,19 +8559,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Llandyrnog",
         "official_identifier": "gss:W05000160",
-        "geography_curie": "gss:W05000160",
         "slug": "llandyrnog",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9218,19 +8612,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Llanfair Dyffryn Clwyd/Gwyddelwern",
         "official_identifier": "gss:W05000161",
-        "geography_curie": "gss:W05000161",
         "slug": "llanfair-dyffryn-clwydgwyddelwern",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9275,19 +8665,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Llangollen",
         "official_identifier": "gss:W05000162",
-        "geography_curie": "gss:W05000162",
         "slug": "llangollen",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9332,19 +8718,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Llanrhaeadr-Yng-Nghinmeirch",
         "official_identifier": "gss:W05000163",
-        "geography_curie": "gss:W05000163",
         "slug": "llanrhaeadr-yng-nghinmeirch",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9389,19 +8771,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Prestatyn Central",
         "official_identifier": "gss:W05000164",
-        "geography_curie": "gss:W05000164",
         "slug": "prestatyn-central",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9446,19 +8824,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Prestatyn East",
         "official_identifier": "gss:W05000165",
-        "geography_curie": "gss:W05000165",
         "slug": "prestatyn-east",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9503,19 +8877,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Prestatyn Meliden",
         "official_identifier": "gss:W05000166",
-        "geography_curie": "gss:W05000166",
         "slug": "prestatyn-meliden",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9560,19 +8930,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Prestatyn North",
         "official_identifier": "gss:W05000167",
-        "geography_curie": "gss:W05000167",
         "slug": "prestatyn-north",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9617,19 +8983,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Prestatyn South West",
         "official_identifier": "gss:W05000168",
-        "geography_curie": "gss:W05000168",
         "slug": "prestatyn-south-west",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9674,19 +9036,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Rhuddlan",
         "official_identifier": "gss:W05000169",
-        "geography_curie": "gss:W05000169",
         "slug": "rhuddlan",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9731,19 +9089,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Rhyl East",
         "official_identifier": "gss:W05000170",
-        "geography_curie": "gss:W05000170",
         "slug": "rhyl-east",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9788,19 +9142,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Rhyl South East",
         "official_identifier": "gss:W05000172",
-        "geography_curie": "gss:W05000172",
         "slug": "rhyl-south-east",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9845,19 +9195,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Rhyl South West",
         "official_identifier": "gss:W05000173",
-        "geography_curie": "gss:W05000173",
         "slug": "rhyl-south-west",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9902,19 +9248,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Rhyl South",
         "official_identifier": "gss:W05000171",
-        "geography_curie": "gss:W05000171",
         "slug": "rhyl-south",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -9959,19 +9301,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Rhyl West",
         "official_identifier": "gss:W05000174",
-        "geography_curie": "gss:W05000174",
         "slug": "rhyl-west",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -10016,19 +9354,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Ruthin",
         "official_identifier": "gss:W05000175",
-        "geography_curie": "gss:W05000175",
         "slug": "ruthin",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -10073,19 +9407,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "St Asaph East",
         "official_identifier": "gss:W05000176",
-        "geography_curie": "gss:W05000176",
         "slug": "st-asaph-east",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -10130,19 +9460,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "St Asaph West",
         "official_identifier": "gss:W05000177",
-        "geography_curie": "gss:W05000177",
         "slug": "st-asaph-west",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -10187,19 +9513,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Trefnant",
         "official_identifier": "gss:W05000178",
-        "geography_curie": "gss:W05000178",
         "slug": "trefnant",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -10244,19 +9566,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Tremeirchion",
         "official_identifier": "gss:W05000179",
-        "geography_curie": "gss:W05000179",
         "slug": "tremeirchion",
         "division_type": "UTE",
         "division_subtype": "Unitary Authority electoral division (UTE)",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -10368,19 +9686,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Alston Moor",
         "official_identifier": "gss:E05003205",
-        "geography_curie": "gss:E05003205",
         "slug": "alston-moor",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -10425,19 +9739,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Appleby (Appleby)",
         "official_identifier": "gss:E05003206",
-        "geography_curie": "gss:E05003206",
         "slug": "appleby-appleby",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -10482,19 +9792,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Appleby (Bongate)",
         "official_identifier": "gss:E05003207",
-        "geography_curie": "gss:E05003207",
         "slug": "appleby-bongate",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -10539,19 +9845,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Askham",
         "official_identifier": "gss:E05003208",
-        "geography_curie": "gss:E05003208",
         "slug": "askham",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -10596,19 +9898,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Brough",
         "official_identifier": "gss:E05003209",
-        "geography_curie": "gss:E05003209",
         "slug": "brough",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -10653,19 +9951,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Crosby Ravensworth",
         "official_identifier": "gss:E05003210",
-        "geography_curie": "gss:E05003210",
         "slug": "crosby-ravensworth",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -10710,19 +10004,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Dacre",
         "official_identifier": "gss:E05003211",
-        "geography_curie": "gss:E05003211",
         "slug": "dacre",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -10767,19 +10057,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Eamont",
         "official_identifier": "gss:E05003212",
-        "geography_curie": "gss:E05003212",
         "slug": "eamont",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -10824,19 +10110,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Greystoke",
         "official_identifier": "gss:E05003213",
-        "geography_curie": "gss:E05003213",
         "slug": "greystoke",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -10881,19 +10163,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Hartside",
         "official_identifier": "gss:E05003214",
-        "geography_curie": "gss:E05003214",
         "slug": "hartside",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -10938,19 +10216,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Hesket",
         "official_identifier": "gss:E05003215",
-        "geography_curie": "gss:E05003215",
         "slug": "hesket",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -10995,19 +10269,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Kirkby Stephen",
         "official_identifier": "gss:E05003216",
-        "geography_curie": "gss:E05003216",
         "slug": "kirkby-stephen",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -11052,19 +10322,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Kirkby Thore",
         "official_identifier": "gss:E05003217",
-        "geography_curie": "gss:E05003217",
         "slug": "kirkby-thore",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -11109,19 +10375,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Kirkoswald",
         "official_identifier": "gss:E05003218",
-        "geography_curie": "gss:E05003218",
         "slug": "kirkoswald",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -11166,19 +10428,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Langwathby",
         "official_identifier": "gss:E05003219",
-        "geography_curie": "gss:E05003219",
         "slug": "langwathby",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -11223,19 +10481,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Lazonby",
         "official_identifier": "gss:E05003220",
-        "geography_curie": "gss:E05003220",
         "slug": "lazonby",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -11280,19 +10534,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Long Marton",
         "official_identifier": "gss:E05003221",
-        "geography_curie": "gss:E05003221",
         "slug": "long-marton",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -11337,19 +10587,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Morland",
         "official_identifier": "gss:E05003222",
-        "geography_curie": "gss:E05003222",
         "slug": "morland",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -11394,19 +10640,15 @@ current_elections_page_2 = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Orton with Tebay",
         "official_identifier": "gss:E05003223",
-        "geography_curie": "gss:E05003223",
         "slug": "orton-with-tebay",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -11422,7 +10664,6 @@ current_elections_page_2 = json.loads(
 }
 """
 )  # noqa
-
 each_type_of_election_on_one_day = json.loads(
     """
 {
@@ -11535,19 +10776,15 @@ each_type_of_election_on_one_day = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Buckingham",
         "official_identifier": "gss:E05007562",
-        "geography_curie": "gss:E05007562",
         "slug": "buckingham",
         "division_type": "DIW",
         "division_subtype": "District council ward",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "ENG"
       },
       "voting_system": {
@@ -11769,19 +11006,15 @@ each_type_of_election_on_one_day = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2016 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/28",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Aberavon",
         "official_identifier": "gss:W09000022",
-        "geography_curie": "gss:W09000022",
         "slug": "aberavon",
         "division_type": "WAC",
         "division_subtype": "Welsh Assembly constituency",
         "division_election_sub_type": "c",
         "seats_total": null,
-        "mapit_generation_low": 26,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -11829,19 +11062,15 @@ each_type_of_election_on_one_day = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2016 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/28",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Mid and West Wales",
         "official_identifier": "gss:W10000006",
-        "geography_curie": "gss:W10000006",
         "slug": "mid-and-west-wales",
         "division_type": "WAE",
         "division_subtype": "Welsh Assembly region",
         "division_election_sub_type": "r",
         "seats_total": null,
-        "mapit_generation_low": 28,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -11931,19 +11160,15 @@ each_type_of_election_on_one_day = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2016 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/28",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Aberavon",
         "official_identifier": "gss:W09000022",
-        "geography_curie": "gss:W09000022",
         "slug": "aberavon",
         "division_type": "WAC",
         "division_subtype": "Welsh Assembly constituency",
         "division_election_sub_type": "c",
         "seats_total": null,
-        "mapit_generation_low": 26,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -11991,19 +11216,15 @@ each_type_of_election_on_one_day = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2016 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/28",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Mid and West Wales",
         "official_identifier": "gss:W10000006",
-        "geography_curie": "gss:W10000006",
         "slug": "mid-and-west-wales",
         "division_type": "WAE",
         "division_subtype": "Welsh Assembly region",
         "division_election_sub_type": "r",
         "seats_total": null,
-        "mapit_generation_low": 28,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -12082,19 +11303,15 @@ each_type_of_election_on_one_day = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2004 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/1",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Lagan Valley",
         "official_identifier": "osni_oid:NIE-13",
-        "geography_curie": "osni_oid:NIE-13",
         "slug": "lagan-valley",
         "division_type": "NIE",
         "division_subtype": "Northern Ireland Assembly constituency",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 1,
-        "mapit_generation_high": 30,
         "territory_code": "NIR"
       },
       "voting_system": {
@@ -12174,19 +11391,15 @@ each_type_of_election_on_one_day = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2010 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/13",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Aberavon",
         "official_identifier": "gss:W07000049",
-        "geography_curie": "gss:W07000049",
         "slug": "aberavon",
         "division_type": "WMC",
         "division_subtype": "UK Parliament constituency",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 13,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -12231,19 +11444,15 @@ each_type_of_election_on_one_day = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2010 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/13",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Ynys Môn",
         "official_identifier": "gss:W07000041",
-        "geography_curie": "gss:W07000041",
         "slug": "ynys-mon",
         "division_type": "WMC",
         "division_subtype": "UK Parliament constituency",
         "division_election_sub_type": "",
         "seats_total": null,
-        "mapit_generation_low": 13,
-        "mapit_generation_high": 30,
         "territory_code": "WLS"
       },
       "voting_system": {
@@ -12428,19 +11637,15 @@ each_type_of_election_on_one_day = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2016 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/28",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Aberdeen Central",
         "official_identifier": "gss:S16000074",
-        "geography_curie": "gss:S16000074",
         "slug": "aberdeen-central",
         "division_type": "SPC",
         "division_subtype": "Scottish Parliament constituency",
         "division_election_sub_type": "c",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "SCT"
       },
       "voting_system": {
@@ -12488,19 +11693,15 @@ each_type_of_election_on_one_day = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2016 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/28",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Glasgow",
         "official_identifier": "gss:S17000017",
-        "geography_curie": "gss:S17000017",
         "slug": "glasgow",
         "division_type": "SPE",
         "division_subtype": "Scottish Parliament region",
         "division_election_sub_type": "r",
         "seats_total": null,
-        "mapit_generation_low": 28,
-        "mapit_generation_high": 30,
         "territory_code": "SCT"
       },
       "voting_system": {
@@ -12590,19 +11791,15 @@ each_type_of_election_on_one_day = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2016 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/28",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Aberdeen Central",
         "official_identifier": "gss:S16000074",
-        "geography_curie": "gss:S16000074",
         "slug": "aberdeen-central",
         "division_type": "SPC",
         "division_subtype": "Scottish Parliament constituency",
         "division_election_sub_type": "c",
         "seats_total": null,
-        "mapit_generation_low": 15,
-        "mapit_generation_high": 30,
         "territory_code": "SCT"
       },
       "voting_system": {
@@ -12650,19 +11847,15 @@ each_type_of_election_on_one_day = json.loads(
           "legislation_url": null,
           "consultation_url": null,
           "short_title": "2016 Boundaries",
-          "mapit_generation_id": "http://mapit.mysociety.org/generations/28",
           "notes": "Auto imported from http://mapit.mysociety.org"
         },
         "name": "Glasgow",
         "official_identifier": "gss:S17000017",
-        "geography_curie": "gss:S17000017",
         "slug": "glasgow",
         "division_type": "SPE",
         "division_subtype": "Scottish Parliament region",
         "division_election_sub_type": "r",
         "seats_total": null,
-        "mapit_generation_low": 28,
-        "mapit_generation_high": 30,
         "territory_code": "SCT"
       },
       "voting_system": {
@@ -12678,9 +11871,7 @@ each_type_of_election_on_one_day = json.loads(
 }
 """
 )
-
 no_results = {"count": 0, "next": None, "previous": None, "results": []}
-
 local_highland = json.loads(
     """
 {
@@ -12765,19 +11956,15 @@ local_highland = json.loads(
           "legislation_url": "http://www.legislation.gov.uk/ssi/2016/278/contents/made",
           "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/highland/",
           "short_title": "The Highland (Electoral Arrangements) Order 2016",
-          "mapit_generation_id": "",
           "notes": ""
         },
         "name": "Wester Ross, Strathpeffer and Lochalsh",
         "official_identifier": "gss:S13002994",
-        "geography_curie": "gss:S13002994",
         "slug": "wester-ross-strathpeffer-and-lochalsh",
         "division_type": "UTW",
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "mapit_generation_low": null,
-        "mapit_generation_high": null,
         "territory_code": ""
       },
       "voting_system": {
@@ -12794,7 +11981,6 @@ local_highland = json.loads(
   ]
 }"""
 )
-
 duplicate_post_names = json.loads(
     """{
     "count": 4,
@@ -12879,19 +12065,15 @@ duplicate_post_names = json.loads(
                     "legislation_url": "http://www.legislation.gov.uk/uksi/2017/1268/contents/made",
                     "consultation_url": "http://www.lgbce.org.uk/current-reviews/south-east/surrey/surrey-heath",
                     "short_title": "The Surrey Heath (Electoral Changes) Order 2017",
-                    "mapit_generation_id": "",
                     "notes": ""
                 },
                 "name": "St Michaels",
                 "official_identifier": "SUR:st-michaels",
-                "geography_curie": "SUR:st-michaels",
                 "slug": "st-michaels",
                 "division_type": "DIW",
                 "division_subtype": "",
                 "division_election_sub_type": "",
                 "seats_total": 2,
-                "mapit_generation_low": null,
-                "mapit_generation_high": null,
                 "territory_code": ""
             },
             "voting_system": {
@@ -12986,19 +12168,15 @@ duplicate_post_names = json.loads(
                     "legislation_url": "http://www.legislation.gov.uk/uksi/2017/1067/contents/made",
                     "consultation_url": "http://www.lgbce.org.uk/current-reviews/north-west/cumbria/allerdale",
                     "short_title": "The Allerdale (Electoral Changes) Order 2017",
-                    "mapit_generation_id": "",
                     "notes": ""
                 },
                 "name": "St Michael's",
                 "official_identifier": "ALL:st-michaels",
-                "geography_curie": "ALL:st-michaels",
                 "slug": "st-michaels",
                 "division_type": "DIW",
                 "division_subtype": "",
                 "division_election_sub_type": "",
                 "seats_total": 2,
-                "mapit_generation_low": null,
-                "mapit_generation_high": null,
                 "territory_code": ""
             },
             "voting_system": {

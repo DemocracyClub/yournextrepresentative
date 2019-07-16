@@ -134,11 +134,11 @@ class EEElection(dict):
                 slug = ":".join(
                     [
                         self["division"]["division_type"],
-                        self["division"]["geography_curie"].split(":")[-1],
+                        self["division"]["official_identifier"].split(":")[-1],
                     ]
                 )
                 label = self["division"]["name"]
-                role = self["division"]["geography_curie"]
+                role = self["division"]["official_identifier"]
             else:
                 # Case 2, this organisation isn't split in to divisions for
                 # this election, take the info from the organisation directly
