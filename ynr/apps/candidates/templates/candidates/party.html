@@ -60,7 +60,7 @@
                     {% url 'person-view' person_id=member_data.person.id as person_url %}
                       <li>
                         <a href="{{ person_url }}">{{ member_data.person.name }}</a> is standing in
-                        <a href="{{ member_data.membership.post_election.get_absolute_url }}">{{ post.short_label }}</a>
+                        <a href="{{ member_data.membership.ballot.get_absolute_url }}">{{ post.short_label }}</a>
                       </li>
                   {% endfor %}
                 </ul>

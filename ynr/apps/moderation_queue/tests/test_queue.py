@@ -69,13 +69,13 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             person=person_2009,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
         MembershipFactory.create(
             person=person_2007,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
 
         self.test_upload_user = User.objects.create_user(
@@ -433,13 +433,13 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
             person=person_2009,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
         MembershipFactory.create(
             person=person_2007,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
 
     def test_login_required(self):

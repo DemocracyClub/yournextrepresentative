@@ -67,11 +67,7 @@ class MembershipQuerySet(DateframeableQuerySet):
 
         return (
             self.select_related(
-                "post_election",
-                "post_election__election",
-                "post_election__post",
-                "person",
-                "party",
+                "ballot", "ballot__election", "ballot__post", "person", "party"
             )
             .prefetch_related(
                 "person__tmp_person_identifiers",
@@ -79,8 +75,8 @@ class MembershipQuerySet(DateframeableQuerySet):
                 "person__images__uploading_user",
             )
             .order_by(
-                "post_election__election__election_date",
-                "-post_election__election__slug",
+                "ballot__election__election_date",
+                "-ballot__election__slug",
                 "person__pk",
             )
         )

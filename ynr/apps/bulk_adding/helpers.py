@@ -34,20 +34,20 @@ def update_person(
     request=None,
     person=None,
     party=None,
-    post_election=None,
+    ballot=None,
     source=None,
     list_position=None,
 ):
-    election = post_election.election
+    election = ballot.election
 
     person.not_standing.remove(election)
 
     check_creation_allowed(request.user, person.current_candidacies)
 
     membership, _ = Membership.objects.update_or_create(
-        post=post_election.post,
+        post=ballot.post,
         person=person,
-        post_election=post_election,
+        ballot=ballot,
         defaults={
             "party": party,
             "party_list_position": list_position,
@@ -63,15 +63,15 @@ def update_person(
     # losing data.
     old_memberships = (
         Membership.objects.exclude(pk=membership.pk)
-        .exclude(post_election__candidates_locked=True)
-        .filter(person=person, post_election__election=post_election.election)
+        .exclude(ballot__candidates_locked=True)
+        .filter(person=person, ballot__election=ballot.election)
     )
     for old_membership in old_memberships:
         raise_if_unsafe_to_delete(old_membership)
         old_membership.delete()
 
     memberships_for_election = Membership.objects.filter(
-        person=person, post_election__election=post_election.election
+        person=person, ballot__election=ballot.election
     )
 
     if (

@@ -13,7 +13,7 @@
 
     <!-- Open Graph and Twitter card data -->
     <meta property="og:url" name="twitter:url" content="{{ canonical_url }}" />
-    <meta property="og:title" name="twitter:title" content="{{ person.name }}{% if last_candidacy %} - Candidate for {{ last_candidacy.post.short_label }} in {{ last_candidacy.post_election.election.name }}{% endif %}" />
+    <meta property="og:title" name="twitter:title" content="{{ person.name }}{% if last_candidacy %} - Candidate for {{ last_candidacy.post.short_label }} in {{ last_candidacy.ballot.election.name }}{% endif %}" />
     <meta property="og:description" name="twitter:description" content="{% metadescription person last_candidacy DATE_TODAY %}">
 
     <!-- Just Open Graph metadata -->
@@ -38,7 +38,7 @@
 
 {% block title %}{{ person.name }}
   {% if last_candidacy %}
-    - Candidate for {{ last_candidacy.post.short_label }} in {{ last_candidacy.post_election.election.name }}
+    - Candidate for {{ last_candidacy.post.short_label }} in {{ last_candidacy.ballot.election.name }}
   {% endif %}
 {% endblock %}
 
@@ -56,10 +56,10 @@
   </div>
   <h1>{{ person.name }}</h1>
     {% if last_candidacy %}
-      {% with election=last_candidacy.post_election.election post=last_candidacy.post %}
+      {% with election=last_candidacy.ballot.election post=last_candidacy.post %}
 
         <p>
-          Candidate for <a href="{{ last_candidacy.post_election.get_absolute_url }}">{{ post.short_label }}</a> in <a href="{{ election.get_absolute_url }}">{{ election.name }}</a>
+          Candidate for <a href="{{ last_candidacy.ballot.get_absolute_url }}">{{ post.short_label }}</a> in <a href="{{ election.get_absolute_url }}">{{ election.name }}</a>
         </p>
       {% endwith %}
     {% endif %}
@@ -247,7 +247,7 @@
   <div class="person__actions__action">
     <h2>Add party info</h2>
     <p>Know something about {{ person.name }}'s local party?</p>
-    <p><a class="button" href="https://docs.google.com/forms/d/e/1FAIpQLSefxjlpi4UVK38CUGKZmZM3zjJO7hJfI58wSX6VZ0ifA54GAQ/viewform?usp=pp_url&entry.166120474={{ last_candidacy.post_election.election.slug }}&entry.339427281={{ last_candidacy.party.ec_id }}">
+    <p><a class="button" href="https://docs.google.com/forms/d/e/1FAIpQLSefxjlpi4UVK38CUGKZmZM3zjJO7hJfI58wSX6VZ0ifA54GAQ/viewform?usp=pp_url&entry.166120474={{ last_candidacy.ballot.election.slug }}&entry.339427281={{ last_candidacy.party.ec_id }}">
       Add it here
     </a></p>
   </div>

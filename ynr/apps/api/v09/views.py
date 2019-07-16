@@ -132,14 +132,14 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
             candidates = []
             for membership in (
                 ballot.membership_set.filter(
-                    post_election__election=ballot.election,
+                    ballot__election=ballot.election,
                     role=ballot.election.candidate_membership_role,
                 )
                 .prefetch_related(
                     Prefetch(
                         "person__memberships",
                         Membership.objects.select_related(
-                            "party", "post", "post_election__election"
+                            "party", "post", "ballot__election"
                         ),
                     ),
                     "person__images",
@@ -245,7 +245,7 @@ class PersonViewSet(viewsets.ModelViewSet):
                 "memberships",
                 Membership.objects.select_related("party", "post"),
             ),
-            "memberships__post_election__election",
+            "memberships__ballot__election",
             "other_names",
             "images",
         ).order_by("id")
@@ -286,7 +286,7 @@ class PostViewSet(viewsets.ModelViewSet):
             Prefetch(
                 "memberships",
                 Membership.objects.select_related(
-                    "person", "party", "post", "post_election__election"
+                    "person", "party", "post", "ballot__election"
                 ),
             ),
         )

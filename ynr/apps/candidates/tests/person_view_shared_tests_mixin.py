@@ -25,7 +25,7 @@ class PersonViewSharedTestsMixin(
             person=self.person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
 
     def test_get_tessa_jowell(self):

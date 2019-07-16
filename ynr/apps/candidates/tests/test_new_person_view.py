@@ -91,7 +91,7 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(candidacy.role, "Candidate")
         self.assertEqual(candidacy.party.legacy_slug, "party:53")
         self.assertEqual(candidacy.party.ec_id, "PP53")
-        self.assertEqual(candidacy.post_election.election_id, self.election.id)
+        self.assertEqual(candidacy.ballot.election_id, self.election.id)
 
         person_identifiers = person.tmp_person_identifiers.all()
         self.assertEqual(person_identifiers.count(), 2)

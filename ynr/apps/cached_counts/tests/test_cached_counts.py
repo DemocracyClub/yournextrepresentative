@@ -42,7 +42,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                     person=person,
                     post=post,
                     party=party,
-                    post_election=self.election.ballot_set.get(post=post),
+                    ballot=self.election.ballot_set.get(post=post),
                 )
                 i += 1
         # Now create a couple of candidacies in the earlier election.
@@ -52,14 +52,14 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             person=Person.objects.get(id=7000),
             post=posts[1],
             party=parties[0],
-            post_election=self.earlier_election.ballot_set.get(post=posts[1]),
+            ballot=self.earlier_election.ballot_set.get(post=posts[1]),
         )
         # Now one in the same post but standing for a different party:
         factories.MembershipFactory.create(
             person=Person.objects.get(id=7001),
             post=posts[1],
             party=parties[2],
-            post_election=self.earlier_election.ballot_set.get(post=posts[1]),
+            ballot=self.earlier_election.ballot_set.get(post=posts[1]),
         )
 
     def test_reports_top_page(self):

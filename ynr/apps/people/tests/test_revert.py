@@ -142,13 +142,13 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_ballot_earlier,
+            ballot=self.dulwich_post_ballot_earlier,
         )
 
     @patch("candidates.views.version_data.get_current_timestamp")
@@ -240,14 +240,11 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         candidacies = Membership.objects.filter(
-            person=person,
-            role=F("post_election__election__candidate_membership_role"),
-        ).order_by("post_election__election__election_date")
+            person=person, role=F("ballot__election__candidate_membership_role")
+        ).order_by("ballot__election__election_date")
 
         self.assertEqual(len(candidacies), 1)
-        self.assertEqual(
-            candidacies[0].post_election.election.slug, "parl.2010-05-06"
-        )
+        self.assertEqual(candidacies[0].ballot.election.slug, "parl.2010-05-06")
 
         # The homepage link should have been added and the Wikipedia
         # one removed, and the theyworkforyou ID created:

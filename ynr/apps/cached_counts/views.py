@@ -16,15 +16,15 @@ def get_counts(for_json=True):
     election_id_to_candidates = {}
     qs = (
         Membership.objects.filter(
-            role=F("post_election__election__candidate_membership_role")
+            role=F("ballot__election__candidate_membership_role")
         )
-        .values("post_election__election")
-        .annotate(count=Count("post_election__election"))
+        .values("ballot__election")
+        .annotate(count=Count("ballot__election"))
         .order_by()
     )
 
     for d in qs:
-        election_id_to_candidates[d["post_election__election"]] = d["count"]
+        election_id_to_candidates[d["ballot__election"]] = d["count"]
 
     grouped_elections = Election.group_and_order_elections(for_json=for_json)
     for era_data in grouped_elections:
@@ -67,7 +67,7 @@ class PartyCountsView(ElectionMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = Party.objects.filter(
-            membership__post_election__election=self.election_data
+            membership__ballot__election=self.election_data
         )
         qs = qs.annotate(count=Count("membership"))
         qs = qs.order_by("-count", "name")

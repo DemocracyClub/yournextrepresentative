@@ -106,17 +106,17 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
 
         candidacies = (
             suggestion.object.memberships.select_related(
-                "post", "party", "post_election__election"
+                "post", "party", "ballot__election"
             )
             .prefetch_related(
                 Prefetch(
-                    "post_election__officialdocument_set",
+                    "ballot__officialdocument_set",
                     queryset=OfficialDocument.objects.filter(
                         document_type=OfficialDocument.NOMINATION_PAPER
                     ).order_by("-modified"),
                 )
             )
-            .order_by("-post_election__election__election_date")[:3]
+            .order_by("-ballot__election__election_date")[:3]
         )
 
         if candidacies:
@@ -125,10 +125,10 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         for candidacy in candidacies:
             text = """{election}: {post} – {party}""".format(
                 post=candidacy.post.short_label,
-                election=candidacy.post_election.election.name,
+                election=candidacy.ballot.election.name,
                 party=candidacy.party.name,
             )
-            sopn = candidacy.post_election.officialdocument_set.first()
+            sopn = candidacy.ballot.officialdocument_set.first()
             if sopn:
                 text += ' (<a href="{0}">SOPN</a>)'.format(
                     sopn.get_absolute_url()
@@ -176,12 +176,10 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             ):
                 continue
             qs = (
-                Membership.objects.filter(
-                    post_election__election=self.ballot.election
-                )
+                Membership.objects.filter(ballot__election=self.ballot.election)
                 .filter(person_id=form_data.get("select_person"))
-                .exclude(post_election=self.ballot)
-                .exclude(post_election__candidates_locked=True)
+                .exclude(ballot=self.ballot)
+                .exclude(ballot__candidates_locked=True)
             )
             if qs.exists():
                 errors.append(

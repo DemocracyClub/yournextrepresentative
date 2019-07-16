@@ -58,17 +58,17 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
         MembershipFactory.create(
-            person=self.person, post_election=self.edinburgh_east_post_ballot
+            person=self.person, ballot=self.edinburgh_east_post_ballot
         )
 
         MembershipFactory.create(
             person=dulwich_not_stand,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_ballot_earlier,
+            ballot=self.dulwich_post_ballot_earlier,
         )
         dulwich_not_stand.not_standing.add(self.election)
 
@@ -77,21 +77,21 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.edinburgh_east_post,
             party=self.labour_party,
             elected=True,
-            post_election=self.edinburgh_east_post_ballot,
+            ballot=self.edinburgh_east_post_ballot,
         )
 
         MembershipFactory.create(
             person=edinburgh_candidate,
             post=self.edinburgh_east_post,
             party=self.labour_party,
-            post_election=self.edinburgh_east_post_ballot,
+            ballot=self.edinburgh_east_post_ballot,
         )
 
         MembershipFactory.create(
             person=edinburgh_may_stand,
             post=self.edinburgh_east_post,
             party=self.labour_party,
-            post_election=self.edinburgh_east_post_ballot_earlier,
+            ballot=self.edinburgh_east_post_ballot_earlier,
         )
 
         PartyEmblemFactory(party=self.labour_party)
@@ -227,7 +227,7 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.person,
             post=self.post,
             party=self.labour_party,
-            post_election=self.election_gla.ballot_set.get(post=self.post),
+            ballot=self.election_gla.ballot_set.get(post=self.post),
         )
         membership_pk = self.person.memberships.first().pk
 

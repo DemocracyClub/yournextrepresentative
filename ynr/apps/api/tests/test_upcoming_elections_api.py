@@ -137,7 +137,7 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.post,
             party=self.labour_party,
-            post_election=self.election_gla.ballot_set.get(post=self.post),
+            ballot=self.election_gla.ballot_set.get(post=self.post),
         )
         membership_pk = person.memberships.first().pk
 

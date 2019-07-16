@@ -16,7 +16,7 @@ class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
 
     @override_settings(TEMPLATES=templates_before)

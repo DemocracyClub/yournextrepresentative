@@ -175,7 +175,7 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
                     person=person,
                     post=posts[created % len(posts)],
                     party=party,
-                    post_election=election.ballot_set.get(
+                    ballot=election.ballot_set.get(
                         post=posts[created % len(posts)]
                     ),
                 )

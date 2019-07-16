@@ -141,7 +141,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=post_locked,
             party=self.green_party,
-            post_election=post_locked.ballot_set.get(election=self.election),
+            ballot=post_locked.ballot_set.get(election=self.election),
         )
 
         person = PersonFactory.create(id=4322, name="Helen Hayes")
@@ -150,9 +150,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.green_party,
-            post_election=self.dulwich_post.ballot_set.get(
-                election=self.election
-            ),
+            ballot=self.dulwich_post.ballot_set.get(election=self.election),
         )
 
     def test_add_when_locked_unprivileged_disallowed(self):

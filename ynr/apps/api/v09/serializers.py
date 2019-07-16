@@ -226,7 +226,7 @@ class MembershipSerializer(serializers.HyperlinkedModelSerializer):
     )
     post = MinimalPostSerializer(read_only=True)
 
-    election = MinimalElectionSerializer(source="post_election.election")
+    election = MinimalElectionSerializer(source="ballot.election")
 
 
 class PostElectionSerializer(serializers.HyperlinkedModelSerializer):

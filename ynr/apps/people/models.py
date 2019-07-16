@@ -273,7 +273,7 @@ class Person(Timestampable, models.Model):
     @property
     def current_candidacies(self):
         result = self.memberships.filter(
-            post_election__election__current=True
+            ballot__election__current=True
         ).select_related("person", "party", "post")
         return list(result)
 
@@ -363,10 +363,9 @@ class Person(Timestampable, models.Model):
     @property
     def last_candidacy(self):
         ordered_candidacies = Membership.objects.filter(
-            person=self, post_election__election__isnull=False
+            person=self, ballot__election__isnull=False
         ).order_by(
-            "post_election__election__current",
-            "post_election__election__election_date",
+            "ballot__election__current", "ballot__election__election_date"
         )
         return ordered_candidacies.last()
 
@@ -454,7 +453,7 @@ class Person(Timestampable, models.Model):
 
     def get_elected(self, election):
         return self.memberships.filter(
-            post_election__election=election, elected=True
+            ballot__election=election, elected=True
         ).exists()
 
     @property
@@ -519,7 +518,7 @@ class Person(Timestampable, models.Model):
             standing_key = "standing_" + election_data.slug
             try:
                 candidacy = Membership.objects.get(
-                    post_election__election=election_data, person=self
+                    ballot__election=election_data, person=self
                 )
             except Membership.DoesNotExist:
                 candidacy = None
@@ -531,9 +530,7 @@ class Person(Timestampable, models.Model):
                 initial_data[constituency_key] = post_id
                 from candidates.models import PartySet
 
-                party_set = PartySet.objects.get(
-                    post=candidacy.post_election.post
-                )
+                party_set = PartySet.objects.get(post=candidacy.ballot.post)
                 party = candidacy.party
                 party_key = (
                     "party_" + party_set.slug.upper() + "_" + election_data.slug

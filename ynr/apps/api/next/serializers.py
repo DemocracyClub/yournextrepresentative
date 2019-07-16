@@ -181,11 +181,9 @@ class MembershipSerializer(serializers.HyperlinkedModelSerializer):
     person = MinimalPersonSerializer(read_only=True)
     party = MinimalPartySerializer()
     post = MinimalPostSerializer(read_only=True)
-    ballot_paper_id = serializers.ReadOnlyField(
-        source="post_election.ballot_paper_id"
-    )
+    ballot_paper_id = serializers.ReadOnlyField(source="ballot.ballot_paper_id")
 
-    election = MinimalElectionSerializer(source="post_election.election")
+    election = MinimalElectionSerializer(source="ballot.election")
 
 
 class PostElectionSerializer(serializers.HyperlinkedModelSerializer):

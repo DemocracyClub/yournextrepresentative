@@ -212,7 +212,7 @@ class PersonMerger:
     def merge_memberships(self):
         for membership in self.source_person.memberships.all():
             existing_membership_qs = self.dest_person.memberships.filter(
-                post_election=membership.post_election
+                ballot=membership.ballot
             )
             if existing_membership_qs.exists():
                 # This is a duplicate membership, so we need to merge the
@@ -227,10 +227,8 @@ class PersonMerger:
         # We need to do this manually because we can't add a DB constraint
         # spanning the three tables (Membership->Ballot->Election)
         person_elections = {
-            mem.post_election.election_id
-            for mem in self.dest_person.memberships.select_related(
-                "post_election"
-            )
+            mem.ballot.election_id
+            for mem in self.dest_person.memberships.select_related("ballot")
         }
         if len(person_elections) != self.dest_person.memberships.count():
             raise InvalidMergeError(
@@ -243,7 +241,7 @@ class PersonMerger:
     def merge_not_standing(self):
         for election in self.source_person.not_standing.all():
             if not self.dest_person.memberships.filter(
-                post_election__election=election
+                ballot__election=election
             ):
                 # If this election is in the dest person's memberships, we
                 # shouldn't add to their "not standing" list.

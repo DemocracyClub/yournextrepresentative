@@ -81,7 +81,7 @@ class BulkAddPartyView(BasePartyBulkAddView):
         qs = self.get_ballot_qs(context["election_obj"])
         for ballot in qs:
             existing = Membership.objects.filter(
-                post_election__election=ballot.election,
+                ballot__election=ballot.election,
                 post=ballot.post,
                 party=context["party"],
             )

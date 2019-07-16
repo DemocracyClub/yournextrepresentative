@@ -28,7 +28,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.green_party,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
 
     def test_update_person_should_not_lose_existing_not_standing(self):
@@ -179,8 +179,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         new_candidacy = Membership.objects.get(pk=list(extra_membership_ids)[0])
         self.assertEqual(new_candidacy.post.label, "Shepway South Ward")
         self.assertEqual(
-            new_candidacy.post_election.election.slug,
-            "local.maidstone.2016-05-05",
+            new_candidacy.ballot.election.slug, "local.maidstone.2016-05-05"
         )
         self.assertEqual(new_candidacy.party.name, "Labour Party")
         same_before_and_after = memberships_before & memberships_afterwards

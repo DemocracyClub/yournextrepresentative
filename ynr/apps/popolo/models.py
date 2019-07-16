@@ -299,11 +299,11 @@ class Membership(Dateframeable, Timestampable, models.Model):
     # Moved from MembeshipExtra
     elected = models.NullBooleanField()
     party_list_position = models.IntegerField(null=True)
-    post_election = models.ForeignKey("candidates.Ballot")
+    ballot = models.ForeignKey("candidates.Ballot")
 
     def save(self, *args, **kwargs):
-        if self.post_election and getattr(self, "check_for_broken", True):
-            if self.post_election.election in self.person.not_standing.all():
+        if self.ballot and getattr(self, "check_for_broken", True):
+            if self.ballot.election in self.person.not_standing.all():
                 msg = (
                     "Trying to add a Membership with an election "
                     '"{election}", but that\'s in {person} '
@@ -311,7 +311,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
                 )
                 raise Exception(
                     msg.format(
-                        election=self.post_election.election,
+                        election=self.ballot.election,
                         person=self.person.name,
                         person_id=self.person.id,
                     )
@@ -340,19 +340,19 @@ class Membership(Dateframeable, Timestampable, models.Model):
             identifier_dict[identifier.value_type] = identifier.value
 
         membership_dict = {
-            "election": self.post_election.election.slug,
-            "election_date": self.post_election.election.election_date,
-            "election_current": self.post_election.election.current,
+            "election": self.ballot.election.slug,
+            "election_date": self.ballot.election.election_date,
+            "election_current": self.ballot.election.current,
             "party_name": self.party.name,
             "party_id": self.party.legacy_slug,
             "party_ec_id": self.party.ec_id,
             "party_list_position": self.party_list_position,
-            "party_lists_in_use": self.post_election.election.party_lists_in_use,
+            "party_lists_in_use": self.ballot.election.party_lists_in_use,
             "mapit_url": "",
             "gss_code": "",
-            "post_id": self.post_election.post.slug,
-            "post_label": self.post_election.post.short_label,
-            "cancelled_poll": self.post_election.cancelled,
+            "post_id": self.ballot.post.slug,
+            "post_label": self.ballot.post.short_label,
+            "cancelled_poll": self.ballot.cancelled,
         }
 
         if redirects and redirects.get(self.person_id):

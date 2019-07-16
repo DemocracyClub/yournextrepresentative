@@ -55,7 +55,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
 
         with transaction.atomic():
             number_of_existing_winners = self.post_data.memberships.filter(
-                elected=True, post_election__election=self.election_data
+                elected=True, ballot__election=self.election_data
             ).count()
             max_winners = get_max_winners(self.ballot)
             if max_winners >= 0 and number_of_existing_winners >= max_winners:
@@ -77,7 +77,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 role=candidate_role,
                 post=self.post_data,
                 person=self.person,
-                post_election__election=self.election_data,
+                ballot__election=self.election_data,
             )
             membership_new_winner.elected = True
             membership_new_winner.save()
@@ -116,7 +116,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 max_reached = max_winners == (number_of_existing_winners + 1)
                 if max_reached:
                     losing_candidacies = self.post_data.memberships.filter(
-                        post_election__election=self.election_data
+                        ballot__election=self.election_data
                     ).exclude(elected=True)
                     for candidacy in losing_candidacies:
                         if candidacy.elected != False:
@@ -146,7 +146,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
 
             all_candidacies = post.memberships.filter(
                 role=self.election_data.candidate_membership_role,
-                post_election__election=self.election_data,
+                ballot__election=self.election_data,
             )
             source = "Result recorded in error, retracting"
             for candidacy in all_candidacies.all():

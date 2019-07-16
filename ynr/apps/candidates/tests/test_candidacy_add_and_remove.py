@@ -14,7 +14,7 @@ class TestCandidacyCreateView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.person,
             post=self.camberwell_post,
             party=self.labour_party,
-            post_election=self.camberwell_post_ballot_earlier,
+            ballot=self.camberwell_post_ballot_earlier,
         )
 
     def test_create_candidacy_from_earlier_election(self):
@@ -38,7 +38,7 @@ class TestCandidacyDeleteView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.person,
             post=self.dulwich_post,
             party=self.green_party,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
 
     def test_delete_candidacy(self):

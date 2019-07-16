@@ -30,10 +30,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         # Create their candidacies:
         candidacies = [
             MembershipFactory.create(
-                post_election=ballot,
-                person=person,
-                post=self.local_post,
-                party=party,
+                ballot=ballot, person=person, post=self.local_post, party=party
             )
             for person, party in zip(self.persons, parties)
         ]

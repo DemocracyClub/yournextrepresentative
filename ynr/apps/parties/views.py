@@ -39,14 +39,12 @@ class CandidatesByElectionForPartyView(TemplateView):
         party = Party.objects.get(ec_id=kwargs["party_id"])
 
         candidates_qs = party.membership_set.select_related(
-            "post_election", "person", "post_election__post"
+            "ballot", "person", "ballot__post"
         )
 
         try:
             election = Election.objects.get(slug=kwargs["election"])
-            candidates_qs = candidates_qs.filter(
-                post_election__election=election
-            )
+            candidates_qs = candidates_qs.filter(ballot__election=election)
             ballot = None
 
         except Election.DoesNotExist:
@@ -55,11 +53,9 @@ class CandidatesByElectionForPartyView(TemplateView):
                 Ballot, ballot_paper_id=kwargs["election"]
             )
             election = ballot.election
-            candidates_qs = candidates_qs.filter(
-                post_election__ballot_paper_id=ballot
-            )
+            candidates_qs = candidates_qs.filter(ballot__ballot_paper_id=ballot)
 
-        candidates_qs = candidates_qs.order_by("post_election__post__label")
+        candidates_qs = candidates_qs.order_by("ballot__post__label")
 
         context["party"] = party
         context["election"] = election

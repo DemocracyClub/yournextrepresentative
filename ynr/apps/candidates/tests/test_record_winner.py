@@ -22,7 +22,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
 
         self.winner = PersonFactory.create(id=4322, name="Helen Hayes")
@@ -31,7 +31,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.winner,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
 
     @override_settings(TEMPLATES=templates_after)
@@ -261,7 +261,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
 
         self.winner = PersonFactory.create(id=4322, name="Helen Hayes")
@@ -271,7 +271,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.dulwich_post,
             party=self.labour_party,
             elected=True,
-            post_election=self.dulwich_post_ballot,
+            ballot=self.dulwich_post_ballot,
         )
 
     def test_retract_winner_link_present(self):

@@ -61,7 +61,7 @@ class PersonIdentifierQuerySet(models.query.QuerySet):
 class PersonQuerySet(models.query.QuerySet):
     def missing(self, field):
         people_in_current_elections = self.filter(
-            memberships__post_election__election__current=True
+            memberships__ballot__election__current=True
         )
         # The field can be one of several types:
         simple_field = [
@@ -88,7 +88,7 @@ class PersonQuerySet(models.query.QuerySet):
             models.Prefetch(
                 "memberships",
                 Membership.objects.select_related(
-                    "post_election", "post_election__election", "party", "post"
+                    "ballot", "ballot__election", "party", "post"
                 ),
             ),
             "images__uploading_user",

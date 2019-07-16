@@ -15,6 +15,6 @@ class Command(BaseCommand):
         for party in parties_qs:
             party.total_candidates = party.membership_set.count()
             party.current_candidates = party.membership_set.filter(
-                post_election__election__current=True
+                ballot__election__current=True
             ).count()
             party.save()

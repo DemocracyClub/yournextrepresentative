@@ -133,9 +133,9 @@ def split_candidacies(election_data, memberships):
     current_candidadacies = set()
     past_candidadacies = set()
     for membership in memberships:
-        if membership.post_election.election == election_data:
+        if membership.ballot.election == election_data:
             current_candidadacies.add(membership)
-        elif membership.post_election.election:
+        elif membership.ballot.election:
             past_candidadacies.add(membership)
 
     return current_candidadacies, past_candidadacies

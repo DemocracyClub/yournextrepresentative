@@ -130,7 +130,7 @@ def mark_as_standing(person, election_data, post, party, party_list_position):
     # which would be lost if we deleted and recreated the membership.
     # Go through the person's existing candidacies for this election:
     for existing_membership in Membership.objects.filter(
-        post_election__election=election_data,
+        ballot__election=election_data,
         role=election_data.candidate_membership_role,
         person=person,
     ):
@@ -144,7 +144,7 @@ def mark_as_standing(person, election_data, post, party, party_list_position):
             post=post,
             person=person,
             role=election_data.candidate_membership_role,
-            post_election=election_data.ballot_set.get(post=post),
+            ballot=election_data.ballot_set.get(post=post),
         )
     # Update the party list position in case it's changed:
     membership.party_list_position = party_list_position
@@ -163,7 +163,7 @@ def mark_as_standing(person, election_data, post, party, party_list_position):
 def mark_as_not_standing(person, election_data, post):
     # Remove any existing candidacy:
     for membership in Membership.objects.filter(
-        post_election__election=election_data,
+        ballot__election=election_data,
         role=election_data.candidate_membership_role,
         person=person,
         # n.b. we are planning to make "not standing" post
@@ -182,7 +182,7 @@ def mark_as_not_standing(person, election_data, post):
 def mark_as_unsure_if_standing(person, election_data, post):
     # Remove any existing candidacy:
     for membership in Membership.objects.filter(
-        post_election__election=election_data,
+        ballot__election=election_data,
         role=election_data.candidate_membership_role,
         person=person,
     ):

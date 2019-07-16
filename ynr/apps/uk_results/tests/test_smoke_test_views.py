@@ -33,7 +33,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         # Create their candidacies:
         candidacies = [
             MembershipFactory.create(
-                post_election=self.ballot,
+                ballot=self.ballot,
                 person=person,
                 post=self.local_post,
                 party=party,

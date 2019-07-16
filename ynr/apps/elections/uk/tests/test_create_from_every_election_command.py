@@ -405,7 +405,7 @@ class EE_ImporterTest(WebTest):
         # create a membership which references the PEE we just imported
         MembershipFactory(
             person=PersonFactory.create(id=2009, name="Tessa Jowell"),
-            post_election=every_election.Ballot.objects.all()[0],
+            ballot=every_election.Ballot.objects.all()[0],
         )
 
         # now we've switched the fixtures round

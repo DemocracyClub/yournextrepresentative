@@ -86,7 +86,7 @@ def current_election_stats(context):
                 election__in=election_qs
             ).aggregate(count=Sum("winner_count"))["count"],
             "candidates": Membership.objects.filter(
-                post_election__election__in=election_qs
+                ballot__election__in=election_qs
             ).count(),
         }
         context["elction_stats"] = stats

@@ -215,11 +215,11 @@ class BallotPaperView(TemplateView):
             self.request.user, context["candidates_locked"]
         )
 
-        extra_qs = Membership.objects.select_related("post_election__election")
+        extra_qs = Membership.objects.select_related("ballot__election")
         current_candidacies, past_candidacies = split_candidacies(
             election,
             mp_post.memberships.select_related(
-                "person", "party", "post_election__election"
+                "person", "party", "ballot__election"
             ).all(),
         )
 
@@ -884,7 +884,7 @@ class BallotPaperView(TemplateView):
             current_candidacies_2015, past_candidacies_2015 = split_candidacies(
                 election,
                 other_post.memberships.select_related("person", "party").filter(
-                    post_election__election__slug="2015"
+                    ballot__election__slug="2015"
                 ),
             )
 

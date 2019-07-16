@@ -39,9 +39,9 @@ class ResultSetViewSet(viewsets.ModelViewSet):
                 "membership__party",
                 "membership__post",
                 "membership__person",
-                "membership__post_election",
-                "membership__post_election__post",
-                "membership__post_election__election",
+                "membership__ballot",
+                "membership__ballot__post",
+                "membership__ballot__election",
             ),
         ),
     ).order_by("id")
