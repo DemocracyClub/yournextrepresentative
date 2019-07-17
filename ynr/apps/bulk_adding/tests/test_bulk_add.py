@@ -38,7 +38,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
 
@@ -59,7 +59,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
 
@@ -121,9 +121,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=existing_person,
             post=self.local_post,
             party=self.labour_party,
-            post_election=self.local_election.postextraelection_set.get(
-                post=self.local_post
-            ),
+            ballot=self.local_election.ballot_set.get(post=self.local_post),
         )
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:
@@ -170,13 +168,13 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self._run_wizard_to_end()
         # We expect to go to the ballot page
         self.assertEqual(
-            response.location, self.dulwich_post_pee.get_absolute_url()
+            response.location, self.dulwich_post_ballot.get_absolute_url()
         )
         new_response = response.follow()
         self.assertFalse(RawPeople.objects.exists())
@@ -190,13 +188,13 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.camberwell_post_pee,
+            ballot=self.camberwell_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self._run_wizard_to_end()
@@ -220,16 +218,14 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             # !!! This is the line that differs from the previous test:
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.election.postextraelection_set.get(
-                post=self.dulwich_post
-            ),
+            ballot=self.election.ballot_set.get(post=self.dulwich_post),
         )
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
 
@@ -272,7 +268,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_redirect_to_review_form(self):
         RawPeople.objects.create(
-            ballot=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             data=[{"name": "Bart", "party_id": "PP52"}],
         )
         response = self.app.get(
@@ -290,7 +286,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
@@ -311,15 +307,13 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             # !!! This is the line that differs from the previous test:
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.election.postextraelection_set.get(
-                post=self.dulwich_post
-            ),
+            ballot=self.election.ballot_set.get(post=self.dulwich_post),
         )
 
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
@@ -343,15 +337,13 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             # !!! This is the line that differs from the previous test:
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.election.postextraelection_set.get(
-                post=self.dulwich_post
-            ),
+            ballot=self.election.ballot_set.get(post=self.dulwich_post),
         )
 
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.camberwell_post_pee,
+            ballot=self.camberwell_post_ballot,
             uploaded_file="sopn.pdf",
         )
 

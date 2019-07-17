@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 
 
 class BaseSOPNParsingCommand(BaseCommand):
@@ -27,7 +27,7 @@ class BaseSOPNParsingCommand(BaseCommand):
         if options["current"]:
             filter_kwargs["election__current"] = True
 
-        qs = PostExtraElection.objects.all()
+        qs = Ballot.objects.all()
         qs = qs.filter(**filter_kwargs)
         qs = qs.exclude(officialdocument=None)
         return qs

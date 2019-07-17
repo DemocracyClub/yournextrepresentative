@@ -34,20 +34,20 @@ def update_person(
     request=None,
     person=None,
     party=None,
-    post_election=None,
+    ballot=None,
     source=None,
     list_position=None,
 ):
-    election = post_election.election
+    election = ballot.election
 
     person.not_standing.remove(election)
 
     check_creation_allowed(request.user, person.current_candidacies)
 
     membership, _ = Membership.objects.update_or_create(
-        post=post_election.post,
+        post=ballot.post,
         person=person,
-        post_election=post_election,
+        ballot=ballot,
         defaults={
             "party": party,
             "party_list_position": list_position,
@@ -63,15 +63,15 @@ def update_person(
     # losing data.
     old_memberships = (
         Membership.objects.exclude(pk=membership.pk)
-        .exclude(post_election__candidates_locked=True)
-        .filter(person=person, post_election__election=post_election.election)
+        .exclude(ballot__candidates_locked=True)
+        .filter(person=person, ballot__election=ballot.election)
     )
     for old_membership in old_memberships:
         raise_if_unsafe_to_delete(old_membership)
         old_membership.delete()
 
     memberships_for_election = Membership.objects.filter(
-        person=person, post_election__election=post_election.election
+        person=person, ballot__election=ballot.election
     )
 
     if (
@@ -106,7 +106,7 @@ class CSVImporter:
         self.validate_posts()
 
         self.ballots = {}
-        for ballot in self.election.postextraelection_set.all():
+        for ballot in self.election.ballot_set.all():
             self.ballots[ballot.ballot_paper_id] = {
                 "ballot": ballot,
                 "data": [],
@@ -148,7 +148,7 @@ class CSVImporter:
 
     def match_division_to_ballot(self, row):
         post_name = self.clean_area_name(row[self.post_header_name])
-        for ballot in self.election.postextraelection_set.all():
+        for ballot in self.election.ballot_set.all():
             print(self.clean_area_name(ballot.post.label), post_name)
             if self.clean_area_name(ballot.post.label) == post_name:
                 return ballot
@@ -241,7 +241,7 @@ class CSVImporter:
         unique_posts = set(
             [row[self.post_header_name] for row in self.csv_data]
         )
-        if len(unique_posts) != self.election.postextraelection_set.count():
+        if len(unique_posts) != self.election.ballot_set.count():
             raise ValueError("Number of posts don't match")
 
         return True

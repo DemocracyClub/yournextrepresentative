@@ -92,7 +92,7 @@ def get_description(description, sopn):
     if description in INDEPENDENT_VALUES:
         return None
 
-    register = sopn.sopn.post_election.post.party_set.slug.upper()
+    register = sopn.sopn.ballot.post.party_set.slug.upper()
     try:
         description_model = PartyDescription.objects.get(
             description=description, party__register=register
@@ -120,9 +120,7 @@ def get_party(description_model, description, sopn):
         return description_model.party
 
     party_name = clean_description(description)
-    qs = Party.objects.register(
-        sopn.sopn.post_election.post.party_set.slug.upper()
-    )
+    qs = Party.objects.register(sopn.sopn.ballot.post.party_set.slug.upper())
     if not party_name or party_name in INDEPENDENT_VALUES:
         return Party.objects.get(ec_id="ynmp-party:2")
 
@@ -162,7 +160,7 @@ def parse_table(sopn, data):
 def parse_raw_data_for_ballot(ballot):
     """
 
-    :type ballot: candidates.models.PostExtraElection
+    :type ballot: candidates.models.Ballot
     """
 
     if ballot.candidates_locked:
@@ -204,11 +202,11 @@ def parse_raw_data_for_ballot(ballot):
     if ballot_data:
         # Check there isn't a rawpeople object from another (better) source
         rawpeople_qs = RawPeople.objects.filter(
-            ballot=parsed_sopn_model.sopn.post_election
+            ballot=parsed_sopn_model.sopn.ballot
         ).exclude(source_type=RawPeople.SOURCE_PARSED_PDF)
         if not rawpeople_qs.exists():
             RawPeople.objects.update_or_create(
-                ballot=parsed_sopn_model.sopn.post_election,
+                ballot=parsed_sopn_model.sopn.ballot,
                 defaults={
                     "data": ballot_data,
                     "source": "Parsed from {}".format(
@@ -221,9 +219,7 @@ def parse_raw_data_for_ballot(ballot):
         storage = DefaultStorage()
         desired_storage_path = join(
             "raw_people",
-            "{}.json".format(
-                parsed_sopn_model.sopn.post_election.ballot_paper_id
-            ),
+            "{}.json".format(parsed_sopn_model.sopn.ballot.ballot_paper_id),
         )
         storage.save(
             desired_storage_path,

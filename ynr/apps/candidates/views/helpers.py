@@ -32,8 +32,8 @@ def get_field_groupings():
 
 
 def get_redirect_to_post(election, post):
-    pee = election.postextraelection_set.get(post=post)
-    return HttpResponseRedirect(pee.get_absolute_url())
+    ballot = election.ballot_set.get(post=post)
+    return HttpResponseRedirect(ballot.get_absolute_url())
 
 
 def get_person_form_fields(context, form):
@@ -104,7 +104,7 @@ def get_party_people_for_election_from_memberships(
         memberships.select_related("person")
         .filter(
             role=election_data.candidate_membership_role,
-            post_election__election=election_data,
+            ballot__election=election_data,
             party__ec_id=party_id,
         )
         .order_by("party_list_position")
@@ -133,9 +133,9 @@ def split_candidacies(election_data, memberships):
     current_candidadacies = set()
     past_candidadacies = set()
     for membership in memberships:
-        if membership.post_election.election == election_data:
+        if membership.ballot.election == election_data:
             current_candidadacies.add(membership)
-        elif membership.post_election.election:
+        elif membership.ballot.election:
             past_candidadacies.add(membership)
 
     return current_candidadacies, past_candidadacies
@@ -343,7 +343,7 @@ class ProcessInlineFormsMixin:
         return super().get_context_data(**kwargs)
 
 
-def get_max_winners(post_election):
+def get_max_winners(ballot):
     """
     If we know the winner count for this ballot, return it, otherwise return 0
 
@@ -355,13 +355,13 @@ def get_max_winners(post_election):
     Setting the winner_count to 0 will prevent things like setting winners or
     showing winners.
 
-    TODO: move this on to the PostExtraElection model, or set it as a default
+    TODO: move this on to the Ballot model, or set it as a default
           in the database, TBD, see comment in
           https://github.com/DemocracyClub/yournextrepresentative/pull/621#issuecomment-417252565
 
     """
-    if post_election.winner_count:
+    if ballot.winner_count:
 
-        return post_election.winner_count
+        return ballot.winner_count
 
     return 0

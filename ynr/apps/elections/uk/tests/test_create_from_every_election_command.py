@@ -152,11 +152,11 @@ class EE_ImporterTest(WebTest):
         election = self.ee_importer.election_tree[self.child_id]
 
         parent = self.ee_importer.get_parent(self.child_id)
-        election.get_or_create_post_election(parent=parent)
+        election.get_or_create_ballot(parent=parent)
 
         self.assertTrue(election.post_created)
         with self.assertNumQueries(0):
-            election.get_or_create_post_election(parent=parent)
+            election.get_or_create_ballot(parent=parent)
             election.get_or_create_post()
         self.assertFalse(election.post_created)
 
@@ -168,7 +168,7 @@ class EE_ImporterTest(WebTest):
     def test_create_many_elections_and_posts(self):
         for ballot_id, election_dict in self.ee_importer.ballot_ids.items():
             parent = self.ee_importer.get_parent(ballot_id)
-            election_dict.get_or_create_post_election(parent=parent)
+            election_dict.get_or_create_ballot(parent=parent)
         self.assertEqual(every_election.Post.objects.all().count(), 189)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
 
@@ -181,7 +181,7 @@ class EE_ImporterTest(WebTest):
 
         for ballot_id, election_dict in self.ee_importer.ballot_ids.items():
             parent = self.ee_importer.get_parent(ballot_id)
-            election_dict.get_or_create_post_election(parent=parent)
+            election_dict.get_or_create_ballot(parent=parent)
         self.assertEqual(every_election.Post.objects.all().count(), 11)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
 
@@ -191,17 +191,13 @@ class EE_ImporterTest(WebTest):
             fake_requests_each_type_of_election_on_one_day
         )
 
-        self.assertEqual(
-            every_election.PostExtraElection.objects.all().count(), 0
-        )
+        self.assertEqual(every_election.Ballot.objects.all().count(), 0)
         with self.assertNumQueries(314):
             call_command("uk_create_elections_from_every_election")
-        self.assertEqual(
-            every_election.PostExtraElection.objects.all().count(), 15
-        )
+        self.assertEqual(every_election.Ballot.objects.all().count(), 15)
         self.assertEqual(
             list(
-                every_election.PostExtraElection.objects.all()
+                every_election.Ballot.objects.all()
                 .values_list("ballot_paper_id", flat=True)
                 .order_by("ballot_paper_id")
             ),
@@ -225,10 +221,10 @@ class EE_ImporterTest(WebTest):
         )
 
         # Check we set the winner count value
-        pee = every_election.PostExtraElection.objects.get(
+        ballot = every_election.Ballot.objects.get(
             ballot_paper_id="local.adur.buckingham.2019-01-17"
         )
-        self.assertEqual(pee.winner_count, 3)
+        self.assertEqual(ballot.winner_count, 3)
 
     @patch("elections.uk.every_election.requests")
     def test_delete_elections_no_matches(self, mock_requests):
@@ -238,9 +234,7 @@ class EE_ImporterTest(WebTest):
             fake_requests_each_type_of_election_on_one_day
         )
         call_command("uk_create_elections_from_every_election")
-        self.assertEqual(
-            every_election.PostExtraElection.objects.all().count(), 15
-        )
+        self.assertEqual(every_election.Ballot.objects.all().count(), 15)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
 
         # now we're going to delete some stuff
@@ -261,9 +255,7 @@ class EE_ImporterTest(WebTest):
         call_command("uk_create_elections_from_every_election")
 
         # nothing in our DB should have changed
-        self.assertEqual(
-            every_election.PostExtraElection.objects.all().count(), 15
-        )
+        self.assertEqual(every_election.Ballot.objects.all().count(), 15)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
 
     @patch("elections.uk.every_election.requests")
@@ -280,9 +272,7 @@ class EE_ImporterTest(WebTest):
             }
         )
         call_command("uk_create_elections_from_every_election")
-        self.assertEqual(
-            every_election.PostExtraElection.objects.all().count(), 1
-        )
+        self.assertEqual(every_election.Ballot.objects.all().count(), 1)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 1)
 
         # now we've switched the fixtures round
@@ -300,9 +290,7 @@ class EE_ImporterTest(WebTest):
         call_command("uk_create_elections_from_every_election")
 
         # we should delete the records we just imported
-        self.assertEqual(
-            every_election.PostExtraElection.objects.all().count(), 0
-        )
+        self.assertEqual(every_election.Ballot.objects.all().count(), 0)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 0)
 
     @patch("elections.uk.every_election.requests")
@@ -315,9 +303,7 @@ class EE_ImporterTest(WebTest):
             fake_requests_each_type_of_election_on_one_day
         )
         call_command("uk_create_elections_from_every_election")
-        self.assertEqual(
-            every_election.PostExtraElection.objects.all().count(), 15
-        )
+        self.assertEqual(every_election.Ballot.objects.all().count(), 15)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
 
         # this simulates a situation where EE reports
@@ -341,9 +327,7 @@ class EE_ImporterTest(WebTest):
 
         # we should also roll back the whole transaction
         # so nothing is inserted or deleted
-        self.assertEqual(
-            every_election.PostExtraElection.objects.all().count(), 15
-        )
+        self.assertEqual(every_election.Ballot.objects.all().count(), 15)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
 
     @patch("elections.uk.every_election.requests")
@@ -362,9 +346,7 @@ class EE_ImporterTest(WebTest):
             }
         )
         call_command("uk_create_elections_from_every_election")
-        self.assertEqual(
-            every_election.PostExtraElection.objects.all().count(), 1
-        )
+        self.assertEqual(every_election.Ballot.objects.all().count(), 1)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 1)
 
         # this simulates a situation where EE reports
@@ -400,9 +382,7 @@ class EE_ImporterTest(WebTest):
 
         # we should also roll back the whole transaction
         # so nothing is inserted or deleted
-        self.assertEqual(
-            every_election.PostExtraElection.objects.all().count(), 1
-        )
+        self.assertEqual(every_election.Ballot.objects.all().count(), 1)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 1)
 
     @patch("elections.uk.every_election.requests")
@@ -419,15 +399,13 @@ class EE_ImporterTest(WebTest):
             }
         )
         call_command("uk_create_elections_from_every_election")
-        self.assertEqual(
-            every_election.PostExtraElection.objects.all().count(), 1
-        )
+        self.assertEqual(every_election.Ballot.objects.all().count(), 1)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 1)
 
         # create a membership which references the PEE we just imported
         MembershipFactory(
             person=PersonFactory.create(id=2009, name="Tessa Jowell"),
-            post_election=every_election.PostExtraElection.objects.all()[0],
+            ballot=every_election.Ballot.objects.all()[0],
         )
 
         # now we've switched the fixtures round
@@ -447,9 +425,7 @@ class EE_ImporterTest(WebTest):
             call_command("uk_create_elections_from_every_election")
 
         # we should also roll back the whole transaction so nothing is deleted
-        self.assertEqual(
-            every_election.PostExtraElection.objects.all().count(), 1
-        )
+        self.assertEqual(every_election.Ballot.objects.all().count(), 1)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 1)
 
     @patch("elections.uk.every_election.requests")

@@ -28,11 +28,11 @@ class TestModels(TestCase):
             slug="dulwich-and-west-norwood",
             label="Member of Parliament for Dulwich and West Norwood",
         )
-        self.ballot = self.post.postextraelection_set.get()
+        self.ballot = self.post.ballot_set.get()
 
     def test_unicode(self):
         doc = OfficialDocument(
-            post_election=self.ballot, source_url="http://example.com/"
+            ballot=self.ballot, source_url="http://example.com/"
         )
 
         self.assertEqual(
@@ -42,7 +42,7 @@ class TestModels(TestCase):
 
     def test_relevant_pages(self):
         doc = OfficialDocument(
-            post_election=self.ballot, source_url="http://example.com/"
+            ballot=self.ballot, source_url="http://example.com/"
         )
         self.assertIsNone(doc.first_page_number)
         self.assertIsNone(doc.last_page_number)

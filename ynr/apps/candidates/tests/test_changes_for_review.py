@@ -193,7 +193,7 @@ class TestNeedsReview(UK2015ExamplesMixin, TestUserMixin, WebTest):
         change_updated_and_created(la, dt)
 
         resp = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(), user=self.user
+            self.dulwich_post_ballot.get_absolute_url(), user=self.user
         )
 
         form = resp.forms["new-candidate-form"]

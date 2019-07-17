@@ -68,7 +68,7 @@
         {% if la.person %}
           <a href="{{ la.person.get_absolute_url }}">{{ la.person }}</a>
           {% else %}
-          <a href="{{ la.post_election.get_absolute_url }}">{{ la.post_election }}</a>
+          <a href="{{ la.ballot.get_absolute_url }}">{{ la.ballot }}</a>
         {% endif %}
       </td>
       <td>{{ la.action_type }}</td>

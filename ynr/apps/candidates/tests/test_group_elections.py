@@ -10,7 +10,7 @@ from .factories import ElectionFactory
 
 
 def get_election_extra(post, election):
-    return post.postextraelection_set.get(election=election)
+    return post.ballot_set.get(election=election)
 
 
 class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
@@ -103,16 +103,14 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
             )
 
     def test_election_grouping_with_posts(self):
-        camberwell_postextraelection = get_election_extra(
+        camberwell_ballot = get_election_extra(
             self.camberwell_post, self.election
         )
-        dulwich_postextraelection = get_election_extra(
-            self.dulwich_post, self.election
-        )
-        edinburgh_east_postextraelection = get_election_extra(
+        dulwich_ballot = get_election_extra(self.dulwich_post, self.election)
+        edinburgh_east_ballot = get_election_extra(
             self.edinburgh_east_post, self.election
         )
-        edinburgh_north_postextraelection = get_election_extra(
+        edinburgh_north_ballot = get_election_extra(
             self.edinburgh_north_post, self.election
         )
         camberwell_earlier = get_election_extra(
@@ -127,14 +125,12 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
         edinburgh_north_earlier = get_election_extra(
             self.edinburgh_north_post, self.earlier_election
         )
-        local_council_pee = get_election_extra(
+        local_council_ballot = get_election_extra(
             self.local_post, self.local_election
         )
         with self.assertNumQueries(4):
             self.assertEqual(
-                Election.group_and_order_elections(
-                    include_postextraelections=True
-                ),
+                Election.group_and_order_elections(include_ballots=True),
                 [
                     {
                         "current": True,
@@ -147,8 +143,8 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
                                             "role": "Local Councillor",
                                             "elections": [
                                                 {
-                                                    "postextraelections": [
-                                                        local_council_pee
+                                                    "ballots": [
+                                                        local_council_ballot
                                                     ],
                                                     "election": self.local_election,
                                                 }
@@ -158,11 +154,11 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
                                             "role": "Member of the Scottish Parliament",
                                             "elections": [
                                                 {
-                                                    "postextraelections": [],
+                                                    "ballots": [],
                                                     "election": self.sp_c_election,
                                                 },
                                                 {
-                                                    "postextraelections": [],
+                                                    "ballots": [],
                                                     "election": self.sp_r_election,
                                                 },
                                             ],
@@ -176,11 +172,11 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
                                             "role": "Member of Parliament",
                                             "elections": [
                                                 {
-                                                    "postextraelections": [
-                                                        camberwell_postextraelection,
-                                                        dulwich_postextraelection,
-                                                        edinburgh_east_postextraelection,
-                                                        edinburgh_north_postextraelection,
+                                                    "ballots": [
+                                                        camberwell_ballot,
+                                                        dulwich_ballot,
+                                                        edinburgh_east_ballot,
+                                                        edinburgh_north_ballot,
                                                     ],
                                                     "election": self.election,
                                                 }
@@ -202,7 +198,7 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
                                             "role": "Member of Parliament",
                                             "elections": [
                                                 {
-                                                    "postextraelections": [
+                                                    "ballots": [
                                                         camberwell_earlier,
                                                         dulwich_earlier,
                                                         edinburgh_east_earlier,

@@ -21,7 +21,7 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
         )
 
         doc = OfficialDocument.objects.create(
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             document_type=OfficialDocument.NOMINATION_PAPER,
             uploaded_file=SimpleUploadedFile(
                 "sopn.pdf", open(example_doc_path, "rb").read()

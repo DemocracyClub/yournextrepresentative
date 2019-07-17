@@ -28,7 +28,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
             person=person,
             post=constituencies["Doncaster North"],
             party=self.labour_party,
-            post_election=self.election.postextraelection_set.get(
+            ballot=self.election.ballot_set.get(
                 post=constituencies["Doncaster North"]
             ),
         )
@@ -37,7 +37,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
             person=person,
             post=constituencies["South Shields"],
             party=self.labour_party,
-            post_election=self.earlier_election.postextraelection_set.get(
+            ballot=self.earlier_election.ballot_set.get(
                 post=constituencies["South Shields"]
             ),
         )
@@ -48,7 +48,7 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
             person=conservative_opponent,
             post=constituencies["South Shields"],
             party=self.conservative_party,
-            post_election=self.election.postextraelection_set.get(
+            ballot=self.election.ballot_set.get(
                 post=constituencies["South Shields"]
             ),
         )

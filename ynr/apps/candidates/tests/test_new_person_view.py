@@ -31,7 +31,7 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_new_person_submission(self):
         response = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(), user=self.user
+            self.dulwich_post_ballot.get_absolute_url(), user=self.user
         )
 
         # make sure we've got the PersonIdentifiers
@@ -91,7 +91,7 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(candidacy.role, "Candidate")
         self.assertEqual(candidacy.party.legacy_slug, "party:53")
         self.assertEqual(candidacy.party.ec_id, "PP53")
-        self.assertEqual(candidacy.post_election.election_id, self.election.id)
+        self.assertEqual(candidacy.ballot.election_id, self.election.id)
 
         person_identifiers = person.tmp_person_identifiers.all()
         self.assertEqual(person_identifiers.count(), 2)

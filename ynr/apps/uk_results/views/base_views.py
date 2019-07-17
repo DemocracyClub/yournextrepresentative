@@ -3,7 +3,7 @@ from datetime import date
 from braces.views import LoginRequiredMixin
 from django.views.generic import FormView, TemplateView
 
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 from uk_results.forms import ResultSetForm
 
 
@@ -25,23 +25,23 @@ class BallotPaperResultsUpdateView(LoginRequiredMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        self.pee = PostExtraElection.objects.get(
+        self.ballot = Ballot.objects.get(
             ballot_paper_id=self.kwargs["ballot_paper_id"],
             # if we try to add results to a cancelled election, throw a 404
             cancelled=False,
         )
         try:
-            kwargs["instance"] = self.pee.resultset
+            kwargs["instance"] = self.ballot.resultset
         except:
             pass
-        kwargs["post_election"] = self.pee
+        kwargs["ballot"] = self.ballot
         return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context["post_election"] = self.pee
-        context["resultset"] = getattr(self.pee, "resultset", None)
+        context["ballot"] = self.ballot
+        context["resultset"] = getattr(self.ballot, "resultset", None)
         return context
 
     def form_valid(self, form):
@@ -49,7 +49,7 @@ class BallotPaperResultsUpdateView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        url = self.pee.get_absolute_url()
+        url = self.ballot.get_absolute_url()
         return url
 
 
@@ -60,7 +60,7 @@ class CurrentElectionsWithNoResuts(TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["elections"] = (
-            PostExtraElection.objects.filter(
+            Ballot.objects.filter(
                 election__current=True,
                 election__election_date__lte=date.today(),
                 resultset=None,

@@ -50,9 +50,9 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
             organization=self.local_council,
         )
 
-        self.dest_person.memberships.create(post_election=self.local_pee)
+        self.dest_person.memberships.create(ballot=self.local_ballot)
         self.source_person.memberships.create(
-            post_election=other_local_post.postextraelection_set.get()
+            ballot=other_local_post.ballot_set.get()
         )
 
         self.assertEqual(Person.objects.count(), 2)
@@ -69,18 +69,18 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         in the merging code. However, we can test that `safe_delete` doesn't
         delete objects with related models.
         """
-        self.dest_person.memberships.create(post_election=self.local_pee)
+        self.dest_person.memberships.create(ballot=self.local_ballot)
         merger = PersonMerger(self.dest_person, self.source_person)
         with self.assertRaises(UnsafeToDelete):
             merger.safe_delete(self.dest_person)
         self.assertEqual(Person.objects.count(), 2)
 
     def test_merge_with_results(self):
-        self.source_person.memberships.create(post_election=self.local_pee)
-        self.dest_person.memberships.create(post_election=self.local_pee)
+        self.source_person.memberships.create(ballot=self.local_ballot)
+        self.dest_person.memberships.create(ballot=self.local_ballot)
 
         result_set = ResultSet.objects.create(
-            post_election=self.local_pee,
+            ballot=self.local_ballot,
             num_turnout_reported=10000,
             num_spoilt_ballots=30,
             user=self.user,
@@ -103,11 +103,11 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_merge_with_results_on_both_memberships(self):
-        self.source_person.memberships.create(post_election=self.local_pee)
-        self.dest_person.memberships.create(post_election=self.local_pee)
+        self.source_person.memberships.create(ballot=self.local_ballot)
+        self.dest_person.memberships.create(ballot=self.local_ballot)
 
         result_set = ResultSet.objects.create(
-            post_election=self.local_pee,
+            ballot=self.local_ballot,
             num_turnout_reported=10000,
             num_spoilt_ballots=30,
             user=self.user,
@@ -501,7 +501,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
             party_set=self.gb_parties,
             organization=self.local_council,
         )
-        ballot = other_local_post.postextraelection_set.get()
+        ballot = other_local_post.ballot_set.get()
 
         # Create person 1
         response = self.app.get(ballot.get_absolute_url(), user=self.user)

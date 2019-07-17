@@ -23,7 +23,7 @@ class PreventCreatingBadMemberships(UK2015ExamplesMixin, TestCase):
                 person=new_candidate,
                 party=self.green_party,
                 post=self.camberwell_post,
-                post_election=self.camberwell_post_pee,
+                ballot=self.camberwell_post_ballot,
             )
 
     def test_raise_if_candidacy_exists(self):
@@ -34,7 +34,7 @@ class PreventCreatingBadMemberships(UK2015ExamplesMixin, TestCase):
             person=new_candidate,
             post=post,
             role=self.election.candidate_membership_role,
-            post_election=self.election.postextraelection_set.get(post=post),
+            ballot=self.election.ballot_set.get(post=post),
         )
         with self.assertRaisesRegex(
             Exception,

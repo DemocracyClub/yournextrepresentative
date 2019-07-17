@@ -29,17 +29,15 @@ def memberships_dicts_for_csv(election_slug=None, post_slug=None):
     redirects = PersonRedirect.all_redirects_dict()
     memberships = Membership.objects.for_csv()
     if election_slug:
-        memberships = memberships.filter(
-            post_election__election__slug=election_slug
-        )
+        memberships = memberships.filter(ballot__election__slug=election_slug)
     if post_slug:
-        memberships = memberships.filter(post_election__post__slug=post_slug)
+        memberships = memberships.filter(ballot__post__slug=post_slug)
 
     memberships_by_election = defaultdict(list)
     elected_by_election = defaultdict(list)
 
     for membership in memberships:
-        election_slug = membership.post_election.election.slug
+        election_slug = membership.ballot.election.slug
         line = membership.dict_for_csv(redirects=redirects)
         memberships_by_election[election_slug].append(line)
         if membership.elected:

@@ -41,7 +41,7 @@
 
             </script>
 
-            <a data-person-id="{{ membership.person.pk }}" data-post-id="{{ membership.post_election.post.slug }}" href="{% url 'candidacy-delete' election=membership.post_election.election.slug %}" class="radius secondary label known-person-not-standing" title="Mark as not standing">
+            <a data-person-id="{{ membership.person.pk }}" data-post-id="{{ membership.ballot.post.slug }}" href="{% url 'candidacy-delete' election=membership.ballot.election.slug %}" class="radius secondary label known-person-not-standing" title="Mark as not standing">
               ❌
             </a>
 
@@ -54,7 +54,7 @@
         {% endfor %}
       </tbody>
     </table>
-    {% include "moderation_queue/includes/ajax_lock_button_html.html" with postextraelection=ballot %}
+    {% include "moderation_queue/includes/ajax_lock_button_html.html" with ballot=ballot %}
   </td>
   <td>
     {% if ballot.sopn %}

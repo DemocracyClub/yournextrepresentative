@@ -37,8 +37,6 @@ class ResultSetSerializer(serializers.HyperlinkedModelSerializer):
 
     # post_result = PostResultSerializer()
     user = serializers.ReadOnlyField(source="user.username")
-    ballot_paper_id = serializers.ReadOnlyField(
-        source="post_election.ballot_paper_id"
-    )
+    ballot_paper_id = serializers.ReadOnlyField(source="ballot.ballot_paper_id")
     user_id = serializers.ReadOnlyField(source="user.id")
     candidate_results = CandidateResultSerializer(many=True, read_only=True)

@@ -71,7 +71,7 @@ def get_call_to_action_flash_message(person, new_person=False):
                     election_data.name,
                 )
                 for election_data in Election.objects.filter(
-                    postextraelection__membership__person=person, current=True
+                    ballot__membership__person=person, current=True
                 ).distinct()
             ],
         },
@@ -93,7 +93,7 @@ class PersonView(TemplateView):
         context["person"] = self.person
 
         context["elections_to_list"] = Election.objects.filter(
-            postextraelection__membership__person=self.person
+            ballot__membership__person=self.person
         ).order_by("-election_date")
 
         context["last_candidacy"] = self.person.last_candidacy

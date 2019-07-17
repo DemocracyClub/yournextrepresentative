@@ -12,7 +12,7 @@ def extract_ballot_table(ballot, parse_flavor="lattice"):
     Given a OfficialDocument model, update or create a ParsedSOPN model with the
     contents of the table as a JSON string.
 
-    :type ballot: candidates.models.PostExtraElection
+    :type ballot: candidates.models.Ballot
 
     """
     document = ballot.sopn

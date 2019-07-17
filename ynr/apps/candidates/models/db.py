@@ -53,7 +53,7 @@ class LoggedAction(models.Model):
     ip_address = models.CharField(max_length=50, blank=True, null=True)
     source = models.TextField()
     post = models.ForeignKey("popolo.Post", blank=True, null=True)
-    post_election = models.ForeignKey("candidates.PostExtraElection", null=True)
+    ballot = models.ForeignKey("candidates.Ballot", null=True)
 
     objects = LoggedActionQuerySet.as_manager()
 
@@ -63,37 +63,35 @@ class LoggedAction(models.Model):
         )
 
     @property
-    def post_election_guess(self):
+    def ballot_guess(self):
         """
         FIXME: Note that this won't always be correct because
         LoggedAction objects only reference Post at the moment,
-        rather than a Post and an Election (or a PostExtraElection).
+        rather than a Post and an Election (or a Ballot).
         """
-        from candidates.models import PostExtraElection
+        from candidates.models import Ballot
 
         if self.post:
             election = self.post.elections.order_by("-current").first()
-            return PostExtraElection.objects.get(
-                election=election, post=self.post
-            )
+            return Ballot.objects.get(election=election, post=self.post)
 
     @property
     def subject_url(self):
-        pee = self.post_election_guess
-        if pee:
-            return pee.get_absolute_url()
+        ballot = self.ballot_guess
+        if ballot:
+            return ballot.get_absolute_url()
         elif self.person:
             return reverse("person-view", kwargs={"person_id": self.person.id})
         return "/"
 
     @property
     def subject_html(self):
-        pee = self.post_election_guess
-        if pee:
+        ballot = self.ballot_guess
+        if ballot:
             return '<a href="{url}">{text} ({post_slug})</a>'.format(
                 url=self.subject_url,
-                text=pee.post.short_label,
-                post_slug=pee.post.slug,
+                text=ballot.post.short_label,
+                post_slug=ballot.post.slug,
             )
         elif self.person:
             return '<a href="{url}">{text} ({person_id})</a>'.format(

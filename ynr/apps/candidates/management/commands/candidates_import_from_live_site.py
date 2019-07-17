@@ -291,7 +291,7 @@ class Command(BaseCommand):
                     election = emodels.Election.objects.get(
                         slug=election_data["id"]
                     )
-                    models.PostExtraElection.objects.update_or_create(
+                    models.Ballot.objects.update_or_create(
                         post=post,
                         election=election,
                         candidates_locked=election_data["candidates_locked"],
@@ -361,7 +361,7 @@ class Command(BaseCommand):
                     kwargs["post"] = pmodels.Post.objects.get(
                         slug=m_data["post"]["id"]
                     )
-                kwargs["post_election"] = models.PostExtraElection.objects.get(
+                kwargs["ballot"] = models.Ballot.objects.get(
                     post=kwargs["post"],
                     election=emodels.Election.objects.get(
                         slug=m_data["election"]["id"]

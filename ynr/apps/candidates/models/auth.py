@@ -17,7 +17,7 @@ class ChangeToLockedConstituencyDisallowedException(Exception):
 
 
 def is_post_locked(post, election):
-    return post.postextraelection_set.filter(
+    return post.ballot_set.filter(
         election=election, candidates_locked=True
     ).exists()
 
@@ -57,11 +57,11 @@ def get_constituency_lock(user, post, election):
 def check_creation_allowed(user, new_candidacies):
     for candidacy in new_candidacies:
         post = candidacy.post
-        election = candidacy.post_election.election
+        election = candidacy.ballot.election
         dummy, edits_allowed = get_constituency_lock(user, post, election)
         if not edits_allowed:
             raise ChangeToLockedConstituencyDisallowedException(
-                "The candidates for this post are locked now"
+                "The candidates for this ballot are locked now"
             )
 
 
@@ -80,8 +80,8 @@ def check_update_allowed(
             )
     # Check that none of the posts that the person's leaving or
     # joining were locked:
-    old_posts = {(c.post, c.post_election.election) for c in old_candidacies}
-    new_posts = {(c.post, c.post_election.election) for c in new_candidacies}
+    old_posts = {(c.post, c.ballot.election) for c in old_candidacies}
+    new_posts = {(c.post, c.ballot.election) for c in new_candidacies}
     for post, election in old_posts ^ new_posts:
         dummy, edits_allowed = get_constituency_lock(user, post, election)
         if not edits_allowed:

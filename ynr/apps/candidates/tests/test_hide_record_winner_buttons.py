@@ -16,13 +16,13 @@ class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
         )
 
     @override_settings(TEMPLATES=templates_before)
     def test_no_was_elected_button_before(self):
         response = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(),
+            self.dulwich_post_ballot.get_absolute_url(),
             user=self.user_who_can_record_results,
         )
         self.assertNotIn(
@@ -33,7 +33,7 @@ class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
     @override_settings(TEMPLATES=templates_on_election_day)
     def test_show_was_elected_button_on_election_day(self):
         response = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(),
+            self.dulwich_post_ballot.get_absolute_url(),
             user=self.user_who_can_record_results,
         )
         self.assertIn(
@@ -44,7 +44,7 @@ class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
     @override_settings(TEMPLATES=templates_after)
     def test_show_was_elected_button_after(self):
         response = self.app.get(
-            self.dulwich_post_pee.get_absolute_url(),
+            self.dulwich_post_ballot.get_absolute_url(),
             user=self.user_who_can_record_results,
         )
         self.assertIn(

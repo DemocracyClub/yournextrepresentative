@@ -33,7 +33,7 @@ class BaseDivision(object):
             match = self.saved_matches[key]
             if match == "--deleted--":
                 return "--deleted--"
-            self.local_area = self.election.postextraelection_set.get(
+            self.local_area = self.election.ballot_set.get(
                 ballot_paper_id=match
             )
             return self.local_area
@@ -54,9 +54,7 @@ class BaseDivision(object):
 
         for name in guesses:
             try:
-                area = self.election.postextraelection_set.get(
-                    post__label__iexact=name
-                )
+                area = self.election.ballot_set.get(post__label__iexact=name)
                 self.local_area = area
                 return
             except:
@@ -67,9 +65,7 @@ class BaseDivision(object):
                 name = name.replace(" ", ".")
                 name = name.replace("-", ".")
                 name = name + "$"
-                area = self.election.postextraelection_set.get(
-                    post__label__iregex=name
-                )
+                area = self.election.ballot_set.get(post__label__iregex=name)
                 self.local_area = area
                 return
             except:
@@ -82,13 +78,13 @@ class BaseDivision(object):
             )
         )
         possible = [
-            pee
-            for pee in self.election.postextraelection_set.all()
+            ballot
+            for ballot in self.election.ballot_set.all()
             .order_by("post__label")
             .select_related("post")
         ]
-        for i, pee in enumerate(possible, start=1):
-            print("\t{}\t{}".format(i, pee.post.label))
+        for i, ballot in enumerate(possible, start=1):
+            print("\t{}\t{}".format(i, ballot.post.label))
         answer = input("Pick a number or 'd' if it's deleted: ")
         if answer.lower() == "d":
             self.saved_matches[key] = "--deleted--"
@@ -111,7 +107,7 @@ class BaseImporter(object):
 
     @property
     def ballot_papers(self):
-        return self.election.postextraelection_set.all()
+        return self.election.ballot_set.all()
 
 
 class BaseCandidate(object):

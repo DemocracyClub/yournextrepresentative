@@ -2,24 +2,24 @@
   {% if show_heading %}
 
   <h4>
-    Result{% if show_post_name %}: {{ post_election.post.label }}{% endif %}
+    Result{% if show_post_name %}: {{ ballot.post.label }}{% endif %}
   </h4>
-  <h5>{{post_election.election}}</h5>
+  <h5>{{ballot.election}}</h5>
   {% endif %}
-  {% if post_election.resultset %}
+  {% if ballot.resultset %}
   <p>Source:</p>
   <blockquote>
-    {{ post_election.resultset.source|urlize }}
+    {{ ballot.resultset.source|urlize }}
   </blockquote>
-  {% include "uk_results/includes/vote_results_table.html" with post_election=post_election %}
+  {% include "uk_results/includes/vote_results_table.html" with ballot=ballot %}
     <p>
-      <a class="button tiny" href="{% url "ballot_paper_results_form" post_election.ballot_paper_id %}">
+      <a class="button tiny" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">
         Edit results
       </a>
     </p>
   {% else %}
   <p>
-    <a class="button" href="{% url "ballot_paper_results_form" post_election.ballot_paper_id %}">
+    <a class="button" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">
       Add results
     </a>
   </p>

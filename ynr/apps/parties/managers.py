@@ -29,18 +29,14 @@ class PartyQuerySet(models.QuerySet):
     def order_by_memberships(self, date=None, nocounts=False):
         qs = self
         if date:
-            qs = qs.filter(
-                membership__post_election__election__election_date=date
-            )
+            qs = qs.filter(membership__ballot__election__election_date=date)
             qs = qs.annotate(
                 candidate_count=models.Count("membership")
             ).order_by("-candidate_count", "name")
 
         if nocounts:
             qs = qs.filter(
-                ~models.Q(
-                    membership__post_election__election__election_date=date
-                )
+                ~models.Q(membership__ballot__election__election_date=date)
             ).annotate(candidate_count=models.Value(0, models.IntegerField()))
 
         return qs

@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.forms import ModelForm
 
-from .models import LoggedAction, PartySet, PostExtraElection
+from .models import LoggedAction, PartySet, Ballot
 
 
 class LoggedActionAdminForm(ModelForm):
@@ -51,8 +51,8 @@ class PartySetAdmin(admin.ModelAdmin):
     form = PartySetAdminForm
 
 
-@admin.register(PostExtraElection)
-class PostExtraElectionAdmin(admin.ModelAdmin):
+@admin.register(Ballot)
+class BallotAdmin(admin.ModelAdmin):
     list_display = ["post", "election", "winner_count"]
     list_filter = ("election__name", "election__current")
     raw_id_fields = ("post", "election")

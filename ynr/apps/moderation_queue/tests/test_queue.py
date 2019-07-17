@@ -20,7 +20,7 @@ from moderation_queue.models import (
     PHOTO_REVIEWERS_GROUP_NAME,
     SuggestedPostLock,
 )
-from candidates.models import LoggedAction, PostExtraElection
+from candidates.models import LoggedAction, Ballot
 from official_documents.models import OfficialDocument
 from ynr.helpers import mkdir_p
 
@@ -69,13 +69,13 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             person=person_2009,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
         )
         MembershipFactory.create(
             person=person_2007,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
         )
 
         self.test_upload_user = User.objects.create_user(
@@ -433,13 +433,13 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
             person=person_2009,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
         )
         MembershipFactory.create(
             person=person_2007,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
         )
 
     def test_login_required(self):
@@ -457,15 +457,15 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertNotContains(response, "<h3>")
 
     def test_suggested_lock_review_view_with_suggestions(self):
-        pee = PostExtraElection.objects.get(
+        ballot = Ballot.objects.get(
             post=self.dulwich_post, election=self.election
         )
         SuggestedPostLock.objects.create(
-            postextraelection=pee, user=self.user, justification="test data"
+            ballot=ballot, user=self.user, justification="test data"
         )
         OfficialDocument.objects.create(
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=pee,
+            ballot=ballot,
             source_url="http://example.com",
         )
         url = reverse("suggestions-to-lock-review-list")
@@ -484,7 +484,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
     def test_sopn_review_view_with_reviews(self):
         OfficialDocument.objects.create(
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             source_url="http://example.com",
         )
         url = reverse("sopn-review-required")
@@ -493,17 +493,13 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertContains(response, "Dulwich")
 
     def test_sopn_review_view_document_with_suggested_lock_not_included(self):
-        postextraelection = self.dulwich_post.postextraelection_set.get(
-            election=self.election
-        )
+        ballot = self.dulwich_post.ballot_set.get(election=self.election)
         SuggestedPostLock.objects.create(
-            postextraelection=postextraelection,
-            user=self.user,
-            justification="test data",
+            ballot=ballot, user=self.user, justification="test data"
         )
         OfficialDocument.objects.create(
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             source_url="http://example.com",
         )
         url = reverse("sopn-review-required")
@@ -512,14 +508,12 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertNotContains(response, "Dulwich")
 
     def test_sopn_review_view_document_with_lock_not_included(self):
-        postextraelection = self.dulwich_post.postextraelection_set.get(
-            election=self.election
-        )
-        postextraelection.candidates_locked = True
-        postextraelection.save()
+        ballot = self.dulwich_post.ballot_set.get(election=self.election)
+        ballot.candidates_locked = True
+        ballot.save()
         OfficialDocument.objects.create(
             document_type=OfficialDocument.NOMINATION_PAPER,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             source_url="http://example.com",
         )
         url = reverse("sopn-review-required")

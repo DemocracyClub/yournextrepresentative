@@ -220,7 +220,7 @@ class BasePersonForm(forms.Form):
                 )
             # Check that that post actually exists:
             post_qs = Post.objects.filter(
-                slug=post_id, postextraelection__election=election_data
+                slug=post_id, ballot__election=election_data
             )
             if not post_qs.exists():
                 message = "An unknown post ID '{post_id}' was specified"
@@ -319,12 +319,12 @@ class NewPersonForm(BasePersonForm):
             # particular party set relevant for that post:
             post_id = kwargs["initial"]["constituency_" + election]
             post_obj = Post.objects.get(
-                slug=post_id, postextraelection__election=election_data
+                slug=post_id, ballot__election=election_data
             )
             specific_party_set = PartySet.objects.get(post=post_obj)
 
         party_registers_for_election = set(
-            election_data.postextraelection_set.annotate(
+            election_data.ballot_set.annotate(
                 Count("post__party_set__slug")
             ).values_list("post__party_set__slug", flat=True)
         )
@@ -467,7 +467,7 @@ class UpdatePersonForm(AddElectionFieldsMixin, BasePersonForm):
         super().__init__(*args, **kwargs)
         self.elections_with_fields = list(
             Election.objects.filter(
-                postextraelection__membership__person=self.initial["person"]
+                ballot__membership__person=self.initial["person"]
             )
             .future()
             .order_by("-election_date")

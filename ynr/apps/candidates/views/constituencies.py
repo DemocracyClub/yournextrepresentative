@@ -9,11 +9,7 @@ from auth_helpers.views import GroupRequiredMixin
 from .helpers import get_redirect_to_post
 from .version_data import get_client_ip, get_change_metadata
 from candidates.forms import ConstituencyRecordWinnerForm
-from ..models import (
-    RESULT_RECORDERS_GROUP_NAME,
-    LoggedAction,
-    PostExtraElection,
-)
+from ..models import RESULT_RECORDERS_GROUP_NAME, LoggedAction, Ballot
 from results.models import ResultEvent
 
 from popolo.models import Membership, Post
@@ -34,7 +30,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
         self.election_data = self.get_election()
         self.person = get_object_or_404(Person, id=person_id)
         self.post_data = get_object_or_404(Post, slug=self.kwargs["post_id"])
-        self.post_election = PostExtraElection.objects.get(
+        self.ballot = Ballot.objects.get(
             election=self.election_data, post=self.post_data
         )
         return super().dispatch(request, *args, **kwargs)
@@ -47,7 +43,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["post_id"] = self.kwargs["post_id"]
-        context["post_election"] = self.post_election
+        context["ballot"] = self.ballot
         context["constituency_name"] = self.post_data.label
         context["person"] = self.person
         return context
@@ -59,9 +55,9 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
 
         with transaction.atomic():
             number_of_existing_winners = self.post_data.memberships.filter(
-                elected=True, post_election__election=self.election_data
+                elected=True, ballot__election=self.election_data
             ).count()
-            max_winners = get_max_winners(self.post_election)
+            max_winners = get_max_winners(self.ballot)
             if max_winners >= 0 and number_of_existing_winners >= max_winners:
                 msg = (
                     "There were already {n} winners of {post_label}"
@@ -81,7 +77,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 role=candidate_role,
                 post=self.post_data,
                 person=self.person,
-                post_election__election=self.election_data,
+                ballot__election=self.election_data,
             )
             membership_new_winner.elected = True
             membership_new_winner.save()
@@ -120,7 +116,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                 max_reached = max_winners == (number_of_existing_winners + 1)
                 if max_reached:
                     losing_candidacies = self.post_data.memberships.filter(
-                        post_election__election=self.election_data
+                        ballot__election=self.election_data
                     ).exclude(elected=True)
                     for candidacy in losing_candidacies:
                         if candidacy.elected != False:
@@ -150,7 +146,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
 
             all_candidacies = post.memberships.filter(
                 role=self.election_data.candidate_membership_role,
-                post_election__election=self.election_data,
+                ballot__election=self.election_data,
             )
             source = "Result recorded in error, retracting"
             for candidacy in all_candidacies.all():
@@ -183,7 +179,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
                     candidate.save()
 
         return HttpResponseRedirect(
-            self.election_data.postextraelection_set.get(
+            self.election_data.ballot_set.get(
                 post__slug=post_id
             ).get_absolute_url()
         )

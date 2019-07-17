@@ -9,7 +9,7 @@ register = template.Library()
 @register.simple_tag
 def metadescription(person, last_candidacy, today):
     if last_candidacy:
-        election = last_candidacy.post_election.election
+        election = last_candidacy.ballot.election
         last_party_name = format_party_name(last_candidacy.party.name)
         args = {
             "election": election.name,

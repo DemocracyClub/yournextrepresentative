@@ -1,6 +1,6 @@
 <div class="lock_button_container left">
-  <form method=post action="{% url 'constituency-lock' ballot_id=postextraelection.ballot_paper_id %}">
-    {% if postextraelection.candidates_locked %}
+  <form method=post action="{% url 'constituency-lock' ballot_id=ballot.ballot_paper_id %}">
+    {% if ballot.candidates_locked %}
       <input type="hidden" name="lock" value="unlock">
     {% else %}
       <input type="hidden" name="lock" value="lock">
@@ -9,5 +9,5 @@
 </div>
 
 <div class="remove-lock-suggestion_container right">
-  <form method=post action="{% url 'remove-lock-suggestion-ajax' %}" data-ballot="{{ postextraelection.ballot_paper_id }}"></form>
+  <form method=post action="{% url 'remove-lock-suggestion-ajax' %}" data-ballot="{{ ballot.ballot_paper_id }}"></form>
 </div>

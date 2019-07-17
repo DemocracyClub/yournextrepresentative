@@ -4,8 +4,8 @@
 
 {% block hero %}
 <h2>Enter results for
-  <a href="{{ post_election.get_absolute_url }}">
-    {{ post_election.post.label }} in the {{ post_election.election.name }}
+  <a href="{{ ballot.get_absolute_url }}">
+    {{ ballot.post.label }} in the {{ ballot.election.name }}
   </a>
 </h2>
 {% endblock  %}

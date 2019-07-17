@@ -84,9 +84,9 @@ def get_person_as_version_data(person, new_person=False):
 
         for membership in person.memberships.filter(post__isnull=False):
             post = membership.post
-            post_election = membership.post_election
-            election = post_election.election
-            standing_in[post_election.election.slug] = {
+            ballot = membership.ballot
+            election = ballot.election
+            standing_in[ballot.election.slug] = {
                 "post_id": post.slug,
                 "name": shorten_post_label(post.label),
             }
@@ -97,7 +97,7 @@ def get_person_as_version_data(person, new_person=False):
                     "party_list_position"
                 ] = membership.party_list_position
             party = membership.party
-            party_memberships[post_election.election.slug] = {
+            party_memberships[ballot.election.slug] = {
                 "id": party.legacy_slug,
                 "name": party.name,
             }
@@ -189,7 +189,7 @@ def revert_person_from_version_data(person, version_data):
                 role=election.candidate_membership_role,
                 elected=standing_in.get("elected"),
                 party_list_position=standing_in.get("party_list_position"),
-                post_election=election.postextraelection_set.get(post=post),
+                ballot=election.ballot_set.get(post=post),
             )
 
     person.save()

@@ -53,7 +53,7 @@ def model_has_related_objects(model):
     return False
 
 
-class PostExtraElection(models.Model):
+class Ballot(models.Model):
     post = models.ForeignKey("popolo.Post")
     election = models.ForeignKey(Election)
     ballot_paper_id = models.CharField(blank=True, max_length=255, unique=True)
@@ -67,7 +67,7 @@ class PostExtraElection(models.Model):
         unique_together = ("election", "post")
 
     def __str__(self):
-        fmt = "<PostExtraElection ballot_paper_id='{e}'{l}{w}>"
+        fmt = "<Ballot ballot_paper_id='{e}'{l}{w}>"
         return fmt.format(
             e=self.ballot_paper_id,
             l=(" candidates_locked=True" if self.candidates_locked else ""),

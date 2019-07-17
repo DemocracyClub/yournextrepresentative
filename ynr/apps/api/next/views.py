@@ -23,8 +23,8 @@ from popolo.models import Membership, Post, Organization
 from people.models import PersonImage, Person
 from rest_framework import pagination, viewsets
 from elections.uk.geo_helpers import (
-    get_post_elections_from_coords,
-    get_post_elections_from_postcode,
+    get_ballots_from_coords,
+    get_ballots_from_postcode,
 )
 from parties.models import Party
 
@@ -67,9 +67,9 @@ class UpcomingElectionsView(View):
 
         try:
             if coords:
-                pees = get_post_elections_from_coords(coords)
+                ballots = get_ballots_from_coords(coords)
             else:
-                pees = get_post_elections_from_postcode(postcode)
+                ballots = get_ballots_from_postcode(postcode)
         except Exception as e:
             errors = {"error": e.message}
 
@@ -79,16 +79,16 @@ class UpcomingElectionsView(View):
             )
 
         results = []
-        pees = pees.select_related("post", "election")
-        for pee in pees:
+        ballots = ballots.select_related("post", "election")
+        for ballot in ballots:
             results.append(
                 {
-                    "post_name": pee.post.label,
-                    "post_slug": pee.post.slug,
-                    "organization": pee.post.organization.name,
-                    "election_date": text_type(pee.election.election_date),
-                    "election_name": pee.election.name,
-                    "election_id": pee.election.slug,
+                    "post_name": ballot.post.label,
+                    "post_slug": ballot.post.slug,
+                    "organization": ballot.post.organization.name,
+                    "election_date": text_type(ballot.election.election_date),
+                    "election_name": ballot.election.name,
+                    "election_id": ballot.election.slug,
                 }
             )
 
@@ -117,26 +117,26 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
 
         try:
             if coords:
-                pees = get_post_elections_from_coords(coords)
+                ballots = get_ballots_from_coords(coords)
             else:
-                pees = get_post_elections_from_postcode(postcode)
+                ballots = get_ballots_from_postcode(postcode)
         except Exception as e:
             return self._error(e.message)
 
         results = []
-        pees = pees.select_related("post__organization", "election")
-        for pee in pees:
+        ballots = ballots.select_related("post__organization", "election")
+        for ballot in ballots:
             candidates = []
             for membership in (
-                pee.membership_set.filter(
-                    post_election__election=pee.election,
-                    role=pee.election.candidate_membership_role,
+                ballot.membership_set.filter(
+                    ballot__election=ballot.election,
+                    role=ballot.election.candidate_membership_role,
                 )
                 .prefetch_related(
                     Prefetch(
                         "person__memberships",
                         Membership.objects.select_related(
-                            "party", "post", "post_election__election"
+                            "party", "post", "ballot__election"
                         ),
                     ),
                     Prefetch(
@@ -155,15 +155,15 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                     ).data
                 )
             election = {
-                "election_date": text_type(pee.election.election_date),
-                "election_name": pee.election.name,
-                "election_id": pee.election.slug,
+                "election_date": text_type(ballot.election.election_date),
+                "election_name": ballot.election.name,
+                "election_id": ballot.election.slug,
                 "post": {
-                    "post_name": pee.post.label,
-                    "post_slug": pee.post.slug,
+                    "post_name": ballot.post.label,
+                    "post_slug": ballot.post.slug,
                     "post_candidates": None,
                 },
-                "organization": pee.post.organization.name,
+                "organization": ballot.post.organization.name,
                 "candidates": candidates,
             }
 
@@ -268,7 +268,7 @@ class PersonViewSet(viewsets.ModelViewSet):
                 "memberships",
                 Membership.objects.select_related("party", "post"),
             ),
-            "memberships__post_election__election",
+            "memberships__ballot__election",
             "other_names",
             "images",
         ).order_by("id")
@@ -306,15 +306,13 @@ class PostViewSet(viewsets.ModelViewSet):
         Post.objects.select_related("organization", "party_set")
         .prefetch_related(
             Prefetch(
-                "postextraelection_set",
-                extra_models.PostExtraElection.objects.select_related(
-                    "election"
-                ),
+                "ballot_set",
+                extra_models.Ballot.objects.select_related("election"),
             ),
             Prefetch(
                 "memberships",
                 Membership.objects.select_related(
-                    "person", "party", "post", "post_election__election"
+                    "person", "party", "post", "ballot__election"
                 ),
             ),
         )
@@ -341,7 +339,7 @@ class PartySetViewSet(viewsets.ModelViewSet):
 
 
 class PostExtraElectionViewSet(viewsets.ModelViewSet):
-    queryset = extra_models.PostExtraElection.objects.select_related(
+    queryset = extra_models.Ballot.objects.select_related(
         "election", "post"
     ).order_by("id")
     serializer_class = serializers.PostElectionSerializer

@@ -20,7 +20,7 @@
   {% with last_candidacy=person.last_candidacy %}
     {% if last_candidacy %}
       <p>
-        Candidate for <a href="{{ last_candidacy.post_election.get_absolute_url }}">{{ last_candidacy.post.short_label  }}</a> in {{ last_candidacy.post_election.election.name }}
+        Candidate for <a href="{{ last_candidacy.ballot.get_absolute_url }}">{{ last_candidacy.post.short_label  }}</a> in {{ last_candidacy.ballot.election.name }}
       </p>
     {% endif %}
   {% endwith %}

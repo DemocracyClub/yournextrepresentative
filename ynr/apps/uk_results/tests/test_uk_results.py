@@ -10,9 +10,9 @@ from uk_results.models import CandidateResult, ResultSet
 class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
     def setUp(self):
         super().setUp()
-        pee = self.local_post.postextraelection_set.get()
+        ballot = self.local_post.ballot_set.get()
         self.result_set = ResultSet.objects.create(
-            post_election=pee,
+            ballot=ballot,
             num_turnout_reported=10000,
             num_spoilt_ballots=30,
             user=self.user,
@@ -30,10 +30,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         # Create their candidacies:
         candidacies = [
             MembershipFactory.create(
-                post_election=pee,
-                person=person,
-                post=self.local_post,
-                party=party,
+                ballot=ballot, person=person, post=self.local_post, party=party
             )
             for person, party in zip(self.persons, parties)
         ]

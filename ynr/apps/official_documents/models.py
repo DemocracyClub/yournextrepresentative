@@ -13,9 +13,7 @@ DOCUMENT_UPLOADERS_GROUP_NAME = "Document Uploaders"
 
 def document_file_name(instance, filename):
     return os.path.join(
-        "official_documents",
-        str(instance.post_election.ballot_paper_id),
-        filename,
+        "official_documents", str(instance.ballot.ballot_paper_id), filename
     )
 
 
@@ -34,9 +32,7 @@ class OfficialDocument(TimeStampedModel):
     uploaded_file = models.FileField(
         upload_to=document_file_name, max_length=800
     )
-    post_election = models.ForeignKey(
-        "candidates.PostExtraElection", null=False
-    )
+    ballot = models.ForeignKey("candidates.Ballot", null=False)
     source_url = models.URLField(
         help_text="The page that links to this document", max_length=1000
     )
@@ -50,14 +46,12 @@ class OfficialDocument(TimeStampedModel):
         get_latest_by = "modified"
 
     def __str__(self):
-        return "{} ({})".format(
-            self.post_election.ballot_paper_id, self.source_url
-        )
+        return "{} ({})".format(self.ballot.ballot_paper_id, self.source_url)
 
     def get_absolute_url(self):
         return reverse(
             "ballot_paper_sopn",
-            kwargs={"ballot_id": self.post_election.ballot_paper_id},
+            kwargs={"ballot_id": self.ballot.ballot_paper_id},
         )
 
     @property
@@ -65,14 +59,14 @@ class OfficialDocument(TimeStampedModel):
         """
         Is this post election locked?
         """
-        return self.post_election.candidates_locked
+        return self.ballot.candidates_locked
 
     @property
     def lock_suggested(self):
         """
         Is there a suggested lock for this document?
         """
-        return self.post_election.suggestedpostlock_set.exists()
+        return self.ballot.suggestedpostlock_set.exists()
 
     def get_pages(self):
         if self.relevant_pages and not self.relevant_pages == "all":

@@ -43,13 +43,11 @@ class Command(BaseCommand):
         )
 
         qs = (
-            ResultSet.objects.filter(
-                post_election__election__election_date=date
-            )
-            .select_related("post_election", "post_election__election")
+            ResultSet.objects.filter(ballot__election__election_date=date)
+            .select_related("ballot", "ballot__election")
             .prefetch_related(
                 Prefetch(
-                    "post_election__membership_set",
+                    "ballot__membership_set",
                     Membership.objects.select_related("person", "party"),
                 )
             )
@@ -57,12 +55,12 @@ class Command(BaseCommand):
         out_data = []
         for result in qs:
 
-            for membership in result.post_election.membership_set.all():
+            for membership in result.ballot.membership_set.all():
                 if not hasattr(membership, "result"):
                     continue
                 row = {
-                    "election_id": result.post_election.election.slug,
-                    "ballot_paper_id": result.post_election.ballot_paper_id,
+                    "election_id": result.ballot.election.slug,
+                    "ballot_paper_id": result.ballot.ballot_paper_id,
                     "turnout": result.num_turnout_reported,
                     "spoilt_ballots": result.num_spoilt_ballots,
                     "source": result.source,

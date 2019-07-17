@@ -128,13 +128,13 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
 
             setattr(cls, cons["attr"], post)
 
-            pee_attr_name = "{}_pee".format(cons["attr"])
-            pee = post.postextraelection_set.get(election=cls.election)
-            setattr(cls, pee_attr_name, pee)
+            ballot_attr_name = "{}_ballot".format(cons["attr"])
+            ballot = post.ballot_set.get(election=cls.election)
+            setattr(cls, ballot_attr_name, ballot)
 
-            pee_attr_name = "{}_pee_earlier".format(cons["attr"])
-            pee = post.postextraelection_set.get(election=cls.earlier_election)
-            setattr(cls, pee_attr_name, pee)
+            ballot_attr_name = "{}_ballot_earlier".format(cons["attr"])
+            ballot = post.ballot_set.get(election=cls.earlier_election)
+            setattr(cls, ballot_attr_name, ballot)
 
         # Also create a local election and post:
         cls.local_council = factories.OrganizationFactory.create(
@@ -155,7 +155,7 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
             organization=cls.local_council,
         )
 
-        cls.local_pee = cls.local_post.postextraelection_set.get()
+        cls.local_ballot = cls.local_post.ballot_set.get()
 
     def create_lots_of_candidates(self, election, parties_and_counts):
         posts = [
@@ -175,7 +175,7 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
                     person=person,
                     post=posts[created % len(posts)],
                     party=party,
-                    post_election=election.postextraelection_set.get(
+                    ballot=election.ballot_set.get(
                         post=posts[created % len(posts)]
                     ),
                 )

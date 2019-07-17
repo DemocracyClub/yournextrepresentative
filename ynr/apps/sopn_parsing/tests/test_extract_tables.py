@@ -23,7 +23,7 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
         )
 
         self.doc = OfficialDocument.objects.create(
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             document_type=OfficialDocument.NOMINATION_PAPER,
             uploaded_file=SimpleUploadedFile(
                 "sopn.pdf", open(example_doc_path, "rb").read()
@@ -34,7 +34,7 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_extract_tables(self):
-        extract_ballot_table(self.dulwich_post_pee)
+        extract_ballot_table(self.dulwich_post_ballot)
         self.assertEqual(
             ParsedSOPN.objects.get().as_pandas.to_dict(),
             {

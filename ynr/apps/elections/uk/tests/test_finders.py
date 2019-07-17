@@ -114,7 +114,7 @@ class TestHomePageView(WebTest):
         self.assertEqual(split_location.path, "/postcode/SE24%200AG/")
         # follow the redirect
         response = response.follow()
-        self.assertEqual(len(response.context["pees"]), 1)
+        self.assertEqual(len(response.context["ballots"]), 1)
         self.assertContains(response, "2015 General Election")
 
     def test_invalid_postcode(self, mock_requests):
@@ -148,7 +148,7 @@ class TestHomePageView(WebTest):
         split_location = urlsplit(response.location)
         self.assertEqual(split_location.path, "/postcode/SE24%200AG/")
         response = response.follow()
-        self.assertEqual(len(response.context["pees"]), 3)
+        self.assertEqual(len(response.context["ballots"]), 3)
         self.assertContains(
             response, "2016 London Assembly Election (Additional)"
         )
@@ -212,7 +212,7 @@ class TestHomePageView(WebTest):
         mock_requests.get.side_effect = fake_requests_for_every_election
         response = self.app.get("/geolocator/-0.143207,51.5")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["pees"]), 1)
+        self.assertEqual(len(response.context["ballots"]), 1)
 
     def test_valid_coords_redirects_with_multiple_elections(
         self, mock_requests
@@ -221,4 +221,4 @@ class TestHomePageView(WebTest):
         self._setup_extra_posts()
         response = self.app.get("/geolocator/-0.143207,51.5")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["pees"]), 3)
+        self.assertEqual(len(response.context["ballots"]), 3)

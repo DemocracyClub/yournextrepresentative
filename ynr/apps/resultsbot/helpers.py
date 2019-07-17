@@ -23,8 +23,8 @@ class ResultsBot(object):
     def _mark_candidates_as_winner(self, instance):
         for candidate_result in instance.candidate_results.all():
             membership = candidate_result.membership
-            post_election = instance.post_election
-            election = post_election.election
+            ballot = instance.ballot
+            election = ballot.election
 
             source = instance.source
 
@@ -37,9 +37,9 @@ class ResultsBot(object):
                 ResultEvent.objects.create(
                     election=election,
                     winner=membership.person,
-                    post=post_election.post,
-                    old_post_id=post_election.post.slug,
-                    old_post_name=post_election.post.label,
+                    post=ballot.post,
+                    old_post_id=ballot.post.slug,
+                    old_post_name=ballot.post.label,
                     winner_party=membership.party,
                     source=source,
                     user=self.user,
@@ -67,11 +67,11 @@ class ResultsBot(object):
         """
         # TODO DRY this and the form logic up
         """
-        post_election = division.local_area
+        ballot = division.local_area
 
         with transaction.atomic():
             instance, _ = ResultSet.objects.update_or_create(
-                post_election=post_election,
+                ballot=ballot,
                 defaults={
                     "source": source,
                     "num_spoilt_ballots": division.spoiled_votes,
@@ -80,7 +80,7 @@ class ResultsBot(object):
             instance.user = self.user
             instance.save()
 
-            winner_count = post_election.winner_count
+            winner_count = ballot.winner_count
 
             if winner_count:
                 winners = dict(
@@ -119,5 +119,5 @@ class ResultsBot(object):
                     user=instance.user,
                     action_type="entered-results-data",
                     source=instance.source,
-                    post_election=instance.post_election,
+                    ballot=instance.ballot,
                 )

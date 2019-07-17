@@ -139,13 +139,13 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.local_post,
             party=self.labour_party,
-            post_election=self.local_pee,
+            ballot=self.local_ballot,
         )
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee_earlier,
+            ballot=self.dulwich_post_ballot_earlier,
         )
         # Now create Shane Collins (who we'll merge into Tessa Jowell)
         person = people.tests.factories.PersonFactory.create(
@@ -253,13 +253,13 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=person,
             post=self.dulwich_post,
             party=self.green_party,
-            post_election=self.dulwich_post_pee_earlier,
+            ballot=self.dulwich_post_ballot_earlier,
         )
         factories.MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
             party=self.green_party,
-            post_election=self.edinburgh_east_post_pee,
+            ballot=self.edinburgh_east_post_ballot,
         )
 
     def tearDown(self):
@@ -334,9 +334,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "parl.14419.2015-05-07",
             "local.maidstone.DIW:E05005004.2016-05-05",
         }
-        found_ballots = {
-            mem.post_election.ballot_paper_id for mem in candidacies
-        }
+        found_ballots = {mem.ballot.ballot_paper_id for mem in candidacies}
         self.assertEqual(expected_ballots, found_ballots)
 
         # Check that there are only two Membership objects
@@ -492,14 +490,12 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         candidacies = (
             Membership.objects.filter(
                 person=merged_person,
-                role=F("post_election__election__candidate_membership_role"),
+                role=F("ballot__election__candidate_membership_role"),
             )
             .values_list(
-                "post_election__election__slug",
-                "post__slug",
-                "party__legacy_slug",
+                "ballot__election__slug", "post__slug", "party__legacy_slug"
             )
-            .order_by("post_election__election__slug")
+            .order_by("ballot__election__slug")
         )
 
         self.assertEqual(

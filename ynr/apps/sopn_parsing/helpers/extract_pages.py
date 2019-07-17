@@ -12,7 +12,7 @@ def extract_pages_for_ballot(ballot):
     Beacuse documents can apply to more than one ballot, we also perform
     "drive by" parsing of other ballots contained in a given document.
 
-    :type ballot: candidates.models.PostExtraElection
+    :type ballot: candidates.models.Ballot
 
     """
 
@@ -23,7 +23,7 @@ def extract_pages_for_ballot(ballot):
 def extract_pages_for_single_document(document):
     other_doc_models = OfficialDocument.objects.filter(
         source_url=document.source_url
-    ).select_related("post_election", "post_election__post")
+    ).select_related("ballot", "ballot__post")
 
     doc_file = document.uploaded_file.file
     if not doc_file:
@@ -39,7 +39,7 @@ def extract_pages_for_single_document(document):
             "No text in {}, skipping".format(document.uploaded_file.url)
         )
     for other_doc in other_doc_models:
-        pages = sopn.get_pages_by_ward_name(other_doc.post_election.post.label)
+        pages = sopn.get_pages_by_ward_name(other_doc.ballot.post.label)
         if not pages:
             continue
         page_numbers = ",".join(str(p.page_number) for p in pages)

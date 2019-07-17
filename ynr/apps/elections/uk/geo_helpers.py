@@ -11,7 +11,7 @@ from django.core.cache import cache
 from django.utils.http import urlquote
 from django.utils.six.moves.urllib_parse import urljoin
 
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 
 
 class BaseMapItException(Exception):
@@ -37,7 +37,7 @@ EE_BASE_URL = getattr(
 )
 
 
-def get_post_elections(url, cache_key, exception):
+def get_ballots(url, cache_key, exception):
     r = requests.get(url)
     if r.status_code == 200:
         ee_result = r.json()
@@ -46,11 +46,11 @@ def get_post_elections(url, cache_key, exception):
             for e in ee_result["results"]
             if not e["group_type"]
         ]
-        pee_qs = PostExtraElection.objects.filter(
+        ballot_qs = Ballot.objects.filter(
             ballot_paper_id__in=ballot_paper_ids, election__current=True
         )
-        cache.set(cache_key, pee_qs, settings.EE_CACHE_SECONDS)
-        return pee_qs
+        cache.set(cache_key, ballot_qs, settings.EE_CACHE_SECONDS)
+        return ballot_qs
     elif r.status_code == 400:
         ee_result = r.json()
         raise exception(ee_result["detail"])
@@ -60,7 +60,7 @@ def get_post_elections(url, cache_key, exception):
         raise UnknownGeoException('Unknown error for "{0}"'.format(url))
 
 
-def get_post_elections_from_postcode(original_postcode):
+def get_ballots_from_postcode(original_postcode):
     postcode = re.sub(r"(?ms)\s*", "", original_postcode.lower())
     if re.search(r"[^a-z0-9]", postcode):
         raise BadPostcodeException(
@@ -77,7 +77,7 @@ def get_post_elections_from_postcode(original_postcode):
         EE_BASE_URL, "/api/elections/?postcode={}".format(urlquote(postcode))
     )
     try:
-        areas = get_post_elections(url, cache_key, BadPostcodeException)
+        areas = get_ballots(url, cache_key, BadPostcodeException)
     except BadPostcodeException:
         # Give a nicer error message, as this is used on the frontend
         raise BadPostcodeException(
@@ -86,7 +86,7 @@ def get_post_elections_from_postcode(original_postcode):
     return areas
 
 
-def get_post_elections_from_coords(coords):
+def get_ballots_from_coords(coords):
     url = urljoin(
         EE_BASE_URL, "/api/elections/?coords={}".format(urlquote(coords))
     )
@@ -96,4 +96,4 @@ def get_post_elections_from_coords(coords):
     if cached_result:
         return cached_result
 
-    return get_post_elections(url, cache_key, BadCoordinatesException)
+    return get_ballots(url, cache_key, BadCoordinatesException)

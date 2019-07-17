@@ -9,7 +9,7 @@ def migrate_post_extra_to_postextraelection(apps, schema_editor):
     for spl in SuggestedPostLock.objects.all():
         # If there's more than one postextraelection, then make sure
         # that we create new SuggestedPostLocks for the rest of them:
-        postextraelections = spl.post_extra.postextraelection_set.all()
+        postextraelections = spl.post_extra.ballot_set.all()
 
         if not postextraelections.exists():
             continue

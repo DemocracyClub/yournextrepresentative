@@ -34,16 +34,16 @@ def get_extra_csv_values(person, election, post):
                 m.group(1)
             )
     for m in person.memberships.all():
-        if m.post_election.election != election:
+        if m.ballot.election != election:
             continue
-        expected_role = m.post_election.election.candidate_membership_role
+        expected_role = m.ballot.election.candidate_membership_role
         if expected_role != m.role:
             continue
         if m.post != post:
             continue
         # Now m / m_extra should be the candidacy membership:
         party_ec_id = m.party.ec_id
-        cancelled_poll = m.post_election.cancelled
+        cancelled_poll = m.ballot.cancelled
         # TODO Add ballot id here
         break
     favourite_biscuits = ""

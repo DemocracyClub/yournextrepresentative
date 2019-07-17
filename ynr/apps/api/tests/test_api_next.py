@@ -58,17 +58,17 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
         )
         MembershipFactory.create(
-            person=self.person, post_election=self.edinburgh_east_post_pee
+            person=self.person, ballot=self.edinburgh_east_post_ballot
         )
 
         MembershipFactory.create(
             person=dulwich_not_stand,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee_earlier,
+            ballot=self.dulwich_post_ballot_earlier,
         )
         dulwich_not_stand.not_standing.add(self.election)
 
@@ -77,21 +77,21 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.edinburgh_east_post,
             party=self.labour_party,
             elected=True,
-            post_election=self.edinburgh_east_post_pee,
+            ballot=self.edinburgh_east_post_ballot,
         )
 
         MembershipFactory.create(
             person=edinburgh_candidate,
             post=self.edinburgh_east_post,
             party=self.labour_party,
-            post_election=self.edinburgh_east_post_pee,
+            ballot=self.edinburgh_east_post_ballot,
         )
 
         MembershipFactory.create(
             person=edinburgh_may_stand,
             post=self.edinburgh_east_post,
             party=self.labour_party,
-            post_election=self.edinburgh_east_post_pee_earlier,
+            ballot=self.edinburgh_east_post_ballot_earlier,
         )
 
         PartyEmblemFactory(party=self.labour_party)
@@ -227,9 +227,7 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.person,
             post=self.post,
             party=self.labour_party,
-            post_election=self.election_gla.postextraelection_set.get(
-                post=self.post
-            ),
+            ballot=self.election_gla.ballot_set.get(post=self.post),
         )
         membership_pk = self.person.memberships.first().pk
 
@@ -337,11 +335,11 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_sopn_on_ballot(self):
         OfficialDocument.objects.create(
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
             document_type=OfficialDocument.NOMINATION_PAPER,
         )
         response = self.app.get(
-            "/api/next/post_elections/{}/".format(self.dulwich_post_pee.pk)
+            "/api/next/post_elections/{}/".format(self.dulwich_post_ballot.pk)
         )
         result = response.json
         self.assertEqual(
@@ -349,8 +347,8 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             {
                 "document_type": "Nomination paper",
                 "uploaded_file": None,
-                "post_election": "http://testserver/api/next/post_elections/{}/".format(
-                    self.dulwich_post_pee.pk
+                "ballot": "http://testserver/api/next/post_elections/{}/".format(
+                    self.dulwich_post_ballot.pk
                 ),
                 "source_url": "",
             },

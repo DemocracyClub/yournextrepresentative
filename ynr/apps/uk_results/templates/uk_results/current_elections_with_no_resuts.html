@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% regroup elections by election as grouped_pees %}
+{% regroup elections by election as grouped_ballots %}
 
-{% for group in grouped_pees %}
+{% for group in grouped_ballots %}
   <h2><a href="{{ group.grouper.get_absolute_url }}">{{ group.grouper }}</a></h2>
   <ul>
-    {% for pee in group.list %}
+    {% for ballot in group.list %}
       <li>
-        <a href="{{ pee.get_absolute_url }}">{{ pee.post.label }}</a>
-        <a href="{% url "ballot_paper_results_form" pee.ballot_paper_id %}" class="button tiny">Add results</a>
+        <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
+        <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}" class="button tiny">Add results</a>
       </li>
     {% endfor %}
   </ul>

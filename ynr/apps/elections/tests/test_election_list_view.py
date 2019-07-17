@@ -38,11 +38,10 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "2015 General Election")
 
     def test_suggested_post_lock_text(self):
-        pee = self.election.postextraelection_set.first()
-        pee.candidates_locked = False
+        ballot = self.election.ballot_set.first()
+        ballot.candidates_locked = False
         SuggestedPostLock.objects.create(
-            postextraelection=pee,
-            user=User.objects.create(username="locking_user"),
+            ballot=ballot, user=User.objects.create(username="locking_user")
         )
         response = self.app.get("/elections/?review_required=suggestion")
 
@@ -55,11 +54,10 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.context["filter"].data, {})
 
         # Lock suggestions, basically the same as the above test
-        pee = self.election.postextraelection_set.first()
-        pee.candidates_locked = False
+        ballot = self.election.ballot_set.first()
+        ballot.candidates_locked = False
         SuggestedPostLock.objects.create(
-            postextraelection=pee,
-            user=User.objects.create(username="locking_user"),
+            ballot=ballot, user=User.objects.create(username="locking_user")
         )
         response = self.app.get("/elections/?review_required=suggestion")
         self.assertEqual(response.context["filter"].qs.count(), 1)

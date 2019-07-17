@@ -6,7 +6,7 @@ from people.models import Person
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 
 from uk_results.models import CandidateResult, ResultSet
 
@@ -26,27 +26,25 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.primary_person,
             post=self.camberwell_post,
             party=self.labour_party,
-            post_election=self.camberwell_post_pee_earlier,
+            ballot=self.camberwell_post_ballot_earlier,
         )
         factories.MembershipFactory.create(
             person=self.secondary_person,
             post=self.local_post,
             party=self.labour_party,
-            post_election=self.local_election.postextraelection_set.get(
-                post=self.local_post
-            ),
+            ballot=self.local_election.ballot_set.get(post=self.local_post),
         )
         secondary_membership = factories.MembershipFactory.create(
             person=self.secondary_person,
             post=self.camberwell_post,
             party=self.labour_party,
-            post_election=self.camberwell_post_pee,
+            ballot=self.camberwell_post_ballot,
         )
 
         # Now attach a vote count to the secondary person's candidacy:
 
         result_set = ResultSet.objects.create(
-            post_election=self.camberwell_post_pee,
+            ballot=self.camberwell_post_ballot,
             num_turnout_reported=51561,
             num_spoilt_ballots=42,
             ip_address="127.0.0.1",
@@ -71,7 +69,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # has a result attached.
         after_merging = Person.objects.get(pk=3885)
         membership = after_merging.memberships.get(
-            post_election__election=self.election
+            ballot__election=self.election
         )
         candidate_result = membership.result
         self.assertEqual(candidate_result.num_ballots, 32614)
@@ -81,26 +79,24 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=self.primary_person,
             post=self.camberwell_post,
             party=self.labour_party,
-            post_election=self.camberwell_post_pee_earlier,
+            ballot=self.camberwell_post_ballot_earlier,
         )
         factories.MembershipFactory.create(
             person=self.secondary_person,
             post=self.local_post,
             party=self.labour_party,
-            post_election=self.local_election.postextraelection_set.get(
-                post=self.local_post
-            ),
+            ballot=self.local_election.ballot_set.get(post=self.local_post),
         )
         factories.MembershipFactory.create(
             person=self.secondary_person,
             post=self.camberwell_post,
             party=self.labour_party,
-            post_election=self.camberwell_post_pee,
+            ballot=self.camberwell_post_ballot,
         )
 
         # Now attach a vote count to the primary person's candidacy:
         result_set = ResultSet.objects.create(
-            post_election=self.camberwell_post_pee_earlier,
+            ballot=self.camberwell_post_ballot_earlier,
             num_turnout_reported=46659,
             num_spoilt_ballots=42,
             ip_address="127.0.0.1",
@@ -125,7 +121,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # has a result attached.
         after_merging = Person.objects.get(pk=3885)
         membership = after_merging.memberships.get(
-            post_election__election=self.earlier_election
+            ballot__election=self.earlier_election
         )
         candidate_result = membership.result
         self.assertEqual(candidate_result.num_ballots, 27619)

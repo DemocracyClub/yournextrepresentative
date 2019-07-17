@@ -2,7 +2,7 @@ import random
 
 from django.views.generic import RedirectView
 
-from candidates.models import PostExtraElection
+from candidates.models import Ballot
 from elections.uk.lib import is_valid_postcode
 
 
@@ -86,8 +86,8 @@ class HelpOutCTAView(RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        pe_qs = (
-            PostExtraElection.objects.filter(
+        ballot_qs = (
+            Ballot.objects.filter(
                 election__current=True,
                 suggestedpostlock=None,
                 post__officialdocument__isnull=False,
@@ -96,11 +96,11 @@ class HelpOutCTAView(RedirectView):
             .distinct()
         )
 
-        if pe_qs:
-            random_offset = random.randrange(min(50, pe_qs.count()))
-            postextra_election = pe_qs[random_offset]
+        if ballot_qs:
+            random_offset = random.randrange(min(50, ballot_qs.count()))
+            ballot = ballot_qs[random_offset]
             return "/bulk_adding/{}/{}/".format(
-                postextra_election.election.slug, postextra_election.post.slug
+                ballot.election.slug, ballot.post.slug
             )
         return "/?get_involved_link=1"
 

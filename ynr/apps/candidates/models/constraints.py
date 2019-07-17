@@ -1,5 +1,5 @@
 def check_no_candidancy_for_election(person, election):
-    if election.postextraelection_set.filter(
+    if election.ballot_set.filter(
         membership__person=person,
         membership__role=election.candidate_membership_role,
     ).exists():

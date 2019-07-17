@@ -8,7 +8,7 @@ from django.conf import settings
 
 from elections.models import Election as YNRElection
 from popolo.models import Post, Organization
-from candidates.models import PartySet, PostExtraElection
+from candidates.models import PartySet, Ballot
 
 ALWAYS_USES_LISTS = ["europarl"]
 
@@ -165,9 +165,9 @@ class EEElection(dict):
             self.post_object.save()
         return (self.post_object, self.post_created)
 
-    def get_or_create_post_election(self, parent):
-        if hasattr(self, "post_election_object"):
-            self.post_election_created = False
+    def get_or_create_ballot(self, parent):
+        if hasattr(self, "ballot_object"):
+            self.ballot_created = False
         else:
             # First, set up the Post and Election with related objects
             self.get_or_create_post()
@@ -182,7 +182,7 @@ class EEElection(dict):
 
             # Get the winner count
             winner_count = self["seats_contested"]
-            self.post_election_object, self.post_election_created = PostExtraElection.objects.update_or_create(
+            self.ballot_object, self.ballot_created = Ballot.objects.update_or_create(
                 ballot_paper_id=self["election_id"],
                 defaults={
                     "post": self.post_object,
@@ -191,14 +191,12 @@ class EEElection(dict):
                     "cancelled": self["cancelled"],
                 },
             )
-        return (self.post_election_object, self.post_election_created)
+        return (self.ballot_object, self.ballot_created)
 
-    def delete_post_election(self):
+    def delete_ballot(self):
         try:
-            pee = PostExtraElection.objects.get(
-                ballot_paper_id=self["election_id"]
-            )
-        except PostExtraElection.DoesNotExist:
+            ballot = Ballot.objects.get(ballot_paper_id=self["election_id"])
+        except Ballot.DoesNotExist:
             # if it doesn't already exist, this might be because:
             # - we deleted it in EE before it was ever imported into YNR
             # - we already deleted it
@@ -206,8 +204,8 @@ class EEElection(dict):
             return
 
         try:
-            pee.safe_delete()
-        except PostExtraElection.UnsafeToDelete as e:
+            ballot.safe_delete()
+        except Ballot.UnsafeToDelete as e:
             raise type(e)(str(e) + ". Manual review needed")
 
     def delete_election(self):

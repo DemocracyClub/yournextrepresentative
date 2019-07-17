@@ -21,20 +21,20 @@
 
 
 
-  {% for postextraelection in ballots %}
+  {% for ballot in ballots %}
   <h3>
-    <a href="{{ postextraelection.get_absolute_url }}">{{ postextraelection.post.label }}</a>
-    {{ postextraelection.cancelled_status_html }}
-    {{ postextraelection.locked_status_html }}
+    <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
+    {{ ballot.cancelled_status_html }}
+    {{ ballot.locked_status_html }}
   </h3>
   <p>
-    {% if postextraelection.winner_count %}
-      {{ postextraelection.winner_count }} seat{{ postextraelection.winner_count|pluralize }} up for election.
+    {% if ballot.winner_count %}
+      {{ ballot.winner_count }} seat{{ ballot.winner_count|pluralize }} up for election.
     {% endif %}
-    {{ postextraelection.membership_set.count }} candidates known.
+    {{ ballot.membership_set.count }} candidates known.
   </p>
 
-  {% if postextraelection.membership_set.exists %}
+  {% if ballot.membership_set.exists %}
   <table>
     <thead>
       <tr>
@@ -43,7 +43,7 @@
         <th>List position</th>
         {% endif %}
         <th>Party</th>
-        {% if postextraelection.resultset %}
+        {% if ballot.resultset %}
         <th>Votes</th>
         <th>Elected?</th>
         {% endif %}
@@ -51,7 +51,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for membership in postextraelection.membership_set.all %}
+      {% for membership in ballot.membership_set.all %}
       <tr>
         <td><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a></td>
         {% if object.party_lists_in_use %}
@@ -59,7 +59,7 @@
         {% endif %}
 
         <td>{{ membership.party.name }}</td>
-        {% if postextraelection.resultset %}
+        {% if ballot.resultset %}
         <td>{{ membership.result.num_ballots }}</td>
         <td>{{ membership.result.is_winner|yesno|title }}</td>
         {% endif %}
@@ -69,13 +69,13 @@
   </table>
   {% endif %}
 
-  {% if not postextraelection.cancelled %}
-    <a class="show-new-candidate-form button tiny" href="{{ postextraelection.get_absolute_url }}">Add candidates</a>
-    {% if postextraelection.election.in_past %}
-      {% if postextraelection.resultset %}
-      <a class="button tiny" href="{% url "ballot_paper_results_form" postextraelection.ballot_paper_id %}">Edit Results</a>
+  {% if not ballot.cancelled %}
+    <a class="show-new-candidate-form button tiny" href="{{ ballot.get_absolute_url }}">Add candidates</a>
+    {% if ballot.election.in_past %}
+      {% if ballot.resultset %}
+      <a class="button tiny" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">Edit Results</a>
       {% else %}
-      <a class="button tiny" href="{% url "ballot_paper_results_form" postextraelection.ballot_paper_id %}">Add Results</a>
+      <a class="button tiny" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">Add Results</a>
       {% endif %}
     {% endif %}
   {% endif %}

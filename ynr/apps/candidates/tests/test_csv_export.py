@@ -61,29 +61,25 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             person=self.ni_person,
             post=north_antrim_post,
             party=self.sinn_fein,
-            post_election=self.election.postextraelection_set.get(
-                post=north_antrim_post
-            ),
+            ballot=self.election.ballot_set.get(post=north_antrim_post),
         )
         factories.MembershipFactory.create(
             person=self.ni_person,
             post=north_antrim_post,
             party=self.sinn_fein,
-            post_election=self.earlier_election.postextraelection_set.get(
-                post=north_antrim_post
-            ),
+            ballot=self.earlier_election.ballot_set.get(post=north_antrim_post),
         )
         factories.MembershipFactory.create(
             person=self.gb_person,
             post=self.camberwell_post,
             party=self.labour_party,
-            post_election=self.camberwell_post_pee,
+            ballot=self.camberwell_post_ballot,
         )
         factories.MembershipFactory.create(
             person=self.gb_person,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee_earlier,
+            ballot=self.dulwich_post_ballot_earlier,
         )
 
         self.gb_person.tmp_person_identifiers.create(

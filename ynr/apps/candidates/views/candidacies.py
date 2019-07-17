@@ -26,7 +26,7 @@ def raise_if_locked(request, post, election):
     if user_in_group(request.user, TRUSTED_TO_LOCK_GROUP_NAME):
         return
     # Otherwise, if the constituency is locked, raise an exception:
-    if post.postextraelection_set.get(election=election).candidates_locked:
+    if post.ballot_set.get(election=election).candidates_locked:
         raise Exception("Attempt to edit a candidacy in a locked constituency")
 
 
@@ -58,7 +58,7 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
                 person=person,
                 post=post,
                 role=self.election_data.candidate_membership_role,
-                post_election__election=self.election_data,
+                ballot__election=self.election_data,
             ).exists()
 
             person.not_standing.remove(self.election_data)
@@ -69,9 +69,7 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
                     post=post,
                     role=self.election_data.candidate_membership_role,
                     party=person.last_party(),
-                    post_election=self.election_data.postextraelection_set.get(
-                        post=post
-                    ),
+                    ballot=self.election_data.ballot_set.get(post=post),
                 )
 
             person.record_version(change_metadata)
@@ -107,7 +105,7 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
             memberships_to_delete = person.memberships.filter(
                 post=post,
                 role=self.election_data.candidate_membership_role,
-                post_election__election=self.election_data,
+                ballot__election=self.election_data,
             )
             for m in memberships_to_delete:
                 raise_if_unsafe_to_delete(m)

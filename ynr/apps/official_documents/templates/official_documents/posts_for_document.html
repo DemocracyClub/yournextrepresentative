@@ -17,12 +17,12 @@
 <ul>
   {% for document in document_posts %}
     <li>
-     <a href="{{ document.post_election.get_absolute_url }}">
-        {{ document.post_election.post.label }}</a>
-        {{ document.post_election.cancelled_status_html }}
-        {{ document.post_election.locked_status_html }}
+     <a href="{{ document.ballot.get_absolute_url }}">
+        {{ document.ballot.post.label }}</a>
+        {{ document.ballot.cancelled_status_html }}
+        {{ document.ballot.locked_status_html }}
         {% if not document.locked and not document.lock_suggested %}
-        <a href="{% url 'bulk_add_from_sopn' election=document.post_election.election.slug post_id=document.post_election.post.slug %}" class="button tiny">
+        <a href="{% url 'bulk_add_from_sopn' election=document.ballot.election.slug post_id=document.ballot.post.slug %}" class="button tiny">
         Add candidates</a>
         {% endif %}
     </li>

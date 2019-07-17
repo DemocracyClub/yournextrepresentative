@@ -42,7 +42,7 @@
 <div class="row">
     <div class="columns large-9">
 
-        {% if post_election.cancelled %}
+        {% if ballot.cancelled %}
         <div class="panel">
           ❌ The poll for this election was cancelled
         </div>
@@ -60,10 +60,10 @@
 
 
         {# TODO Remove elections that aren't FPTP #}
-        {% if post_election.election.in_past and not post_election.cancelled %}
+        {% if ballot.election.in_past and not ballot.cancelled %}
         <section>
         <h3>Results</h3>
-        {% include "uk_results/includes/vote_result_item.html" with post_election=post_election %}
+        {% include "uk_results/includes/vote_result_item.html" with ballot=ballot %}
         </section>
         {% endif %}
 
@@ -71,7 +71,7 @@
 
         {% if not candidates_locked %}
             {% if some_official_documents %}
-                <a href="{% url "bulk_add_from_sopn" post_election.election.slug post_data.id %}" class="button">Add candidates from nomination paper in {{post_data.label}}</a>
+                <a href="{% url "bulk_add_from_sopn" ballot.election.slug post_data.id %}" class="button">Add candidates from nomination paper in {{post_data.label}}</a>
             {% endif %}
         {% endif %}
 
@@ -94,7 +94,7 @@
                     the list is final.</p>
 
 
-                    {{ suggest_lock_form.postextraelection }}
+                    {{ suggest_lock_form.ballot }}
 
                     {{ suggest_lock_form.justification.label_tag }}
                     <label for="{{ suggest_lock_form.justification.id_for_label }}">{{ suggest_lock_form.justification.help_text }}</label>

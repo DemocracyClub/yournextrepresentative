@@ -2,8 +2,6 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
 
-from candidates.models import PostExtraElection
-
 PHOTO_REVIEWERS_GROUP_NAME = "Photo Reviewers"
 
 
@@ -95,7 +93,7 @@ class QueuedImage(models.Model):
 
 
 class SuggestedPostLock(models.Model):
-    postextraelection = models.ForeignKey(PostExtraElection)
+    ballot = models.ForeignKey("candidates.Ballot")
     user = models.ForeignKey(User, blank=False, null=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
