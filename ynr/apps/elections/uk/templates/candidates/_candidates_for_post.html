@@ -1,56 +1,5 @@
 {% load standing %}
 
-
-{% comment %}
-
-  The following variables are expected in the context:
-
-    election
-
-    post_data.id
-    post_data.label
-    post_label_shorter
-
-    candidacies
-    candidacies_might_stand_again
-    candidacies_not_standing_again
-
-    candidates_locked
-    show_confirm_result
-    show_retract_result
-    candidates_list_edits_allowed
-
-    lock_form
-    add_candidate_form
-
-  Permission variables from the context processor:
-
-    user_can_upload_documents
-    user_can_lock
-    user_can_record_results
-
-    user
-
-  Those required by included partials:
-
-    candidates/_person_in_list.html
-
-      c (a candidacy from candidacies, candidacies_might_stand_again, etc.)
-
-    candidates/_source_confirmation.html
-
-      c
-      standing (either 'standing' or 'not-standing')
-      post_data.id
-
-    official_documents/_post.html
-
-      official_documents
-      post_data.label
-      post_data.id
-
-{% endcomment %}
-
 {% if election.show_official_documents %}
   {% include 'official_documents/_post.html' %}
 {% endif %}
