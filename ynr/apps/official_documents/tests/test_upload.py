@@ -81,13 +81,15 @@ class TestModels(TestUserMixin, WebTest):
             self.ballot.get_absolute_url(),
             user=self.user_who_can_upload_documents,
         )
-        self.assertIn(
-            "Change Statement of Persons Nominated document", response.text
+
+        self.assertInHTML(
+            "Upload the Statement of Persons Nominated", response.text
         )
+
         response = self.app.get(
             reverse(
                 "upload_document_view",
-                args=(self.election.slug, self.post.slug),
+                args=(self.ballot.election.slug, self.ballot.post.slug),
             ),
             user=self.user_who_can_upload_documents,
         )
@@ -95,8 +97,9 @@ class TestModels(TestUserMixin, WebTest):
         form["source_url"] = "http://example.org/foo"
         with open(self.example_image_filename, "rb") as f:
             form["uploaded_file"] = Upload("pilot.jpg", f.read())
-        form.submit()
-        self.assertEqual(response.status_code, 200)
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+
         ods = OfficialDocument.objects.all()
         self.assertEqual(ods.count(), 1)
         od = ods[0]
@@ -117,3 +120,11 @@ class TestModels(TestUserMixin, WebTest):
         qs = LoggedAction.objects.all()
         self.assertEqual(qs.count(), 1)
         self.assertEqual(qs.get().source, "http://example.org/foo")
+
+        response = self.app.get(
+            self.ballot.get_absolute_url(),
+            user=self.user_who_can_upload_documents,
+        )
+        self.assertInHTML(
+            "Change Statement of Persons Nominated document", response.text
+        )

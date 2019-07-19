@@ -1,8 +1,6 @@
 {% load standing %}
 
-{% if election.show_official_documents %}
-  {% include 'official_documents/_post.html' %}
-{% endif %}
+{% include 'official_documents/sopn_for_ballot.html' %}
 
 <div id="candidates-for-post-{{ post_data.id }}" class="candidates-for-post">
   {% if user_can_lock %}
@@ -19,7 +17,7 @@
               Unlock candidate list
             </button>
           {% else %}
-            {% if has_lock_suggestion and some_official_documents %}
+            {% if has_lock_suggestion and sopn %}
               <button type="submit" class="button small">
                 Lock candidate list
               </button>

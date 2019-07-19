@@ -143,31 +143,20 @@ class BallotPaperView(TemplateView):
 
         context = super().get_context_data(**kwargs)
 
-        context["ballot"] = get_object_or_404(
+        context["ballot"] = ballot = get_object_or_404(
             Ballot.objects.all().select_related("post", "election"),
             ballot_paper_id=context["election"],
         )
+
+        try:
+            context["sopn"] = ballot.sopn
+        except OfficialDocument.DoesNotExist:
+            context["sopn"] = None
 
         mp_post = context["ballot"].post
         context["election"] = election = context["ballot"].election
         context["post_id"] = post_id = mp_post.slug
         context["post_obj"] = mp_post
-
-        documents_by_type = {}
-        # Make sure that every available document type has a key in
-        # the dictionary, even if there are no such documents.
-        doc_lookup = {
-            t[0]: (t[1], t[2]) for t in OfficialDocument.DOCUMENT_TYPES
-        }
-        for t in doc_lookup.values():
-            documents_by_type[t] = []
-        documents_for_post = OfficialDocument.objects.filter(
-            ballot=context["ballot"]
-        )
-        for od in documents_for_post:
-            documents_by_type[doc_lookup[od.document_type]].append(od)
-        context["official_documents"] = documents_by_type.items()
-        context["some_official_documents"] = documents_for_post.count()
 
         context["post_label"] = mp_post.label
         context["post_label_shorter"] = shorten_post_label(
@@ -177,8 +166,6 @@ class BallotPaperView(TemplateView):
         context["redirect_after_login"] = context["ballot"].get_absolute_url()
 
         context["post_data"] = {"id": mp_post.slug, "label": mp_post.label}
-
-        ballot = context["ballot"]
 
         context["candidates_locked"] = ballot.candidates_locked
 
