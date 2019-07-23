@@ -28,7 +28,8 @@ class BaseElectionFactory(factory.DjangoModelFactory):
         model = "elections.Election"
         abstract = True
 
-    slug = "sp.2016-05-05"
+    slug = factory.LazyAttribute(lambda o: "sp.%s" % o.election_date)
+
     for_post_role = "Member of the Scottish Parliament"
     winner_membership_role = None
     candidate_membership_role = "Candidate"
