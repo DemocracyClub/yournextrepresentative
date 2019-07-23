@@ -1,4 +1,4 @@
-/* Javascript for the constituency page, dealing with:
+/* Javascript for the ballot page, dealing with:
    - Popping up the source attribution boxes
    - Hiding or revealing the the new candidate form
 */
