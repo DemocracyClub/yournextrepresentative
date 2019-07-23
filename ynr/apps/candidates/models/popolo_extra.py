@@ -136,6 +136,18 @@ class Ballot(models.Model):
             return True
         return False
 
+    @property
+    def get_winner_count(self):
+        """
+        Returns 0 rather than None if the winner_count is unknown. See comment in
+        https://github.com/DemocracyClub/yournextrepresentative/pull/621#issuecomment-417252565
+
+        :return:
+        """
+        if self.winner_count:
+            return self.winner_count
+        return 0
+
 
 class PartySet(models.Model):
     slug = models.CharField(max_length=256, unique=True)

@@ -3,7 +3,6 @@ from django.views.generic import FormView, View
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 
-from candidates.views.helpers import get_max_winners
 from elections.mixins import ElectionMixin
 from auth_helpers.views import GroupRequiredMixin
 from .helpers import get_redirect_to_post
@@ -57,7 +56,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
             number_of_existing_winners = self.post_data.memberships.filter(
                 elected=True, ballot__election=self.election_data
             ).count()
-            max_winners = get_max_winners(self.ballot)
+            max_winners = self.ballot.get_winner_count
             if max_winners >= 0 and number_of_existing_winners >= max_winners:
                 msg = (
                     "There were already {n} winners of {post_label}"

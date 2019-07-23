@@ -22,7 +22,6 @@ from candidates.models import (
 from candidates.models.auth import is_post_locked
 from candidates.views import get_client_ip
 from candidates.views.helpers import (
-    get_max_winners,
     get_person_form_fields,
     group_candidates_by_party,
     split_by_elected,

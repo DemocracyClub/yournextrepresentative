@@ -341,27 +341,3 @@ class ProcessInlineFormsMixin:
             if not fs_name in kwargs:
                 kwargs[fs_name] = fs
         return super().get_context_data(**kwargs)
-
-
-def get_max_winners(ballot):
-    """
-    If we know the winner count for this ballot, return it, otherwise return 0
-
-    This is because the source of truth for winners is
-    elections.democracyclub.org.uk. If it's not set there (and therefore at
-    import time) then there is a high chance that we don't know the winner_count
-    at all yet.
-
-    Setting the winner_count to 0 will prevent things like setting winners or
-    showing winners.
-
-    TODO: move this on to the Ballot model, or set it as a default
-          in the database, TBD, see comment in
-          https://github.com/DemocracyClub/yournextrepresentative/pull/621#issuecomment-417252565
-
-    """
-    if ballot.winner_count:
-
-        return ballot.winner_count
-
-    return 0
