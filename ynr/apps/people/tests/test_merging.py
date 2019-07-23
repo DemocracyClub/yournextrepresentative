@@ -199,13 +199,20 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     "wikipedia_url": "",
                     "wikidata_id": "",
                     "honorific_prefix": "",
-                    "name": "",
+                    "name": self.dest_person.name,
                     "honorific_suffix": "",
                     "gender": "",
                     "birth_date": "",
                     "death_date": "",
                     "biography": "",
-                    "other_names": [],
+                    "other_names": [
+                        {
+                            "end_date": None,
+                            "name": self.dest_person.name,
+                            "note": "",
+                            "start_date": None,
+                        }
+                    ],
                     "extra_fields": {"favourite_biscuits": ""},
                     "standing_in": {},
                     "party_memberships": {},
