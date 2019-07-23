@@ -100,18 +100,3 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         self.result_set.num_turnout_reported = 300
         self.result_set.save()
         self.result_set.record_version()
-
-    def test_table_on_ballot_page(self):
-        resp = self.client.get(
-            self.local_post.ballot_set.get().get_absolute_url()
-        )
-        self.assertContains(resp, "<h3>Results</h3>")
-        expected_row = """
-            <tr>
-                <td><a href="/person/14">Bob</a></td>
-                <td>Conservative Party</td>
-                <td><strong>5000</strong></td>
-                <td><strong>Yes</strong></td>
-            </tr>
-        """
-        self.assertInHTML(expected_row, resp.content.decode("utf8"))
