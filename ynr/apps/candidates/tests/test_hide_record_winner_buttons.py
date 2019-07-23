@@ -1,3 +1,5 @@
+from unittest import skip
+
 from django.test.utils import override_settings
 from django_webtest import WebTest
 
@@ -8,6 +10,7 @@ from .factories import MembershipFactory
 from people.tests.factories import PersonFactory
 
 
+@skip("until winner buttons on candidate page")
 class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()

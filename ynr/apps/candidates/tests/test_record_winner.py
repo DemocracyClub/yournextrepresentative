@@ -1,3 +1,5 @@
+from unittest import skip
+
 from django.urls import reverse
 from django.test.utils import override_settings
 from django_webtest import WebTest
@@ -14,6 +16,7 @@ from .uk_examples import UK2015ExamplesMixin
 from results.models import ResultEvent
 
 
+@skip("Winner buttons on ballot page")
 class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
@@ -253,6 +256,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
 
+@skip("Winner buttons on ballot page")
 class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
