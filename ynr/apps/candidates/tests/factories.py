@@ -72,7 +72,7 @@ class PostFactory(factory.DjangoModelFactory):
             return
         if extracted:
             for election in extracted:
-                if re.search("\d\d\d\d-\d\d-\d\d$", election.slug):
+                if re.search(r"\d\d\d\d-\d\d-\d\d$", election.slug):
                     parts = election.slug.split(".")
                     parts.insert(-1, self.slug)
                     ballot_paper_id = ".".join(parts)
