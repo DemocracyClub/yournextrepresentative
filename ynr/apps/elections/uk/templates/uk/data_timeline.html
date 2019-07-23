@@ -22,7 +22,7 @@
     <div class="status_not_started">
         <strong>No "SOPNs" uploaded yet</strong>.
         {% if user_can_upload_documents %}
-          <a href="{% url 'upload_document_view' election=election.slug post_id=post_data.id %}">
+          <a href="{% url 'upload_document_view' election=ballot.election.slug post_id=ballot.post.slug %}">
             Upload SOPN</a>
       {% endif %}
 
@@ -32,7 +32,7 @@
 
 <div class="timeline_item">
     <h4>Candidates verified and lock suggested</h4>
-    {% if not has_lock_suggestion and not candidates_locked  %}
+    {% if not has_lock_suggestion and not ballot.candidates_locked  %}
         {% if sopn %}
         <div class="status_in_progress">
             <strong>No lock suggestions</strong> Please check this list against the uploaded document
@@ -44,7 +44,7 @@
         {% endif %}
 
     {% else %}
-        {% if not candidates_locked %}
+        {% if not ballot.candidates_locked %}
         <div class="status_in_progress">
             <strong>Suggested lock</strong> Waiting for verification.
             You can help by adding more information on the candidates
@@ -59,7 +59,7 @@
 
 <div class="timeline_item">
     <h4>Final verification and locked</h4>
-    {% if not candidates_locked %}
+    {% if not ballot.candidates_locked %}
     <div class="status_not_started">
         <strong>Not verified or locked</strong>
     </div>
@@ -77,7 +77,7 @@
         <strong>The poll for this election was cancelled</strong>
     </div>
     {% else %}
-      {% if not election.in_past %}
+      {% if not ballot.election.in_past %}
       <div class="status_not_started">
           <strong>Waiting for election to happen</strong>
       </div>

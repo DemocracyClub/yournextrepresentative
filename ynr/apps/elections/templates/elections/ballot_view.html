@@ -8,8 +8,8 @@
 {% block extra_head %}
     <!-- Open Graph and Twitter card data -->
     <meta property="og:url" name="twitter:url" content="{{ request.build_absolute_uri }}" />
-    <meta property="og:title" name="twitter:title" content="Candidates for {{ post_label_shorter }} in the {{ election.name }}" />
-    <meta property="og:description" name="twitter:description" content="List of Candidates for {{ post_label_shorter }} in the {{ election.name }} - find out more on {{ site.name }}">
+    <meta property="og:title" name="twitter:title" content="Candidates for {{ ballot.post.label }} in the {{ ballot.election.name }}" />
+    <meta property="og:description" name="twitter:description" content="List of Candidates for {{ ballot.post.label }} in the {{ ballot.election.name }} - find out more on {{ site.name }}">
 
     <!-- Open Graph data -->
     <meta property="og:type" content="article" />
@@ -31,92 +31,110 @@
 
 {% block body_class %}constituency{% endblock %}
 
-{% block title %}Candidates for {{ post_label_shorter }} in the {{ election.name }}{% endblock %}
+{% block title %}Candidates for {{ ballot.post.label }} in the {{ ballot.election.name }}{% endblock %}
 
 {% block hero %}
-  <h1>Candidates for <span id="constituency-name">{{ post_label_shorter }}</span></h1>
+  <h1>Candidates for {{ ballot.post.label }}</h1>
 {% endblock %}
 
 
 {% block content %}
 <div class="row">
-    <div class="columns large-9">
+  <div class="columns large-9">
+    {% if ballot.cancelled %}
+    <div class="panel">
+      ❌ The poll for this election was cancelled
+    </div>
+    {% endif %}
 
-        {% if ballot.cancelled %}
-        <div class="panel">
-          ❌ The poll for this election was cancelled
-        </div>
-        {% endif %}
-
-        {% if not candidates_locked %}
-        <div class="panel">
-            <p>These candidates haven't been confirmed by the official "nomination papers"
-                from the council yet. This means they might not all end up on the ballot paper.</p>
-            <p>We will manually verify each candidate when the nomination papers are published.</p>
-        </div>
-        {% endif %}
-
-        {% include 'candidates/_candidates_for_post.html' %}
-
-
-        {# TODO Remove elections that aren't FPTP #}
-        {% if ballot.election.in_past and not ballot.cancelled %}
-        <section>
-        <h3>Results</h3>
-        {% include "uk_results/includes/vote_result_item.html" with ballot=ballot %}
-        </section>
-        {% endif %}
+    {% if not ballot.candidates_locked and candidates.exists %}
+    <div class="panel">
+        <p>These candidates haven't been confirmed by the official "nomination papers"
+            from the council yet. This means they might not all end up on the ballot paper.</p>
+        <p>We will manually verify each candidate when the nomination papers are published.</p>
+    </div>
+    {% endif %}
 
 
 
-        {% if not candidates_locked %}
-            {% if sopn %}
-                <a href="{% url "bulk_add_from_sopn" ballot.election.slug post_data.id %}" class="button">Add candidates from nomination paper in {{post_data.label}}</a>
+{#    Candidates Table #}
+    {% if candidates.exists %}
+      <table class="table candidates-list">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Party</th>
+            {% if ballot.has_results %}
+            <th>Results</th>
             {% endif %}
-        {% endif %}
-
-        {% if request.user.is_authenticated %}
-          {% if not user_has_suggested_lock %}
-            {% if not candidates_locked %}
-                {% if election.show_official_documents and sopn %}
-                <form method=post id="suggest_lock_form" action="{% url 'constituency-suggest-lock' election_id=election %}">
-                    {% csrf_token %}
-                    <h3>Suggest locking</h3>
-
-
-                    <p>If you think this list is complete, please suggest that we lock it.
-                    Please only do this with good reason, for example if you have reviewed
-                    one of the official lists of candidates ("Nomination papers" or
-                    "Statement of Persons Nominated") linked to above.</p>
-
-                    <p>Locking a list means that candidates can't be added or removed, but
-                    their details can still be edited. This is useful when we know that
-                    the list is final.</p>
-
-
-                    {{ suggest_lock_form.ballot }}
-
-                    {{ suggest_lock_form.justification.label_tag }}
-                    <label for="{{ suggest_lock_form.justification.id_for_label }}">{{ suggest_lock_form.justification.help_text }}</label>
-                    {{ suggest_lock_form.justification }}
-                    <button type="submit" class="button small secondary">Suggest locking</button>
-                </form>
+            {% if user.is_authenticated %}
+            <th>Actions</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for candidate in candidates %}
+          <tr>
+            <td>
+              <a href="{{ candidate.person.get_absolute_url }}">
+                <img class="person-avatar" src="{{ candidate.person.get_display_image_url }}"/>
+                {% if candidate.result.is_winner %}<strong>{% endif %}
+                  {{ candidate.person.name }}
+                {% if candidate.result.is_winner %}</strong>{% endif %}
+              </a>
+            </td>
+            <td>{{ candidate.party.name }}</td>
+            {% if ballot.has_results %}
+            <td>
+              {{ candidate.result.num_ballots }}
+              {% if candidate.result.is_winner %} (elected){% endif %}
+            </td>
+            {% endif %}
+            <td>
+              {% if user.is_authenticated %}
+                {% if candidate_list_edits_allowed %}
+                  <a class="button tiny js-toggle-source-confirmation not-standing">Not actually standing?</a>
+                  {% include 'candidates/_source_confirmation.html' with standing='not-standing' action='candidacy-delete' %}
                 {% endif %}
-            {% endif %}
-          {% else %}
-            <h3>Suggest locking</h3>
-            {% if candidates_locked %}
-            <p>Thanks! You suggested locking this list, and we did!</p>
-            {% else %}
-            <p>Thanks, you've suggested we lock this list – we'll review it soon.</p>
-            {% endif %}
-          {% endif %}
-        {% endif %}
+                <a href="{% url 'person-update' person_id=candidate.person.pk %}" class="button tiny secondary">Edit</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
 
-    </div>
-    <div class="columns large-3">
-        {% include "uk/data_timeline.html" %}
-    </div>
+        </tbody>
+      </table>
+    {% else %}
+      <div class="no-candidates">
+        <p>
+          <strong>Oh no!</strong>
+          We don’t know of any candidates in {{ ballot.post.label }} for the {{ ballot.election.name }} yet.
+        </p>
+      </div>
+    {% endif %}
+
+    {% if candidate_list_edits_allowed %}
+      <p>
+        <a class="show-new-candidate-form button" href="{% url 'person-create' election=ballot.election.slug %}">Add a new candidate</a>
+      </p>
+      {% if sopn %}
+        <a href="{% url "bulk_add_from_sopn" ballot.election.slug ballot.post.id %}" class="button">Add candidates from nomination paper in {{ballot.post.label}}</a>
+      {% endif %}
+
+    {% elif not request.user.is_authenticated %}
+      <p>
+        <a href="{% url 'account_login' %}?next={{ request.path }}" class="show-new-candidate-form button">
+          Sign in to add a new candidate
+        </a>
+      </p>
+    {% endif %}
+
+{#    END Candidates Table #}
+
+  </div>
+  <div class="columns large-3">
+      {% include "uk/data_timeline.html" %}
+  </div>
 </div>
 
 {% endblock %}

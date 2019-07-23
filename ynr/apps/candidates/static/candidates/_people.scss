@@ -69,10 +69,14 @@
   margin-bottom: 0.2em;
 }
 
-.candidates-list__person {
+.candidates-list {
   list-style-type: none;
   margin-bottom: 1em;
   @include clearfix;
+
+  td {
+    vertical-align: top;
+  }
 
   .person-position {
     display: block;
@@ -197,8 +201,8 @@
   border: 1px solid $message-border-color;
   border-radius: 3px;
 
-  padding-top: 0.8em;
-  padding-bottom: 0.8em;
+  padding: 0.8em;
+  margin: 0.8em 0;
 
   p + p {
     margin-bottom: 0;
