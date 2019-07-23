@@ -4,6 +4,7 @@ from datetime import date, timedelta
 from django.conf import settings
 
 date_in_near_future = date.today() + timedelta(days=14)
+date_in_near_past = date.today() - timedelta(days=14)
 
 FOUR_YEARS_IN_DAYS = 1462
 
