@@ -10,17 +10,14 @@ from django.views.generic import DetailView, TemplateView
 from auth_helpers.views import GroupRequiredMixin
 from candidates.csv_helpers import memberships_dicts_for_csv, list_to_csv
 from candidates.forms import ToggleLockForm
-from candidates.models import (
-    Ballot,
-    get_edits_allowed,
-    TRUSTED_TO_LOCK_GROUP_NAME,
-    LoggedAction,
-)
+from candidates.views.helpers import get_person_form_fields
+from candidates.models import Ballot, TRUSTED_TO_LOCK_GROUP_NAME, LoggedAction
 from candidates.views import get_client_ip
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from official_documents.models import OfficialDocument
 from popolo.models import Membership
+from people.forms import NewPersonForm, PersonIdentifierFormsetFactory
 from parties.models import Party
 
 from .filters import BallotFilter, filter_shortcuts
@@ -140,14 +137,30 @@ class BallotPaperView(TemplateView):
         context["candidates"] = Membership.objects.memberships_for_ballot(
             ballot
         )
-        context["candidate_list_edits_allowed"] = get_edits_allowed(
-            self.request.user, ballot.candidates_locked
-        )
 
         try:
             context["sopn"] = ballot.sopn
         except OfficialDocument.DoesNotExist:
             context["sopn"] = None
+
+        context["membership_edits_allowed"] = ballot.user_can_edit_membership(
+            self.request.user
+        )
+
+        if context["membership_edits_allowed"]:
+            context["add_candidate_form"] = NewPersonForm(
+                election=ballot.election.slug,
+                initial={
+                    ("constituency_" + ballot.election.slug): ballot.post.slug,
+                    ("standing_" + ballot.election.slug): "standing",
+                },
+                hidden_post_widget=True,
+            )
+
+            context = get_person_form_fields(
+                context, context["add_candidate_form"]
+            )
+            context["identifiers_formset"] = PersonIdentifierFormsetFactory()
 
         return context
 
@@ -155,7 +168,6 @@ class BallotPaperView(TemplateView):
         # TODO: Lock form
         # TODO: past_candidates / standing again / etc
         # TODO: Retract results
-        # TODO: New candidate form
 
 
 class LockBallotView(GroupRequiredMixin, UpdateView):

@@ -55,9 +55,6 @@
     </div>
     {% endif %}
 
-
-
-{#    Candidates Table #}
     {% if candidates.exists %}
       <table class="table candidates-list">
         <thead>
@@ -92,7 +89,7 @@
             {% endif %}
             <td>
               {% if user.is_authenticated %}
-                {% if candidate_list_edits_allowed %}
+                {% if membership_edits_allowed %}
                   <a class="button tiny js-toggle-source-confirmation not-standing">
                     Not actually standing?
                   </a>
@@ -117,27 +114,39 @@
       </div>
     {% endif %}
 
-    {% if candidate_list_edits_allowed %}
-      <p>
-        <a class="show-new-candidate-form button" href="{% url 'person-create' election=ballot.election.slug %}">
-          Add a new candidate
-        </a>
-      </p>
-      {% if sopn %}
-        <a href="{% url "bulk_add_from_sopn" ballot.election.slug ballot.post.id %}" class="button">
-          Add candidates from nomination paper in {{ballot.post.label}}
-        </a>
+    <div class="ballot-ctas">
+      {% if membership_edits_allowed %}
+        <p>
+          <a class="show-new-candidate-form button" href="{% url 'person-create' election=ballot.election.slug %}">
+            Add a new candidate
+          </a>
+        </p>
+        {% if sopn %}
+          <a href="{% url "bulk_add_from_sopn" ballot.election.slug ballot.post.id %}" class="button">
+            Add candidates from nomination paper in {{ballot.post.label}}
+          </a>
+        {% endif %}
+
+      {% elif not request.user.is_authenticated %}
+        <p>
+          <a href="{% url 'account_login' %}?next={{ request.path }}" class="show-new-candidate-form button">
+            Sign in to add a new candidate
+          </a>
+        </p>
       {% endif %}
+    </div>
 
-    {% elif not request.user.is_authenticated %}
-      <p>
-        <a href="{% url 'account_login' %}?next={{ request.path }}" class="show-new-candidate-form button">
-          Sign in to add a new candidate
-        </a>
-      </p>
+    {% if membership_edits_allowed and add_candidate_form %}
+      <div class="candidates__new" {% if add_candidate_form.errors %}style="display: block"{% endif %}>
+        <h4>Add a new candidate</h4>
+
+        <form id="new-candidate-form" name="new-candidate-form" action="{% url 'person-create' election=ballot.election.slug %}" method="post">
+        {% with form=add_candidate_form identifiers_formset=identifiers_formset %}
+          {% include 'candidates/_person_form.html' %}
+        {% endwith %}
+        </form>
+      </div>
     {% endif %}
-
-{#    END Candidates Table #}
 
   </div>
   <div class="columns large-3">

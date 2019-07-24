@@ -54,7 +54,6 @@ def fake_diff_html(self, version_id, inline_style=False):
     )
 
 
-@skip("until new candidate form is on ballot page again")
 @patch.object(Person, "diff_for_version", fake_diff_html)
 @patch("candidates.models.db.datetime")
 @override_settings(PEOPLE_LIABLE_TO_VANDALISM={2811})

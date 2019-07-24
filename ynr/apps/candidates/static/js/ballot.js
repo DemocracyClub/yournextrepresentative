@@ -13,13 +13,12 @@ $(function() {
   $('.candidates__new').hide();
 
   function getNewCandidateDiv(element) {
-    var target = $(element),
-      allCandidates = target.closest('.candidates-for-post');
-    return allCandidates.find('.candidates__new');
+    return $('.candidates__new');
   }
 
   /* Set up the hide / reveal for the add new candidate form */
   $('.show-new-candidate-form').on('click', function(e){
+    e.preventDefault();
     var newCandidate = getNewCandidateDiv(e.target);
     newCandidate.slideDown(function(){
       newCandidate.find('input:text').eq(0).focus();

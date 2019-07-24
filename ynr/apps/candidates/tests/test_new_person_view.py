@@ -31,7 +31,6 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             split_location.query,
         )
 
-    @skip("New person form on ballot page")
     def test_new_person_submission(self):
         response = self.app.get(
             self.dulwich_post_ballot.get_absolute_url(), user=self.user

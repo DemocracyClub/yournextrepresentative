@@ -12,7 +12,6 @@ from people.models import Person
 from .uk_examples import UK2015ExamplesMixin
 
 
-@skip("New person form on ballot page")
 class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
