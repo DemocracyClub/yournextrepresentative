@@ -32,26 +32,22 @@ def get_constituency_lock_from_person_data(
     return get_constituency_lock(user, api, standing_in_election.get("post_id"))
 
 
-def get_edits_allowed(user, candidates_locked):
-    return user.is_authenticated and (
-        user_in_group(user, TRUSTED_TO_LOCK_GROUP_NAME)
-        or (not candidates_locked)
-    )
-
-
 def get_constituency_lock(user, post, election):
-    """Return whether the constituency is locked and whether this user can edit
+    """
+    Return whether the constituency is locked and whether this user can edit
 
     You should make sure that 'extra' is populated on the post that's
-    passed in to avoid an extra query."""
+    passed in to avoid an extra query.
+
+    """
 
     if post is None:
         return False, True
+    ballot = election.ballot_set.get(post=post)
     # Use the cached version because it'll be faster than going to
     # PopIt, even if it brings in embeds that we don't need:
-    candidates_locked = is_post_locked(post, election)
-    edits_allowed = get_edits_allowed(user, candidates_locked)
-    return candidates_locked, edits_allowed
+    edits_allowed = ballot.user_can_edit_membership(user)
+    return ballot.candidates_locked, edits_allowed
 
 
 def check_creation_allowed(user, new_candidacies):

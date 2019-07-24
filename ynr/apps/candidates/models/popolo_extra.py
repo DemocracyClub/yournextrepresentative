@@ -15,6 +15,7 @@ from django.utils.html import mark_safe
 from dateutil import parser
 from slugify import slugify
 
+from candidates.models.auth import TRUSTED_TO_LOCK_GROUP_NAME
 from elections.models import Election
 
 """Extensions to the base django-popolo classes for YourNextRepresentative
@@ -147,6 +148,26 @@ class Ballot(models.Model):
         if self.winner_count:
             return self.winner_count
         return 0
+
+    def user_can_edit_membership(self, user):
+        """
+        Can a given user edit this ballot?
+
+        """
+
+        # users have to be logged in to an account
+        if not user.is_authenticated:
+            return False
+
+        # If the ballot is unlocked, anyone can edit the memberships
+        if not self.candidates_locked:
+            return True
+
+        # If a user is trusted to lock then they can edit memberships
+        # TODO: Is this right?
+        # https://github.com/DemocracyClub/yournextrepresentative/issues/991
+        if user.groups.filter(name=TRUSTED_TO_LOCK_GROUP_NAME).exists():
+            return True
 
 
 class PartySet(models.Model):
