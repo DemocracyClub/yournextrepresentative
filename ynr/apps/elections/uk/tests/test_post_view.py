@@ -11,8 +11,7 @@ from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
-@skip("until lock form is on ballot page")
-class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
+class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_suggest_post_lock_offered_with_document_when_unlocked(self):
         OfficialDocument.objects.create(
             source_url="http://example.com",
@@ -67,7 +66,11 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response.location,
             self.edinburgh_east_post_ballot.get_absolute_url(),
         )
-
+        response = response.follow()
+        self.assertContains(
+            response,
+            "Thanks, you've suggested we lock this ballot – we'll review it soon.",
+        )
         suggested_locks = SuggestedPostLock.objects.all()
         self.assertEqual(suggested_locks.count(), 1)
         suggested_lock = suggested_locks.get()
@@ -83,13 +86,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "I liked totally reviewed the SOPN",
         )
         response = self.app.get("/")
-
-        self.assertContains(
-            response,
-            'Suggested locking ballot\n              <a href="/elections/{ballot}/">{ballot}</a>'.format(
-                ballot=suggested_lock.ballot.ballot_paper_id
-            ),
-        )
+        self.assertContains(response, """Suggested locking ballot""")
 
     def test_post_lock_disabled_not_shown_when_no_suggested_lock(self):
         group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
@@ -135,6 +132,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response, "Thanks, you've suggested we lock this list"
         )
 
+    @skip("Lock form on ballot page")
     def test_post_lock_not_offered_when_user_suggested_lock(self):
         group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
         self.user.groups.add(group)
@@ -164,6 +162,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response, "Locking disabled because you suggested locking this post"
         )
 
+    @skip("Lock form on ballot page")
     def test_post_lock_offered_when_suggested_lock_exists(self):
         group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
         self.user.groups.add(group)

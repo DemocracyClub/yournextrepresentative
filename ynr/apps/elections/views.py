@@ -16,6 +16,7 @@ from candidates.views import get_client_ip
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from official_documents.models import OfficialDocument
+from moderation_queue.forms import SuggestedPostLockForm
 from popolo.models import Membership
 from people.forms import NewPersonForm, PersonIdentifierFormsetFactory
 from parties.models import Party
@@ -132,8 +133,6 @@ class BallotPaperView(TemplateView):
             ballot_paper_id=context["election"],
         )
 
-        context["has_lock_suggestion"] = ballot.suggestedpostlock_set.exists()
-
         context["candidates"] = Membership.objects.memberships_for_ballot(
             ballot
         )
@@ -146,6 +145,17 @@ class BallotPaperView(TemplateView):
         context["membership_edits_allowed"] = ballot.user_can_edit_membership(
             self.request.user
         )
+
+        if ballot.has_lock_suggestion:
+            context[
+                "current_user_suggested_lock"
+            ] = ballot.suggestedpostlock_set.filter(
+                user=self.request.user
+            ).exists()
+        else:
+            context["suggest_lock_form"] = SuggestedPostLockForm(
+                initial={"ballot": ballot}
+            )
 
         if context["membership_edits_allowed"]:
             context["add_candidate_form"] = NewPersonForm(
@@ -164,7 +174,6 @@ class BallotPaperView(TemplateView):
 
         return context
 
-        # TODO: SuggestedPostLocks
         # TODO: Lock form
         # TODO: past_candidates / standing again / etc
         # TODO: Retract results
