@@ -113,7 +113,7 @@ class Ballot(models.Model):
             return mark_safe(
                 '<abbr title="Candidates verified and post locked">🔐</abbr>'
             )
-        if self.suggestedpostlock_set.exists():
+        if self.has_lock_suggestion:
             self.suggested_lock_html
         return ""
 
@@ -136,6 +136,10 @@ class Ballot(models.Model):
         if self.membership_set.filter(elected=True).exists():
             return True
         return False
+
+    @property
+    def has_lock_suggestion(self):
+        return self.suggestedpostlock_set.exists()
 
     @property
     def get_winner_count(self):
