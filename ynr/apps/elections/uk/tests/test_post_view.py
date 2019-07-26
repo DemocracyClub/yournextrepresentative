@@ -132,7 +132,6 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response, "Thanks, you've suggested we lock this list"
         )
 
-    @skip("Lock form on ballot page")
     def test_post_lock_not_offered_when_user_suggested_lock(self):
         group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
         self.user.groups.add(group)
@@ -159,10 +158,10 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             self.edinburgh_east_post_ballot.get_absolute_url(), user=self.user
         )
         self.assertContains(
-            response, "Locking disabled because you suggested locking this post"
+            response,
+            "Locking disabled because you suggested locking this ballot",
         )
 
-    @skip("Lock form on ballot page")
     def test_post_lock_offered_when_suggested_lock_exists(self):
         group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
         self.user.groups.add(group)

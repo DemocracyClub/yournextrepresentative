@@ -157,6 +157,13 @@ class BallotPaperView(TemplateView):
                 initial={"ballot": ballot}
             )
 
+        context["lock_form"] = ToggleLockForm(
+            initial={
+                "post_id": ballot.post.slug,
+                "lock": not ballot.candidates_locked,
+            }
+        )
+
         if context["membership_edits_allowed"]:
             context["add_candidate_form"] = NewPersonForm(
                 election=ballot.election.slug,
@@ -174,7 +181,6 @@ class BallotPaperView(TemplateView):
 
         return context
 
-        # TODO: Lock form
         # TODO: past_candidates / standing again / etc
         # TODO: Retract results
 
