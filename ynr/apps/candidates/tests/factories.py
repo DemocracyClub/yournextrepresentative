@@ -3,7 +3,7 @@ import re
 
 import factory
 import faker
-
+from slugify import slugify
 
 from .dates import date_in_near_future, FOUR_YEARS_IN_DAYS
 
@@ -65,6 +65,7 @@ class PostFactory(factory.DjangoModelFactory):
         model = "popolo.Post"
 
     role = "Member of Parliament"
+    slug = factory.LazyAttribute(lambda o: slugify(o.label))
 
     @factory.post_generation
     def elections(self, create, extracted, **kwargs):

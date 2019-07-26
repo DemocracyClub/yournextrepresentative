@@ -30,9 +30,9 @@ $(function() {
   });
 
   function toggleSourceConfirmation(button, classSuffix, target) {
-    var allConfirmationBoxes = $(button).parents('li').children('.source-confirmation'),
+    var allConfirmationBoxes = $('.source-confirmation'),
     confirmationClass = '.source-confirmation-' + classSuffix,
-    confirmation = $(button).parents('li').children(confirmationClass);
+    confirmation = $(button).parents('td').children(confirmationClass);
     if(confirmation.is(':visible')){
       confirmation.hide();
     } else {

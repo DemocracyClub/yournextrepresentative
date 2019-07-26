@@ -7,6 +7,7 @@ from django.utils.html import escape
 
 from sorl.thumbnail import get_thumbnail
 
+from candidates.models import PartySet
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.dates import date_in_near_future, date_in_near_past
 from candidates.tests.factories import (
@@ -40,8 +41,9 @@ class SingleBallotStatesMixin:
         return ElectionFactory(**kwargs)
 
     def create_post(self, post_label):
+        ps, _ = PartySet.objects.update_or_create(slug="GB")
         org = OrganizationFactory(name="Baz council")
-        return PostFactory(label=post_label, organization=org)
+        return PostFactory(label=post_label, organization=org, party_set=ps)
 
     def create_ballot(self, ballot_paper_id, election, post, winner_count=1):
         return BallotPaperFactory(
@@ -245,244 +247,173 @@ class TestBallotView(
         )
         response.mustcontain("Unset the current winners")
 
-    @skip("Move to new ballot view test")
     def test_constituency_with_may_be_standing(self):
-        response = self.app.get("/elections/parl.14419.2015-05-07/")
+        self.create_memberships(self.past_ballot, self.parties)
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
         response.mustcontain(
-            "if these candidates from earlier elections are standing"
-        )
-        response.mustcontain(
-            no="These candidates from earlier elections are known not to be standing again"
+            "Is a candidate from an earlier election standing again?"
         )
 
-    @skip("Move to new ballot view test")
     def test_constituency_with_not_standing(self):
-        response = self.app.get(self.dulwich_post_ballot.get_absolute_url())
+        self.create_memberships(self.past_ballot, self.parties)
+        person_not_standing = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        person_not_standing.not_standing.add(self.ballot.election)
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
         response.mustcontain(
-            "These candidates from earlier elections are known not to be standing again"
-        )
-        response.mustcontain(
-            no="if these candidates from earlier elections are standing"
+            "These people from earlier elections are known not to be standing again"
         )
 
-    @skip("Move to new ballot view test")
     def test_mark_not_standing_no_candidate(self):
-        response = self.app.get(
-            self.edinburgh_east_post_ballot.get_absolute_url(), user=self.user
-        )
+        self.create_memberships(self.past_ballot, self.parties)
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
 
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/2015/candidacy/delete",
-            params={
-                "person_id": "9999",
-                "post_id": "14419",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
-
+        form = response.forms["candidacy-delete_{}".format(person_to_mark.pk)]
+        form["person_id"] = 9999
+        form["post_id"] = 14419
+        form["source"] = "test data"
+        response = form.submit(expect_errors=True)
         self.assertEqual(response.status_code, 404)
 
-    @skip("Move to new ballot view test")
     def test_mark_not_standing_no_post(self):
-        response = self.app.get(
-            "/election/parl.2015-05-07/post/14419/edinburgh-east",
-            user=self.user,
-        )
+        self.create_memberships(self.past_ballot, self.parties)
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
 
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy/delete",
-            params={
-                "person_id": "181",
-                "post_id": "9999",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
-
+        form = response.forms["candidacy-delete_{}".format(person_to_mark.pk)]
+        form["person_id"] = person_to_mark.pk
+        form["post_id"] = 99999
+        form["source"] = "test data"
+        response = form.submit(expect_errors=True)
         self.assertEqual(response.status_code, 404)
 
-    @skip("Move to new ballot view test")
     def test_mark_standing_no_candidate(self):
-        response = self.app.get(
-            "/election/parl.2015-05-07/post/14419/edinburgh-east",
-            user=self.user,
-        )
+        self.create_memberships(self.past_ballot, self.parties)
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
 
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy",
-            params={
-                "person_id": "9999",
-                "post_id": "14419",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
-
+        form = response.forms["candidacy-create_{}".format(person_to_mark.pk)]
+        form["person_id"] = 00000
+        form["post_id"] = 99999
+        form["source"] = "test data"
+        response = form.submit(expect_errors=True)
         self.assertEqual(response.status_code, 404)
 
-    @skip("Move to new ballot view test")
     def test_mark_standing_no_post(self):
-        response = self.app.get(
-            "/election/parl.2015-05-07/post/14419/edinburgh-east",
-            user=self.user,
-        )
+        self.create_memberships(self.past_ballot, self.parties)
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
 
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy",
-            params={
-                "person_id": "5163",
-                "post_id": "9999",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
-
+        form = response.forms["candidacy-create_{}".format(person_to_mark.pk)]
+        form["person_id"] = person_to_mark.pk
+        form["post_id"] = 99999
+        form["source"] = "test data"
+        response = form.submit(expect_errors=True)
         self.assertEqual(response.status_code, 404)
 
-    @skip("Move to new ballot view test")
     def test_mark_candidate_not_standing(self):
-        response = self.app.get(
-            "/election/parl.2015-05-07/post/14419/edinburgh-east",
-            user=self.user,
-        )
+        self.create_memberships(self.past_ballot, self.parties)
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
 
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy/delete",
-            params={
-                "person_id": "818",
-                "post_id": "14419",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
-
-        membership = Membership.objects.filter(
-            person_id=818, post__slug="14419", ballot__election__slug="2015"
-        )
-        self.assertFalse(membership.exists())
-
-        person = Person.objects.get(id=818)
-        not_standing = person.not_standing.all()
-        self.assertTrue(self.election in not_standing)
-
+        form = response.forms["candidacy-delete_{}".format(person_to_mark.pk)]
+        form["person_id"] = person_to_mark.pk
+        form["post_id"] = self.ballot.post.slug
+        form["source"] = "test data"
+        response = form.submit()
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location,
-            self.edinburgh_east_post_ballot.get_absolute_url(),
+
+        self.assertFalse(self.ballot.membership_set.exists())
+        self.assertTrue(
+            self.ballot.election in person_to_mark.not_standing.all()
         )
 
-    @skip("Move to new ballot view test")
     def test_mark_may_stand_actually_standing(self):
-        response = self.app.get(
-            self.edinburgh_east_post_ballot.get_absolute_url(), user=self.user
-        )
+        self.assertFalse(self.ballot.membership_set.exists())
+        self.create_memberships(self.past_ballot, self.parties)
 
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy",
-            params={
-                "person_id": "5163",
-                "post_id": "14419",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+
+        form = response.forms["candidacy-create_{}".format(person_to_mark.pk)]
+        form["person_id"] = person_to_mark.pk
+        form["post_id"] = self.ballot.post.slug
+        form["source"] = "test data"
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
 
         membership = Membership.objects.filter(
-            person_id=5163,
-            post__slug="14419",
-            ballot__election__slug="parl.2015-05-07",
+            person=person_to_mark, ballot=self.ballot
         )
 
         self.assertTrue(membership.exists())
 
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location,
-            self.edinburgh_east_post_ballot.get_absolute_url(),
-        )
-
-    @skip("Move to new ballot view test")
     def test_mark_may_stand_not_standing_again(self):
-        response = self.app.get(
-            self.edinburgh_east_post_ballot.get_absolute_url(), user=self.user
-        )
+        self.create_memberships(self.past_ballot, self.parties)
 
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy/delete",
-            params={
-                "person_id": "5163",
-                "post_id": "14419",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+
+        form = response.forms["candidacy-delete_{}".format(person_to_mark.pk)]
+        form["person_id"] = person_to_mark.pk
+        form["post_id"] = self.ballot.post.slug
+        form["source"] = "test data"
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
 
         membership = Membership.objects.filter(
-            person_id=5163,
-            post__slug="14419",
-            ballot__election__slug="parl.2015-05-07",
+            person=person_to_mark, ballot=self.ballot
         )
         self.assertFalse(membership.exists())
 
-        person = Person.objects.get(id=5163)
-        not_standing = person.not_standing.all()
-        self.assertTrue(self.election in not_standing)
+        not_standing = person_to_mark.not_standing.all()
+        self.assertTrue(self.ballot.election in not_standing)
 
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location,
-            self.edinburgh_east_post_ballot.get_absolute_url(),
-        )
-
-    @skip("Move to new ballot view test")
     def test_mark_not_standing_standing_again(self):
-        response = self.app.get(
-            self.dulwich_post_ballot.get_absolute_url(), user=self.user
-        )
+        self.create_memberships(self.past_ballot, self.parties)
 
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy",
-            params={
-                "person_id": "4322",
-                "post_id": "65808",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        person_to_mark.not_standing.add(self.ballot.election)
 
         membership = Membership.objects.filter(
-            person_id=4322,
-            post__slug="65808",
-            ballot__election__slug="parl.2015-05-07",
+            person=person_to_mark, ballot=self.ballot
         )
+        self.assertFalse(membership.exists())
 
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+
+        form = response.forms["candidacy-create_{}".format(person_to_mark.pk)]
+        form["person_id"] = person_to_mark.pk
+        form["post_id"] = self.ballot.post.slug
+        form["source"] = "test data"
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+
+        membership = Membership.objects.filter(
+            person=person_to_mark, ballot=self.ballot
+        )
         self.assertTrue(membership.exists())
 
-        person = Person.objects.get(id=4322)
-        not_standing = person.not_standing.all()
+        not_standing = person_to_mark.not_standing.all()
         self.assertFalse(self.election in not_standing)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location, self.dulwich_post_ballot.get_absolute_url()
-        )
 
     @skip("Move to new ballot view test")
     def test_constituency_with_no_winner_record_results_user(self):

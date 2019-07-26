@@ -179,9 +179,26 @@ class BallotPaperView(TemplateView):
             )
             context["identifiers_formset"] = PersonIdentifierFormsetFactory()
 
+            context[
+                "previous_ballot"
+            ] = previous_ballot = Ballot.objects.get_previous_ballot_for_post(
+                ballot
+            )
+            if previous_ballot:
+                context[
+                    "people_not_standing"
+                ] = ballot.people_not_standing_again(previous_ballot)
+
+                context[
+                    "candidates_might_stand_again"
+                ] = Membership.objects.memberships_for_ballot(
+                    previous_ballot,
+                    exclude_memberships_qs=context["candidates"],
+                    exclude_people_qs=context["people_not_standing"],
+                )
+
         return context
 
-        # TODO: past_candidates / standing again / etc
         # TODO: Retract results
 
 

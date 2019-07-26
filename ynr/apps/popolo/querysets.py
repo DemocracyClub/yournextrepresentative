@@ -83,8 +83,9 @@ class MembershipQuerySet(DateframeableQuerySet):
             )
         )
 
-    def memberships_for_ballot(self, ballot):
-
+    def memberships_for_ballot(
+        self, ballot, exclude_memberships_qs=None, exclude_people_qs=None
+    ):
         order_by = ["-result__is_winner", "-result__num_ballots"]
         if ballot.election.party_lists_in_use:
             order_by += ["party__name", "party_list_position"]
@@ -97,6 +98,15 @@ class MembershipQuerySet(DateframeableQuerySet):
         qs = qs.select_related("person", "party").prefetch_related(
             "person__images"
         )
+
+        if exclude_memberships_qs and exclude_memberships_qs.exists():
+            qs = qs.exclude(
+                person__pk__in=exclude_memberships_qs.values("person__pk")
+            )
+
+        if exclude_people_qs and exclude_people_qs.exists():
+            qs = qs.exclude(person__pk__in=exclude_people_qs)
+
         return qs
 
 
