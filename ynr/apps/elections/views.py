@@ -37,8 +37,6 @@ from people.forms import NewPersonForm, PersonIdentifierFormsetFactory
 from popolo.models import Membership, Post
 from parties.models import Party
 
-from .filters import BallotFilter, filter_shortcuts
-
 
 class ElectionView(DetailView):
     template_name = "elections/election_detail.html"
@@ -69,6 +67,8 @@ class ElectionListView(TemplateView):
     template_name = "elections/election_list.html"
 
     def get_context_data(self, **kwargs):
+        from .filters import BallotFilter, filter_shortcuts
+
         context = super().get_context_data(**kwargs)
 
         qs = (
