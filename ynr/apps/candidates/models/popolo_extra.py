@@ -7,7 +7,7 @@ from django.contrib.admin.utils import NestedObjects
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.files.storage import DefaultStorage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import connection
 from django.db import models
 from django.utils.html import mark_safe

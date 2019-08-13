@@ -2,7 +2,7 @@ from slugify import slugify
 
 from django import template
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Prefetch
 from django.utils.safestring import mark_safe
 

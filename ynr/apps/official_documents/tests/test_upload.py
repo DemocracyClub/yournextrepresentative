@@ -3,7 +3,7 @@ from os.path import join, realpath, dirname
 from django_webtest import WebTest
 from webtest import Upload
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from candidates.tests.auth import TestUserMixin
 from candidates.models import LoggedAction

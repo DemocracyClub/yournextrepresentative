@@ -1,7 +1,7 @@
 import os
 
 from django.db import models
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from popolo.models import Post
 from elections.models import Election

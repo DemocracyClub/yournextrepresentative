@@ -2,7 +2,7 @@ from collections import defaultdict, OrderedDict
 from datetime import date
 
 from django.contrib.admin.utils import NestedObjects
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import connection
 from django.db import models
 from django.shortcuts import get_object_or_404

@@ -1,6 +1,6 @@
 from braces.views import LoginRequiredMixin
 from django import forms as django_forms
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.views.generic import FormView, TemplateView

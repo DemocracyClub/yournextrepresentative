@@ -12,7 +12,7 @@ from django.contrib.sites.models import Site
 from django.contrib import messages
 from django.core.files import File
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.http import (
     HttpResponseRedirect,

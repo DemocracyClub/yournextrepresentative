@@ -1,7 +1,7 @@
 from os.path import exists, join
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.views.generic import TemplateView
 
 from elections.models import Election

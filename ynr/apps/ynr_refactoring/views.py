@@ -1,6 +1,6 @@
 from django.views.generic import RedirectView
 from django.views.defaults import page_not_found
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import get_object_or_404
 
 from elections.models import Election
