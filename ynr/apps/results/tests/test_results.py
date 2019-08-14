@@ -207,7 +207,7 @@ class TestResultsFeedWithRetraction(
   <link href="http://example.com/" rel="alternate"/>
   <link href="http://example.com/results/all.atom" rel="self"/>
   <id>http://example.com/</id>
-  <updated>{updated[0]}</updated>
+  <updated>{updated[2]}</updated>
   <entry>
     <title>Tessa Jowell (Labour Party) won in Dulwich and West Norwood</title>
     <link href="http://example.com/#{item_id[0]}" rel="alternate"/>
@@ -305,7 +305,7 @@ class TestResultsFeedWithRetraction(
   <link href="http://example.com/" rel="alternate"/>
   <link href="http://example.com/results/all-basic.atom" rel="self"/>
   <id>http://example.com/</id>
-  <updated>{updated[0]}</updated>
+  <updated>{updated[2]}</updated>
   <entry>
     <title>Tessa Jowell (Labour Party) won in Dulwich and West Norwood</title>
     <link href="http://example.com/#{item_id[0]}" rel="alternate"/>
