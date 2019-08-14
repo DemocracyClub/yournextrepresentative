@@ -22,7 +22,7 @@ class TestCaching(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_auth_user_cache_headers(self):
         response = self.app.get(
-            "/elections/parl.65808.2010-05-06/", user=self.user
+            "/elections/parl.65808.2015-05-07/", user=self.user
         )
 
         headers = response.headerlist
