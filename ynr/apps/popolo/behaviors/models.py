@@ -19,7 +19,9 @@ class GenericRelatable(models.Model):
     An abstract class that provides the possibility of generic relations
     """
 
-    content_type = models.ForeignKey(ContentType, blank=True, null=True)
+    content_type = models.ForeignKey(
+        ContentType, blank=True, null=True, on_delete=models.CASCADE
+    )
     object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey("content_type", "object_id")
 

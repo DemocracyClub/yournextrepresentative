@@ -41,7 +41,7 @@ class Election(models.Model):
     current = models.BooleanField()
     use_for_candidate_suggestions = models.BooleanField(default=False)
     organization = models.ForeignKey(
-        "popolo.Organization", null=True, blank=True
+        "popolo.Organization", null=True, blank=True, on_delete=models.CASCADE
     )
     party_lists_in_use = models.BooleanField(default=False)
     people_elected_per_post = models.IntegerField(

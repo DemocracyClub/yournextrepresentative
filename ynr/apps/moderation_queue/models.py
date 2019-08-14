@@ -62,8 +62,12 @@ class QueuedImage(models.Model):
     image = models.ImageField(
         upload_to="queued-images/%Y/%m/%d", max_length=512
     )
-    person = models.ForeignKey("people.Person", blank=True, null=True)
-    user = models.ForeignKey(User, blank=True, null=True)
+    person = models.ForeignKey(
+        "people.Person", blank=True, null=True, on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        User, blank=True, null=True, on_delete=models.CASCADE
+    )
 
     crop_min_x = models.IntegerField(blank=True, null=True)
     crop_min_y = models.IntegerField(blank=True, null=True)
@@ -93,8 +97,10 @@ class QueuedImage(models.Model):
 
 
 class SuggestedPostLock(models.Model):
-    ballot = models.ForeignKey("candidates.Ballot")
-    user = models.ForeignKey(User, blank=False, null=False)
+    ballot = models.ForeignKey("candidates.Ballot", on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, blank=False, null=False, on_delete=models.CASCADE
+    )
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     justification = models.TextField(

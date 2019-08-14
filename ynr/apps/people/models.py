@@ -41,11 +41,15 @@ class PersonImage(models.Model):
     notes they have.
     """
 
-    person = models.ForeignKey("people.Person", related_name="images")
+    person = models.ForeignKey(
+        "people.Person", related_name="images", on_delete=models.CASCADE
+    )
     image = models.ImageField(upload_to=person_image_path, max_length=512)
     source = models.CharField(max_length=400)
     copyright = models.CharField(max_length=64, default="other", blank=True)
-    uploading_user = models.ForeignKey("auth.User", blank=True, null=True)
+    uploading_user = models.ForeignKey(
+        "auth.User", blank=True, null=True, on_delete=models.CASCADE
+    )
     user_notes = models.TextField(blank=True)
     md5sum = models.CharField(max_length=32, blank=True)
     user_copyright = models.CharField(max_length=128, blank=True)
@@ -75,7 +79,9 @@ class PersonIdentifier(TimeStampedModel):
     """
 
     person = models.ForeignKey(
-        "people.Person", related_name="tmp_person_identifiers"
+        "people.Person",
+        related_name="tmp_person_identifiers",
+        on_delete=models.CASCADE,
     )
     value = models.CharField(
         max_length=800,

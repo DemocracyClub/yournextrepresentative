@@ -43,7 +43,9 @@ class WombleTags(models.Model):
 
 
 class WombleProfile(models.Model):
-    user = models.OneToOneField("auth.User", related_name="womble_profile")
+    user = models.OneToOneField(
+        "auth.User", related_name="womble_profile", on_delete=models.CASCADE
+    )
     tags = models.ManyToManyField(WombleTags)
 
     objects = WombleQuerySet.as_manager()

@@ -44,7 +44,7 @@ class RawPeople(TimeStampedModel):
     # to edit (edit option always there)
     TRUSTED_SOURCES = (SOURCE_COUNCIL_CSV, SOURCE_BULK_ADD_FORM)
 
-    ballot = models.OneToOneField("candidates.Ballot")
+    ballot = models.OneToOneField("candidates.Ballot", on_delete=models.CASCADE)
     data = JSONField()
     source = models.CharField(max_length=512)
     source_type = models.CharField(

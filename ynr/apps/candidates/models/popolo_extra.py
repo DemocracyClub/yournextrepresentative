@@ -54,8 +54,8 @@ def model_has_related_objects(model):
 
 
 class Ballot(models.Model):
-    post = models.ForeignKey("popolo.Post")
-    election = models.ForeignKey(Election)
+    post = models.ForeignKey("popolo.Post", on_delete=models.CASCADE)
+    election = models.ForeignKey(Election, on_delete=models.CASCADE)
     ballot_paper_id = models.CharField(blank=True, max_length=255, unique=True)
 
     candidates_locked = models.BooleanField(default=False)
