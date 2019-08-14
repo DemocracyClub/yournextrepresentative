@@ -27,7 +27,9 @@ class StrippedCharField(forms.CharField):
         self, max_length=None, min_length=None, strip=True, *args, **kwargs
     ):
         self.strip = strip
-        super().__init__(max_length, min_length, *args, **kwargs)
+        super().__init__(
+            max_length=max_length, min_length=min_length, *args, **kwargs
+        )
 
     def to_python(self, value):
         value = super().to_python(value)
