@@ -128,7 +128,7 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
         local_council_ballot = get_election_extra(
             self.local_post, self.local_election
         )
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(3):
             self.assertEqual(
                 Election.group_and_order_elections(include_ballots=True),
                 [
