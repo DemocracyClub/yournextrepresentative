@@ -184,7 +184,7 @@ class BallotPaperView(TemplateView):
             ] = previous_ballot = Ballot.objects.get_previous_ballot_for_post(
                 ballot
             )
-            if previous_ballot:
+            if previous_ballot and not ballot.polls_closed:
                 context[
                     "people_not_standing"
                 ] = ballot.people_not_standing_again(previous_ballot)
