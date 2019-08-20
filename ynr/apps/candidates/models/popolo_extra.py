@@ -1,4 +1,4 @@
-from datetime import date
+import datetime
 from os.path import join
 import re
 
@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.db import connection
 from django.db import models
 from django.utils.html import mark_safe
+from django.utils import timezone
 
 from dateutil import parser
 from slugify import slugify
@@ -158,6 +159,18 @@ class Ballot(models.Model):
         if self.membership_set.filter(elected=True).exists():
             return True
         return False
+
+    @property
+    def polls_closed(self):
+        # TODO: City of London and other complex cases. Take this from EE?
+        normal_poll_close_time = datetime.time(hour=22)
+
+        poll_close_datetime = timezone.make_aware(
+            datetime.datetime.combine(
+                self.election.election_date, normal_poll_close_time
+            )
+        )
+        return poll_close_datetime <= timezone.now()
 
     @property
     def has_lock_suggestion(self):
