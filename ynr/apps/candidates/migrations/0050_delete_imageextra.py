@@ -14,9 +14,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(model_name="imageextra", name="base"),
-        migrations.RemoveField(model_name="imageextra", name="uploading_user"),
         migrations.RemoveField(model_name="organizationextra", name="base"),
-        migrations.DeleteModel(name="ImageExtra"),
         migrations.DeleteModel(name="OrganizationExtra"),
     ]

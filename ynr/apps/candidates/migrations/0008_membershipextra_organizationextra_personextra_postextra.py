@@ -6,7 +6,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("images", "0001_initial"),
         ("popolo", "0002_update_models_from_upstream"),
         ("elections", "0003_allow_null_winner_membership_role"),
         ("candidates", "0007_add_result_recorders_group"),
@@ -195,50 +194,6 @@ class Migration(migrations.Migration):
                         on_delete=models.CASCADE,
                     ),
                 ),
-            ],
-        ),
-        migrations.CreateModel(
-            name="ImageExtra",
-            fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        verbose_name="ID",
-                        serialize=False,
-                        auto_created=True,
-                        primary_key=True,
-                    ),
-                ),
-                (
-                    "copyright",
-                    models.CharField(
-                        default=b"other", max_length=64, blank=True
-                    ),
-                ),
-                ("user_notes", models.TextField(blank=True)),
-                (
-                    "base",
-                    models.OneToOneField(
-                        related_name="extra",
-                        to="images.Image",
-                        on_delete=models.CASCADE,
-                    ),
-                ),
-                ("md5sum", models.CharField(max_length=32, blank=True)),
-                (
-                    "uploading_user",
-                    models.ForeignKey(
-                        blank=True,
-                        to=settings.AUTH_USER_MODEL,
-                        null=True,
-                        on_delete=models.CASCADE,
-                    ),
-                ),
-                (
-                    "user_copyright",
-                    models.CharField(max_length=128, blank=True),
-                ),
-                ("notes", models.TextField(blank=True)),
             ],
         ),
     ]

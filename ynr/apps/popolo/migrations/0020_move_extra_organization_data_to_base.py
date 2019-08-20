@@ -5,42 +5,12 @@ from __future__ import unicode_literals
 from django.db import migrations
 
 
-def add_extra_fields_to_base(apps, schema_editor):
-    Organization = apps.get_model("popolo", "Organization")
-    OrganizationExtra = apps.get_model("candidates", "OrganizationExtra")
-    ContentType = apps.get_model("contenttypes", "ContentType")
-    Image = apps.get_model("images", "Image")
-
-    old_to_new_map = {}
-
-    # First, delete any Organization objects with no extra
-    Organization.objects.filter(extra=None).delete()
-
-    for base in Organization.objects.all().select_related("extra"):
-        old_to_new_map[base.extra.pk] = base.pk
-        base.slug = base.extra.slug
-        base.register = base.extra.register
-        base.save()
-
-    # Update the content type ID for the images generic relation
-    oe_content_type_id = ContentType.objects.get_for_model(OrganizationExtra).pk
-    org_content_type_id = ContentType.objects.get_for_model(Organization).pk
-    Image.objects.filter(content_type_id=oe_content_type_id).update(
-        content_type_id=org_content_type_id
-    )
-    images = Image.objects.filter(content_type_id=org_content_type_id)
-    for image in images:
-        if image.object_id in old_to_new_map:
-            image.object_id = old_to_new_map[image.object_id]
-            image.save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [("popolo", "0019_move_organization_extra_fields_to_base")]
 
     operations = [
         migrations.RunPython(
-            add_extra_fields_to_base, migrations.RunPython.noop
+            migrations.RunPython.noop, migrations.RunPython.noop
         )
     ]
