@@ -12,7 +12,7 @@ class DataTimelineHTMLAssertions(WebTest):
         self.assertInHTML("<h3>Data Timeline</h3>", response.text)
 
     def assertDataTimelineNoResults(self, response):
-        if response.context["ballot"].election.in_past:
+        if response.context["ballot"].polls_closed:
             self.assertContains(
                 response, """<strong>Winner(s) unknown</strong>:"""
             )
