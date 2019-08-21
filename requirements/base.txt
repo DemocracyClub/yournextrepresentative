@@ -85,6 +85,6 @@ Unidecode==1.0.23
 urllib3>=1.21.1,<1.26
 waitress==1.2.1
 WebOb==1.8.5
-WebTest==2.0.15
+WebTest==2.0.33
 Whoosh==2.7.4
 yanc==0.3.3
