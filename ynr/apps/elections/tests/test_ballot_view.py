@@ -239,10 +239,13 @@ class TestBallotView(
         response.mustcontain(no="Unset the current winners")
         # TODO: Test winners in table
 
-    @skip("Move to new ballot view test")
     def test_constituency_with_winner_record_results_user(self):
+        self.ballot.election.election_date = "2015-05-07"
+        self.ballot.election.save()
+        self.create_memberships(self.ballot, self.parties)
+        self.ballot.membership_set.update(elected=True)
         response = self.app.get(
-            self.edinburgh_east_post_ballot.get_absolute_url(),
+            self.ballot.get_absolute_url(),
             user=self.user_who_can_record_results,
         )
         response.mustcontain("Unset the current winners")
@@ -415,10 +418,9 @@ class TestBallotView(
         not_standing = person_to_mark.not_standing.all()
         self.assertFalse(self.election in not_standing)
 
-    @skip("Move to new ballot view test")
     def test_constituency_with_no_winner_record_results_user(self):
         response = self.app.get(
-            self.dulwich_post_ballot.get_absolute_url(),
+            self.ballot.get_absolute_url(),
             user=self.user_who_can_record_results,
         )
         response.mustcontain(no="Unset the current winners")

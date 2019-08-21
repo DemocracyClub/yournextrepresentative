@@ -28,6 +28,7 @@ class ElectionTests(UK2015ExamplesMixin, TestCase):
         self.assertTrue(self.edinburgh_east_post_ballot_earlier.polls_closed)
 
     def test_polls_closed_election_in_future(self):
+        self.edinburgh_east_post_ballot.election.refresh_from_db()
         self.assertFalse(self.edinburgh_east_post_ballot.polls_closed)
 
     @mock.patch("django.utils.timezone.now")

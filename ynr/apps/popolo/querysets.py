@@ -86,7 +86,7 @@ class MembershipQuerySet(DateframeableQuerySet):
     def memberships_for_ballot(
         self, ballot, exclude_memberships_qs=None, exclude_people_qs=None
     ):
-        order_by = ["-result__is_winner", "-result__num_ballots"]
+        order_by = ["-elected", "-result__is_winner", "-result__num_ballots"]
         if ballot.election.party_lists_in_use:
             order_by += ["party__name", "party_list_position"]
         else:

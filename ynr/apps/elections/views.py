@@ -197,9 +197,12 @@ class BallotPaperView(TemplateView):
                     exclude_people_qs=context["people_not_standing"],
                 )
 
-        return context
+        if ballot.polls_closed:
+            context["has_any_winners"] = any(
+                [m.elected for m in context["candidates"]]
+            )
 
-        # TODO: Retract results
+        return context
 
 
 class LockBallotView(GroupRequiredMixin, UpdateView):

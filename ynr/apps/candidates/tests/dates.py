@@ -1,5 +1,6 @@
 import copy
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime, time
+from django.utils import timezone
 
 from django.conf import settings
 
@@ -15,6 +16,22 @@ election_date_after = lambda r: {
 }
 
 default_templates = settings.TEMPLATES
+
+
+def mock_in_past():
+    return timezone.make_aware(datetime(2019, 1, 1, 10, 10, 10))
+
+
+def mock_on_election_day(election):
+    return timezone.make_aware(
+        datetime.combine(election.election_date, time(10, 10, 10))
+    )
+
+
+def mock_on_election_day_polls_closed(election):
+    return timezone.make_aware(
+        datetime.combine(election.election_date, time(23, 10, 10))
+    )
 
 
 def _insert_context_processor(path):
