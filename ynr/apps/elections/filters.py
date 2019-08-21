@@ -3,23 +3,18 @@ from urllib.parse import urlencode
 import django_filters
 from django_filters.widgets import LinkWidget
 
-from candidates.models import Ballot, TRUSTED_TO_LOCK_GROUP_NAME
+from candidates.models import Ballot
 from elections.models import Election
 
 
-class CurrentElectionTypesFilter(django_filters.ChoiceFilter):
-    def __init__(self, *args, **kwargs):
-        qs = (
-            Election.objects.filter(current=True)
-            .order_by("for_post_role")
-            .distinct("for_post_role")
-            .values("slug", "for_post_role")
-        )
-
-        kwargs["choices"] = [
-            (e["slug"].split(".")[0], e["for_post_role"]) for e in qs
-        ]
-        super().__init__(*args, **kwargs)
+def election_types_choices():
+    qs = (
+        Election.objects.filter(current=True)
+        .order_by("for_post_role")
+        .distinct("for_post_role")
+        .values("slug", "for_post_role")
+    )
+    return [(e["slug"].split(".")[0], e["for_post_role"]) for e in qs]
 
 
 class BallotFilter(django_filters.FilterSet):
@@ -69,9 +64,10 @@ class BallotFilter(django_filters.FilterSet):
         choices=[(1, "Yes"), (0, "No")],
     )
 
-    election_type = CurrentElectionTypesFilter(
+    election_type = django_filters.ChoiceFilter(
         widget=LinkWidget(),
         method="election_type_filter",
+        choices=election_types_choices,
         label="Election Type",
     )
 
