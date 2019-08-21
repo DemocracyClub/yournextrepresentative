@@ -81,6 +81,7 @@ class Organization(Dateframeable, Timestampable, models.Model):
         null=True,
         related_name="children",
         help_text="The organization that contains this organization",
+        on_delete=models.CASCADE,
     )
 
     founding_date = models.CharField(
@@ -202,6 +203,7 @@ class Post(Dateframeable, Timestampable, models.Model):
         "Organization",
         related_name="posts",
         help_text="The organization in which the post is held",
+        on_delete=models.CASCADE,
     )
 
     # array of items referencing "http://popoloproject.com/schemas/contact_detail.json#"
@@ -221,7 +223,9 @@ class Post(Dateframeable, Timestampable, models.Model):
         "elections.Election", related_name="posts", through="candidates.Ballot"
     )
     group = models.CharField(max_length=1024, blank=True)
-    party_set = models.ForeignKey("candidates.PartySet", blank=True, null=True)
+    party_set = models.ForeignKey(
+        "candidates.PartySet", blank=True, null=True, on_delete=models.CASCADE
+    )
 
     @property
     def short_label(self):
@@ -267,6 +271,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
         to_field="id",
         related_name="memberships",
         help_text="The person who is a party to the relationship",
+        on_delete=models.CASCADE,
     )
 
     party = models.ForeignKey(
@@ -283,6 +288,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
         null=True,
         related_name="memberships",
         help_text="The post held by the person in the organization through this membership",
+        on_delete=models.CASCADE,
     )
 
     # array of items referencing "http://popoloproject.com/schemas/contact_detail.json#"
@@ -299,7 +305,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
     # Moved from MembeshipExtra
     elected = models.NullBooleanField()
     party_list_position = models.IntegerField(null=True)
-    ballot = models.ForeignKey("candidates.Ballot")
+    ballot = models.ForeignKey("candidates.Ballot", on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         if self.ballot and getattr(self, "check_for_broken", True):

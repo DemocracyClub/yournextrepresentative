@@ -1,7 +1,7 @@
 import os
 
 from django.db import models
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from popolo.models import Post
 from elections.models import Election
@@ -32,7 +32,9 @@ class OfficialDocument(TimeStampedModel):
     uploaded_file = models.FileField(
         upload_to=document_file_name, max_length=800
     )
-    ballot = models.ForeignKey("candidates.Ballot", null=False)
+    ballot = models.ForeignKey(
+        "candidates.Ballot", null=False, on_delete=models.CASCADE
+    )
     source_url = models.URLField(
         help_text="The page that links to this document", max_length=1000
     )

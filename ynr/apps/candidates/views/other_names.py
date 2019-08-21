@@ -1,5 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction
 from django.http import JsonResponse
 from django.utils.functional import cached_property

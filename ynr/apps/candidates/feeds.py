@@ -2,7 +2,7 @@ import re
 
 from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.feedgenerator import Atom1Feed
 from django.conf import settings
 

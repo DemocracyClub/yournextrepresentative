@@ -8,7 +8,6 @@ class Migration(migrations.Migration):
             "candidates",
             "0008_membershipextra_organizationextra_personextra_postextra",
         ),
-        ("images", "0001_initial"),
         ("popolo", "0002_update_models_from_upstream"),
     ]
 

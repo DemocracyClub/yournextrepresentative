@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from functools import reduce
 
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.utils.html import escape
@@ -44,16 +44,24 @@ class LoggedAction(models.Model):
     should be helpful in tracking down both bugs and the actions of
     malicious users."""
 
-    user = models.ForeignKey(User, blank=True, null=True)
-    person = models.ForeignKey("people.Person", blank=True, null=True)
+    user = models.ForeignKey(
+        User, blank=True, null=True, on_delete=models.CASCADE
+    )
+    person = models.ForeignKey(
+        "people.Person", blank=True, null=True, on_delete=models.CASCADE
+    )
     action_type = models.CharField(max_length=64)
     popit_person_new_version = models.CharField(max_length=32)
     created = models.DateTimeField(auto_now_add=True, db_index=True)
     updated = models.DateTimeField(auto_now=True)
     ip_address = models.CharField(max_length=50, blank=True, null=True)
     source = models.TextField()
-    post = models.ForeignKey("popolo.Post", blank=True, null=True)
-    ballot = models.ForeignKey("candidates.Ballot", null=True)
+    post = models.ForeignKey(
+        "popolo.Post", blank=True, null=True, on_delete=models.CASCADE
+    )
+    ballot = models.ForeignKey(
+        "candidates.Ballot", null=True, on_delete=models.CASCADE
+    )
 
     objects = LoggedActionQuerySet.as_manager()
 
@@ -136,7 +144,9 @@ class PersonRedirect(models.Model):
 
 
 class UserTermsAgreement(models.Model):
-    user = models.OneToOneField(User, related_name="terms_agreement")
+    user = models.OneToOneField(
+        User, related_name="terms_agreement", on_delete=models.CASCADE
+    )
     assigned_to_dc = models.BooleanField(default=False)
 
 

@@ -10,14 +10,20 @@ class ResultEvent(models.Model):
         ordering = ["created"]
 
     created = models.DateTimeField(auto_now_add=True)
-    election = models.ForeignKey(Election, blank=True, null=True)
-    winner = models.ForeignKey("people.Person")
+    election = models.ForeignKey(
+        Election, blank=True, null=True, on_delete=models.CASCADE
+    )
+    winner = models.ForeignKey("people.Person", on_delete=models.CASCADE)
     old_post_id = models.CharField(blank=False, max_length=256)
     old_post_name = models.CharField(blank=True, null=True, max_length=1024)
-    post = models.ForeignKey(Post, blank=True, null=True)
-    winner_party = models.ForeignKey("parties.Party")
+    post = models.ForeignKey(
+        Post, blank=True, null=True, on_delete=models.CASCADE
+    )
+    winner_party = models.ForeignKey("parties.Party", on_delete=models.CASCADE)
     source = models.CharField(max_length=512)
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(
+        User, blank=True, null=True, on_delete=models.CASCADE
+    )
     parlparse_id = models.CharField(blank=True, null=True, max_length=256)
     retraction = models.BooleanField(default=False)
 

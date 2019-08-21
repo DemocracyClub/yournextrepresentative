@@ -5,7 +5,7 @@ from shutil import rmtree
 from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test.utils import override_settings
 from django.utils.six.moves.urllib_parse import urlsplit
 

@@ -7,7 +7,7 @@ from django.contrib.admin.utils import NestedObjects
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.files.storage import DefaultStorage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import connection
 from django.db import models
 from django.utils.html import mark_safe
@@ -54,8 +54,8 @@ def model_has_related_objects(model):
 
 
 class Ballot(models.Model):
-    post = models.ForeignKey("popolo.Post")
-    election = models.ForeignKey(Election)
+    post = models.ForeignKey("popolo.Post", on_delete=models.CASCADE)
+    election = models.ForeignKey(Election, on_delete=models.CASCADE)
     ballot_paper_id = models.CharField(blank=True, max_length=255, unique=True)
 
     candidates_locked = models.BooleanField(default=False)

@@ -1,6 +1,6 @@
 from braces.views import LoginRequiredMixin
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction
 from django.db.models import F
 from django.http import HttpResponseRedirect

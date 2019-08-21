@@ -29,6 +29,6 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             source_url="example.com",
         )
         self.assertEqual(doc.first_page_number, None)
-        call_command("sopn_parsing_extract_page_numbers", all_documents=True)
+        call_command("sopn_parsing_extract_page_numbers")
         doc.refresh_from_db()
         self.assertEqual(doc.relevant_pages, "all")

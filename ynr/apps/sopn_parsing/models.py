@@ -10,7 +10,9 @@ class ParsedSOPN(TimeStampedModel):
 
     """
 
-    sopn = models.OneToOneField("official_documents.OfficialDocument")
+    sopn = models.OneToOneField(
+        "official_documents.OfficialDocument", on_delete=models.CASCADE
+    )
     raw_data = models.TextField()
     raw_data_type = models.CharField(max_length=255, default="pandas")
     parsed_data = models.TextField(null=True)
