@@ -180,19 +180,27 @@ class BasePersonForm(forms.Form):
         ("not-standing", "No"),
     )
 
+    def _clean_date(self, date):
+        if not date:
+            return ""
+
+        if len(date) > 20:
+            raise ValidationError("The date entered was too long")
+        try:
+            parsed_date = parse_approximate_date(date)
+        except ValueError:
+            raise ValidationError(
+                "That date of birth could not be understood. Try using DD/MM/YYYY instead"
+            )
+        return parsed_date
+
     def clean_birth_date(self):
         birth_date = self.cleaned_data["birth_date"]
-        if not birth_date:
-            return ""
-        try:
-            parsed_date = parse_approximate_date(birth_date)
-        except ValueError:
-            if settings.DD_MM_DATE_FORMAT_PREFERRED:
-                message = "That date of birth could not be understood. Try using DD/MM/YYYY instead"
-            else:
-                message = "That date of birth could not be understood. Try using MM/DD/YYYY instead"
-            raise ValidationError(message)
-        return parsed_date
+        return self._clean_date(birth_date)
+
+    def clean_death_date(self):
+        death_date = self.cleaned_data["death_date"]
+        return self._clean_date(death_date)
 
     def check_party_and_constituency_are_selected(self, cleaned_data):
         """This is called by the clean method of subclasses"""

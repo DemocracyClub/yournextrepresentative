@@ -69,11 +69,13 @@ def update_person_from_form(person, form):
     form_data = form.cleaned_data.copy()
     # The date is returned as a datetime.date, so if that's set, turn
     # it into a string:
-    birth_date_date = form_data["birth_date"]
-    if birth_date_date:
-        form_data["birth_date"] = repr(birth_date_date).replace("-00-00", "")
-    else:
-        form_data["birth_date"] = ""
+    for date_field in ["birth_date", "death_date"]:
+        birth_date_date = form_data[date_field]
+        if birth_date_date:
+            form_data[date_field] = repr(birth_date_date).replace("-00-00", "")
+        else:
+            form_data[date_field] = ""
+
     for field in settings.SIMPLE_POPOLO_FIELDS:
         setattr(person, field.name, form_data[field.name])
 

@@ -50,6 +50,30 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         self.person.refresh_from_db()
         self.assertEqual(self.person.death_date, "2017-01-01")
 
+    def test_set_death_date_different_formats(self):
+        date_formats = ["23 July 2019", "23/07/2019"]
+        for date_format in date_formats:
+            response = self.app.get(
+                "/person/{}/update".format(self.person.pk), user=self.user
+            )
+
+            form = response.forms[1]
+            form["death_date"] = date_format
+            form["source"] = "BBC News"
+            form.submit()
+
+    def test_set_death_date_too_long(self):
+
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        form = response.forms[1]
+        form["death_date"] = ("a really really really long string",)
+        form["source"] = "BBC News"
+        response = form.submit()
+        self.assertContains(response, "The date entered was too long")
+
     def change_name_creates_other_names(self):
         self.assertFalse(self.person.other_names.exists())
         response = self.app.get(
