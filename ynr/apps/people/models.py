@@ -229,10 +229,10 @@ class Person(Timestampable, models.Model):
         "gender", max_length=128, blank=True, help_text="A gender"
     )
     birth_date = models.CharField(
-        "birth date", max_length=10, blank=True, help_text="A date of birth"
+        "birth date", max_length=20, blank=True, help_text="A date of birth"
     )
     death_date = models.CharField(
-        "death date", max_length=10, blank=True, help_text="A date of death"
+        "death date", max_length=20, blank=True, help_text="A date of death"
     )
 
     summary = models.CharField(
