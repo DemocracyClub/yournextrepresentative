@@ -33,13 +33,18 @@ class UnsafeToDelete(Exception):
 
 
 def raise_if_unsafe_to_delete(model):
-    if model_has_related_objects(model):
+    related_models = model_has_related_objects(model)
+    if related_models:
         msg = (
             "Trying to delete a {model} (pk={pk}) that other "
-            "objects that depend on"
+            "objects depend on ({related_models})"
         )
         raise UnsafeToDelete(
-            msg.format(model=model._meta.model.__name__, pk=model.id)
+            msg.format(
+                model=model._meta.model.__name__,
+                pk=model.id,
+                related_models=str(related_models),
+            )
         )
 
 
@@ -48,7 +53,7 @@ def model_has_related_objects(model):
     collector.collect([model])
     collected = collector.nested()
     if len(collected) >= 2:
-        return True
+        return collected[1]
     assert collected[0] == model
     return False
 
