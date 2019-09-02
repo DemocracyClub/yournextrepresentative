@@ -101,5 +101,4 @@ class DataTimelineHTMLAssertions(WebTest):
         self.assertDataTimelineNoResults(response)
 
     def assertDataTimelineHasResults(self, response):
-        print(response.text)
         self.assertDataTimelineNoResults(response)
