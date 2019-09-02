@@ -229,7 +229,7 @@
           </a>
         {% endif %}
 
-      {% elif not request.user.is_authenticated %}
+      {% elif not user.is_authenticated %}
         <p>
           <a href="{% url 'account_login' %}?next={{ request.path }}" class="show-new-candidate-form button">
             Sign in to add a new candidate
