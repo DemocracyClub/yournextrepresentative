@@ -1,0 +1,33 @@
+{# Locking #}
+{% if user_can_lock %}
+  <form method="post" action="{% url 'constituency-lock' ballot_id=ballot.ballot_paper_id %}">
+    {% csrf_token %}
+    {% if ballot.has_lock_suggestion and sopn %}
+      {% if current_user_suggested_lock %}
+         <p>
+          Locking disabled because you suggested locking this ballot.
+          Someone else will double check it soon.
+        </p>
+      {% else %}
+        <input type="submit" class="button small" value="Lock candidate list">
+      {% endif %}
+
+    {% elif ballot.candidates_locked %}
+      <input type="submit" class="button small" value="Unlock candidate list">
+    {% endif %}
+
+    {% if ballot.candidates_locked %}
+      This list of candidates is currently <strong>locked</strong>.
+    {% else %}
+      This list of candidates is currently <strong>unlocked</strong>.
+    {% endif %}
+  </form>
+{% else %}
+  {% if candidates_locked %}
+    <p>
+      This list of candidates is now <strong>locked</strong>;
+      you can still update contact details of candidates, but
+      can't change the people standing in this constituency.
+    </p>
+  {% endif %}
+{% endif %}

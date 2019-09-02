@@ -1,0 +1,42 @@
+{% if candidates_might_stand_again %}
+    <div class="candidates__previous">
+      <h3>Is a candidate from an earlier election standing again?</h3>
+
+
+      <table class="table candidates-list">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Party</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for candidate in candidates_might_stand_again %}
+          <tr>
+            <td>
+              <a href="{{ candidate.person.get_absolute_url }}">
+                <img class="person-avatar" src="{{ candidate.person.get_display_image_url }}"/>
+                {% if candidate.result.is_winner %}<strong>{% endif %}
+                  {{ candidate.person.name }}
+                {% if candidate.result.is_winner %}</strong>{% endif %}
+              </a>
+            </td>
+            <td>{{ candidate.party.name }}</td>
+            <td>
+              <button class="button tiny js-toggle-source-confirmation standing">Standing again</button>
+              <button class="button tiny js-toggle-source-confirmation not-standing">Not standing again</button>
+              {% include 'candidates/_source_confirmation.html' with standing='standing' action='candidacy-create' person_id=candidate.person.pk %}
+              {% include 'candidates/_source_confirmation.html' with standing='not-standing' action='candidacy-delete' person_id=candidate.person.pk %}
+
+              <a href="{% url 'person-update' person_id=candidate.person.pk %}" class="button tiny secondary">
+                Edit
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+    </div>
+    {% endif %}

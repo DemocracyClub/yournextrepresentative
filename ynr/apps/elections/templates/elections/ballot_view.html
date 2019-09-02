@@ -139,83 +139,8 @@
 
     <div class="ballot-ctas">
 
-      {# Suggested Locking #}
-      {% if sopn and not ballot.candidates_locked %}
-        {# If there's a SOPN and no lock, we want to show info about lock suggestions #}
-        <h3>Suggest locking</h3>
-        {% if ballot.has_lock_suggestion %}
-          {% if current_user_suggested_lock %}
-            <p>Thanks, you've suggested we lock this ballot – we'll review it soon.</p>
-          {% else %}
-            <p>Someone has suggested locking this ballot.</p>
-          {% endif %}
-        {% else %}
-          <form method="post" id="suggest_lock_form" action="{% url 'constituency-suggest-lock' election_id=ballot.election %}">
-          {% csrf_token %}
-          <h3>Suggest locking</h3>
-
-          <p>
-            If you think the candidates for this ballot is complete,
-            please suggest that we lock it.
-          </p>
-          <p>
-            Please only do this with good reason, for example if you have reviewed
-            the official lists of candidates ("Nomination papers" or
-            "Statement of Persons Nominated") linked to above.
-          </p>
-
-          <p>
-            Locking a list means that candidates can't be added or removed, but
-            their details can still be edited. This is useful when we know that
-            the list is final.
-          </p>
-
-
-          {{ suggest_lock_form.ballot }}
-
-          {{ suggest_lock_form.justification.label_tag }}
-          <label for="{{ suggest_lock_form.justification.id_for_label }}">{{ suggest_lock_form.justification.help_text }}</label>
-          {{ suggest_lock_form.justification }}
-              <button type="submit" class="button small secondary">Suggest locking</button>
-          </form>
-        {% endif %}
-
-      {% endif %}
-
-
-      {# Locking #}
-      {% if user_can_lock %}
-        <form method="post" action="{% url 'constituency-lock' ballot_id=ballot.ballot_paper_id %}">
-          {% csrf_token %}
-          {% if ballot.has_lock_suggestion and sopn %}
-            {% if current_user_suggested_lock %}
-               <p>
-                Locking disabled because you suggested locking this ballot.
-                Someone else will double check it soon.
-              </p>
-            {% else %}
-              <input type="submit" class="button small" value="Lock candidate list">
-            {% endif %}
-
-          {% elif ballot.candidates_locked %}
-            <input type="submit" class="button small" value="Unlock candidate list">
-          {% endif %}
-
-          {% if ballot.candidates_locked %}
-            This list of candidates is currently <strong>locked</strong>.
-          {% else %}
-            This list of candidates is currently <strong>unlocked</strong>.
-          {% endif %}
-        </form>
-      {% else %}
-        {% if candidates_locked %}
-          <p>
-            This list of candidates is now <strong>locked</strong>;
-            you can still update contact details of candidates, but
-            can't change the people standing in this constituency.
-          </p>
-        {% endif %}
-      {% endif %}
+      {% include "elections/includes/_ballot_suggest_locking.html" %}
+      {% include "elections/includes/_ballot_lock_form.html" %}
 
       {% if membership_edits_allowed %}
         <p>
@@ -238,110 +163,21 @@
       {% endif %}
     </div>
 
-    {% if membership_edits_allowed and add_candidate_form %}
-      <div class="candidates__new" {% if add_candidate_form.errors %}style="display: block"{% endif %}>
-        <h4>Add a new candidate</h4>
-
-        <form id="new-candidate-form" name="new-candidate-form" action="{% url 'person-create' election=ballot.election.slug %}" method="post">
-        {% with form=add_candidate_form identifiers_formset=identifiers_formset %}
-          {% include 'candidates/_person_form.html' %}
-        {% endwith %}
-        </form>
-      </div>
-    {% endif %}
-
-
     {% if membership_edits_allowed %}
+      {% if add_candidate_form %}
+        <div class="candidates__new" {% if add_candidate_form.errors %}style="display: block"{% endif %}>
+          <h4>Add a new candidate</h4>
+          <form id="new-candidate-form" name="new-candidate-form" action="{% url 'person-create' election=ballot.election.slug %}" method="post">
+          {% with form=add_candidate_form identifiers_formset=identifiers_formset %}
+            {% include 'candidates/_person_form.html' %}
+          {% endwith %}
+          </form>
+        </div>
+      {% endif %}
 
-
-    {% comment %}<h2>People not standing again</h2>
-
-    {{ people_not_standing }}
-{% endcomment %}
-    {% if candidates_might_stand_again %}
-
-
-    <div class="candidates__previous">
-      <h3>Is a candidate from an earlier election standing again?</h3>
-
-
-      <table class="table candidates-list">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Party</th>
-            {% if user.is_authenticated %}
-            <th>Actions</th>
-            {% endif %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for candidate in candidates_might_stand_again %}
-          <tr>
-            <td>
-              <a href="{{ candidate.person.get_absolute_url }}">
-                <img class="person-avatar" src="{{ candidate.person.get_display_image_url }}"/>
-                {% if candidate.result.is_winner %}<strong>{% endif %}
-                  {{ candidate.person.name }}
-                {% if candidate.result.is_winner %}</strong>{% endif %}
-              </a>
-            </td>
-            <td>{{ candidate.party.name }}</td>
-            <td>
-              <button class="button tiny js-toggle-source-confirmation standing">Standing again</button>
-              <button class="button tiny js-toggle-source-confirmation not-standing">Not standing again</button>
-              {% include 'candidates/_source_confirmation.html' with standing='standing' action='candidacy-create' person_id=candidate.person.pk %}
-              {% include 'candidates/_source_confirmation.html' with standing='not-standing' action='candidacy-delete' person_id=candidate.person.pk %}
-
-              <a href="{% url 'person-update' person_id=candidate.person.pk %}" class="button tiny secondary">
-                Edit
-              </a>
-            </td>
-          </tr>
-          {% endfor %}
-
-        </tbody>
-      </table>
-    </div>
-    {% endif %}
-
-
-    {% if people_not_standing %}
-    <div class="candidates__not-standing">
-      <h3>These people from earlier elections are known not to be standing again</h3>
-      <table class="table candidates-list">
-        <thead>
-          <tr>
-            <th>Name</th>
-            {% if user.is_authenticated %}
-            <th>Actions</th>
-            {% endif %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for person in people_not_standing %}
-          <tr>
-            <td>
-              <a href="{{ person.get_absolute_url }}">
-                <img class="person-avatar" src="{{ person.get_display_image_url }}"/>
-                {{ person.name }}
-              </a>
-            </td>
-            <td>
-              <a class="button tiny js-toggle-source-confirmation standing">Actually, they are standing!</a>
-              {% include 'candidates/_source_confirmation.html' with standing='standing' action='candidacy-create' person_id=person.pk %}
-              <a href="{% url 'person-update' person_id=person.pk %}" class="button tiny secondary">
-                Edit
-              </a>
-            </td>
-          </tr>
-          {% endfor %}
-
-        </tbody>
-      </table>
-    </div>
-    {% endif %}
-
+      {# Only include these if the user can alter memberships #}
+      {% include "elections/includes/_ballot_candidates_might_stand.html" %}
+      {% include "elections/includes/_ballot_candidates_not_standing.html" %}
     {% endif %}
 
   </div>
