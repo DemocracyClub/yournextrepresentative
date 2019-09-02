@@ -1,5 +1,5 @@
 {# Suggested Locking #}
-{% if sopn and not ballot.candidates_locked %}
+{% if user.is_authenticated and sopn and not ballot.candidates_locked %}
   {# If there's a SOPN and no lock, we want to show info about lock suggestions #}
   {% if ballot.has_lock_suggestion %}
     <h3>Suggest locking</h3>
