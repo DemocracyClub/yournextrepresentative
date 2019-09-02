@@ -1,5 +1,3 @@
-from unittest import skip
-
 import codecs
 from io import BytesIO
 from mock import patch

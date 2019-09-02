@@ -1,5 +1,3 @@
-from unittest import skip
-
 from django_webtest import WebTest
 from django.contrib.auth.models import Group
 

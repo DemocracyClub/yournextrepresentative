@@ -1,5 +1,3 @@
-from unittest import skip
-
 import re
 
 from django.core.management import call_command

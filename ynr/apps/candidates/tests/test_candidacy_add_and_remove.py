@@ -1,5 +1,3 @@
-from unittest import skip
-
 from django_webtest import WebTest
 
 from .auth import TestUserMixin

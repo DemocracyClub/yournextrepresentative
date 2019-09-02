@@ -1,7 +1,5 @@
 from random import randrange
 
-from unittest import skip
-from django.utils.six import text_type
 from django_webtest import WebTest
 from django.utils.html import escape
 

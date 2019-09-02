@@ -1,5 +1,3 @@
-from unittest import skip
-
 import json
 
 from django.utils.six.moves.urllib_parse import urlsplit
