@@ -150,7 +150,7 @@
             <p>Someone has suggested locking this ballot.</p>
           {% endif %}
         {% else %}
-          <form method=post id="suggest_lock_form" action="{% url 'constituency-suggest-lock' election_id=ballot.election %}">
+          <form method="post" id="suggest_lock_form" action="{% url 'constituency-suggest-lock' election_id=ballot.election %}">
           {% csrf_token %}
           <h3>Suggest locking</h3>
 
