@@ -208,6 +208,8 @@ class Ballot(models.Model):
         if user.groups.filter(name=TRUSTED_TO_LOCK_GROUP_NAME).exists():
             return True
 
+        return False
+
     def people_not_standing_again(self, previous_ballot):
         """
         Returns a queryset of People objects that are known not to be standing
