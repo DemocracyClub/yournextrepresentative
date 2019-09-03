@@ -91,7 +91,7 @@ class TestBallotView(
         """
         New ballot, just imported from EE, no data against it yet
         """
-        with self.assertNumQueries(FuzzyInt(8, 10)):
+        with self.assertNumQueries(FuzzyInt(7, 10)):
             response = self.app.get(self.ballot.get_absolute_url())
 
         self.assertContains(

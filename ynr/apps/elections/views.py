@@ -124,28 +124,12 @@ class BallotPaperView(TemplateView):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-    def get_context_data(self, **kwargs):
+    def get_authenticated_user_context(self, ballot, context):
+        """
+        Stuff we only want to add if the user is authrnticated
+        """
 
-        context = super().get_context_data(**kwargs)
-
-        context["ballot"] = ballot = get_object_or_404(
-            Ballot.objects.all().select_related("post", "election"),
-            ballot_paper_id=context["election"],
-        )
-
-        context["candidates"] = Membership.objects.memberships_for_ballot(
-            ballot
-        )
-
-        try:
-            context["sopn"] = ballot.sopn
-        except OfficialDocument.DoesNotExist:
-            context["sopn"] = None
-
-        context["membership_edits_allowed"] = ballot.user_can_edit_membership(
-            self.request.user
-        )
-
+        # Lock Suggestions
         if ballot.has_lock_suggestion:
             context[
                 "current_user_suggested_lock"
@@ -157,6 +141,7 @@ class BallotPaperView(TemplateView):
                 initial={"ballot": ballot}
             )
 
+        # Locking form
         context["lock_form"] = ToggleLockForm(
             initial={
                 "post_id": ballot.post.slug,
@@ -164,7 +149,15 @@ class BallotPaperView(TemplateView):
             }
         )
 
+        # Check if adding and removing Memberships for this ballot
+        # is allowed.
+        context["membership_edits_allowed"] = ballot.user_can_edit_membership(
+            self.request.user
+        )
+
         if context["membership_edits_allowed"]:
+
+            # New person form
             context["add_candidate_form"] = NewPersonForm(
                 election=ballot.election.slug,
                 initial={
@@ -173,12 +166,12 @@ class BallotPaperView(TemplateView):
                 },
                 hidden_post_widget=True,
             )
-
             context = get_person_form_fields(
                 context, context["add_candidate_form"]
             )
             context["identifiers_formset"] = PersonIdentifierFormsetFactory()
 
+            # Previous candidate suggestions
             context[
                 "previous_ballot"
             ] = previous_ballot = Ballot.objects.get_previous_ballot_for_post(
@@ -197,10 +190,33 @@ class BallotPaperView(TemplateView):
                     exclude_people_qs=context["people_not_standing"],
                 )
 
+        return context
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        context["ballot"] = ballot = get_object_or_404(
+            Ballot.objects.all().select_related("post", "election"),
+            ballot_paper_id=context["election"],
+        )
+
+        context["candidates"] = Membership.objects.memberships_for_ballot(
+            ballot
+        )
+
+        try:
+            context["sopn"] = ballot.sopn
+        except OfficialDocument.DoesNotExist:
+            context["sopn"] = None
+
         if ballot.polls_closed:
             context["has_any_winners"] = any(
                 [m.elected for m in context["candidates"]]
             )
+
+        if self.request.user.is_authenticated:
+            context = self.get_authenticated_user_context(ballot, context)
 
         return context
 
