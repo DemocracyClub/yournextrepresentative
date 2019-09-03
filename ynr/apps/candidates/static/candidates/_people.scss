@@ -146,12 +146,6 @@
 
 }
 
-.candidates__new {
-  @media #{$medium-up} {
-    background-image: url(img/icon-add-candidate.png);
-  }
-}
-
 .candidates__previous {
   .source-confirmation button {
     background-color: $unknown-candidate-status-color;
