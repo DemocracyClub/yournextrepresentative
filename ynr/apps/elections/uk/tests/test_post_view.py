@@ -8,9 +8,18 @@ from candidates.models import Ballot, TRUSTED_TO_LOCK_GROUP_NAME, LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
+from candidates.tests.factories import MembershipFactory
+from parties.tests.factories import PartyFactory
+from people.tests.factories import PersonFactory
+
 
 class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_suggest_post_lock_offered_with_document_when_unlocked(self):
+        MembershipFactory(
+            ballot=self.edinburgh_east_post_ballot,
+            person=PersonFactory(),
+            party=PartyFactory(),
+        )
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
@@ -46,6 +55,11 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertNotIn("suggest_lock_form", response.forms)
 
     def test_create_suggested_post_lock(self):
+        MembershipFactory(
+            ballot=self.edinburgh_east_post_ballot,
+            person=PersonFactory(),
+            party=PartyFactory(),
+        )
         self.assertEqual(LoggedAction.objects.count(), 0)
         OfficialDocument.objects.create(
             source_url="http://example.com",
@@ -131,6 +145,11 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_post_lock_not_offered_when_user_suggested_lock(self):
+        MembershipFactory(
+            ballot=self.edinburgh_east_post_ballot,
+            person=PersonFactory(),
+            party=PartyFactory(),
+        )
         group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
         self.user.groups.add(group)
         self.user.save()
@@ -161,6 +180,11 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_post_lock_offered_when_suggested_lock_exists(self):
+        MembershipFactory(
+            ballot=self.edinburgh_east_post_ballot,
+            person=PersonFactory(),
+            party=PartyFactory(),
+        )
         group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
         self.user.groups.add(group)
         self.user.save()

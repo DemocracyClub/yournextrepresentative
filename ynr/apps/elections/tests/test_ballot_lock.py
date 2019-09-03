@@ -8,6 +8,7 @@ from popolo.models import Post
 from bulk_adding.models import RawPeople
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
+from parties.tests.factories import PartyFactory
 from people.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.models import Ballot
@@ -98,6 +99,11 @@ class TestConstituencyLockAndUnlock(
         )
 
     def test_constituency_unlock(self):
+        MembershipFactory(
+            ballot=self.dulwich_post_ballot,
+            person=PersonFactory(),
+            party=PartyFactory(),
+        )
         ballot = self.dulwich_post_ballot
         ballot.candidates_locked = True
         ballot.save()

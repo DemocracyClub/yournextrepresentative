@@ -1,5 +1,5 @@
 {# Locking #}
-{% if user_can_lock %}
+{% if candidates.exists and user_can_lock %}
   <form method="post" action="{% url 'constituency-lock' ballot_id=ballot.ballot_paper_id %}">
     {% csrf_token %}
     {% if ballot.has_lock_suggestion and sopn %}
