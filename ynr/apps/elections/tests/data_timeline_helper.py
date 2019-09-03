@@ -74,7 +74,7 @@ class DataTimelineHTMLAssertions(WebTest):
         if not response.context["user"].is_authenticated:
             self.assertInHTML(
                 """
-                <a href="/accounts/login/?next=/elections/local.foo.bar.2019-08-03/" class="show-new-candidate-form button">
+                <a href="/accounts/login/?next=/elections/local.foo.bar.2019-08-03/" class="button">
                     Sign in to add a new candidate
                 </a>
                 """,
