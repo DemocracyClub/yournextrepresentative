@@ -16,7 +16,7 @@
           <tr>
             <td>
               <a href="{{ candidate.person.get_absolute_url }}">
-                <img class="person-avatar" src="{{ candidate.person.get_display_image_url }}"/>
+                <img class="person-avatar" src="{{ candidate.person.get_display_image_url }}" width="64" height="64" />
                 {% if candidate.result.is_winner %}<strong>{% endif %}
                   {{ candidate.person.name }}
                 {% if candidate.result.is_winner %}</strong>{% endif %}
