@@ -149,7 +149,7 @@
           </a>
         </p>
         {% if sopn %}
-          <a href="{% url "bulk_add_from_sopn" ballot.election.slug ballot.post.id %}" class="button">
+          <a href="{% url "bulk_add_from_sopn" ballot.election.slug ballot.post.slug %}" class="button">
             Add candidates from nomination paper in {{ballot.post.label}}
           </a>
         {% endif %}
