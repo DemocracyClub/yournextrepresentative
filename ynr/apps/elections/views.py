@@ -141,14 +141,6 @@ class BallotPaperView(TemplateView):
                 initial={"ballot": ballot}
             )
 
-        # Locking form
-        context["lock_form"] = ToggleLockForm(
-            initial={
-                "post_id": ballot.post.slug,
-                "lock": not ballot.candidates_locked,
-            }
-        )
-
         # Check if adding and removing Memberships for this ballot
         # is allowed.
         context["membership_edits_allowed"] = ballot.user_can_edit_membership(
