@@ -1,6 +1,5 @@
 from candidates.models.auth import get_constituency_lock
 from candidates.models.auth import get_constituency_lock_from_person_data
-from candidates.models.auth import get_edits_allowed
 from candidates.models.auth import is_post_locked
 
 from candidates.models.merge import merge_popit_people

@@ -23,7 +23,7 @@ class TestCandidacyCreateView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             self.camberwell_post_ballot.get_absolute_url(),
             user=self.user_who_can_lock,
         )
-        form = response.forms["candidacy-create"]
+        form = response.forms["candidacy-create_{}".format(self.person.pk)]
         form["source"] = "Tests"
         form.submit()
         self.assertEqual(self.person.memberships.count(), 2)
@@ -47,7 +47,7 @@ class TestCandidacyDeleteView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             self.dulwich_post_ballot.get_absolute_url(),
             user=self.user_who_can_lock,
         )
-        form = response.forms["candidacy-delete"]
+        form = response.forms["candidacy-delete_{}".format(self.person.pk)]
         form["source"] = "Tests"
         form.submit()
         self.assertEqual(self.person.memberships.count(), 0)

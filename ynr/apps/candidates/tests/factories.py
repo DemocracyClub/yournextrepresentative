@@ -3,7 +3,7 @@ import re
 
 import factory
 import faker
-
+from slugify import slugify
 
 from .dates import date_in_near_future, FOUR_YEARS_IN_DAYS
 
@@ -28,7 +28,8 @@ class BaseElectionFactory(factory.DjangoModelFactory):
         model = "elections.Election"
         abstract = True
 
-    slug = "sp.2016-05-05"
+    slug = factory.LazyAttribute(lambda o: "sp.%s" % o.election_date)
+
     for_post_role = "Member of the Scottish Parliament"
     winner_membership_role = None
     candidate_membership_role = "Candidate"
@@ -64,6 +65,7 @@ class PostFactory(factory.DjangoModelFactory):
         model = "popolo.Post"
 
     role = "Member of Parliament"
+    slug = factory.LazyAttribute(lambda o: slugify(o.label))
 
     @factory.post_generation
     def elections(self, create, extracted, **kwargs):
@@ -71,7 +73,7 @@ class PostFactory(factory.DjangoModelFactory):
             return
         if extracted:
             for election in extracted:
-                if re.search("\d\d\d\d-\d\d-\d\d$", election.slug):
+                if re.search(r"\d\d\d\d-\d\d-\d\d$", election.slug):
                     parts = election.slug.split(".")
                     parts.insert(-1, self.slug)
                     ballot_paper_id = ".".join(parts)

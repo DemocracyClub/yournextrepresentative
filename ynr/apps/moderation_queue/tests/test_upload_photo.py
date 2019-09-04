@@ -12,7 +12,6 @@ from django.utils.six import text_type
 from django.utils.six.moves.urllib_parse import urlsplit
 
 from django_webtest import WebTest
-from unittest import skip
 from webtest import Upload
 
 from moderation_queue.models import QueuedImage

@@ -1,421 +1,146 @@
-from django.utils.six import text_type
+from random import randrange
+
 from django_webtest import WebTest
+from django.utils.html import escape
 
 from sorl.thumbnail import get_thumbnail
 
+from candidates.models import PartySet
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.dates import date_in_near_future
-from candidates.tests.factories import MembershipFactory
+from candidates.tests.dates import date_in_near_future, date_in_near_past
+from candidates.tests.factories import (
+    MembershipFactory,
+    BallotPaperFactory,
+    ElectionFactory,
+    PostFactory,
+    OrganizationFactory,
+)
+from elections.tests.data_timeline_helper import DataTimelineHTMLAssertions
 from people.tests.factories import PersonFactory
-from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 from compat import BufferDictReader
 
 from people.models import PersonImage, Person
 from popolo.models import Membership
+from parties.tests.factories import PartyFactory
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from utils.testing_utils import FuzzyInt
-from uk_results.models import ResultSet
+from uk_results.models import ResultSet, CandidateResult
 
 
-class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
+class SingleBallotStatesMixin:
+    def create_election(self, election_name, date=None):
+        kwargs = {"name": election_name}
+        if date:
+            kwargs["election_date"] = date
+        else:
+            kwargs["election_date"] = date_in_near_future
+
+        return ElectionFactory(**kwargs)
+
+    def create_post(self, post_label):
+        ps, _ = PartySet.objects.update_or_create(slug="GB")
+        org = OrganizationFactory(name="Baz council")
+        return PostFactory(label=post_label, organization=org, party_set=ps)
+
+    def create_ballot(self, ballot_paper_id, election, post, winner_count=1):
+        return BallotPaperFactory(
+            ballot_paper_id=ballot_paper_id,
+            election=election,
+            post=post,
+            winner_count=winner_count,
+        )
+
+    def create_party(self):
+        return PartyFactory()
+
+    def create_parties(self, number):
+        return [self.create_party() for i in range(number)]
+
+    def create_memberships(self, ballot, parties):
+        for i in range(3):
+            for party in parties:
+                person = PersonFactory()
+                MembershipFactory(ballot=ballot, person=person, party=party)
+
+
+class TestBallotView(
+    TestUserMixin, SingleBallotStatesMixin, DataTimelineHTMLAssertions, WebTest
+):
     def setUp(self):
         super().setUp()
-        person = PersonFactory.create(id=2009, name="Tessa Jowell")
-        dulwich_not_stand = PersonFactory.create(id=4322, name="Helen Hayes")
-        MembershipFactory.create(
-            person=person,
-            post=self.dulwich_post,
-            party=self.labour_party,
-            ballot=self.dulwich_post_ballot,
+        self.election = self.create_election("Foo Local Election")
+        self.post = self.create_post("Bar Ward")
+        self.ballot = self.create_ballot(
+            "local.foo.bar.2019-08-03", self.election, self.post, winner_count=2
         )
 
-        winner_post = self.edinburgh_east_post
-
-        edinburgh_candidate = PersonFactory.create(
-            id="818", name="Sheila Gilmore"
+        self.past_election = self.create_election(
+            "Foo Local election", date=date_in_near_past
         )
-        edinburgh_winner = PersonFactory.create(
-            id="5795", name="Tommy Sheppard"
-        )
-        edinburgh_may_stand = PersonFactory.create(
-            id="5163", name="Peter McColl"
+        self.past_ballot = self.create_ballot(
+            "local.foo.bar.{}".format(date_in_near_past.isoformat()),
+            self.past_election,
+            self.post,
+            winner_count=2,
         )
 
-        MembershipFactory.create(
-            person=dulwich_not_stand,
-            post=self.dulwich_post,
-            party=self.labour_party,
-            ballot=self.dulwich_post_ballot_earlier,
-        )
-        dulwich_not_stand.not_standing.add(self.election)
+        self.parties = self.create_parties(3)
 
-        MembershipFactory.create(
-            person=edinburgh_winner,
-            post=winner_post,
-            party=self.labour_party,
-            elected=True,
-            ballot=self.election.ballot_set.get(post=winner_post),
+    def test_ballot_just_created(self):
+        """
+        New ballot, just imported from EE, no data against it yet
+        """
+        with self.assertNumQueries(FuzzyInt(7, 10)):
+            response = self.app.get(self.ballot.get_absolute_url())
+
+        self.assertContains(
+            response,
+            "We don’t know of any candidates in Bar Ward for the Foo Local Election yet.",
         )
 
-        MembershipFactory.create(
-            person=edinburgh_candidate,
-            post=winner_post,
-            party=self.labour_party,
-            ballot=self.dulwich_post_ballot,
+        self.assertDataTimelineCandidateAddingInProgress(response)
+
+    def test_ballot_with_candidates_no_sopn(self):
+
+        self.create_memberships(self.ballot, self.parties)
+        response = self.app.get(self.ballot.get_absolute_url())
+
+        self.assertEqual(response.context["candidates"].count(), 9)
+        self.assertDataTimelineCandidateAddingInProgress(response)
+        self.assertInHTML("<h1>Candidates for Bar Ward</h1>", response.text)
+        self.assertInHTML(
+            """
+            <p>
+                These candidates haven't been confirmed by the official 
+                "nomination papers" from the council yet. This means they might 
+                not all end up on the ballot paper.
+            </p>
+            """,
+            response.text,
+        )
+        self.assertInHTML(
+            """
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Party</th>
+              </tr>
+            </thead>
+        """,
+            response.text,
         )
 
-        MembershipFactory.create(
-            person=edinburgh_may_stand,
-            post=winner_post,
-            party=self.labour_party,
-            ballot=self.earlier_election.ballot_set.get(post=winner_post),
-        )
-
-    def test_any_constituency_page_without_login(self):
-        # Just a smoke test for the moment:
-        response = self.app.get("/elections/parl.65808.2015-05-07/")
-        response.mustcontain(
-            '<a href="/person/2009/tessa-jowell" class="candidate-name">Tessa Jowell</a> <span class="party">Labour Party</span>'
-        )
-        # There should be only one form ( person search ) on the page if you're not logged in:
-
-        # even though there is only one form on the page the list has
-        # two entries - one for the numeric identifier and one for the id
-        self.assertEqual(2, len(response.forms))
-        self.assertEqual(response.forms[0].id, "person_search_header")
-
-    def test_any_ballot_page(self):
-        # Just a smoke test for the moment:
-        with self.assertNumQueries(FuzzyInt(42, 46)):
-            response = self.app.get(
-                self.dulwich_post_ballot.get_absolute_url(), user=self.user
-            )
-        response.mustcontain(
-            '<a href="/person/2009/tessa-jowell" class="candidate-name">Tessa Jowell</a> <span class="party">Labour Party</span>'
-        )
-        form = response.forms["new-candidate-form"]
-        self.assertTrue(form)
-        response.mustcontain(no="Unset the current winners")
-
-    def test_constituency_with_no_winner_record_results_user(self):
-        response = self.app.get(
-            self.dulwich_post_ballot.get_absolute_url(),
-            user=self.user_who_can_record_results,
-        )
-        response.mustcontain(no="Unset the current winners")
-
-    def test_any_constituency_csv(self):
-        url = "{}.csv".format(
-            self.dulwich_post_ballot.get_absolute_url().rstrip("/")
-        )
-        response = self.app.get(url)
-        self.assertEqual(response.status_code, 200)
-        row_dicts = [row for row in BufferDictReader(response.content)]
-        self.assertEqual(2, len(row_dicts))
-        self.assertDictEqual(
-            dict(row_dicts[1]),
-            {
-                "birth_date": "",
-                "cancelled_poll": "False",
-                "elected": "",
-                "election": "parl.2015-05-07",
-                "election_current": "True",
-                "election_date": text_type(date_in_near_future),
-                "email": "",
-                "facebook_page_url": "",
-                "facebook_personal_url": "",
-                "favourite_biscuits": "",
-                "gender": "",
-                "gss_code": "",
-                "homepage_url": "",
-                "honorific_prefix": "",
-                "honorific_suffix": "",
-                "id": "2009",
-                "image_copyright": "",
-                "image_uploading_user": "",
-                "image_uploading_user_notes": "",
-                "image_url": "",
-                "linkedin_url": "",
-                "mapit_url": "",
-                "name": "Tessa Jowell",
-                "old_person_ids": "",
-                "parlparse_id": "",
-                "party_ec_id": "PP53",
-                "party_id": "party:53",
-                "party_lists_in_use": "False",
-                "party_list_position": "",
-                "party_name": "Labour Party",
-                "party_ppc_page_url": "",
-                "post_id": "65808",
-                "post_label": "Dulwich and West Norwood",
-                "proxy_image_url_template": "",
-                "theyworkforyou_url": "",
-                "twitter_username": "",
-                "twitter_user_id": "",
-                "wikipedia_url": "",
-                "wikidata_id": "",
-            },
-        )
-
-    def test_constituency_with_winner(self):
-        ResultSet.objects.create(ballot=self.edinburgh_east_post_ballot_earlier)
-        response = self.app.get(
-            self.edinburgh_east_post_ballot_earlier.get_absolute_url()
-        )
-        response.mustcontain("Winner(s) recorded")
-        response.mustcontain(no="Winner(s) unknown")
-        response.mustcontain(no="Waiting for election to happen")
-        response.mustcontain(no="Unset the current winners")
-
-    def test_constituency_with_winner_record_results_user(self):
-        response = self.app.get(
-            self.edinburgh_east_post_ballot.get_absolute_url(),
-            user=self.user_who_can_record_results,
-        )
-        response.mustcontain("Unset the current winners")
-
-    def test_constituency_with_may_be_standing(self):
-        response = self.app.get("/elections/parl.14419.2015-05-07/")
-        response.mustcontain(
-            "if these candidates from earlier elections are standing"
-        )
-        response.mustcontain(
-            no="These candidates from earlier elections are known not to be standing again"
-        )
-
-    def test_constituency_with_not_standing(self):
-        response = self.app.get(self.dulwich_post_ballot.get_absolute_url())
-        response.mustcontain(
-            "These candidates from earlier elections are known not to be standing again"
-        )
-        response.mustcontain(
-            no="if these candidates from earlier elections are standing"
-        )
-
-    def test_mark_not_standing_no_candidate(self):
-        response = self.app.get(
-            self.edinburgh_east_post_ballot.get_absolute_url(), user=self.user
-        )
-
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/2015/candidacy/delete",
-            params={
-                "person_id": "9999",
-                "post_id": "14419",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
-
-        self.assertEqual(response.status_code, 404)
-
-    def test_mark_not_standing_no_post(self):
-        response = self.app.get(
-            "/election/parl.2015-05-07/post/14419/edinburgh-east",
-            user=self.user,
-        )
-
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy/delete",
-            params={
-                "person_id": "181",
-                "post_id": "9999",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
-
-        self.assertEqual(response.status_code, 404)
-
-    def test_mark_standing_no_candidate(self):
-        response = self.app.get(
-            "/election/parl.2015-05-07/post/14419/edinburgh-east",
-            user=self.user,
-        )
-
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy",
-            params={
-                "person_id": "9999",
-                "post_id": "14419",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
-
-        self.assertEqual(response.status_code, 404)
-
-    def test_mark_standing_no_post(self):
-        response = self.app.get(
-            "/election/parl.2015-05-07/post/14419/edinburgh-east",
-            user=self.user,
-        )
-
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy",
-            params={
-                "person_id": "5163",
-                "post_id": "9999",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
-
-        self.assertEqual(response.status_code, 404)
-
-    def test_mark_candidate_not_standing(self):
-        response = self.app.get(
-            "/election/parl.2015-05-07/post/14419/edinburgh-east",
-            user=self.user,
-        )
-
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy/delete",
-            params={
-                "person_id": "818",
-                "post_id": "14419",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
-
-        membership = Membership.objects.filter(
-            person_id=818, post__slug="14419", ballot__election__slug="2015"
-        )
-        self.assertFalse(membership.exists())
-
-        person = Person.objects.get(id=818)
-        not_standing = person.not_standing.all()
-        self.assertTrue(self.election in not_standing)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location,
-            self.edinburgh_east_post_ballot.get_absolute_url(),
-        )
-
-    def test_mark_may_stand_actually_standing(self):
-        response = self.app.get(
-            self.edinburgh_east_post_ballot.get_absolute_url(), user=self.user
-        )
-
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy",
-            params={
-                "person_id": "5163",
-                "post_id": "14419",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
-
-        membership = Membership.objects.filter(
-            person_id=5163,
-            post__slug="14419",
-            ballot__election__slug="parl.2015-05-07",
-        )
-
-        self.assertTrue(membership.exists())
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location,
-            self.edinburgh_east_post_ballot.get_absolute_url(),
-        )
-
-    def test_mark_may_stand_not_standing_again(self):
-        response = self.app.get(
-            self.edinburgh_east_post_ballot.get_absolute_url(), user=self.user
-        )
-
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy/delete",
-            params={
-                "person_id": "5163",
-                "post_id": "14419",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
-
-        membership = Membership.objects.filter(
-            person_id=5163,
-            post__slug="14419",
-            ballot__election__slug="parl.2015-05-07",
-        )
-        self.assertFalse(membership.exists())
-
-        person = Person.objects.get(id=5163)
-        not_standing = person.not_standing.all()
-        self.assertTrue(self.election in not_standing)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location,
-            self.edinburgh_east_post_ballot.get_absolute_url(),
-        )
-
-    def test_mark_not_standing_standing_again(self):
-        response = self.app.get(
-            self.dulwich_post_ballot.get_absolute_url(), user=self.user
-        )
-
-        csrftoken = self.app.cookies["csrftoken"]
-        response = self.app.post(
-            "/election/parl.2015-05-07/candidacy",
-            params={
-                "person_id": "4322",
-                "post_id": "65808",
-                "source": "test data",
-                "csrfmiddlewaretoken": csrftoken,
-            },
-            expect_errors=True,
-        )
-
-        membership = Membership.objects.filter(
-            person_id=4322,
-            post__slug="65808",
-            ballot__election__slug="parl.2015-05-07",
-        )
-
-        self.assertTrue(membership.exists())
-
-        person = Person.objects.get(id=4322)
-        not_standing = person.not_standing.all()
-        self.assertFalse(self.election in not_standing)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location, self.dulwich_post_ballot.get_absolute_url()
-        )
-
-    def test_return_404_when_post_not_associated_with_election(self):
-        # Now that post is not associated with the 2015 election, so
-        # viewing a page with election: 2015 and post: DIW:E05005004
-        # should return a 404.
-        response = self.app.get(
-            "/election/parl.2015-05-07/post/DIW:E05005004/whatever",
-            expect_errors=True,
-        )
-        self.assertEqual(response.status_code, 404)
+    def test_all_expected_people_in_table(self):
+        self.create_memberships(self.ballot, self.parties)
+        response = self.app.get(self.ballot.get_absolute_url())
+        for membership in self.ballot.membership_set.all():
+            self.assertContains(response, escape(membership.person.name))
+            self.assertContains(response, membership.party.name)
 
     def test_person_photo_shown(self):
-        person = Person.objects.get(id=2009)
+        self.create_memberships(self.ballot, self.parties)
+        person = self.ballot.membership_set.first().person
         im = PersonImage.objects.update_or_create_from_file(
             EXAMPLE_IMAGE_FILENAME,
             "images/imported.jpg",
@@ -430,5 +155,270 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             },
         )
         expected_url = get_thumbnail(im.image, "x64").url
-        response = self.app.get(self.dulwich_post_ballot.get_absolute_url())
+        response = self.app.get(self.ballot.get_absolute_url())
         response.mustcontain(expected_url)
+
+    def test_any_constituency_csv(self):
+        self.create_memberships(self.ballot, self.parties)
+        url = "{}.csv".format(self.ballot.get_absolute_url().rstrip("/"))
+        response = self.app.get(url)
+        self.assertEqual(response.status_code, 200)
+        row_dicts = [row for row in BufferDictReader(response.content)]
+        self.assertEqual(9, len(row_dicts))
+        membership = self.ballot.membership_set.order_by("person__pk").first()
+        self.maxDiff = None
+        self.assertDictEqual(
+            dict(row_dicts[0]),
+            {
+                "birth_date": "",
+                "cancelled_poll": "False",
+                "elected": "",
+                "election": self.ballot.election.slug,
+                "election_current": "True",
+                "election_date": self.ballot.election.election_date.isoformat(),
+                "email": "",
+                "facebook_page_url": "",
+                "facebook_personal_url": "",
+                "favourite_biscuits": "",
+                "gender": "",
+                "gss_code": "",
+                "homepage_url": "",
+                "honorific_prefix": "",
+                "honorific_suffix": "",
+                "id": str(membership.person.pk),
+                "image_copyright": "",
+                "image_uploading_user": "",
+                "image_uploading_user_notes": "",
+                "image_url": "",
+                "linkedin_url": "",
+                "mapit_url": "",
+                "name": membership.person.name,
+                "old_person_ids": "",
+                "parlparse_id": "",
+                "party_ec_id": membership.party.ec_id,
+                "party_id": membership.party.legacy_slug,
+                "party_lists_in_use": "False",
+                "party_list_position": "",
+                "party_name": membership.party.name,
+                "party_ppc_page_url": "",
+                "post_id": self.ballot.post.slug,
+                "post_label": self.ballot.post.label,
+                "proxy_image_url_template": "",
+                "theyworkforyou_url": "",
+                "twitter_username": "",
+                "twitter_user_id": "",
+                "wikipedia_url": "",
+                "wikidata_id": "",
+            },
+        )
+
+    def test_ballot_with_winner(self):
+        self.create_memberships(self.past_ballot, self.parties)
+        response = self.app.get(self.past_ballot.get_absolute_url())
+        self.assertDataTimelineNoResults(response)
+
+        rs = ResultSet.objects.create(ballot=self.past_ballot)
+        for i, membership in enumerate(self.past_ballot.membership_set.all()):
+            if i in range(0, self.past_ballot.winner_count):
+                winner = True
+            else:
+                winner = False
+            CandidateResult.objects.create(
+                result_set=rs,
+                membership=membership,
+                num_ballots=randrange(1, 1000),
+                is_winner=winner,
+            )
+
+        response = self.app.get(self.past_ballot.get_absolute_url())
+        response.mustcontain("Winner(s) recorded")
+        response.mustcontain(no="Winner(s) unknown")
+        response.mustcontain(no="Waiting for election to happen")
+        response.mustcontain(no="Unset the current winners")
+        # TODO: Test winners in table
+
+    def test_constituency_with_winner_record_results_user(self):
+        self.ballot.election.election_date = "2015-05-07"
+        self.ballot.election.save()
+        self.create_memberships(self.ballot, self.parties)
+        self.ballot.membership_set.update(elected=True)
+        response = self.app.get(
+            self.ballot.get_absolute_url(),
+            user=self.user_who_can_record_results,
+        )
+        response.mustcontain("Unset the current winners")
+
+    def test_constituency_with_may_be_standing(self):
+        self.create_memberships(self.past_ballot, self.parties)
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+        response.mustcontain(
+            "Is a candidate from an earlier election standing again?"
+        )
+
+    def test_constituency_with_not_standing(self):
+        self.create_memberships(self.past_ballot, self.parties)
+        person_not_standing = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        person_not_standing.not_standing.add(self.ballot.election)
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+        response.mustcontain(
+            "These people from earlier elections are known not to be standing again"
+        )
+
+    def test_mark_not_standing_no_candidate(self):
+        self.create_memberships(self.past_ballot, self.parties)
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+
+        form = response.forms["candidacy-delete_{}".format(person_to_mark.pk)]
+        form["person_id"] = 9999
+        form["post_id"] = 14419
+        form["source"] = "test data"
+        response = form.submit(expect_errors=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_mark_not_standing_no_post(self):
+        self.create_memberships(self.past_ballot, self.parties)
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+
+        form = response.forms["candidacy-delete_{}".format(person_to_mark.pk)]
+        form["person_id"] = person_to_mark.pk
+        form["post_id"] = 99999
+        form["source"] = "test data"
+        response = form.submit(expect_errors=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_mark_standing_no_candidate(self):
+        self.create_memberships(self.past_ballot, self.parties)
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+
+        form = response.forms["candidacy-create_{}".format(person_to_mark.pk)]
+        form["person_id"] = 00000
+        form["post_id"] = 99999
+        form["source"] = "test data"
+        response = form.submit(expect_errors=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_mark_standing_no_post(self):
+        self.create_memberships(self.past_ballot, self.parties)
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+
+        form = response.forms["candidacy-create_{}".format(person_to_mark.pk)]
+        form["person_id"] = person_to_mark.pk
+        form["post_id"] = 99999
+        form["source"] = "test data"
+        response = form.submit(expect_errors=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_mark_candidate_not_standing(self):
+        self.create_memberships(self.past_ballot, self.parties)
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+
+        form = response.forms["candidacy-delete_{}".format(person_to_mark.pk)]
+        form["person_id"] = person_to_mark.pk
+        form["post_id"] = self.ballot.post.slug
+        form["source"] = "test data"
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+
+        self.assertFalse(self.ballot.membership_set.exists())
+        self.assertTrue(
+            self.ballot.election in person_to_mark.not_standing.all()
+        )
+
+    def test_mark_may_stand_actually_standing(self):
+        self.assertFalse(self.ballot.membership_set.exists())
+        self.create_memberships(self.past_ballot, self.parties)
+
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+
+        form = response.forms["candidacy-create_{}".format(person_to_mark.pk)]
+        form["person_id"] = person_to_mark.pk
+        form["post_id"] = self.ballot.post.slug
+        form["source"] = "test data"
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+
+        membership = Membership.objects.filter(
+            person=person_to_mark, ballot=self.ballot
+        )
+
+        self.assertTrue(membership.exists())
+
+    def test_mark_may_stand_not_standing_again(self):
+        self.create_memberships(self.past_ballot, self.parties)
+
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+
+        form = response.forms["candidacy-delete_{}".format(person_to_mark.pk)]
+        form["person_id"] = person_to_mark.pk
+        form["post_id"] = self.ballot.post.slug
+        form["source"] = "test data"
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+
+        membership = Membership.objects.filter(
+            person=person_to_mark, ballot=self.ballot
+        )
+        self.assertFalse(membership.exists())
+
+        not_standing = person_to_mark.not_standing.all()
+        self.assertTrue(self.ballot.election in not_standing)
+
+    def test_mark_not_standing_standing_again(self):
+        self.create_memberships(self.past_ballot, self.parties)
+
+        person_to_mark = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        person_to_mark.not_standing.add(self.ballot.election)
+
+        membership = Membership.objects.filter(
+            person=person_to_mark, ballot=self.ballot
+        )
+        self.assertFalse(membership.exists())
+
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+
+        form = response.forms["candidacy-create_{}".format(person_to_mark.pk)]
+        form["person_id"] = person_to_mark.pk
+        form["post_id"] = self.ballot.post.slug
+        form["source"] = "test data"
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+
+        membership = Membership.objects.filter(
+            person=person_to_mark, ballot=self.ballot
+        )
+        self.assertTrue(membership.exists())
+
+        not_standing = person_to_mark.not_standing.all()
+        self.assertFalse(self.election in not_standing)
+
+    def test_constituency_with_no_winner_record_results_user(self):
+        response = self.app.get(
+            self.ballot.get_absolute_url(),
+            user=self.user_who_can_record_results,
+        )
+        response.mustcontain(no="Unset the current winners")

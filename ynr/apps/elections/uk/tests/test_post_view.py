@@ -8,9 +8,18 @@ from candidates.models import Ballot, TRUSTED_TO_LOCK_GROUP_NAME, LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
+from candidates.tests.factories import MembershipFactory
+from parties.tests.factories import PartyFactory
+from people.tests.factories import PersonFactory
 
-class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
+
+class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_suggest_post_lock_offered_with_document_when_unlocked(self):
+        MembershipFactory(
+            ballot=self.edinburgh_east_post_ballot,
+            person=PersonFactory(),
+            party=PartyFactory(),
+        )
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
@@ -46,6 +55,11 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertNotIn("suggest_lock_form", response.forms)
 
     def test_create_suggested_post_lock(self):
+        MembershipFactory(
+            ballot=self.edinburgh_east_post_ballot,
+            person=PersonFactory(),
+            party=PartyFactory(),
+        )
         self.assertEqual(LoggedAction.objects.count(), 0)
         OfficialDocument.objects.create(
             source_url="http://example.com",
@@ -64,7 +78,11 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response.location,
             self.edinburgh_east_post_ballot.get_absolute_url(),
         )
-
+        response = response.follow()
+        self.assertContains(
+            response,
+            "Thanks, you've suggested we lock this ballot – we'll review it soon.",
+        )
         suggested_locks = SuggestedPostLock.objects.all()
         self.assertEqual(suggested_locks.count(), 1)
         suggested_lock = suggested_locks.get()
@@ -80,13 +98,7 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "I liked totally reviewed the SOPN",
         )
         response = self.app.get("/")
-
-        self.assertContains(
-            response,
-            'Suggested locking ballot\n              <a href="/elections/{ballot}/">{ballot}</a>'.format(
-                ballot=suggested_lock.ballot.ballot_paper_id
-            ),
-        )
+        self.assertContains(response, """Suggested locking ballot""")
 
     def test_post_lock_disabled_not_shown_when_no_suggested_lock(self):
         group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
@@ -133,6 +145,11 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_post_lock_not_offered_when_user_suggested_lock(self):
+        MembershipFactory(
+            ballot=self.edinburgh_east_post_ballot,
+            person=PersonFactory(),
+            party=PartyFactory(),
+        )
         group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
         self.user.groups.add(group)
         self.user.save()
@@ -158,10 +175,16 @@ class TestConstituencyDetailView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             self.edinburgh_east_post_ballot.get_absolute_url(), user=self.user
         )
         self.assertContains(
-            response, "Locking disabled because you suggested locking this post"
+            response,
+            "Locking disabled because you suggested locking this ballot",
         )
 
     def test_post_lock_offered_when_suggested_lock_exists(self):
+        MembershipFactory(
+            ballot=self.edinburgh_east_post_ballot,
+            person=PersonFactory(),
+            party=PartyFactory(),
+        )
         group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)
         self.user.groups.add(group)
         self.user.save()

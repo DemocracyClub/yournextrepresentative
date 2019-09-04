@@ -1,0 +1,41 @@
+{# Suggested Locking #}
+{% if user.is_authenticated and sopn and not ballot.candidates_locked %}
+  {# If there's a SOPN and no lock, we want to show info about lock suggestions #}
+  {% if ballot.has_lock_suggestion %}
+    <h3>Suggest locking</h3>
+    {% if current_user_suggested_lock %}
+      <p>Thanks, you've suggested we lock this ballot – we'll review it soon.</p>
+    {% else %}
+      <p>Someone has suggested locking this ballot.</p>
+    {% endif %}
+  {% elif candidates.exists %}
+    <h3>Suggest locking</h3>
+    <form method=post id="suggest_lock_form" action="{% url 'constituency-suggest-lock' election_id=ballot.election %}">
+    {% csrf_token %}
+    <p>
+      If you think the candidates for this ballot is complete,
+      please suggest that we lock it.
+    </p>
+    <p>
+      Please only do this with good reason, for example if you have reviewed
+      the official lists of candidates ("Nomination papers" or
+      "Statement of Persons Nominated") linked to above.
+    </p>
+
+    <p>
+      Locking a list means that candidates can't be added or removed, but
+      their details can still be edited. This is useful when we know that
+      the list is final.
+    </p>
+
+
+    {{ suggest_lock_form.ballot }}
+
+    {{ suggest_lock_form.justification.label_tag }}
+    <label for="{{ suggest_lock_form.justification.id_for_label }}">{{ suggest_lock_form.justification.help_text }}</label>
+    {{ suggest_lock_form.justification }}
+        <button type="submit" class="button small secondary">Suggest locking</button>
+    </form>
+  {% endif %}
+
+{% endif %}

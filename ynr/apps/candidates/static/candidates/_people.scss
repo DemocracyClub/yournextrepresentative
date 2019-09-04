@@ -69,10 +69,14 @@
   margin-bottom: 0.2em;
 }
 
-.candidates-list__person {
+.candidates-list {
   list-style-type: none;
   margin-bottom: 1em;
   @include clearfix;
+
+  td {
+    vertical-align: top;
+  }
 
   .person-position {
     display: block;
@@ -134,54 +138,20 @@
 .candidates__elected {
   margin-bottom: 3em;
 
-  @media #{$medium-up} {
-    padding-left: 100px;
-    background: transparent url(img/icon-candidates.png) 0 0 no-repeat;
-  }
 
   h3 {
     margin-top: 0;
     margin-bottom: 0.5em;
   }
 
-  li > p > .button {
-    margin-right: 0.8em;
-  }
-}
-
-.candidates__new {
-  @media #{$medium-up} {
-    background-image: url(img/icon-add-candidate.png);
-  }
 }
 
 .candidates__previous {
-  @media #{$medium-up} {
-    background-image: url(img/icon-question.png);
-  }
-
-  li > p > .button:first-child,
-  li > p > .button:nth-child(2),
-  .source-confirmation .button {
+  .source-confirmation button {
     background-color: $unknown-candidate-status-color;
 
     &:hover, &:focus {
       background-color: scale-color($unknown-candidate-status-color, $lightness: $button-function-factor);
-    }
-  }
-}
-
-.candidates__not-standing {
-  @media #{$medium-up} {
-    background-image: url(img/icon-cross.png);
-  }
-
-  li > p > .button:first-child,
-  .source-confirmation .button {
-    background-color: $not-standing-candidate-status-color;
-
-    &:hover, &:focus {
-      background-color: scale-color($not-standing-candidate-status-color, $lightness: $button-function-factor);
     }
   }
 }
@@ -197,8 +167,8 @@
   border: 1px solid $message-border-color;
   border-radius: 3px;
 
-  padding-top: 0.8em;
-  padding-bottom: 0.8em;
+  padding: 0.8em;
+  margin: 0.8em 0;
 
   p + p {
     margin-bottom: 0;

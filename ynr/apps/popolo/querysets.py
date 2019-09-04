@@ -5,6 +5,8 @@ __author__ = "guglielmo"
 from django.db import models
 from datetime import datetime
 
+from utils.db import LastWord
+
 
 class DateframeableQuerySet(models.query.QuerySet):
     """
@@ -80,6 +82,32 @@ class MembershipQuerySet(DateframeableQuerySet):
                 "person__pk",
             )
         )
+
+    def memberships_for_ballot(
+        self, ballot, exclude_memberships_qs=None, exclude_people_qs=None
+    ):
+        order_by = ["-elected", "-result__is_winner", "-result__num_ballots"]
+        if ballot.election.party_lists_in_use:
+            order_by += ["party__name", "party_list_position"]
+        else:
+            order_by += ["person__sort_name", "last_name"]
+
+        qs = self.filter(ballot=ballot)
+        qs = qs.annotate(last_name=LastWord("person__name"))
+        qs = qs.order_by(*order_by)
+        qs = qs.select_related("person", "party").prefetch_related(
+            "person__images"
+        )
+
+        if exclude_memberships_qs and exclude_memberships_qs.exists():
+            qs = qs.exclude(
+                person__pk__in=exclude_memberships_qs.values("person__pk")
+            )
+
+        if exclude_people_qs and exclude_people_qs.exists():
+            qs = qs.exclude(person__pk__in=exclude_people_qs)
+
+        return qs
 
 
 class ContactDetailQuerySet(DateframeableQuerySet):

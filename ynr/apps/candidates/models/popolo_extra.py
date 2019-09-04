@@ -1,4 +1,4 @@
-from datetime import date
+import datetime
 from os.path import join
 import re
 
@@ -11,10 +11,12 @@ from django.urls import reverse
 from django.db import connection
 from django.db import models
 from django.utils.html import mark_safe
+from django.utils import timezone
 
 from dateutil import parser
 from slugify import slugify
 
+from candidates.models.auth import TRUSTED_TO_LOCK_GROUP_NAME
 from elections.models import Election
 
 """Extensions to the base django-popolo classes for YourNextRepresentative
@@ -58,6 +60,26 @@ def model_has_related_objects(model):
     return False
 
 
+class BallotQueryset(models.QuerySet):
+    def get_previous_ballot_for_post(self, ballot):
+        """
+        Given a ballot object, get the previous (by election date) ballot for
+        the ballot's post.
+        :type ballot: Ballot
+
+        """
+
+        qs = self.filter(
+            post=ballot.post,
+            election__election_date__lt=ballot.election.election_date,
+        ).order_by("election__election_date")
+
+        if qs.exists():
+            return qs.first()
+
+        return None
+
+
 class Ballot(models.Model):
     post = models.ForeignKey("popolo.Post", on_delete=models.CASCADE)
     election = models.ForeignKey(Election, on_delete=models.CASCADE)
@@ -67,6 +89,8 @@ class Ballot(models.Model):
     winner_count = models.IntegerField(blank=True, null=True)
     cancelled = models.BooleanField(default=False)
     UnsafeToDelete = UnsafeToDelete
+
+    objects = BallotQueryset.as_manager()
 
     class Meta:
         unique_together = ("election", "post")
@@ -112,7 +136,7 @@ class Ballot(models.Model):
             return mark_safe(
                 '<abbr title="Candidates verified and post locked">🔐</abbr>'
             )
-        if self.suggestedpostlock_set.exists():
+        if self.has_lock_suggestion:
             self.suggested_lock_html
         return ""
 
@@ -135,6 +159,74 @@ class Ballot(models.Model):
         if self.membership_set.filter(elected=True).exists():
             return True
         return False
+
+    @property
+    def polls_closed(self):
+        # TODO: City of London and other complex cases. Take this from EE?
+        normal_poll_close_time = datetime.time(hour=22)
+
+        poll_close_datetime = timezone.make_aware(
+            datetime.datetime.combine(
+                self.election.election_date, normal_poll_close_time
+            )
+        )
+        return poll_close_datetime <= timezone.now()
+
+    @property
+    def has_lock_suggestion(self):
+        return self.suggestedpostlock_set.exists()
+
+    @property
+    def get_winner_count(self):
+        """
+        Returns 0 rather than None if the winner_count is unknown. See comment in
+        https://github.com/DemocracyClub/yournextrepresentative/pull/621#issuecomment-417252565
+
+        :return:
+        """
+        if self.winner_count:
+            return self.winner_count
+        return 0
+
+    def user_can_edit_membership(self, user):
+        """
+        Can a given user edit this ballot?
+
+        """
+
+        # users have to be logged in to an account
+        if not user.is_authenticated:
+            return False
+
+        # If the ballot is unlocked, anyone can edit the memberships
+        if not self.candidates_locked:
+            return True
+
+        # If a user is trusted to lock then they can edit memberships
+        # TODO: Is this right?
+        # https://github.com/DemocracyClub/yournextrepresentative/issues/991
+        if user.groups.filter(name=TRUSTED_TO_LOCK_GROUP_NAME).exists():
+            return True
+
+        return False
+
+    def people_not_standing_again(self, previous_ballot):
+        """
+        Returns a queryset of People objects that are known not to be standing
+        again for this ballot.
+
+        "Not standing again" means that the person stood in this ballot's post
+        previously and someone has asserted that they're not standing again.
+
+        The current data model only stores "not standing" against an election,
+        not a post or ballot, so we have to filter all people not standing
+        in this election by the post they previously stood in.
+
+        """
+
+        return self.election.persons_not_standing_tmp.filter(
+            memberships__ballot=previous_ballot
+        ).only("pk")
 
 
 class PartySet(models.Model):

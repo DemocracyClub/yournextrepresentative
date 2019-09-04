@@ -1,0 +1,34 @@
+{# List of people not standing, shown on the ballot view #}
+{% if people_not_standing %}
+<div class="candidates__not-standing">
+  <h3>These people from earlier elections are known not to be standing again</h3>
+  <table class="table candidates-list">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for person in people_not_standing %}
+      <tr>
+        <td>
+          <a href="{{ person.get_absolute_url }}">
+            <img class="person-avatar" src="{{ person.get_display_image_url }}"/>
+            {{ person.name }}
+          </a>
+        </td>
+        <td>
+          <a class="button tiny js-toggle-source-confirmation standing">Actually, they are standing!</a>
+          {% include 'candidates/_source_confirmation.html' with standing='standing' action='candidacy-create' person_id=person.pk %}
+          <a href="{% url 'person-update' person_id=person.pk %}" class="button tiny secondary">
+            Edit
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+</div>
+{% endif %}
