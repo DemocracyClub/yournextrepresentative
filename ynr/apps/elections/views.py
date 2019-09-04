@@ -126,7 +126,7 @@ class BallotPaperView(TemplateView):
 
     def get_authenticated_user_context(self, ballot, context):
         """
-        Stuff we only want to add if the user is authrnticated
+        Stuff we only want to add if the user is authenticated
         """
 
         # Lock Suggestions
