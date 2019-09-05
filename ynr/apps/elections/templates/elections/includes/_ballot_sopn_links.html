@@ -1,0 +1,10 @@
+{% if sopn %}
+  <p>
+    <a href="{{ sopn.get_absolute_url }}">View the Statement of Persons Nominated (SOPN) for this ballot</a>
+  </p>
+{% else %}
+  {% if user_can_upload_documents %}
+    {% url 'upload_document_view' election=election post_id=post_data.extra.slug as url %}
+    <a href="{{ url }}" class="button">Upload SOPN</a>
+  {% endif %}
+{% endif %}

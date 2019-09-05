@@ -16,7 +16,9 @@
     <h4>Nomination documents uploaded</h4>
     {% if sopn %}
     <div class="status_done">
-        <strong>"SOPN" uploaded.</strong>
+        <strong>
+          <a href="{{ sopn.get_absolute_url }}">"SOPN" uploaded.</a>
+        </strong>
     </div>
     {% else %}
     <div class="status_not_started">
