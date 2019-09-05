@@ -63,6 +63,18 @@ class LoggedAction(models.Model):
         "candidates.Ballot", null=True, on_delete=models.CASCADE
     )
 
+    flagged_type = models.CharField(
+        max_length=100,
+        null=True,
+        help_text="If NOT NULL, a type of flag that marks "
+        "this edit as needing review by a human",
+    )
+    flagged_reason = models.CharField(
+        max_length=255,
+        null=True,
+        help_text="An explaination of the reason for flagging this edit",
+    )
+
     objects = LoggedActionQuerySet.as_manager()
 
     def __str__(self):
