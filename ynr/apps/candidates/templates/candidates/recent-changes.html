@@ -18,6 +18,7 @@
     <th>Action</th>
     <th>Candidate edited</th>
     <th>Information source</th>
+    <th>Needs review?</th>
   </tr>
   {% for action in actions %}
     <tr>
@@ -30,6 +31,7 @@
         <td></td>
       {% endif %}
       <td>{{ action.source }}</td>
+      <td>{{ action.flagged_reason|default_if_none:"" }}</td>
     </tr>
   {% endfor %}
 </table>
