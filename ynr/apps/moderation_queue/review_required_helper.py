@@ -1,5 +1,6 @@
 import abc
 from collections import namedtuple
+from enum import Enum, unique
 
 from django.conf import settings
 
@@ -9,6 +10,12 @@ class BaseReviewRequiredDecider(metaclass=abc.ABCMeta):
     A base class that decides if a given LoggedAction needs to be flagged
     as requiring review
     """
+
+    @unique
+    class Status(Enum):
+        UNDECIDED = None
+        NEEDS_REVIEW = 1
+        NO_REVIEW_NEEDED = 2
 
     def __init__(self, logged_action):
         """
@@ -47,10 +54,11 @@ class FirstByUserEditsDecider(BaseReviewRequiredDecider):
         )
 
     def needs_review(self):
-        if not self.logged_action.user:
-            return False
-        user_edits = self.logged_action.user.loggedaction_set.count()
-        return user_edits < settings.NEEDS_REVIEW_FIRST_EDITS
+        if self.logged_action.user:
+            user_edits = self.logged_action.user.loggedaction_set.count()
+            if user_edits < settings.NEEDS_REVIEW_FIRST_EDITS:
+                return self.Status.NEEDS_REVIEW
+        return self.Status.UNDECIDED
 
 
 class DeadCandidateEditsDecider(BaseReviewRequiredDecider):
@@ -62,10 +70,11 @@ class DeadCandidateEditsDecider(BaseReviewRequiredDecider):
         return "Edit of a candidate who has died"
 
     def needs_review(self):
-        if not self.logged_action.person:
-            return False
-        has_death_date = self.logged_action.person.death_date
-        return bool(has_death_date)
+        if self.logged_action.person:
+            has_death_date = self.logged_action.person.death_date
+            if has_death_date:
+                return self.Status.NEEDS_REVIEW
+        return self.Status.UNDECIDED
 
 
 class HighProfileCandidateEditDecider(BaseReviewRequiredDecider):
@@ -77,12 +86,13 @@ class HighProfileCandidateEditDecider(BaseReviewRequiredDecider):
         return "Edit of a candidate whose record may be particularly liable to vandalism"
 
     def needs_review(self):
-        if not self.logged_action.person:
-            return False
-        return (
-            int(self.logged_action.person.pk)
-            in settings.PEOPLE_LIABLE_TO_VANDALISM
-        )
+        if self.logged_action.person:
+            if (
+                int(self.logged_action.person.pk)
+                in settings.PEOPLE_LIABLE_TO_VANDALISM
+            ):
+                return self.Status.NEEDS_REVIEW
+        return self.Status.UNDECIDED
 
 
 class CandidateStatementEditDecider(BaseReviewRequiredDecider):
@@ -94,18 +104,16 @@ class CandidateStatementEditDecider(BaseReviewRequiredDecider):
         return "Edit of a statement to voters"
 
     def needs_review(self):
-        if not self.logged_action.person:
-            return False
-
-        la = self.logged_action
-        for version_diff in la.person.version_diffs:
-            if version_diff["version_id"] == la.popit_person_new_version:
-                this_diff = version_diff["diffs"][0]["parent_diff"]
-                for op in this_diff:
-                    if op["path"] == "biography":
-                        # this is an edit to a biography / statement
-                        return True
-        return False
+        if self.logged_action.person:
+            la = self.logged_action
+            for version_diff in la.person.version_diffs:
+                if version_diff["version_id"] == la.popit_person_new_version:
+                    this_diff = version_diff["diffs"][0]["parent_diff"]
+                    for op in this_diff:
+                        if op["path"] == "biography":
+                            # this is an edit to a biography / statement
+                            return self.Status.NEEDS_REVIEW
+        return self.Status.UNDECIDED
 
 
 ReviewType = namedtuple("ReviewType", ["type", "label", "cls"])
@@ -144,7 +152,10 @@ def set_review_required(logged_action):
 
     for review_type in REVIEW_TYPES:
         decider = review_type.cls(logged_action)
-        if decider.needs_review():
+        decision = decider.needs_review()
+        if decision == review_type.cls.Status.NEEDS_REVIEW:
             logged_action.flagged_type = review_type.type
             logged_action.flagged_reason = decider.review_description_text()
+            break
+        if decision == review_type.cls.Status.NO_REVIEW_NEEDED:
             break
