@@ -1,6 +1,5 @@
 import json
 from datetime import date
-import re
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation

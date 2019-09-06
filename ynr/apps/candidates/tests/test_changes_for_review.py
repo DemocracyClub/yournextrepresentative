@@ -20,7 +20,6 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from people.models import Person
 from parties.models import Party
 
-from . import factories
 from .auth import TestUserMixin
 from people.tests.test_version_diffs import tidy_html_whitespace
 
