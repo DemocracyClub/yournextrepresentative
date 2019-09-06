@@ -9,7 +9,7 @@ from django.utils.html import escape
 from django.utils.six import text_type
 
 
-from moderation_queue.review_required_helper import set_review_required
+from moderation_queue.review_required_helper import REVIEW_TYPES
 
 
 def merge_dicts_with_list_values(dict_a, dict_b):
@@ -127,8 +127,25 @@ class LoggedAction(models.Model):
         except VersionNotFound as e:
             return "<p>{}</p>".format(escape(text_type(e)))
 
+    def set_review_required(self):
+        """
+        Runs all `ReviewRequiredDecider` classed over a LoggedAction
+        and sets the flags accordingly
+
+        """
+
+        for review_type in REVIEW_TYPES:
+            decider = review_type.cls(self)
+            decision = decider.needs_review()
+            if decision == review_type.cls.Status.NEEDS_REVIEW:
+                self.flagged_type = review_type.type
+                self.flagged_reason = decider.review_description_text()
+                break
+            if decision == review_type.cls.Status.NO_REVIEW_NEEDED:
+                break
+
     def save(self, **kwargs):
-        set_review_required(self)
+        self.set_review_required()
         return super().save(**kwargs)
 
 

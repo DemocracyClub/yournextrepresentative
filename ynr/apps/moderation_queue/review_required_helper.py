@@ -140,22 +140,3 @@ REVIEW_TYPES = (
         cls=CandidateStatementEditDecider,
     ),
 )
-
-
-def set_review_required(logged_action):
-    """
-    Runs all `ReviewRequiredDecider` classed over a LoggedAction
-    and sets the flags on that model accordingly
-
-    :type logged_action: candidates.models.LoggedAction
-    """
-
-    for review_type in REVIEW_TYPES:
-        decider = review_type.cls(logged_action)
-        decision = decider.needs_review()
-        if decision == review_type.cls.Status.NEEDS_REVIEW:
-            logged_action.flagged_type = review_type.type
-            logged_action.flagged_reason = decider.review_description_text()
-            break
-        if decision == review_type.cls.Status.NO_REVIEW_NEEDED:
-            break
