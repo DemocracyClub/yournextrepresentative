@@ -4,3 +4,22 @@
         display: inline-block;
     }
 }
+
+.search_results {
+    li {
+        list-style: none;
+        margin:0;
+        padding:0;
+
+        img {
+            float:left;
+            width:64px;
+            margin-right:0.5em;
+            background-color: #c4ccd4;
+        }
+    }
+
+    li + li {
+        margin-top:1.5em;
+    }
+}
