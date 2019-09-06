@@ -116,9 +116,36 @@ class CandidateStatementEditDecider(BaseReviewRequiredDecider):
         return self.Status.UNDECIDED
 
 
+class EditMadeByBotDecider(BaseReviewRequiredDecider):
+    """
+    Marks an edit as not needing review if it was made by a bot
+    """
+
+    def review_description_text(self):
+        return "Edit made by bot"
+
+    def needs_review(self):
+        BOT_USERS = (
+            settings.TWITTER_BOT_USERNAME,
+            settings.CANDIDATE_BOT_USERNAME,
+            settings.RESULTS_BOT_USERNAME,
+        )
+        if (
+            self.logged_action.user
+            and self.logged_action.user.username in BOT_USERS
+        ):
+            return self.Status.NO_REVIEW_NEEDED
+        return self.Status.UNDECIDED
+
+
 ReviewType = namedtuple("ReviewType", ["type", "label", "cls"])
 
 REVIEW_TYPES = (
+    ReviewType(
+        type="no_review_needed_due_to_user_being_a_bot",
+        label="Edit made by bot",
+        cls=EditMadeByBotDecider,
+    ),
     ReviewType(
         type="needs_review_due_to_high_profile",
         label="Edit of a candidate whose record may be particularly liable to vandalism",
