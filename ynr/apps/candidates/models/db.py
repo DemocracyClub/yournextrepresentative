@@ -24,7 +24,7 @@ class LoggedActionQuerySet(models.QuerySet):
         return self.filter(created__gte=(datetime.now() - timedelta(days=days)))
 
     def needs_review(self):
-        return self.exclude(flagged_type=None).order_by("-created")
+        return self.exclude(flagged_type="").order_by("-created")
 
 
 class LoggedAction(models.Model):
@@ -58,13 +58,15 @@ class LoggedAction(models.Model):
 
     flagged_type = models.CharField(
         max_length=100,
-        null=True,
+        blank=True,
+        null=False,
         help_text="If NOT NULL, a type of flag that marks "
         "this edit as needing review by a human",
     )
     flagged_reason = models.CharField(
         max_length=255,
-        null=True,
+        blank=True,
+        null=False,
         help_text="An explaination of the reason for flagging this edit",
     )
 
