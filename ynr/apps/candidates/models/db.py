@@ -27,12 +27,7 @@ class LoggedActionQuerySet(models.QuerySet):
         return self.filter(created__gte=(datetime.now() - timedelta(days=days)))
 
     def needs_review(self):
-        """Return a dict of LoggedAction -> list of reasons should be reviewed"""
-        return reduce(
-            merge_dicts_with_list_values,
-            [f(self) for f in needs_review_fns],
-            {},
-        )
+        return self.exclude(flagged_type=None).order_by("-created")
 
 
 class LoggedAction(models.Model):
