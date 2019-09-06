@@ -1,6 +1,5 @@
 import re
 
-from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
 from django.urls import reverse
 from django.utils.feedgenerator import Atom1Feed
@@ -96,30 +95,27 @@ class NeedsReviewFeed(ChangesMixin, Feed):
     def items(self):
         # Consider changes in the last 5 days. We exclude any photo
         # related activity since that has its own reviewing system.
-        return sorted(
+        return (
             LoggedAction.objects.exclude(action_type__startswith="photo-")
             .in_recent_days(1)
             .order_by("-created")
             .needs_review()
-            .items(),
-            key=lambda t: t[0].created,
-            reverse=True,
         )
 
     def item_title(self, item):
-        return self.get_title(item[0])
+        return self.get_title(item)
 
     def item_guid(self, item):
-        return self.id_format.format(item[0].id)
+        return self.id_format.format(item.id)
 
     def item_updateddate(self, item):
-        return self.get_updated(item[0])
+        return self.get_updated(item)
 
     def item_author_name(self, item):
-        return self.get_author(item[0])
+        return self.get_author(item)
 
     def item_description(self, item):
-        la = item[0]
+        la = item
         return """
 <p>{action_type} of {subject} by {user} with source: “ {source} ”;</p>
 <ul>
@@ -129,12 +125,10 @@ class NeedsReviewFeed(ChangesMixin, Feed):
             subject=la.subject_html,
             user=la.user.username,
             source=la.source,
-            reasons_review_needed="\n".join(
-                "<li>{}</li>".format(i) for i in item[1]
-            ),
+            reasons_review_needed=item.flagged_reason,
             timestamp=la.updated,
             diff=la.diff_html,
         )
 
     def item_link(self, item):
-        return item[0].subject_url
+        return item.subject_url

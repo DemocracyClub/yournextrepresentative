@@ -1,3 +1,7 @@
+# This is the number of the first edits of a user that are considered
+# to need review.
+NEEDS_REVIEW_FIRST_EDITS = 3
+
 PEOPLE_LIABLE_TO_VANDALISM = {
     2811,  # Theresa May
     1120,  # Jeremy Corbyn

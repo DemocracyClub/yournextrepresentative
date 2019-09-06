@@ -13,8 +13,6 @@ from candidates.models.db import LoggedAction
 from candidates.models.db import PersonRedirect
 from candidates.models.db import UserTermsAgreement
 
-from candidates.models.needs_review import needs_review_fns
-
 from candidates.models.auth import TRUSTED_TO_MERGE_GROUP_NAME
 from candidates.models.auth import TRUSTED_TO_LOCK_GROUP_NAME
 from candidates.models.auth import TRUSTED_TO_RENAME_GROUP_NAME

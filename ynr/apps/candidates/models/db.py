@@ -1,6 +1,5 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
-from functools import reduce
 
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -9,9 +8,8 @@ from django.db.models.signals import post_save
 from django.utils.html import escape
 from django.utils.six import text_type
 
-from slugify import slugify
 
-from .needs_review import needs_review_fns
+from moderation_queue.review_required_helper import REVIEW_TYPES
 
 
 def merge_dicts_with_list_values(dict_a, dict_b):
@@ -26,12 +24,7 @@ class LoggedActionQuerySet(models.QuerySet):
         return self.filter(created__gte=(datetime.now() - timedelta(days=days)))
 
     def needs_review(self):
-        """Return a dict of LoggedAction -> list of reasons should be reviewed"""
-        return reduce(
-            merge_dicts_with_list_values,
-            [f(self) for f in needs_review_fns],
-            {},
-        )
+        return self.exclude(flagged_type="").order_by("-created")
 
 
 class LoggedAction(models.Model):
@@ -61,6 +54,20 @@ class LoggedAction(models.Model):
     )
     ballot = models.ForeignKey(
         "candidates.Ballot", null=True, on_delete=models.CASCADE
+    )
+
+    flagged_type = models.CharField(
+        max_length=100,
+        blank=True,
+        null=False,
+        help_text="If NOT NULL, a type of flag that marks "
+        "this edit as needing review by a human",
+    )
+    flagged_reason = models.CharField(
+        max_length=255,
+        blank=True,
+        null=False,
+        help_text="An explaination of the reason for flagging this edit",
     )
 
     objects = LoggedActionQuerySet.as_manager()
@@ -121,6 +128,27 @@ class LoggedAction(models.Model):
             )
         except VersionNotFound as e:
             return "<p>{}</p>".format(escape(text_type(e)))
+
+    def set_review_required(self):
+        """
+        Runs all `ReviewRequiredDecider` classed over a LoggedAction
+        and sets the flags accordingly
+
+        """
+
+        for review_type in REVIEW_TYPES:
+            decider = review_type.cls(self)
+            decision = decider.needs_review()
+            if decision == review_type.cls.Status.NEEDS_REVIEW:
+                self.flagged_type = review_type.type
+                self.flagged_reason = decider.review_description_text()
+                break
+            if decision == review_type.cls.Status.NO_REVIEW_NEEDED:
+                break
+
+    def save(self, **kwargs):
+        self.set_review_required()
+        return super().save(**kwargs)
 
 
 class PersonRedirect(models.Model):
