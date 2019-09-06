@@ -12,6 +12,7 @@ from django.utils.six import text_type
 from slugify import slugify
 
 from .needs_review import needs_review_fns
+from moderation_queue.review_required_helper import set_review_required
 
 
 def merge_dicts_with_list_values(dict_a, dict_b):
@@ -133,6 +134,10 @@ class LoggedAction(models.Model):
             )
         except VersionNotFound as e:
             return "<p>{}</p>".format(escape(text_type(e)))
+
+    def save(self, **kwargs):
+        set_review_required(self)
+        return super().save(**kwargs)
 
 
 class PersonRedirect(models.Model):
