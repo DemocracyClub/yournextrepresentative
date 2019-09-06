@@ -85,6 +85,29 @@ class HighProfileCandidateEditDecider(BaseReviewRequiredDecider):
         )
 
 
+class CandidateStatementEditDecider(BaseReviewRequiredDecider):
+    """
+    Flag edits to candidates statements
+    """
+
+    def review_description_text(self):
+        return "Edit of a statement to voters"
+
+    def needs_review(self):
+        if not self.logged_action.person:
+            return False
+
+        la = self.logged_action
+        for version_diff in la.person.version_diffs:
+            if version_diff["version_id"] == la.popit_person_new_version:
+                this_diff = version_diff["diffs"][0]["parent_diff"]
+                for op in this_diff:
+                    if op["path"] == "biography":
+                        # this is an edit to a biography / statement
+                        return True
+        return False
+
+
 ReviewType = namedtuple("ReviewType", ["type", "label", "cls"])
 
 REVIEW_TYPES = (
@@ -102,6 +125,11 @@ REVIEW_TYPES = (
         type="needs_review_due_to_first_edits",
         label="First edits by user",
         cls=FirstByUserEditsDecider,
+    ),
+    ReviewType(
+        type="needs_review_due_to_statement_edit",
+        label="Edit of a statement to voters",
+        cls=CandidateStatementEditDecider,
     ),
 )
 

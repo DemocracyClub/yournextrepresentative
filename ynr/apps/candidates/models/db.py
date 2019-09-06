@@ -11,7 +11,6 @@ from django.utils.six import text_type
 
 from slugify import slugify
 
-from .needs_review import needs_review_fns
 from moderation_queue.review_required_helper import set_review_required
 
 
