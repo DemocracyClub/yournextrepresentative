@@ -700,3 +700,10 @@ class Person(Timestampable, models.Model):
         return (
             self.edit_limitations != EditLimitationStatuses.EDITS_PREVENTED.name
         )
+
+    @property
+    def liable_to_vandalism(self):
+        return (
+            self.edit_limitations
+            == EditLimitationStatuses.LIABLE_TO_VANDALISM.name
+        )

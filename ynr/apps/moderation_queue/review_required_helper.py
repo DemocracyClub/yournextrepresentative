@@ -92,6 +92,9 @@ class HighProfileCandidateEditDecider(BaseReviewRequiredDecider):
                 in settings.PEOPLE_LIABLE_TO_VANDALISM
             ):
                 return self.Status.NEEDS_REVIEW
+
+            if self.logged_action.person.liable_to_vandalism:
+                return self.Status.NEEDS_REVIEW
         return self.Status.UNDECIDED
 
 
