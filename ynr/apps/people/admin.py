@@ -1,13 +1,30 @@
 from django.contrib import admin
-from django.forms import ModelForm
+from django import forms
+
+from sorl.thumbnail.admin.current import AdminImageWidget
 
 from popolo.models import Membership
-from people.models import Person
+from people.models import Person, PersonImage
 
 
 class MembershipInline(admin.StackedInline):
     extra = 0
     model = Membership
+
+
+class PersonImageInlineForm(forms.ModelForm):
+    class Meta:
+        model = PersonImage
+        widgets = {"image": AdminImageWidget}
+
+        fields = ("image", "is_primary")
+
+
+class PersonImageInline(admin.TabularInline):
+    extra = 0
+    model = PersonImage
+    form = PersonImageInlineForm
+    fields = ("image", "is_primary")
 
 
 class PersonAdmin(admin.ModelAdmin):
@@ -42,7 +59,7 @@ class PersonAdmin(admin.ModelAdmin):
             {"classes": ("collapse",), "fields": ("start_date", "end_date")},
         ),
     )
-    # inlines = generics.BASE_INLINES + [MembershipInline]
+    inlines = [PersonImageInline]
 
 
 admin.site.register(Person, PersonAdmin)
