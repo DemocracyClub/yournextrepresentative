@@ -57,8 +57,12 @@ class PersonAdmin(admin.ModelAdmin):
         (
             "Advanced options",
             {"classes": ("collapse",), "fields": ("start_date", "end_date")},
+            "Edit limitations",
+            {"classes": ("collapse",), "fields": ("edit_limitations",)},
         ),
     )
+
+    list_filter = ("edit_limitations",)
     inlines = [PersonImageInline]
 
 

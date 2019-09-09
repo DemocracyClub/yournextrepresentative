@@ -694,3 +694,9 @@ class Person(Timestampable, models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def edits_allowed(self):
+        return (
+            self.edit_limitations != EditLimitationStatuses.EDITS_PREVENTED.name
+        )

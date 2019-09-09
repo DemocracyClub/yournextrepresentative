@@ -4,6 +4,7 @@ import re
 from slugify import slugify
 
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.urls import reverse
 from django.db import transaction
@@ -283,6 +284,9 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
             return HttpResponseRedirect(reverse("all-edits-disallowed"))
 
         context = self.get_context_data()
+        if context["person"].edits_allowed:
+            raise PermissionDenied
+
         identifiers_formset = all_forms["identifiers_formset"]
 
         with transaction.atomic():
