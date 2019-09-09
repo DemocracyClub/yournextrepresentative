@@ -15,10 +15,7 @@ class PersonAdmin(admin.ModelAdmin):
         (None, {"fields": ("name", "gender", "birth_date", "death_date")}),
         (
             "Biography",
-            {
-                "classes": ("collapse",),
-                "fields": ("summary", "image", "biography"),
-            },
+            {"classes": ("collapse",), "fields": ("summary", "biography")},
         ),
         (
             "Honorifics",
@@ -26,10 +23,6 @@ class PersonAdmin(admin.ModelAdmin):
                 "classes": ("collapse",),
                 "fields": ("honorific_prefix", "honorific_suffix"),
             },
-        ),
-        (
-            "Demography",
-            {"classes": ("collapse",), "fields": ("national_identity",)},
         ),
         (
             "Special Names",
