@@ -1,6 +1,6 @@
 import json
 from datetime import date
-
+from enum import Enum, unique
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.fields import JSONField
@@ -31,6 +31,13 @@ def person_image_path(instance, filename):
     filename = filename[400:]
     # Upload images in a directory per person
     return "images/people/{0}/{1}".format(instance.person.id, filename)
+
+
+@unique
+class EditLimitationStatuses(Enum):
+    NO_STATUS = ""
+    LIABLE_TO_VANDALISM = "Liable to vandalism"
+    EDITS_PREVENTED = "Edits prevented"
 
 
 class PersonImage(models.Model):
@@ -268,6 +275,15 @@ class Person(Timestampable, models.Model):
 
     favourite_biscuit = models.CharField(
         "Favourite biscuit 🍪", max_length=255, null=True
+    )
+
+    edit_limitations = models.CharField(
+        max_length=100,
+        null=False,
+        blank=True,
+        choices=[
+            (status.name, status.value) for status in EditLimitationStatuses
+        ],
     )
 
     class Meta:
