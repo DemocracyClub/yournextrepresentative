@@ -284,7 +284,7 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
             return HttpResponseRedirect(reverse("all-edits-disallowed"))
 
         context = self.get_context_data()
-        if context["person"].edits_allowed:
+        if not context["person"].edits_allowed:
             raise PermissionDenied
 
         identifiers_formset = all_forms["identifiers_formset"]
