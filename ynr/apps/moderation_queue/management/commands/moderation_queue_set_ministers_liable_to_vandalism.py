@@ -2,7 +2,7 @@ import re
 import datetime
 import requests
 
-from people.models import Person
+from people.models import Person, EditLimitationStatuses
 
 from django.core.management.base import BaseCommand
 
@@ -38,8 +38,7 @@ class Command(BaseCommand):
                 # There will be lords in the government that never got elected…
                 continue
 
-            self.stdout.write(
-                "    {0},\t# {1} ({2})".format(
-                    person.id, person.name, minister["role"]
-                )
+            person.edit_limitations = (
+                EditLimitationStatuses.LIABLE_TO_VANDALISM.name
             )
+            person.save()

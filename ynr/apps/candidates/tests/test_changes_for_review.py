@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 from django_webtest import WebTest
 from django.conf import settings
 from django.test import TestCase
-from django.test.utils import override_settings
 from django.utils.timezone import make_aware
 
 from lxml import etree
@@ -102,12 +101,14 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
             "needs_review_due_to_candidate_having_died",
         )
 
-    @override_settings(PEOPLE_LIABLE_TO_VANDALISM={2009})
     def test_needs_review_due_to_high_profile(self):
         self.assertFalse(LoggedAction.objects.needs_review().exists())
 
         example_person = people.tests.factories.PersonFactory.create(
-            id="2009", name="Tessa Jowell", death_date="2018-01-01"
+            id="2009",
+            name="Tessa Jowell",
+            death_date="2018-01-01",
+            edit_limitations="LIABLE_TO_VANDALISM",
         )
 
         LoggedAction.objects.create(
@@ -132,7 +133,6 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
 @patch.object(Person, "diff_for_version", fake_diff_html)
 @patch("candidates.models.db.datetime")
-@override_settings(PEOPLE_LIABLE_TO_VANDALISM={2811})
 class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
     maxDiff = None
@@ -229,7 +229,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         change_updated_and_created(la, dt)
 
         prime_minister = people.tests.factories.PersonFactory.create(
-            id=2811, name="Theresa May"
+            id=2811, name="Theresa May", edit_limitations="LIABLE_TO_VANDALISM"
         )
         # Create a candidate on the "liable to vandalism" list.
         la = LoggedAction.objects.create(
