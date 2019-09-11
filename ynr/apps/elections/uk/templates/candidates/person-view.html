@@ -239,6 +239,7 @@
         <a href="{% url 'account_login' %}?next={{ redirect_after_login }}" class="button">Log in to edit</a>
       {% endif %}
     {% else %}
+      <h2>Edits disabled</h2>
       {% include 'candidates/_edits_disallowed_message.html' %}
     {% endif %}
   </div>
