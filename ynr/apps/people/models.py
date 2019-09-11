@@ -35,7 +35,6 @@ def person_image_path(instance, filename):
 
 @unique
 class EditLimitationStatuses(Enum):
-    NO_STATUS = ""
     LIABLE_TO_VANDALISM = "Liable to vandalism"
     EDITS_PREVENTED = "Edits prevented"
 
