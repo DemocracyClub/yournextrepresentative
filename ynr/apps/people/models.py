@@ -35,7 +35,7 @@ def person_image_path(instance, filename):
 
 @unique
 class EditLimitationStatuses(Enum):
-    LIABLE_TO_VANDALISM = "Liable to vandalism"
+    NEEDS_REVIEW = "Needs review"
     EDITS_PREVENTED = "Edits prevented"
 
 
@@ -708,7 +708,4 @@ class Person(Timestampable, models.Model):
 
     @property
     def liable_to_vandalism(self):
-        return (
-            self.edit_limitations
-            == EditLimitationStatuses.LIABLE_TO_VANDALISM.name
-        )
+        return self.edit_limitations == EditLimitationStatuses.NEEDS_REVIEW.name

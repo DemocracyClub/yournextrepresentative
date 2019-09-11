@@ -79,7 +79,7 @@ class DeadCandidateEditsDecider(BaseReviewRequiredDecider):
 
 class HighProfileCandidateEditDecider(BaseReviewRequiredDecider):
     """
-    Flag edits to people who's edit_limitations are `LIABLE_TO_VANDALISM`
+    Flag edits to people who's edit_limitations are `NEEDS_REVIEW`
     """
 
     def review_description_text(self):

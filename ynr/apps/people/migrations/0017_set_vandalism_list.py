@@ -199,7 +199,7 @@ def set_liable_to_vandalism(apps, schema_editor):
             # We can't use the Enum here, because the `Person` object isn't the
             # actual class in the code. The Enum values might change over time,
             # so it's best to hard code this.
-            person.edit_limitations = "LIABLE_TO_VANDALISM"
+            person.edit_limitations = "NEEDS_REVIEW"
             person.save()
 
 

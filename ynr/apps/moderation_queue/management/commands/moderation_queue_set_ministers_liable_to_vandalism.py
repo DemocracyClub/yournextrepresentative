@@ -38,7 +38,5 @@ class Command(BaseCommand):
                 # There will be lords in the government that never got elected…
                 continue
 
-            person.edit_limitations = (
-                EditLimitationStatuses.LIABLE_TO_VANDALISM.name
-            )
+            person.edit_limitations = EditLimitationStatuses.NEEDS_REVIEW.name
             person.save()

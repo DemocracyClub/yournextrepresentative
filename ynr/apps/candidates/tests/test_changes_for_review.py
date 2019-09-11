@@ -108,7 +108,7 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
             id="2009",
             name="Tessa Jowell",
             death_date="2018-01-01",
-            edit_limitations="LIABLE_TO_VANDALISM",
+            edit_limitations="NEEDS_REVIEW",
         )
 
         LoggedAction.objects.create(
@@ -229,7 +229,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         change_updated_and_created(la, dt)
 
         prime_minister = people.tests.factories.PersonFactory.create(
-            id=2811, name="Theresa May", edit_limitations="LIABLE_TO_VANDALISM"
+            id=2811, name="Theresa May", edit_limitations="NEEDS_REVIEW"
         )
         # Create a candidate on the "liable to vandalism" list.
         la = LoggedAction.objects.create(

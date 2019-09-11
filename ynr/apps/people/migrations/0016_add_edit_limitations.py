@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 choices=[
                     ("NO_STATUS", ""),
-                    ("LIABLE_TO_VANDALISM", "Liable to vandalism"),
+                    ("NEEDS_REVIEW", "Liable to vandalism"),
                     ("EDITS_PREVENTED", "Edits prevented"),
                 ],
                 max_length=100,
