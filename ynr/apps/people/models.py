@@ -695,8 +695,14 @@ class Person(Timestampable, models.Model):
     def __str__(self):
         return self.name
 
-    @property
-    def edits_allowed(self):
+    def user_can_edit(self, user):
+        """
+        User is ignored at the moment, but passed for future evaluation
+        of edit permissions based on the user/group
+
+
+        :type user: django.contrib.auth.models.User
+        """
         return (
             self.edit_limitations != EditLimitationStatuses.EDITS_PREVENTED.name
         )

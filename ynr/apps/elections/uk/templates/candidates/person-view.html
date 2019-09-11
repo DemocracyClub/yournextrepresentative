@@ -229,7 +229,7 @@
 
   <div class="person__actions__action person__actions__edit">
     <h2>Improve this data!</h2>
-    {% if user_can_edit and person.edits_allowed %}
+    {% if user_can_edit and person_edits_allowed %}
       <p>Our database is built by people like you.</p>
       <p>Please do add extra details about this candidate – it only takes a moment.</p>
       {% if user.is_authenticated %}
