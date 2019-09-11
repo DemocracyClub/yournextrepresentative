@@ -4,6 +4,7 @@ from candidates.tests.person_view_shared_tests_mixin import (
     PersonViewSharedTestsMixin,
 )
 from candidates.views.version_data import get_change_metadata
+from people.models import EditLimitationStatuses
 
 
 class TestPersonUpdate(PersonViewSharedTestsMixin):
@@ -86,3 +87,36 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         form.submit()
         self.assertEqual(self.person.other_names.first().name, "Tessa Jowell")
         self.assertEqual(self.person.name, "Tessa Palmer")
+
+    def test_edits_prevented(self):
+        # See if we get a 403 when submitting a person form
+        # for a person who's edits are prevented
+        response = self.app.get(
+            "/person/{}/update/".format(self.person.pk), user=self.user
+        )
+        form = response.forms[1]
+        form["name"] = "Tessa Palmer"
+        form["source"] = "Mumsnet"
+        self.person.edit_limitations = (
+            EditLimitationStatuses.EDITS_PREVENTED.name
+        )
+        self.person.save()
+        response = form.submit(expect_errors=True)
+        self.assertEqual(response.status_code, 403)
+
+        # Check no edit button is shown
+        response = self.app.get(
+            "/person/{}/".format(self.person.pk), user=self.user
+        )
+        self.assertContains(response, "Edits disabled")
+        self.assertNotContains(response, "Edit candidate")
+
+        # Check we can't see the edit form
+        response = self.app.get(
+            "/person/{}/update/".format(self.person.pk), user=self.user
+        )
+        self.assertContains(
+            response,
+            "Editing of this page has been disabled to prevent possible vandalism.",
+        )
+        self.assertNotContains(response, "<h2>Personal details:</h2>")
