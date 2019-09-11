@@ -44,7 +44,7 @@ ipython==7.4.0
 jsonfield==2.0.2
 jsonpatch==1.23
 jsonpointer==2.0
-libsass==0.18.0
+libsass==0.19.2
 lxml==4.3.4
 mock==1.0.1
 ndg-httpsclient==0.5.1
