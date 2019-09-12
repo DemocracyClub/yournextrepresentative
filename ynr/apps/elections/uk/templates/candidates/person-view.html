@@ -275,6 +275,12 @@
         WhoCanIVoteFor.co.uk, and by other information providers, such as The Electoral Commission and news media companies.
     </p>
   </div>
+  {% if user.is_staff %}
+  <div class="person__actions__action person__actions__edit">
+    <h2>Admin interface</h2>
+    <p><a href="{% url "admin:people_person_change" person.pk %}">Edit this person in the admin interface</a></p>
+  </div>
+  {% endif %}
 
 </div>
 
