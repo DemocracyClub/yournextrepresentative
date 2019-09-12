@@ -3,8 +3,10 @@ from django import forms
 
 from sorl.thumbnail.admin.current import AdminImageWidget
 
+from candidates.models import LoggedAction
+from candidates.views.version_data import get_client_ip
 from popolo.models import Membership
-from people.models import Person, PersonImage
+from people.models import Person, PersonImage, EditLimitationStatuses
 
 
 class MembershipInline(admin.StackedInline):
@@ -62,6 +64,27 @@ class PersonAdmin(admin.ModelAdmin):
 
     list_filter = ("edit_limitations",)
     inlines = [PersonImageInline]
+
+    def save_model(self, request, obj, form, change):
+        if form.initial["edit_limitations"] != form["edit_limitations"].value():
+
+            try:
+                limitation = EditLimitationStatuses[
+                    form["edit_limitations"].value()
+                ].value
+                message = "Changed edit limitations to '{}'".format(limitation)
+            except KeyError:
+                message = "Removed edit limitations"
+
+            LoggedAction.objects.create(
+                user=request.user,
+                action_type="change-edit-limitations",
+                ip_address=get_client_ip(request),
+                person=obj,
+                source=message,
+            )
+
+        super().save_model(request, obj, form, change)
 
 
 admin.site.register(Person, PersonAdmin)
