@@ -1,6 +1,6 @@
 import json
 from datetime import date
-
+from enum import Enum, unique
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.fields import JSONField
@@ -31,6 +31,12 @@ def person_image_path(instance, filename):
     filename = filename[400:]
     # Upload images in a directory per person
     return "images/people/{0}/{1}".format(instance.person.id, filename)
+
+
+@unique
+class EditLimitationStatuses(Enum):
+    NEEDS_REVIEW = "Needs review"
+    EDITS_PREVENTED = "Edits prevented"
 
 
 class PersonImage(models.Model):
@@ -268,6 +274,15 @@ class Person(Timestampable, models.Model):
 
     favourite_biscuit = models.CharField(
         "Favourite biscuit 🍪", max_length=255, null=True
+    )
+
+    edit_limitations = models.CharField(
+        max_length=100,
+        null=False,
+        blank=True,
+        choices=[
+            (status.name, status.value) for status in EditLimitationStatuses
+        ],
     )
 
     class Meta:
@@ -678,3 +693,19 @@ class Person(Timestampable, models.Model):
 
     def __str__(self):
         return self.name
+
+    def user_can_edit(self, user):
+        """
+        User is ignored at the moment, but passed for future evaluation
+        of edit permissions based on the user/group
+
+
+        :type user: django.contrib.auth.models.User
+        """
+        return (
+            self.edit_limitations != EditLimitationStatuses.EDITS_PREVENTED.name
+        )
+
+    @property
+    def liable_to_vandalism(self):
+        return self.edit_limitations == EditLimitationStatuses.NEEDS_REVIEW.name

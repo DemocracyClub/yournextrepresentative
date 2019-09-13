@@ -34,6 +34,7 @@
       <tr>
         <td></td>
         <td colspan=2 class="actions">
+          {% if person.edits_allowed %}
           <a href="{% url 'person-update' person.pk %}" target="_blank" class="button secondary tiny">
             Edit candidate
           </a>
@@ -43,6 +44,7 @@
           <a data-person-id="{{ person.pk }}" data-post-id="{{ post.slug }}" href="{% url 'candidacy-delete' election=election %}" class="button secondary tiny js-bulk-known-person-not-standing">
             Not standing
           </a>
+          {% endif %}
         </td>
 
         <script type="text/html" class="js-bulk-known-person-alternate-name-form">

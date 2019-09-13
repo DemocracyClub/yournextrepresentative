@@ -79,7 +79,7 @@ class DeadCandidateEditsDecider(BaseReviewRequiredDecider):
 
 class HighProfileCandidateEditDecider(BaseReviewRequiredDecider):
     """
-    Flag edits to candidates on the PEOPLE_LIABLE_TO_VANDALISM list
+    Flag edits to people who's edit_limitations are `NEEDS_REVIEW`
     """
 
     def review_description_text(self):
@@ -87,10 +87,7 @@ class HighProfileCandidateEditDecider(BaseReviewRequiredDecider):
 
     def needs_review(self):
         if self.logged_action.person:
-            if (
-                int(self.logged_action.person.pk)
-                in settings.PEOPLE_LIABLE_TO_VANDALISM
-            ):
+            if self.logged_action.person.liable_to_vandalism:
                 return self.Status.NEEDS_REVIEW
         return self.Status.UNDECIDED
 

@@ -4,6 +4,7 @@ import re
 from slugify import slugify
 
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.urls import reverse
 from django.db import transaction
@@ -104,6 +105,11 @@ class PersonView(TemplateView):
         context["simple_fields"] = [
             field.name for field in settings.SIMPLE_POPOLO_FIELDS
         ]
+
+        context["person_edits_allowed"] = self.person.user_can_edit(
+            self.request.user
+        )
+
         personal_fields, demographic_fields = get_field_groupings()
         context["has_demographics"] = any(
             demographic in context["simple_fields"]
@@ -270,6 +276,10 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
             self.request.user, TRUSTED_TO_MERGE_GROUP_NAME
         )
 
+        context["person_edits_allowed"] = person.user_can_edit(
+            self.request.user
+        )
+
         context["versions"] = get_version_diffs(json.loads(person.versions))
 
         context = get_person_form_fields(context, context["form"])
@@ -283,6 +293,9 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
             return HttpResponseRedirect(reverse("all-edits-disallowed"))
 
         context = self.get_context_data()
+        if not context["person_edits_allowed"]:
+            raise PermissionDenied
+
         identifiers_formset = all_forms["identifiers_formset"]
 
         with transaction.atomic():

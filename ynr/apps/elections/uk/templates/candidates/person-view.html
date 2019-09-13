@@ -229,7 +229,7 @@
 
   <div class="person__actions__action person__actions__edit">
     <h2>Improve this data!</h2>
-    {% if user_can_edit %}
+    {% if user_can_edit and person_edits_allowed %}
       <p>Our database is built by people like you.</p>
       <p>Please do add extra details about this candidate – it only takes a moment.</p>
       {% if user.is_authenticated %}
@@ -239,6 +239,7 @@
         <a href="{% url 'account_login' %}?next={{ redirect_after_login }}" class="button">Log in to edit</a>
       {% endif %}
     {% else %}
+      <h2>Edits disabled</h2>
       {% include 'candidates/_edits_disallowed_message.html' %}
     {% endif %}
   </div>
@@ -274,6 +275,12 @@
         WhoCanIVoteFor.co.uk, and by other information providers, such as The Electoral Commission and news media companies.
     </p>
   </div>
+  {% if user.is_staff %}
+  <div class="person__actions__action person__actions__edit">
+    <h2>Admin interface</h2>
+    <p><a href="{% url "admin:people_person_change" person.pk %}">Edit this person in the admin interface</a></p>
+  </div>
+  {% endif %}
 
 </div>
 
