@@ -18,7 +18,7 @@
           <dt>Source</dt>
           <dd>{{ version.information_source }}</dd>
           {% include 'candidates/_diffs_against_parents.html' with diffs_against_all_parents=version.diffs inline_style=False %}
-          {% if user.is_authenticated and not forloop.first %}
+          {% if user.is_authenticated and person_edits_allowed and not forloop.first %}
           <dt>Revert to this</dt>
           <dd>
             <form id="revert-form-{{ version.version_id }}" action="{% url 'person-revert' person_id=person.id %}" method="post" class="version-revert">
