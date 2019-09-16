@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+  <h1>Adverts from {{ object.name }}</h1>
+  <h2>Up to £{{ total_max_spend|intcomma }} spent on {{ object.facebookadvert_set.count }} adverts</h2>
+  <hr>
+  {% for advert in object.facebookadvert_set.all %}
+    <section>
+      <p>This advert shown from {{ advert.start_date|date }}
+        to {{ advert.stop_date|date }} and paid for by {{ advert.get_funding_entity }}</p>
+      <p>Of the {{ advert.get_impressions_range.0|intcomma }} to {{ advert.get_impressions_range.1|intcomma }}
+        people who saw this advert, Facebook reports {{ advert.get_female_impressions }}%
+        were female and {{ advert.get_male_impressions }}% were male.</p>
+      <p>{{ object.name }} spent between £{{ advert.get_spend_range.0|intcomma }}
+        and £{{  advert.get_spend_range.1|intcomma}} on this advert</p>
+      <blockquote>
+        {{ advert.ad_json.ad_creative_body }}
+      </blockquote>
+      <hr>
+    </section>
+  {% endfor %}
+
+{% endblock %}

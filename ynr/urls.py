@@ -9,6 +9,7 @@ urlpatterns = [
     url(r"^parties/", include("parties.urls")),
     url(r"^", include("api.urls")),
     url(r"^", include("elections.urls")),
+    url(r"", include("facebook_data.urls")),
     url(r"^", include("candidates.urls")),
     url(r"^admin/doc/", include("django.contrib.admindocs.urls")),
     url(r"^admin/", admin.site.urls),
