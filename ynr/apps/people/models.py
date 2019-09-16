@@ -664,6 +664,11 @@ class Person(Timestampable, models.Model):
             "image_copyright": image_copyright,
             "image_uploading_user": image_uploading_user,
             "image_uploading_user_notes": image_uploading_user_notes,
+            "blog_url": self.get_single_identifier_value("blog_url"),
+            "instagram_url": self.get_single_identifier_value("instagram_url"),
+            "youtube_profile": self.get_single_identifier_value(
+                "youtube_profile"
+            ),
         }
         return row
 

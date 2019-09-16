@@ -170,6 +170,7 @@ class TestBallotView(
         self.assertDictEqual(
             dict(row_dicts[0]),
             {
+                "blog_url": "",
                 "birth_date": "",
                 "cancelled_poll": "False",
                 "elected": "",
@@ -190,6 +191,7 @@ class TestBallotView(
                 "image_uploading_user": "",
                 "image_uploading_user_notes": "",
                 "image_url": "",
+                "instagram_url": "",
                 "linkedin_url": "",
                 "mapit_url": "",
                 "name": membership.person.name,
@@ -209,6 +211,7 @@ class TestBallotView(
                 "twitter_user_id": "",
                 "wikipedia_url": "",
                 "wikidata_id": "",
+                "youtube_profile": "",
             },
         )
 

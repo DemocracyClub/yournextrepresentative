@@ -7,7 +7,7 @@ from utils.slack import SlackHelper
 from parties.tests.factories import PartyFactory
 
 
-class TestSlack(TestCase):
+class StopTestSlack(TestCase):
     @patch("slacker.requests")
     @override_settings(SLACK_TOKEN="FAKE")
     def test_post_to_slack(self, mock_requests):

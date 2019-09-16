@@ -178,12 +178,14 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.maxDiff = None
         expected_new_version = {
             "data": {
+                "blog_url": "",
                 "facebook_page_url": "",
                 "facebook_personal_url": "",
                 "name": "Tessa Jowell",
                 "honorific_suffix": "",
                 "party_ppc_page_url": "",
                 "gender": "",
+                "instagram_url": "",
                 "linkedin_url": "",
                 "id": "2009",
                 "other_names": [
@@ -204,6 +206,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "homepage_url": "http://example.org/tessajowell",
                 "twitter_username": "",
                 "wikipedia_url": "",
+                "youtube_profile": "",
                 "wikidata_id": "",
                 "party_memberships": {
                     "parl.2010-05-06": {
