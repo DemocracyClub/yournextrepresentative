@@ -38,4 +38,7 @@ CSV_ROW_FIELDS = [
     "favourite_biscuits",
     "cancelled_poll",
     "wikidata_id",
+    "blog_url",
+    "instagram_url",
+    "youtube_profile",
 ]
