@@ -1,17 +1,15 @@
 import json
 
 from django.utils.six.moves.urllib_parse import urlsplit
-
 from django_webtest import WebTest
 from webtest.forms import Text
 
-from .auth import TestUserMixin
-
-from popolo.models import Membership
 from people.models import Person
-
-from .factories import MembershipFactory
 from people.tests.factories import PersonFactory
+from popolo.models import Membership
+
+from .auth import TestUserMixin
+from .factories import MembershipFactory
 from .uk_examples import UK2015ExamplesMixin
 
 

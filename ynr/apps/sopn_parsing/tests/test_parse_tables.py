@@ -1,13 +1,13 @@
 import json
 
-from django.test import TestCase
 from django.core.management import call_command
+from django.test import TestCase
 
-from candidates.tests.uk_examples import UK2015ExamplesMixin
-from sopn_parsing.models import ParsedSOPN
-from official_documents.models import OfficialDocument
 from bulk_adding.models import RawPeople
-from parties.tests.factories import PartyFactory, PartyDescriptionFactory
+from candidates.tests.uk_examples import UK2015ExamplesMixin
+from official_documents.models import OfficialDocument
+from parties.tests.factories import PartyFactory
+from sopn_parsing.models import ParsedSOPN
 
 
 class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):

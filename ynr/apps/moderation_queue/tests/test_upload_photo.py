@@ -1,31 +1,26 @@
-from mock import Mock, patch
-
-from os.path import join, realpath, dirname
+from os.path import dirname, join, realpath
 from shutil import rmtree
 
 from django.contrib.auth.models import User
-from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from django.urls import reverse
 from django.test.utils import override_settings
+from django.urls import reverse
 from django.utils.six import text_type
 from django.utils.six.moves.urllib_parse import urlsplit
-
 from django_webtest import WebTest
+from mock import Mock, patch
 from webtest import Upload
 
-from moderation_queue.models import QueuedImage
-from ynr.helpers import mkdir_p
-
-from candidates.models import LoggedAction
 from candidates.management.images import (
     ImageDownloadException,
     download_image_from_url,
 )
-
-from people.tests.factories import PersonFactory
+from candidates.models import LoggedAction
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from moderation_queue.models import QueuedImage
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from people.tests.factories import PersonFactory
+from ynr.helpers import mkdir_p
 
 TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
 

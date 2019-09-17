@@ -4,14 +4,15 @@ Run with "manage.py test popolo, or with python".
 """
 
 from django.test import TestCase
-from popolo.behaviors.tests.test_behaviors import (
-    TimestampableTests,
-    DateframeableTests,
-)
-from popolo.models import Organization, Post, ContactDetail
-from people.models import Person
 from faker import Factory
 from slugify import slugify
+
+from people.models import Person
+from popolo.behaviors.tests.test_behaviors import (
+    DateframeableTests,
+    TimestampableTests,
+)
+from popolo.models import Organization
 
 faker = Factory.create("it_IT")  # a factory to create fake names for tests
 

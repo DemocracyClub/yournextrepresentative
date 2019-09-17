@@ -1,11 +1,10 @@
-from mock import Mock, patch
-
 from django.core.management import call_command
 from django.test import TestCase, override_settings
+from mock import Mock, patch
 
 from candidates.tests.auth import TestUserMixin
-from people.tests.factories import PersonFactory
 from candidates.tests.output import capture_output, split_output
+from people.tests.factories import PersonFactory
 
 
 def fake_post_for_username_updater(*args, **kwargs):

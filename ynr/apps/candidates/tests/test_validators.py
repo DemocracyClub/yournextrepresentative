@@ -4,8 +4,8 @@ from django.test import TestCase
 from django.test.utils import override_settings
 
 from people.forms import BasePersonForm, UpdatePersonForm
-
 from people.tests.factories import PersonFactory
+
 from .uk_examples import UK2015ExamplesMixin
 
 

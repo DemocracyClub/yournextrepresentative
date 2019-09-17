@@ -1,15 +1,13 @@
 import json
-from datetime import datetime, timedelta
-import os
-from os.path import basename, exists, isdir, join
 import re
-from shutil import rmtree
+from datetime import datetime
+from os.path import join
 
-from django.core.management.base import BaseCommand
-from django.core.files.storage import DefaultStorage
 from django.core.files.base import ContentFile
+from django.core.files.storage import DefaultStorage
+from django.core.management.base import BaseCommand
 from django.test import Client
-from django.utils.six.moves.urllib_parse import urlsplit, parse_qs
+from django.utils.six.moves.urllib_parse import parse_qs, urlsplit
 
 
 def path_and_query(url):

@@ -1,4 +1,4 @@
-from django.db import models, migrations
+from django.db import migrations
 
 
 def create_user_terms_agreements(apps, schema_editor):

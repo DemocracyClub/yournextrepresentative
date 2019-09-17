@@ -2,7 +2,6 @@ import unittest
 
 from ._compat import BufferDictReader, BufferDictWriter
 
-
 # These tests were adapted from the Python 3.5 stdlib test/test_csv.py
 # module.
 

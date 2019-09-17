@@ -2,17 +2,17 @@ from django.conf.urls import url
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .views import (
+    PersonNameCleanupView,
+    PhotoReview,
+    PhotoReviewList,
+    PhotoUploadSuccess,
+    RemoveSuggestedLocksView,
+    SOPNReviewRequiredView,
+    SuggestLockReviewListView,
+    SuggestLockView,
     upload_photo,
     upload_photo_image,
     upload_photo_url,
-    PhotoUploadSuccess,
-    PhotoReviewList,
-    PhotoReview,
-    SuggestLockView,
-    SuggestLockReviewListView,
-    SOPNReviewRequiredView,
-    PersonNameCleanupView,
-    RemoveSuggestedLocksView,
 )
 
 urlpatterns = [

@@ -1,11 +1,11 @@
-from datetime import timedelta
 import re
+from datetime import timedelta
 
 import factory
 import faker
 from slugify import slugify
 
-from .dates import date_in_near_future, FOUR_YEARS_IN_DAYS
+from .dates import FOUR_YEARS_IN_DAYS, date_in_near_future
 
 faker_factory = faker.Factory.create()
 

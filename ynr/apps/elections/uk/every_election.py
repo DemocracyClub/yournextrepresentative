@@ -3,12 +3,11 @@ from datetime import date, timedelta
 from urllib.parse import urlencode
 
 import requests
-
 from django.conf import settings
 
+from candidates.models import Ballot, PartySet
 from elections.models import Election as YNRElection
-from popolo.models import Post, Organization
-from candidates.models import PartySet, Ballot
+from popolo.models import Organization, Post
 
 ALWAYS_USES_LISTS = ["europarl"]
 

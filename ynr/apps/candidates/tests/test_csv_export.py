@@ -1,24 +1,24 @@
 from datetime import timedelta
 
 from django.conf import settings
-from django.test import TestCase
 from django.core.files.storage import DefaultStorage
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.test import TestCase
 
 import people.tests.factories
-from people.models import PersonImage
-from candidates.models import PersonRedirect
 from candidates.csv_helpers import list_to_csv, memberships_dicts_for_csv
+from candidates.models import PersonRedirect
 from candidates.tests.helpers import TmpMediaRootMixin
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from people.models import PersonImage
 from popolo.models import Membership
+from ynr_refactoring.settings import PersonIdentifierFields
 
 from . import factories
 from .auth import TestUserMixin
-from .dates import date_in_near_future, FOUR_YEARS_IN_DAYS
+from .dates import FOUR_YEARS_IN_DAYS, date_in_near_future
 from .uk_examples import UK2015ExamplesMixin
-from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from ynr_refactoring.settings import PersonIdentifierFields
 
 
 class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):

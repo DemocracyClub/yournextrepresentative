@@ -1,17 +1,15 @@
-from django.urls import reverse
 import mock
-
+from django.urls import reverse
 from django_webtest import WebTest
 
 from people.models import Person
+from people.tests.factories import PersonFactory
+from results.models import ResultEvent
 
 from .auth import TestUserMixin
-from .factories import MembershipFactory
-from people.tests.factories import PersonFactory
 from .dates import mock_in_past
+from .factories import MembershipFactory
 from .uk_examples import UK2015ExamplesMixin
-
-from results.models import ResultEvent
 
 
 class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):

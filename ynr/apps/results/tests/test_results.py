@@ -1,22 +1,15 @@
-from datetime import datetime
 from io import BytesIO
-from os.path import join
 
+from django.utils.feedgenerator import rfc3339_date
 from django_webtest import WebTest
-
 from lxml import etree
 
-from django.conf import settings
-from django.utils import timezone
-from django.utils.feedgenerator import rfc3339_date
-
 import people.tests.factories
-from people.models import PersonImage
-from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from results.models import ResultEvent
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from people.models import PersonImage
+from results.models import ResultEvent
 
 
 class XMLEqualityMixin(object):

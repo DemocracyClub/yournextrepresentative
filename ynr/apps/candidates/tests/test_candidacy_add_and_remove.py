@@ -1,9 +1,10 @@
 from django_webtest import WebTest
 
-from .auth import TestUserMixin
-from .uk_examples import UK2015ExamplesMixin
-from .factories import MembershipFactory
 from people.tests.factories import PersonFactory
+
+from .auth import TestUserMixin
+from .factories import MembershipFactory
+from .uk_examples import UK2015ExamplesMixin
 
 
 class TestCandidacyCreateView(TestUserMixin, UK2015ExamplesMixin, WebTest):

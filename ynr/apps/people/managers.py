@@ -1,11 +1,10 @@
 from os.path import join
 
-from django.db import models
 from django.core.files.storage import DefaultStorage
-from django.conf import settings
+from django.db import models
 
-from ynr_refactoring.settings import PersonIdentifierFields
 from candidates.models import PersonRedirect
+from ynr_refactoring.settings import PersonIdentifierFields
 
 
 class PersonImageManager(models.Manager):

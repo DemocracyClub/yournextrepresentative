@@ -1,10 +1,10 @@
 from django.conf.urls import url
 
 from .views import (
-    PartyCountsView,
-    ConstituencyCountsView,
-    ReportsHomeView,
     AttentionNeededView,
+    ConstituencyCountsView,
+    PartyCountsView,
+    ReportsHomeView,
 )
 
 urlpatterns = [

@@ -5,15 +5,13 @@ Basic smoke tests for OfficialDocument model
 
 from django.test import TestCase
 
-from official_documents.models import OfficialDocument
-
 from candidates.tests.factories import (
     ElectionFactory,
     ParliamentaryChamberFactory,
     PostFactory,
 )
-
 from compat import text_type
+from official_documents.models import OfficialDocument
 
 
 class TestModels(TestCase):

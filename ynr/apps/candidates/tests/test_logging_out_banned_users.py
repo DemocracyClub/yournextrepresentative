@@ -1,7 +1,8 @@
 from django_webtest import WebTest
 
-from .auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+
+from .auth import TestUserMixin
 
 
 class TestLoggingOutMiddleware(TestUserMixin, UK2015ExamplesMixin, WebTest):

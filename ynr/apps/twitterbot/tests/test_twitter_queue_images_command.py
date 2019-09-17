@@ -1,16 +1,15 @@
-from mock import Mock, call, patch
-from os.path import dirname, join
 import re
 
 from django.core.management import call_command
 from django.test import TestCase
+from mock import Mock, call, patch
 
-from people.models import PersonImage
-from moderation_queue.models import QueuedImage
 from candidates.tests.auth import TestUserMixin
-from people.tests.factories import PersonFactory
 from candidates.tests.output import capture_output, split_output
+from moderation_queue.models import QueuedImage
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from people.models import PersonImage
+from people.tests.factories import PersonFactory
 
 
 @patch("twitterbot.management.commands.twitterbot_add_images_to_queue.requests")

@@ -6,7 +6,6 @@ from candidates.tests.factories import (
     ElectionFactory,
     ParliamentaryChamberFactory,
 )
-
 from elections.models import Election
 
 

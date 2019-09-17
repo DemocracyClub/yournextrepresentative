@@ -8,7 +8,7 @@ except ImportError:
         GenericTabularInline,
         GenericStackedInline,
     )
-from popolo import models, behaviors
+from popolo import models
 
 
 class IdentifierAdmin(GenericTabularInline):

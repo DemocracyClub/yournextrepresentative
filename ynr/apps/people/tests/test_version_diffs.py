@@ -3,8 +3,7 @@ import re
 from django.test import TestCase
 
 import people.tests.factories
-from candidates.diffs import get_version_diffs, get_version_diff
-
+from candidates.diffs import get_version_diff, get_version_diffs
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 

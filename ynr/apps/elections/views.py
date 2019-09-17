@@ -1,27 +1,24 @@
 from django.db import transaction
-from django.db.models import Prefetch, Count
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
+from django.db.models import Count, Prefetch
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
-from django.views.generic import UpdateView
 from django.views.decorators.cache import cache_control
-from django.views.generic import DetailView, TemplateView
+from django.views.generic import DetailView, TemplateView, UpdateView
 
 from auth_helpers.views import GroupRequiredMixin
-from candidates.csv_helpers import memberships_dicts_for_csv, list_to_csv
+from candidates.csv_helpers import list_to_csv, memberships_dicts_for_csv
 from candidates.forms import ToggleLockForm
+from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.views.helpers import get_person_form_fields
-from candidates.models import Ballot, TRUSTED_TO_LOCK_GROUP_NAME, LoggedAction
-from candidates.views import get_client_ip
+from candidates.views.version_data import get_client_ip
 from elections.mixins import ElectionMixin
 from elections.models import Election
-from official_documents.models import OfficialDocument
 from moderation_queue.forms import SuggestedPostLockForm
-from popolo.models import Membership
-from people.forms import NewPersonForm, PersonIdentifierFormsetFactory
+from official_documents.models import OfficialDocument
 from parties.models import Party
-
-from .filters import BallotFilter, filter_shortcuts
+from people.forms import NewPersonForm, PersonIdentifierFormsetFactory
+from popolo.models import Membership
 
 
 class ElectionView(DetailView):

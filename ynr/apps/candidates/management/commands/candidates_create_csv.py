@@ -1,7 +1,7 @@
 from collections import defaultdict
 
-from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import DefaultStorage
+from django.core.management.base import BaseCommand, CommandError
 
 from candidates.csv_helpers import list_to_csv, memberships_dicts_for_csv
 from elections.models import Election

@@ -1,31 +1,28 @@
 from random import randrange
 
-from django_webtest import WebTest
 from django.utils.html import escape
-
+from django_webtest import WebTest
 from sorl.thumbnail import get_thumbnail
 
 from candidates.models import PartySet
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.dates import date_in_near_future, date_in_near_past
 from candidates.tests.factories import (
-    MembershipFactory,
     BallotPaperFactory,
     ElectionFactory,
-    PostFactory,
+    MembershipFactory,
     OrganizationFactory,
+    PostFactory,
 )
-from elections.tests.data_timeline_helper import DataTimelineHTMLAssertions
-from people.tests.factories import PersonFactory
-
 from compat import BufferDictReader
-
-from people.models import PersonImage, Person
-from popolo.models import Membership
-from parties.tests.factories import PartyFactory
+from elections.tests.data_timeline_helper import DataTimelineHTMLAssertions
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from parties.tests.factories import PartyFactory
+from people.models import Person, PersonImage
+from people.tests.factories import PersonFactory
+from popolo.models import Membership
+from uk_results.models import CandidateResult, ResultSet
 from utils.testing_utils import FuzzyInt
-from uk_results.models import ResultSet, CandidateResult
 
 
 class SingleBallotStatesMixin:

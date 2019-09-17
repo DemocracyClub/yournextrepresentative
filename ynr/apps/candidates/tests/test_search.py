@@ -3,10 +3,9 @@ import re
 from django.core.management import call_command
 from django_webtest import WebTest
 
-from .auth import TestUserMixin
-
 from people.models import Person
 
+from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
 
 

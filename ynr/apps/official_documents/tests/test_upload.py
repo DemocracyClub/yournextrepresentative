@@ -1,24 +1,20 @@
+from os.path import dirname, join, realpath
 from unittest import skip
 
-from os.path import join, realpath, dirname
-
+from django.urls import reverse
 from django_webtest import WebTest
 from webtest import Upload
 
-from django.urls import reverse
-
-from candidates.tests.auth import TestUserMixin
 from candidates.models import LoggedAction
-
-from official_documents.models import OfficialDocument
-
+from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import (
     ElectionFactory,
     ParliamentaryChamberFactory,
-    PostFactory,
     PartySetFactory,
+    PostFactory,
 )
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from official_documents.models import OfficialDocument
 
 TEST_MEDIA_ROOT = realpath(
     join(dirname(__file__), "..", "..", "moderation_queue", "tests", "media")

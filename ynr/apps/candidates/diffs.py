@@ -2,14 +2,12 @@
 # between our JSON representation of candidates.
 
 
-import re
 import json
-
-from django.conf import settings
-from django.http import Http404
+import re
 
 import jsonpatch
 import jsonpointer
+from django.http import Http404
 
 from candidates.models.versions import get_versions_parent_map
 from elections.models import Election

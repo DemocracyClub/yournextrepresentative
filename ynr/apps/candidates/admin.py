@@ -1,9 +1,8 @@
 from django.contrib import admin
-
-from django.urls import reverse
 from django.forms import ModelForm
+from django.urls import reverse
 
-from .models import LoggedAction, PartySet, Ballot
+from .models import Ballot, LoggedAction, PartySet
 
 
 class LoggedActionAdminForm(ModelForm):

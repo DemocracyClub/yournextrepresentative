@@ -1,5 +1,5 @@
-from os.path import abspath, join, dirname
-from unittest import skipIf, skip
+from os.path import abspath, dirname, join
+from unittest import skip, skipIf
 
 from django.test import TestCase
 

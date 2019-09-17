@@ -1,17 +1,16 @@
-from elections.models import Election
-
 from django import forms
-from django.core.validators import validate_email
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.db.models import Count
 from django.utils.functional import cached_property
 
 from candidates.models import PartySet
-from popolo.models import OtherName, Post
+from elections.models import Election
+from parties.models import Party
 from people.helpers import parse_approximate_date
 from people.models import Person, PersonIdentifier
-from parties.models import Party
+from popolo.models import OtherName, Post
 
 from .helpers import clean_twitter_username, clean_wikidata_id
 

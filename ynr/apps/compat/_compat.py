@@ -1,9 +1,9 @@
-import six
-from six import text_type
-from six.moves import input
-
 import csv
 import io
+
+import six
+from six import text_type
+from six.moves import input  # noqa
 
 _ENCODING = "utf-8"
 

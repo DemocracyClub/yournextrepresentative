@@ -1,8 +1,8 @@
 import hashlib
 from tempfile import NamedTemporaryFile
 
-from PIL import Image as PillowImage
 import requests
+from PIL import Image as PillowImage
 
 
 def get_file_md5sum(filename):

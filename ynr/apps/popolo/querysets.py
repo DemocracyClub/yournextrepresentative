@@ -1,11 +1,11 @@
-from django.db.models import Q
-
-__author__ = "guglielmo"
-
-from django.db import models
 from datetime import datetime
 
+from django.db import models
+from django.db.models import Q
+
 from utils.db import LastWord
+
+__author__ = "guglielmo"
 
 
 class DateframeableQuerySet(models.query.QuerySet):

@@ -1,7 +1,6 @@
+from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.pdf_helpers import SOPNDocument
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
-
-from official_documents.models import OfficialDocument
 
 
 def extract_pages_for_ballot(ballot):

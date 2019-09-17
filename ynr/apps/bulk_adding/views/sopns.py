@@ -1,15 +1,15 @@
 from braces.views import LoginRequiredMixin
 from django.contrib import messages
-from django.urls import reverse
 from django.db import transaction
 from django.db.models import F
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.views.generic import RedirectView, TemplateView
 
 from bulk_adding import forms, helpers
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot, LoggedAction
-from candidates.views import get_client_ip
+from candidates.views.version_data import get_client_ip
 from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument

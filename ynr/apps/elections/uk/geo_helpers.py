@@ -1,11 +1,10 @@
 # coding=utf-8
 
 
-import re
 import logging
+import re
 
 import requests
-
 from django.conf import settings
 from django.core.cache import cache
 from django.utils.http import urlquote

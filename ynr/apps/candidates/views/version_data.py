@@ -1,6 +1,6 @@
+import sys
 from datetime import datetime
 from random import randint
-import sys
 
 
 def get_client_ip(request):

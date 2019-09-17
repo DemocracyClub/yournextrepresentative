@@ -1,12 +1,10 @@
 import json
 
 from django.utils.six.moves.urllib_parse import urlsplit
-
 from django_webtest import WebTest
 
-from people.models import Person
-
 from candidates.models import LoggedAction
+from people.models import Person
 
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin

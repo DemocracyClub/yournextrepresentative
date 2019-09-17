@@ -1,50 +1,52 @@
-from django.conf import settings
-from django.conf.urls import url, include
+from django.conf.urls import include, url
 
-from elections.uk import views
+from elections.uk.views import frontpage, redirects
 
 post_ignored_slug_re = r"(?!record-winner$|retract-winner$|.*\.csv$).*"
 
 urlpatterns = [
     url(r"^bulk_adding/", include("bulk_adding.urls")),
     url(r"^uk_results/", include("uk_results.urls")),
-    url(r"^$", views.HomePageView.as_view(), name="lookup-postcode"),
+    url(r"^$", frontpage.HomePageView.as_view(), name="lookup-postcode"),
     url(
         r"^postcode/(?P<postcode>[^/]+)/$",
-        views.PostcodeView.as_view(),
+        frontpage.PostcodeView.as_view(),
         name="postcode-view",
     ),
     url(
         r"^geolocator/(?P<latitude>[\d.\-]+),(?P<longitude>[\d.\-]+)",
-        views.GeoLocatorView.as_view(),
+        frontpage.GeoLocatorView.as_view(),
         name="geolocator",
     ),
     # These should all be redirects to the new URL scheme:
     url(
         r"^constituencies(?P<list_filter>|/unlocked|/declared)$",
-        views.ConstituenciesRedirect.as_view(),
+        redirects.ConstituenciesRedirect.as_view(),
     ),
     url(
         r"^constituency/(?P<rest_of_path>.*)$",
-        views.ConstituencyRedirect.as_view(),
+        redirects.ConstituencyRedirect.as_view(),
     ),
     # This regex is to catch the /party and /parties URLs:
-    url(r"^part(?P<rest_of_path>.*)$", views.PartyRedirect.as_view()),
-    url(r"^candidacy(?P<rest_of_path>.*)$", views.CandidacyRedirect.as_view()),
-    url(r"^person/create/$", views.PersonCreateRedirect.as_view()),
+    url(r"^part(?P<rest_of_path>.*)$", redirects.PartyRedirect.as_view()),
+    url(
+        r"^candidacy(?P<rest_of_path>.*)$",
+        redirects.CandidacyRedirect.as_view(),
+    ),
+    url(r"^person/create/$", redirects.PersonCreateRedirect.as_view()),
     url(
         r"^numbers/(?P<rest_of_path>constituencies|parties)$",
-        views.CachedCountsRedirect.as_view(),
+        redirects.CachedCountsRedirect.as_view(),
     ),
     url(
         r"^upload_document/upload/(?P<rest_of_path>[^/]*/)$",
-        views.OfficialDocumentsRedirect.as_view(),
+        redirects.OfficialDocumentsRedirect.as_view(),
     ),
-    url(r"^postcode_redirect/$", views.WhoPostcodeRedirect.as_view()),
-    url(r"^get_involved/$", views.HelpOutCTAView.as_view()),
+    url(r"^postcode_redirect/$", redirects.WhoPostcodeRedirect.as_view()),
+    url(r"^get_involved/$", redirects.HelpOutCTAView.as_view()),
     url(
         r"^areas-of-type/(?P<area_type>.*?)(?:/(?P<ignored_slug>.*))?$",
-        views.AreasOfTypeRedirectView.as_view(),
+        redirects.AreasOfTypeRedirectView.as_view(),
         name="areas-of-type-view",
     ),
 ]

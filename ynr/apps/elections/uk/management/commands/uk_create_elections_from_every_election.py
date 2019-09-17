@@ -1,12 +1,9 @@
 from datetime import date, timedelta
 
-import requests
-
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from elections.models import Election
-
 from elections.uk.every_election import EveryElectionImporter
 
 

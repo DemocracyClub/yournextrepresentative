@@ -1,7 +1,7 @@
 from datetime import date
-from mock import patch
 
 from django.test import TestCase
+from mock import patch
 
 from people.models import Person
 

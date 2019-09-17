@@ -1,13 +1,10 @@
 from django_webtest import WebTest
 
 import people.tests.factories
-from people.models import Person
-
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from candidates.models import Ballot
-
+from people.models import Person
 from uk_results.models import CandidateResult, ResultSet
 
 

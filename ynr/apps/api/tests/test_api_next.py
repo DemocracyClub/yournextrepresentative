@@ -1,25 +1,23 @@
-from mock import patch
 from datetime import date, timedelta
 
-from django_webtest import WebTest
-
 from django.core.files.storage import DefaultStorage
+from django_webtest import WebTest
+from mock import patch
 
-from candidates.tests.helpers import TmpMediaRootMixin
-from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import (
     ElectionFactory,
+    MembershipFactory,
     ParliamentaryChamberFactory,
     PostFactory,
-    MembershipFactory,
 )
-from people.tests.factories import PersonFactory
-
+from candidates.tests.helpers import TmpMediaRootMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from parties.tests.factories import PartyEmblemFactory, PartyDescriptionFactory
-from people.models import PersonImage
 from official_documents.models import OfficialDocument
+from parties.tests.factories import PartyDescriptionFactory, PartyEmblemFactory
+from people.models import PersonImage
+from people.tests.factories import PersonFactory
 
 from .test_upcoming_elections_api import fake_requests_for_every_election
 

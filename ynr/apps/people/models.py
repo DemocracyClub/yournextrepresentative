@@ -1,30 +1,31 @@
 import json
 from datetime import date
 from enum import Enum, unique
+
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse
-from django.utils import timezone
 from django.db import models
 from django.template import loader
 from django.templatetags.static import static
+from django.urls import reverse
+from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.six.moves.urllib_parse import quote_plus, urljoin
 from django.utils.html import format_html
+from django.utils.six.moves.urllib_parse import quote_plus, urljoin
 from django_extensions.db.models import TimeStampedModel
-from popolo.behaviors.models import GenericRelatable, Timestampable
-from popolo.models import ContactDetail, Identifier, Membership, VersionNotFound
 from slugify import slugify
 from sorl.thumbnail import get_thumbnail
 
 from candidates.diffs import get_version_diffs
 from people.managers import (
-    PersonImageManager,
     PersonIdentifierQuerySet,
+    PersonImageManager,
     PersonQuerySet,
 )
+from popolo.behaviors.models import Timestampable
+from popolo.models import Membership, VersionNotFound
 
 
 def person_image_path(instance, filename):

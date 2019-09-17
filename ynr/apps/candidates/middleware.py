@@ -1,23 +1,17 @@
 import re
 
-from requests.adapters import ConnectionError
-
 from django.conf import settings
-from django.contrib.sites.models import Site
 from django.contrib.auth import logout
+from django.contrib.sites.models import Site
 from django.core.mail import send_mail
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse
-from django.http import Http404, HttpResponseRedirect
-from django.http import HttpResponseForbidden
-from django.shortcuts import render
-from django.utils.deprecation import MiddlewareMixin
+from django.utils.cache import add_never_cache_headers
 from django.utils.http import urlquote
 
-from django.utils.cache import add_never_cache_headers
-
 from candidates.models.auth import (
-    NameChangeDisallowedException,
     ChangeToLockedConstituencyDisallowedException,
+    NameChangeDisallowedException,
 )
 
 

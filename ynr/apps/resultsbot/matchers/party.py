@@ -1,6 +1,4 @@
-from popolo.models import Identifier, OtherName, Organization
 from parties.models import Party, PartyDescription
-
 from resultsbot.matchers.mappings import SavedMapping
 
 

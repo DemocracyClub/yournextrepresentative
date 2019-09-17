@@ -1,10 +1,8 @@
+from django.test import TestCase, override_settings
 from mock import Mock, PropertyMock, call, patch
 
-from django.test import TestCase, override_settings
-
-from twitterbot.management.twitter import TwitterAPIData
-
 from people.tests.factories import PersonFactory
+from twitterbot.management.twitter import TwitterAPIData
 
 
 def fake_twitter_api_post(*args, **kwargs):

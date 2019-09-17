@@ -3,17 +3,16 @@ from datetime import date, timedelta
 
 from django_webtest import WebTest
 
-from candidates.tests.uk_examples import UK2015ExamplesMixin
+from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import PostFactory
-from candidates.models import LoggedAction
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from people.merging import InvalidMergeError, PersonMerger, UnsafeToDelete
+from people.models import Person, PersonImage
 from people.tests.factories import PersonFactory
 from results.models import ResultEvent
 from uk_results.models import CandidateResult, ResultSet
-
-from people.merging import PersonMerger, InvalidMergeError, UnsafeToDelete
-from people.models import Person, PersonImage
 
 
 class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):

@@ -4,11 +4,8 @@ from __future__ import unicode_literals
 
 import json
 
-from django.db import migrations
-
 from django.contrib.admin.utils import NestedObjects
-from django.db import connection
-
+from django.db import connection, migrations
 
 UPDATED_SLUGS = {
     "2010": "parl.2010-05-06",

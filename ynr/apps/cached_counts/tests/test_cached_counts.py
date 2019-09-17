@@ -3,12 +3,10 @@ import json
 from django_webtest import WebTest
 
 import people.tests.factories
-from people.models import Person
-
 from candidates.tests import factories
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-
 from compat import text_type
+from people.models import Person
 
 
 class CachedCountTestCase(UK2015ExamplesMixin, WebTest):

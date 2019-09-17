@@ -1,14 +1,13 @@
 import difflib
 import json
-from tempfile import mkdtemp
 import shutil
-
 import sys
+from tempfile import mkdtemp
+
+from django.conf import settings
+from django.test import TestCase, override_settings
 
 from compat import text_type
-
-from django.test import TestCase, override_settings
-from django.conf import settings
 
 
 def p(*args):

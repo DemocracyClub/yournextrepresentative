@@ -1,12 +1,9 @@
 from collections import defaultdict
 
 from django.conf import settings
-from django.urls import reverse
 from django.http import HttpResponseRedirect
 
 from elections.models import Election
-
-from slugify import slugify
 
 from ..models import PartySet
 

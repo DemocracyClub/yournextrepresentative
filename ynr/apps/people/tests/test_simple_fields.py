@@ -1,15 +1,12 @@
 import re
-from django.utils.six.moves.urllib_parse import urlsplit
+
 from django.conf import settings
-
+from django.utils.six.moves.urllib_parse import urlsplit
 from django_webtest import WebTest
-from people.models import Person
-
-from people.models import Person
 
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-
+from people.models import Person
 from ynr_refactoring.helpers.popolo_fields import SimplePopoloField
 
 

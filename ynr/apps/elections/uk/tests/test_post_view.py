@@ -1,14 +1,12 @@
-from django_webtest import WebTest
 from django.contrib.auth.models import Group
+from django_webtest import WebTest
 
+from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.factories import MembershipFactory
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
-
-from candidates.models import Ballot, TRUSTED_TO_LOCK_GROUP_NAME, LoggedAction
-from candidates.tests.auth import TestUserMixin
-from candidates.tests.uk_examples import UK2015ExamplesMixin
-
-from candidates.tests.factories import MembershipFactory
 from parties.tests.factories import PartyFactory
 from people.tests.factories import PersonFactory
 

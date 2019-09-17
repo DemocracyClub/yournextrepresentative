@@ -4,12 +4,13 @@ except ImportError:
     # This fallback import is the version that was deprecated in
     # Django 1.7 and is removed in 1.9:
     from django.contrib.contenttypes.generic import GenericForeignKey
+from datetime import datetime
+
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
 from model_utils.fields import AutoCreatedField, AutoLastModifiedField
-from datetime import datetime
 
 __author__ = "guglielmo"
 

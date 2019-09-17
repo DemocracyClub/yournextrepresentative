@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
-
 from django_webtest import WebTest
 
-from .auth import TestUserMixin
-from people.tests.factories import PersonFactory
 from candidates.models import LoggedAction
+from people.tests.factories import PersonFactory
+
+from .auth import TestUserMixin
 
 
 class TestLeaderboardView(TestUserMixin, WebTest):

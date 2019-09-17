@@ -1,9 +1,9 @@
 import mock
-
 from django.core.management import call_command
 from django.test import TestCase
-from people.tests.factories import PersonFactory
+
 from people.models import EditLimitationStatuses
+from people.tests.factories import PersonFactory
 
 
 class TestPersonUpdate(TestCase):

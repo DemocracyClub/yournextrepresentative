@@ -2,9 +2,8 @@ import json
 
 import camelot
 
-from sopn_parsing.helpers.text_helpers import clean_text
+from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
 from sopn_parsing.models import ParsedSOPN
-from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
 
 def extract_ballot_table(ballot, parse_flavor="lattice"):

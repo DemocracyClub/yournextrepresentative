@@ -3,8 +3,7 @@ import csv
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from candidates.models import PersonRedirect
-from people.models import PersonIdentifier, Person
+from people.models import Person, PersonIdentifier
 
 
 class Command(BaseCommand):

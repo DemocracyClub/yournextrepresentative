@@ -1,13 +1,12 @@
 import mock
-
-from django.test.utils import override_settings
 from django_webtest import WebTest
+
+from people.tests.factories import PersonFactory
 
 from .auth import TestUserMixin
 from .dates import mock_on_election_day_polls_closed
-from .uk_examples import UK2015ExamplesMixin
 from .factories import MembershipFactory
-from people.tests.factories import PersonFactory
+from .uk_examples import UK2015ExamplesMixin
 
 
 class TestWasElectedButtons(TestUserMixin, UK2015ExamplesMixin, WebTest):

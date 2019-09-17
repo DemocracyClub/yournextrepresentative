@@ -1,17 +1,15 @@
 from django.urls import reverse
-
 from django_webtest import WebTest
-from people.models import Person
-
-from popolo.models import Post
 
 from bulk_adding.models import RawPeople
+from candidates.models import Ballot
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
-from parties.tests.factories import PartyFactory
-from people.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from candidates.models import Ballot
+from parties.tests.factories import PartyFactory
+from people.models import Person
+from people.tests.factories import PersonFactory
+from popolo.models import Post
 
 
 def update_lock(post, election, lock_status):

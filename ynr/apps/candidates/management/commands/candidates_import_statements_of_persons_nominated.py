@@ -1,20 +1,19 @@
 import errno
-import re
 import hashlib
-import magic
 import mimetypes
 import os
-from os.path import dirname, join, exists
+import re
+from os.path import dirname, exists, join
+
+import magic
 import requests
-
-from django.core.management.base import BaseCommand
 from django.core.files.storage import DefaultStorage
+from django.core.management.base import BaseCommand
 
+from candidates.models import Ballot
+from compat import BufferDictReader
 from official_documents.models import OfficialDocument
 from sopn_parsing.tasks import extract_and_parse_tables_for_ballot
-from candidates.models import Ballot
-
-from compat import BufferDictReader
 
 allowed_mime_types = {
     "application/pdf",

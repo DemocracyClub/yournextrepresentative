@@ -1,15 +1,14 @@
+from braces.views import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
-from django.urls import reverse
 from django.db import transaction
 from django.http import JsonResponse
+from django.urls import reverse
 from django.utils.functional import cached_property
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
-from braces.views import LoginRequiredMixin
-
 from people.forms import OtherNameForm
-from popolo.models import OtherName
 from people.models import Person
+from popolo.models import OtherName
 
 from .version_data import get_change_metadata
 
