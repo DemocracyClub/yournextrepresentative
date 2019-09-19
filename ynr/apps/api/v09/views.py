@@ -41,18 +41,6 @@ def parse_date(date_text):
         return None
 
 
-def handle_election(election, request, only_upcoming=False):
-    if only_upcoming:
-        only_after = date.today()
-    else:
-        only_after = parse_date(request.GET.get("date_gte", ""))
-    if (only_after is not None) and (election.election_date < only_after):
-        return False
-    if election.current or request.GET.get("all_elections"):
-        return True
-    return False
-
-
 class UpcomingElectionsView(View):
 
     http_method_names = ["get"]
