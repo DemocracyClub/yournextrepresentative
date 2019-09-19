@@ -82,7 +82,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             data,
             [
                 {
-                    "current": True,
+                    "current_or_future": True,
                     "dates": {
                         text_type(self.election.election_date.isoformat()): [
                             {
@@ -115,7 +115,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                     },
                 },
                 {
-                    "current": False,
+                    "current_or_future": False,
                     "dates": {
                         text_type(
                             self.earlier_election.election_date.isoformat()
