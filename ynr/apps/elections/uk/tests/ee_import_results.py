@@ -4,7 +4,7 @@ current_elections = json.loads(
     """
 {
   "count": 518,
-  "next": "https://elections.democracyclub.org.uk/api/elections/?current=True&limit=100&offset=100",
+  "next": "https://elections.democracyclub.org.uk/api/elections/?poll_open_date__gte=fakedate&limit=100&offset=100",
   "previous": null,
   "results": [
     {

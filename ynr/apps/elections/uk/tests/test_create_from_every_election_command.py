@@ -39,9 +39,13 @@ def create_mock_with_fixtures(fixtures):
 
 fake_requests_current_elections = create_mock_with_fixtures(
     {
-        urljoin(EE_BASE_URL, "/api/elections/?current=True"): current_elections,
         urljoin(
-            EE_BASE_URL, "/api/elections/?current=True&limit=100&offset=100"
+            EE_BASE_URL,
+            f"/api/elections/?poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
+        ): current_elections,
+        urljoin(
+            EE_BASE_URL,
+            f"/api/elections/?poll_open_date__gte=fakedate&limit=100&offset=100",
         ): current_elections_page_2,
         urljoin(
             EE_BASE_URL,
@@ -53,9 +57,13 @@ fake_requests_current_elections = create_mock_with_fixtures(
 fake_requests_each_type_of_election_on_one_day = create_mock_with_fixtures(
     {
         urljoin(
-            EE_BASE_URL, "/api/elections/?current=True"
+            EE_BASE_URL,
+            f"/api/elections/?poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
         ): each_type_of_election_on_one_day,
-        urljoin(EE_BASE_URL, "/api/elections/?current=1&deleted=1"): no_results,
+        urljoin(
+            EE_BASE_URL,
+            f"/api/elections/?deleted=1&poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
+        ): no_results,
     }
 )
 
@@ -244,10 +252,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    f"/api/elections/?poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): no_results,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    f"/api/elections/?deleted=1&poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): local_highland,
             }
         )
@@ -264,10 +274,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    f"/api/elections/?poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): local_highland,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    f"/api/elections/?deleted=1&poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): no_results,
             }
         )
@@ -280,10 +292,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    f"/api/elections/?poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): no_results,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    f"/api/elections/?deleted=1&poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): local_highland,
             }
         )
@@ -313,10 +327,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    f"/api/elections/?poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): local_highland,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    f"/api/elections/?deleted=1&poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): local_highland,
             }
         )
@@ -338,10 +354,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    f"/api/elections/?poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): local_highland,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    f"/api/elections/?deleted=1&poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): no_results,
             }
         )
@@ -368,10 +386,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    f"/api/elections/?poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): current_elections,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    f"/api/elections/?deleted=1&poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): deleted_elections,
             }
         )
@@ -391,10 +411,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    f"/api/elections/?poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): local_highland,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    f"/api/elections/?deleted=1&poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): no_results,
             }
         )
@@ -413,10 +435,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    f"/api/elections/?poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): no_results,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    f"/api/elections/?deleted=1&poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): local_highland,
             }
         )
@@ -439,10 +463,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    f"/api/elections/?poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): duplicate_post_names,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    f"/api/elections/?deleted=1&poll_open_date__gte={every_election.POLL_OPEN_DATE_GTE}",
                 ): local_highland,
             }
         )

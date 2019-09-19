@@ -5,7 +5,10 @@ from django.db import transaction
 
 from elections.models import Election
 
-from elections.uk.every_election import EveryElectionImporter
+from elections.uk.every_election import (
+    EveryElectionImporter,
+    POLL_OPEN_DATE_GTE,
+)
 
 
 class Command(BaseCommand):
@@ -22,7 +25,9 @@ class Command(BaseCommand):
 
     def delete_deleted_elections(self):
         # Get all deleted elections from EE
-        ee_importer = EveryElectionImporter({"current": 1, "deleted": 1})
+        ee_importer = EveryElectionImporter(
+            {"poll_open_date__gte": POLL_OPEN_DATE_GTE, "deleted": 1}
+        )
         ee_importer.build_election_tree()
 
         for ballot_id, election_dict in ee_importer.ballot_ids.items():

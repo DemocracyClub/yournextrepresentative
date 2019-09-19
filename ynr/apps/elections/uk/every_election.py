@@ -1,5 +1,5 @@
 from collections import OrderedDict
-
+from datetime import date, timedelta
 from urllib.parse import urlencode
 
 import requests
@@ -231,6 +231,9 @@ def is_mayor_or_pcc_ballot(election):
     ] in ["mayor", "pcc"]
 
 
+POLL_OPEN_DATE_GTE = str(date.today() - timedelta(days=30))
+
+
 class EveryElectionImporter(object):
     def __init__(self, query_args=None):
         self.EE_BASE_URL = getattr(
@@ -239,7 +242,7 @@ class EveryElectionImporter(object):
 
         self.election_tree = {}
         if not query_args:
-            query_args = {"current": "True"}
+            query_args = {"poll_open_date__gte": POLL_OPEN_DATE_GTE}
         self.query_args = query_args
 
     def build_election_tree(self):
