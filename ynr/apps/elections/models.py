@@ -16,6 +16,11 @@ class ElectionQuerySet(models.QuerySet):
     def future(self):
         return self.filter(election_date__gt=timezone.now())
 
+    def current_or_future(self):
+        return self.filter(
+            models.Q(current=True) | models.Q(election_date__gt=timezone.now())
+        )
+
     def get_by_slug(self, election):
         return get_object_or_404(self, slug=election)
 
