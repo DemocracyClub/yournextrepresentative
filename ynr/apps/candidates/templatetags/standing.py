@@ -76,7 +76,7 @@ def post_in_election(person, election):
         result = prefix + result + suffix
     else:
         if election in person.not_standing.all():
-            if election.current:
+            if not election.in_past:
                 result = (
                     '<span class="constituency-value-not-standing">%s</span>'
                     % "Not standing"
@@ -87,7 +87,7 @@ def post_in_election(person, election):
                     % "Did not stand"
                 )
         else:
-            if election.current:
+            if not election.in_past:
                 result = (
                     '<span class="constituency-value-unknown">%s</span>'
                     % "No information yet"

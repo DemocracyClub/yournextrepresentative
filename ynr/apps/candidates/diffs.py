@@ -25,12 +25,12 @@ def get_descriptive_value(election, attribute, value, leaf):
 
     try:
         election_data = Election.objects.get_by_slug(election)
-        current_election = election_data.current
+        future_election = not election_data.in_past
         election_name = election_data.name
     except Http404:
         # The election slug may have changed since the diff was stored.
         # Assume this is an older election
-        current_election = False
+        future_election = False
         # Use the raw ID here, as it's more useful than nothing.
         election_name = "{} election".format(election)
 
@@ -39,13 +39,13 @@ def get_descriptive_value(election, attribute, value, leaf):
             # In that case, there's only a particular value in the
             # dictionary that's changed:
             if leaf == "name":
-                if current_election:
+                if future_election:
                     message = "is known to be standing for the party '{party}' in the {election}"
                 else:
                     message = "was known to be standing for the party '{party}' in the {election}"
                 return message.format(party=value, election=election_name)
             elif leaf == "id":
-                if current_election:
+                if future_election:
                     message = "is known to be standing for the party with ID {party} in the {election}"
                 else:
                     message = "was known to be standing for the party with ID {party} in the {election}"
@@ -54,14 +54,14 @@ def get_descriptive_value(election, attribute, value, leaf):
                 message = "Unexpected leaf {0} (attribute: {1}, election: {2}"
                 raise Exception(message.format(leaf, attribute, election))
         else:
-            if current_election:
+            if future_election:
                 message = 'is known to be standing for the party "{party}" in the {election}'
             else:
                 message = 'was known to be standing for the party "{party}" in the {election}'
             return message.format(party=value["name"], election=election_name)
     elif attribute == "standing_in":
         if value is None:
-            if current_election:
+            if future_election:
                 message = "is known not to be standing in the {election}"
             else:
                 message = "was known not to be standing in the {election}"
@@ -69,13 +69,13 @@ def get_descriptive_value(election, attribute, value, leaf):
         else:
             if leaf:
                 if leaf == "post_id":
-                    if current_election:
+                    if future_election:
                         message = "is known to be standing for the post with ID {post_id} in the {election}"
                     else:
                         message = "was known to be standing for the post with ID {post_id} in the {election}"
                     return message.format(post_id=value, election=election_name)
                 elif leaf == "mapit_url":
-                    if current_election:
+                    if future_election:
                         message = "is known to be standing in the constituency with MapIt URL {mapit_url} in the {election}"
                     else:
                         message = "was known to be standing in the constituency with MapIt URL {mapit_url} in the {election}"
@@ -83,7 +83,7 @@ def get_descriptive_value(election, attribute, value, leaf):
                         mapit_url=value, election=election_name
                     )
                 elif leaf == "name":
-                    if current_election:
+                    if future_election:
                         message = "is known to be standing in {party} in the {election}"
                     else:
                         message = "was known to be standing in {party} in the {election}"
@@ -112,7 +112,7 @@ def get_descriptive_value(election, attribute, value, leaf):
                     )
                     raise Exception(message.format(leaf, attribute, election))
             else:
-                if current_election:
+                if future_election:
                     message = (
                         "is known to be standing in {party} in the {election}"
                     )
