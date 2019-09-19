@@ -59,25 +59,6 @@ class PersonIdentifierQuerySet(models.query.QuerySet):
 
 
 class PersonQuerySet(models.query.QuerySet):
-    def missing(self, field):
-        people_in_current_elections = self.filter(
-            memberships__ballot__election__current=True
-        )
-        # The field can be one of several types:
-        simple_field = [
-            f for f in settings.SIMPLE_POPOLO_FIELDS if f.name == field
-        ]
-        if simple_field:
-            return people_in_current_elections.filter(**{field: ""})
-
-        if hasattr(PersonIdentifierFields, field):
-            return people_in_current_elections.exclude(
-                tmp_person_identifiers__value_type=field
-            )
-
-        # If we get to this point, it's a non-existent field on the person:
-        raise ValueError("Unknown field '{}'".format(field))
-
     def alive_now(self):
         return self.filter(death_date="")
 
