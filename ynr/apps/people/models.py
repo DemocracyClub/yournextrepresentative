@@ -6,6 +6,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
+from django.utils import timezone
 from django.db import models
 from django.template import loader
 from django.templatetags.static import static
@@ -291,9 +292,10 @@ class Person(Timestampable, models.Model):
     objects = PersonQuerySet.as_manager()
 
     @property
-    def current_candidacies(self):
+    def current_or_future_candidacies(self):
         result = self.memberships.filter(
-            ballot__election__current=True
+            models.Q(ballot__election__current=True)
+            | models.Q(ballot__election__election_date__gt=timezone.now())
         ).select_related("person", "party", "post")
         return list(result)
 

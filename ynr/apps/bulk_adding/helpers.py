@@ -42,7 +42,7 @@ def update_person(
 
     person.not_standing.remove(election)
 
-    check_creation_allowed(request.user, person.current_candidacies)
+    check_creation_allowed(request.user, person.current_or_future_candidacies)
 
     membership, _ = Membership.objects.update_or_create(
         post=ballot.post,

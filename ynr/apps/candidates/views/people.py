@@ -305,10 +305,10 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
             identifiers_formset.save()
 
             old_name = person.name
-            old_candidacies = person.current_candidacies
+            old_candidacies = person.current_or_future_candidacies
             person.update_from_form(form)
             new_name = person.name
-            new_candidacies = person.current_candidacies
+            new_candidacies = person.current_or_future_candidacies
             check_update_allowed(
                 self.request.user,
                 old_name,
@@ -421,7 +421,7 @@ class NewPersonView(
             identifiers_formset.save()
 
             check_creation_allowed(
-                self.request.user, person.current_candidacies
+                self.request.user, person.current_or_future_candidacies
             )
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data["source"]
