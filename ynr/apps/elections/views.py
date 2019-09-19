@@ -58,7 +58,7 @@ class ElectionListView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         qs = (
-            Ballot.objects.filter(election__current=True)
+            Ballot.objects.current_or_future()
             .select_related("election", "post")
             .prefetch_related("suggestedpostlock_set")
             .prefetch_related("officialdocument_set")
