@@ -165,7 +165,7 @@ class CurrentElectionsView(View):
 
     def get(self, request, *args, **kwargs):
         results = {}
-        qs = Election.objects.filter(current=True).order_by("id")
+        qs = Election.objects.current_or_future().order_by("id")
         if request.GET.get("future"):
             qs = qs.future()
         for election in qs:
