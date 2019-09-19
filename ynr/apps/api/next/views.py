@@ -312,7 +312,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class ElectionViewSet(viewsets.ModelViewSet):
-    lookup_value_regex = "(?!\.json$)[^/]+"
+    lookup_value_regex = r"(?!\.json$)[^/]+"
     queryset = Election.objects.order_by("id")
     lookup_field = "slug"
     serializer_class = serializers.ElectionSerializer
