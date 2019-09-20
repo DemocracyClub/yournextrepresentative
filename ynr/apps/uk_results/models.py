@@ -37,7 +37,7 @@ class ResultSet(TimeStampedModel):
         # TODO use API serializer for this?
         """
         data = {
-            "created": self.created.isoformat(),
+            "created": self.modified.isoformat(),
             "ballot_paper_id": self.ballot.ballot_paper_id,
             "turnout": self.num_turnout_reported,
             "spoilt_ballots": self.num_spoilt_ballots,
@@ -57,13 +57,22 @@ class ResultSet(TimeStampedModel):
             )
         return data
 
+    def versions_equal(self, v1, v2):
+        """
+        Compare v1 and v2, ignoring the created key
+        """
+        ignore_keys = ["created"]
+        comp1 = {k: v for k, v in v1.items() if k not in ignore_keys}
+        comp2 = {k: v for k, v in v2.items() if k not in ignore_keys}
+        return comp1 == comp2
+
     def record_version(self, force=False, save=True):
         existing = self.versions
         this_version = self.as_dict()
         changed = False
         if existing:
             latest = existing[0]
-            if force or latest != this_version:
+            if force or not self.versions_equal(latest, this_version):
                 changed = True
                 existing.insert(0, this_version)
         else:
