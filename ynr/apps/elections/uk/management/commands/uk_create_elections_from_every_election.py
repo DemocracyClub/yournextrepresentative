@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 import requests
 
 from django.core.management.base import BaseCommand
@@ -5,10 +7,7 @@ from django.db import transaction
 
 from elections.models import Election
 
-from elections.uk.every_election import (
-    EveryElectionImporter,
-    POLL_OPEN_DATE_GTE,
-)
+from elections.uk.every_election import EveryElectionImporter
 
 
 class Command(BaseCommand):
@@ -26,7 +25,10 @@ class Command(BaseCommand):
     def delete_deleted_elections(self):
         # Get all deleted elections from EE
         ee_importer = EveryElectionImporter(
-            {"poll_open_date__gte": POLL_OPEN_DATE_GTE, "deleted": 1}
+            {
+                "poll_open_date__gte": str(date.today() - timedelta(days=30)),
+                "deleted": 1,
+            }
         )
         ee_importer.build_election_tree()
 
