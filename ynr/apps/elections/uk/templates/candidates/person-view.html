@@ -7,6 +7,7 @@
 {% load metadescription %}
 {% load extra_field_value %}
 {% load thumbnail %}
+{% load approximate_dates %}
 
 {% block extra_head %}
     <link rel="canonical" href="{{ canonical_url }}" />
@@ -171,30 +172,20 @@
 
       <dt>Age</dt>
       {% if person.birth_date %}
-        {% if person.birth_date|length_is:"4" %}
-          <dd>
-            {{ person.age }} <small class="dob">(Year of birth: {{ person.birth_date }})</small>
-          </dd>
-        {% else %}
           <dd>
             {{ person.age }}
-            <small class="dob">(Date of birth: {{ person.dob_as_date|date:"jS F Y" }})</small>
+            <small class="dob">
+              (Born: {{ person.dob_as_approximate_date|format_approximate_date }})
+            </small>
           </dd>
-        {% endif %}
       {% else %}
         <dd>Unknown</dd>
       {% endif %}
 
       {% if person.death_date %}
-        {% if person.death_date|length_is:"4" %}
           <dd>
-            Year of death: {{ person.death_date }}
+            Died: {{ person.dod_as_approximate_date|format_approximate_date }}
           </dd>
-        {% else %}
-          <dd>
-            Date of death: {{ person.dod_as_date|date:"jS F Y" }}
-          </dd>
-        {% endif %}
       {% endif %}
 
     </dl>
