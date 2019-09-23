@@ -100,7 +100,7 @@ class PersonView(TemplateView):
         context["last_candidacy"] = self.person.last_candidacy
         context["election_to_show"] = None
         context["has_current_elections"] = (
-            context["elections_to_list"].filter(current=True).exists()
+            context["elections_to_list"].current_or_future().exists()
         )
         context["simple_fields"] = [
             field.name for field in settings.SIMPLE_POPOLO_FIELDS
@@ -305,10 +305,10 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
             identifiers_formset.save()
 
             old_name = person.name
-            old_candidacies = person.current_candidacies
+            old_candidacies = person.current_or_future_candidacies
             person.update_from_form(form)
             new_name = person.name
-            new_candidacies = person.current_candidacies
+            new_candidacies = person.current_or_future_candidacies
             check_update_allowed(
                 self.request.user,
                 old_name,
@@ -367,7 +367,7 @@ class NewPersonSelectElectionView(LoginRequiredMixin, TemplateView):
         context["name"] = self.request.GET.get("name")
         elections = []
         local_elections = []
-        for election in Election.objects.filter(current=True).order_by("slug"):
+        for election in Election.objects.current_or_future().order_by("slug"):
             election_type = election.slug.split(".")[0]
             if election_type == "local":
                 election.type_name = "Local Elections"
@@ -421,7 +421,7 @@ class NewPersonView(
             identifiers_formset.save()
 
             check_creation_allowed(
-                self.request.user, person.current_candidacies
+                self.request.user, person.current_or_future_candidacies
             )
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data["source"]

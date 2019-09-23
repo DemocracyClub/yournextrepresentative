@@ -16,6 +16,11 @@ class ElectionQuerySet(models.QuerySet):
     def future(self):
         return self.filter(election_date__gt=timezone.now())
 
+    def current_or_future(self):
+        return self.filter(
+            models.Q(current=True) | models.Q(election_date__gt=timezone.now())
+        )
+
     def get_by_slug(self, election):
         return get_object_or_404(self, slug=election)
 
@@ -71,14 +76,12 @@ class Election(models.Model):
         return self.election_date < date.today()
 
     @classmethod
-    def group_and_order_elections(
-        cls, include_ballots=False, include_noncurrent=True, for_json=False
-    ):
+    def group_and_order_elections(cls, include_ballots=False, for_json=False):
         """Group elections in a helpful order
 
         We should order and group elections in the following way:
 
-          Group by current=True, then current=False
+          Group by current_or_future=True, then current=False
             Group election by election date (new to old)
               Group by for_post_role (ordered alphabetically)
                 Order by election name
@@ -93,7 +96,7 @@ class Election(models.Model):
 
         [
           {
-            'current': True,
+            'current_or_future': True,
             'dates': OrderedDict([(datetime.date(2015, 5, 7), [
               {
                 'role': 'Member of Parliament',
@@ -134,7 +137,7 @@ class Election(models.Model):
             ])])
           },
           {
-            'current': False,
+            'current_or_future': False,
             'dates': OrderedDict([(datetime.date(2010, 5, 6), [
               {
                 'role': 'Member of Parliament',
@@ -156,9 +159,8 @@ class Election(models.Model):
         """
         from candidates.models import Ballot
 
-        result = [{"current": True, "dates": OrderedDict()}]
-        if include_noncurrent:
-            result.append({"current": False, "dates": OrderedDict()})
+        result = [{"current_or_future": True, "dates": OrderedDict()}]
+        result.append({"current_or_future": False, "dates": OrderedDict()})
 
         role = None
         qs = cls.objects.order_by(
@@ -175,14 +177,14 @@ class Election(models.Model):
                     .prefetch_related("suggestedpostlock_set"),
                 )
             )
-        if not include_noncurrent:
-            qs = qs.filter(current=True)
+
         # The elections and ballots are already sorted into the right
         # order, but now need to be grouped into the useful
         # data structure described in the docstring.
         last_current = None
         for election in qs:
-            current_index = 1 - int(election.current)
+            current_or_future = election.current or not election.in_past
+            current_index = 1 - int(current_or_future)
             if for_json:
                 election_date = election.election_date.isoformat()
             else:
@@ -198,7 +200,7 @@ class Election(models.Model):
                 != election_date
                 or (
                     last_current is not None
-                    and last_current != election.current
+                    and last_current != current_or_future
                 )
             ):
                 role = {"role": election.for_post_role, "elections": []}
@@ -207,7 +209,8 @@ class Election(models.Model):
             if include_ballots:
                 d["ballots"] = list(election.ballot_set.all())
             role["elections"].append(d)
-            last_current = election.current
+            last_current = current_or_future
+
         return result
 
     def safe_delete(self):

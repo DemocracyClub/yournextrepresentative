@@ -79,6 +79,18 @@ class BallotQueryset(models.QuerySet):
 
         return None
 
+    def current(self, current=True):
+        return self.filter(election__current=current)
+
+    def future(self):
+        return self.filter(election__election_date__gt=timezone.now())
+
+    def current_or_future(self):
+        return self.filter(
+            models.Q(election__current=True)
+            | models.Q(election__election_date__gt=timezone.now())
+        )
+
 
 class Ballot(models.Model):
     post = models.ForeignKey("popolo.Post", on_delete=models.CASCADE)

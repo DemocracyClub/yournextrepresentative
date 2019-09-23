@@ -9,7 +9,7 @@ from elections.models import Election
 
 def election_types_choices():
     qs = (
-        Election.objects.filter(current=True)
+        Election.objects.current_or_future()
         .order_by("for_post_role")
         .distinct("for_post_role")
         .values("slug", "for_post_role")

@@ -32,7 +32,9 @@ djangorestframework==3.9.4
 docutils==0.14
 elasticsearch==2.4.1
 factory-boy==2.11.1
+Faker==2.0.1
 fake-factory==0.5.3
+freezegun==0.3.12
 futures==3.0.3
 git+https://github.com/dessibelle/sorl-thumbnail-serializer-field.git#egg=sorl-thumbnail-serializer-field
 html5lib==1.0.1

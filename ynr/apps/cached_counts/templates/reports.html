@@ -19,8 +19,8 @@
 
   {% for era in all_elections %}
     <div class="statistics-elections {% if era.current %}current{% else %}past{% endif %}">
-      <h2>{% if era.current %}
-        Current Elections
+      <h2>{% if era.current_or_future %}
+        Current or Future Elections
       {% else %}
         Past Elections
       {% endif %}</h2>

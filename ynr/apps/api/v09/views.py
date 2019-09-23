@@ -41,18 +41,6 @@ def parse_date(date_text):
         return None
 
 
-def handle_election(election, request, only_upcoming=False):
-    if only_upcoming:
-        only_after = date.today()
-    else:
-        only_after = parse_date(request.GET.get("date_gte", ""))
-    if (only_after is not None) and (election.election_date < only_after):
-        return False
-    if election.current or request.GET.get("all_elections"):
-        return True
-    return False
-
-
 class UpcomingElectionsView(View):
 
     http_method_names = ["get"]
@@ -177,7 +165,7 @@ class CurrentElectionsView(View):
 
     def get(self, request, *args, **kwargs):
         results = {}
-        qs = Election.objects.filter(current=True).order_by("id")
+        qs = Election.objects.current_or_future().order_by("id")
         if request.GET.get("future"):
             qs = qs.future()
         for election in qs:
@@ -230,8 +218,8 @@ class PostIDToPartySetView(View):
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):
-        qs = Post.objects.filter(elections__current=True).values_list(
-            "slug", "party_set__slug"
+        qs = extra_models.Ballot.objects.current_or_future().values_list(
+            "post__slug", "post__party_set__slug"
         )
         result = dict([(k, v.upper()) for k, v in qs])
         return HttpResponse(json.dumps(result), content_type="application/json")
@@ -298,7 +286,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class ElectionViewSet(viewsets.ModelViewSet):
-    lookup_value_regex = "(?!\.json$)[^/]+"
+    lookup_value_regex = r"(?!\.json$)[^/]+"
     queryset = Election.objects.order_by("id")
     lookup_field = "slug"
     serializer_class = serializers.ElectionSerializer

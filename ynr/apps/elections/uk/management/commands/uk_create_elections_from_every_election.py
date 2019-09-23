@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 import requests
 
 from django.core.management.base import BaseCommand
@@ -22,7 +24,12 @@ class Command(BaseCommand):
 
     def delete_deleted_elections(self):
         # Get all deleted elections from EE
-        ee_importer = EveryElectionImporter({"current": 1, "deleted": 1})
+        ee_importer = EveryElectionImporter(
+            {
+                "poll_open_date__gte": str(date.today() - timedelta(days=30)),
+                "deleted": 1,
+            }
+        )
         ee_importer.build_election_tree()
 
         for ballot_id, election_dict in ee_importer.ballot_ids.items():

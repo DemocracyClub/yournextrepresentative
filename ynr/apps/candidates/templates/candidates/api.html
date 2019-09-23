@@ -66,8 +66,8 @@ explaining how to get election results from this site</a>.
 
   {% for era in grouped_elections %}
     <div>
-      <h3>{% if era.current %}
-        Current Elections
+      <h3>{% if era.current_or_future %}
+        Current or Future Elections
       {% else %}
         Past Elections
       {% endif %}</h3>

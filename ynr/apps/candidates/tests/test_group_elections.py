@@ -38,7 +38,7 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
                 Election.group_and_order_elections(),
                 [
                     {
-                        "current": True,
+                        "current_or_future": True,
                         "dates": OrderedDict(
                             [
                                 (
@@ -80,7 +80,7 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
                         ),
                     },
                     {
-                        "current": False,
+                        "current_or_future": False,
                         "dates": OrderedDict(
                             [
                                 (
@@ -133,7 +133,7 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
                 Election.group_and_order_elections(include_ballots=True),
                 [
                     {
-                        "current": True,
+                        "current_or_future": True,
                         "dates": OrderedDict(
                             [
                                 (
@@ -188,7 +188,7 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
                         ),
                     },
                     {
-                        "current": False,
+                        "current_or_future": False,
                         "dates": OrderedDict(
                             [
                                 (
@@ -224,7 +224,7 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
                 Election.group_and_order_elections(),
                 [
                     {
-                        "current": True,
+                        "current_or_future": True,
                         "dates": OrderedDict(
                             [
                                 (
@@ -255,7 +255,7 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
                         ),
                     },
                     {
-                        "current": False,
+                        "current_or_future": False,
                         "dates": OrderedDict(
                             [
                                 (

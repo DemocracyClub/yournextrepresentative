@@ -5,6 +5,7 @@ from django.core.management import call_command
 from django.conf import settings
 
 from django_webtest import WebTest
+from freezegun import freeze_time
 
 from .ee_import_results import (
     current_elections,
@@ -39,9 +40,12 @@ def create_mock_with_fixtures(fixtures):
 
 fake_requests_current_elections = create_mock_with_fixtures(
     {
-        urljoin(EE_BASE_URL, "/api/elections/?current=True"): current_elections,
         urljoin(
-            EE_BASE_URL, "/api/elections/?current=True&limit=100&offset=100"
+            EE_BASE_URL, "/api/elections/?poll_open_date__gte=2018-01-03"
+        ): current_elections,
+        urljoin(
+            EE_BASE_URL,
+            "/api/elections/?poll_open_date__gte=fakedate&limit=100&offset=100",
         ): current_elections_page_2,
         urljoin(
             EE_BASE_URL,
@@ -53,15 +57,19 @@ fake_requests_current_elections = create_mock_with_fixtures(
 fake_requests_each_type_of_election_on_one_day = create_mock_with_fixtures(
     {
         urljoin(
-            EE_BASE_URL, "/api/elections/?current=True"
+            EE_BASE_URL, "/api/elections/?poll_open_date__gte=2018-01-03"
         ): each_type_of_election_on_one_day,
-        urljoin(EE_BASE_URL, "/api/elections/?current=1&deleted=1"): no_results,
+        urljoin(
+            EE_BASE_URL,
+            "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
+        ): no_results,
     }
 )
 
 
 class EE_ImporterTest(WebTest):
     @patch("elections.uk.every_election.requests")
+    @freeze_time("2018-02-02")
     def setUp(self, mock_requests):
         mock_requests.get.side_effect = fake_requests_current_elections
 
@@ -186,6 +194,7 @@ class EE_ImporterTest(WebTest):
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
 
     @patch("elections.uk.every_election.requests")
+    @freeze_time("2018-02-02")
     def test_import_management_command(self, mock_requests):
         mock_requests.get.side_effect = (
             fake_requests_each_type_of_election_on_one_day
@@ -227,6 +236,7 @@ class EE_ImporterTest(WebTest):
         self.assertEqual(ballot.winner_count, 3)
 
     @patch("elections.uk.every_election.requests")
+    @freeze_time("2018-02-02")
     def test_delete_elections_no_matches(self, mock_requests):
         # import some data
         # just so we've got a non-empty DB
@@ -244,10 +254,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    "/api/elections/?poll_open_date__gte=2018-01-03",
                 ): no_results,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
                 ): local_highland,
             }
         )
@@ -259,15 +271,18 @@ class EE_ImporterTest(WebTest):
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
 
     @patch("elections.uk.every_election.requests")
+    @freeze_time("2018-02-02")
     def test_delete_elections_with_matches(self, mock_requests):
         # import some data
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    "/api/elections/?poll_open_date__gte=2018-01-03",
                 ): local_highland,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
                 ): no_results,
             }
         )
@@ -280,10 +295,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    "/api/elections/?poll_open_date__gte=2018-01-03",
                 ): no_results,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
                 ): local_highland,
             }
         )
@@ -294,6 +311,7 @@ class EE_ImporterTest(WebTest):
         self.assertEqual(every_election.YNRElection.objects.all().count(), 0)
 
     @patch("elections.uk.every_election.requests")
+    @freeze_time("2018-02-02")
     def test_delete_elections_invalid_input_insert_and_delete(
         self, mock_requests
     ):
@@ -313,10 +331,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    "/api/elections/?poll_open_date__gte=2018-01-03",
                 ): local_highland,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
                 ): local_highland,
             }
         )
@@ -331,6 +351,7 @@ class EE_ImporterTest(WebTest):
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
 
     @patch("elections.uk.every_election.requests")
+    @freeze_time("2018-02-02")
     def test_delete_elections_invalid_input_non_empty_election(
         self, mock_requests
     ):
@@ -338,10 +359,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    "/api/elections/?poll_open_date__gte=2018-01-03",
                 ): local_highland,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
                 ): no_results,
             }
         )
@@ -368,10 +391,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    "/api/elections/?poll_open_date__gte=2018-01-03",
                 ): current_elections,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
                 ): deleted_elections,
             }
         )
@@ -386,15 +411,18 @@ class EE_ImporterTest(WebTest):
         self.assertEqual(every_election.YNRElection.objects.all().count(), 1)
 
     @patch("elections.uk.every_election.requests")
+    @freeze_time("2018-02-02")
     def test_delete_elections_with_related_membership(self, mock_requests):
         # import some data
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    "/api/elections/?poll_open_date__gte=2018-01-03",
                 ): local_highland,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
                 ): no_results,
             }
         )
@@ -413,10 +441,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    "/api/elections/?poll_open_date__gte=2018-01-03",
                 ): no_results,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
                 ): local_highland,
             }
         )
@@ -429,6 +459,7 @@ class EE_ImporterTest(WebTest):
         self.assertEqual(every_election.YNRElection.objects.all().count(), 1)
 
     @patch("elections.uk.every_election.requests")
+    @freeze_time("2018-02-02")
     def test_import_post_duplicate_slugs(self, mock_requests):
         """
         Regression test to check that a post with duplicate names
@@ -439,10 +470,12 @@ class EE_ImporterTest(WebTest):
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=True"
+                    EE_BASE_URL,
+                    "/api/elections/?poll_open_date__gte=2018-01-03",
                 ): duplicate_post_names,
                 urljoin(
-                    EE_BASE_URL, "/api/elections/?current=1&deleted=1"
+                    EE_BASE_URL,
+                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
                 ): local_highland,
             }
         )

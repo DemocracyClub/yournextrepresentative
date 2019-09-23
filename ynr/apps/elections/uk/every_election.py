@@ -1,5 +1,5 @@
 from collections import OrderedDict
-
+from datetime import date, timedelta
 from urllib.parse import urlencode
 
 import requests
@@ -239,7 +239,9 @@ class EveryElectionImporter(object):
 
         self.election_tree = {}
         if not query_args:
-            query_args = {"current": "True"}
+            query_args = {
+                "poll_open_date__gte": str(date.today() - timedelta(days=30))
+            }
         self.query_args = query_args
 
     def build_election_tree(self):

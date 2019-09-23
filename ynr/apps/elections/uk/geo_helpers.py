@@ -46,8 +46,8 @@ def get_ballots(url, cache_key, exception):
             for e in ee_result["results"]
             if not e["group_type"]
         ]
-        ballot_qs = Ballot.objects.filter(
-            ballot_paper_id__in=ballot_paper_ids, election__current=True
+        ballot_qs = Ballot.objects.current_or_future().filter(
+            ballot_paper_id__in=ballot_paper_ids
         )
         cache.set(cache_key, ballot_qs, settings.EE_CACHE_SECONDS)
         return ballot_qs
