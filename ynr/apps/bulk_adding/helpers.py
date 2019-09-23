@@ -90,7 +90,7 @@ def update_person(
     LoggedAction.objects.create(
         user=request.user,
         person=person,
-        action_type="person-update",
+        action_type="candidacy-create",
         ip_address=get_client_ip(request),
         popit_person_new_version=change_metadata["version_id"],
         source=change_metadata["information_source"],
