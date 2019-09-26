@@ -629,14 +629,14 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     "version_id": "274e50504df330e4"
                   }]""",
         )
-        person_a.not_standing.add(self.dulwich_post_pee.election)
+        person_a.not_standing.add(self.dulwich_post_ballot.election)
 
         person_b = Person.objects.get(pk=2009)
         factories.MembershipFactory.create(
             person=person_b,
             post=self.dulwich_post,
             party=self.labour_party,
-            post_election=self.dulwich_post_pee,
+            ballot=self.dulwich_post_ballot,
         )
 
         response = self.app.get(

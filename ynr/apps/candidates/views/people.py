@@ -266,17 +266,17 @@ class CorrectNotStandingMergeView(
     def populate_not_standing_list(self, person, person_not_standing):
         for membership in person.memberships.all():
             if (
-                membership.post_election.election
+                membership.ballot.election
                 in person_not_standing.not_standing.all()
             ):
                 self.not_standing_elections.append(
                     {
-                        "election": membership.post_election.election,
+                        "election": membership.ballot.election,
                         "person_standing": person,
-                        "person_standing_ballot": membership.post_election,
+                        "person_standing_ballot": membership.ballot,
                         "person_not_standing": person_not_standing,
                         "version": self.extract_not_standing_edit(
-                            membership.post_election.election,
+                            membership.ballot.election,
                             person_not_standing.versions,
                         ),
                     }
