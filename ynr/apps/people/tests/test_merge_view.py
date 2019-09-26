@@ -602,7 +602,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "homepage_url": "",
                       "honorific_prefix": "Mr",
                       "honorific_suffix": "",
-                      "id": "2007",
+                      "id": "1",
                       "identifiers": [],
                       "image": null,
                       "linkedin_url": "",
