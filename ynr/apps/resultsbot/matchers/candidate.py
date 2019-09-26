@@ -1,6 +1,4 @@
 from parties.models import Party
-
-
 from resultsbot.matchers.mappings import SavedMapping
 
 

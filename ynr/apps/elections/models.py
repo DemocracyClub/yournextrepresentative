@@ -1,11 +1,10 @@
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict
 from datetime import date
 
 from django.contrib.admin.utils import NestedObjects
-from django.urls import reverse
-from django.db import connection
-from django.db import models
+from django.db import connection, models
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils import timezone
 
 

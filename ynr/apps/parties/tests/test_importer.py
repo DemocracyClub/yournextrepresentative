@@ -2,24 +2,23 @@
 Test some of the basic model use cases
 
 """
-from mock import patch
 from io import StringIO
 from tempfile import NamedTemporaryFile
 
-from django.test import TestCase
 from django.core.files.storage import DefaultStorage
+from django.test import TestCase
+from mock import patch
 
 from candidates.tests.helpers import TmpMediaRootMixin
 from moderation_queue.tests.paths import (
-    EXAMPLE_IMAGE_FILENAME,
     BROKEN_IMAGE_FILENAME,
+    EXAMPLE_IMAGE_FILENAME,
 )
-
 from parties.importer import ECParty, ECPartyImporter
-from parties.models import Party, PartyDescription, PartyEmblem
 from parties.management.commands.parties_import_from_ec import Command
-from .factories import PartyFactory, PartyDescriptionFactory
+from parties.models import Party, PartyDescription, PartyEmblem
 
+from .factories import PartyDescriptionFactory, PartyFactory
 
 FAKE_PARTY_DICT = {
     "RegulatedEntityName": "Wombles Alliance",

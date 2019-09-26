@@ -1,23 +1,14 @@
 import datetime
-from os.path import join
-import re
 
-from django.conf import settings
 from django.contrib.admin.utils import NestedObjects
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.fields import GenericRelation
-from django.core.files.storage import DefaultStorage
+from django.db import connection, models
 from django.urls import reverse
-from django.db import connection
-from django.db import models
-from django.utils.html import mark_safe
 from django.utils import timezone
-
-from dateutil import parser
-from slugify import slugify
+from django.utils.html import mark_safe
 
 from candidates.models.auth import TRUSTED_TO_LOCK_GROUP_NAME
 from elections.models import Election
+
 
 """Extensions to the base django-popolo classes for YourNextRepresentative
 

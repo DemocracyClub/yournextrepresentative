@@ -1,9 +1,9 @@
-from ._compat import (
+from ._compat import (  # noqa
     BufferDictReader,
     BufferDictWriter,
     bytes_to_unicode,
-    unicode_to_bytes,
+    deep_sort,
     input,
     text_type,
-    deep_sort,
+    unicode_to_bytes,
 )

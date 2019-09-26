@@ -1,23 +1,17 @@
-from datetime import datetime
-import hashlib
-from os.path import join
 import re
-from shutil import move
-from tempfile import NamedTemporaryFile
+from datetime import datetime
+from os.path import join
+from urllib.parse import urlencode
 
-from django.contrib.contenttypes.models import ContentType
-from django.core.management.base import BaseCommand
-from django.conf import settings
-from django.db import transaction
-from urllib.parse import urlencode, urljoin
-
-import magic
-import mimetypes
-from popolo.models import Organization
-import requests
 import dateutil.parser
+import magic
+import requests
+from django.conf import settings
+from django.core.management.base import BaseCommand
+from django.db import transaction
 
 from candidates.models import PartySet
+from popolo.models import Organization
 
 emblem_directory = join(settings.BASE_DIR, "data", "party-emblems")
 base_emblem_url = (

@@ -3,6 +3,7 @@ from django_webtest import WebTest
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from parties.models import Party
+
 from .factories import PartyDescriptionFactory
 
 

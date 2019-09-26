@@ -5,9 +5,9 @@ from django.conf import settings
 from django_date_extensions.fields import ApproximateDate
 
 from candidates.models import PartySet, raise_if_unsafe_to_delete
-from candidates.twitter_api import get_twitter_user_id, TwitterAPITokenMissing
-from popolo.models import Post, Membership
+from candidates.twitter_api import TwitterAPITokenMissing, get_twitter_user_id
 from parties.models import Party
+from popolo.models import Membership, Post
 
 
 def parse_approximate_date(s):

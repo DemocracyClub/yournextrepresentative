@@ -1,26 +1,23 @@
-from mock import patch, Mock
-
 from datetime import date, timedelta
 
 from django.conf import settings
 from django.utils.six.moves.urllib_parse import urljoin
-
 from django_webtest import WebTest
+from mock import Mock, patch
 
 from candidates.tests.factories import (
     ElectionFactory,
+    MembershipFactory,
     ParliamentaryChamberFactory,
     PostFactory,
-    MembershipFactory,
 )
-from people.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from compat import text_type
 from elections.uk.tests.ee_postcode_results import (
     ee_se240ag_result,
     ee_sw1a1aa_result,
 )
-
-from compat import text_type
+from people.tests.factories import PersonFactory
 
 
 def fake_requests_for_every_election(url, *args, **kwargs):

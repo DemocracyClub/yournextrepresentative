@@ -1,7 +1,4 @@
-from contextlib import contextmanager
-
 from django.conf import settings
-
 
 # This is actually taken from Pombola's country-specific code package
 # in pombola/country/__init__.py. You should add to this list anything

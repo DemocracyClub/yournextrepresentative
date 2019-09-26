@@ -1,8 +1,9 @@
 from django_webtest import WebTest
 
-from people.models import Person
-from .auth import TestUserMixin
 from candidates.models import LoggedAction
+from people.models import Person
+
+from .auth import TestUserMixin
 
 
 class TestFeeds(TestUserMixin, WebTest):

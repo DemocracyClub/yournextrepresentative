@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils import timezone
-
 from django_extensions.db.models import TimeStampedModel
 
 from .managers import PartyQuerySet

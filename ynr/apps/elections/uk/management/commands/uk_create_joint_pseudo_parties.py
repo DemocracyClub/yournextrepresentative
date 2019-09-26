@@ -1,6 +1,6 @@
+import re
 from collections import defaultdict
 from datetime import date
-import re
 
 from django.core.management.base import BaseCommand
 from django.db import transaction

@@ -1,9 +1,9 @@
-from compat import BufferDictWriter
-import requests
 import hashlib
 
+import requests
 from django.core.management.base import BaseCommand
 
+from compat import BufferDictWriter
 from official_documents.models import OfficialDocument
 
 

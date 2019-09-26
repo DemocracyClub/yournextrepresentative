@@ -1,12 +1,10 @@
-from django.test.utils import override_settings
 from django.core.management import call_command
 from django_webtest import WebTest
 
 from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.uk_examples import UK2015ExamplesMixin
-
 from candidates.tests.factories import MembershipFactory
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from people.tests.factories import PersonFactory
 
 

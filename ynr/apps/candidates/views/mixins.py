@@ -1,11 +1,8 @@
 from datetime import timedelta
 
-from django.contrib.auth.models import User
+from dateutil.parser import parse
 from django.db.models import Count, F
 from django.utils import timezone
-
-
-from dateutil.parser import parse
 
 from ..models import LoggedAction
 

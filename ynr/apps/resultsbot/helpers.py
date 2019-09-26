@@ -2,8 +2,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import transaction
 
-from candidates.views.version_data import get_change_metadata
 from candidates.models import LoggedAction
+from candidates.views.version_data import get_change_metadata
 from results.models import ResultEvent
 from uk_results.models import ResultSet
 

@@ -1,34 +1,31 @@
-from os.path import join, realpath, dirname
 import re
+from io import BytesIO
+from os.path import dirname, join, realpath
 from shutil import rmtree
 
-from django.contrib.auth.models import User, Group
-from django.conf import settings
+from django.contrib.auth.models import Group, User
 from django.core.files.storage import FileSystemStorage
-from django.urls import reverse
 from django.test.utils import override_settings
+from django.urls import reverse
 from django.utils.six.moves.urllib_parse import urlsplit
-
-from PIL import Image
-from io import BytesIO
 from django_webtest import WebTest
 from mock import patch
+from PIL import Image
 
-from people.models import Person
+from candidates.models import Ballot, LoggedAction
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.factories import MembershipFactory
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.models import (
-    QueuedImage,
     PHOTO_REVIEWERS_GROUP_NAME,
+    QueuedImage,
     SuggestedPostLock,
 )
-from candidates.models import LoggedAction, Ballot
-from official_documents.models import OfficialDocument
-from ynr.helpers import mkdir_p
-
-from candidates.tests.factories import MembershipFactory
-from people.tests.factories import PersonFactory
-from candidates.tests.uk_examples import UK2015ExamplesMixin
-from candidates.tests.auth import TestUserMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from official_documents.models import OfficialDocument
+from people.models import Person
+from people.tests.factories import PersonFactory
+from ynr.helpers import mkdir_p
 
 TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
 

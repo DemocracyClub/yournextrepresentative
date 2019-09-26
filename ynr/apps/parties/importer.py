@@ -1,21 +1,21 @@
+import mimetypes
 import os
-from urllib.parse import urlencode, urljoin
 import re
 from datetime import datetime
 from tempfile import NamedTemporaryFile
-import mimetypes
-import magic
-import dateutil.parser
+from urllib.parse import urlencode
 
+import dateutil.parser
+import magic
 import requests
 
 from .constants import (
+    CORRECTED_DESCRIPTION_DATES,
+    CORRECTED_PARTY_NAMES_IN_DESC,
+    DEFAULT_EMBLEMS,
     EC_API_BASE,
     EC_EMBLEM_BASE,
-    DEFAULT_EMBLEMS,
     JOINT_DESCRIPTION_REGEX,
-    CORRECTED_PARTY_NAMES_IN_DESC,
-    CORRECTED_DESCRIPTION_DATES,
 )
 from .models import Party, PartyDescription, PartyEmblem
 

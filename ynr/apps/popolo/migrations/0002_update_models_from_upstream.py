@@ -1,7 +1,8 @@
-from django.db import migrations, models
+import django.core.validators
 import django.utils.timezone
 import model_utils.fields
-import django.core.validators
+from django.db import migrations, models
+
 import popolo.behaviors.models
 
 

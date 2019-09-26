@@ -1,25 +1,23 @@
-from mock import patch, Mock
-
-from django.utils.six.moves.urllib_parse import urljoin
-from django.core.management import call_command
 from django.conf import settings
-
+from django.core.management import call_command
+from django.utils.six.moves.urllib_parse import urljoin
 from django_webtest import WebTest
 from freezegun import freeze_time
+from mock import Mock, patch
+
+from candidates.tests.factories import MembershipFactory
+from elections.uk import every_election
+from people.tests.factories import PersonFactory
+from popolo.models import Post
 
 from .ee_import_results import (
     current_elections,
     current_elections_page_2,
-    each_type_of_election_on_one_day,
-    no_results,
-    local_highland,
     duplicate_post_names,
+    each_type_of_election_on_one_day,
+    local_highland,
+    no_results,
 )
-from candidates.tests.factories import MembershipFactory
-from people.tests.factories import PersonFactory
-from elections.uk import every_election
-from popolo.models import Post
-
 
 EE_BASE_URL = getattr(
     settings, "EE_BASE_URL", "https://elections.democracyclub.org.uk/"

@@ -1,13 +1,9 @@
-from slugify import slugify
-
 from django import template
 from django.conf import settings
-from django.urls import reverse
 from django.db.models import Prefetch
 from django.utils.safestring import mark_safe
 
 from popolo.models import Membership
-
 from uk_results.models import CandidateResult
 
 register = template.Library()

@@ -1,7 +1,7 @@
-from django.views.generic import DetailView, ListView
-from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.db.models import Count
+from django.views.generic import DetailView, ListView
 
 from candidates.models import LoggedAction
 from wombles.models import WombleTags

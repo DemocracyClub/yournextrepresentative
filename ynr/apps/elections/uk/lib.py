@@ -1,11 +1,4 @@
-from contextlib import contextmanager
 import re
-
-from django.core.exceptions import ObjectDoesNotExist
-
-from popolo.models import Post
-
-from uk_results.models import CandidateResult
 
 
 def shorten_post_label(post_label):

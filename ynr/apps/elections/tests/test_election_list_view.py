@@ -1,8 +1,7 @@
-from django_webtest import WebTest
 from django.contrib.auth.models import User
+from django_webtest import WebTest
 
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-
 from moderation_queue.models import SuggestedPostLock
 
 

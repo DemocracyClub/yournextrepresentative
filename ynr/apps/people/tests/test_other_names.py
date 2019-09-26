@@ -1,10 +1,9 @@
 from django_webtest import WebTest
 
-from popolo.models import OtherName
-
 from candidates.tests.auth import TestUserMixin
-from people.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from people.tests.factories import PersonFactory
+from popolo.models import OtherName
 
 
 class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):

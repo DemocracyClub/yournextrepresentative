@@ -1,7 +1,6 @@
 from django_webtest import WebTest
 
 from .auth import TestUserMixin
-
 from .uk_examples import UK2015ExamplesMixin
 
 

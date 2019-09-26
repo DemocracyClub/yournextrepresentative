@@ -1,51 +1,48 @@
-import bleach
 import os
-import re
 import random
-
+import re
 from os.path import join
 from tempfile import NamedTemporaryFile
 
+import bleach
+from braces.views import LoginRequiredMixin
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.models import Site
-from django.contrib import messages
 from django.core.files import File
 from django.core.mail import send_mail
-from django.urls import reverse
 from django.db import models
 from django.http import (
-    HttpResponseRedirect,
     HttpResponseBadRequest,
+    HttpResponseRedirect,
     JsonResponse,
 )
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.http import urlquote
-from django.views.generic import ListView, TemplateView, CreateView, View
+from django.views.generic import CreateView, ListView, TemplateView, View
 from PIL import Image as PillowImage
-from braces.views import LoginRequiredMixin
 from sorl.thumbnail import delete as sorl_delete
 
 from auth_helpers.views import GroupRequiredMixin
-
-from .forms import (
-    UploadPersonPhotoImageForm,
-    UploadPersonPhotoURLForm,
-    PhotoReviewForm,
-)
-from .models import QueuedImage, SuggestedPostLock, PHOTO_REVIEWERS_GROUP_NAME
-
 from candidates.management.images import (
-    get_file_md5sum,
     ImageDownloadException,
     download_image_from_url,
+    get_file_md5sum,
 )
-from candidates.models import LoggedAction, Ballot, TRUSTED_TO_LOCK_GROUP_NAME
-from candidates.views.version_data import get_client_ip, get_change_metadata
-
-from people.models import PersonImage, Person
+from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
+from candidates.views.version_data import get_change_metadata, get_client_ip
+from people.models import Person, PersonImage
 from popolo.models import Membership
+
+from .forms import (
+    PhotoReviewForm,
+    UploadPersonPhotoImageForm,
+    UploadPersonPhotoURLForm,
+)
+from .models import PHOTO_REVIEWERS_GROUP_NAME, QueuedImage, SuggestedPostLock
 
 
 @login_required

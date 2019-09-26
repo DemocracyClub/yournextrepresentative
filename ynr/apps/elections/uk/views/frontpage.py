@@ -1,24 +1,18 @@
-import random
-
 from django.conf import settings
-from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import FormView, TemplateView
-from django.db.models import F
 
 from candidates.views.mixins import ContributorsMixin
-from candidates.models import Ballot
-
-from elections.models import Election
+from elections.uk.geo_helpers import (
+    get_ballots_from_coords,
+    get_ballots_from_postcode,
+)
 
 from ..forms import PostcodeForm
-from elections.uk.geo_helpers import (
-    get_ballots_from_postcode,
-    get_ballots_from_coords,
-)
 
 
 class HomePageView(ContributorsMixin, FormView):

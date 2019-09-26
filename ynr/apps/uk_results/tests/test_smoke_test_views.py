@@ -1,12 +1,12 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse
 from django.test import TestCase
+from django.urls import reverse
 from django_webtest import WebTest
 
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
-from people.tests.factories import PersonFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from people.tests.factories import PersonFactory
 from uk_results.models import CandidateResult, ResultSet
 
 

@@ -1,5 +1,5 @@
 from os.path import abspath, dirname, join
-from unittest import skipIf, skip
+from unittest import skip, skipIf
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command

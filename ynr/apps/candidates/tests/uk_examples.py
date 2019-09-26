@@ -1,13 +1,13 @@
-from abc import abstractmethod, ABCMeta
+from abc import ABCMeta
+from datetime import date
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command
 
-from datetime import date
-
 import people.tests.factories
-from . import factories
 from parties.tests.factories import PartyFactory
+
+from . import factories
 
 EXAMPLE_PARTIES = [
     {

@@ -1,4 +1,4 @@
-from django.db import models, migrations
+from django.db import migrations
 
 # This migration should only need to run by original YourNextMP
 # installations, for the UK 2015 General Election; any future

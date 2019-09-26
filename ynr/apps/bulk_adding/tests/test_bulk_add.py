@@ -3,16 +3,15 @@ import json
 from django.core.management import call_command
 from django_webtest import WebTest
 
-from people.tests.factories import PersonFactory
-from popolo.models import Membership
-from people.models import Person
-
 from bulk_adding.models import RawPeople
 from candidates.tests.auth import TestUserMixin
+from candidates.tests.factories import MembershipFactory
 from candidates.tests.test_update_view import membership_id_set
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from candidates.tests.factories import MembershipFactory
 from official_documents.models import OfficialDocument
+from people.models import Person
+from people.tests.factories import PersonFactory
+from popolo.models import Membership
 
 
 class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):

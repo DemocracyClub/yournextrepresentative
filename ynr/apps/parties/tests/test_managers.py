@@ -8,8 +8,8 @@ from django.test import TestCase
 from django.utils import timezone
 
 from parties.models import Party
-from .factories import PartyFactory
 
+from .factories import PartyFactory
 
 PartyDate = namedtuple(
     "PartyDate", ["ec_id", "name", "date_registered", "date_deregistered"]

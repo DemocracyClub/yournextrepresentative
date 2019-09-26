@@ -1,8 +1,7 @@
 import random
 
-from slacker import Slacker
-
 from django.conf import settings
+from slacker import Slacker
 
 
 class SlackHelper:

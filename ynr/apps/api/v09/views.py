@@ -1,35 +1,32 @@
 import json
-from os.path import dirname
 import subprocess
 import sys
 from datetime import date, datetime, timedelta
-from dateutil import parser
+from os.path import dirname
 
 import django
+from dateutil import parser
 from django.contrib.auth.models import User
 from django.db.models import Count, Prefetch, Q
 from django.http import HttpResponse, HttpResponsePermanentRedirect
 from django.views.generic import View
-
+from rest_framework import viewsets
+from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.viewsets import ViewSet
-from rest_framework.response import Response
 
+from api.helpers import ResultsSetPagination
 from api.v09 import serializers
 from candidates import models as extra_models
+from compat import text_type
 from elections.models import Election
-from popolo.models import Membership, Post, Organization
-from people.models import PersonImage, Person
-from rest_framework import viewsets
 from elections.uk.geo_helpers import (
     get_ballots_from_coords,
     get_ballots_from_postcode,
 )
+from people.models import Person
+from popolo.models import Membership, Organization, Post
 from ynr_refactoring.views import get_changed_election_slug
-
-from compat import text_type
-
-from api.helpers import ResultsSetPagination
 
 
 def parse_date(date_text):

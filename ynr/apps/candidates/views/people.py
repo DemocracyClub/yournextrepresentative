@@ -1,49 +1,47 @@
 import json
 import re
 
-from slugify import slugify
-
+from braces.views import LoginRequiredMixin
 from django.conf import settings
-from django.core.exceptions import PermissionDenied
 from django.contrib import messages
-from django.urls import reverse
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import (
-    HttpResponseRedirect,
-    HttpResponsePermanentRedirect,
     Http404,
+    HttpResponsePermanentRedirect,
+    HttpResponseRedirect,
 )
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.http import urlquote
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, TemplateView, View
-
-from braces.views import LoginRequiredMixin
+from slugify import slugify
 
 from auth_helpers.views import GroupRequiredMixin, user_in_group
-from elections.models import Election
+from candidates.forms import SingleElectionForm
 from elections.mixins import ElectionMixin
+from elections.models import Election
+from people.forms import (
+    NewPersonForm,
+    PersonIdentifierFormsetFactory,
+    UpdatePersonForm,
+)
+from people.models import Person
 from ynr.apps.people.merging import PersonMerger
 
 from ..diffs import get_version_diffs
-from .version_data import get_client_ip, get_change_metadata
-from people.forms import (
-    NewPersonForm,
-    UpdatePersonForm,
-    PersonIdentifierFormsetFactory,
-)
-from candidates.forms import SingleElectionForm
-from ..models import LoggedAction, PersonRedirect, TRUSTED_TO_MERGE_GROUP_NAME
+from ..models import TRUSTED_TO_MERGE_GROUP_NAME, LoggedAction, PersonRedirect
 from ..models.auth import check_creation_allowed, check_update_allowed
 from ..models.versions import revert_person_from_version_data
 from .helpers import (
+    ProcessInlineFormsMixin,
     get_field_groupings,
     get_person_form_fields,
-    ProcessInlineFormsMixin,
 )
-from people.models import Person
+from .version_data import get_change_metadata, get_client_ip
 
 
 def get_call_to_action_flash_message(person, new_person=False):

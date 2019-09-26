@@ -1,7 +1,5 @@
-from django_webtest import WebTest
-
-from django.conf import settings
 from django.test.utils import override_settings
+from django_webtest import WebTest
 
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 

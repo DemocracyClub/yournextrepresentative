@@ -2,10 +2,6 @@ import os
 
 from django.db import models
 from django.urls import reverse
-
-from popolo.models import Post
-from elections.models import Election
-
 from django_extensions.db.models import TimeStampedModel
 
 DOCUMENT_UPLOADERS_GROUP_NAME = "Document Uploaders"

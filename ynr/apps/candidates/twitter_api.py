@@ -1,8 +1,7 @@
+import requests
 from django.conf import settings
 from django.core.cache import cache
 from django.utils.six import text_type
-
-import requests
 
 
 class TwitterAPITokenMissing(Exception):

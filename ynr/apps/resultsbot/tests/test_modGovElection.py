@@ -1,15 +1,16 @@
 import os
 from tempfile import NamedTemporaryFile
-from django.test import TestCase
-import mock
 
-from resultsbot.importers.modgov import ModGovElection, ModGovImporter
+import mock
+from django.test import TestCase
+
 from candidates.tests.factories import (
-    ElectionFactory,
-    PostFactory,
     BallotPaperFactory,
+    ElectionFactory,
     OrganizationFactory,
+    PostFactory,
 )
+from resultsbot.importers.modgov import ModGovElection, ModGovImporter
 
 KIRKLEES_XML = open(
     os.path.join(

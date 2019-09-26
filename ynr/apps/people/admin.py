@@ -1,12 +1,11 @@
-from django.contrib import admin
 from django import forms
-
+from django.contrib import admin
 from sorl.thumbnail.admin.current import AdminImageWidget
 
 from candidates.models import LoggedAction
 from candidates.views.version_data import get_client_ip
+from people.models import EditLimitationStatuses, Person, PersonImage
 from popolo.models import Membership
-from people.models import Person, PersonImage, EditLimitationStatuses
 
 
 class MembershipInline(admin.StackedInline):

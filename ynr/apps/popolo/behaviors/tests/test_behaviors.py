@@ -1,7 +1,5 @@
+from datetime import datetime, timedelta
 from time import sleep
-from datetime import timedelta
-from datetime import datetime
-from django.core.exceptions import ValidationError
 
 
 class BehaviorTestCaseMixin(object):

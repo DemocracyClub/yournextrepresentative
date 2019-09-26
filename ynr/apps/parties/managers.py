@@ -1,7 +1,7 @@
 import re
 
-from django.utils import timezone
 from django.db import models
+from django.utils import timezone
 
 from .constants import JOINT_DESCRIPTION_REGEX
 
@@ -55,7 +55,7 @@ class PartyQuerySet(models.QuerySet):
         # list of candidates if there are enough that such an ordering
         # makes sense.  Otherwise the fallback is to rank
         # alphabetically.
-        from popolo.models import Membership
+        pass
 
         party_filter_kwargs = {}
         party_order_by = ["name"]

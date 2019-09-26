@@ -1,5 +1,4 @@
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
-
 from sopn_parsing.helpers.extract_pages import extract_pages_for_ballot
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 

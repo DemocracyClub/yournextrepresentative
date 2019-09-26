@@ -1,30 +1,27 @@
-from contextlib import contextmanager
 import errno
 import hashlib
 import json
-from os import makedirs
-from os.path import dirname, exists, join
 import re
 import shutil
-
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
-from django.core.files.storage import FileSystemStorage
-from django.core.management.base import BaseCommand, CommandError
-from django.core.management import call_command
-from django.core.management.color import no_style
-from django.db import connection, transaction
-from django.utils.six import string_types
-from django.utils.six.moves.urllib_parse import urlsplit, urlunsplit
+from contextlib import contextmanager
+from os import makedirs
+from os.path import dirname, exists, join
 
 import requests
+from django.contrib.auth.models import User
+from django.core.files.storage import FileSystemStorage
+from django.core.management import call_command
+from django.core.management.base import BaseCommand, CommandError
+from django.core.management.color import no_style
+from django.db import connection, transaction
+from django.utils.six.moves.urllib_parse import urlsplit, urlunsplit
 
 import people.models
 from candidates import models
 from elections import models as emodels
-from popolo import models as pmodels
-from people.models import PersonImage, PersonIdentifier
 from parties.models import Party
+from people.models import PersonIdentifier, PersonImage
+from popolo import models as pmodels
 
 from ..images import get_image_extension
 

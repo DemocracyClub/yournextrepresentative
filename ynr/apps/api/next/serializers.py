@@ -5,10 +5,10 @@ import people.models
 from api.helpers import JSONSerializerField
 from candidates import models as candidates_models
 from elections import models as election_models
+from official_documents.serializers import OfficialDocumentSerializer
+from parties.serializers import MinimalPartySerializer
 from people.serializers import ImageSerializer
 from popolo import models as popolo_models
-from parties.serializers import MinimalPartySerializer
-from official_documents.serializers import OfficialDocumentSerializer
 
 # These are serializer classes from the Django-REST-framework API
 #

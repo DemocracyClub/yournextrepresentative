@@ -2,11 +2,12 @@
 Test some of the basic model use cases
 
 """
-from django.test import TestCase
 from django.core.files.storage import DefaultStorage
+from django.test import TestCase
 
 from candidates.tests.helpers import TmpMediaRootMixin
-from .factories import PartyFactory, PartyEmblemFactory
+
+from .factories import PartyEmblemFactory, PartyFactory
 
 
 class TestPartyModels(TmpMediaRootMixin, TestCase):

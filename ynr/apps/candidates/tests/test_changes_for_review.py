@@ -1,26 +1,23 @@
 import codecs
-from io import BytesIO
-from mock import patch
 import os
-
 from datetime import datetime, timedelta
+from io import BytesIO
 
-from django_webtest import WebTest
 from django.conf import settings
 from django.test import TestCase
 from django.utils.timezone import make_aware
-
+from django_webtest import WebTest
 from lxml import etree
+from mock import patch
 
 import people.tests.factories
 from candidates.models import LoggedAction
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-
-from people.models import Person
 from parties.models import Party
+from people.models import Person
+from people.tests.test_version_diffs import tidy_html_whitespace
 
 from .auth import TestUserMixin
-from people.tests.test_version_diffs import tidy_html_whitespace
 
 
 def random_person_id():

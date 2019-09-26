@@ -1,10 +1,9 @@
 import os
 
-from storages.backends.s3boto3 import S3Boto3Storage, SpooledTemporaryFile
+from django.conf import settings
 from django.contrib.staticfiles.storage import ManifestFilesMixin
 from pipeline.storage import PipelineMixin
-
-from django.conf import settings
+from storages.backends.s3boto3 import S3Boto3Storage, SpooledTemporaryFile
 
 
 class PatchedS3Boto3Storage(S3Boto3Storage):

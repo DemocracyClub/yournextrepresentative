@@ -1,11 +1,11 @@
-from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.utils.html import escape
-
-from haystack.query import SearchQuerySet
-from haystack.generic_views import SearchView
 from haystack.forms import SearchForm
+from haystack.generic_views import SearchView
+from haystack.query import SearchQuerySet
 
+from elections.uk.lib import is_valid_postcode
 from people.models import Person
 
 
@@ -45,9 +45,6 @@ class PersonSearchForm(SearchForm):
     def search(self):
         sqs = super().search()
         return search_person_by_name(self.cleaned_data["q"], sqs)
-
-
-from elections.uk.lib import is_valid_postcode
 
 
 class PersonSearch(SearchView):

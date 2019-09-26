@@ -1,6 +1,6 @@
+from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 from sopn_parsing.helpers.extract_tables import extract_ballot_table
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
-from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 
 
 class Command(BaseSOPNParsingCommand):

@@ -1,12 +1,12 @@
+import cgi
+
+import requests
 from django import forms
 from django.core.exceptions import ValidationError
 
-import requests
-import cgi
-
-from .models import QueuedImage, CopyrightOptions, SuggestedPostLock
-
 from people.forms import StrippedCharField
+
+from .models import CopyrightOptions, QueuedImage, SuggestedPostLock
 
 
 class UploadPersonPhotoImageForm(forms.ModelForm):

@@ -12,23 +12,22 @@ try:
 except ImportError:
     pass
 
-from slugify import slugify
-
 from django.core.validators import RegexValidator
 from django.db import models
-from model_utils import Choices
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from model_utils import Choices
+from slugify import slugify
 
 from ynr_refactoring.settings import PersonIdentifierFields
 
-from .behaviors.models import Timestampable, Dateframeable, GenericRelatable
+from .behaviors.models import Dateframeable, GenericRelatable, Timestampable
 from .querysets import (
-    PostQuerySet,
-    OtherNameQuerySet,
     ContactDetailQuerySet,
     MembershipQuerySet,
     OrganizationQuerySet,
+    OtherNameQuerySet,
+    PostQuerySet,
 )
 
 

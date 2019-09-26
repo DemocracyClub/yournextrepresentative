@@ -1,4 +1,4 @@
-from django.db import models, migrations
+from django.db import migrations
 
 
 def popit_to_db(apps, schema_editor):

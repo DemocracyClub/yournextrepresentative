@@ -2,7 +2,7 @@ import json
 
 from django.conf import settings
 from django.contrib.admin.utils import NestedObjects
-from django.db import IntegrityError, connection, transaction
+from django.db import connection, transaction
 
 from candidates.models import (
     LoggedAction,
@@ -20,8 +20,6 @@ class InvalidMergeError(ValueError):
     Raised when merging two people would cause invalid data or some other
     oddness
     """
-
-    pass
 
 
 class PersonMerger:

@@ -1,15 +1,14 @@
 from braces.views import LoginRequiredMixin
-from django import forms as django_forms
-from django.urls import reverse
 from django.db import transaction
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.views.generic import FormView, TemplateView
-from popolo.models import Membership
-from people.models import Person
 
 from bulk_adding import forms, helpers
 from elections.models import Election
 from parties.models import Party
+from people.models import Person
+from popolo.models import Membership
 
 # Assume 5 winners if we have no other info.
 # If someone reports this, we can update EE and re-import

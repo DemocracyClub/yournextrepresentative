@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
-import logging
+
 import json
+import logging
 import os
 
 from django.db import migrations
-
-from elections.uk import geo_helpers
 
 logger = logging.getLogger(__name__)
 

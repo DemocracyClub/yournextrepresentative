@@ -1,10 +1,9 @@
+import datetime
+
 from django.core.management.base import BaseCommand
 from django.db.models import Count
-
-import datetime
 from django.utils import timezone
 
-from candidates.models import LoggedAction
 from wombles.models import WombleProfile, WombleTags
 
 

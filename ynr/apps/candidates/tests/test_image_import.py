@@ -1,16 +1,13 @@
 import hashlib
-from os.path import dirname, join
 
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 
 import people.tests.factories
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from people.models import PersonImage
 
-from . import factories
 from .auth import TestUserMixin
-from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from parties.tests.factories import PartyFactory
 
 
 def get_file_md5sum(filename):

@@ -1,18 +1,18 @@
-from django.http import HttpResponseRedirect
-from django.views.generic import FormView, View
-from django.shortcuts import get_object_or_404
 from django.db import transaction
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.views.generic import FormView, View
 
-from elections.mixins import ElectionMixin
 from auth_helpers.views import GroupRequiredMixin
-from .helpers import get_redirect_to_post
-from .version_data import get_client_ip, get_change_metadata
 from candidates.forms import ConstituencyRecordWinnerForm
-from ..models import RESULT_RECORDERS_GROUP_NAME, LoggedAction, Ballot
+from elections.mixins import ElectionMixin
+from people.models import Person
+from popolo.models import Membership, Post
 from results.models import ResultEvent
 
-from popolo.models import Membership, Post
-from people.models import Person
+from ..models import RESULT_RECORDERS_GROUP_NAME, Ballot, LoggedAction
+from .helpers import get_redirect_to_post
+from .version_data import get_change_metadata, get_client_ip
 
 
 class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):

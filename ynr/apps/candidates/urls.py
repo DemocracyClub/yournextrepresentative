@@ -1,17 +1,13 @@
 from django.conf import settings
 from django.conf.urls import include, url
-from django.contrib import admin
+from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
-from django.views.decorators.cache import cache_page
 
 import candidates.views as views
-import elections.views
-import parties.views
 
-from .feeds import RecentChangesFeed, NeedsReviewFeed
 from .constants import ELECTION_ID_REGEX, POST_ID_REGEX
-
+from .feeds import NeedsReviewFeed, RecentChangesFeed
 
 urlpatterns = [
     url(

@@ -1,12 +1,11 @@
 from django_webtest import WebTest
-from candidates.tests.helpers import TmpMediaRootMixin
+from sorl.thumbnail import get_thumbnail
 
 from candidates.tests.factories import faker_factory
-from people.tests.factories import PersonFactory
-from people.models import PersonImage, Person
+from candidates.tests.helpers import TmpMediaRootMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-
-from sorl.thumbnail import get_thumbnail
+from people.models import Person, PersonImage
+from people.tests.factories import PersonFactory
 
 
 class TestPersonModels(TmpMediaRootMixin, WebTest):

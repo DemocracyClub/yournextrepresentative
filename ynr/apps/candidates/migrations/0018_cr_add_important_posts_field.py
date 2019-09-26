@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db import models, migrations
+from django.db import migrations
 
 
 def add_extra_field(apps, schema_editor):

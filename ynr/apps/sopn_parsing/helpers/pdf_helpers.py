@@ -2,10 +2,10 @@ from io import StringIO
 
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
 from pdfminer.pdfpage import PDFPage
 
-from sopn_parsing.helpers.text_helpers import clean_text, NoTextInDocumentError
+from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
 
 # Used by SOPNPageText.get_page_heading
 HEADING_SIZE = 0.3

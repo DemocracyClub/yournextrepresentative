@@ -1,7 +1,7 @@
 from datetime import date
 
 from django.conf import settings
-from django.db import models, migrations
+from django.db import migrations
 
 
 def load_election_data(apps, schema_editor):

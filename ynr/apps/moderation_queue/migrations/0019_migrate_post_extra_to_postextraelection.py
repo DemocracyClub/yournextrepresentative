@@ -1,7 +1,7 @@
-from collections import defaultdict
 import os
+from collections import defaultdict
 
-from django.db import migrations, models
+from django.db import migrations
 
 
 def migrate_post_extra_to_postextraelection(apps, schema_editor):

@@ -2,12 +2,12 @@ import json
 import re
 from os.path import join
 
-from django.core.files.storage import DefaultStorage
 from django.core.files.base import ContentFile
+from django.core.files.storage import DefaultStorage
 
-from sopn_parsing.helpers.text_helpers import clean_text
-from parties.models import Party, PartyDescription
 from bulk_adding.models import RawPeople
+from parties.models import Party, PartyDescription
+from sopn_parsing.helpers.text_helpers import clean_text
 
 NAME_FIELDS = (
     "name of candidate",

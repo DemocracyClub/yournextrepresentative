@@ -3,14 +3,15 @@ import re
 from django.test.utils import override_settings
 from django_webtest import WebTest
 
-from .auth import TestUserMixin
-from .dates import templates_before, templates_after
-from .factories import MembershipFactory
-from people.tests.factories import PersonFactory
-from people.models import PersonImage
-from .uk_examples import UK2015ExamplesMixin
 from candidates.tests.helpers import TmpMediaRootMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from people.models import PersonImage
+from people.tests.factories import PersonFactory
+
+from .auth import TestUserMixin
+from .dates import templates_after, templates_before
+from .factories import MembershipFactory
+from .uk_examples import UK2015ExamplesMixin
 
 
 class PersonViewSharedTestsMixin(

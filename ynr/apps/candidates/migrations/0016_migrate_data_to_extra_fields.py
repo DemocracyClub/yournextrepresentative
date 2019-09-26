@@ -1,5 +1,5 @@
-from django.db import models, migrations
 from django.conf import settings
+from django.db import migrations
 
 
 def from_person_extra_to_generic_fields(apps, schema_editor):

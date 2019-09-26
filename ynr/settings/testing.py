@@ -1,6 +1,5 @@
 from .base import *  # noqa
 
-
 DATABASES["default"]["CONN_MAX_AGE"] = 0
 SITE_NAME = "example.com"
 

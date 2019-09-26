@@ -1,23 +1,20 @@
-from django.views.generic import FormView
-from django.shortcuts import get_object_or_404
+from braces.views import LoginRequiredMixin
 from django.db import transaction
 from django.http import JsonResponse
-
-from braces.views import LoginRequiredMixin
+from django.shortcuts import get_object_or_404
+from django.views.generic import FormView
 
 from auth_helpers.views import user_in_group
-
-from popolo.models import Membership, Post
-from people.models import Person
 from candidates.models import raise_if_unsafe_to_delete
 from candidates.models.constraints import check_no_candidancy_for_election
-
 from elections.mixins import ElectionMixin
-
-from .helpers import get_redirect_to_post
-from .version_data import get_client_ip, get_change_metadata
 from people.forms import CandidacyCreateForm, CandidacyDeleteForm
-from ..models import LoggedAction, TRUSTED_TO_LOCK_GROUP_NAME
+from people.models import Person
+from popolo.models import Membership, Post
+
+from ..models import TRUSTED_TO_LOCK_GROUP_NAME, LoggedAction
+from .helpers import get_redirect_to_post
+from .version_data import get_change_metadata, get_client_ip
 
 
 def raise_if_locked(request, post, election):

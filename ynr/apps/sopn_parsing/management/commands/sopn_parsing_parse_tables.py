@@ -1,7 +1,6 @@
 from bulk_adding.models import RawPeople
-
-from sopn_parsing.helpers.parse_tables import parse_raw_data_for_ballot
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
+from sopn_parsing.helpers.parse_tables import parse_raw_data_for_ballot
 
 
 class Command(BaseSOPNParsingCommand):

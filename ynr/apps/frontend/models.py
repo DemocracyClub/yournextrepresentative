@@ -1,6 +1,5 @@
-from django.utils.timezone import now
-
 from django.db import models
+from django.utils.timezone import now
 from model_utils.models import TimeStampedModel
 
 

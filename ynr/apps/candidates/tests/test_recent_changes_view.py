@@ -1,10 +1,9 @@
 from django_webtest import WebTest
 
 import people.tests.factories
-from candidates.tests import factories
+from candidates.models import LoggedAction
 
 from .auth import TestUserMixin
-from candidates.models import LoggedAction
 
 
 class TestRecentChangesView(TestUserMixin, WebTest):

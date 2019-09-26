@@ -1,12 +1,12 @@
-from collections import OrderedDict
 import datetime
+from collections import OrderedDict
 
 from django.test import TestCase
 
 from elections.models import Election
 
-from .uk_examples import UK2015ExamplesMixin
 from .factories import ElectionFactory
+from .uk_examples import UK2015ExamplesMixin
 
 
 def get_election_extra(post, election):

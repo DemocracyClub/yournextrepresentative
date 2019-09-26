@@ -1,11 +1,11 @@
 from django.test import TestCase
 
 import people.tests.factories
-from candidates.models import LoggedAction, Ballot
+from candidates.models import Ballot, LoggedAction
 
+from . import factories
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
-from . import factories
 
 
 class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):

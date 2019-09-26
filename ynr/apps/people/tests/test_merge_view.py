@@ -1,26 +1,21 @@
-from os.path import join, dirname, realpath
+from os.path import dirname, join, realpath
 from shutil import rmtree
 
-from mock import patch
-
-from django.conf import settings
 from django.db.models import F
 from django.test.utils import override_settings
-
 from django_webtest import WebTest
+from mock import patch
 
 import people.tests.factories
-from popolo.models import Membership
-
-from candidates.models import PersonRedirect, LoggedAction
+from candidates.models import LoggedAction, PersonRedirect
 from candidates.models.versions import revert_person_from_version_data
-from people.models import PersonImage, Person
-from ynr.helpers import mkdir_p
+from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from candidates.tests import factories
-from ynr.helpers import mkdir_p
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from people.models import Person, PersonImage
+from popolo.models import Membership
+from ynr.helpers import mkdir_p
 
 example_timestamp = "2014-09-29T10:11:59.216159"
 example_version_id = "5aa6418325c1a0bb"

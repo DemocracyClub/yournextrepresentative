@@ -2,8 +2,8 @@ from django import forms
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 
-from people.forms import StrippedCharField, AddElectionFieldsMixin
 from candidates.models import Ballot
+from people.forms import AddElectionFieldsMixin, StrippedCharField
 
 
 class UserTermsAgreementForm(forms.Form):

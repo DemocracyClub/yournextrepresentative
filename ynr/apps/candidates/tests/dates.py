@@ -1,8 +1,8 @@
 import copy
-from datetime import date, timedelta, datetime, time
-from django.utils import timezone
+from datetime import date, datetime, time, timedelta
 
 from django.conf import settings
+from django.utils import timezone
 
 date_in_near_future = date.today() + timedelta(days=14)
 date_in_near_past = date.today() - timedelta(days=14)

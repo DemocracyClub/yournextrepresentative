@@ -2,7 +2,6 @@ from django.conf.urls import url
 
 from .feeds import BasicResultEventsFeed, ResultEventsFeed
 
-
 urlpatterns = [
     url(r"^all\.atom$", ResultEventsFeed(), name="atom-results"),
     url(

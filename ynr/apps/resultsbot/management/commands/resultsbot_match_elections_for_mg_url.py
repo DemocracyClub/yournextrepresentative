@@ -1,11 +1,10 @@
+import csv
 import os
 
 from django.core.management.base import BaseCommand
 
 import resultsbot
 from resultsbot.importers.modgov import ModGovElectionMatcher
-
-import csv
 
 data = [
     ("local.ashford.2019-05-02", "ashford.moderngov.co.uk"),

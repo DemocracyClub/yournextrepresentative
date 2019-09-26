@@ -1,10 +1,10 @@
-import re
 import datetime
+import re
+
 import requests
-
-from people.models import Person, EditLimitationStatuses
-
 from django.core.management.base import BaseCommand
+
+from people.models import EditLimitationStatuses, Person
 
 
 class Command(BaseCommand):

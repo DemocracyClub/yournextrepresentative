@@ -1,12 +1,11 @@
+from django.test import override_settings
+from django.urls import reverse
 from django_webtest import WebTest
 
-from django.urls import reverse
-from django.test import override_settings
-
 from candidates.tests.auth import TestUserMixin
+from candidates.tests.factories import faker_factory
 from people.models import PersonIdentifier
 from people.tests.factories import PersonFactory
-from candidates.tests.factories import faker_factory
 
 
 @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN=None)

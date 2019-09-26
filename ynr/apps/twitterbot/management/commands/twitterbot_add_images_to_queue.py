@@ -1,15 +1,13 @@
-from django.core.files.temp import NamedTemporaryFile
+import requests
 from django.core.files.base import ContentFile
+from django.core.files.temp import NamedTemporaryFile
 from django.core.management.base import BaseCommand
 
-from moderation_queue.models import QueuedImage, CopyrightOptions
+from candidates.management.images import get_image_extension
+from moderation_queue.models import CopyrightOptions, QueuedImage
 from people.models import Person
 
-import requests
-
-from candidates.management.images import get_image_extension
 from ..twitter import TwitterAPIData
-
 
 VERBOSE = False
 

@@ -2,12 +2,11 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User
-from django.urls import reverse
 from django.db import models
 from django.db.models.signals import post_save
+from django.urls import reverse
 from django.utils.html import escape
 from django.utils.six import text_type
-
 
 from moderation_queue.review_required_helper import REVIEW_TYPES
 

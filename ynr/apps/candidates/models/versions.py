@@ -1,12 +1,10 @@
+import re
 from collections import defaultdict
 from datetime import datetime
-import re
 
-from django.db.models import F
 from django.conf import settings
 from django.db.models.query import prefetch_related_objects
 
-from ..twitter_api import TwitterAPITokenMissing
 from parties.models import Party
 from ynr_refactoring.settings import PersonIdentifierFields
 
@@ -123,7 +121,7 @@ def get_person_as_version_data(person, new_person=False):
 
 def revert_person_from_version_data(person, version_data):
 
-    from popolo.models import Membership, Organization, Post
+    from popolo.models import Membership, Post
     from candidates.models import raise_if_unsafe_to_delete
 
     from elections.models import Election

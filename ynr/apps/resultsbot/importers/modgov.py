@@ -1,15 +1,16 @@
+import requests
 from bs4 import BeautifulSoup
 from dateutil import parser
-import requests
-
-requests.packages.urllib3.disable_warnings()
 from django.utils.six.moves.urllib_parse import urljoin
 
 from elections.models import Election
-from .base import BaseCandidate, BaseDivision, BaseImporter
-from resultsbot.matchers.mappings import SavedMapping
 from resultsbot.matchers.candidate import CandidateMatcher
+from resultsbot.matchers.mappings import SavedMapping
 from resultsbot.matchers.party import PartyMatacher
+
+from .base import BaseCandidate, BaseDivision, BaseImporter
+
+requests.packages.urllib3.disable_warnings()
 
 
 class ModGovCandidate(BaseCandidate):

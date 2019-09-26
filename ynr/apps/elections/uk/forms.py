@@ -2,11 +2,10 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from compat import text_type
-
 from elections.uk.geo_helpers import (
-    get_ballots_from_postcode,
-    UnknownGeoException,
     BadPostcodeException,
+    UnknownGeoException,
+    get_ballots_from_postcode,
 )
 
 

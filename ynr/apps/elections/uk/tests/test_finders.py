@@ -1,17 +1,17 @@
-from mock import patch, Mock
 import re
 
-from django.utils.six.moves.urllib_parse import urlsplit, urljoin
 from django.conf import settings
-
+from django.utils.six.moves.urllib_parse import urljoin, urlsplit
 from django_webtest import WebTest
+from mock import Mock, patch
 
 from candidates.tests.factories import (
     ElectionFactory,
-    PostFactory,
     ParliamentaryChamberFactory,
     PartySetFactory,
+    PostFactory,
 )
+
 from .ee_postcode_results import ee_se240ag_result, ee_sw1a1aa_result
 
 

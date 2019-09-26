@@ -1,17 +1,16 @@
-from django.views.generic import CreateView, DetailView, TemplateView
-from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+from django.views.generic import CreateView, DetailView, TemplateView
 
 from auth_helpers.views import GroupRequiredMixin
+from candidates.models import Ballot, LoggedAction
+from candidates.views.version_data import get_client_ip
 from elections.mixins import ElectionMixin
 from moderation_queue.models import SuggestedPostLock
+from popolo.models import Post
 
 from .forms import UploadDocumentForm
 from .models import DOCUMENT_UPLOADERS_GROUP_NAME, OfficialDocument
-
-from popolo.models import Post
-from candidates.models import is_post_locked, Ballot, LoggedAction
-from candidates.views import get_client_ip
 
 
 class CreateDocumentView(ElectionMixin, GroupRequiredMixin, CreateView):

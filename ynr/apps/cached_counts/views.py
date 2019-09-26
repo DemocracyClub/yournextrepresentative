@@ -7,9 +7,10 @@ from django.views.generic import TemplateView
 from candidates.models import Ballot
 from elections.mixins import ElectionMixin
 from elections.models import Election
-from popolo.models import Membership, Organization
-from .models import get_attention_needed_posts
 from parties.models import Party
+from popolo.models import Membership
+
+from .models import get_attention_needed_posts
 
 
 def get_counts(for_json=True):

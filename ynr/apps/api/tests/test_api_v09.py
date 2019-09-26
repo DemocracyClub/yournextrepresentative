@@ -1,26 +1,22 @@
-from datetime import datetime
 import json
-from mock import call, patch
-import os
-from os.path import exists, join
-from shutil import rmtree
-from tempfile import mkdtemp
+from datetime import datetime
+from os.path import join
 
-from django.core.management import call_command
 from django.conf import settings
-from django.core.files.storage import DefaultStorage
 from django.core.files.base import ContentFile
-
+from django.core.files.storage import DefaultStorage
+from django.core.management import call_command
 from django_webtest import WebTest
+from mock import patch
 
+from candidates.models import LoggedAction, PersonRedirect
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
-from people.tests.factories import PersonFactory
-from candidates.tests.uk_examples import UK2015ExamplesMixin
-from candidates.models import LoggedAction, PersonRedirect
 from candidates.tests.helpers import TmpMediaRootMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from people.models import PersonImage, PersonIdentifier
+from people.models import PersonIdentifier, PersonImage
+from people.tests.factories import PersonFactory
 
 
 class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):

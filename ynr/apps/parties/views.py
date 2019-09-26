@@ -1,12 +1,7 @@
-from collections.__init__ import defaultdict
-
-from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
-
-from elections.mixins import ElectionMixin
+from django.views.generic import TemplateView
 
 from candidates.models import Ballot
-from popolo.models import Identifier, Membership
 from elections.models import Election
 
 from .models import Party
