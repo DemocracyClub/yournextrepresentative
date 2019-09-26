@@ -139,11 +139,44 @@ class PersonMerger:
             self.dest_person.images.update(is_primary=False)
         self.source_person.images.update(person=self.dest_person)
 
+    def _resolve_duplicate_identifiers(self, i1, i2):
+        # Get the newer ID of the two
+        keep, delete = sorted([i1, i2], key=lambda m: m.modified, reverse=True)
+        self.safe_delete(delete)
+        keep.person = self.dest_person
+        keep.save()
+
+    def _invalidate_pi_cache(self):
+        """
+        Django can store a prefetch cache on a model, meaning
+        that `dest_person.tmp_person_identifiers.all()`
+        wont return the newly moved IDs. To save confusion
+        in downstream code, invalidate the cache after moving.
+        Do the same for the `get_all_identifiers` cache
+        """
+        attrs = ["_prefetched_objects_cache", "get_all_idenfitiers"]
+
+        for person in [self.source_person, self.dest_person]:
+            for attr in attrs:
+                delattr(person, attr)
+
     def merge_person_identifiers(self):
         """
-        Beacuse we store the modified datetime for PersonIdentifiers,
+        Because we store the modified datetime for PersonIdentifiers,
         we can just keep the latest version from either source or dest.
         """
+
+        duplicate_pi_values = self.source_person.tmp_person_identifiers.filter(
+            value__in=self.dest_person.tmp_person_identifiers.all().values_list(
+                "value", flat=True
+            )
+        )
+        for pi in duplicate_pi_values:
+            self._resolve_duplicate_identifiers(
+                pi, self.dest_person.tmp_person_identifiers.get(value=pi.value)
+            )
+        if duplicate_pi_values:
+            self._invalidate_pi_cache()
 
         qs = self.source_person.tmp_person_identifiers.all()
         moved_any = qs.exists()
@@ -151,32 +184,16 @@ class PersonMerger:
             existing_of_type = self.dest_person.get_single_identifier_of_type(
                 identifier.value_type
             )
-
             if existing_of_type:
-                # Get the newer ID of the two
-                keep, delete = sorted(
-                    [identifier, existing_of_type],
-                    key=lambda m: m.modified,
-                    reverse=True,
+                self._resolve_duplicate_identifiers(
+                    existing_of_type, identifier
                 )
-                self.safe_delete(delete)
             else:
-                keep = identifier
+                identifier.person = self.dest_person
+                identifier.save()
 
-            keep.person = self.dest_person
-            keep.save()
-
-        # Django can store a prefetch cache on a model, meaning
-        # that `dest_person.tmp_person_identifiers.all()`
-        # wont return the newly moved IDs. To save confusion
-        # in downstream code, invalidate the cache after moving.
-        # Do the same for the `get_all_idenfitiers` cache
         if moved_any:
-            try:
-                del self.dest_person._prefetched_objects_cache
-                del self.dest_person.get_all_idenfitiers
-            except AttributeError:
-                pass
+            self._invalidate_pi_cache()
 
     def merge_logged_actions(self):
         self.source_person.loggedaction_set.update(person=self.dest_person)

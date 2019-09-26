@@ -595,3 +595,33 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         result = ResultEvent.objects.get(winner=self.dest_person)
         self.assertEqual(result.winner, self.dest_person)
+
+    def test_merge_person_identifiers_with_duplicate_values(self):
+        """
+        Regression test for
+        https://github.com/DemocracyClub/yournextrepresentative/issues/1007
+
+        If two PersonIdentifiers exist with the same value but different
+        value_types then an IntegrityError error was raised
+        """
+
+        self.source_person.tmp_person_identifiers.create(
+            value_type="facebook_personal", value="example.com/foo"
+        )
+
+        self.dest_person.tmp_person_identifiers.create(
+            value_type="facebook_page", value="example.com/foo"
+        )
+
+        merger = PersonMerger(self.dest_person, self.source_person)
+        merger.merge()
+        self.assertTrue(
+            self.dest_person.tmp_person_identifiers.filter(
+                value_type="facebook_page"
+            ).exists()
+        )
+        self.assertFalse(
+            self.dest_person.tmp_person_identifiers.filter(
+                value_type="facebook_personal"
+            ).exists()
+        )
