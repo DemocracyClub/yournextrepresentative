@@ -435,30 +435,32 @@ class Person(Timestampable, models.Model):
         dob = self.dob_as_approximate_date
         if not dob:
             return None
-        today = date.today()
-        approx_age = today.year - dob.year
+        until = date.today()
+        if self.death_date:
+            until = self.dod_as_approximate_date
+        approx_age = until.year - dob.year
         if dob.month == 0 and dob.day == 0:
             min_age = approx_age - 1
             max_age = approx_age
         elif dob.day == 0:
             min_age = approx_age - 1
             max_age = approx_age
-            if today.month < dob.month:
+            if until.month < dob.month:
                 max_age = min_age
-            elif today.month > dob.month:
+            elif until.month > dob.month:
                 min_age = max_age
         else:
             # There's a complete date:
             dob_as_date = self.dob_as_date()
             try:
-                today_in_birth_year = date(dob.year, today.month, today.day)
+                today_in_birth_year = date(dob.year, until.month, until.day)
             except ValueError:
                 # It must have been February 29th
                 today_in_birth_year = date(dob.year, 3, 1)
             if today_in_birth_year > dob_as_date:
-                min_age = max_age = today.year - dob.year
+                min_age = max_age = until.year - dob.year
             else:
-                min_age = max_age = (today.year - dob.year) - 1
+                min_age = max_age = (until.year - dob.year) - 1
         if min_age == max_age:
             # We know their exact age:
             return str(min_age)

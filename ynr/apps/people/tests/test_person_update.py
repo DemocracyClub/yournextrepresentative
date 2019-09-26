@@ -75,6 +75,56 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         response = form.submit()
         self.assertContains(response, "The date entered was too long")
 
+    def test_set_birth_date_invalid_date(self):
+        """
+        Regression for
+        https://github.com/DemocracyClub/yournextrepresentative/issues/850
+        """
+
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        form = response.forms[1]
+        form["birth_date"] = "1962-09-00"
+        form["source"] = "BBC News"
+        response = form.submit().follow()
+        self.assertContains(response, "September 1962")
+
+    def test_set_birth_date_year_only(self):
+        """
+        Regression for
+        https://github.com/DemocracyClub/yournextrepresentative/issues/850
+        """
+
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        form = response.forms[1]
+        form["birth_date"] = "1962"
+        form["source"] = "BBC News"
+        response = form.submit().follow()
+        self.assertContains(response, "1962")
+
+    def test_set_dead_person_age(self):
+        """
+        Regression for
+        https://github.com/DemocracyClub/yournextrepresentative/issues/980
+        """
+
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        form = response.forms[1]
+        form["birth_date"] = "1962"
+        form["death_date"] = "2000"
+        form["source"] = "BBC News"
+        form.submit().follow()
+        self.person.refresh_from_db()
+        self.assertEqual(self.person.age, "37 or 38")
+
     def change_name_creates_other_names(self):
         self.assertFalse(self.person.other_names.exists())
         response = self.app.get(

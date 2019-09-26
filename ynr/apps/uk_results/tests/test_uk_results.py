@@ -49,7 +49,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
 
         self.expected = {
             "ballot_paper_id": "local.maidstone.DIW:E05005004.2016-05-05",
-            "created": self.result_set.created.isoformat(),
+            "created": self.result_set.modified.isoformat(),
             "candidate_results": [
                 {
                     "is_winner": True,
@@ -81,6 +81,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         self.assertEqual(self.result_set.as_dict(), self.expected)
 
     def test_record_version(self):
+        self.maxDiff = None
         self.assertEqual(self.result_set.versions, [])
         self.result_set.record_version()
         self.assertEqual(self.result_set.versions, [self.expected])
@@ -93,8 +94,10 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         # Make sure we can force a duplicate though
         self.result_set.record_version(force=True)
         self.assertEqual(len(self.result_set.versions), 2)
-        self.assertEqual(
-            self.result_set.versions, [self.expected, self.expected]
+        self.assertTrue(
+            self.result_set.versions_equal(
+                self.result_set.versions[0], self.result_set.versions[1]
+            )
         )
 
         self.result_set.num_turnout_reported = 300
