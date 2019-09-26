@@ -33,6 +33,18 @@ git submodule init
 git submodule update
 ```
 
+## (Optional) Code linting
+
+A CI will check all code against Black and Flake8. To save pushing commits that don't
+pass these tests you can configure pre-commmit hooks.
+
+Do this by installing `[precommit](https://pre-commit.com/)`:
+
+```
+pip install pre-commit
+pre-commit install
+```
+
 ## (Optional) SOPN parsing
 
 SOPNs parsing (see `ynr/apps/sopn_parsing/README.md`) is optional
