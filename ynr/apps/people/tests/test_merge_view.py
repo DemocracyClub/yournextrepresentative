@@ -648,7 +648,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = merge_form.submit()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location, "/person/1/merge_correct_not_standing/2009"
+            response.location, "/person/1/merge_conflict/2009/not_standing/"
         )
         response = response.follow()
         form = response.forms[1]
