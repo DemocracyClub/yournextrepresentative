@@ -655,3 +655,25 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = form.submit()
         response.follow()
         self.assertEqual(response.location, "/person/1/tessa-jowell")
+
+    def test_merge_same_person_shows_error(self):
+        response = self.app.get(
+            "/person/{}/update".format(2009), user=self.user_who_can_merge
+        )
+        merge_form = response.forms["person-merge"]
+        merge_form["other"] = 2009
+        response = merge_form.submit()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, "You can&#39;t merge a person (2009) with themself (2009)"
+        )
+
+    def test_merge_malformed_other(self):
+        response = self.app.get(
+            "/person/{}/update".format(2009), user=self.user_who_can_merge
+        )
+        merge_form = response.forms["person-merge"]
+        merge_form["other"] = "foobar"
+        response = merge_form.submit()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Malformed person ID &#39;foobar&#39;")

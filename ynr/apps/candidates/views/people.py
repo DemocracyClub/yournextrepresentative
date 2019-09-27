@@ -203,41 +203,55 @@ class MergePeopleMixin:
         return merger.merge(delete=True)
 
 
-class MergePeopleView(GroupRequiredMixin, View, MergePeopleMixin):
+class MergePeopleView(GroupRequiredMixin, TemplateView, MergePeopleMixin):
 
-    http_method_names = ["post"]
+    http_method_names = ["get", "post"]
     required_group_name = TRUSTED_TO_MERGE_GROUP_NAME
+    template_name = "candidates/generic-merge-error.html"
 
-    def post(self, request, *args, **kwargs):
-        # Check that the person IDs are well-formed:
-        primary_person_id = self.kwargs["person_id"]
-        secondary_person_id = self.request.POST["other"]
-        if not re.search(r"^\d+$", secondary_person_id):
+    def validate(self, context):
+        if not re.search(r"^\d+$", context["other_person_id"]):
             message = "Malformed person ID '{0}'"
-            raise ValueError(message.format(secondary_person_id))
-        if primary_person_id == secondary_person_id:
+            raise ValueError(message.format(context["other_person_id"]))
+        if context["person"].pk == int(context["other_person_id"]):
             message = "You can't merge a person ({0}) with themself ({1})"
             raise ValueError(
-                message.format(primary_person_id, secondary_person_id)
+                message.format(context["person"].pk, context["other_person_id"])
             )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["person"] = get_object_or_404(
+            Person, id=self.kwargs["person_id"]
+        )
+        context["other_person_id"] = self.request.POST.get("other", "")
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        # Check that the person IDs are well-formed:
+        try:
+            self.validate(context)
+        except ValueError as e:
+            context["error_message"] = e
+            return self.render_to_response(context)
+
         with transaction.atomic():
-            primary_person, secondary_person = [
-                get_object_or_404(Person, id=person_id)
-                for person_id in (primary_person_id, secondary_person_id)
-            ]
-            primary_person = primary_person
-            secondary_person = secondary_person
+            secondary_person = get_object_or_404(
+                Person, id=context["other_person_id"]
+            )
 
             try:
-                merged_person = self.do_merge(primary_person, secondary_person)
+                merged_person = self.do_merge(
+                    context["person"], secondary_person
+                )
             except NotStandingValidationError:
                 return HttpResponseRedirect(
                     reverse(
                         "person-merge-correct-not-standing",
                         kwargs={
-                            "person_id": primary_person_id,
-                            "other_person_id": secondary_person_id,
+                            "person_id": context["person"].pk,
+                            "other_person_id": context["other_person_id"],
                         },
                     )
                 )
