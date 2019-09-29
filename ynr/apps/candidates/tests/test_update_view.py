@@ -155,16 +155,19 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Now fake the addition of elements to the form as would
         # happen with the Javascript addition of a new candidacy.
         form = response.forms["person-details"]
-        for name, value in [
+        extra_fields = [
             ("extra_election_id", "local.maidstone.2016-05-05"),
             ("party_GB_local.maidstone.2016-05-05", self.labour_party.ec_id),
             ("constituency_local.maidstone.2016-05-05", "DIW:E05005004"),
             ("standing_local.maidstone.2016-05-05", "standing"),
             ("source", "Testing dynamic election addition"),
-        ]:
-            field = Text(form, "input", None, None, value)
-            form.fields[name] = [field]
+        ]
+        start_pos = len(form.field_order)
+        for pos, data in enumerate(extra_fields):
+            name, value = data
+            field = Text(form, "input", name, start_pos + pos, value)
             form.field_order.append((name, field))
+            form.fields[name] = [field]
         response = form.submit()
         self.assertEqual(response.status_code, 302)
         split_location = urlsplit(response.location)
@@ -189,14 +192,17 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Now fake the addition of elements to the form as would
         # happen with the Javascript addition of a new candidacy.
         form = response.forms["person-details"]
-        for name, value in [
+        extra_fields = [
             ("extra_election_id", "local.maidstone.2016-05-05"),
             ("party_GB_local.maidstone.2016-05-05", self.labour_party.ec_id),
             ("constituency_local.maidstone.2016-05-05", "DIW:E05005004"),
             ("standing_local.maidstone.2016-05-05", "not-sure"),
             ("source", "Testing dynamic election addition"),
-        ]:
-            field = Text(form, "input", None, None, value)
+        ]
+        starting_pos = len(form.field_order)
+        for pos, data in enumerate(extra_fields):
+            name, value = data
+            field = Text(form, "input", None, starting_pos + pos, value)
             form.fields[name] = [field]
             form.field_order.append((name, field))
         response = form.submit()

@@ -25,7 +25,7 @@ django-markdown-deux==1.0.5
 django-model-utils==3.1.2
 django-pipeline==1.6.14
 django-storages==1.6.6
-django-webtest==1.9.4
+django-webtest==1.9.7
 Django==2.2.4
 djangorestframework-jsonp==1.0.2
 djangorestframework==3.9.4
@@ -86,6 +86,6 @@ Unidecode==1.0.23
 urllib3>=1.21.1,<1.26
 waitress==1.2.1
 WebOb==1.8.5
-WebTest==2.0.15
+WebTest==2.0.32
 Whoosh==2.7.4
 yanc==0.3.3
