@@ -677,3 +677,109 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = merge_form.submit()
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Malformed person ID &#39;foobar&#39;")
+
+
+class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
+    def setUp(self):
+        # Person 1
+        response = self.app.get(
+            self.dulwich_post_ballot.get_absolute_url(), user=self.user
+        )
+        form = response.forms["new-candidate-form"]
+        form["name"] = "Elizabeth Bennet"
+        form["tmp_person_identifiers-0-value"] = "lizzie@example.com"
+        form["tmp_person_identifiers-0-value_type"] = "email"
+        form[
+            "tmp_person_identifiers-1-value"
+        ] = "http://en.wikipedia.org/wiki/Lizzie_Bennet"
+        form["tmp_person_identifiers-1-value_type"] = "wikipedia_url"
+
+        form["party_GB_parl.2015-05-07"] = self.labour_party.ec_id
+        form["standing_parl.2015-05-07"] = "standing"
+        form["constituency_parl.2015-05-07"] = "65913"
+        form["source"] = "bar bar"
+
+        form.submit()
+
+        # Person 2
+        response = self.app.get(
+            self.local_ballot.get_absolute_url(), user=self.user
+        )
+        form = response.forms["new-candidate-form"]
+        form["name"] = "Foo Bar"
+        election_slug = self.local_ballot.election.slug
+        form["party_GB_{}".format(election_slug)] = self.labour_party.ec_id
+        form["standing_{}".format(election_slug)] = "standing"
+        form[
+            "constituency_{}".format(election_slug)
+        ] = self.local_ballot.post.slug
+        form["source"] = "foo bar"
+
+        response = form.submit()
+
+    def test_persons_created(self):
+        self.assertEqual(Person.objects.all().count(), 2)
+
+    def test_merging_people(self):
+
+        source, dest = Person.objects.all().values_list("pk", flat=True)
+
+        response = self.app.get(
+            "/person/{}/update".format(source), user=self.user
+        )
+
+        form = response.forms[1]
+        form["birth_date"] = "1962"
+        form["death_date"] = "2000"
+        form["source"] = "BBC News"
+        form.submit().follow()
+
+        response = self.app.get(
+            "/person/{}/update".format(dest), user=self.user_who_can_merge
+        )
+        merge_form = response.forms["person-merge"]
+        merge_form["other"] = source
+        response = merge_form.submit()
+
+        self.assertEqual(Person.objects.count(), 1)
+        print(Person.objects.get().loggedaction_set.all())
+
+    def test_merge_three_people(self):
+        # Merge the first two people
+        source, dest = Person.objects.all().values_list("pk", flat=True)
+        response = self.app.get(
+            "/person/{}/update".format(dest), user=self.user_who_can_merge
+        )
+        merge_form = response.forms["person-merge"]
+        merge_form["other"] = source
+        response = merge_form.submit()
+
+        # Make another person
+        self.earlier_election.current = True
+        self.earlier_election.save()
+        self.earlier_election.refresh_from_db()
+        response = self.app.get(
+            self.dulwich_post_ballot_earlier.get_absolute_url(), user=self.user
+        )
+        form = response.forms["new-candidate-form"]
+        form["name"] = "Foo Bar"
+        election_slug = self.earlier_election.slug
+        form["party_GB_{}".format(election_slug)] = self.labour_party.ec_id
+        form["standing_{}".format(election_slug)] = "standing"
+        form[
+            "constituency_{}".format(election_slug)
+        ] = self.dulwich_post_ballot_earlier.post.slug
+        form["source"] = "foo bar"
+
+        response = form.submit()
+
+        # Merge again
+        source, dest = Person.objects.all().values_list("pk", flat=True)
+        response = self.app.get(
+            "/person/{}/update".format(dest), user=self.user_who_can_merge
+        )
+        merge_form = response.forms["person-merge"]
+        merge_form["other"] = source
+        response = merge_form.submit()
+
+        self.assertTrue(Person.objects.count(), 1)
