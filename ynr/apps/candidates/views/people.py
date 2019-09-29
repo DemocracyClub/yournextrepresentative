@@ -30,7 +30,7 @@ from people.forms import (
 )
 from people.models import Person
 from popolo.models import NotStandingValidationError
-from ynr.apps.people.merging import PersonMerger
+from ynr.apps.people.merging import PersonMerger, InvalidMergeError
 
 from ..diffs import get_version_diffs
 from ..models import TRUSTED_TO_MERGE_GROUP_NAME, LoggedAction, PersonRedirect
@@ -212,10 +212,10 @@ class MergePeopleView(GroupRequiredMixin, TemplateView, MergePeopleMixin):
     def validate(self, context):
         if not re.search(r"^\d+$", context["other_person_id"]):
             message = "Malformed person ID '{0}'"
-            raise ValueError(message.format(context["other_person_id"]))
+            raise InvalidMergeError(message.format(context["other_person_id"]))
         if context["person"].pk == int(context["other_person_id"]):
             message = "You can't merge a person ({0}) with themself ({1})"
-            raise ValueError(
+            raise InvalidMergeError(
                 message.format(context["person"].pk, context["other_person_id"])
             )
 
@@ -232,7 +232,7 @@ class MergePeopleView(GroupRequiredMixin, TemplateView, MergePeopleMixin):
         # Check that the person IDs are well-formed:
         try:
             self.validate(context)
-        except ValueError as e:
+        except InvalidMergeError as e:
             context["error_message"] = e
             return self.render_to_response(context)
 
