@@ -182,7 +182,7 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertEqual(response.status_code, 403)
 
-    def test_add_when_locked_privileged_allowed(self):
+    def test_add_when_unlocked_allowed(self):
         self.camberwell_post_ballot.candidates_locked = False
         self.camberwell_post_ballot.save()
         response = self.app.get(
@@ -230,9 +230,17 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["source"] = "Testing a switch to a unlocked constituency"
         form["constituency_parl.2015-05-07"] = "65808"
         submission_response = form.submit(expect_errors=True)
-        self.assertEqual(submission_response.status_code, 403)
+        # self.assertEqual(submission_response.status_code, 200)
+        self.assertEqual(
+            submission_response.context["form"].errors,
+            {
+                "constituency_parl.2015-05-07": [
+                    "Can't delete a membership of a locked ballot (parl.65913.2015-05-07)"
+                ]
+            },
+        )
 
-    def test_move_out_of_locked_privileged_allowed(self):
+    def test_move_out_of_locked_privileged_disallowed(self):
         response = self.app.get(
             "/person/4170/update", user=self.user_who_can_lock
         )
@@ -240,8 +248,15 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["source"] = "Testing a switch to a unlocked constituency"
         form["constituency_parl.2015-05-07"] = "65808"
         submission_response = form.submit()
-        self.assertEqual(submission_response.status_code, 302)
-        self.assertEqual(submission_response.location, "/person/4170")
+        self.assertEqual(submission_response.status_code, 200)
+        self.assertEqual(
+            submission_response.context["form"].errors,
+            {
+                "constituency_parl.2015-05-07": [
+                    "Can't delete a membership of a locked ballot (parl.65913.2015-05-07)"
+                ]
+            },
+        )
 
     # Now the tests to check that the only privileged users can change
     # the parties of people in locked constituecies.
