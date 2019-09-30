@@ -26,6 +26,13 @@ class UnsafeToDelete(Exception):
 
 
 def raise_if_unsafe_to_delete(model):
+    if model._meta.label == "popolo.Membership":
+        if model.ballot.candidates_locked:
+            raise UnsafeToDelete(
+                "Can't delete a membership of a locked ballot ({})".format(
+                    model.ballot.ballot_paper_id
+                )
+            )
     related_models = model_has_related_objects(model)
     if related_models:
         msg = (
