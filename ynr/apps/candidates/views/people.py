@@ -18,7 +18,6 @@ from django.utils.decorators import method_decorator
 from django.utils.http import urlquote
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, TemplateView, View
-from slugify import slugify
 
 from auth_helpers.views import GroupRequiredMixin, user_in_group
 from candidates.forms import SingleElectionForm
@@ -30,7 +29,8 @@ from people.forms import (
     UpdatePersonForm,
 )
 from people.models import Person
-from ynr.apps.people.merging import PersonMerger
+from popolo.models import NotStandingValidationError
+from ynr.apps.people.merging import PersonMerger, InvalidMergeError
 
 from ..diffs import get_version_diffs
 from ..models import TRUSTED_TO_MERGE_GROUP_NAME, LoggedAction, PersonRedirect
@@ -194,47 +194,139 @@ class RevertPersonView(LoginRequiredMixin, View):
         )
 
 
-class MergePeopleView(GroupRequiredMixin, View):
+class MergePeopleMixin:
+    def do_merge(self, primary_person, secondary_person):
+        merger = PersonMerger(
+            primary_person, secondary_person, request=self.request
+        )
 
-    http_method_names = ["post"]
+        return merger.merge(delete=True)
+
+
+class MergePeopleView(GroupRequiredMixin, TemplateView, MergePeopleMixin):
+
+    http_method_names = ["get", "post"]
     required_group_name = TRUSTED_TO_MERGE_GROUP_NAME
+    template_name = "candidates/generic-merge-error.html"
+
+    def validate(self, context):
+        if not re.search(r"^\d+$", context["other_person_id"]):
+            message = "Malformed person ID '{0}'"
+            raise InvalidMergeError(message.format(context["other_person_id"]))
+        if context["person"].pk == int(context["other_person_id"]):
+            message = "You can't merge a person ({0}) with themself ({1})"
+            raise InvalidMergeError(
+                message.format(context["person"].pk, context["other_person_id"])
+            )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["person"] = get_object_or_404(
+            Person, id=self.kwargs["person_id"]
+        )
+        context["other_person_id"] = self.request.POST.get("other", "")
+        return context
 
     def post(self, request, *args, **kwargs):
+        context = self.get_context_data()
         # Check that the person IDs are well-formed:
-        primary_person_id = self.kwargs["person_id"]
-        secondary_person_id = self.request.POST["other"]
-        if not re.search("^\d+$", secondary_person_id):
-            message = "Malformed person ID '{0}'"
-            raise ValueError(message.format(secondary_person_id))
-        if primary_person_id == secondary_person_id:
-            message = "You can't merge a person ({0}) with themself ({1})"
-            raise ValueError(
-                message.format(primary_person_id, secondary_person_id)
-            )
+        try:
+            self.validate(context)
+        except InvalidMergeError as e:
+            context["error_message"] = e
+            return self.render_to_response(context)
 
         with transaction.atomic():
-            primary_person, secondary_person = [
-                get_object_or_404(Person, id=person_id)
-                for person_id in (primary_person_id, secondary_person_id)
-            ]
-            primary_person = primary_person
-            secondary_person = secondary_person
-
-            merger = PersonMerger(
-                primary_person, secondary_person, request=self.request
+            secondary_person = get_object_or_404(
+                Person, id=context["other_person_id"]
             )
-            merger.merge(delete=True)
+
+            try:
+                merged_person = self.do_merge(
+                    context["person"], secondary_person
+                )
+            except NotStandingValidationError:
+                return HttpResponseRedirect(
+                    reverse(
+                        "person-merge-correct-not-standing",
+                        kwargs={
+                            "person_id": context["person"].pk,
+                            "other_person_id": context["other_person_id"],
+                        },
+                    )
+                )
 
         # And redirect to the primary person with the merged data:
-        return HttpResponseRedirect(
-            reverse(
-                "person-view",
-                kwargs={
-                    "person_id": primary_person_id,
-                    "ignored_slug": slugify(primary_person.name),
-                },
-            )
+        return HttpResponseRedirect(merged_person.get_absolute_url())
+
+
+class CorrectNotStandingMergeView(
+    GroupRequiredMixin, TemplateView, MergePeopleMixin
+):
+    template_name = "people/correct_not_standing_in_merge.html"
+    required_group_name = TRUSTED_TO_MERGE_GROUP_NAME
+
+    def extract_not_standing_edit(self, election, versions):
+        versions_json = json.loads(versions)
+        for version in versions_json:
+            try:
+                membership = version["data"]["standing_in"][election.slug]
+                if membership is None:
+                    return version
+            except KeyError:
+                continue
+        return None
+
+    def populate_not_standing_list(self, person, person_not_standing):
+        for membership in person.memberships.all():
+            if (
+                membership.ballot.election
+                in person_not_standing.not_standing.all()
+            ):
+                self.not_standing_elections.append(
+                    {
+                        "election": membership.ballot.election,
+                        "person_standing": person,
+                        "person_standing_ballot": membership.ballot,
+                        "person_not_standing": person_not_standing,
+                        "version": self.extract_not_standing_edit(
+                            membership.ballot.election,
+                            person_not_standing.versions,
+                        ),
+                    }
+                )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["person_a"] = get_object_or_404(
+            Person, id=self.kwargs["person_id"]
         )
+        context["person_b"] = get_object_or_404(
+            Person, id=self.kwargs["other_person_id"]
+        )
+
+        self.not_standing_elections = []
+        self.populate_not_standing_list(
+            context["person_a"], context["person_b"]
+        )
+        self.populate_not_standing_list(
+            context["person_b"], context["person_a"]
+        )
+        context["not_standing_elections"] = self.not_standing_elections
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data()
+
+        with transaction.atomic():
+            for pair in context["not_standing_elections"]:
+                pair["person_not_standing"].not_standing.remove(
+                    pair["election"]
+                )
+        merged_person = self.do_merge(context["person_a"], context["person_b"])
+
+        # And redirect to the primary person with the merged data:
+        return HttpResponseRedirect(merged_person.get_absolute_url())
 
 
 class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
