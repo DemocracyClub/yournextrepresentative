@@ -300,6 +300,11 @@ class PersonMerger:
                 self.request,
                 "After merging person {}".format(self.source_person.pk),
             )
+            # Save the dest person before creating a LoggedAction
+            # See https://github.com/DemocracyClub/yournextrepresentative/issues/1037
+            # for more
+            self.dest_person.record_version(change_metadata)
+            self.dest_person.save()
 
             # Log that the merge has taken place, and will be shown in
             # the recent changes, leaderboards, etc.
@@ -312,9 +317,6 @@ class PersonMerger:
                     person=self.dest_person,
                     source=change_metadata["information_source"],
                 )
-
-            self.dest_person.record_version(change_metadata)
-            self.dest_person.save()
 
             self.setup_redirect()
 
