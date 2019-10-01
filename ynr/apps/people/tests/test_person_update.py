@@ -4,6 +4,7 @@ from candidates.tests.person_view_shared_tests_mixin import (
     PersonViewSharedTestsMixin,
 )
 from candidates.views.version_data import get_change_metadata
+from candidates.tests.factories import ElectionFactory, BallotPaperFactory
 from people.models import EditLimitationStatuses
 
 
@@ -170,3 +171,42 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             "Editing of this page has been disabled to prevent possible vandalism.",
         )
         self.assertNotContains(response, "<h2>Personal details:</h2>")
+
+    def test_person_update_election_future_not_current(self):
+        future_election = ElectionFactory(
+            election_date="2050-01-01", slug="parl.2050-01-01", current=False
+        )
+        ballot = BallotPaperFactory(
+            election=future_election,
+            post=self.dulwich_post,
+            ballot_paper_id="parl.foo.2050-01-01",
+        )
+
+        self.person.memberships.create(
+            ballot=ballot, post=self.dulwich_post, party=self.green_party
+        )
+
+        response = self.app.get(
+            "/person/{}/update/".format(self.person.pk), user=self.user
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            set(response.context["form"].initial.keys()),
+            {
+                "honorific_prefix",
+                "name",
+                "honorific_suffix",
+                "gender",
+                "birth_date",
+                "death_date",
+                "biography",
+                "favourite_biscuit",
+                "standing_parl.2015-05-07",
+                "constituency_parl.2015-05-07",
+                "party_GB_parl.2015-05-07",
+                "standing_parl.2050-01-01",
+                "constituency_parl.2050-01-01",
+                "party_GB_parl.2050-01-01",
+                "person",
+            },
+        )
