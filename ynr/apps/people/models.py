@@ -535,7 +535,7 @@ class Person(Timestampable, models.Model):
         from elections.models import Election
 
         for election_data in (
-            Election.objects.current()
+            Election.objects.future()
             .filter(ballot__membership__person=self)
             .by_date()
         ):
