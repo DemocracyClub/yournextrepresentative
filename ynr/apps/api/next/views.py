@@ -322,12 +322,6 @@ class PostExtraElectionViewSet(viewsets.ModelViewSet):
     pagination_class = ResultsSetPagination
 
 
-class MembershipViewSet(viewsets.ModelViewSet):
-    queryset = Membership.objects.order_by("id")
-    serializer_class = serializers.MembershipSerializer
-    pagination_class = ResultsSetPagination
-
-
 class LoggedActionViewSet(viewsets.ModelViewSet):
     queryset = extra_models.LoggedAction.objects.order_by("id")
     serializer_class = candidates.serializers.LoggedActionSerializer

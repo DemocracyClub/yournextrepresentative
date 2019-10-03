@@ -41,7 +41,6 @@ next_api_router.register(r"posts", next_views.PostViewSet)
 next_api_router.register(r"elections", next_views.ElectionViewSet)
 next_api_router.register(r"party_sets", next_views.PartySetViewSet)
 next_api_router.register(r"post_elections", next_views.PostExtraElectionViewSet)
-next_api_router.register(r"memberships", next_views.MembershipViewSet)
 next_api_router.register(r"logged_actions", next_views.LoggedActionViewSet)
 next_api_router.register(r"person_redirects", next_views.PersonRedirectViewSet)
 
