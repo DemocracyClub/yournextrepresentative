@@ -13,6 +13,7 @@ from elections.uk.geo_helpers import (
     get_ballots_from_coords,
     get_ballots_from_postcode,
 )
+from elections.filters import BallotFilter
 
 
 class UpcomingElectionsView(View):
@@ -77,3 +78,5 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
     ).order_by("-election__election_date", "ballot_paper_id")
     serializer_class = elections.serializers.BallotSerializer
     pagination_class = ResultsSetPagination
+
+    filterset_class = BallotFilter

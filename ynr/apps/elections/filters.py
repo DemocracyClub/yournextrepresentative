@@ -7,14 +7,23 @@ from candidates.models import Ballot
 from elections.models import Election
 
 
-def election_types_choices():
+def _get_election_types_choices_for_qs(qs):
     qs = (
-        Election.objects.current_or_future()
-        .order_by("for_post_role")
+        qs.order_by("for_post_role")
         .distinct("for_post_role")
         .values("slug", "for_post_role")
     )
     return [(e["slug"].split(".")[0], e["for_post_role"]) for e in qs]
+
+
+def election_types_choices():
+    qs = Election.objects.all()
+    return _get_election_types_choices_for_qs(qs)
+
+
+def current_election_types_choices():
+    qs = Election.objects.current_or_future()
+    return _get_election_types_choices_for_qs(qs)
 
 
 class BallotFilter(django_filters.FilterSet):
@@ -74,6 +83,20 @@ class BallotFilter(django_filters.FilterSet):
     class Meta:
         model = Ballot
         fields = ["review_required", "has_sopn"]
+
+
+class CurrentOrFutureBallotFilter(BallotFilter):
+    """
+    Same as Ballot Filter, but only present options related to current
+    elections
+    """
+
+    election_type = django_filters.ChoiceFilter(
+        widget=LinkWidget(),
+        method="election_type_filter",
+        choices=current_election_types_choices,
+        label="Election Type",
+    )
 
 
 def filter_shortcuts(request):
