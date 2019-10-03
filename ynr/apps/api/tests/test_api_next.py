@@ -109,7 +109,6 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             json["elections"], "http://testserver/api/next/elections/"
         )
-        self.assertEqual(json["posts"], "http://testserver/api/next/posts/")
 
         persons_resp = self.app.get("/api/next/persons/")
         self.assertEqual(persons_resp.status_code, 200)
@@ -119,9 +118,6 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         elections_resp = self.app.get("/api/next/elections/")
         self.assertEqual(elections_resp.status_code, 200)
-
-        posts_resp = self.app.get("/api/next/posts/")
-        self.assertEqual(posts_resp.status_code, 200)
 
         parties_resp = self.app.get("/api/next/parties/")
         self.assertEqual(parties_resp.status_code, 200)

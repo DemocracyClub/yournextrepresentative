@@ -51,28 +51,6 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     pagination_class = ResultsSetPagination
 
 
-class PostViewSet(viewsets.ModelViewSet):
-    queryset = (
-        Post.objects.select_related("organization", "party_set")
-        .prefetch_related(
-            Prefetch(
-                "ballot_set",
-                extra_models.Ballot.objects.select_related("election"),
-            ),
-            Prefetch(
-                "memberships",
-                Membership.objects.select_related(
-                    "person", "party", "post", "ballot__election"
-                ),
-            ),
-        )
-        .order_by("id")
-    )
-    lookup_field = "slug"
-    serializer_class = popolo.serializers.PostSerializer
-    pagination_class = ResultsSetPagination
-
-
 class LoggedActionViewSet(viewsets.ModelViewSet):
     queryset = extra_models.LoggedAction.objects.order_by("id")
     serializer_class = candidates.serializers.LoggedActionSerializer

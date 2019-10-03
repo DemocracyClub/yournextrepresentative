@@ -40,11 +40,8 @@ next_api_router.register(
     r"persons", people.api_views.PersonViewSet, basename="person"
 )
 next_api_router.register(r"organizations", next_views.OrganizationViewSet)
-next_api_router.register(r"posts", next_views.PostViewSet)
 next_api_router.register(r"elections", elections.api_views.ElectionViewSet)
-next_api_router.register(
-    r"post_elections", elections.api_views.PostExtraElectionViewSet
-)
+next_api_router.register(r"ballots", elections.api_views.BallotViewSet)
 next_api_router.register(r"logged_actions", next_views.LoggedActionViewSet)
 next_api_router.register(
     r"person_redirects", people.api_views.PersonRedirectViewSet

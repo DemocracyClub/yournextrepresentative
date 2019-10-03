@@ -337,17 +337,7 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         entries = self.storage.listdir(expected_timestamped_directory)[1]
         persons_1_leafname = "persons-000001.json"
         persons_2_leafname = "persons-000002.json"
-        posts_1_leafname = "posts-000001.json"
-        posts_2_leafname = "posts-000002.json"
-        self.assertEqual(
-            set(entries),
-            {
-                persons_1_leafname,
-                persons_2_leafname,
-                posts_1_leafname,
-                posts_2_leafname,
-            },
-        )
+        self.assertEqual(set(entries), {persons_1_leafname, persons_2_leafname})
         # Get the data from those pages:
         with self.storage.open(
             join(expected_timestamped_directory, persons_1_leafname)
@@ -357,14 +347,7 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
             join(expected_timestamped_directory, persons_2_leafname)
         ) as f:
             persons_2_data = json.loads(f.read().decode("utf8"))
-        with self.storage.open(
-            join(expected_timestamped_directory, posts_1_leafname)
-        ) as f:
-            posts_1_data = json.loads(f.read().decode("utf8"))
-        with self.storage.open(
-            join(expected_timestamped_directory, posts_2_leafname)
-        ) as f:
-            posts_2_data = json.loads(f.read().decode("utf8"))
+
         # Check the previous and next links are as we expect:
         self.assertEqual(
             persons_1_data["next"],
@@ -380,20 +363,6 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
                 expected_leafname, persons_1_leafname
             ),
         )
-        self.assertEqual(
-            posts_1_data["next"],
-            "https://example.com/media/api-cache-for-wcivf/{}/{}".format(
-                expected_leafname, posts_2_leafname
-            ),
-        )
-        self.assertEqual(posts_1_data["previous"], None)
-        self.assertEqual(posts_2_data["next"], None)
-        self.assertEqual(
-            posts_2_data["previous"],
-            "https://example.com/media/api-cache-for-wcivf/{}/{}".format(
-                expected_leafname, posts_1_leafname
-            ),
-        )
         # Check that the URL of the first person is as expected,
         # as well as it being the right person:
         first_person = persons_1_data["results"][0]
@@ -402,16 +371,6 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             first_person["url"],
             "https://candidates.democracyclub.org.uk/api/next/persons/818/?format=json",
-        )
-        # Similarly, check that the URL of the first post is as expected:
-        first_post = posts_1_data["results"][0]
-        self.assertEqual(first_post["id"], self.edinburgh_east_post.slug)
-        self.assertEqual(
-            first_post["label"], "Member of Parliament for Edinburgh East"
-        )
-        self.assertEqual(
-            first_post["url"],
-            "https://candidates.democracyclub.org.uk/api/next/posts/14419/?format=json",
         )
 
     def _setup_cached_api_directory(self, dir_list):

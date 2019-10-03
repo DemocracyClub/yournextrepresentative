@@ -43,7 +43,7 @@ class ElectionSerializer(MinimalElectionSerializer):
     organization = OrganizationSerializer(read_only=True)
 
 
-class PostElectionSerializer(serializers.HyperlinkedModelSerializer):
+class BallotSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = candidates_models.Ballot
         fields = (
@@ -55,6 +55,12 @@ class PostElectionSerializer(serializers.HyperlinkedModelSerializer):
             "cancelled",
             "sopn",
         )
+
+    url = serializers.HyperlinkedIdentityField(
+        view_name="ballot-detail",
+        lookup_field="ballot_paper_id",
+        lookup_url_kwarg="ballot_paper_id",
+    )
 
     election = MinimalElectionSerializer(read_only=True)
     sopn = OfficialDocumentSerializer(read_only=True)

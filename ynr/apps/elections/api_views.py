@@ -69,9 +69,11 @@ class ElectionViewSet(viewsets.ModelViewSet):
     pagination_class = ResultsSetPagination
 
 
-class PostExtraElectionViewSet(viewsets.ModelViewSet):
+class BallotViewSet(viewsets.ReadOnlyModelViewSet):
+    lookup_field = "ballot_paper_id"
+    lookup_value_regex = "[^/]+"
     queryset = extra_models.Ballot.objects.select_related(
         "election", "post"
-    ).order_by("id")
-    serializer_class = elections.serializers.PostElectionSerializer
+    ).order_by("-election__election_date", "ballot_paper_id")
+    serializer_class = elections.serializers.BallotSerializer
     pagination_class = ResultsSetPagination
