@@ -9,9 +9,10 @@ from official_documents.serializers import OfficialDocumentSerializer
 class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = election_models.Election
-        fields = ("id", "url", "name")
+        fields = ("election_id", "url", "name", "election_date")
 
-    id = serializers.ReadOnlyField(source="slug")
+    election_id = serializers.ReadOnlyField(source="slug")
+
     url = serializers.HyperlinkedIdentityField(
         view_name="election-detail",
         lookup_field="slug",
@@ -47,13 +48,13 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = candidates_models.Ballot
         fields = (
-            "id",
             "url",
             "election",
             "winner_count",
             "ballot_paper_id",
             "cancelled",
             "sopn",
+            "candidates_locked",
         )
 
     url = serializers.HyperlinkedIdentityField(
@@ -82,3 +83,8 @@ class EmbeddedPostElectionSerializer(serializers.HyperlinkedModelSerializer):
     name = serializers.ReadOnlyField(source="election.name")
     id = serializers.ReadOnlyField(source="election.slug")
     winner_count = serializers.ReadOnlyField()
+    url = serializers.HyperlinkedIdentityField(
+        view_name="ballot-detail",
+        lookup_field="ballot_paper_id",
+        lookup_url_kwarg="ballot_paper_id",
+    )

@@ -191,7 +191,9 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             document_type=OfficialDocument.NOMINATION_PAPER,
         )
         response = self.app.get(
-            "/api/next/post_elections/{}/".format(self.dulwich_post_ballot.pk)
+            "/api/next/ballots/{}/".format(
+                self.dulwich_post_ballot.ballot_paper_id
+            )
         )
         result = response.json
         self.assertEqual(
@@ -199,9 +201,6 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             {
                 "document_type": "Nomination paper",
                 "uploaded_file": None,
-                "ballot": "http://testserver/api/next/post_elections/{}/".format(
-                    self.dulwich_post_ballot.pk
-                ),
                 "source_url": "",
             },
         )
