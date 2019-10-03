@@ -2,6 +2,9 @@ from django.conf.urls import include, url
 from django.views.decorators.cache import cache_page
 from rest_framework import routers
 
+import elections.api_views
+import parties.api_views
+import people.api_views
 from api.next import views as next_views
 from api.v09 import views as v09views
 from parties.api_views import PartyViewSet, PartyRegisterList
@@ -34,14 +37,18 @@ v09_api_router.register(
 # "Next" is the label we give to the "bleeding edge" or unstable API
 next_api_router = routers.DefaultRouter()
 next_api_router.register(
-    r"persons", next_views.PersonViewSet, basename="person"
+    r"persons", people.api_views.PersonViewSet, basename="person"
 )
 next_api_router.register(r"organizations", next_views.OrganizationViewSet)
 next_api_router.register(r"posts", next_views.PostViewSet)
-next_api_router.register(r"elections", next_views.ElectionViewSet)
-next_api_router.register(r"post_elections", next_views.PostExtraElectionViewSet)
+next_api_router.register(r"elections", elections.api_views.ElectionViewSet)
+next_api_router.register(
+    r"post_elections", elections.api_views.PostExtraElectionViewSet
+)
 next_api_router.register(r"logged_actions", next_views.LoggedActionViewSet)
-next_api_router.register(r"person_redirects", next_views.PersonRedirectViewSet)
+next_api_router.register(
+    r"person_redirects", people.api_views.PersonRedirectViewSet
+)
 
 next_api_router.register(r"candidate_results", CandidateResultViewSet)
 next_api_router.register(r"result_sets", ResultSetViewSet)
@@ -67,7 +74,7 @@ urlpatterns = [
     ),
     url(
         r"^all-parties.json$",
-        cache_page(60 * 60)(next_views.AllPartiesJSONView.as_view()),
+        cache_page(60 * 60)(parties.api_views.AllPartiesJSONView.as_view()),
         name="all-parties-json-view",
     ),
     url(r"^version.json", v09views.VersionView.as_view(), name="version"),

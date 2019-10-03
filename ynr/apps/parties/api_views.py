@@ -1,3 +1,7 @@
+import json
+
+from django.http import HttpResponse
+from django.views import View
 from rest_framework import viewsets
 from rest_framework.response import Response
 
@@ -27,3 +31,42 @@ class PartyRegisterList(viewsets.ViewSet):
             .distinct("register")
         )
         return Response(registers)
+
+
+class AllPartiesJSONView(View):
+
+    http_method_names = ["get"]
+
+    def get(self, request, *args, **kwargs):
+        register = self.request.GET.get("register", "").upper()
+        status_code = 200
+        if not register or register not in ["GB", "NI"]:
+            ret = {
+                "error": "Please provide a `register` as a GET param that equals either `NI` or `GB`"
+            }
+            status_code = 400
+        else:
+            ps = Party.objects.register(register)
+            ret = {"items": []}
+            qs = ps.party_choices(
+                exclude_deregistered=True, include_description_ids=True
+            )
+
+            for party in qs:
+                item = {}
+                if type(party[1]) == list:
+                    item["text"] = party[0]
+                    item["children"] = []
+                    for child in party[1]:
+                        item["children"].append(
+                            {"id": child[0], "text": child[1]}
+                        )
+                else:
+                    item["id"] = party[0]
+                    item["text"] = party[1]
+
+                ret["items"].append(item)
+
+        return HttpResponse(
+            json.dumps(ret), content_type="application/json", status=status_code
+        )
