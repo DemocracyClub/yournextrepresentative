@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 from api.next.serializers import OrganizationSerializer
 from elections.serializers import EmbeddedPostElectionSerializer
-from parties.serializers import PartySetSerializer
 from popolo import models as popolo_models
 
 
@@ -27,14 +26,12 @@ class PostSerializer(MinimalPostSerializer):
             "label",
             "role",
             "group",
-            "party_set",
             "organization",
             "elections",
             "memberships",
         )
 
     role = serializers.ReadOnlyField()
-    party_set = PartySetSerializer(read_only=True)
 
     organization = OrganizationSerializer()
 

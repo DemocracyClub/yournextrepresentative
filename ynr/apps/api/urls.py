@@ -4,7 +4,7 @@ from rest_framework import routers
 
 from api.next import views as next_views
 from api.v09 import views as v09views
-from parties.api_views import PartyViewSet
+from parties.api_views import PartyViewSet, PartyRegisterList
 from uk_results.views import CandidateResultViewSet, ResultSetViewSet
 
 v09_api_router = routers.DefaultRouter()
@@ -39,7 +39,6 @@ next_api_router.register(
 next_api_router.register(r"organizations", next_views.OrganizationViewSet)
 next_api_router.register(r"posts", next_views.PostViewSet)
 next_api_router.register(r"elections", next_views.ElectionViewSet)
-next_api_router.register(r"party_sets", next_views.PartySetViewSet)
 next_api_router.register(r"post_elections", next_views.PostExtraElectionViewSet)
 next_api_router.register(r"logged_actions", next_views.LoggedActionViewSet)
 next_api_router.register(r"person_redirects", next_views.PersonRedirectViewSet)
@@ -47,6 +46,9 @@ next_api_router.register(r"person_redirects", next_views.PersonRedirectViewSet)
 next_api_router.register(r"candidate_results", CandidateResultViewSet)
 next_api_router.register(r"result_sets", ResultSetViewSet)
 next_api_router.register(r"parties", PartyViewSet)
+next_api_router.register(
+    r"party_registers", PartyRegisterList, basename="party_register"
+)
 
 next_api_router.register(
     r"candidates_for_postcode",

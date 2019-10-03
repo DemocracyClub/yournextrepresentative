@@ -308,12 +308,6 @@ class ElectionViewSet(viewsets.ModelViewSet):
     pagination_class = ResultsSetPagination
 
 
-class PartySetViewSet(viewsets.ModelViewSet):
-    queryset = extra_models.PartySet.objects.order_by("id")
-    serializer_class = parties.serializers.PartySetSerializer
-    pagination_class = ResultsSetPagination
-
-
 class PostExtraElectionViewSet(viewsets.ModelViewSet):
     queryset = extra_models.Ballot.objects.select_related(
         "election", "post"

@@ -49,9 +49,3 @@ class MinimalPartySerializer(PartySerializer):
     class Meta:
         model = Party
         fields = ("ec_id", "name", "legacy_slug")
-
-
-class PartySetSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = candidates_models.PartySet
-        fields = ("id", "url", "name", "slug")
