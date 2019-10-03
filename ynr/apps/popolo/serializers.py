@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from api.next.serializers import OrganizationSerializer
 from elections.serializers import EmbeddedPostElectionSerializer
 from popolo import models as popolo_models
 
@@ -20,20 +19,9 @@ class MinimalPostSerializer(serializers.HyperlinkedModelSerializer):
 class PostSerializer(MinimalPostSerializer):
     class Meta:
         model = popolo_models.Post
-        fields = (
-            "id",
-            "url",
-            "label",
-            "role",
-            "group",
-            "organization",
-            "elections",
-            "memberships",
-        )
+        fields = ("id", "url", "label", "role", "group", "elections")
 
     role = serializers.ReadOnlyField()
-
-    organization = OrganizationSerializer()
 
     elections = EmbeddedPostElectionSerializer(
         many=True, read_only=True, source="ballot_set"

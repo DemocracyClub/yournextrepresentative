@@ -3,7 +3,6 @@ from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
 
 import people.models
 from api.helpers import JSONSerializerField
-from api.next.serializers import MembershipSerializer
 from candidates import models as candidates_models
 from people.models import PersonImage
 from popolo import models as popolo_models
@@ -88,7 +87,6 @@ class PersonSerializer(MinimalPersonSerializer):
             "birth_date",
             "death_date",
             "versions",
-            "memberships",
             "images",
             "thumbnail",
             "favourite_biscuit",
@@ -100,8 +98,6 @@ class PersonSerializer(MinimalPersonSerializer):
     email = serializers.SerializerMethodField()
 
     versions = JSONSerializerField(read_only=True)
-
-    memberships = MembershipSerializer(many=True, read_only=True)
 
     thumbnail = SizeLimitedHyperlinkedSorlImageField(
         "300x300",
@@ -130,7 +126,6 @@ class NoVersionPersonSerializer(PersonSerializer):
             "gender",
             "birth_date",
             "death_date",
-            "memberships",
             "images",
             "thumbnail",
         )
