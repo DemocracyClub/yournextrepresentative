@@ -27,36 +27,6 @@ def parse_date(date_text):
         return None
 
 
-class VersionView(View):
-
-    http_method_names = ["get"]
-
-    def get(self, request, *args, **kwargs):
-        result = {
-            "python_version": sys.version,
-            "django_version": django.get_version(),
-            "interesting_user_actions": extra_models.LoggedAction.objects.exclude(
-                action_type="set-candidate-not-elected"
-            ).count(),
-            "users_who_have_edited": User.objects.annotate(
-                edit_count=Count("loggedaction")
-            )
-            .filter(edit_count__gt=0)
-            .count(),
-        }
-        # Try to get the object name of HEAD from git:
-        try:
-            git_version = subprocess.check_output(
-                ["git", "rev-parse", "--verify", "HEAD"],
-                cwd=dirname(__file__),
-                universal_newlines=True,
-            ).strip()
-            result["git_version"] = git_version
-        except (OSError, subprocess.CalledProcessError):
-            pass
-        return HttpResponse(json.dumps(result), content_type="application/json")
-
-
 # Now the django-rest-framework based API views:
 class ResultsSetPagination(pagination.PageNumberPagination):
     page_size = 10
