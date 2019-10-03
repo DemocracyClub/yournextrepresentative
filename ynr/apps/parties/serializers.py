@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from candidates import models as candidates_models
 from parties.models import Party, PartyDescription, PartyEmblem
 
 
@@ -48,3 +49,9 @@ class MinimalPartySerializer(PartySerializer):
     class Meta:
         model = Party
         fields = ("ec_id", "name", "legacy_slug")
+
+
+class PartySetSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = candidates_models.PartySet
+        fields = ("id", "url", "name", "slug")

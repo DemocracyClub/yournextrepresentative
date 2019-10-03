@@ -14,6 +14,11 @@ from rest_framework import pagination, viewsets
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+import candidates.serializers
+import elections.serializers
+import parties.serializers
+import people.serializers
+import popolo.serializers
 from api.next import serializers
 from candidates import models as extra_models
 from compat import text_type
@@ -132,7 +137,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                 .select_related("person")
             ):
                 candidates.append(
-                    serializers.NoVersionPersonSerializer(
+                    people.serializers.NoVersionPersonSerializer(
                         instance=membership.person,
                         context={"request": request},
                         read_only=True,
@@ -251,7 +256,7 @@ class PersonViewSet(viewsets.ModelViewSet):
             )
         return queryset
 
-    serializer_class = serializers.PersonSerializer
+    serializer_class = people.serializers.PersonSerializer
     pagination_class = ResultsSetPagination
 
 
@@ -290,7 +295,7 @@ class PostViewSet(viewsets.ModelViewSet):
         .order_by("id")
     )
     lookup_field = "slug"
-    serializer_class = serializers.PostSerializer
+    serializer_class = popolo.serializers.PostSerializer
     pagination_class = ResultsSetPagination
 
 
@@ -298,14 +303,14 @@ class ElectionViewSet(viewsets.ModelViewSet):
     lookup_value_regex = r"(?!\.json$)[^/]+"
     queryset = Election.objects.order_by("id")
     lookup_field = "slug"
-    serializer_class = serializers.ElectionSerializer
+    serializer_class = elections.serializers.ElectionSerializer
     filterset_fields = ("current",)
     pagination_class = ResultsSetPagination
 
 
 class PartySetViewSet(viewsets.ModelViewSet):
     queryset = extra_models.PartySet.objects.order_by("id")
-    serializer_class = serializers.PartySetSerializer
+    serializer_class = parties.serializers.PartySetSerializer
     pagination_class = ResultsSetPagination
 
 
@@ -313,7 +318,7 @@ class PostExtraElectionViewSet(viewsets.ModelViewSet):
     queryset = extra_models.Ballot.objects.select_related(
         "election", "post"
     ).order_by("id")
-    serializer_class = serializers.PostElectionSerializer
+    serializer_class = elections.serializers.PostElectionSerializer
     pagination_class = ResultsSetPagination
 
 
@@ -325,12 +330,12 @@ class MembershipViewSet(viewsets.ModelViewSet):
 
 class LoggedActionViewSet(viewsets.ModelViewSet):
     queryset = extra_models.LoggedAction.objects.order_by("id")
-    serializer_class = serializers.LoggedActionSerializer
+    serializer_class = candidates.serializers.LoggedActionSerializer
     pagination_class = ResultsSetPagination
 
 
 class PersonRedirectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = extra_models.PersonRedirect.objects.order_by("id")
     lookup_field = "old_person_id"
-    serializer_class = serializers.PersonRedirectSerializer
+    serializer_class = people.serializers.PersonRedirectSerializer
     pagination_class = ResultsSetPagination

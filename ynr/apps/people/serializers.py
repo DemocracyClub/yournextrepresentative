@@ -1,6 +1,21 @@
 from rest_framework import serializers
+from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
 
+import people.models
+from api.helpers import JSONSerializerField
+from api.next.serializers import MembershipSerializer
+from candidates import models as candidates_models
 from people.models import PersonImage
+from popolo import models as popolo_models
+
+
+class SizeLimitedHyperlinkedSorlImageField(HyperlinkedSorlImageField):
+    def to_representation(self, value):
+        try:
+            return super().to_representation(value)
+        except ValueError:
+            # Chances are the image is too large
+            return None
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -24,3 +39,110 @@ class ImageSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, instance):
         return instance.image.url
+
+
+class OtherNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = popolo_models.OtherName
+        fields = ("name", "note")
+
+
+class IdentifierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = popolo_models.Identifier
+        fields = ("identifier", "scheme")
+
+
+class ContactDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = popolo_models.ContactDetail
+        fields = ("contact_type", "label", "note", "value")
+
+
+class SourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = popolo_models.Source
+        fields = ("note", "url")
+
+
+class MinimalPersonSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = people.models.Person
+        fields = ("id", "url", "name")
+
+
+class PersonSerializer(MinimalPersonSerializer):
+    class Meta:
+        model = people.models.Person
+        fields = (
+            "id",
+            "url",
+            "name",
+            "other_names",
+            "identifiers",
+            "honorific_prefix",
+            "honorific_suffix",
+            "sort_name",
+            "email",
+            "gender",
+            "birth_date",
+            "death_date",
+            "versions",
+            "memberships",
+            "images",
+            "thumbnail",
+            "favourite_biscuit",
+        )
+
+    identifiers = IdentifierSerializer(many=True, read_only=True)
+    other_names = OtherNameSerializer(many=True, read_only=True)
+    images = ImageSerializer(many=True, read_only=True, default=[])
+    email = serializers.SerializerMethodField()
+
+    versions = JSONSerializerField(read_only=True)
+
+    memberships = MembershipSerializer(many=True, read_only=True)
+
+    thumbnail = SizeLimitedHyperlinkedSorlImageField(
+        "300x300",
+        options={"crop": "center"},
+        source="primary_image",
+        read_only=True,
+    )
+
+    def get_email(self, obj):
+        return obj.get_email
+
+
+class NoVersionPersonSerializer(PersonSerializer):
+    class Meta:
+        model = people.models.Person
+        fields = (
+            "id",
+            "url",
+            "name",
+            "other_names",
+            "identifiers",
+            "honorific_prefix",
+            "honorific_suffix",
+            "sort_name",
+            "email",
+            "gender",
+            "birth_date",
+            "death_date",
+            "memberships",
+            "images",
+            "thumbnail",
+        )
+
+
+class PersonRedirectSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = candidates_models.PersonRedirect
+        fields = ("id", "url", "old_person_id", "new_person_id")
+
+    url = serializers.HyperlinkedIdentityField(
+        view_name="personredirect-detail",
+        lookup_field="old_person_id",
+        lookup_url_kwarg="old_person_id",
+    )
