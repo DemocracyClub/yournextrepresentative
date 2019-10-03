@@ -50,13 +50,6 @@ next_api_router.register(
     r"party_registers", PartyRegisterList, basename="party_register"
 )
 
-next_api_router.register(
-    r"candidates_for_postcode",
-    next_views.CandidatesAndElectionsForPostcodeViewSet,
-    basename="candidates-for-postcode",
-)
-
-
 urlpatterns = [
     # Router views
     url(r"^api/(?P<version>v0.9)/", include(v09_api_router.urls)),
