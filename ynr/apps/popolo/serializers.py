@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from elections.serializers import EmbeddedPostElectionSerializer
 from popolo import models as popolo_models
+from parties.serializers import MinimalPartySerializer
 
 
 class MinimalPostSerializer(serializers.HyperlinkedModelSerializer):
@@ -16,13 +16,18 @@ class MinimalPostSerializer(serializers.HyperlinkedModelSerializer):
     )
 
 
-class PostSerializer(MinimalPostSerializer):
+class NominationAndResultSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    A representation of a Membership with only the information on the ballot
+    paper, and results if we have them.
+
+    """
+
     class Meta:
-        model = popolo_models.Post
-        fields = ("id", "url", "label", "role", "group", "elections")
+        model = popolo_models.Membership
+        fields = ("elected", "party_list_position", "person", "party")
 
-    role = serializers.ReadOnlyField()
-
-    elections = EmbeddedPostElectionSerializer(
-        many=True, read_only=True, source="ballot_set"
-    )
+    elected = serializers.ReadOnlyField()
+    party_list_position = serializers.ReadOnlyField()
+    person = serializers.ReadOnlyField(source="person.name")
+    party = MinimalPartySerializer(read_only=True)

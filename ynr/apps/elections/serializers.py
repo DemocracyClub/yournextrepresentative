@@ -4,6 +4,8 @@ from api.next.serializers import OrganizationSerializer
 from candidates import models as candidates_models
 from elections import models as election_models
 from official_documents.serializers import OfficialDocumentSerializer
+from popolo.serializers import NominationAndResultSerializer
+from utils.db import LastWord
 
 
 class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
@@ -55,6 +57,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
             "cancelled",
             "sopn",
             "candidates_locked",
+            "candidates",
         )
 
     url = serializers.HyperlinkedIdentityField(
@@ -65,6 +68,23 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
 
     election = MinimalElectionSerializer(read_only=True)
     sopn = OfficialDocumentSerializer(read_only=True)
+    candidates = serializers.SerializerMethodField()
+
+    def get_candidates(self, instance):
+        qs = (
+            instance.membership_set.all()
+            .select_related("result", "person", "party")
+            .annotate(last_name=LastWord("person__name"))
+        )
+
+        order_by = ["-elected", "-result__is_winner", "-result__num_ballots"]
+        if instance.election.party_lists_in_use:
+            order_by += ["party__name", "party_list_position"]
+        else:
+            order_by += ["person__sort_name", "last_name"]
+        qs = qs.order_by(*order_by)
+
+        return NominationAndResultSerializer(qs, many=True).data
 
 
 class EmbeddedPostElectionSerializer(serializers.HyperlinkedModelSerializer):
