@@ -2,7 +2,6 @@ from rest_framework import serializers
 from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
 
 import people.models
-from api.helpers import JSONSerializerField
 from candidates import models as candidates_models
 from people.models import PersonImage
 from popolo import models as popolo_models
@@ -46,12 +45,6 @@ class OtherNameSerializer(serializers.ModelSerializer):
         fields = ("name", "note")
 
 
-class IdentifierSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = popolo_models.Identifier
-        fields = ("identifier", "scheme")
-
-
 class ContactDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = popolo_models.ContactDetail
@@ -62,6 +55,12 @@ class SourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = popolo_models.Source
         fields = ("note", "url")
+
+
+class PersonIdentifierSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = people.models.PersonIdentifier
+        fields = ("value", "value_type", "internal_identifier")
 
 
 class MinimalPersonSerializer(serializers.HyperlinkedModelSerializer):
@@ -86,18 +85,17 @@ class PersonSerializer(MinimalPersonSerializer):
             "gender",
             "birth_date",
             "death_date",
-            "versions",
             "images",
             "thumbnail",
             "favourite_biscuit",
         )
 
-    identifiers = IdentifierSerializer(many=True, read_only=True)
+    identifiers = PersonIdentifierSerializer(
+        many=True, read_only=True, source="tmp_person_identifiers"
+    )
     other_names = OtherNameSerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True, default=[])
     email = serializers.SerializerMethodField()
-
-    versions = JSONSerializerField(read_only=True)
 
     thumbnail = SizeLimitedHyperlinkedSorlImageField(
         "300x300",
@@ -108,27 +106,6 @@ class PersonSerializer(MinimalPersonSerializer):
 
     def get_email(self, obj):
         return obj.get_email
-
-
-class NoVersionPersonSerializer(PersonSerializer):
-    class Meta:
-        model = people.models.Person
-        fields = (
-            "id",
-            "url",
-            "name",
-            "other_names",
-            "identifiers",
-            "honorific_prefix",
-            "honorific_suffix",
-            "sort_name",
-            "email",
-            "gender",
-            "birth_date",
-            "death_date",
-            "images",
-            "thumbnail",
-        )
 
 
 class PersonRedirectSerializer(serializers.HyperlinkedModelSerializer):

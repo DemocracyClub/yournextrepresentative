@@ -17,6 +17,7 @@ class PersonViewSet(viewsets.ModelViewSet):
                 Membership.objects.select_related("party", "post"),
             ),
             "memberships__ballot__election",
+            "tmp_person_identifiers",
             "other_names",
             "images",
         ).order_by("id")
