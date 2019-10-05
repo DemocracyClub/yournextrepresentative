@@ -1,6 +1,8 @@
 import json
 
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views import View
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -24,6 +26,7 @@ class PartyRegisterList(viewsets.ViewSet):
     discovery of filter values in the `parties` endpoint.
     """
 
+    @method_decorator(cache_page(60 * 60 * 24))
     def list(self, request, version):
         registers = (
             Party.objects.order_by("register")
