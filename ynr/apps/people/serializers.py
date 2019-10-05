@@ -69,18 +69,37 @@ class MinimalPersonSerializer(serializers.HyperlinkedModelSerializer):
         fields = ("id", "url", "name")
 
 
+class PersonBallotsSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = popolo_models.Membership
+        fields = (
+            "ballot",
+            # "party",
+            "elected",
+            "party_list_position",
+        )
+
+    ballot = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name="ballot-detail",
+        lookup_field="ballot_paper_id",
+        lookup_url_kwarg="ballot_paper_id",
+    )
+
+
 class PersonSerializer(MinimalPersonSerializer):
     class Meta:
         model = people.models.Person
         fields = (
             "id",
             "url",
-            "name",
-            "other_names",
-            "identifiers",
             "honorific_prefix",
+            "name",
             "honorific_suffix",
+            "other_names",
             "sort_name",
+            "identifiers",
+            "ballots",
             "email",
             "gender",
             "birth_date",
@@ -96,6 +115,7 @@ class PersonSerializer(MinimalPersonSerializer):
     other_names = OtherNameSerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True, default=[])
     email = serializers.SerializerMethodField()
+    ballots = serializers.SerializerMethodField()
 
     thumbnail = SizeLimitedHyperlinkedSorlImageField(
         "300x300",
@@ -106,6 +126,21 @@ class PersonSerializer(MinimalPersonSerializer):
 
     def get_email(self, obj):
         return obj.get_email
+
+    def get_ballots(self, obj):
+        qs = (
+            obj.memberships.all()
+            .select_related("ballot", "party")
+            .order_by("ballot__election__election_date")
+        )
+        ballots = []
+        for ballot in qs:
+            ballots.append(
+                PersonBallotsSerializer(
+                    ballot, context={"request": self.context["request"]}
+                ).data
+            )
+        return ballots
 
 
 class PersonRedirectSerializer(serializers.HyperlinkedModelSerializer):
