@@ -33,9 +33,17 @@ class ElectionSerializer(MinimalElectionSerializer):
             "current",
             "organization",
             "party_lists_in_use",
+            "ballots",
         )
 
     organization = OrganizationSerializer(read_only=True)
+    ballots = serializers.HyperlinkedRelatedField(
+        source="ballot_set",
+        view_name="ballot-detail",
+        read_only=True,
+        lookup_field="ballot_paper_id",
+        many=True,
+    )
 
 
 class BallotSerializer(serializers.HyperlinkedModelSerializer):
