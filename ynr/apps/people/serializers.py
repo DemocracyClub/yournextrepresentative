@@ -146,10 +146,22 @@ class PersonSerializer(MinimalPersonSerializer):
 class PersonRedirectSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = candidates_models.PersonRedirect
-        fields = ("id", "url", "old_person_id", "new_person_id")
+        fields = (
+            "id",
+            "url",
+            "old_person_id",
+            "new_person_id",
+            "new_person_url",
+        )
 
     url = serializers.HyperlinkedIdentityField(
         view_name="personredirect-detail",
         lookup_field="old_person_id",
         lookup_url_kwarg="old_person_id",
+    )
+
+    new_person_url = serializers.HyperlinkedIdentityField(
+        view_name="person-detail",
+        lookup_field="new_person_id",
+        lookup_url_kwarg="pk",
     )
