@@ -23,7 +23,7 @@ from popolo import models as popolo_models
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = popolo_models.Organization
-        fields = ("id", "url", "name", "slug")
+        fields = ("url", "name", "slug")
 
     url = serializers.HyperlinkedIdentityField(
         view_name="organization-detail",

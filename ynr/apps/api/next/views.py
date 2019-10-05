@@ -37,15 +37,10 @@ class ResultsSetPagination(pagination.PageNumberPagination):
 class OrganizationViewSet(viewsets.ModelViewSet):
 
     queryset = (
-        Organization.objects.prefetch_related(
-            "contact_details",
-            "other_names",
-            "sources",
-            "identifiers",
-            "parent",
-            "parent",
-        ).order_by("id")
-    ).exclude(classification="Party")
+        Organization.objects.all()
+        .order_by("slug")
+        .exclude(classification="Party")
+    )
     lookup_field = "slug"
     serializer_class = serializers.OrganizationSerializer
     pagination_class = ResultsSetPagination
