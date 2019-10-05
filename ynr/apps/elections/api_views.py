@@ -1,8 +1,11 @@
 import json
 
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views import View
 from rest_framework import viewsets
+from rest_framework.response import Response
 from six import text_type
 
 import elections.serializers
@@ -13,7 +16,7 @@ from elections.uk.geo_helpers import (
     get_ballots_from_coords,
     get_ballots_from_postcode,
 )
-from elections.filters import BallotFilter
+from elections.filters import BallotFilter, election_types_choices
 
 
 class UpcomingElectionsView(View):
@@ -82,3 +85,14 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = ResultsSetPagination
 
     filterset_class = BallotFilter
+
+
+class ElectionTypesList(viewsets.ViewSet):
+    """
+    Return a list of all election types, used for
+    discovery of filter values in the `ballots` endpoint.
+    """
+
+    @method_decorator(cache_page(60 * 60 * 24))
+    def list(self, request, version):
+        return Response(election_types_choices())

@@ -41,6 +41,11 @@ next_api_router.register(
 )
 next_api_router.register(r"organizations", next_views.OrganizationViewSet)
 next_api_router.register(r"elections", elections.api_views.ElectionViewSet)
+next_api_router.register(
+    r"election_types",
+    elections.api_views.ElectionTypesList,
+    basename="election_types",
+)
 next_api_router.register(r"ballots", elections.api_views.BallotViewSet)
 next_api_router.register(r"logged_actions", next_views.LoggedActionViewSet)
 next_api_router.register(
