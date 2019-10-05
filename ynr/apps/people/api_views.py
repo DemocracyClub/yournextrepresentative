@@ -1,8 +1,11 @@
 import json
+
 from dateutil import parser
 from django.db.models import Prefetch, Q
+from django.http import Http404, HttpResponsePermanentRedirect
 from rest_framework.decorators import action
 from rest_framework import viewsets
+from rest_framework.reverse import reverse
 from rest_framework.response import Response
 
 import people.serializers
@@ -32,6 +35,27 @@ class PersonViewSet(viewsets.ModelViewSet):
                 Q(updated_at__gte=date) | Q(memberships__updated_at__gte=date)
             )
         return queryset
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            return super().retrieve(request, *args, **kwargs)
+        except Http404 as e:
+            try:
+                lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+                instance = extra_models.PersonRedirect.objects.get(
+                    old_person_id=self.kwargs[lookup_url_kwarg]
+                )
+                return HttpResponsePermanentRedirect(
+                    reverse(
+                        "person-detail",
+                        kwargs={
+                            "pk": instance.new_person_id,
+                            "version": kwargs["version"],
+                        },
+                    )
+                )
+            except extra_models.PersonRedirect.DoesNotExist:
+                raise Http404(e)
 
     @action(detail=True, methods=["get"], name="Person History")
     def history(self, request, pk=None, **kwargs):
