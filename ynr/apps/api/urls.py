@@ -37,7 +37,7 @@ v09_api_router.register(
 # "Next" is the label we give to the "bleeding edge" or unstable API
 next_api_router = routers.DefaultRouter()
 next_api_router.register(
-    r"persons", people.api_views.PersonViewSet, basename="person"
+    r"people", people.api_views.PersonViewSet, basename="person"
 )
 next_api_router.register(r"organizations", next_views.OrganizationViewSet)
 next_api_router.register(r"elections", elections.api_views.ElectionViewSet)
