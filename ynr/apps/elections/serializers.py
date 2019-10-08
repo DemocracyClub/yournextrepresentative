@@ -55,6 +55,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             "url",
             "election",
+            "post",
             "winner_count",
             "ballot_paper_id",
             "cancelled",
@@ -70,6 +71,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
     )
 
     election = MinimalElectionSerializer(read_only=True)
+    post = MinimalPostSerializer(read_only=True)
     sopn = OfficialDocumentSerializer(read_only=True)
     candidates = serializers.SerializerMethodField()
 

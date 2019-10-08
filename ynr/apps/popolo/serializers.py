@@ -4,16 +4,13 @@ from popolo import models as popolo_models
 from parties.serializers import MinimalPartySerializer
 
 
-class MinimalPostSerializer(serializers.HyperlinkedModelSerializer):
+class MinimalPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = popolo_models.Post
-        fields = ("id", "url", "label", "slug")
+        fields = ("id", "label", "slug")
 
     id = serializers.ReadOnlyField(source="slug")
     label = serializers.ReadOnlyField()
-    url = serializers.HyperlinkedIdentityField(
-        view_name="post-detail", lookup_field="slug", lookup_url_kwarg="slug"
-    )
 
 
 class NominationAndResultSerializer(serializers.HyperlinkedModelSerializer):
