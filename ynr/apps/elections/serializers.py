@@ -90,26 +90,3 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         qs = qs.order_by(*order_by)
 
         return NominationAndResultSerializer(qs, many=True).data
-
-
-class EmbeddedPostElectionSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = candidates_models.Ballot
-        fields = (
-            "winner_count",
-            "candidates_locked",
-            "name",
-            "id",
-            "url",
-            "ballot_paper_id",
-            "cancelled",
-        )
-
-    name = serializers.ReadOnlyField(source="election.name")
-    id = serializers.ReadOnlyField(source="election.slug")
-    winner_count = serializers.ReadOnlyField()
-    url = serializers.HyperlinkedIdentityField(
-        view_name="ballot-detail",
-        lookup_field="ballot_paper_id",
-        lookup_url_kwarg="ballot_paper_id",
-    )
