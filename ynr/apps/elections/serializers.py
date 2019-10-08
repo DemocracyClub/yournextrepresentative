@@ -4,14 +4,17 @@ from api.next.serializers import OrganizationSerializer
 from candidates import models as candidates_models
 from elections import models as election_models
 from official_documents.serializers import OfficialDocumentSerializer
-from popolo.serializers import NominationAndResultSerializer
+from popolo.serializers import (
+    NominationAndResultSerializer,
+    MinimalPostSerializer,
+)
 from utils.db import LastWord
 
 
 class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = election_models.Election
-        fields = ("election_id", "url", "name", "election_date")
+        fields = ("election_id", "url", "name", "election_date", "current")
 
     election_id = serializers.ReadOnlyField(source="slug")
 
