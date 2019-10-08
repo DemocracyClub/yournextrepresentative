@@ -22,9 +22,9 @@ class NominationAndResultSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = popolo_models.Membership
-        fields = ("elected", "party_list_position", "person", "party")
+        fields = ("id", "elected", "party_list_position", "name", "party")
 
     elected = serializers.ReadOnlyField()
     party_list_position = serializers.ReadOnlyField()
-    person = serializers.ReadOnlyField(source="person.name")
+    name = serializers.ReadOnlyField(source="person.name")
     party = MinimalPartySerializer(read_only=True)
