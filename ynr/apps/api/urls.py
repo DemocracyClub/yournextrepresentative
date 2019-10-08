@@ -52,8 +52,6 @@ next_api_router.register(
     r"person_redirects", people.api_views.PersonRedirectViewSet
 )
 
-next_api_router.register(r"candidate_results", CandidateResultViewSet)
-next_api_router.register(r"result_sets", ResultSetViewSet)
 next_api_router.register(r"parties", PartyViewSet)
 next_api_router.register(
     r"party_registers", PartyRegisterList, basename="party_register"
