@@ -76,6 +76,8 @@ class PersonSerializer(MinimalPersonSerializer):
         fields = (
             "id",
             "url",
+            "versions_url",
+            "history_url",
             "honorific_prefix",
             "name",
             "honorific_suffix",
@@ -91,6 +93,13 @@ class PersonSerializer(MinimalPersonSerializer):
             "thumbnail",
             "favourite_biscuit",
         )
+
+    versions_url = serializers.HyperlinkedIdentityField(
+        view_name="person-versions"
+    )
+    history_url = serializers.HyperlinkedIdentityField(
+        view_name="person-history"
+    )
 
     identifiers = PersonIdentifierSerializer(
         many=True, read_only=True, source="tmp_person_identifiers"
