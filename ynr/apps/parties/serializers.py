@@ -38,8 +38,10 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
             "descriptions",
             "legacy_slug",
         )
-        extra_kwargs = {"url": {"lookup_field": "ec_id"}}
 
+    url = serializers.HyperlinkedIdentityField(
+        view_name="party-detail", lookup_field="ec_id", lookup_url_kwarg="ec_id"
+    )
     default_emblem = PartyEmblemSerializer()
     emblems = PartyEmblemSerializer(many=True)
     descriptions = PartyDescriptionSerializer(many=True)
@@ -48,4 +50,4 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
 class MinimalPartySerializer(PartySerializer):
     class Meta:
         model = Party
-        fields = ("ec_id", "name", "legacy_slug")
+        fields = ("url", "ec_id", "name", "legacy_slug")

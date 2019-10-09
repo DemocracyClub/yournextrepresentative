@@ -66,7 +66,7 @@ class CandidacySerializer(serializers.HyperlinkedModelSerializer):
 
     elected = serializers.ReadOnlyField()
     party_list_position = serializers.ReadOnlyField()
-    party = MinimalPartySerializer(read_only=True)
+    party = serializers.SerializerMethodField()
     person = serializers.SerializerMethodField(read_only=True)
     ballot = serializers.SerializerMethodField()
     result = serializers.SerializerMethodField()
@@ -86,6 +86,9 @@ class CandidacySerializer(serializers.HyperlinkedModelSerializer):
                 result, read_only=True, context=self.context
             ).data
         return None
+
+    def get_party(self, obj):
+        return MinimalPartySerializer(obj.party, context=self.context).data
 
 
 class CandidacyOnBallotSerializer(CandidacySerializer):
