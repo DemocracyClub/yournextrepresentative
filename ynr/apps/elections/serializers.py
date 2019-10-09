@@ -5,7 +5,7 @@ from candidates import models as candidates_models
 from elections import models as election_models
 from official_documents.serializers import OfficialDocumentSerializer
 from popolo.serializers import (
-    NominationAndResultSerializer,
+    CandidacyOnBallotSerializer,
     MinimalPostSerializer,
 )
 from utils.db import LastWord
@@ -88,5 +88,6 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         else:
             order_by += ["person__sort_name", "last_name"]
         qs = qs.order_by(*order_by)
-
-        return NominationAndResultSerializer(qs, many=True).data
+        return CandidacyOnBallotSerializer(
+            qs, many=True, context=self.context
+        ).data
