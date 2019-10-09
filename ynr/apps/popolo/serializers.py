@@ -4,6 +4,7 @@ from popolo import models as popolo_models
 from candidates import models as candidates_models
 from parties.serializers import MinimalPartySerializer
 from people.models import Person
+from uk_results.models import CandidateResult
 
 
 class PersonOnBallotSerializer(serializers.HyperlinkedModelSerializer):
@@ -37,14 +38,15 @@ class MinimalBallotSerializer(serializers.HyperlinkedModelSerializer):
     )
 
 
-BASE_CANDIDACY_FIELDS = [
-    "elected",
-    "party_list_position",
-    "party",
-    # "results",
-]
+class CandidacyResultsSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = CandidateResult
+        fields = ("is_winner", "num_ballots")
 
-CANDIDACY_ON_BALLOT_FIELDS = BASE_CANDIDACY_FIELDS + ["person"]
+
+BASE_CANDIDACY_FIELDS = ["elected", "party_list_position", "party"]
+
+CANDIDACY_ON_BALLOT_FIELDS = BASE_CANDIDACY_FIELDS + ["person", "result"]
 CANDIDACY_ON_PERSON_FIELDS = BASE_CANDIDACY_FIELDS + ["ballot"]
 
 
@@ -67,6 +69,7 @@ class CandidacySerializer(serializers.HyperlinkedModelSerializer):
     party = MinimalPartySerializer(read_only=True)
     person = serializers.SerializerMethodField(read_only=True)
     ballot = serializers.SerializerMethodField()
+    result = serializers.SerializerMethodField()
 
     def get_ballot(self, obj):
         return MinimalBallotSerializer(
@@ -75,6 +78,14 @@ class CandidacySerializer(serializers.HyperlinkedModelSerializer):
 
     def get_person(self, obj):
         return PersonOnBallotSerializer(obj.person, context=self.context).data
+
+    def get_result(self, obj):
+        result = getattr(obj, "result", None)
+        if result:
+            return CandidacyResultsSerializer(
+                result, read_only=True, context=self.context
+            ).data
+        return None
 
 
 class CandidacyOnBallotSerializer(CandidacySerializer):

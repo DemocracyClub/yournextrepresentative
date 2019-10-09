@@ -9,6 +9,13 @@ from popolo.serializers import (
     MinimalPostSerializer,
 )
 from utils.db import LastWord
+from uk_results.models import ResultSet
+
+
+class ResultOnBallotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResultSet
+        fields = ("num_turnout_reported", "num_spoilt_ballots", "source")
 
 
 class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
@@ -62,6 +69,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
             "sopn",
             "candidates_locked",
             "candidates",
+            "results",
         )
 
     url = serializers.HyperlinkedIdentityField(
@@ -74,6 +82,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
     post = MinimalPostSerializer(read_only=True)
     sopn = OfficialDocumentSerializer(read_only=True)
     candidates = serializers.SerializerMethodField()
+    results = serializers.SerializerMethodField()
 
     def get_candidates(self, instance):
         qs = (
@@ -91,3 +100,11 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         return CandidacyOnBallotSerializer(
             qs, many=True, context=self.context
         ).data
+
+    def get_results(self, obj):
+        resultset = getattr(obj, "resultset", None)
+        if resultset:
+            return ResultOnBallotSerializer(
+                resultset, context=self.context
+            ).data
+        return None
