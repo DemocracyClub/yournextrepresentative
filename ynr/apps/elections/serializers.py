@@ -61,6 +61,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         model = candidates_models.Ballot
         fields = (
             "url",
+            "history_url",
             "election",
             "post",
             "winner_count",
@@ -74,6 +75,12 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
 
     url = serializers.HyperlinkedIdentityField(
         view_name="ballot-detail",
+        lookup_field="ballot_paper_id",
+        lookup_url_kwarg="ballot_paper_id",
+    )
+
+    history_url = serializers.HyperlinkedIdentityField(
+        view_name="ballot-history",
         lookup_field="ballot_paper_id",
         lookup_url_kwarg="ballot_paper_id",
     )

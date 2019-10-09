@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views import View
+from rest_framework.decorators import action
 from rest_framework import viewsets
 from rest_framework.response import Response
 from six import text_type
@@ -11,6 +12,7 @@ from six import text_type
 import elections.serializers
 from api.next.views import ResultsSetPagination
 from candidates import models as extra_models
+from candidates.serializers import LoggedActionSerializer
 from elections.models import Election
 from elections.uk.geo_helpers import (
     get_ballots_from_coords,
@@ -85,6 +87,26 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = ResultsSetPagination
 
     filterset_class = BallotFilter
+
+    @action(detail=True, methods=["get"], name="Ballot History")
+    def history(self, request, pk=None, **kwargs):
+        qs = (
+            extra_models.LoggedAction.objects.filter(
+                ballot__ballot_paper_id=kwargs["ballot_paper_id"]
+            )
+            .select_related("ballot", "user")
+            .order_by("-created")
+        )
+
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = LoggedActionSerializer(
+                page, many=True, context={"request": request}
+            )
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
 
 
 class ElectionTypesList(viewsets.ViewSet):
