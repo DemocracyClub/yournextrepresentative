@@ -68,7 +68,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
             "cancelled",
             "sopn",
             "candidates_locked",
-            "candidates",
+            "candidacies",
             "results",
         )
 
@@ -81,10 +81,10 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
     election = MinimalElectionSerializer(read_only=True)
     post = MinimalPostSerializer(read_only=True)
     sopn = OfficialDocumentSerializer(read_only=True)
-    candidates = serializers.SerializerMethodField()
+    candidacies = serializers.SerializerMethodField()
     results = serializers.SerializerMethodField()
 
-    def get_candidates(self, instance):
+    def get_candidacies(self, instance):
         qs = (
             instance.membership_set.all()
             .select_related("result", "person", "party")
