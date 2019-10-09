@@ -47,6 +47,10 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
     descriptions = PartyDescriptionSerializer(many=True)
 
 
+class PartyRegisterSerializer(serializers.Serializer):
+    register = serializers.CharField(max_length=2)
+
+
 class MinimalPartySerializer(PartySerializer):
     class Meta:
         model = Party

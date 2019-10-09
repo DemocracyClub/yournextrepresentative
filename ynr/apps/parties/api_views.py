@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from api.helpers import ResultsSetPagination
 
 from .models import Party
-from .serializers import PartySerializer
+from .serializers import PartySerializer, PartyRegisterSerializer
 
 
 class PartyViewSet(viewsets.ReadOnlyModelViewSet):
@@ -20,20 +20,22 @@ class PartyViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = ResultsSetPagination
 
 
-class PartyRegisterList(viewsets.ViewSet):
+class PartyRegisterList(viewsets.ReadOnlyModelViewSet):
     """
     Return a list of all party register values, used for
     discovery of filter values in the `parties` endpoint.
     """
 
+    pagination_class = ResultsSetPagination
+
     @method_decorator(cache_page(60 * 60 * 24))
-    def list(self, request, version):
-        registers = (
-            Party.objects.order_by("register")
-            .values_list("register", flat=True)
-            .distinct("register")
-        )
-        return Response(registers)
+    def list(self, request, version, format):
+        qs = Party.objects.order_by("register").distinct("register")
+
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = PartyRegisterSerializer(qs, many=True)
+            return self.get_paginated_response(serializer.data)
 
 
 class AllPartiesJSONView(View):
