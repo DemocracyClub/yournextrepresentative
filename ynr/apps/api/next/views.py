@@ -15,6 +15,7 @@ import candidates.serializers
 import popolo.serializers
 from api.next import serializers
 from candidates import models as extra_models
+from candidates.filters import LoggedActionAPIFilter
 from popolo.models import Membership, Organization, Post
 
 
@@ -50,3 +51,5 @@ class LoggedActionViewSet(viewsets.ModelViewSet):
     queryset = extra_models.LoggedAction.objects.order_by("id")
     serializer_class = candidates.serializers.LoggedActionSerializer
     pagination_class = ResultsSetPagination
+
+    filterset_class = LoggedActionAPIFilter
