@@ -29,10 +29,11 @@ class PartyRegisterList(viewsets.ReadOnlyModelViewSet):
     """
 
     pagination_class = ResultsSetPagination
+    queryset = Party.objects.order_by("register").distinct("register")
 
     @method_decorator(cache_page(60 * 60 * 24))
-    def list(self, request, version, format):
-        qs = Party.objects.order_by("register").distinct("register")
+    def list(self, request, version, format=None):
+        qs = self.get_queryset()
 
         page = self.paginate_queryset(qs)
         if page is not None:
