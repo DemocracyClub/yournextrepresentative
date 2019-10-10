@@ -3,6 +3,8 @@ from urllib.parse import urlencode
 import django_filters
 from django_filters.widgets import LinkWidget
 
+from django import forms
+
 from candidates.models import Ballot
 from elections.models import Election
 
@@ -26,7 +28,34 @@ def current_election_types_choices():
     return _get_election_types_choices_for_qs(qs)
 
 
-class BallotFilter(django_filters.FilterSet):
+class AnyBooleanWidget(forms.Select):
+    """
+    Same as BooleanWidget, but the default option is "any" rather than "unknown"
+    """
+
+    def __init__(self, attrs=None):
+        choices = (("", "Any"), ("true", "Yes"), ("false", "No"))
+        super().__init__(attrs, choices)
+
+
+class FutureDateFilter(django_filters.BooleanFilter):
+    def filter(self, qs, value):
+        if value:
+            qs = qs.future()
+        return qs
+
+
+class HasResultsFilter(django_filters.BooleanFilter):
+    def filter(self, qs, value):
+        if value is True:
+            return qs.exclude(resultset=None)
+        elif value is False:
+            return qs.filter(resultset=None)
+        else:
+            return qs
+
+
+class BaseBallotFilter(django_filters.FilterSet):
     def lock_status(self, queryset, name, value):
         """
         Unlocked ballots with a document but no lock suggestion
@@ -85,7 +114,35 @@ class BallotFilter(django_filters.FilterSet):
         fields = ["review_required", "has_sopn"]
 
 
-class CurrentOrFutureBallotFilter(BallotFilter):
+class BallotFilter(BaseBallotFilter):
+    """
+    Used on the API
+
+    """
+
+    election_date = django_filters.DateFilter(
+        field_name="election__election_date", label="Election Date"
+    )
+
+    election_date_range = django_filters.DateFromToRangeFilter(
+        field_name="election__election_date", label="Election Date Range"
+    )
+
+    election_id = django_filters.CharFilter(field_name="election__slug")
+
+    future = FutureDateFilter(
+        label="Election in Future", widget=AnyBooleanWidget
+    )
+    current = django_filters.BooleanFilter(
+        field_name="election__current",
+        label="Election Current",
+        widget=AnyBooleanWidget,
+    )
+
+    has_results = HasResultsFilter(label="Has Results", widget=AnyBooleanWidget)
+
+
+class CurrentOrFutureBallotFilter(BaseBallotFilter):
     """
     Same as Ballot Filter, but only present options related to current
     elections
