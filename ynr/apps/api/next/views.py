@@ -1,22 +1,12 @@
-import json
-import subprocess
-import sys
 from datetime import date, datetime
-from os.path import dirname
 
-import django
-from django.contrib.auth.models import User
-from django.db.models import Count, Prefetch
-from django.http import HttpResponse
-from django.views.generic import View
 from rest_framework import pagination, viewsets
 
-import candidates.serializers
-import popolo.serializers
+import candidates.api.next.serializers
 from api.next import serializers
 from candidates import models as extra_models
 from candidates.filters import LoggedActionAPIFilter
-from popolo.models import Membership, Organization, Post
+from popolo.models import Organization
 
 
 def parse_date(date_text):
@@ -49,7 +39,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
 
 class LoggedActionViewSet(viewsets.ModelViewSet):
     queryset = extra_models.LoggedAction.objects.order_by("id")
-    serializer_class = candidates.serializers.LoggedActionSerializer
+    serializer_class = candidates.api.next.serializers.LoggedActionSerializer
     pagination_class = ResultsSetPagination
 
     filterset_class = LoggedActionAPIFilter

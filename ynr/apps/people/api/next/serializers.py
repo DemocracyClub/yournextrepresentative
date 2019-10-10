@@ -5,7 +5,7 @@ import people.models
 from candidates import models as candidates_models
 from people.models import PersonImage
 from popolo import models as popolo_models
-from popolo.serializers import CandidacyOnPersonSerializer
+from popolo.api.next.serializers import CandidacyOnPersonSerializer
 
 
 class SizeLimitedHyperlinkedSorlImageField(HyperlinkedSorlImageField):

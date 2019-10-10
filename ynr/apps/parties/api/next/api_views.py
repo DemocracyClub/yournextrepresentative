@@ -5,12 +5,14 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views import View
 from rest_framework import viewsets
-from rest_framework.response import Response
 
 from api.helpers import ResultsSetPagination
 
-from .models import Party
-from .serializers import PartySerializer, PartyRegisterSerializer
+from parties.models import Party
+from parties.api.next.serializers import (
+    PartySerializer,
+    PartyRegisterSerializer,
+)
 
 
 class PartyViewSet(viewsets.ReadOnlyModelViewSet):

@@ -9,10 +9,10 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from six import text_type
 
-import elections.serializers
+import elections.api.next.serializers
 from api.next.views import ResultsSetPagination
 from candidates import models as extra_models
-from candidates.serializers import LoggedActionSerializer
+from candidates.api.next.serializers import LoggedActionSerializer
 from elections.models import Election
 from elections.uk.geo_helpers import (
     get_ballots_from_coords,
@@ -70,7 +70,7 @@ class ElectionViewSet(viewsets.ModelViewSet):
     lookup_value_regex = r"(?!\.json$)[^/]+"
     queryset = Election.objects.order_by("id")
     lookup_field = "slug"
-    serializer_class = elections.serializers.ElectionSerializer
+    serializer_class = elections.api.next.serializers.ElectionSerializer
     filterset_fields = ("current",)
     pagination_class = ResultsSetPagination
 
@@ -83,7 +83,7 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
         .prefetch_related("membership_set")
         .order_by("-election__election_date", "ballot_paper_id")
     )
-    serializer_class = elections.serializers.BallotSerializer
+    serializer_class = elections.api.next.serializers.BallotSerializer
     pagination_class = ResultsSetPagination
 
     filterset_class = BallotFilter

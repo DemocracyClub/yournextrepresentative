@@ -8,10 +8,10 @@ from rest_framework import viewsets
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
 
-import people.serializers
+import people.api.next.serializers
 from api.next.views import ResultsSetPagination
 from candidates import models as extra_models
-from candidates.serializers import LoggedActionSerializer
+from candidates.api.next.serializers import LoggedActionSerializer
 from people.models import Person
 from popolo.models import Membership
 
@@ -79,12 +79,12 @@ class PersonViewSet(viewsets.ModelViewSet):
     def versions(self, request, pk=None, **kwargs):
         return Response(json.loads(self.get_object().versions))
 
-    serializer_class = people.serializers.PersonSerializer
+    serializer_class = people.api.next.serializers.PersonSerializer
     pagination_class = ResultsSetPagination
 
 
 class PersonRedirectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = extra_models.PersonRedirect.objects.order_by("id")
     lookup_field = "old_person_id"
-    serializer_class = people.serializers.PersonRedirectSerializer
+    serializer_class = people.api.next.serializers.PersonRedirectSerializer
     pagination_class = ResultsSetPagination

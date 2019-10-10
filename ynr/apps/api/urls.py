@@ -2,13 +2,16 @@ from django.conf.urls import include, url
 from django.views.decorators.cache import cache_page
 from rest_framework import routers
 
-import elections.api_views
-import parties.api_views
-import people.api_views
+import elections.api.next.api_views
+import parties.api.next.api_views
+import people.api.next.api_views
 from api.next import views as next_views
 from api.v09 import views as v09views
-from parties.api_views import PartyViewSet, PartyRegisterList
-from uk_results.views import CandidateResultViewSet, ResultSetViewSet
+from parties.api.next.api_views import PartyViewSet, PartyRegisterList
+from uk_results.api.v09.api_views import (
+    CandidateResultViewSet,
+    ResultSetViewSet,
+)
 
 v09_api_router = routers.DefaultRouter()
 
@@ -37,19 +40,21 @@ v09_api_router.register(
 # "Next" is the label we give to the "bleeding edge" or unstable API
 next_api_router = routers.DefaultRouter()
 next_api_router.register(
-    r"people", people.api_views.PersonViewSet, basename="person"
+    r"people", people.api.next.api_views.PersonViewSet, basename="person"
 )
 next_api_router.register(r"organizations", next_views.OrganizationViewSet)
-next_api_router.register(r"elections", elections.api_views.ElectionViewSet)
+next_api_router.register(
+    r"elections", elections.api.next.api_views.ElectionViewSet
+)
 next_api_router.register(
     r"election_types",
-    elections.api_views.ElectionTypesList,
+    elections.api.next.api_views.ElectionTypesList,
     basename="election_types",
 )
-next_api_router.register(r"ballots", elections.api_views.BallotViewSet)
+next_api_router.register(r"ballots", elections.api.next.api_views.BallotViewSet)
 next_api_router.register(r"logged_actions", next_views.LoggedActionViewSet)
 next_api_router.register(
-    r"person_redirects", people.api_views.PersonRedirectViewSet
+    r"person_redirects", people.api.next.api_views.PersonRedirectViewSet
 )
 
 next_api_router.register(r"parties", PartyViewSet)
@@ -74,7 +79,9 @@ urlpatterns = [
     ),
     url(
         r"^all-parties.json$",
-        cache_page(60 * 60)(parties.api_views.AllPartiesJSONView.as_view()),
+        cache_page(60 * 60)(
+            parties.api.next.api_views.AllPartiesJSONView.as_view()
+        ),
         name="all-parties-json-view",
     ),
     url(r"^version.json", v09views.VersionView.as_view(), name="version"),

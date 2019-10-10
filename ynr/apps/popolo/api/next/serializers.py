@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from popolo import models as popolo_models
 from candidates import models as candidates_models
-from parties.serializers import MinimalPartySerializer
+from parties.api.next.serializers import MinimalPartySerializer
 from people.models import Person
 from uk_results.models import CandidateResult
 

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from candidates import models as candidates_models
-from people.serializers import MinimalPersonSerializer
+from people.api.next.serializers import MinimalPersonSerializer
 
 
 class LoggedActionSerializer(serializers.HyperlinkedModelSerializer):
