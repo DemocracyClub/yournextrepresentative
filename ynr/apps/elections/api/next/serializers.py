@@ -32,6 +32,11 @@ class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
     )
 
 
+class ElectionTypeSerializer(serializers.Serializer):
+    slug = serializers.CharField(max_length=50)
+    label = serializers.CharField(max_length=100, source="for_post_role")
+
+
 class ElectionSerializer(MinimalElectionSerializer):
     class Meta:
         model = election_models.Election

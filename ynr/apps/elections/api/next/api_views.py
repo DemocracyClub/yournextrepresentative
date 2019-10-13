@@ -109,12 +109,26 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-class ElectionTypesList(viewsets.ViewSet):
+class ElectionTypesList(viewsets.ReadOnlyModelViewSet):
     """
-    Return a list of all election types, used for
-    discovery of filter values in the `ballots` endpoint.
+    Return a list of all party register values, used for
+    discovery of filter values in the `parties` endpoint.
     """
 
+    pagination_class = ResultsSetPagination
+    queryset = (
+        Election.objects.order_by("for_post_role")
+        .distinct("for_post_role")
+        .values("slug", "for_post_role")
+    )
+
     @method_decorator(cache_page(60 * 60 * 24))
-    def list(self, request, version):
-        return Response(election_types_choices())
+    def list(self, request, version, format=None):
+        qs = self.get_queryset()
+
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = elections.api.next.serializers.ElectionTypeSerializer(
+                qs, many=True
+            )
+            return self.get_paginated_response(serializer.data)
