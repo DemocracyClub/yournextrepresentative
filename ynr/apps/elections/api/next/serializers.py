@@ -32,6 +32,18 @@ class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
     )
 
 
+class BallotOnElectionSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = candidates_models.Ballot
+        fields = ("url", "ballot_paper_id")
+
+    url = serializers.HyperlinkedIdentityField(
+        view_name="ballot-detail",
+        lookup_field="ballot_paper_id",
+        lookup_url_kwarg="ballot_paper_id",
+    )
+
+
 class ElectionTypeSerializer(serializers.Serializer):
     slug = serializers.CharField(max_length=50)
     label = serializers.CharField(max_length=100, source="for_post_role")
@@ -52,13 +64,12 @@ class ElectionSerializer(MinimalElectionSerializer):
         )
 
     organization = OrganizationSerializer(read_only=True)
-    ballots = serializers.HyperlinkedRelatedField(
-        source="ballot_set",
-        view_name="ballot-detail",
-        read_only=True,
-        lookup_field="ballot_paper_id",
-        many=True,
-    )
+    ballots = serializers.SerializerMethodField()
+
+    def get_ballots(self, obj):
+        return BallotOnElectionSerializer(
+            obj.ballot_set, many=True, context=self.context
+        ).data
 
 
 class BallotSerializer(serializers.HyperlinkedModelSerializer):
