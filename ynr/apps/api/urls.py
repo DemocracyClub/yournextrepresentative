@@ -1,6 +1,7 @@
 from django.conf.urls import include, url
 from django.views.decorators.cache import cache_page
 from rest_framework import routers
+from rest_framework.schemas import get_schema_view
 
 import elections.api.next.api_views
 import parties.api.next.api_views
@@ -66,6 +67,17 @@ urlpatterns = [
     # Router views
     url(r"^api/(?P<version>v0.9)/", include(v09_api_router.urls)),
     url(r"^api/(?P<version>next)/", include(next_api_router.urls)),
+    url(
+        r"^api/next/openapi",
+        get_schema_view(
+            title="Democracy Club Candidates API",
+            description="API for candidates in UK elections",
+            version="next",
+            url="/api/next/",
+            patterns=next_api_router.urls,
+        ),
+        name="openapi-schema",
+    ),
     # Standard Django views
     url(
         r"^api/current-elections",
