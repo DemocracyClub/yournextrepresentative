@@ -1,5 +1,6 @@
 from django.conf.urls import include, url
 from django.views.decorators.cache import cache_page
+from django.views.generic import TemplateView
 from rest_framework import routers
 from rest_framework.schemas import get_schema_view
 
@@ -77,6 +78,10 @@ urlpatterns = [
             patterns=next_api_router.urls,
         ),
         name="openapi-schema",
+    ),
+    url(
+        r"^api/next/docs/$",
+        TemplateView.as_view(template_name="api/api-home.html"),
     ),
     # Standard Django views
     url(
