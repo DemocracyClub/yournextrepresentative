@@ -102,7 +102,7 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 200)
         json = response.json
 
-        self.assertEqual(json["persons"], "http://testserver/api/next/persons/")
+        self.assertEqual(json["people"], "http://testserver/api/next/people/")
         self.assertEqual(
             json["organizations"], "http://testserver/api/next/organizations/"
         )
@@ -110,8 +110,8 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
             json["elections"], "http://testserver/api/next/elections/"
         )
 
-        persons_resp = self.app.get("/api/next/persons/")
-        self.assertEqual(persons_resp.status_code, 200)
+        people_resp = self.app.get("/api/next/people/")
+        self.assertEqual(people_resp.status_code, 200)
 
         organizations_resp = self.app.get("/api/next/organizations/")
         self.assertEqual(organizations_resp.status_code, 200)
@@ -127,11 +127,11 @@ class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(parties_resp.json["count"], 7)
 
     def test_person_endpoint_smoke_test(self):
-        response = self.app.get("/api/next/persons/")
+        response = self.app.get("/api/next/people/")
         result_json = response.json
         self.assertEqual(result_json["count"], 5)
 
-        response = self.app.get("/api/next/persons/2009/")
+        response = self.app.get("/api/next/people/2009/")
         result_json = response.json
         self.assertTrue(result_json["images"][0]["is_primary"])
 
