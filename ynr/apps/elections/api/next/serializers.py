@@ -32,7 +32,7 @@ class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
     )
 
 
-class BallotOnElectionSerializer(serializers.HyperlinkedModelSerializer):
+class MinimalBallotSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = candidates_models.Ballot
         fields = ("url", "ballot_paper_id")
@@ -67,7 +67,7 @@ class ElectionSerializer(MinimalElectionSerializer):
     ballots = serializers.SerializerMethodField()
 
     def get_ballots(self, obj):
-        return BallotOnElectionSerializer(
+        return MinimalBallotSerializer(
             obj.ballot_set, many=True, context=self.context
         ).data
 
