@@ -5,6 +5,7 @@ from django.db import transaction
 from candidates.models import LoggedAction
 from candidates.views.version_data import get_change_metadata
 from people.models import Person, PersonIdentifier
+from people.helpers import clean_twitter_username
 
 
 class CandidateBot(object):
@@ -13,7 +14,14 @@ class CandidateBot(object):
     and edit history.
     """
 
-    SUPPORTED_EDIT_FIELDS = ["email", "other_names", "name"]
+    SUPPORTED_EDIT_FIELDS = [
+        "email",
+        "other_names",
+        "name",
+        "twitter_username",
+        "homepage_url",
+        "facebook_page_url",
+    ]
 
     def __init__(self, person_id):
         self.user = User.objects.get(username=settings.CANDIDATE_BOT_USERNAME)
@@ -40,18 +48,25 @@ class CandidateBot(object):
             raise ValueError(
                 "CandidateBot can't edit {} yet".format(field_name)
             )
+
+        value = field_value
+
         if field_name == "email":
             # The lightest of validation
-            if "@" in field_value:
+            if "@" in value:
                 if self.person.get_email:
                     raise ValueError("Email already exists")
-                PersonIdentifier.objects.update_or_create(
-                    person=self.person, value_type=field_name, value=field_value
-                )
             else:
-                ValueError("{} is not a valid email".format(field_value))
+                ValueError("{} is not a valid email".format(value))
 
-    def save(self, source):
+        if field_name == "twitter_username":
+            value = clean_twitter_username(value)
+
+        PersonIdentifier.objects.update_or_create(
+            person=self.person, value_type=field_name, value=value
+        )
+
+    def save(self, source, action_type="person-update"):
         with transaction.atomic():
             metadata = self.get_change_metadata_for_bot(source)
             self.person.record_version(metadata)
@@ -60,7 +75,7 @@ class CandidateBot(object):
             LoggedAction.objects.create(
                 user=self.user,
                 person=self.person,
-                action_type="person-update",
+                action_type=action_type,
                 ip_address=None,
                 popit_person_new_version=metadata["version_id"],
                 source=metadata["information_source"],
@@ -73,3 +88,12 @@ class CandidateBot(object):
         A tiny wrapper around edit_fields to make adding a single field easier
         """
         self._edit_field("email", email)
+
+    def add_twitter_username(self, username):
+        self._edit_field("twitter_username", username)
+
+    def add_homepage_url(self, username):
+        self._edit_field("homepage_url", username)
+
+    def add_facebook_page_url(self, username):
+        self._edit_field("facebook_page_url", username)
