@@ -5,6 +5,7 @@ import requests
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
+from candidatebot.helpers import CandidateBot
 from elections.models import Election
 from people.models import Person
 from parties.models import Party
@@ -49,12 +50,12 @@ class Command(BaseCommand):
             # who are we to doubt them?
             person_id = url.split("/")[4]
             try:
-                return Person.objects.get(pk=person_id)
+                return Person.objects.get_by_id_with_redirects(person_id)
             except Person.DoesNotExist:
                 return None
         else:
             # All we have is a name. We might create a duplicate person,
-            # but we absolutly don't want to make a duplotate person on this
+            # but we absolutely don't want to make a duplicate person on this
             # ballot. We also have to consider that names might change, or be
             # duplicated on a ballot, so we can't just rely on name alone. Use
             # party too, and accept that there is an error margin. We'll mop
@@ -77,8 +78,13 @@ class Command(BaseCommand):
 
             # If we get here, it looks like we need to create a new person
             # This can always be undone with a merge later
-            print(name)
-            return Person.objects.create(name=name)
+            new_person = Person.objects.create(name=name)
+            bot = CandidateBot(new_person.pk)
+            bot.save(self.get_source_from_line(line))
+            return new_person
+
+    def get_source_from_line(self, line):
+        return line.get("Source", "PPC sheet importer")
 
     def get_ballot_from_line(self, line):
         ballot_paper_start = (
@@ -111,22 +117,54 @@ class Command(BaseCommand):
             (line["Candidate Name"], line["Existing Candidate Profile URL"])
         )
 
+    def add_contact_details(self, bot, person, line):
+
+        if not person.get_email and line["Email"]:
+            bot.add_email(line["Email"])
+            if line["Email Source"] and line["Source"] != line["Email Source"]:
+                # The source for the email is different, save now
+                bot.save(line["Email Source"])
+
+        if line["Twitter"]:
+            if not person.tmp_person_identifiers.filter(value=line["Twitter"]):
+                bot.add_twitter_username(line["Twitter"])
+
+        if line["Facebook"]:
+            if not person.tmp_person_identifiers.filter(value=line["Facebook"]):
+                bot.add_facebook_page_url(line["Facebook"])
+
+        if line["Website"]:
+            if not person.tmp_person_identifiers.filter(value=line["Website"]):
+                bot.add_homepage_url(line["Website"])
+
+        if any([line["Twitter"], line["Website"], line["Facebook"]]):
+            bot.save(self.get_source_from_line(line))
+
     def import_line(self, line):
         if not self.line_has_values(line):
             return
         party = self.get_party_from_line(line)
         ballot = self.get_ballot_from_line(line)
         person = self.get_person_from_line(line, ballot, party)
-        if person:
-            try:
-                Membership.objects.update_or_create(
-                    person=person, ballot=ballot, defaults={"party": party}
-                )
-            except (Membership.DoesNotExist, NotStandingValidationError) as e:
-                print(
-                    "Error creating membership for line {} ({})".format(line, e)
-                )
-            except:
-                import ipdb
+        if not person:
+            return
+        try:
+            Membership.objects.update_or_create(
+                person=person, ballot=ballot, defaults={"party": party}
+            )
 
-                ipdb.set_trace()
+        except (Membership.DoesNotExist, NotStandingValidationError) as e:
+            print("Error creating membership for line {} ({})".format(line, e))
+            return
+        except Exception as e:
+            print(e)
+            import ipdb
+
+            ipdb.set_trace()
+
+        bot = CandidateBot(person.pk)
+        bot.save(
+            self.get_source_from_line(line), action_type="candidacy-create"
+        )
+
+        self.add_contact_details(bot, person, line)
