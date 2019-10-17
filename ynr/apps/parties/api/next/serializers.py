@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from candidates import models as candidates_models
 from parties.models import Party, PartyDescription, PartyEmblem
 
 

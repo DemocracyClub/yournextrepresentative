@@ -18,7 +18,7 @@ from elections.uk.geo_helpers import (
     get_ballots_from_coords,
     get_ballots_from_postcode,
 )
-from elections.filters import BallotFilter, election_types_choices
+from elections.filters import BallotFilter
 
 
 class UpcomingElectionsView(View):

@@ -1,16 +1,8 @@
-from datetime import date, timedelta
-
 from django.core.files.storage import DefaultStorage
 from django_webtest import WebTest
-from mock import patch
 
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import (
-    ElectionFactory,
-    MembershipFactory,
-    ParliamentaryChamberFactory,
-    PostFactory,
-)
+from candidates.tests.factories import MembershipFactory
 from candidates.tests.helpers import TmpMediaRootMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
@@ -18,8 +10,6 @@ from official_documents.models import OfficialDocument
 from parties.tests.factories import PartyDescriptionFactory, PartyEmblemFactory
 from people.models import PersonImage
 from people.tests.factories import PersonFactory
-
-from .test_upcoming_elections_api import fake_requests_for_every_election
 
 
 class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
