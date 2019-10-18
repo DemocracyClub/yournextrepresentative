@@ -14,6 +14,7 @@ from uk_results.api.v09.api_views import (
     CandidateResultViewSet,
     ResultSetViewSet,
 )
+from uk_results.api.next.api_views import ResultViewSet
 
 v09_api_router = routers.DefaultRouter()
 
@@ -63,6 +64,8 @@ next_api_router.register(r"parties", PartyViewSet)
 next_api_router.register(
     r"party_registers", PartyRegisterList, basename="party_register"
 )
+next_api_router.register(r"results", ResultViewSet)
+
 
 urlpatterns = [
     # Router views

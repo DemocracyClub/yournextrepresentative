@@ -41,7 +41,9 @@ class MinimalBallotSerializer(serializers.HyperlinkedModelSerializer):
 class CandidacyResultsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CandidateResult
-        fields = ("is_winner", "num_ballots")
+        fields = ("elected", "num_ballots")
+
+    elected = serializers.ReadOnlyField(source="is_winner")
 
 
 BASE_CANDIDACY_FIELDS = ["elected", "party_list_position", "party"]
