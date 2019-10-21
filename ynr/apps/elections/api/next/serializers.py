@@ -14,7 +14,14 @@ from utils.db import LastWord
 class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = election_models.Election
-        fields = ("election_id", "url", "name", "election_date", "current")
+        fields = (
+            "election_id",
+            "url",
+            "name",
+            "election_date",
+            "current",
+            "party_lists_in_use",
+        )
 
     election_id = serializers.ReadOnlyField(source="slug")
 
@@ -96,7 +103,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
 
     election = MinimalElectionSerializer(read_only=True)
     post = MinimalPostSerializer(read_only=True)
-    sopn = OfficialDocumentSerializer(read_only=True)
+    sopn = serializers.SerializerMethodField()
     candidacies = serializers.SerializerMethodField()
 
     results_url = serializers.HyperlinkedIdentityField(
@@ -105,19 +112,26 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         lookup_url_kwarg="ballot_paper_id",
     )
 
-    def get_candidacies(self, instance):
-        qs = (
-            instance.membership_set.all()
-            .select_related("result", "person", "party")
-            .annotate(last_name=LastWord("person__name"))
-        )
+    def get_sopn(self, instance):
+        try:
+            sopn = instance.officialdocument_set.all()[0]
+        except IndexError:
+            return None
 
-        order_by = ["-elected", "-result__is_winner", "-result__num_ballots"]
+        return OfficialDocumentSerializer(instance=sopn, read_only=True).data
+
+    def get_candidacies(self, instance):
+        qs = instance.membership_set.all()
+
         if instance.election.party_lists_in_use:
-            order_by += ["party__name", "party_list_position"]
-        else:
-            order_by += ["person__sort_name", "last_name"]
-        qs = qs.order_by(*order_by)
+            order_by = [
+                "-elected",
+                "-result__is_winner",
+                "-result__num_ballots",
+                "party__name",
+                "party_list_position",
+            ]
+            qs = qs.order_by(*order_by)
         return CandidacyOnBallotSerializer(
             qs, many=True, context=self.context
         ).data

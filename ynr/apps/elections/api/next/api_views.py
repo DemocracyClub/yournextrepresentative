@@ -1,6 +1,7 @@
 import json
 
 from django.http import HttpResponse
+from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views import View
@@ -19,6 +20,9 @@ from elections.uk.geo_helpers import (
     get_ballots_from_postcode,
 )
 from elections.filters import BallotFilter
+from official_documents.models import OfficialDocument
+from popolo.models import Membership
+from utils.db import LastWord
 
 
 class UpcomingElectionsView(View):
@@ -80,7 +84,27 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_value_regex = "[^/]+"
     queryset = (
         extra_models.Ballot.objects.select_related("election", "post")
-        .prefetch_related("membership_set")
+        .prefetch_related(
+            Prefetch(
+                "membership_set",
+                queryset=Membership.objects.all()
+                .select_related("result", "person", "party")
+                .annotate(last_name=LastWord("person__name"))
+                .order_by(
+                    "-elected",
+                    "-result__is_winner",
+                    "-result__num_ballots",
+                    "person__sort_name",
+                    "last_name",
+                ),
+            ),
+            Prefetch(
+                "officialdocument_set",
+                queryset=OfficialDocument.objects.filter(
+                    document_type=OfficialDocument.NOMINATION_PAPER
+                ).order_by("modified"),
+            ),
+        )
         .order_by("-election__election_date", "ballot_paper_id")
     )
     serializer_class = elections.api.next.serializers.BallotSerializer
