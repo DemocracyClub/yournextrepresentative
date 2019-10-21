@@ -12,7 +12,7 @@ import people.api.next.serializers
 from api.next.views import ResultsSetPagination
 from candidates import models as extra_models
 from candidates.api.next.serializers import LoggedActionSerializer
-from people.models import Person
+from people.models import Person, PersonImage
 from popolo.models import Membership
 
 
@@ -21,12 +21,19 @@ class PersonViewSet(viewsets.ModelViewSet):
         queryset = Person.objects.prefetch_related(
             Prefetch(
                 "memberships",
-                Membership.objects.select_related("party", "post"),
+                Membership.objects.select_related("party", "post").order_by(
+                    "ballot__election__election_date"
+                ),
+            ),
+            Prefetch(
+                "images",
+                PersonImage.objects.filter(is_primary=True).select_related(
+                    "uploading_user"
+                ),
             ),
             "memberships__ballot__election",
             "tmp_person_identifiers",
             "other_names",
-            "images",
         ).order_by("id")
         date_qs = self.request.query_params.get("updated_gte", None)
         if date_qs:

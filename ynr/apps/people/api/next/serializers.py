@@ -108,31 +108,27 @@ class PersonSerializer(MinimalPersonSerializer):
     images = ImageSerializer(many=True, read_only=True, default=[])
     email = serializers.SerializerMethodField()
     candidacies = serializers.SerializerMethodField()
+    statement_to_voters = serializers.CharField(source="biography")
+    thumbnail = serializers.SerializerMethodField()
 
-    thumbnail = SizeLimitedHyperlinkedSorlImageField(
-        "300x300",
-        options={"crop": "center"},
-        source="primary_image",
-        read_only=True,
-    )
+    def get_thumbnail(self, instance):
+        try:
+            image = instance.images.all()[0]
+        except IndexError:
+            return None
+
+        return SizeLimitedHyperlinkedSorlImageField(
+            "300x300", options={"crop": "center"}, read_only=True, use_url=True
+        ).to_representation(image)
 
     def get_email(self, obj):
         return obj.get_email
 
     def get_candidacies(self, obj):
-        qs = (
-            obj.memberships.all()
-            .select_related("ballot", "party")
-            .order_by("ballot__election__election_date")
-        )
-        candidacies = []
-        for ballot in qs:
-            candidacies.append(
-                CandidacyOnPersonSerializer(
-                    ballot, context={"request": self.context["request"]}
-                ).data
-            )
-        return candidacies
+        qs = obj.memberships.all()
+        return CandidacyOnPersonSerializer(
+            qs, many=True, context={"request": self.context["request"]}
+        ).data
 
 
 class PersonRedirectSerializer(serializers.HyperlinkedModelSerializer):

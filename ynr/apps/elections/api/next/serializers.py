@@ -8,7 +8,6 @@ from popolo.api.next.serializers import (
     CandidacyOnBallotSerializer,
     MinimalPostSerializer,
 )
-from utils.db import LastWord
 
 
 class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
