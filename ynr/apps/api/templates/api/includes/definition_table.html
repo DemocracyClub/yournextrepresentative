@@ -1,0 +1,51 @@
+{% load api_docs %}
+{% load markdown_deux_tags %}
+<table class="table api_defs">
+{% if desc %}
+{{ desc|format_docstring|markdown }}
+{% endif %}
+  <thead>
+    <tr>
+      <th style="width:30%;">Name</th>
+      <th>Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for property_name, property_data in def_data.properties.items %}
+      <tr>
+      <td>
+        {{ property_name }}
+        {% if parent_name %}
+          <a href="#{{ def_name }}/{{ property_name }}" id="{{ def_name }}/{{ property_name }}">#</a>
+        {% endif %}
+        <p><code>{{ property_data.type }}</code></p>
+      </td>
+      <td>
+      {% if property_data.type == "object" %}
+        {%  include "api/includes/definition_table.html" with parent_name=None def_data=property_data desc=property_data.description %}
+      {% elif property_data.type == "array" %}
+        <p>An array of <code>{{ property_name }}</code>.</p>
+        {%  include "api/includes/definition_table.html" with parent_name=None def_data=property_data.items desc=property_data.items.description %}
+      {% else %}
+        <table class="table">
+          {% for prop in property_data.items %}
+            <tr>
+            {% if prop.0 == "$ref" %}
+              <th colspan="2">
+              {{ prop|link_to_definition }} object
+              </th>
+            {% else %}
+              <th>{{ prop.0|title }}</th>
+              <td>{{ prop.1|format_docstring|markdown }}</td>
+
+            {% endif %}
+            </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+      </td>
+      </tr>
+    {% endfor %}
+
+  </tbody>
+  </table>

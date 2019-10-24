@@ -2,19 +2,24 @@ from django.conf.urls import include, url
 from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView
 from rest_framework import routers
-from rest_framework.schemas import get_schema_view
 
 import elections.api.next.api_views
 import parties.api.next.api_views
 import people.api.next.api_views
 from api.next import views as next_views
 from api.v09 import views as v09views
+from api.views import (
+    APIDocsEndpointsView,
+    APIDocsDefinitionsView,
+    NextAPIDocsView,
+)
 from parties.api.next.api_views import PartyViewSet, PartyRegisterList
 from uk_results.api.v09.api_views import (
     CandidateResultViewSet,
     ResultSetViewSet,
 )
 from uk_results.api.next.api_views import ResultViewSet
+
 
 v09_api_router = routers.DefaultRouter()
 
@@ -72,18 +77,29 @@ urlpatterns = [
     url(r"^api/(?P<version>v0.9)/", include(v09_api_router.urls)),
     url(r"^api/(?P<version>next)/", include(next_api_router.urls)),
     url(
-        r"^api/next/openapi",
-        get_schema_view(
-            title="Democracy Club Candidates API",
-            description="API for candidates in UK elections",
-            version="next",
-            url="/api/next/",
-            patterns=next_api_router.urls,
-        ),
-        name="openapi-schema",
+        r"^api/docs/$", TemplateView.as_view(template_name="api/api-home.html")
     ),
     url(
-        r"^api/next/docs/$",
+        r"^api/docs/next/$",
+        NextAPIDocsView.as_view(patterns=next_api_router.urls, version="next"),
+        name="api_docs_next_home",
+    ),
+    url(
+        r"^api/docs/next/endpoints/$",
+        APIDocsEndpointsView.as_view(
+            patterns=next_api_router.urls, version="next"
+        ),
+        name="api_docs_next_endpoints",
+    ),
+    url(
+        r"^api/docs/next/definitions/$",
+        APIDocsDefinitionsView.as_view(
+            patterns=next_api_router.urls, version="next"
+        ),
+        name="api_docs_next_definitions",
+    ),
+    url(
+        r"^api/docs/v0.9/$",
         TemplateView.as_view(template_name="api/api-home.html"),
     ),
     # Standard Django views

@@ -1,3 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
+  <h1>Candidates API: <code>{{ version }}</code></h1>
+  <div class="row">
+    <div class="columns large-2">
+      <dl class="side-nav">
+        <li><a href="{% url "api_docs_next_home" %}">{{ version }} home</a></li>
+        <li><a href="{% url "api_docs_next_endpoints" %}">Endpoints</a></li>
+        <li><a href="{% url "api_docs_next_definitions" %}">Definitions</a></li>
+      </dl>
+    </div>
+    <div class="columns large-10">
+      {% block api_content %}
+
+      {% endblock %}
+    </div>
+
+  </div>
 {% endblock %}

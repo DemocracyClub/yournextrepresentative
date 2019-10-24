@@ -1,0 +1,111 @@
+{% extends "api/api-base.html" %}
+{% load api_docs %}
+{% load markdown_deux_tags %}
+{% block api_content %}
+<h2>Endpoints</h2>
+<style>
+.endpoint {
+  clear:both;
+}
+.table td {
+  vertical-align: top;
+}
+.table td:first-child {
+  font-weight: bold;
+}
+
+</style>
+<table class="table">
+<thead>
+  <tr>
+    <th>Endpoint Name</th>
+    <th>Description</th>
+  </tr>
+</thead>
+<tbody>
+{% for endpoint_name, endpoint_data in schema.paths.items %}
+  <tr>
+    <td><a href="#{{ endpoint_data.get.operationId }}">{{ endpoint_name }}</a></td>
+    <td>{{ endpoint_data.get.description }}</td>
+  </tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% for endpoint_name, endpoint_data in schema.paths.items %}
+  <div class="endpoint">
+      <h2>{{ endpoint_name }}
+        <a href="#{{ endpoint_data.get.operationId }}" id="{{ endpoint_data.get.operationId }}">#</a>
+      </h2>
+  <p>{{ endpoint_data.get.description|markdown }}</p>
+      {% with endpoint_data.get as method_data %}
+        {% if method_data.parameters %}
+          <h3>Parameters</h3>
+          <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for field in method_data.parameters %}
+            <tr>
+              <td>
+                <code>{{ field.name }}</code>
+                {% if field.required %}
+                  (required)
+                {% endif %}
+              </td>
+              <td>{{ field.description }}</td>
+              <td>{{ field.type }}</td>
+            </tr>
+
+          {% endfor %}
+          </tbody>
+          </table>
+        {% endif %}
+      {% endwith %}
+
+
+      {% with endpoint_data.get.responses as responses_data %}
+        {% if responses_data.200.schema.properties %}
+          <h3>Responses</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Value type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for name, response in responses_data.200.schema.properties.items %}
+              <tr>
+                <td>{{ name }}</td>
+                <td>{{ response.type }}</td>
+                <td>
+                  {% if "$ref" in response.items %}
+                    List of {{ response.items|link_to_definition }} objects
+                  {% else %}
+                    {{ response.format }}
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+        {% elif "$ref" in responses_data.200.schema %}
+          <p>Returns a {{ responses_data.200.schema|link_to_definition }} object</p>
+        {% endif %}
+      {% endwith %}
+  </div>
+
+
+{% endfor %}
+
+
+
+{% endblock %}
