@@ -16,7 +16,7 @@ from people.models import Person, PersonImage
 from popolo.models import Membership
 
 
-class PersonViewSet(viewsets.ModelViewSet):
+class PersonViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset = Person.objects.prefetch_related(
             Prefetch(

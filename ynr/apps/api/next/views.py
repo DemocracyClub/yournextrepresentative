@@ -25,7 +25,7 @@ class ResultsSetPagination(pagination.PageNumberPagination):
     max_page_size = 200
 
 
-class OrganizationViewSet(viewsets.ModelViewSet):
+class OrganizationViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = (
         Organization.objects.all()
@@ -37,7 +37,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     pagination_class = ResultsSetPagination
 
 
-class LoggedActionViewSet(viewsets.ModelViewSet):
+class LoggedActionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = extra_models.LoggedAction.objects.order_by("id")
     serializer_class = candidates.api.next.serializers.LoggedActionSerializer
     pagination_class = ResultsSetPagination

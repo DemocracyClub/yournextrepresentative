@@ -1,0 +1,79 @@
+{% extends "api/api-base.html" %}
+{% load markdown_deux_tags %}
+{% load static %}
+{% block content %}
+{% filter markdown %}
+# Candidates API
+
+<img src="{%  static "images/ballot-relations.png" %}">
+
+## High level concepts
+
+This API contains data on candidates standing for elections in the UK, and related data.
+
+### Elections
+
+`Elections` in this project are imported from and share identifiers with our
+[Every Election](https://elections.democracyclub.org.uk/) project.
+
+`Election` objects represent an event that elects `People` to an `Organisation`. All `Elections`
+have at least one `Ballot` as a child object.
+
+#### Fields
+##### `Slug`
+
+An `election` slug contains 3 or 4 parts:
+
+* Election type
+* Election subtype (optional)
+* Organisation
+* Date polls open
+
+For example, <a href="{% url "election-detail" version="next" slug="gla.c.2016-05-05" %}">
+<code>gla.c.2016-05-05</code></a>.
+
+For more on the ID system, see the
+[Election Identifier Reference](https://elections.democracyclub.org.uk/reference_definition/).
+
+##### `url`
+
+The URL to the election object
+
+##### `name`
+
+The name for this election
+
+##### `election_date`
+
+The date of the election, in ISO format
+
+##### `current`
+
+Current is a concept that we add to elections. Any election whose date is 3 months in the future or 20 days
+in the past is marked as current by defult, however we have the ability to mark elections as current for
+different timeframes as we see fit.
+
+##### `organization`
+
+An `organization` object with basic information on the organization that candaites are elected to.
+
+##### `party_lists_in_use`
+
+A boolean indicating if the election uses a list based voding system. If this is True then candidates
+on an ballot in this election are expect to have an integer for their `party_list_position`.
+
+##### `ballots`
+
+A list of objects containing a ballot paper ID and a URL to the full ballot object.
+
+
+### Ballots
+
+A `ballot` has candidates, and election and other meta data. It's the "lowest level" of election ID.
+
+
+
+
+
+{% endfilter %}
+{% endblock %}

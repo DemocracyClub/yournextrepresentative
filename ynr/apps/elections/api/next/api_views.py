@@ -70,7 +70,7 @@ class UpcomingElectionsView(View):
         )
 
 
-class ElectionViewSet(viewsets.ModelViewSet):
+class ElectionViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_value_regex = r"(?!\.json$)[^/]+"
     queryset = Election.objects.order_by("id")
     lookup_field = "slug"
