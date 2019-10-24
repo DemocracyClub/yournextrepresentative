@@ -6,6 +6,7 @@ from parties.models import Party, PartyDescription, PartyEmblem
 class PartyEmblemSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PartyEmblem
+        ref_name = None  # Tells swagger that this is always embedded
         fields = (
             "image",
             "description",
@@ -18,6 +19,7 @@ class PartyEmblemSerializer(serializers.HyperlinkedModelSerializer):
 class PartyDescriptionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PartyDescription
+        ref_name = None  # Tells swagger that this is always embedded
         fields = ("description", "date_description_approved")
 
 
@@ -47,10 +49,14 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PartyRegisterSerializer(serializers.Serializer):
+    class Meta:
+        ref_name = None  # Tells swagger that this is always embedded
+
     register = serializers.CharField(max_length=2)
 
 
 class MinimalPartySerializer(PartySerializer):
     class Meta:
         model = Party
+        ref_name = None  # Tells swagger that this is always embedded
         fields = ("url", "ec_id", "name", "legacy_slug")

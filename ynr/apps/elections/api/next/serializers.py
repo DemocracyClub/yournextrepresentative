@@ -13,6 +13,8 @@ from popolo.api.next.serializers import (
 class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = election_models.Election
+        ref_name = None  # Tells swagger that this is always embedded
+
         fields = (
             "election_id",
             "url",
@@ -34,6 +36,7 @@ class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
 class MinimalBallotSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = candidates_models.Ballot
+        ref_name = None  # Tells swagger that this is always embedded
         fields = ("url", "ballot_paper_id")
 
     url = serializers.HyperlinkedIdentityField(

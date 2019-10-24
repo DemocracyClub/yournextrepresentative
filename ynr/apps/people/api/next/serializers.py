@@ -44,6 +44,7 @@ class OtherNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = popolo_models.OtherName
         fields = ("name", "note")
+        ref_name = None  # Tells swagger that this is always embedded
 
 
 class ContactDetailSerializer(serializers.ModelSerializer):
@@ -61,12 +62,14 @@ class SourceSerializer(serializers.ModelSerializer):
 class PersonIdentifierSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = people.models.PersonIdentifier
+        ref_name = None  # Tells swagger that this is always embedded
         fields = ("value", "value_type", "internal_identifier")
 
 
 class MinimalPersonSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = people.models.Person
+        ref_name = None  # Tells swagger that this is always embedded
         fields = ("id", "url", "name")
 
 

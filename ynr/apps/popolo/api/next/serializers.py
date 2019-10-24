@@ -20,6 +20,7 @@ class PersonOnBallotSerializer(serializers.HyperlinkedModelSerializer):
 class MinimalPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = popolo_models.Post
+        ref_name = None  # Tells swagger that this is always embedded
         fields = ("id", "label", "slug")
 
     id = serializers.ReadOnlyField(source="slug")
@@ -30,6 +31,7 @@ class MinimalBallotSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = candidates_models.Ballot
         fields = ("url", "ballot_paper_id")
+        ref_name = None  # Tells swagger that this is always embedded
 
     url = serializers.HyperlinkedIdentityField(
         view_name="ballot-detail",
