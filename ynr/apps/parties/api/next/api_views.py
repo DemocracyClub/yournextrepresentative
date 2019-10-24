@@ -28,6 +28,7 @@ class PartyRegisterList(viewsets.ReadOnlyModelViewSet):
     discovery of filter values in the `parties` endpoint.
     """
 
+    serializer_class = PartyRegisterSerializer
     pagination_class = ResultsSetPagination
     queryset = Party.objects.order_by("register").distinct("register")
 

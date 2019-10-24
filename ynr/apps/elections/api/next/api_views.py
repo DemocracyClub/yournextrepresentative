@@ -139,6 +139,7 @@ class ElectionTypesList(viewsets.ReadOnlyModelViewSet):
     discovery of filter values in the `parties` endpoint.
     """
 
+    serializer_class = elections.api.next.serializers.ElectionTypeSerializer
     pagination_class = ResultsSetPagination
     queryset = (
         Election.objects.order_by("for_post_role")
