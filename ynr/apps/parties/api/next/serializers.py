@@ -14,6 +14,18 @@ class PartyEmblemSerializer(serializers.HyperlinkedModelSerializer):
             "ec_emblem_id",
             "default",
         )
+        swagger_schema_fields = {"description": model.__doc__}
+
+
+class DefaultPartyEmblemSerializer(PartyEmblemSerializer):
+    """
+    Simply used to change the help text aways from the PartyEmblem docstring,
+    as it's helpful to explain why this property exists.
+
+    """
+
+    class Meta(PartyEmblemSerializer.Meta):
+        swagger_schema_fields = {"description": Party.default_emblem.__doc__}
 
 
 class PartyDescriptionSerializer(serializers.HyperlinkedModelSerializer):
@@ -21,6 +33,7 @@ class PartyDescriptionSerializer(serializers.HyperlinkedModelSerializer):
         model = PartyDescription
         ref_name = None  # Tells swagger that this is always embedded
         fields = ("description", "date_description_approved")
+        swagger_schema_fields = {"description": model.__doc__}
 
 
 class PartySerializer(serializers.HyperlinkedModelSerializer):
@@ -39,11 +52,12 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
             "descriptions",
             "legacy_slug",
         )
+        swagger_schema_fields = {"description": model.__doc__}
 
     url = serializers.HyperlinkedIdentityField(
         view_name="party-detail", lookup_field="ec_id", lookup_url_kwarg="ec_id"
     )
-    default_emblem = PartyEmblemSerializer()
+    default_emblem = DefaultPartyEmblemSerializer()
     emblems = PartyEmblemSerializer(many=True)
     descriptions = PartyDescriptionSerializer(many=True)
 
@@ -60,3 +74,4 @@ class MinimalPartySerializer(PartySerializer):
         model = Party
         ref_name = None  # Tells swagger that this is always embedded
         fields = ("url", "ec_id", "name", "legacy_slug")
+        swagger_schema_fields = {"description": Party.__doc__}

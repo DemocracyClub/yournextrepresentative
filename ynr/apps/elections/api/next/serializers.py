@@ -1,3 +1,5 @@
+from drf_yasg.utils import swagger_serializer_method
+
 from rest_framework import serializers
 
 from api.next.serializers import OrganizationSerializer
@@ -24,7 +26,9 @@ class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
             "party_lists_in_use",
         )
 
-    election_id = serializers.ReadOnlyField(source="slug")
+    election_id = serializers.ReadOnlyField(
+        source="slug", label="An election ID"
+    )
 
     url = serializers.HyperlinkedIdentityField(
         view_name="election-detail",
@@ -114,6 +118,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         lookup_url_kwarg="ballot_paper_id",
     )
 
+    @swagger_serializer_method(serializer_or_field=OfficialDocumentSerializer)
     def get_sopn(self, instance):
         try:
             sopn = instance.officialdocument_set.all()[0]

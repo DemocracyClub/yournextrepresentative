@@ -80,6 +80,11 @@ class ElectionViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class BallotViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    A paginated list of all ballots
+
+    """
+
     lookup_field = "ballot_paper_id"
     lookup_value_regex = "[^/]+"
     queryset = (

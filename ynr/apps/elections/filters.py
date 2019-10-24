@@ -121,7 +121,8 @@ class BallotFilter(BaseBallotFilter):
     """
 
     election_date = django_filters.DateFilter(
-        field_name="election__election_date", label="Election Date"
+        field_name="election__election_date",
+        label="Election Date in ISO format",
     )
 
     election_date_range = django_filters.DateFromToRangeFilter(
