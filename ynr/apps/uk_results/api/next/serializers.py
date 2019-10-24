@@ -3,7 +3,7 @@ from rest_framework.reverse import reverse
 
 from parties.api.next.serializers import MinimalPartySerializer
 from popolo.api.next.serializers import (
-    MinimalBallotSerializer,
+    BallotOnCandidacySerializer,
     PersonOnBallotSerializer,
 )
 from uk_results.models import ResultSet, CandidateResult
@@ -60,5 +60,5 @@ class ResultSerializer(serializers.ModelSerializer):
             request=self.context["request"],
         )
 
-    ballot = MinimalBallotSerializer()
+    ballot = BallotOnCandidacySerializer()
     candidate_results = CandidateResultSerializer(many=True)

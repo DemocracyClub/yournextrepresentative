@@ -27,7 +27,7 @@ class MinimalPostSerializer(serializers.ModelSerializer):
     label = serializers.ReadOnlyField()
 
 
-class MinimalBallotSerializer(serializers.HyperlinkedModelSerializer):
+class BallotOnCandidacySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = candidates_models.Ballot
         fields = ("url", "ballot_paper_id")
@@ -76,7 +76,7 @@ class CandidacySerializer(serializers.HyperlinkedModelSerializer):
     result = serializers.SerializerMethodField()
 
     def get_ballot(self, obj):
-        return MinimalBallotSerializer(
+        return BallotOnCandidacySerializer(
             obj.ballot, read_only=True, context=self.context
         ).data
 
