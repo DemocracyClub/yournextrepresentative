@@ -1,25 +1,9 @@
 from os.path import exists, join
 
 from django.conf import settings
-from django.urls import reverse
 from django.views.generic import TemplateView
 
 from elections.models import Election
-
-
-class HelpApiView(TemplateView):
-    template_name = "candidates/api.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context["grouped_elections"] = Election.group_and_order_elections()
-        context["help_results_url"] = reverse("help-results")
-
-        context["base_api_url"] = self.request.build_absolute_uri(
-            reverse("api-root", kwargs={"version": "v0.9"})
-        )
-        return context
 
 
 class HelpAboutView(TemplateView):
