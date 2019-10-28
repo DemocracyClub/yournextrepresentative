@@ -62,3 +62,7 @@ class APIDocsDefinitionsView(OpenAPISchemaMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["schema"] = self.get_schema()
         return context
+
+
+class CSVDocsView(TemplateView):
+    template_name = "api/csv_docs.html"

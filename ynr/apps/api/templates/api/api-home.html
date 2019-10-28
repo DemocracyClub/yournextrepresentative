@@ -1,75 +1,35 @@
 {% extends "api/api-base.html" %}
 {% load markdown_deux_tags %}
 {% load static %}
-{% block content %}
+{% block api_content %}
 {% filter markdown %}
-# Candidates API
 
-<img src="{%  static "images/ballot-relations.png" %}">
+This site holds data on elections in the UK, including candidates, parties, results and other related data.
 
-## High level concepts
+### Usage terms
 
-This API contains data on candidates standing for elections in the UK, and related data.
-
-### Elections
-
-`Elections` in this project are imported from and share identifiers with our
-[Every Election](https://elections.democracyclub.org.uk/) project.
-
-`Election` objects represent an event that elects `People` to an `Organisation`. All `Elections`
-have at least one `Ballot` as a child object.
-
-#### Fields
-##### `Slug`
-
-An `election` slug contains 3 or 4 parts:
-
-* Election type
-* Election subtype (optional)
-* Organisation
-* Date polls open
-
-For example, <a href="{% url "election-detail" version="next" slug="gla.c.2016-05-05" %}">
-<code>gla.c.2016-05-05</code></a>.
-
-For more on the ID system, see the
-[Election Identifier Reference](https://elections.democracyclub.org.uk/reference_definition/).
-
-##### `url`
-
-The URL to the election object
-
-##### `name`
-
-The name for this election
-
-##### `election_date`
-
-The date of the election, in ISO format
-
-##### `current`
-
-Current is a concept that we add to elections. Any election whose date is 3 months in the future or 20 days
-in the past is marked as current by defult, however we have the ability to mark elections as current for
-different timeframes as we see fit.
-
-##### `organization`
-
-An `organization` object with basic information on the organization that candaites are elected to.
-
-##### `party_lists_in_use`
-
-A boolean indicating if the election uses a list based voding system. If this is True then candidates
-on an ballot in this election are expect to have an integer for their `party_list_position`.
-
-##### `ballots`
-
-A list of objects containing a ballot paper ID and a URL to the full ballot object.
+* The data on this site is provided under the [Attribution-ShareAlike 3.0 (CC BY-SA 3.0) licence](https://creativecommons.org/licenses/by-sa/3.0/).
+* Please give credit to Democracy Club when reusing this data
+* Please [read the full terms]({% url "api-terms" %})
 
 
-### Ballots
 
-A `ballot` has candidates, and election and other meta data. It's the "lowest level" of election ID.
+### Formats
+
+We have data in [CSV format]({% url "api_docs_csv" %}) or a REST API.
+
+There are currently two API versions, [v0.9](TODO) and [next]({% url "api_docs_next_home" %}).
+
+`v0.9` is stable but soon to be deprecated as it doesn't reflect the common needs users have has.
+
+It's best used for bulk downloading all data from this site because it's hard to filter or look up
+candidates by a single ballot.
+
+`next` is our "bleeding edge" or "HEAD" API version, so it's unstable but does have a more useful
+feature set and interaface. If you want to consume our API, this is a good starting point but it's
+a good idea to [contact us] before you do.
+
+We plan on creating a `v1` API version soon, that will be close to the current `next` API.
 
 
 

@@ -1,0 +1,26 @@
+{% extends "api/api-base.html" %}
+{% block api_page_title %}
+  <h2 id="csv">CSV / Excel Download</h2>
+{% endblock %}
+{% block api_content %}
+
+  <p>
+    This CSV file contains details of all candidates in the database including contact details
+  parties and elections they have stood in.
+  </p>
+
+  <p>
+  There is a row per candidacy, so if a single person has stood on 3 ballots, they will have 3 rows in the file.
+  </p>
+
+  <p><a href="{{ MEDIA_URL }}candidates-all.csv" class="button">Download all the candidates</a></p>
+
+  <h2>Election results</h2>
+
+  <p>
+  There is <a href="{% url "help-results" %}">a separate page
+  explaining how to get election results from this site</a>.
+  </p>
+
+
+{% endblock %}

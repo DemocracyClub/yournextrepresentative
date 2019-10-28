@@ -9,19 +9,26 @@ register = template.Library()
 
 
 @register.filter
-def link_to_definition(value, version="next"):
+def link_to_definition(value, version_and_label="next"):
     ref_id = None
     if type(value) in (SchemaRef, dict):
         ref_id = value["$ref"]
     if type(value) == tuple:
         ref_id = value[1]
+    if isinstance(value, str):
+        ref_id = value
 
     if ref_id:
-        class_name = ref_id.split("/")[-1]
+        if "," in version_and_label:
+            version, label = version_and_label.split(",", 1)
+        else:
+            version = version_and_label or "next"
+            label = ref_id.split("/")[-1]
+
         url = reverse("api_docs_{}_definitions".format(version))
         return mark_safe(
-            """<a href="{url}#{class_name}">{class_name}</a>""".format(
-                ref_id=ref_id, class_name=class_name, url=url
+            """<code><a href="{url}#{ref_id}">{label}</a></code>""".format(
+                ref_id=ref_id, label=label, url=url
             )
         )
     else:
