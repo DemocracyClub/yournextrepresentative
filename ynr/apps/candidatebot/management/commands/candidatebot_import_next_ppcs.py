@@ -27,6 +27,7 @@ class Command(BaseCommand):
         )
         if not election:
             raise ValueError("No future parl election found!")
+        return election
 
     @transaction.atomic()
     def handle(self, *args, **options):
