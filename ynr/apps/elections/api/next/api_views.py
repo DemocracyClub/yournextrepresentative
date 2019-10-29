@@ -5,8 +5,10 @@ from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views import View
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
 from rest_framework import viewsets
+from drf_yasg import openapi
 from rest_framework.response import Response
 from six import text_type
 
@@ -117,8 +119,26 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
 
     filterset_class = BallotFilter
 
+    def retrieve(self, request, *args, **kwargs):
+        """
+        A single `Ballot` object
+        """
+        return super().retrieve(request, *args, **kwargs)
+
+    history_response = openapi.Response("", LoggedActionSerializer)
+
+    @swagger_auto_schema(method="get", responses={200: history_response})
     @action(detail=True, methods=["get"], name="Ballot History")
     def history(self, request, pk=None, **kwargs):
+        """
+        A list of `LoggedAction` objects for this Ballot
+
+        Returns a list of `LoggedAction` objects filtered by this ballot and
+        ordered by the date it was created.
+
+        Typically, this includes locking, unlocking events and entering results
+
+        """
         qs = (
             extra_models.LoggedAction.objects.filter(
                 ballot__ballot_paper_id=kwargs["ballot_paper_id"]
@@ -140,8 +160,7 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ElectionTypesList(viewsets.ReadOnlyModelViewSet):
     """
-    Return a list of all party register values, used for
-    discovery of filter values in the `parties` endpoint.
+    A list of election types as defined in [EveryElection](https://elections.democracyclub.org.uk/election_types/)
     """
 
     serializer_class = elections.api.next.serializers.ElectionTypeSerializer
@@ -151,6 +170,12 @@ class ElectionTypesList(viewsets.ReadOnlyModelViewSet):
         .distinct("for_post_role")
         .values("slug", "for_post_role")
     )
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        A single `ElectionType` object
+        """
+        return super().retrieve(request, *args, **kwargs)
 
     @method_decorator(cache_page(60 * 60 * 24))
     def list(self, request, version, format=None):

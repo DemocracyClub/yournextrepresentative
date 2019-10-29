@@ -12,7 +12,7 @@ register = template.Library()
 def link_to_definition(value, version_and_label="next"):
     ref_id = None
     if type(value) in (SchemaRef, dict):
-        ref_id = value["$ref"]
+        ref_id = value["$ref"].split("/")[-1]
     if type(value) == tuple:
         ref_id = value[1]
     if isinstance(value, str):

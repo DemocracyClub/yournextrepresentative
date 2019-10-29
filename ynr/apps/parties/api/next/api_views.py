@@ -16,10 +16,21 @@ from parties.api.next.serializers import (
 
 
 class PartyViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+
+
+    """
+
     queryset = Party.objects.all().prefetch_related("emblems", "descriptions")
     serializer_class = PartySerializer
     lookup_field = "ec_id"
     pagination_class = ResultsSetPagination
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        A single `Party` object
+        """
+        return super().retrieve(request, *args, **kwargs)
 
 
 class PartyRegisterList(viewsets.ReadOnlyModelViewSet):
@@ -31,6 +42,12 @@ class PartyRegisterList(viewsets.ReadOnlyModelViewSet):
     serializer_class = PartyRegisterSerializer
     pagination_class = ResultsSetPagination
     queryset = Party.objects.order_by("register").distinct("register")
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        A single `PartyRegister` object
+        """
+        return super().retrieve(request, *args, **kwargs)
 
     @method_decorator(cache_page(60 * 60 * 24))
     def list(self, request, version, format=None):
