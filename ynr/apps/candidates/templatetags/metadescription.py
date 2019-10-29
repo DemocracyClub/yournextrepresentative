@@ -15,7 +15,7 @@ def metadescription(person, last_candidacy, today):
             "election": election.name,
             "name": person.name,
             "party": last_party_name,
-            "post": last_candidacy.post.label,
+            "post": last_candidacy.ballot.post.label,
         }
         if is_post_election(election, today):
             if last_party_name == "Independent" % args:
