@@ -1,6 +1,6 @@
 from django.conf.urls import include, url
 from django.views.decorators.cache import cache_page
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 from rest_framework import routers
 
 import elections.api.next.api_views
@@ -78,16 +78,21 @@ urlpatterns = [
     url(r"^api/(?P<version>v0.9)/", include(v09_api_router.urls)),
     url(r"^api/(?P<version>next)/", include(next_api_router.urls)),
     url(
-        r"^api/$",
+        r"^api/docs/$",
         TemplateView.as_view(template_name="api/api-home.html"),
         name="api-home",
     ),
     url(
-        r"^api/terms/$",
+        r"^api/$",
+        RedirectView.as_view(url="/api/docs/"),
+        name="api-docs-redirect",
+    ),
+    url(
+        r"^api/docs/terms/$",
         TemplateView.as_view(template_name="api/terms.html"),
         name="api-terms",
     ),
-    url(r"^api/csv/$", CSVDocsView.as_view(), name="api_docs_csv"),
+    url(r"^api/docs/csv/$", CSVDocsView.as_view(), name="api_docs_csv"),
     url(
         r"^api/docs/next/$",
         NextAPIDocsView.as_view(patterns=next_api_router.urls, version="next"),
@@ -106,10 +111,6 @@ urlpatterns = [
             patterns=next_api_router.urls, version="next"
         ),
         name="api_docs_next_definitions",
-    ),
-    url(
-        r"^api/docs/v0.9/$",
-        TemplateView.as_view(template_name="api/api-home.html"),
     ),
     # Standard Django views
     url(

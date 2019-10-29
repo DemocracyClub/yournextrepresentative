@@ -117,6 +117,9 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
 
     def test_api_home(self):
         response = self.app.get("/api/")
+        self.assertEqual(response.status_code, 302)
+
+        response = self.app.get("/api/docs/")
         self.assertEqual(response.status_code, 200)
 
         response = self.app.get("/api/v0.8", expect_errors=True)
