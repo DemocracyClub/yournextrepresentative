@@ -20,9 +20,7 @@ def get_candidacy(person, election):
             )
         else:
             memberships_qs = person.memberships.all()
-        return memberships_qs.get(
-            role=election.candidate_membership_role, ballot__election=election
-        )
+        return memberships_qs.get(ballot__election=election)
     except Membership.DoesNotExist:
         return None
 
@@ -54,7 +52,7 @@ def post_in_election(person, election):
     if candidacy:
         link = '<a href="{cons_url}">{cons_name}</a>'.format(
             cons_url=candidacy.ballot.get_absolute_url(),
-            cons_name=candidacy.post.short_label,
+            cons_name=candidacy.ballot.post.short_label,
         )
         result = '<span class="constituency-value-standing-link">{}'.format(
             link
