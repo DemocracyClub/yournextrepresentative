@@ -551,7 +551,7 @@ class Person(Timestampable, models.Model):
                 initial_data[standing_key] = "not-standing"
             elif candidacy:
                 initial_data[standing_key] = "standing"
-                post_id = candidacy.post.slug
+                post_id = candidacy.ballot.post.slug
                 initial_data[constituency_key] = post_id
                 from candidates.models import PartySet
 
