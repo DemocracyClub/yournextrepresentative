@@ -72,8 +72,8 @@ class Party(TimeStampedModel):
             This field will be removed in the future in favour of the `ec_id`.
             """,
     )
-    current_candidates = models.IntegerField(default=0)
-    total_candidates = models.IntegerField(default=0)
+    current_candidates = models.PositiveSmallIntegerField(default=0)
+    total_candidates = models.PositiveIntegerField(default=0)
 
     objects = PartyQuerySet.as_manager()
 
@@ -181,7 +181,7 @@ class PartyEmblem(TimeStampedModel):
     party = models.ForeignKey(
         Party, on_delete=models.CASCADE, related_name="emblems"
     )
-    ec_emblem_id = models.IntegerField(primary_key=True)
+    ec_emblem_id = models.PositiveIntegerField(primary_key=True)
     image = models.ImageField(upload_to=emblem_upload_path)
     description = models.CharField(max_length=255)
     date_approved = models.DateField(null=True)

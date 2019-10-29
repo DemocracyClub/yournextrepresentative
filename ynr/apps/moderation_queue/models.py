@@ -69,10 +69,10 @@ class QueuedImage(models.Model):
         User, blank=True, null=True, on_delete=models.CASCADE
     )
 
-    crop_min_x = models.IntegerField(blank=True, null=True)
-    crop_min_y = models.IntegerField(blank=True, null=True)
-    crop_max_x = models.IntegerField(blank=True, null=True)
-    crop_max_y = models.IntegerField(blank=True, null=True)
+    crop_min_x = models.PositiveIntegerField(blank=True, null=True)
+    crop_min_y = models.PositiveIntegerField(blank=True, null=True)
+    crop_max_x = models.PositiveIntegerField(blank=True, null=True)
+    crop_max_y = models.PositiveIntegerField(blank=True, null=True)
 
     detection_metadata = models.TextField(blank=True)
 
