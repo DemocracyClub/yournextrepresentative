@@ -14,10 +14,10 @@ class Party(TimeStampedModel):
     fewer parties (that is, 0, 1 or 2 parties).
 
     To save representing this in the data model (and all the complexities that
-    would arise) we make three types of "psudo-party" objects:
+    would arise) we make three types of "pseudo-party" objects:
 
     1. "Independent" (standing for 0 parties) is given the ID "ynmp-party:2"
-    2. Join parties (candidate standing for two parties) are each given a
+    2. Joint parties (candidate standing for two parties) are each given a
        pseudo-party. These parties are guesses at by looking at the descriptions
        in the source data. For example, a description might look like:
 
@@ -37,7 +37,7 @@ class Party(TimeStampedModel):
         verbose_name="Electoral Commission Idenfitier",
         help_text="""
             An ID issued by The Electoral Commission in their party register,
-            with the exception of Democracy Club added IDs for special parties
+            with the exception of Democracy Club psuedo IDs for special parties
         """,
     )
     name = models.CharField(max_length=255, verbose_name="Party name")
