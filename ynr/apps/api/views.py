@@ -6,6 +6,8 @@ from rest_framework.request import Request
 from drf_yasg import openapi
 from drf_yasg.generators import OpenAPISchemaGenerator
 
+from elections.models import Election
+
 
 class OpenAPISchemaMixin:
     version = None
@@ -66,3 +68,19 @@ class APIDocsDefinitionsView(OpenAPISchemaMixin, TemplateView):
 
 class CSVDocsView(TemplateView):
     template_name = "api/csv_docs.html"
+
+
+class CSVListView(TemplateView):
+    template_name = "api/csv_list.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        base_qs = Election.objects.all().order_by(
+            "current", "-election_date", "slug"
+        )
+        context["current_elections"] = base_qs.current()
+        context["future_elections"] = base_qs.future().exclude(current=True)
+        context["past_elections"] = base_qs.past().exclude(current=True)
+
+        return context

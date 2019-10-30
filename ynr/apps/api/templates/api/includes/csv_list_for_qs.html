@@ -1,0 +1,27 @@
+{% regroup election_qs by election_date as elections_by_date %}
+  {% for grouper, election_list in elections_by_date %}
+    <h3>{{ grouper }}</h3>
+    <a class="button small">CSV of all candidates for all elections on {{ grouper }}</a>
+    <table class="table">
+    <thead>
+      <tr>
+        <th style="width:50%">Election Slug</th>
+        <th>Election Name</th>
+        <th style="width:10%">Data URL</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for election in election_list %}
+      <tr>
+      <td><code><a href="{{ election.get_absolute_url }}">{{ election.slug }}</a></code></td>
+      <td>{{ election.name }}</td>
+      <td>
+        <a href="{{ MEDIA_URL }}candidates-{{ election.slug }}.csv">CSV</a> |
+        <a href="{% url "election-detail" version="next" slug=election.slug %}">JSON</a>
+      </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+    </table>
+  {% endfor %}

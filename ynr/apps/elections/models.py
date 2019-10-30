@@ -15,6 +15,9 @@ class ElectionQuerySet(models.QuerySet):
     def future(self):
         return self.filter(election_date__gt=timezone.now())
 
+    def past(self):
+        return self.filter(election_date__lt=timezone.now())
+
     def current_or_future(self):
         return self.filter(
             models.Q(current=True) | models.Q(election_date__gt=timezone.now())

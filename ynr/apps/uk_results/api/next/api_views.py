@@ -8,7 +8,7 @@ from uk_results.api.next.serializers import ResultSerializer
 
 class ResultViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "ballot__ballot_paper_id"
-    lookup_value_regex = "[^/]+"
+    lookup_value_regex = r"(?!\.json$)[^/]+"
     lookup_url_kwarg = "ballot_paper_id"
     queryset = (
         ResultSet.objects.select_related("ballot")
