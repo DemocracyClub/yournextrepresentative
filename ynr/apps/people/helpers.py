@@ -132,11 +132,9 @@ def mark_as_standing(person, election_data, post, party, party_list_position):
     # which would be lost if we deleted and recreated the membership.
     # Go through the person's existing candidacies for this election:
     for existing_membership in Membership.objects.filter(
-        ballot__election=election_data,
-        role=election_data.candidate_membership_role,
-        person=person,
+        ballot__election=election_data, person=person
     ):
-        if existing_membership.post == post:
+        if existing_membership.ballot.post == post:
             membership = existing_membership
         else:
             membership_ids_to_remove.add(existing_membership.id)
@@ -145,7 +143,6 @@ def mark_as_standing(person, election_data, post, party, party_list_position):
         membership = Membership.objects.create(
             post=post,
             person=person,
-            role=election_data.candidate_membership_role,
             ballot=election_data.ballot_set.get(post=post),
         )
     # Update the party list position in case it's changed:
@@ -235,6 +232,6 @@ def clean_wikidata_id(identifier):
     if m:
         identifier = m.group(2)
     identifier = identifier.upper()
-    if not re.match("Q[\d]+", identifier):
+    if not re.match(r"Q[\d]+", identifier):
         raise ValueError("Wikidata ID be a 'Q12345' type identifier")
     return identifier
