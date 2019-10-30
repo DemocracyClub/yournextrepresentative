@@ -8,7 +8,6 @@ celery[redis]==4.3.0
 celery-haystack==0.10
 certifi>=2017.4.17
 cffi>=1.7
-coreapi==2.3.3
 coverage>=3.6
 cryptography==2.7
 decorator==4.4.0
