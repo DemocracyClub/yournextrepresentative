@@ -1,75 +1,21 @@
-import json
-
-from django.http import HttpResponse
 from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from django.views import View
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework.decorators import action
-from rest_framework import viewsets
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from six import text_type
 
 import elections.api.next.serializers
 from api.next.views import ResultsSetPagination
 from candidates import models as extra_models
 from candidates.api.next.serializers import LoggedActionSerializer
-from elections.models import Election
-from elections.uk.geo_helpers import (
-    get_ballots_from_coords,
-    get_ballots_from_postcode,
-)
 from elections.filters import BallotFilter
+from elections.models import Election
 from official_documents.models import OfficialDocument
 from popolo.models import Membership
 from utils.db import LastWord
-
-
-class UpcomingElectionsView(View):
-
-    http_method_names = ["get"]
-
-    def get(self, request, *args, **kwargs):
-        postcode = request.GET.get("postcode", None)
-        coords = request.GET.get("coords", None)
-
-        # TODO: postcode may not make sense everywhere
-        errors = None
-        if not postcode and not coords:
-            errors = {"error": "Postcode or Co-ordinates required"}
-
-        try:
-            if coords:
-                ballots = get_ballots_from_coords(coords)
-            else:
-                ballots = get_ballots_from_postcode(postcode)
-        except Exception as e:
-            errors = {"error": e.message}
-
-        if errors:
-            return HttpResponse(
-                json.dumps(errors), status=400, content_type="application/json"
-            )
-
-        results = []
-        ballots = ballots.select_related("post", "election")
-        for ballot in ballots:
-            results.append(
-                {
-                    "post_name": ballot.post.label,
-                    "post_slug": ballot.post.slug,
-                    "organization": ballot.post.organization.name,
-                    "election_date": text_type(ballot.election.election_date),
-                    "election_name": ballot.election.name,
-                    "election_id": ballot.election.slug,
-                }
-            )
-
-        return HttpResponse(
-            json.dumps(results), content_type="application/json"
-        )
 
 
 class ElectionViewSet(viewsets.ReadOnlyModelViewSet):
