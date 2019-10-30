@@ -124,7 +124,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
 
         for candidacy in candidacies:
             text = """{election}: {post} – {party}""".format(
-                post=candidacy.post.short_label,
+                post=candidacy.ballot.post.short_label,
                 election=candidacy.ballot.election.name,
                 party=candidacy.party.name,
             )

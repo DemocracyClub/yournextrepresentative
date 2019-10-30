@@ -112,7 +112,7 @@ def upload_photo_url(request, person_id):
         try:
             img_temp_filename = download_image_from_url(image_url)
         except ImageDownloadException as ide:
-            return HttpResponseBadRequest(unicode(ide).encode("utf-8"))
+            return HttpResponseBadRequest(str(ide).encode("utf-8"))
         try:
             queued_image = QueuedImage(
                 why_allowed=url_form.cleaned_data["why_allowed_url"],
@@ -209,7 +209,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 image_search_query += ' "{}"'.format(
                     tidy_party_name(party.name)
                 )
-            post = last_candidacy.post
+            post = last_candidacy.ballot.post
             if post is not None:
                 image_search_query += ' "{}"'.format(post.label)
         return "https://www.google.co.uk/search?tbm=isch&q={}".format(

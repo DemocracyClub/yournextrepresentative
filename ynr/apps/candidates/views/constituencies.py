@@ -118,7 +118,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
                         ballot__election=self.election_data
                     ).exclude(elected=True)
                     for candidacy in losing_candidacies:
-                        if candidacy.elected != False:
+                        if candidacy.elected is not False:
                             candidacy.elected = False
                             candidacy.save()
                             candidate = candidacy.person
@@ -157,9 +157,9 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
                     ResultEvent.objects.create(
                         election=self.election_data,
                         winner=candidacy.person,
-                        old_post_id=candidacy.post.slug,
-                        old_post_name=candidacy.post.label,
-                        post=candidacy.post,
+                        old_post_id=candidacy.ballot.post.slug,
+                        old_post_name=candidacy.ballot.post.label,
+                        post=candidacy.ballot.post,
                         winner_party=candidacy.party,
                         source=source,
                         user=self.request.user,

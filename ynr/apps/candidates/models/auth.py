@@ -52,7 +52,7 @@ def get_constituency_lock(user, post, election):
 
 def check_creation_allowed(user, new_candidacies):
     for candidacy in new_candidacies:
-        post = candidacy.post
+        post = candidacy.ballot.post
         election = candidacy.ballot.election
         dummy, edits_allowed = get_constituency_lock(user, post, election)
         if not edits_allowed:

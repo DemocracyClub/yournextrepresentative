@@ -86,7 +86,6 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         candidacy = person.memberships.first()
 
         self.assertEqual(candidacy.post.slug, "65808")
-        self.assertEqual(candidacy.role, "Candidate")
         self.assertEqual(candidacy.party.legacy_slug, "party:53")
         self.assertEqual(candidacy.party.ec_id, "PP53")
         self.assertEqual(candidacy.ballot.election_id, self.election.id)
