@@ -47,6 +47,7 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
                     "-elected",
                     "-result__is_winner",
                     "-result__num_ballots",
+                    "party_list_position",
                     "person__sort_name",
                     "last_name",
                 ),
