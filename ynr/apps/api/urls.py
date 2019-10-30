@@ -12,7 +12,6 @@ from api.views import (
     APIDocsEndpointsView,
     APIDocsDefinitionsView,
     NextAPIDocsView,
-    CSVDocsView,
     CSVListView,
 )
 from parties.api.next.api_views import PartyViewSet, PartyRegisterList
@@ -93,8 +92,7 @@ urlpatterns = [
         TemplateView.as_view(template_name="api/terms.html"),
         name="api-terms",
     ),
-    url(r"^api/docs/csv/$", CSVDocsView.as_view(), name="api_docs_csv"),
-    url(r"^api/csv_list/$", CSVListView.as_view(), name="api_csv_list"),
+    url(r"^api/docs/csv/$", CSVListView.as_view(), name="api_docs_csv"),
     url(
         r"^api/docs/next/$",
         NextAPIDocsView.as_view(patterns=next_api_router.urls, version="next"),

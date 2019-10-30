@@ -66,10 +66,6 @@ class APIDocsDefinitionsView(OpenAPISchemaMixin, TemplateView):
         return context
 
 
-class CSVDocsView(TemplateView):
-    template_name = "api/csv_docs.html"
-
-
 class CSVListView(TemplateView):
     template_name = "api/csv_list.html"
 
