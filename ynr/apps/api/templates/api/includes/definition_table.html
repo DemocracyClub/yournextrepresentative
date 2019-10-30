@@ -1,9 +1,9 @@
 {% load api_docs %}
 {% load markdown_deux_tags %}
-<table class="table api_defs">
 {% if desc %}
 {{ desc|format_docstring|markdown }}
 {% endif %}
+<table class="table api_defs">
   <thead>
     <tr>
       <th style="width:30%;">Name</th>

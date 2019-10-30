@@ -104,6 +104,7 @@ class CandidacyOnBallotSerializer(CandidacySerializer):
     class Meta:
         model = popolo_models.Membership
         fields = CANDIDACY_ON_BALLOT_FIELDS
+        ref_name = None  # Tells swagger that this is always embedded
 
 
 class CandidacyOnPersonSerializer(CandidacySerializer):

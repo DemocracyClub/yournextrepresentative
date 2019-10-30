@@ -70,8 +70,9 @@ class ElectionSerializer(MinimalElectionSerializer):
         )
 
     organization = OrganizationSerializer(read_only=True)
-    ballots = serializers.SerializerMethodField()
+    ballots = serializers.SerializerMethodField(read_only=True)
 
+    @swagger_serializer_method(serializer_or_field=MinimalBallotSerializer)
     def get_ballots(self, obj):
         return MinimalBallotSerializer(
             obj.ballot_set, many=True, context=self.context
@@ -127,7 +128,14 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
 
         return OfficialDocumentSerializer(instance=sopn, read_only=True).data
 
+    @swagger_serializer_method(serializer_or_field=CandidacyOnBallotSerializer)
     def get_candidacies(self, instance):
+        """
+        A candidacy represents a `Person` standing on this `Ballot`.
+
+        This is different to simply insluding a `Person` object, as a person
+        can stand more than once, and stand for different parties.
+        """
         qs = instance.membership_set.all()
 
         if instance.election.party_lists_in_use:
