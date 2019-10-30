@@ -15,7 +15,7 @@
 }
 
 </style>
-<table class="table">
+<table class="table api_defs">
 <thead>
   <tr>
     <th>Endpoint Name</th>
@@ -26,7 +26,7 @@
 {% for endpoint_name, endpoint_data in schema.paths.items %}
   <tr>
     <td><a href="#{{ endpoint_data.get.operationId }}">{{ endpoint_name }}</a></td>
-    <td>{{ endpoint_data.get.description }}</td>
+    <td>{{ endpoint_data.get.description|markdown }}</td>
   </tr>
 {% endfor %}
 </tbody>
@@ -41,7 +41,7 @@
       {% with endpoint_data.get as method_data %}
         {% if method_data.parameters %}
           <h3>Parameters</h3>
-          <table>
+          <table class="api_defs table">
           <thead>
             <tr>
               <th>Name</th>
@@ -58,7 +58,7 @@
                   (required)
                 {% endif %}
               </td>
-              <td>{{ field.description }}</td>
+              <td>{{ field.description|markdown }}</td>
               <td>{{ field.type }}</td>
             </tr>
 
@@ -72,7 +72,7 @@
       {% with endpoint_data.get.responses as responses_data %}
         {% if responses_data.200.schema.properties %}
           <h3>Responses</h3>
-          <table>
+          <table class="table">
             <thead>
               <tr>
                 <th>Name</th>

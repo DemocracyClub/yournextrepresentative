@@ -87,6 +87,7 @@ class BaseBallotFilter(django_filters.FilterSet):
         method="lock_status",
         widget=LinkWidget(),
         label="Lock status",
+        help_text="One of `locked`, `suggestion` or `unlocked`.",
         choices=[
             ("locked", "Locked"),
             ("suggestion", "Lock suggestion"),
@@ -99,6 +100,8 @@ class BaseBallotFilter(django_filters.FilterSet):
         method="has_sopn_filter",
         widget=LinkWidget(),
         label="Has SoPN",
+        help_text="""Boolean, `1` for ballots that have a
+            SOPN uploaded or `0` for ballots without SOPNs""",
         choices=[(1, "Yes"), (0, "No")],
     )
 
@@ -107,6 +110,7 @@ class BaseBallotFilter(django_filters.FilterSet):
         method="election_type_filter",
         choices=election_types_choices,
         label="Election Type",
+        help_text="A valid [election type](https://elections.democracyclub.org.uk/election_types/)",
     )
 
     class Meta:
@@ -123,24 +127,49 @@ class BallotFilter(BaseBallotFilter):
     election_date = django_filters.DateFilter(
         field_name="election__election_date",
         label="Election Date in ISO format",
+        help_text="Election Date in ISO format",
     )
 
     election_date_range = django_filters.DateFromToRangeFilter(
-        field_name="election__election_date", label="Election Date Range"
+        field_name="election__election_date",
+        label="Election Date Range",
+        help_text="""Use `election_date_range_before` and
+        `election_date_range_after` with ISO dates to get ballots
+        inside this range.
+        """,
     )
 
-    election_id = django_filters.CharFilter(field_name="election__slug")
+    election_id = django_filters.CharFilter(
+        field_name="election__slug",
+        help_text="""An election
+        [slug](/api/docs/next/definitions/#Election/slug), used to get all
+        ballots for a given election""",
+    )
 
     future = FutureDateFilter(
-        label="Election in Future", widget=AnyBooleanWidget
+        label="Election in Future",
+        widget=AnyBooleanWidget,
+        help_text="Boolean. Election dates in the future.",
     )
     current = django_filters.BooleanFilter(
         field_name="election__current",
         label="Election Current",
         widget=AnyBooleanWidget,
+        help_text="""Boolean. Elections are typically marked as `current` when
+        the election date is 90 days in the future and 20 days in the past.
+
+This may change depending on the elections. Used to determine if
+        Democracy Club considers this election to be of current interest, e.g.
+        for showing results after polling day.
+        """,
     )
 
-    has_results = HasResultsFilter(label="Has Results", widget=AnyBooleanWidget)
+    has_results = HasResultsFilter(
+        label="Has Results",
+        widget=AnyBooleanWidget,
+        help_text="""Boolean. If results have been entered for this ballot.
+        Only First Past The Post ballots have results at the moment.""",
+    )
 
 
 class CurrentOrFutureBallotFilter(BaseBallotFilter):
