@@ -307,7 +307,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
 
     # Moved from MembeshipExtra
     elected = models.NullBooleanField()
-    party_list_position = models.IntegerField(null=True)
+    party_list_position = models.PositiveSmallIntegerField(null=True)
     ballot = models.ForeignKey("candidates.Ballot", on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):

@@ -34,7 +34,7 @@ class Command(BaseCommand):
 
     help = "Cache the output of the persons and posts endpoints to a directory"
 
-    endpoints = ("persons", "posts")
+    endpoints = ("people", "ballots")
 
     def add_arguments(self, parser):
         parser.add_argument(

@@ -11,11 +11,4 @@ class TestApiHelpView(WebTest):
 
     def test_api_help(self):
         response = self.app.get("/help/api")
-        self.assertEqual(response.status_code, 200)
-
-        self.assertIn("Download the 2015 General Election candidates", response)
-
-        self.assertIn(
-            'The browsable base URL of the site\'s read-only API is: <a href="http://testserver/api/v0.9/">http://testserver/api/v0.9/</a>',
-            response,
-        )
+        self.assertEqual(response.status_code, 301)

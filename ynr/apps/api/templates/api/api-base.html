@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+  <div class="row">
+    <div class="columns large-2">
+      <ul class="side-nav">
+        <li><a href="{% url "api-home" %}">Data Overview</a></li>
+        <li><a href="{% url "api-terms" %}">Terms</a></li>
+        <li class="divider"></li>
+        <li class="heading"><a href="{% url "api_docs_csv" %}">CSV / Excel downlands</a></li>
+        <li class="divider"></li>
+        <li class="heading">
+          <a href="{% url "api_docs_next_home" %}">
+            'next' API<span class="round alert label">alpha</span>
+          </a>
+        </li>
+        <li><a href="{% url "api_docs_next_endpoints" %}">Endpoints</a></li>
+        <li><a href="{% url "api_docs_next_definitions" %}">Definitions</a></li>
+        <li class="divider"></li>
+        <li class="heading"><a href="{% url "api-root" version="v0.9" %}">v0.9 API</a></li>
+      </ul>
+    </div>
+    <div class="columns large-10">
+  {% block api_page_title %}
+    <h1>Candidates and results data</h1>
+  {% endblock %}
+      {% block api_content %}
+
+      {% endblock %}
+    </div>
+
+  </div>
+{% endblock %}

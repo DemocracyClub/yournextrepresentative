@@ -6,10 +6,10 @@ from django_extensions.db.models import TimeStampedModel
 class ResultSet(TimeStampedModel):
     ballot = models.OneToOneField("candidates.Ballot", on_delete=models.CASCADE)
 
-    num_turnout_reported = models.IntegerField(
+    num_turnout_reported = models.PositiveIntegerField(
         null=True, verbose_name="Reported Turnout"
     )
-    num_spoilt_ballots = models.IntegerField(
+    num_spoilt_ballots = models.PositiveIntegerField(
         null=True, verbose_name="Spoilt Ballots"
     )
     source = models.TextField(null=True)
@@ -94,7 +94,7 @@ class CandidateResult(TimeStampedModel):
         "popolo.Membership", related_name="result", on_delete=models.CASCADE
     )
 
-    num_ballots = models.IntegerField()
+    num_ballots = models.PositiveIntegerField()
     is_winner = models.BooleanField(default=False)
 
     class Meta:

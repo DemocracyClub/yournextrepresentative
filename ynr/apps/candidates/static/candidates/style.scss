@@ -80,6 +80,10 @@ table.table {
   width:100%;
 }
 
+table.table caption {
+  text-align: left;
+}
+
 tbody + tbody {
   border-top:1px solid #DDD;
 
@@ -94,4 +98,21 @@ details > summary {
   cursor: pointer;
   text-decoration: underline;
   font-weight: bold;
+}
+
+
+// API docs
+
+table.api_defs td, table.api_defs th {
+  font-size:0.9rem;
+  vertical-align: top;
+}
+
+table.api_defs p {
+  margin:0;
+  font-size:0.9rem;
+}
+
+table.api_defs p + p {
+  margin:1em 0;
 }

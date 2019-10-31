@@ -1,11 +1,26 @@
 from django.conf.urls import include, url
 from django.views.decorators.cache import cache_page
+from django.views.generic import TemplateView, RedirectView
 from rest_framework import routers
 
+import elections.api.next.api_views
+import parties.api.next.api_views
+import people.api.next.api_views
 from api.next import views as next_views
 from api.v09 import views as v09views
-from parties.api_views import PartyViewSet
-from uk_results.views import CandidateResultViewSet, ResultSetViewSet
+from api.views import (
+    APIDocsEndpointsView,
+    APIDocsDefinitionsView,
+    NextAPIDocsView,
+    CSVListView,
+)
+from parties.api.next.api_views import PartyViewSet, PartyRegisterList
+from uk_results.api.v09.api_views import (
+    CandidateResultViewSet,
+    ResultSetViewSet,
+)
+from uk_results.api.next.api_views import ResultViewSet
+
 
 v09_api_router = routers.DefaultRouter()
 
@@ -34,32 +49,69 @@ v09_api_router.register(
 # "Next" is the label we give to the "bleeding edge" or unstable API
 next_api_router = routers.DefaultRouter()
 next_api_router.register(
-    r"persons", next_views.PersonViewSet, basename="person"
+    r"people", people.api.next.api_views.PersonViewSet, basename="person"
 )
 next_api_router.register(r"organizations", next_views.OrganizationViewSet)
-next_api_router.register(r"posts", next_views.PostViewSet)
-next_api_router.register(r"elections", next_views.ElectionViewSet)
-next_api_router.register(r"party_sets", next_views.PartySetViewSet)
-next_api_router.register(r"post_elections", next_views.PostExtraElectionViewSet)
-next_api_router.register(r"memberships", next_views.MembershipViewSet)
-next_api_router.register(r"logged_actions", next_views.LoggedActionViewSet)
-next_api_router.register(r"person_redirects", next_views.PersonRedirectViewSet)
-
-next_api_router.register(r"candidate_results", CandidateResultViewSet)
-next_api_router.register(r"result_sets", ResultSetViewSet)
-next_api_router.register(r"parties", PartyViewSet)
-
 next_api_router.register(
-    r"candidates_for_postcode",
-    next_views.CandidatesAndElectionsForPostcodeViewSet,
-    basename="candidates-for-postcode",
+    r"elections", elections.api.next.api_views.ElectionViewSet
 )
+next_api_router.register(
+    r"election_types",
+    elections.api.next.api_views.ElectionTypesList,
+    basename="election_types",
+)
+next_api_router.register(r"ballots", elections.api.next.api_views.BallotViewSet)
+next_api_router.register(r"logged_actions", next_views.LoggedActionViewSet)
+next_api_router.register(
+    r"person_redirects", people.api.next.api_views.PersonRedirectViewSet
+)
+
+next_api_router.register(r"parties", PartyViewSet)
+next_api_router.register(
+    r"party_registers", PartyRegisterList, basename="party_register"
+)
+next_api_router.register(r"results", ResultViewSet)
 
 
 urlpatterns = [
     # Router views
     url(r"^api/(?P<version>v0.9)/", include(v09_api_router.urls)),
     url(r"^api/(?P<version>next)/", include(next_api_router.urls)),
+    url(
+        r"^api/docs/$",
+        TemplateView.as_view(template_name="api/api-home.html"),
+        name="api-home",
+    ),
+    url(
+        r"^api/$",
+        RedirectView.as_view(url="/api/docs/"),
+        name="api-docs-redirect",
+    ),
+    url(
+        r"^api/docs/terms/$",
+        TemplateView.as_view(template_name="api/terms.html"),
+        name="api-terms",
+    ),
+    url(r"^api/docs/csv/$", CSVListView.as_view(), name="api_docs_csv"),
+    url(
+        r"^api/docs/next/$",
+        NextAPIDocsView.as_view(patterns=next_api_router.urls, version="next"),
+        name="api_docs_next_home",
+    ),
+    url(
+        r"^api/docs/next/endpoints/$",
+        APIDocsEndpointsView.as_view(
+            patterns=next_api_router.urls, version="next"
+        ),
+        name="api_docs_next_endpoints",
+    ),
+    url(
+        r"^api/docs/next/definitions/$",
+        APIDocsDefinitionsView.as_view(
+            patterns=next_api_router.urls, version="next"
+        ),
+        name="api_docs_next_definitions",
+    ),
     # Standard Django views
     url(
         r"^api/current-elections",
@@ -73,7 +125,9 @@ urlpatterns = [
     ),
     url(
         r"^all-parties.json$",
-        cache_page(60 * 60)(next_views.AllPartiesJSONView.as_view()),
+        cache_page(60 * 60)(
+            parties.api.next.api_views.AllPartiesJSONView.as_view()
+        ),
         name="all-parties-json-view",
     ),
     url(r"^version.json", v09views.VersionView.as_view(), name="version"),

@@ -112,7 +112,10 @@ class EEElection(dict):
                 partyset_name = "Great Britain"
                 country = "gb"
 
-            self.party_set_object, self.party_set_created = PartySet.objects.update_or_create(
+            (
+                self.party_set_object,
+                self.party_set_created,
+            ) = PartySet.objects.update_or_create(
                 slug=country, defaults={"name": partyset_name}
             )
         return (self.party_set_object, self.party_set_created)
@@ -181,7 +184,10 @@ class EEElection(dict):
 
             # Get the winner count
             winner_count = self["seats_contested"]
-            self.ballot_object, self.ballot_created = Ballot.objects.update_or_create(
+            (
+                self.ballot_object,
+                self.ballot_created,
+            ) = Ballot.objects.update_or_create(
                 ballot_paper_id=self["election_id"],
                 defaults={
                     "post": self.post_object,

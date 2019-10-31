@@ -4,7 +4,7 @@ from rest_framework import viewsets
 
 from api.v09.views import ResultsSetPagination
 from uk_results.models import CandidateResult, ResultSet
-from uk_results.serializers import (
+from uk_results.api.v09.serializers import (
     CandidateResultSerializer,
     ResultSetSerializer,
 )

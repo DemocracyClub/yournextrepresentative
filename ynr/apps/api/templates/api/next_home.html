@@ -1,0 +1,114 @@
+{% extends "api/api-base.html" %}
+{% load staticfiles %}
+{% load api_docs %}
+{% load markdown_deux_tags %}
+{% block api_page_title %}
+  <h2><code>next</code> API <span class="round alert label">alpha</span></h2>
+{% endblock %}
+
+{% block api_content %}
+
+{% filter markdown %}
+**A *read only* API for information stored about UK candidates and how they relate to ballots.**
+
+**If you are after postcode lookups for current elections and polling stations,
+then you should use [our other API at our developers site](https://developers.democracyclub.org.uk).**
+
+This is our internal "bleeding edge" API version that we use for developing new ideas
+and for syncing between sites.
+
+At the moment this is the best API version to use, however **it is subject to change
+in the near future**, so you should [get in touch](https://democracyclub.org.uk/contact/)
+about your requiremnts and to hear about breaking changes.
+
+We plan on publishing a `v1` API once we have some more feedback from users
+and we think it's stable enough.
+
+
+
+### High level concepts
+
+*Candidates* are a mix of a *person* and a *candidacy*. A *candidacy*
+is the *person* on a *ballot*. *Ballots* have *elections* and *divisions*
+(areas, currently called *posts*).
+
+A *person* can stand in more than one election, that is, they can have many
+*candidacies* on different ballots.
+
+*Ballots* make up the main structure of the data, with each ballot being
+grouped by *elections* or *divisions*.
+
+Apart from the base data model, there are two other concepts in this API.
+
+Firstly, the data will change over time, from a ballot being announced through to results being entered.
+
+
+## Timeline of a ballot
+
+Ballots are created soon after they are added to Every Election. This is typically a few months
+before the polls open. In the case of by-elections they are added as soon as we hear about them
+
+Scheduled elections are more complex, as we know a long time in advance when a given council
+will have an election, but we don't know if a boundary change will happen in that council area
+until quite close to the election. We add scheduled elections as soon as we think nothing will
+changes about them, however we still maintain the ability to cancel and replace ballots.
+
+As soon as a ballot is created it's possible to create *candidacies* for them. And candidacy
+added to the ballot before the *SOPN* is published is speculative and typically sourced from
+candidates or parties asserting that they intend to stand in that election.
+
+After a {{ "OfficialDocument"|link_to_definition:"next,SOPN" }} is published it is uploaded
+and archived on the site. This starts a process of *locking*. *Candidacies* are locked once
+two people have checked them against the *SOPN*.
+
+Once the election has taken place, results can be added. Results data is added to the ballot
+and candidacy objects.
+
+
+### People
+
+A `Person` object contains information about a person that doesn't change inline with ballots.
+That is, although a person's name might change over time, they typically don't change *per candidacy*.
+
+For more on the fields on a `Person` object, see the
+{{ "Person"|link_to_definition:"next,reference documentation" }}.
+
+### Candidacies
+
+A `Person` can have none or more `candidacies`. Candidacies are times that a person has soon for
+election, as recorded on this site.
+
+A `Candidacy` object contains basic information about the `Person`, `Party` and `Ballot`, as well
+as results after the election.
+
+
+### Elections
+
+{{ "Election"|link_to_definition:"next,Elections" }} in this project are imported from and share
+identifiers with our [Every Election](https://elections.democracyclub.org.uk/) project.
+
+{{ "Election"|link_to_definition:"next" }} objects represent an event that elects
+{{ "Person"|link_to_definition:"next,People" }} to an
+{{ "Organization"|link_to_definition:"next,Organization" }}. All
+{{ "Election"|link_to_definition:"next,Elections" }}
+have at least one {{ "Ballot"|link_to_definition:"next,Ballot" }} as a child object.
+
+
+
+### Data sources and coverage
+
+The election and ballot elements of the data come from our
+[Every Election](https://elections.democracyclub.org.uk/) project, and the candidate data
+is crowdsourced by users of this website.
+
+Party data comes from
+[The Electoral Commission](http://search.electoralcommission.org.uk/English/Search/Registrations).
+
+The project contains data for all general election candidates since 2010, scheduled election candidates
+for local, police and crime commissioners, devolved governments and mayoral elections since 2016.
+See the {{ "ElectionType"|link_to_definition:"next,Election Types" }} section for more information about elections covered.
+
+{% endfilter %}
+
+
+{% endblock %}

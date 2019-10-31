@@ -250,11 +250,11 @@
     <p>Open data JSON API:</p>
     {% url 'person-detail' version='v0.9' pk=person.id format='json' as person_json_api_url %}
     <p><input type="text" value="{{ person_json_api_url|absolute_url:request }}" onclick="this.select();"></p>
-    {% url 'help-api' as api_url %}
-    {% url 'help-about' as about_url %}
+    {% url 'api-home' as api_url %}
+    {% url 'api-terms' as terms_url %}
     <p>
       More details about getting <a href="{{ api_url }}">the data</a>
-      and <a href="{{ about_url }}">its licence</a>.
+      and <a href="{{ terms_url }}">its licence</a>.
     </p>
   </div>
 

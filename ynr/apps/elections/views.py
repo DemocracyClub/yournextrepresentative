@@ -50,7 +50,7 @@ class ElectionListView(TemplateView):
     template_name = "elections/election_list.html"
 
     def get_context_data(self, **kwargs):
-        from .filters import BallotFilter, filter_shortcuts
+        from .filters import CurrentOrFutureBallotFilter, filter_shortcuts
 
         context = super().get_context_data(**kwargs)
 
@@ -63,7 +63,7 @@ class ElectionListView(TemplateView):
             .order_by("election__election_date", "election__name")
         )
 
-        f = BallotFilter(self.request.GET, qs)
+        f = CurrentOrFutureBallotFilter(self.request.GET, qs)
 
         context["filter"] = f
         context["queryset"] = f.qs

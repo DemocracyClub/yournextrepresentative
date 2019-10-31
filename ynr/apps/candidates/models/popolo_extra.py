@@ -89,7 +89,7 @@ class Ballot(models.Model):
     ballot_paper_id = models.CharField(blank=True, max_length=255, unique=True)
 
     candidates_locked = models.BooleanField(default=False)
-    winner_count = models.IntegerField(blank=True, null=True)
+    winner_count = models.PositiveSmallIntegerField(blank=True, null=True)
     cancelled = models.BooleanField(default=False)
     UnsafeToDelete = UnsafeToDelete
 
@@ -99,10 +99,12 @@ class Ballot(models.Model):
         unique_together = ("election", "post")
 
     def __str__(self):
-        fmt = "<Ballot ballot_paper_id='{e}'{l}{w}>"
+        fmt = "<Ballot ballot_paper_id='{e}'{locked}{w}>"
         return fmt.format(
             e=self.ballot_paper_id,
-            l=(" candidates_locked=True" if self.candidates_locked else ""),
+            locked=(
+                " candidates_locked=True" if self.candidates_locked else ""
+            ),
             w=(
                 " winner_count={}".format(self.winner_count)
                 if (self.winner_count is not None)

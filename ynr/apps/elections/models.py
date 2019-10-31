@@ -15,6 +15,9 @@ class ElectionQuerySet(models.QuerySet):
     def future(self):
         return self.filter(election_date__gt=timezone.now())
 
+    def past(self):
+        return self.filter(election_date__lt=timezone.now())
+
     def current_or_future(self):
         return self.filter(
             models.Q(current=True) | models.Q(election_date__gt=timezone.now())
@@ -48,14 +51,16 @@ class Election(models.Model):
         "popolo.Organization", null=True, blank=True, on_delete=models.CASCADE
     )
     party_lists_in_use = models.BooleanField(default=False)
-    people_elected_per_post = models.IntegerField(
+    people_elected_per_post = models.PositiveSmallIntegerField(
         default=1,
         help_text=(
-            "The number of people who are elected to this post in the "
-            "election.  -1 means a variable number of winners"
+            "The number of people who are elected per post in this "
+            "election. 0 means a variable number of winners"
         ),
     )
-    default_party_list_members_to_show = models.IntegerField(default=0)
+    default_party_list_members_to_show = models.PositiveSmallIntegerField(
+        default=0
+    )
     show_official_documents = models.BooleanField(default=False)
     ocd_division = models.CharField(max_length=250, blank=True)
 

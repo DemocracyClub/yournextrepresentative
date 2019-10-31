@@ -1,0 +1,21 @@
+{% extends "api/api-base.html" %}
+{% block api_content %}
+
+<h2>Definitions</h2>
+
+<ul class="side-nav">
+{% for def_name, def_data in schema.definitions.items %}
+        <li><a href="#{{ def_name }}">{{ def_name }}</a></li>
+    {% endfor %}
+</ul>
+
+{% for def_name, def_data in schema.definitions.items %}
+  <h3>{{ def_name }}
+    <a href="#{{ def_name }}" id="{{ def_name }}">#</a>
+  </h3>
+  {%  include "api/includes/definition_table.html" with parent_name=def_name def_data=def_data desc=def_data.description %}
+
+{% endfor %}
+
+
+{% endblock %}

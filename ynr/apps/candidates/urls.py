@@ -141,7 +141,7 @@ patterns_to_format = [
     },
     {
         "pattern": r"^help/api$",
-        "view": views.HelpApiView.as_view(),
+        "view": RedirectView.as_view(url="/api/", permanent=True),
         "name": "help-api",
     },
     {

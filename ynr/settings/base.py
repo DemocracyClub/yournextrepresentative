@@ -390,6 +390,7 @@ REST_FRAMEWORK = {
     ),
     "PAGE_SIZE": 10,
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
 }
 
 HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
@@ -409,10 +410,19 @@ CORS_ALLOW_METHODS = ("GET", "OPTIONS")
 
 MARKDOWN_DEUX_STYLES = {
     "default": {
-        "extras": {"code-friendly": None, "fenced-code-blocks": None},
-        "safe_mode": "escape",
+        "extras": {
+            "code-friendly": True,
+            "markdown-in-html": True,
+            "footnotes": False,
+            "header-ids": True,
+            "smarty-pants": True,
+            "toc": {},
+            "fenced-code-blocks": True,
+        },
+        "safe_mode": None,
     }
 }
+
 
 # TODO Delete this once election specific import are gone
 ELECTION_APP = "uk"
