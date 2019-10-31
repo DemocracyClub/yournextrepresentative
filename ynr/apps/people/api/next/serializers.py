@@ -1,3 +1,4 @@
+from drf_yasg.utils import swagger_serializer_method
 from rest_framework import serializers
 from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
 
@@ -36,6 +37,7 @@ class ImageSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
     uploading_user = serializers.ReadOnlyField(source="uploading_user.username")
 
+    @swagger_serializer_method(serializer_or_field=serializers.URLField)
     def get_image_url(self, instance):
         return instance.image.url
 
@@ -129,6 +131,7 @@ class PersonSerializer(MinimalPersonSerializer):
     def get_email(self, obj):
         return obj.get_email
 
+    @swagger_serializer_method(serializer_or_field=CandidacyOnPersonSerializer)
     def get_candidacies(self, obj):
         qs = obj.memberships.all()
         return CandidacyOnPersonSerializer(
