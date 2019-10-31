@@ -1,3 +1,4 @@
+from drf_yasg.utils import swagger_serializer_method
 from rest_framework import serializers
 
 from popolo import models as popolo_models
@@ -15,6 +16,7 @@ class PersonOnBallotSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Person
         fields = ("id", "url", "name")
+        ref_name = None  # Tells swagger that this is always embedded
 
 
 class MinimalPostSerializer(serializers.ModelSerializer):
@@ -44,6 +46,7 @@ class CandidacyResultsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CandidateResult
         fields = ("elected", "num_ballots")
+        ref_name = None  # Tells swagger that this is always embedded
 
     elected = serializers.ReadOnlyField(source="is_winner")
 
@@ -75,14 +78,17 @@ class CandidacySerializer(serializers.HyperlinkedModelSerializer):
     ballot = serializers.SerializerMethodField()
     result = serializers.SerializerMethodField()
 
+    @swagger_serializer_method(serializer_or_field=BallotOnCandidacySerializer)
     def get_ballot(self, obj):
         return BallotOnCandidacySerializer(
             obj.ballot, read_only=True, context=self.context
         ).data
 
+    @swagger_serializer_method(serializer_or_field=PersonOnBallotSerializer)
     def get_person(self, obj):
         return PersonOnBallotSerializer(obj.person, context=self.context).data
 
+    @swagger_serializer_method(serializer_or_field=CandidacyResultsSerializer)
     def get_result(self, obj):
         result = getattr(obj, "result", None)
         if result:
@@ -91,6 +97,7 @@ class CandidacySerializer(serializers.HyperlinkedModelSerializer):
             ).data
         return None
 
+    @swagger_serializer_method(serializer_or_field=MinimalPartySerializer)
     def get_party(self, obj):
         return MinimalPartySerializer(obj.party, context=self.context).data
 
