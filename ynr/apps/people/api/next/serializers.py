@@ -126,7 +126,7 @@ class PersonSerializer(MinimalPersonSerializer):
 
         return SizeLimitedHyperlinkedSorlImageField(
             "300x300", options={"crop": "center"}, read_only=True, use_url=True
-        ).to_representation(image)
+        ).to_representation(image.image)
 
     def get_email(self, obj):
         return obj.get_email
