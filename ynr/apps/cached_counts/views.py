@@ -1,6 +1,6 @@
 import json
 
-from django.db.models import Count, F
+from django.db.models import Count
 from django.http import HttpResponse
 from django.views.generic import TemplateView
 
@@ -16,9 +16,7 @@ from .models import get_attention_needed_posts
 def get_counts(for_json=True):
     election_id_to_candidates = {}
     qs = (
-        Membership.objects.filter(
-            role=F("ballot__election__candidate_membership_role")
-        )
+        Membership.objects.all()
         .values("ballot__election")
         .annotate(count=Count("ballot__election"))
         .order_by()

@@ -163,7 +163,6 @@ def mark_as_not_standing(person, election_data, post):
     # Remove any existing candidacy:
     for membership in Membership.objects.filter(
         ballot__election=election_data,
-        role=election_data.candidate_membership_role,
         person=person,
         # n.b. we are planning to make "not standing" post
         # specific in the future, in which case we would also want
@@ -181,9 +180,7 @@ def mark_as_not_standing(person, election_data, post):
 def mark_as_unsure_if_standing(person, election_data, post):
     # Remove any existing candidacy:
     for membership in Membership.objects.filter(
-        ballot__election=election_data,
-        role=election_data.candidate_membership_role,
-        person=person,
+        ballot__election=election_data, person=person
     ):
         raise_if_unsafe_to_delete(membership)
         membership.delete()

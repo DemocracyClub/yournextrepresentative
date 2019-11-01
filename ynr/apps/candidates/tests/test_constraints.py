@@ -20,7 +20,6 @@ class PreventCreatingBadMemberships(UK2015ExamplesMixin, TestCase):
             r"\({}\)\'s not_standing list".format(new_candidate.id),
         ):
             Membership.objects.create(
-                role="Candidate",
                 person=new_candidate,
                 party=self.green_party,
                 post=self.camberwell_post,
@@ -34,7 +33,6 @@ class PreventCreatingBadMemberships(UK2015ExamplesMixin, TestCase):
         MembershipFactory.create(
             person=new_candidate,
             post=post,
-            role=self.election.candidate_membership_role,
             ballot=self.election.ballot_set.get(post=post),
         )
         with self.assertRaisesRegex(

@@ -1,7 +1,6 @@
 from os.path import dirname, join, realpath
 from shutil import rmtree
 
-from django.db.models import F
 from django.test.utils import override_settings
 from django_webtest import WebTest
 from mock import patch
@@ -483,10 +482,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         merged_person = Person.objects.get(pk="2111")
 
         candidacies = (
-            Membership.objects.filter(
-                person=merged_person,
-                role=F("ballot__election__candidate_membership_role"),
-            )
+            Membership.objects.filter(person=merged_person)
             .values_list(
                 "ballot__election__slug", "post__slug", "party__legacy_slug"
             )

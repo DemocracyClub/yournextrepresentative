@@ -90,7 +90,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         submission_response = form.submit()
 
         person = Person.objects.get(id="2009")
-        party = person.memberships.filter(role="Candidate")
+        party = person.memberships.all()
 
         self.assertEqual(party.count(), 1)
         self.assertEqual(party[0].party.legacy_slug, "party:53")

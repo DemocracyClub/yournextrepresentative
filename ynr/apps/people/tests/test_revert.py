@@ -1,7 +1,6 @@
 import json
 from string import Template
 
-from django.db.models import F
 from django_webtest import WebTest
 from mock import patch
 
@@ -238,9 +237,9 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "http://example.org/tessajowell",
         )
 
-        candidacies = Membership.objects.filter(
-            person=person, role=F("ballot__election__candidate_membership_role")
-        ).order_by("ballot__election__election_date")
+        candidacies = Membership.objects.filter(person=person).order_by(
+            "ballot__election__election_date"
+        )
 
         self.assertEqual(len(candidacies), 1)
         self.assertEqual(candidacies[0].ballot.election.slug, "parl.2010-05-06")

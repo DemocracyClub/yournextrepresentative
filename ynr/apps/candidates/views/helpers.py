@@ -96,11 +96,7 @@ def get_party_people_for_election_from_memberships(
     election_data = Election.objects.get_by_slug(election)
     memberships = (
         memberships.select_related("person")
-        .filter(
-            role=election_data.candidate_membership_role,
-            ballot__election=election_data,
-            party__ec_id=party_id,
-        )
+        .filter(ballot__election=election_data, party__ec_id=party_id)
         .order_by("party_list_position")
         .all()
     )
@@ -332,6 +328,6 @@ class ProcessInlineFormsMixin:
         Insert the formsets into the context dict.
         """
         for fs_name, fs in self.get_all_initialized_inline_formsets().items():
-            if not fs_name in kwargs:
+            if fs_name not in kwargs:
                 kwargs[fs_name] = fs
         return super().get_context_data(**kwargs)

@@ -221,10 +221,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
 
         factories.ElectionFactory.create(
-            slug="2018",
-            name="2018 General Election",
-            for_post_role="Member of Parliament",
-            organization=self.commons,
+            slug="2018", name="2018 General Election", organization=self.commons
         )
 
         call_command("candidates_create_csv")

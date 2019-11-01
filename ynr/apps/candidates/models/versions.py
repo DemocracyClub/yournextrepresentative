@@ -45,7 +45,7 @@ def get_person_as_version_data(person, new_person=False):
         new_id = person.get_single_identifier_of_type(
             "theyworkforyou"
         ).internal_identifier
-        if not "publicwhip" in new_id:
+        if "publicwhip" not in new_id:
             new_id = "uk.org.publicwhip/person/{}".format(new_id)
 
         result["identifiers"].append(
@@ -184,7 +184,6 @@ def revert_person_from_version_data(person, version_data):
                 party=party,
                 person=person,
                 post=post,
-                role=election.candidate_membership_role,
                 elected=standing_in.get("elected"),
                 party_list_position=standing_in.get("party_list_position"),
                 ballot=election.ballot_set.get(post=post),

@@ -116,10 +116,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
         for ballot in ballots:
             candidates = []
             for membership in (
-                ballot.membership_set.filter(
-                    ballot__election=ballot.election,
-                    role=ballot.election.candidate_membership_role,
-                )
+                ballot.membership_set.filter(ballot__election=ballot.election)
                 .prefetch_related(
                     Prefetch(
                         "person__memberships",

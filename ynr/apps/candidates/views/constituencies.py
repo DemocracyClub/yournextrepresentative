@@ -73,7 +73,6 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
             # So now we know we can set this person as the winner:
             candidate_role = self.election_data.candidate_membership_role
             membership_new_winner = Membership.objects.get(
-                role=candidate_role,
                 post=self.post_data,
                 person=self.person,
                 ballot__election=self.election_data,
@@ -144,8 +143,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
             constituency_name = post.short_label
 
             all_candidacies = post.memberships.filter(
-                role=self.election_data.candidate_membership_role,
-                ballot__election=self.election_data,
+                ballot__election=self.election_data
             )
             source = "Result recorded in error, retracting"
             for candidacy in all_candidacies.all():
