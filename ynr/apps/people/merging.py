@@ -158,7 +158,10 @@ class PersonMerger:
 
         for person in [self.source_person, self.dest_person]:
             for attr in attrs:
-                delattr(person, attr)
+                try:
+                    delattr(person, attr)
+                except AttributeError:
+                    pass
 
     def merge_person_identifiers(self):
         """
