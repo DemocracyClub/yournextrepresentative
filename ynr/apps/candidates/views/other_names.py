@@ -49,11 +49,20 @@ class PersonOtherNameCreateView(LoginRequiredMixin, PersonMixin, CreateView):
     template_name = "candidates/othername_new.html"
     raise_exception = True
 
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        self.object = None
+        form.instance.content_object = self.person
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
     def form_valid(self, form):
         with transaction.atomic():
             # This is similar to the example here:
             #   https://docs.djangoproject.com/en/1.8/topics/class-based-views/generic-editing/#models-and-request-user
-            form.instance.content_object = self.person
+
             result = super(PersonOtherNameCreateView, self).form_valid(form)
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data["source"]

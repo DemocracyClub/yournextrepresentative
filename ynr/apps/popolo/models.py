@@ -471,6 +471,9 @@ class OtherName(Dateframeable, GenericRelatable, models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        unique_together = ("name", "object_id", "content_type")
+
 
 class Identifier(GenericRelatable, models.Model):
     """

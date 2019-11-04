@@ -542,3 +542,13 @@ class OtherNameForm(forms.ModelForm):
         ),
         max_length=512,
     )
+
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+        name_exists = self.instance.content_object.other_names.filter(
+            name=name
+        ).exists()
+
+        if name_exists:
+            raise ValidationError("This other name already exists")
+        return name
