@@ -19,6 +19,7 @@ from slugify import slugify
 from sorl.thumbnail import get_thumbnail
 
 from candidates.diffs import get_version_diffs
+from candidates.models import Ballot
 from people.managers import (
     PersonIdentifierQuerySet,
     PersonImageManager,
@@ -719,3 +720,24 @@ class Person(Timestampable, models.Model):
     @property
     def liable_to_vandalism(self):
         return self.edit_limitations == EditLimitationStatuses.NEEDS_REVIEW.name
+
+    def current_elections_standing_down(self):
+        """
+        Returns a list of elections where:
+
+        1. They were elected in the last ballot for this post
+        2. They are marked as not_standing in the election for the next
+           ballot for that post
+        """
+        standing_down_elections = []
+        elected_memberships = self.memberships.filter(elected=True)
+        for membership in elected_memberships:
+            elected_ballot = membership.ballot
+            next_ballot = Ballot.objects.filter(
+                election__current=True
+            ).get_next_ballot_for_post(elected_ballot)
+
+            if next_ballot:
+                if self.not_standing.filter(slug=next_ballot.election.slug):
+                    standing_down_elections.append(next_ballot.election)
+        return standing_down_elections
