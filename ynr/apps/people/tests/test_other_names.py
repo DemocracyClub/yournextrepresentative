@@ -186,3 +186,20 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
             user=self.user,
         )
         self.assertContains(response, "Also known as Fozzie")
+
+    def test_other_names_add_duplicate(self):
+        self.assertEqual(2, self.person_other_names.other_names.count())
+        response = self.app.get(
+            "/person/{}/other-names/create".format(self.person_other_names.id),
+            user=self.user,
+        )
+        form = response.forms["person_create_other_name"]
+        form["name"] = "Fozzie Bear"
+        form["source"] = "Some reasonable explanation"
+        submission_response = form.submit()
+        self.assertEqual(submission_response.status_code, 200)
+        self.assertEqual(
+            submission_response.context["form"].errors,
+            {"name": ["This other name already exists"]},
+        )
+        self.assertEqual(2, self.person_other_names.other_names.count())
