@@ -70,6 +70,24 @@ class BallotQueryset(models.QuerySet):
 
         return None
 
+    def get_next_ballot_for_post(self, ballot):
+        """
+        Given a ballot object, get the next (by election date) ballot for
+        the ballot's post.
+        :type ballot: Ballot
+
+        """
+
+        qs = self.filter(
+            post=ballot.post,
+            election__election_date__gt=ballot.election.election_date,
+        ).order_by("election__election_date")
+
+        if qs.exists():
+            return qs.first()
+
+        return None
+
     def current(self, current=True):
         return self.filter(election__current=current)
 

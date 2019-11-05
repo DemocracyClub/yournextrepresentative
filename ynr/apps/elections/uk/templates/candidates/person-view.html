@@ -135,8 +135,12 @@
   </dl>
 
   <h2>Candidacies:</h2>
-
   <dl>
+    {% for election in person.current_elections_standing_down %}
+    <dt>{{ election.name }} ({{ election.election_date }})</dt>
+      <dd>Standing down</dd>
+    {% endfor %}
+
     {% for election_data in elections_to_list %}
       <dt>{% if DATE_TODAY > election_data.election_date %}
            Contested the {{ election_data.name }} ({{ election_data.election_date }})

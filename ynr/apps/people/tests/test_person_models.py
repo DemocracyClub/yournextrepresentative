@@ -2,13 +2,15 @@ from django_webtest import WebTest
 from sorl.thumbnail import get_thumbnail
 
 from candidates.tests.factories import faker_factory
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.tests.helpers import TmpMediaRootMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from people.models import Person, PersonImage
 from people.tests.factories import PersonFactory
+from popolo.models import Membership
 
 
-class TestPersonModels(TmpMediaRootMixin, WebTest):
+class TestPersonModels(UK2015ExamplesMixin, TmpMediaRootMixin, WebTest):
     def test_get_display_image_url(self):
         person = PersonFactory(name=faker_factory.name())
 
@@ -39,3 +41,18 @@ class TestPersonModels(TmpMediaRootMixin, WebTest):
         qs = Person.objects.alive_now()
         self.assertEqual(qs.count(), 1)
         self.assertEqual(qs.get(), alive_person)
+
+    def test_current_elections_standing_down(self):
+        person = PersonFactory(name=faker_factory.name())
+        self.assertEqual(person.current_elections_standing_down(), [])
+        Membership.objects.create(
+            ballot=self.dulwich_post_ballot_earlier,
+            party=self.ld_party,
+            person=person,
+            elected=True,
+        )
+
+        person.not_standing.add(self.election)
+        self.assertEqual(
+            person.current_elections_standing_down(), [self.election]
+        )
