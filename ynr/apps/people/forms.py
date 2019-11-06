@@ -5,7 +5,11 @@ from django.core.validators import validate_email
 from django.db.models import Count
 from django.utils.functional import cached_property
 
-from candidates.models import PartySet
+from candidates.models import (
+    PartySet,
+    UnsafeToDelete,
+    raise_if_unsafe_to_delete,
+)
 from elections.models import Election
 from parties.models import Party
 from people.helpers import parse_approximate_date
@@ -218,15 +222,22 @@ class BasePersonForm(forms.Form):
             # from the clean method rather than single field validation
             # since the party field that should be checked depends on the
             # selected constituency.
-            post_id = cleaned_data["constituency_" + election]
+            post_key = "constituency_" + election
+            post_id = cleaned_data.get(post_key, None)
+
             if not post_id:
-                message = (
-                    "If you mark the candidate as standing in the "
-                    "{election}, you must select a post"
-                )
-                raise forms.ValidationError(
-                    message.format(election=election_name)
-                )
+                # If there's already an error about this field, don't add
+                # another one
+                if post_key in self.errors:
+                    return cleaned_data
+                else:
+                    message = (
+                        "If you mark the candidate as standing in the "
+                        "{election}, you must select a post"
+                    )
+                    raise forms.ValidationError(
+                        message.format(election=election_name)
+                    )
             # Check that that post actually exists:
             post_qs = Post.objects.filter(
                 slug=post_id, ballot__election=election_data
@@ -516,6 +527,19 @@ class UpdatePersonForm(AddElectionFieldsMixin, BasePersonForm):
 
             # Now we need to re-clean the data, with the new election in it
             self._clean_fields()
+
+        for field in self.changed_data:
+            if field.startswith("constituency_"):
+                # We're changing a constituency, so we need to make sure
+                # that's allowed
+                if self.initial.get(field):
+                    membership = self.initial["person"].memberships.get(
+                        post__slug=self.initial[field]
+                    )
+                    try:
+                        raise_if_unsafe_to_delete(membership)
+                    except UnsafeToDelete as e:
+                        self.add_error(field, e)
 
         cleaned_data = super().clean()
         return self.check_party_and_constituency_are_selected(cleaned_data)

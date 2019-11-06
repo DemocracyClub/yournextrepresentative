@@ -2,9 +2,14 @@ import re
 
 from dateutil import parser
 from django.conf import settings
+from django.forms import ValidationError
 from django_date_extensions.fields import ApproximateDate
 
-from candidates.models import PartySet, raise_if_unsafe_to_delete
+from candidates.models import (
+    PartySet,
+    raise_if_unsafe_to_delete,
+    UnsafeToDelete,
+)
 from candidates.twitter_api import TwitterAPITokenMissing, get_twitter_user_id
 from parties.models import Party
 from popolo.models import Membership, Post
@@ -155,7 +160,10 @@ def mark_as_standing(person, election_data, post, party, party_list_position):
     for membership_to_remove in Membership.objects.filter(
         pk__in=membership_ids_to_remove
     ):
-        raise_if_unsafe_to_delete(membership_to_remove)
+        try:
+            raise_if_unsafe_to_delete(membership_to_remove)
+        except UnsafeToDelete as e:
+            raise ValidationError(e)
         membership_to_remove.delete()
 
 

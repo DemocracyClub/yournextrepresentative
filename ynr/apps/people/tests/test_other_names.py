@@ -30,8 +30,8 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_list_other_names_some_Names(self):
         response = self.app.get("/person/5678/other-names")
-        self.assertIn("<strong>Name</strong>: Fozzie Bear", response.text)
-        self.assertIn("<strong>Name</strong>: Mr Fozziewig", response.text)
+        self.assertIn("<td><strong>Fozzie Bear</strong></td>", response.text)
+        self.assertIn("<td><strong>Mr Fozziewig</strong></td>", response.text)
 
     # Deleting
 

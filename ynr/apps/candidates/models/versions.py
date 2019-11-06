@@ -160,7 +160,12 @@ def revert_person_from_version_data(person, version_data):
         )
 
     # Remove all candidacies, and recreate:
-    for membership in Membership.objects.filter(person=person):
+    qs = (
+        Membership.objects.filter(person=person)
+        .filter(result=None)
+        .filter(ballot__candidates_locked=False)
+    )
+    for membership in qs:
         raise_if_unsafe_to_delete(membership)
         membership.delete()
     # Also remove the indications of elections that this person is

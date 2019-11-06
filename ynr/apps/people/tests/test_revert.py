@@ -11,6 +11,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from compat import deep_sort
 from people.models import Person, PersonIdentifier
 from popolo.models import Membership
+from uk_results.models import CandidateResult, ResultSet
 
 example_timestamp = "2014-09-29T10:11:59.216159"
 example_version_id = "5aa6418325c1a0bb"
@@ -248,3 +249,41 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # one removed, and the theyworkforyou ID created:
         self.assertEqual(3, person.tmp_person_identifiers.all().count())
         self.assertIsNone(person.get_single_identifier_value("wikipedia_url"))
+
+    @patch("candidates.views.version_data.get_current_timestamp")
+    @patch("candidates.views.version_data.create_version_id")
+    def test_revert_to_earlier_version_with_results(
+        self, mock_create_version_id, mock_get_current_timestamp
+    ):
+        mock_get_current_timestamp.return_value = example_timestamp
+        mock_create_version_id.return_value = example_version_id
+
+        result_set = ResultSet.objects.create(
+            ballot=self.dulwich_post_ballot_earlier,
+            num_turnout_reported=51561,
+            num_spoilt_ballots=42,
+            ip_address="127.0.0.1",
+        )
+        CandidateResult.objects.create(
+            result_set=result_set,
+            membership=Person.objects.get(pk=2009).memberships.first(),
+            num_ballots=32614,
+            is_winner=True,
+        )
+
+        response = self.app.get("/person/2009/update", user=self.user)
+        revert_form = response.forms["revert-form-5469de7db0cbd155"]
+        revert_form[
+            "source"
+        ] = "Reverting to version 5469de7db0cbd155 for testing purposes"
+        response = revert_form.submit()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, "/person/2009")
+
+        # Now get the person from the database and check if the
+        # details are the same as the earlier version:
+        person = Person.objects.get(id=2009)
+        self.assertTrue(Membership.objects.filter(person_id=2009).count(), 2)
+        self.assertTrue(
+            CandidateResult.objects.filter(membership__person_id=2009).exists()
+        )
