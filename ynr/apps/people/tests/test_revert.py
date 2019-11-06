@@ -284,3 +284,6 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # details are the same as the earlier version:
         person = Person.objects.get(id=2009)
         self.assertTrue(Membership.objects.filter(person_id=2009).count(), 2)
+        self.assertTrue(
+            CandidateResult.objects.filter(membership__person_id=2009).exists()
+        )
