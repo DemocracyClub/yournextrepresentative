@@ -10,9 +10,19 @@ from elections.uk.every_election import EveryElectionImporter
 class Command(BaseCommand):
     help = "Create posts and elections from a EveryElection"
 
-    def import_approved_elections(self):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--full",
+            action="store_true",
+            help="Do a full import of all elections",
+        )
+
+    def import_approved_elections(self, full=False):
         # Get all approved elections from EveryElection
-        ee_importer = EveryElectionImporter()
+        query_args = None
+        if full:
+            query_args = {}
+        ee_importer = EveryElectionImporter(query_args)
         ee_importer.build_election_tree()
 
         for ballot_id, election_dict in ee_importer.ballot_ids.items():
@@ -42,5 +52,5 @@ class Command(BaseCommand):
             # be (re)set later
             Election.objects.update(current=False)
 
-            self.import_approved_elections()
+            self.import_approved_elections(full=options["full"])
             self.delete_deleted_elections()
