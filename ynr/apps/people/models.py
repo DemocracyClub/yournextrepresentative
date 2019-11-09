@@ -486,7 +486,7 @@ class Person(Timestampable, models.Model):
     def version_diffs(self):
         versions = self.versions
         if not versions:
-            versions = []
+            versions = "[]"
         return get_version_diffs(json.loads(versions))
 
     def diff_for_version(self, version_id, inline_style=False):
