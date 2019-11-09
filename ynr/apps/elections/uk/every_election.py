@@ -131,7 +131,7 @@ class EEElection(dict):
         if not self.parent or self.children:
             raise ValueError("Can't create YNR Post from a election group ID")
 
-            # Make an organisation
+        # Make an organisation
         self.get_or_create_organisation()
 
         if self["division"]:
@@ -167,12 +167,12 @@ class EEElection(dict):
                     label=label,
                     organization=self.organization_object,
                     slug=slug,
-                    party_set=self.get_or_create_partyset()[0],
                 )
                 self.post_created = True
 
             self.post_object.role = role
             self.post_object.label = label
+            self.post_object.party_set = self.get_or_create_partyset()[0]
             self.post_object.organization = self.organization_object
             self.post_object.save()
             POST_CACHE[cache_key] = self.post_object
