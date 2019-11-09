@@ -11,6 +11,11 @@ from popolo.models import Organization, Post
 
 ALWAYS_USES_LISTS = ["europarl"]
 
+ELECTION_CACHE = {}
+POST_CACHE = {}
+ORGANISATION_CACHE = {}
+PARTYSET_CACHE = {}
+
 
 class EEElection(dict):
     """
@@ -38,6 +43,8 @@ class EEElection(dict):
         ]
 
     def get_or_create_organisation(self):
+        if not self["organisation"]:
+            return (None, False)
         org_name = self["organisation"]["official_name"]
         classification = self["organisation"]["organisation_type"]
         org_slug = ":".join([classification, self["organisation"]["slug"]])
@@ -46,9 +53,7 @@ class EEElection(dict):
             self.organization_created = False
         else:
             try:
-                organization = Organization.objects.get(
-                    slug=org_slug, classification=classification
-                )
+                organization = Organization.objects.get(slug=org_slug)
                 self.organization_created = False
             except Organization.DoesNotExist:
                 organization = Organization.objects.create(
@@ -60,8 +65,9 @@ class EEElection(dict):
         return (self.organization_object, self.organization_created)
 
     def get_or_create_election(self):
-        if hasattr(self, "election_object"):
+        if self["election_id"] in ELECTION_CACHE:
             self.election_created = False
+            self.election_object = ELECTION_CACHE[self["election_id"]]
         else:
             party_lists_in_use = False
             election_type = self["election_id"].split(".")[0]
@@ -85,6 +91,7 @@ class EEElection(dict):
             )
             self.election_object = election_obj
             self.election_created = created
+            ELECTION_CACHE[self["election_id"]] = election_obj
         return (self.election_object, self.election_created)
 
     def get_or_create_partyset(self):
@@ -92,61 +99,64 @@ class EEElection(dict):
         The list of parties used for this election depends on the territory.
         Currently only Northern Ireland uses a different set.
         """
-        # TODO Pass in party sets to save queries for each post
-
         # The division can have a different code to the organisation
         # for example UK wide orgs like `parl` has divisions in 4 differet
         # territories. We need to use the most specific code here.
-        if hasattr(self, "party_set_object"):
-            self.party_set_created = False
+        if self["division"] and self["division"]["territory_code"]:
+            territory_code = self["division"]["territory_code"]
         else:
-            if self["division"] and self["division"]["territory_code"]:
-                territory_code = self["division"]["territory_code"]
-            else:
-                territory_code = self["organisation"]["territory_code"]
+            territory_code = self["organisation"]["territory_code"]
 
-            if territory_code == "NIR":
-                partyset_name = "Northern Ireland"
-                country = "ni"
-            else:
-                partyset_name = "Great Britain"
-                country = "gb"
+        if territory_code == "NIR":
+            partyset_name = "Northern Ireland"
+            country = "ni"
+        else:
+            partyset_name = "Great Britain"
+            country = "gb"
 
+        if country in PARTYSET_CACHE:
+            self.party_set_created = False
+            self.party_set_object = PARTYSET_CACHE[country]
+        else:
             (
                 self.party_set_object,
                 self.party_set_created,
             ) = PartySet.objects.update_or_create(
                 slug=country, defaults={"name": partyset_name}
             )
+            PARTYSET_CACHE[country] = self.party_set_object
         return (self.party_set_object, self.party_set_created)
 
     def get_or_create_post(self):
         if not self.parent or self.children:
             raise ValueError("Can't create YNR Post from a election group ID")
 
-        if hasattr(self, "post_object"):
-            self.post_created = False
-        else:
-            # Make an organisation
-            self.get_or_create_organisation()
+        # Make an organisation
+        self.get_or_create_organisation()
 
-            if self["division"]:
-                # Case 1, there is an organisational division relted to this
-                # post
-                slug = ":".join(
-                    [
-                        self["division"]["division_type"],
-                        self["division"]["official_identifier"].split(":")[-1],
-                    ]
-                )
-                label = self["division"]["name"]
-                role = self["division"]["official_identifier"]
-            else:
-                # Case 2, this organisation isn't split in to divisions for
-                # this election, take the info from the organisation directly
-                slug = self["organisation"]["slug"]
-                label = self["organisation"]["official_name"]
-                role = self["elected_role"]
+        if self["division"]:
+            # Case 1, there is an organisational division relted to this
+            # post
+            slug = ":".join(
+                [
+                    self["division"]["division_type"],
+                    self["division"]["official_identifier"].split(":")[-1],
+                ]
+            )
+            label = self["division"]["name"]
+            role = self["division"]["official_identifier"]
+        else:
+            # Case 2, this organisation isn't split in to divisions for
+            # this election, take the info from the organisation directly
+            slug = self["organisation"]["slug"]
+            label = self["organisation"]["official_name"]
+            role = self["elected_role"]
+
+        cache_key = "--".join([slug, self.organization_object.slug, label])
+        if cache_key in POST_CACHE:
+            self.post_created = False
+            self.post_object = POST_CACHE[cache_key]
+        else:
             try:
                 self.post_object = Post.objects.get(
                     slug=slug, organization=self.organization_object
@@ -157,14 +167,15 @@ class EEElection(dict):
                     label=label,
                     organization=self.organization_object,
                     slug=slug,
-                    party_set=self.get_or_create_partyset()[0],
                 )
                 self.post_created = True
 
             self.post_object.role = role
             self.post_object.label = label
+            self.post_object.party_set = self.get_or_create_partyset()[0]
             self.post_object.organization = self.organization_object
             self.post_object.save()
+            POST_CACHE[cache_key] = self.post_object
         return (self.post_object, self.post_created)
 
     def get_or_create_ballot(self, parent):
@@ -184,18 +195,50 @@ class EEElection(dict):
 
             # Get the winner count
             winner_count = self["seats_contested"]
-            (
-                self.ballot_object,
-                self.ballot_created,
-            ) = Ballot.objects.update_or_create(
-                ballot_paper_id=self["election_id"],
-                defaults={
-                    "post": self.post_object,
-                    "election": parent.election_object,
-                    "winner_count": winner_count,
-                    "cancelled": self["cancelled"],
-                },
-            )
+            try:
+                (
+                    self.ballot_object,
+                    self.ballot_created,
+                ) = Ballot.objects.update_or_create(
+                    ballot_paper_id=self["election_id"],
+                    defaults={
+                        "post": self.post_object,
+                        "election": parent.election_object,
+                        "winner_count": winner_count,
+                        "cancelled": self["cancelled"],
+                    },
+                )
+            except:
+                # This is an interesting case:
+                # Sometimes by-elections are called in multi-seat wards
+                # and sometimes (or at least, sometimes in the past) we mark
+                # them asa by-election. This project has a unique constraint
+                # on (post, election) that's mostly useful, but does break
+                # in this case. As a fudge, let's just add 1 to the winner_count
+                # for the existing ballot, and ignore the `.by.` election ID
+                # from EE
+                if ".by." in self["election_id"]:
+                    try:
+                        print(self["election_id"].replace(".by.", "."))
+                        existing_ballot = Ballot.objects.get(
+                            ballot_paper_id=self["election_id"].replace(
+                                ".by.", "."
+                            )
+                        )
+                        if not existing_ballot.winner_count:
+                            # We don't always set winners, but a by election
+                            # and scheduled election means there has to be at
+                            # least 2
+                            existing_ballot.winner_count = 2
+                        else:
+                            existing_ballot.winner_count += 1
+                        existing_ballot.save()
+                        self.ballot_object = existing_ballot
+                        self.ballot_created = False
+                    except Ballot.DoesNotExist:
+                        raise
+                else:
+                    raise
         return (self.ballot_object, self.ballot_created)
 
     def delete_ballot(self):
@@ -243,7 +286,7 @@ class EveryElectionImporter(object):
         )
 
         self.election_tree = {}
-        if not query_args:
+        if query_args is None:
             query_args = {
                 "poll_open_date__gte": str(date.today() - timedelta(days=30))
             }
@@ -278,6 +321,10 @@ class EveryElectionImporter(object):
                 # note: this (intentionally) creates a circular reference
                 # we need to be careful how we parse this data structure
                 ballots[k]["group"] = v["election_id"]
+            if v["election_id"][:-10] == "gla.a.":
+                ballots[k] = v
+                ballots[k]["group"] = v["election_id"]
+
         return ballots
 
     @property
@@ -286,8 +333,12 @@ class EveryElectionImporter(object):
         for k, v in self.election_tree.items():
             if v["group_type"] in ["election", "organisation"]:
                 groups[k] = v
+            if v["election_id"][:-10] == "gla.a.":
+                groups[k] = v
         return groups
 
     def get_parent(self, election_id):
         child = self.election_tree[election_id]
+        if election_id[:-10] == "gla.a.":
+            return child
         return self.election_tree[child.parent]

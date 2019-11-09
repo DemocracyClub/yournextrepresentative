@@ -77,6 +77,11 @@ class EE_ImporterTest(WebTest):
         self.parent_id = "local.brent.2018-02-22"  # they're good elections
         self.child_id = "local.brent.alperton.2018-02-22"
 
+    def tearDown(self):
+        every_election.POST_CACHE = {}
+        every_election.ELECTION_CACHE = {}
+        every_election.PARTYSET_CACHE = {}
+
     def test_ee_importer_build_tree(self):
         self.assertEqual(len(self.ee_importer.election_tree.keys()), 200)
         self.assertEqual(len(self.ee_importer.ballot_ids.keys()), 189)
@@ -199,7 +204,7 @@ class EE_ImporterTest(WebTest):
         )
 
         self.assertEqual(every_election.Ballot.objects.all().count(), 0)
-        with self.assertNumQueries(314):
+        with self.assertNumQueries(258):
             call_command("uk_create_elections_from_every_election")
         self.assertEqual(every_election.Ballot.objects.all().count(), 15)
         self.assertEqual(

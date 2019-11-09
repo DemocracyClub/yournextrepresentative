@@ -57,9 +57,9 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="party-detail", lookup_field="ec_id", lookup_url_kwarg="ec_id"
     )
-    default_emblem = DefaultPartyEmblemSerializer()
-    emblems = PartyEmblemSerializer(many=True)
-    descriptions = PartyDescriptionSerializer(many=True)
+    default_emblem = DefaultPartyEmblemSerializer(read_only=True)
+    emblems = PartyEmblemSerializer(many=True, read_only=True)
+    descriptions = PartyDescriptionSerializer(many=True, read_only=True)
 
 
 class PartyRegisterSerializer(serializers.Serializer):

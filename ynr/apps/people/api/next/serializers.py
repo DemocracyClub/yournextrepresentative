@@ -115,7 +115,10 @@ class PersonSerializer(MinimalPersonSerializer):
     images = ImageSerializer(many=True, read_only=True, default=[])
     email = serializers.SerializerMethodField()
     candidacies = serializers.SerializerMethodField()
-    statement_to_voters = serializers.CharField(source="biography")
+    statement_to_voters = serializers.CharField(
+        source="biography", allow_blank=True
+    )
+    favourite_biscuit = serializers.CharField(allow_null=True, allow_blank=True)
     thumbnail = serializers.SerializerMethodField()
 
     def get_thumbnail(self, instance):
