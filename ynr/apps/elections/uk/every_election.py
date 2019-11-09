@@ -321,6 +321,10 @@ class EveryElectionImporter(object):
                 # note: this (intentionally) creates a circular reference
                 # we need to be careful how we parse this data structure
                 ballots[k]["group"] = v["election_id"]
+            if v["election_id"][:-10] == "gla.a.":
+                ballots[k] = v
+                ballots[k]["group"] = v["election_id"]
+
         return ballots
 
     @property
@@ -329,8 +333,12 @@ class EveryElectionImporter(object):
         for k, v in self.election_tree.items():
             if v["group_type"] in ["election", "organisation"]:
                 groups[k] = v
+            if v["election_id"][:-10] == "gla.a.":
+                groups[k] = v
         return groups
 
     def get_parent(self, election_id):
         child = self.election_tree[election_id]
+        if election_id[:-10] == "gla.a.":
+            return child
         return self.election_tree[child.parent]
