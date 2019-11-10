@@ -9,6 +9,7 @@ from django.utils.html import escape
 from django.utils.six import text_type
 
 from moderation_queue.review_required_helper import REVIEW_TYPES
+from moderation_queue.slack import post_action_to_slack
 
 
 def merge_dicts_with_list_values(dict_a, dict_b):
@@ -146,8 +147,12 @@ class LoggedAction(models.Model):
                 break
 
     def save(self, **kwargs):
-        self.set_review_required()
-        return super().save(**kwargs)
+        if not kwargs.get("review_not_required", False):
+            self.set_review_required()
+        super().save(**kwargs)
+
+        if self.flagged_type and self.person:
+            post_action_to_slack.delay(self.pk)
 
 
 class PersonRedirect(models.Model):
