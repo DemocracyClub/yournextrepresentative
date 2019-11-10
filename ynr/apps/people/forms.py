@@ -534,7 +534,10 @@ class UpdatePersonForm(AddElectionFieldsMixin, BasePersonForm):
                 # that's allowed
                 if self.initial.get(field):
                     membership = self.initial["person"].memberships.get(
-                        post__slug=self.initial[field]
+                        ballot__post__slug=self.initial[field],
+                        ballot__election__slug=field.replace(
+                            "constituency_", ""
+                        ),
                     )
                     try:
                         raise_if_unsafe_to_delete(membership)
