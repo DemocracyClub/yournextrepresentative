@@ -157,7 +157,11 @@ with the source: `{source}`
 
     def post_message(self):
         self.sh.client.chat.post_message(
-            "U02Q1MV4P", text="edit to foo", blocks=self.message
+            "U02Q1MV4P",
+            text="Edit to {}".format(self.logged_action.person.name),
+            blocks=self.message,
+            username=settings.CANDIDATE_BOT_USERNAME,
+            icon_emoji=":robot_face:",
         )
 
 
