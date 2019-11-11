@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.urls import reverse
 from django.utils.html import escape
@@ -147,12 +147,13 @@ class LoggedAction(models.Model):
                 break
 
     def save(self, **kwargs):
+        has_initial_pk = self.pk
         if not kwargs.get("review_not_required", False):
             self.set_review_required()
         super().save(**kwargs)
 
-        if self.flagged_type and self.person:
-            post_action_to_slack.delay(self.pk)
+        if not has_initial_pk and self.flagged_type and self.person:
+            transaction.on_commit(post_action_to_slack.s(self.pk).delay)
 
 
 class PersonRedirect(models.Model):
