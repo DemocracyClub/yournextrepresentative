@@ -138,6 +138,11 @@ INSTALLED_APPS = (
 )
 
 CELERY_RESULT_BACKEND = "django-db"
+# Set ALWAYS_EAGER so that by default tasks blocking when running and
+# always return the value. This essentially disabled Celery unless it's enabled.
+# This is useful for testing and local development, and we enable it in
+# production
+CELERY_TASK_ALWAYS_EAGER = True
 
 MIDDLEWARE = (
     "debug_toolbar.middleware.DebugToolbarMiddleware",
