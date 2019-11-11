@@ -80,7 +80,7 @@ requests-oauthlib==1.2.0
 requests==2.22.0
 simplegeneric==0.8.1
 six==1.12.0
-slacker==0.13.0
+git+https://github.com/symroe/slacker.git
 sorl-thumbnail==12.5.0
 sqlparse==0.3.0
 tox
