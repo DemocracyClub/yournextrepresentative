@@ -162,6 +162,12 @@
             {% elif action.action_type == 'suggest-ballot-lock' %}
               Suggested locking ballot
               <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.ballot_paper_id }}</a>
+            {% elif action.action_type == 'person-other-name-create' %}
+              added an alternate name for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
+            {% elif action.action_type == 'person-other-name-delete' %}
+              removed an alternate name for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
+            {% elif action.action_type == 'person-other-name-update' %}
+              changed an alternate name for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
             {% else %}
               {% if action.person %}
                 updated <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>

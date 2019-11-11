@@ -123,6 +123,15 @@
               User <strong>{{ username }}</strong>
               marked <a href="{{ person_url }}">{{ person_name }}</a> as the winner
               <span class="when">{{ when }} ago</span>
+            {% elif action.action_type == 'person-other-name-create' %}
+              User <strong>{{ username }}</strong>
+              added an alternate name for <a href="{{ person_url }}">{{ person_name }}</a>
+            {% elif action.action_type == 'person-other-name-delete' %}
+              User <strong>{{ username }}</strong>
+              removed an alternate name for <a href="{{ person_url }}">{{ person_name }}</a>
+            {% elif action.action_type == 'person-other-name-update' %}
+              User <strong>{{ username }}</strong>
+              changed an alternate name for <a href="{{ person_url }}">{{ person_name }}</a>
             {% else %}
               User <strong>{{ username }}</strong>
               updated <a href="{{ person_url }}">{{ person_name }}</a>

@@ -1,5 +1,6 @@
 from django_webtest import WebTest
 
+from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from people.tests.factories import PersonFactory
@@ -65,6 +66,16 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
             self.person_other_names.other_names.get().name, "Mr Fozziewig"
         )
 
+        latest_logged_action = LoggedAction.objects.latest("updated")
+        self.assertEqual(
+            latest_logged_action.action_type, "person-other-name-delete"
+        )
+        self.assertEqual(latest_logged_action.person_id, 5678)
+        self.assertEqual(
+            latest_logged_action.source,
+            "Some good reasons for deleting this name",
+        )
+
     # Adding
 
     def test_add_other_name_get_not_authenticated(self):
@@ -116,6 +127,15 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
             submission_response.location, "/person/5678/other-names"
         )
         self.assertEqual(3, self.person_other_names.other_names.count())
+
+        latest_logged_action = LoggedAction.objects.latest("updated")
+        self.assertEqual(
+            latest_logged_action.action_type, "person-other-name-create"
+        )
+        self.assertEqual(latest_logged_action.person_id, 5678)
+        self.assertEqual(
+            latest_logged_action.source, "Some reasonable explanation"
+        )
 
     # Editing
 
@@ -179,6 +199,15 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
             submission_response.location, "/person/5678/other-names"
         )
         self.assertEqual(2, self.person_other_names.other_names.count())
+
+        latest_logged_action = LoggedAction.objects.latest("updated")
+        self.assertEqual(
+            latest_logged_action.action_type, "person-other-name-update"
+        )
+        self.assertEqual(latest_logged_action.person_id, 5678)
+        self.assertEqual(
+            latest_logged_action.source, "Some reasonable explanation"
+        )
 
     def test_other_names_on_update_page(self):
         response = self.app.get(
