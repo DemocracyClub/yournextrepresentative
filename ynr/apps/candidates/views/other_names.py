@@ -6,11 +6,12 @@ from django.urls import reverse
 from django.utils.functional import cached_property
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
+from candidates.models import LoggedAction
 from people.forms import OtherNameForm
 from people.models import Person
 from popolo.models import OtherName
 
-from .version_data import get_change_metadata
+from .version_data import get_change_metadata, get_client_ip
 
 
 class PersonMixin(object):
@@ -69,6 +70,14 @@ class PersonOtherNameCreateView(LoginRequiredMixin, PersonMixin, CreateView):
             )
             self.person.record_version(change_metadata)
             self.person.save()
+            LoggedAction.objects.create(
+                user=self.request.user,
+                person=self.person,
+                action_type="person-other-name-create",
+                ip_address=get_client_ip(self.request),
+                popit_person_new_version=change_metadata["version_id"],
+                source=change_metadata["information_source"],
+            )
             """
             On the bulk edit page this view is inlined and the data
             sent over ajax so we have to return an ajax response, and
@@ -110,6 +119,14 @@ class PersonOtherNameDeleteView(LoginRequiredMixin, PersonMixin, DeleteView):
             )
             self.person.record_version(change_metadata)
             self.person.save()
+            LoggedAction.objects.create(
+                user=self.request.user,
+                person=self.person,
+                action_type="person-other-name-delete",
+                ip_address=get_client_ip(self.request),
+                popit_person_new_version=change_metadata["version_id"],
+                source=change_metadata["information_source"],
+            )
             return result_redirect
 
 
@@ -128,4 +145,12 @@ class PersonOtherNameUpdateView(LoginRequiredMixin, PersonMixin, UpdateView):
             )
             self.person.record_version(change_metadata)
             self.person.save()
+            LoggedAction.objects.create(
+                user=self.request.user,
+                person=self.person,
+                action_type="person-other-name-update",
+                ip_address=get_client_ip(self.request),
+                popit_person_new_version=change_metadata["version_id"],
+                source=change_metadata["information_source"],
+            )
             return result
