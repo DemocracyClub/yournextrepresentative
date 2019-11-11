@@ -4,7 +4,7 @@
   </p>
 {% else %}
   {% if user_can_upload_documents %}
-    {% url 'upload_document_view' election=election post_id=post_data.extra.slug as url %}
+    {% url 'upload_document_view' election=ballot.election.slug post_id=ballot.post.slug as url %}
     <a href="{{ url }}" class="button">Upload SOPN</a>
   {% endif %}
 {% endif %}
