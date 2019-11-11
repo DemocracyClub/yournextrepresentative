@@ -133,6 +133,10 @@ def revert_person_from_version_data(person, version_data):
         else:
             setattr(person, field.name, "")
 
+    person.favourite_biscuit = version_data.get("extra_fields", {}).get(
+        "favourite_biscuits"
+    )
+
     # Remove old PersonIdentifier objects
     from people.models import PersonIdentifier
 
