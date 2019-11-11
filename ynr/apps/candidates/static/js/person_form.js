@@ -247,6 +247,10 @@ function toTitleCase(str) {
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
+function compressWhitespace(str) {
+    return str.replace(/\s\s+/g, ' ');
+}
+
 suggest_correction = function(el, suggestion) {
 
     suggestion_el = $('<a class="suggested">Change to <span>' + suggestion + '</span>?</a>');
@@ -270,6 +274,16 @@ function checkNameFormat(e) {
         var name = name_parts.join(' ') + ' ' + toTitleCase(last_name);
         suggest_correction(e.target, name);
     }
+}
+
+function addTitleCaseButton() {
+    var b = $('<button type="button" class="button tiny secondary">Title Case</botton>');
+    b.on('click', function() {
+        var name_val = $('#id_name').val();
+        $('#id_name').val(compressWhitespace(toTitleCase(name_val)));
+        return false;
+    });
+    $('#id_name').after(b);
 }
 
 $(document).ready(function() {
