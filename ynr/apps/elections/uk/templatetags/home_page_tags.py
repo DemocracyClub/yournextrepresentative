@@ -125,7 +125,9 @@ def by_election_ctas(context):
         dates_to_ignore = getattr(settings, "SCHEDULED_ELECTION_DATES", [])
 
         all_ballots = (
-            Ballot.objects.filter(election__current=True)
+            Ballot.objects.filter(
+                election__current=True, ballot_paper_id__contains=".by."
+            )
             .exclude(election__election_date__in=dates_to_ignore)
             .order_by("election__election_date", "election")
             .select_related("election", "post")
