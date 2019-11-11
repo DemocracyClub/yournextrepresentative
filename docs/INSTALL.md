@@ -58,3 +58,18 @@ Read up on how to install them, and then install the SOPN parsing requirements:
 ```
 pip install -r requirements/sopn_parsing.txt
 ```
+
+## (Optional) Run automated tests
+
+To run the test suite locally, run:
+
+```
+pytest
+```
+
+(Note that if the tests hang in `ynr/apps/bulk_adding/tests/test_bulk_add.py`
+that's likely due to you not having an AMQP broker listening on
+port 5672. One way of fixing this is to install RabbitMQ.)
+
+On Travis, the tests will be run on all supported Python version
+with `tox`.
