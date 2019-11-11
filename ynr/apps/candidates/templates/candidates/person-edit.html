@@ -84,7 +84,7 @@
         str = str.replace(/\s\s+/g, ' ');
         return str;
     }
-    b = $('<button class="button tiny secondary">Title Case</botton>');
+    b = $('<button type="button" class="button tiny secondary">Title Case</botton>');
     b.on('click', function() {
             var name_val = $('#id_name').val();
             $('#id_name').val(toTitleCase(name_val));
