@@ -17,9 +17,9 @@ class ContributorsMixin(object):
                 timezone.now(),
             ),
             (
-                "2019 local elections",
-                timezone.make_aware(parse("2019-03-01")),
-                timezone.make_aware(parse("2019-05-10")),
+                "2019 General election",
+                timezone.make_aware(parse("2019-10-28")),
+                timezone.make_aware(parse("2019-12-15")),
             ),
         ]
         if all_time:
