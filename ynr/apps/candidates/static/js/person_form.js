@@ -296,6 +296,9 @@ $(document).ready(function() {
       /* Now enable the "add an extra election" button if it's present */
       $('#add_election_button').on('click', showElectionsForm);
       $('.add_more_elections_field').hide();
+      /* Check for the common name form like "SMITH Ali" found on
+         SOPNs and suggest changing it to "Ali Smith" in any name
+         fields */
       $('[name=name]').on('paste keyup', checkNameFormat);
       $('[name*=-name]').on('paste keyup', checkNameFormat);
   });
