@@ -109,8 +109,8 @@ class TestBallotView(
         self.assertInHTML(
             """
             <p>
-                These candidates haven't been confirmed by the official 
-                "nomination papers" from the council yet. This means they might 
+                These candidates haven't been confirmed by the official
+                "nomination papers" from the council yet. This means they might
                 not all end up on the ballot paper.
             </p>
             """,
