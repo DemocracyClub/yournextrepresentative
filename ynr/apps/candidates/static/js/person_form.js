@@ -243,8 +243,21 @@ function showElectionsForm() {
   });
 }
 
+/* This title-casing function should uppercase any letter after a word
+   boundary, and lowercases any letters up to the next word boundary:
+
+     toTitleCase("john travolta") => "John Travolta"
+     toTitleCase("olivia newton-john") => "Olivia Newton-John"
+     toTitleCase("miles o'brien") => "Miles O'Brien"
+     toTitleCase("miles o’brien") => "Miles O’Brien"
+     toTitleCase("BENJAMIN SISKO") => "Benjamin Sisko"
+*/
 function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    return str.replace(/\b(\w)(.*?)\b/g, function (_, first, rest) { return first.toUpperCase() + rest.toLowerCase() })
+}
+
+function compressWhitespace(str) {
+    return str.replace(/\s\s+/g, ' ');
 }
 
 suggest_correction = function(el, suggestion) {
@@ -272,6 +285,16 @@ function checkNameFormat(e) {
     }
 }
 
+function addTitleCaseButton() {
+    var b = $('<button type="button" class="button tiny secondary">Title Case</botton>');
+    b.on('click', function() {
+        var name_val = $('#id_name').val();
+        $('#id_name').val(compressWhitespace(toTitleCase(name_val)));
+        return false;
+    });
+    $('#id_name').after(b);
+}
+
 $(document).ready(function() {
   $.getJSON('/post-id-to-party-set.json', function(data) {
       window.postIDToPartySet = data;
@@ -282,6 +305,9 @@ $(document).ready(function() {
       /* Now enable the "add an extra election" button if it's present */
       $('#add_election_button').on('click', showElectionsForm);
       $('.add_more_elections_field').hide();
+      /* Check for the common name form like "SMITH Ali" found on
+         SOPNs and suggest changing it to "Ali Smith" in any name
+         fields */
       $('[name=name]').on('paste keyup', checkNameFormat);
       $('[name*=-name]').on('paste keyup', checkNameFormat);
   });
