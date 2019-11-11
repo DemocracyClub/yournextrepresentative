@@ -121,7 +121,7 @@ with the source: `{source}`
 
         message_added_header = {
             "type": "section",
-            "text": {"type": "mrkdwn", "text": ":white_check_mark: *Added*:"},
+            "text": {"type": "mrkdwn", "text": ":heavy_plus_sign: *Added*:"},
         }
 
         message_removed_header = {
