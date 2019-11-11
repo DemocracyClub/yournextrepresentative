@@ -243,8 +243,17 @@ function showElectionsForm() {
   });
 }
 
+/* This title-casing function should uppercase any letter after a word
+   boundary, and lowercases any letters up to the next word boundary:
+
+     toTitleCase("john travolta") => "John Travolta"
+     toTitleCase("olivia newton-john") => "Olivia Newton-John"
+     toTitleCase("miles o'brien") => "Miles O'Brien"
+     toTitleCase("miles o’brien") => "Miles O’Brien"
+     toTitleCase("BENJAMIN SISKO") => "Benjamin Sisko"
+*/
 function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    return str.replace(/\b(\w)(.*?)\b/g, function (_, first, rest) { return first.toUpperCase() + rest.toLowerCase() })
 }
 
 function compressWhitespace(str) {
