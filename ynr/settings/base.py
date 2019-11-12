@@ -322,6 +322,8 @@ PIPELINE = {
     # On some platforms this might be called "yuicompressor", so it may be
     # necessary to symlink it into your PATH as "yui-compressor".
     "YUI_BINARY": "/usr/bin/env yui-compressor",
+    # Don't munge function names, meaning they can be used globally
+    "YUI_JS_ARGUMENTS": "--nomunge",
 }
 
 SASS_INCLUDE_PATHS = (root("apps/candidates/static/foundation/scss"),)
