@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.viewsets import ViewSet
 
-from api.helpers import ResultsSetPagination
+from api.helpers import DefaultPageNumberPagination
 from api.v09 import serializers
 from candidates import models as extra_models
 from compat import text_type
@@ -240,7 +240,7 @@ class PersonViewSet(viewsets.ModelViewSet):
         return queryset
 
     serializer_class = serializers.PersonSerializer
-    pagination_class = ResultsSetPagination
+    pagination_class = DefaultPageNumberPagination
 
 
 class OrganizationViewSet(viewsets.ModelViewSet):
@@ -254,7 +254,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     ).order_by("id")
     lookup_field = "slug"
     serializer_class = serializers.OrganizationSerializer
-    pagination_class = ResultsSetPagination
+    pagination_class = DefaultPageNumberPagination
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -276,7 +276,7 @@ class PostViewSet(viewsets.ModelViewSet):
     )
     lookup_field = "slug"
     serializer_class = serializers.PostSerializer
-    pagination_class = ResultsSetPagination
+    pagination_class = DefaultPageNumberPagination
 
 
 class ElectionViewSet(viewsets.ModelViewSet):
@@ -285,7 +285,7 @@ class ElectionViewSet(viewsets.ModelViewSet):
     lookup_field = "slug"
     serializer_class = serializers.ElectionSerializer
     filterset_fields = ("current",)
-    pagination_class = ResultsSetPagination
+    pagination_class = DefaultPageNumberPagination
 
     def dispatch(self, request, *args, **kwargs):
         provided_slug = self.kwargs.get(self.lookup_field)
@@ -306,7 +306,7 @@ class ElectionViewSet(viewsets.ModelViewSet):
 class PartySetViewSet(viewsets.ModelViewSet):
     queryset = extra_models.PartySet.objects.order_by("id")
     serializer_class = serializers.PartySetSerializer
-    pagination_class = ResultsSetPagination
+    pagination_class = DefaultPageNumberPagination
 
 
 class PostExtraElectionViewSet(viewsets.ModelViewSet):
@@ -314,19 +314,19 @@ class PostExtraElectionViewSet(viewsets.ModelViewSet):
         "election", "post"
     ).order_by("id")
     serializer_class = serializers.PostElectionSerializer
-    pagination_class = ResultsSetPagination
+    pagination_class = DefaultPageNumberPagination
 
 
 class MembershipViewSet(viewsets.ModelViewSet):
     queryset = Membership.objects.order_by("id")
     serializer_class = serializers.MembershipSerializer
-    pagination_class = ResultsSetPagination
+    pagination_class = DefaultPageNumberPagination
 
 
 class LoggedActionViewSet(viewsets.ModelViewSet):
     queryset = extra_models.LoggedAction.objects.order_by("id")
     serializer_class = serializers.LoggedActionSerializer
-    pagination_class = ResultsSetPagination
+    pagination_class = DefaultPageNumberPagination
 
 
 class ExtraFieldViewSet(viewsets.ViewSet):
@@ -357,4 +357,4 @@ class PersonRedirectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = extra_models.PersonRedirect.objects.order_by("id")
     lookup_field = "old_person_id"
     serializer_class = serializers.PersonRedirectSerializer
-    pagination_class = ResultsSetPagination
+    pagination_class = DefaultPageNumberPagination

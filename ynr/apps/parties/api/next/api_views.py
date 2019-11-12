@@ -6,7 +6,7 @@ from django.views.decorators.cache import cache_page
 from django.views import View
 from rest_framework import viewsets
 
-from api.helpers import ResultsSetPagination
+from api.helpers import DefaultPageNumberPagination
 
 from parties.models import Party
 from parties.api.next.serializers import (
@@ -24,7 +24,7 @@ class PartyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Party.objects.all().prefetch_related("emblems", "descriptions")
     serializer_class = PartySerializer
     lookup_field = "ec_id"
-    pagination_class = ResultsSetPagination
+    pagination_class = DefaultPageNumberPagination
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -40,7 +40,7 @@ class PartyRegisterList(viewsets.ReadOnlyModelViewSet):
     """
 
     serializer_class = PartyRegisterSerializer
-    pagination_class = ResultsSetPagination
+    pagination_class = DefaultPageNumberPagination
     queryset = Party.objects.order_by("register").distinct("register")
 
     def retrieve(self, request, *args, **kwargs):

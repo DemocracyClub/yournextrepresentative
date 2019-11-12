@@ -2,7 +2,7 @@ from django.db.models import Prefetch
 from django_filters import filters, filterset
 from rest_framework import viewsets
 
-from api.v09.views import ResultsSetPagination
+from api.v09.views import DefaultPageNumberPagination
 from uk_results.models import CandidateResult, ResultSet
 from uk_results.api.v09.serializers import (
     CandidateResultSerializer,
@@ -15,7 +15,7 @@ class CandidateResultViewSet(viewsets.ModelViewSet):
         "membership__party", "membership__post", "membership__person"
     ).order_by("id")
     serializer_class = CandidateResultSerializer
-    pagination_class = ResultsSetPagination
+    pagination_class = DefaultPageNumberPagination
 
 
 class ResultSetFilter(filterset.FilterSet):
@@ -48,6 +48,6 @@ class ResultSetViewSet(viewsets.ModelViewSet):
     ).order_by("id")
 
     serializer_class = ResultSetSerializer
-    pagination_class = ResultsSetPagination
+    pagination_class = DefaultPageNumberPagination
 
     filterset_class = ResultSetFilter
