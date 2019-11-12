@@ -27,6 +27,10 @@
       </p>
       {{ simple_field.errors }}
       {% if simple_field.name == 'name'%}
+        {% if user_can_merge %}
+          <button class="titleCaseNameField button tiny secondary" type="button">Title Case</button>
+        {% endif %}
+
         {% if not add_candidate_form %}
           <p class="alternative-names">
             {% if person.other_names.exists %}

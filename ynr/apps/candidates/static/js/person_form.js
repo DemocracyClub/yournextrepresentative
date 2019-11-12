@@ -286,13 +286,16 @@ function checkNameFormat(e) {
 }
 
 function addTitleCaseButton() {
-    var b = $('<button type="button" class="button tiny secondary">Title Case</botton>');
-    b.on('click', function() {
-        var name_val = $('#id_name').val();
-        $('#id_name').val(compressWhitespace(toTitleCase(name_val)));
-        return false;
+    var buttons = $('.titleCaseNameField');
+    buttons.each(function() {
+        button_el = $(this);
+        $(this).on('click', function() {
+            this_name_field = button_el.parent().find('#id_name');
+            name_val = this_name_field.val();
+            this_name_field.val(compressWhitespace(toTitleCase(name_val)));
+            return false;
+        })
     });
-    $('#id_name').after(b);
 }
 
 $(document).ready(function() {
@@ -311,4 +314,7 @@ $(document).ready(function() {
       $('[name=name]').on('paste keyup', checkNameFormat);
       $('[name*=-name]').on('paste keyup', checkNameFormat);
   });
+  // general page set up functions
+  addTitleCaseButton()
+
 });
