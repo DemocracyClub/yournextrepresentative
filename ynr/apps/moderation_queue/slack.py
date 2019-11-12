@@ -64,7 +64,7 @@ class FlaggedEditSlackPoster:
 *{flagged_reason}*\n\n
 
 {username} edited <https://candidates.democracyclub.org.uk{candidate_url}|{candidate_name}>\n
-with the source: `{source}`
+with the source: \n> {source}
 """.format(
             flagged_reason=self.logged_action.flagged_reason,
             username=self.logged_action.user.username,
