@@ -1,6 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
+from api.helpers import DefaultPageNumberPagination
 from uk_results.models import ResultSet
 
 from uk_results.api.next.serializers import ResultSerializer
@@ -16,6 +18,7 @@ class ResultViewSet(viewsets.ReadOnlyModelViewSet):
         .order_by("-ballot__election__election_date", "ballot__ballot_paper_id")
     )
     serializer_class = ResultSerializer
+    pagination_class = DefaultPageNumberPagination
 
     @action(detail=True, methods=["get"], name="Previous versions")
     def versions(self, request, ballot_paper_id=None, **kwargs):
