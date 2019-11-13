@@ -1,6 +1,7 @@
 import json
 from datetime import date
 from enum import Enum, unique
+import uuid
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
@@ -33,7 +34,9 @@ def person_image_path(instance, filename):
     # Ensure the filename isn't too long
     filename = filename[400:]
     # Upload images in a directory per person
-    return "images/people/{0}/{1}".format(instance.person.id, filename)
+    return "images/people/{0}/{1}-{2}".format(
+        instance.person.id, uuid.uuid4(), filename
+    )
 
 
 @unique
