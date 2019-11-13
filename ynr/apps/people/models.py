@@ -744,3 +744,28 @@ class Person(Timestampable, models.Model):
                 if self.not_standing.filter(slug=next_ballot.election.slug):
                     standing_down_elections.append(next_ballot.election)
         return standing_down_elections
+
+
+class GenderGuess(models.Model):
+    """
+    In many, many ways, this is a really bad idea.
+
+    It's here because we often get asked about the gender of candidates as a
+    whole at elections. The default in this project (and elsewhere, hopefully)
+    is that we don't proscribe gender, or suggest that it's a binary choice.
+
+    _However_, it is useful,sometimes, to ask for approximate balance of binary
+    gender.
+
+    This model should never be used to assert the gender of an individual,
+    rather it should *only* be used in aggregate to infer rough balance,
+    and even then reports and so on should be couched in language that
+    explains this position.
+    """
+
+    gender = models.CharField(max_length=1)
+    person = models.OneToOneField(
+        on_delete=models.deletion.CASCADE,
+        related_name="gender_guess",
+        to="people.Person",
+    )
