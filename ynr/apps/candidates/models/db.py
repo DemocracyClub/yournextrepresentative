@@ -168,7 +168,8 @@ class LoggedAction(models.Model):
         super().save(**kwargs)
 
         if not has_initial_pk and self.flagged_type and self.person:
-            transaction.on_commit(post_action_to_slack.s(self.pk).delay)
+            if self.edit_type == "USER":
+                transaction.on_commit(post_action_to_slack.s(self.pk).delay)
 
 
 class PersonRedirect(models.Model):
