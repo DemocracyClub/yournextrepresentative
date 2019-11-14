@@ -106,7 +106,9 @@ class TestBallotView(
         )
         self.assertContains(
             response,
-            '<a href="/upload_document/upload/election/sp.2019-11-25/post/bar-ward/" class="button">Upload SOPN</a>',
+            '<a href="/upload_document/upload/election/{}/post/bar-ward/" class="button">Upload SOPN</a>'.format(
+                self.election.slug
+            ),
         )
 
     def test_ballot_with_candidates_no_sopn(self):
