@@ -116,3 +116,47 @@ table.api_defs p {
 table.api_defs p + p {
   margin:1em 0;
 }
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.filters > div {
+  flex: 1 0 15em;
+}
+
+.filters .advance_filters {
+  text-align: right;
+  font-size:0.8em;
+  flex: 1;
+}
+
+
+.filters .selected {
+  font-weight:bold;
+  text-decoration: underline;
+}
+
+.filters p {
+  margin: 1em 0 0 0;
+}
+.filters p label {
+  font-weight: bold;
+}
+
+.filters .filter_links {
+  border-bottom: 1px solid #4e4e4e;
+}
+
+.filters ul {
+  margin:0;
+  padding:0;
+  list-style-type: none;
+}
+
+.filters ul li {
+  display: block;
+  margin: 0 0 0 1em;
+
+}

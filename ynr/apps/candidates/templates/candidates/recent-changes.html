@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load humanize %}
 
 {% block body_class %}{% endblock %}
 
@@ -10,8 +10,39 @@
 {% endblock %}
 
 {% block content %}
+<section class="filters">
+  <div>
+    <dl class="sub-nav" role="menu" title="Filters">
+      <dt>Filter:</dt>
+      <dd {% if request.get_full_path == "/recent-changes" %}class="active" {% endif %}><a href="{% url "recent-changes" %}">All</a></dd>
+    {% for shortcut in shortcuts.list %}
+      <dd {% if shortcut.active %}class="active" {% endif %}><a href="{% url "recent-changes" %}?{{ shortcut.querystring }}">{{ shortcut.label }}</a></dd>
+    {% endfor %}
+    </dl>
 
-<table>
+  </div>
+  <div>
+      <details class="advance_filters" {% if filter.data %}open{% endif %}>
+        <summary>Advanced filters</summary>
+        <div class="filter_links">
+          <form>
+            {{ filter.form.as_p }}
+            <button type="submit">Filter</button>
+          </form>
+
+        </div>
+      </details>
+    </div>
+</section>
+<style>
+.recent-changes td {
+  vertical-align: top;
+}
+.recent-changes th:first-child {
+  width: 10%;
+}
+</style>
+<table class="table recent-changes">
   <tr>
     <th>User</th>
     <th>Date and time</th>
@@ -22,8 +53,12 @@
   </tr>
   {% for action in actions %}
     <tr>
-      <td>{{ action.user.username }}</td>
-      <td>{{ action.created }}</td>
+      <td>
+        <a href="{% url "recent-changes" %}?username={{ action.user.username }}" title="Filter by this user only">
+          {{ action.user.username }}
+        </a>
+      </td>
+      <td>{{ action.created|naturaltime }}</td>
       <td>{{ action.action_type }}</td>
       {% if action.person %}
         <td><a href="{% url 'person-view' person_id=action.person.id %}">{{ action.person.name }}</a></td>
