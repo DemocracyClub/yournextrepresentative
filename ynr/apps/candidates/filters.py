@@ -50,7 +50,9 @@ class LoggedActionRecentChangesFilter(django_filters.FilterSet):
         widget=LinkWidget(),
     )
 
-    action_type = django_filters.ChoiceFilter(choices=get_action_types)
+    action_type = django_filters.AllValuesMultipleFilter(
+        choices=get_action_types
+    )
 
     username = django_filters.CharFilter(
         label="User name", method="filter_username"
