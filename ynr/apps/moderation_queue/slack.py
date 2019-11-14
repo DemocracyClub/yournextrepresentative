@@ -131,7 +131,10 @@ with the source: \n> {source}
 
             else:
                 fields_category.append(
-                    {"type": "mrkdwn", "text": text_data["text"]}
+                    {
+                        "type": "mrkdwn",
+                        "text": "{}\n\n".format(text_data["text"]),
+                    }
                 )
 
         if message_removed_fields:
