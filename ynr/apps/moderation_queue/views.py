@@ -3,6 +3,7 @@ import random
 import re
 from os.path import join
 from tempfile import NamedTemporaryFile
+import uuid
 
 import bleach
 from braces.views import LoginRequiredMixin
@@ -310,7 +311,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         ntf = NamedTemporaryFile(delete=False)
         cropped.save(ntf.name, "PNG")
         md5sum = get_file_md5sum(ntf.name)
-        filename = str(person_id) + ".png"
+        filename = str(person_id) + "-" + str(uuid.uuid4()) + ".png"
         if self.queued_image.user:
             uploaded_by = self.queued_image.user.username
         else:

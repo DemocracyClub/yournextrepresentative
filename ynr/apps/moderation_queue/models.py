@@ -1,3 +1,7 @@
+from datetime import date
+from os.path import join, splitext
+import uuid
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
@@ -36,6 +40,16 @@ class CopyrightOptions:
     )
 
 
+def queued_image_filename(queued_image_instance, filename):
+    original_extension = splitext(filename)[1]
+    base_filename = "{0}-{1}".format(
+        queued_image_instance.person_id, uuid.uuid4()
+    )
+    if original_extension:
+        base_filename += original_extension
+    return join(date.today().strftime("queued-images/%Y/%m/%d"), base_filename)
+
+
 class QueuedImage(models.Model):
 
     APPROVED = "approved"
@@ -59,9 +73,7 @@ class QueuedImage(models.Model):
     decision = models.CharField(
         max_length=32, choices=DECISION_CHOICES, default=UNDECIDED
     )
-    image = models.ImageField(
-        upload_to="queued-images/%Y/%m/%d", max_length=512
-    )
+    image = models.ImageField(upload_to=queued_image_filename, max_length=512)
     person = models.ForeignKey(
         "people.Person", blank=True, null=True, on_delete=models.CASCADE
     )
