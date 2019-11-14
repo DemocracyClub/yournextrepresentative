@@ -30,9 +30,12 @@ class ToggleLockForm(forms.ModelForm):
     candidates_locked = forms.HiddenInput()
 
     def clean(self):
-        self.cleaned_data[
-            "candidates_locked"
-        ] = not self.instance.candidates_locked
+        if self.data.get("lock") == "lock":
+            self.cleaned_data["candidates_locked"] = True
+        else:
+            self.cleaned_data[
+                "candidates_locked"
+            ] = not self.instance.candidates_locked
         return self.cleaned_data
 
 
