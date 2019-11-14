@@ -50,12 +50,12 @@ class FlaggedEditSlackPoster:
         if value:
             value = value.replace("was known to be ", " ")
         if diff["op"] == "replace":
-            value = "{} \n *previously:*\n{}\n---------".format(
-                value, diff["previous_value"]
-            )
-
+            if not path == "biography":
+                value = "{} \n *previously:*\n{}\n---------".format(
+                    value, diff["previous_value"]
+                )
         text = default_text.format(path=path, value=value)
-        return text
+        return {"text": text, "path": path}
 
     def format_message(self):
         message_divider = {"type": "divider"}
@@ -92,6 +92,9 @@ with the source: \n> {source}
                 ),
             }
 
+        message_added_section = []
+        message_removed_section = []
+        message_replaced_section = []
         message_added_fields = []
         message_removed_fields = []
         message_replaced_fields = []
@@ -99,25 +102,50 @@ with the source: \n> {source}
             "parent_diff"
         ]:
 
+            fields_category = None
             section_category = None
-            text = self.format_text(diff)
-            if not text:
+            text_data = self.format_text(diff)
+            if not text_data["text"]:
                 continue
 
             if diff["op"] == "add":
-                section_category = message_added_fields
+                fields_category = message_added_fields
+                section_category = message_added_section
 
             if diff["op"] == "remove":
-                section_category = message_removed_fields
+                fields_category = message_removed_fields
+                section_category = message_removed_section
 
             if diff["op"] == "replace":
-                section_category = message_replaced_fields
+                fields_category = message_replaced_fields
+                section_category = message_replaced_section
 
-            section = {
-                "type": "section",
-                "fields": [{"type": "mrkdwn", "text": text}],
-            }
-            section_category.append(section)
+            if text_data["path"] == "biography":
+                # Special case this, so we don't end up with a really narrow
+                # block of text
+                section = {
+                    "type": "section",
+                    "text": {"type": "mrkdwn", "text": text_data["text"]},
+                }
+                section_category.append(section)
+
+            else:
+                fields_category.append(
+                    {"type": "mrkdwn", "text": text_data["text"]}
+                )
+
+        if message_removed_fields:
+            message_removed_section.append(
+                {"type": "section", "fields": message_removed_fields}
+            )
+        if message_added_fields:
+            message_added_section.append(
+                {"type": "section", "fields": message_added_fields}
+            )
+        if message_replaced_fields:
+            message_replaced_section.append(
+                {"type": "section", "fields": message_replaced_fields}
+            )
 
         message_added_header = {
             "type": "section",
@@ -139,18 +167,18 @@ with the source: \n> {source}
 
         message = [message_divider]
         message.append(message_header)
-        if message_added_fields:
+        if message_added_section:
             message.append(message_divider)
             message.append(message_added_header)
-            message.extend(message_added_fields)
-        if message_replaced_fields:
+            message.extend(message_added_section)
+        if message_replaced_section:
             message.append(message_divider)
             message.append(message_replace_header)
-            message.extend(message_replaced_fields)
-        if message_removed_fields:
+            message.extend(message_replaced_section)
+        if message_removed_section:
             message.append(message_divider)
             message.append(message_removed_header)
-            message.extend(message_removed_fields)
+            message.extend(message_removed_section)
         # message.extend([message_divider, message_buttons])
         self.message = json.dumps(message)
         return self.message
