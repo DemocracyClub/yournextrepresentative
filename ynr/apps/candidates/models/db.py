@@ -1,5 +1,6 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
+from enum import Enum, unique
 
 from django.contrib.auth.models import User
 from django.db import models, transaction
@@ -25,6 +26,13 @@ class LoggedActionQuerySet(models.QuerySet):
 
     def needs_review(self):
         return self.exclude(flagged_type="").order_by("-created")
+
+
+@unique
+class EditType(Enum):
+    USER = "User"
+    BOT = "Bot"
+    BULK_ADD = "Bulk Add"
 
 
 class LoggedAction(models.Model):
@@ -68,6 +76,13 @@ class LoggedAction(models.Model):
         blank=True,
         null=False,
         help_text="An explaination of the reason for flagging this edit",
+    )
+    edit_type = models.CharField(
+        null=False,
+        blank=False,
+        choices=[(edit_type.name, edit_type.value) for edit_type in EditType],
+        default=EditType.USER.name,
+        max_length=20,
     )
 
     objects = LoggedActionQuerySet.as_manager()
@@ -153,7 +168,8 @@ class LoggedAction(models.Model):
         super().save(**kwargs)
 
         if not has_initial_pk and self.flagged_type and self.person:
-            transaction.on_commit(post_action_to_slack.s(self.pk).delay)
+            if self.edit_type == "USER":
+                transaction.on_commit(post_action_to_slack.s(self.pk).delay)
 
 
 class PersonRedirect(models.Model):

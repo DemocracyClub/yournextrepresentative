@@ -9,6 +9,7 @@ from django.views.generic import RedirectView, TemplateView
 from bulk_adding import forms, helpers
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot, LoggedAction
+from candidates.models.db import EditType
 from candidates.views.version_data import get_client_ip
 from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
@@ -247,6 +248,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     ip_address=get_client_ip(self.request),
                     ballot=ballot,
                     source="Suggested after bulk adding",
+                    edit_type=EditType.BULK_ADD,
                 )
 
                 if hasattr(ballot, "rawpeople"):

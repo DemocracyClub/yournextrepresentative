@@ -3,6 +3,7 @@ import csv
 from bulk_adding.models import RawPeople
 from candidates.models import LoggedAction, raise_if_unsafe_to_delete
 from candidates.models.auth import check_creation_allowed
+from candidates.models.db import EditType
 from candidates.views.version_data import get_change_metadata, get_client_ip
 from parties.models import Party, PartyDescription
 from people.models import Person
@@ -24,6 +25,7 @@ def add_person(request, person_data):
         ip_address=get_client_ip(request),
         popit_person_new_version=change_metadata["version_id"],
         source=change_metadata["information_source"],
+        edit_type=EditType.BULK_ADD,
     )
     return person
 
@@ -92,6 +94,7 @@ def update_person(
         ip_address=get_client_ip(request),
         popit_person_new_version=change_metadata["version_id"],
         source=change_metadata["information_source"],
+        edit_type=EditType.BULK_ADD,
     )
 
 

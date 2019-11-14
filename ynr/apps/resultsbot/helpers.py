@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 
 from candidates.models import LoggedAction
+from candidates.models.db import EditType
 from candidates.views.version_data import get_change_metadata
 from results.models import ResultEvent
 from uk_results.models import ResultSet
@@ -54,6 +55,7 @@ class ResultsBot(object):
                     popit_person_new_version=change_metadata["version_id"],
                     person=membership.person,
                     source=source,
+                    edit_type=EditType.BOT,
                 )
             else:
                 change_metadata[
@@ -120,4 +122,5 @@ class ResultsBot(object):
                     action_type="entered-results-data",
                     source=instance.source,
                     ballot=instance.ballot,
+                    edit_type=EditType.BOT,
                 )
