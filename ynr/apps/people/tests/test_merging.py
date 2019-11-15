@@ -9,7 +9,7 @@ from candidates.tests.factories import PostFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from people.merging import InvalidMergeError, PersonMerger, UnsafeToDelete
-from people.models import Person, PersonImage
+from people.models import Person, PersonImage, GenderGuess
 from people.tests.factories import PersonFactory
 from results.models import ResultEvent
 from uk_results.models import CandidateResult, ResultSet
@@ -625,3 +625,9 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 value_type="facebook_personal"
             ).exists()
         )
+
+    def test_merging_with_gender_guess(self):
+
+        GenderGuess.objects.create(gender="M", person=self.source_person)
+        merger = PersonMerger(self.dest_person, self.source_person)
+        merger.merge()

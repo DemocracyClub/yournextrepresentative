@@ -271,6 +271,13 @@ class PersonMerger:
             winner=self.dest_person
         )
 
+    def merge_gender_guess(self):
+        """
+        Just delete the source guess – this is data we generate from the
+        name so it's not important
+        """
+        self.source_person.gender_guess.delete()
+
     def setup_redirect(self):
         # Create a redirect from the old person to the new person:
         PersonRedirect.objects.create(
@@ -296,6 +303,7 @@ class PersonMerger:
             self.merge_queued_images()
             self.merge_not_standing()
             self.merge_result_events()
+            self.merge_gender_guess()
 
             # Post merging tasks
             # Save the dest person (don't assume the methods above do this)
