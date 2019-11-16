@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from enum import Enum, unique
 
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import JSONField
 from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.urls import reverse
@@ -84,6 +85,7 @@ class LoggedAction(models.Model):
         default=EditType.USER.name,
         max_length=20,
     )
+    approved = JSONField(null=True)
 
     objects = LoggedActionQuerySet.as_manager()
 
