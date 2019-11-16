@@ -354,6 +354,12 @@ class Person(Timestampable, models.Model):
             return path
         return request.build_absolute_uri(path)
 
+    def get_edit_url(self, request=None):
+        path = reverse("person-update", kwargs={"person_id": self.pk})
+        if request is None:
+            return path
+        return request.build_absolute_uri(path)
+
     @cached_property
     def get_all_idenfitiers(self):
         return list(self.tmp_person_identifiers.all())

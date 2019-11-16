@@ -6,6 +6,7 @@ from rest_framework import routers
 import elections.api.next.api_views
 import parties.api.next.api_views
 import people.api.next.api_views
+from api import slack_hooks
 from api.next import views as next_views
 from api.v09 import views as v09views
 from api.views import (
@@ -136,4 +137,5 @@ urlpatterns = [
         v09views.UpcomingElectionsView.as_view(),
         name="upcoming-elections",
     ),
+    url("api/slack-hooks", slack_hooks.SlackHookRouter.as_view()),
 ]

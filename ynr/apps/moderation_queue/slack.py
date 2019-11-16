@@ -1,4 +1,9 @@
+import datetime
+
+import requests
+
 from django.conf import settings
+
 from celery import shared_task
 
 from utils.slack import SlackHelper
@@ -168,6 +173,35 @@ with the source: \n> {source}
             },
         }
 
+        message_actions = {
+            "type": "actions",
+            "elements": [
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "emoji": True,
+                        "text": "Approve",
+                    },
+                    "style": "primary",
+                    "value": "{}".format(self.logged_action.pk),
+                    "action_id": "candidate-edit-review-approve",
+                },
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "emoji": True,
+                        "text": "Edit",
+                    },
+                    "value": "Edit",
+                    "url": "https://candidates.democracyclub.org.uk{}".format(
+                        self.logged_action.person.get_edit_url()
+                    ),
+                },
+            ],
+        }
+
         message = [message_divider]
         message.append(message_header)
         if message_added_section:
@@ -182,13 +216,13 @@ with the source: \n> {source}
             message.append(message_divider)
             message.append(message_removed_header)
             message.extend(message_removed_section)
-        # message.extend([message_divider, message_buttons])
-        self.message = json.dumps(message)
+        message.extend([message_divider, message_actions])
+        self.message = json.dumps(message, indent=4)
         return self.message
 
     def post_message(self):
         self.sh.client.chat.post_message(
-            "C59LHLH7A",
+            getattr(settings, "SLACK_REVIEW_CHANNEL", "C59LHLH7A"),
             text="Edit to {}".format(self.logged_action.person.name),
             blocks=self.message,
             username=settings.CANDIDATE_BOT_USERNAME,
@@ -197,23 +231,41 @@ with the source: \n> {source}
 
 
 class FlaggedEditSlackReplyer:
-    def __init__(self, payload):
+    def __init__(self, payload, action):
         self.payload = payload
+        self.action = action
         self.sh = SlackHelper()
+        self.username = self.payload["user"]["username"]
+
+    def mark_as_approved(self, pk):
+        from candidates.models import LoggedAction
+
+        LoggedAction.objects.filter(pk=pk).update(
+            approved={
+                "via": "slack",
+                "username": self.username,
+                "datetime": datetime.datetime.now().isoformat(),
+            }
+        )
 
     def reply(self):
-        self.sh.client.chat.update(
-            self.payload["channel"]["id"],
-            self.payload["message_ts"],
-            text="Message updated",
-            attachments=[
-                {
-                    "text": "Edit approved by @{}".format(
-                        self.payload["user"]["name"]
-                    )
-                }
-            ],
-        )
+        self.mark_as_approved(self.action["value"])
+        message = self.payload["message"]
+        message["blocks"] = [
+            message["blocks"][0],
+            message["blocks"][1],
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": ":white_check_mark: *{}* approved this edit".format(
+                        self.username
+                    ),
+                },
+            },
+            {"type": "divider"},
+        ]
+        requests.post(self.payload["response_url"], json=message)
 
 
 @shared_task
