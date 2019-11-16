@@ -276,7 +276,8 @@ class PersonMerger:
         Just delete the source guess – this is data we generate from the
         name so it's not important
         """
-        self.source_person.gender_guess.delete()
+        if hasattr(self.source_person, "gender_guess"):
+            self.source_person.gender_guess.delete()
 
     def setup_redirect(self):
         # Create a redirect from the old person to the new person:
