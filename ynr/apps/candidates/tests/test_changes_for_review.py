@@ -127,6 +127,62 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
             "needs_review_due_to_high_profile",
         )
 
+    def test_change_name_of_locked_ballot_candidate(self):
+
+        example_person = people.tests.factories.PersonFactory.create(
+            id="2009", name="Tessa Jowell"
+        )
+        for i in range(20):
+            LoggedAction.objects.create(
+                id=(1000 + i),
+                user=self.user,
+                action_type="person-update",
+                person=example_person,
+                popit_person_new_version=random_person_id(),
+                source="Just for tests...",
+            )
+        self.assertEqual(LoggedAction.objects.all().count(), 20)
+        response = self.app.get(
+            "/person/{person_id}/update".format(person_id=example_person.id),
+            user=self.user,
+        )
+        form = response.forms["person-details"]
+        form["name"] = "A name"
+        form["source"] = "Testing setting simple fields"
+        form.submit()
+
+        example_person.refresh_from_db()
+        self.assertEqual(example_person.name, "A name")
+
+        self.local_ballot.candidates_locked = True
+        self.local_ballot.save()
+        self.local_ballot.election.current = True
+        self.local_ballot.election.save()
+
+        example_person.memberships.create(
+            ballot=self.local_ballot, party=self.green_party
+        )
+
+        response = self.app.get(
+            "/person/{person_id}/update".format(person_id=example_person.id),
+            user=self.user,
+        )
+        form = response.forms["person-details"]
+        form["name"] = "A different name"
+        form["source"] = "Testing setting simple fields"
+        form.submit()
+
+        example_person.refresh_from_db()
+        self.assertEqual(example_person.name, "A different name")
+
+        self.assertEqual(LoggedAction.objects.all().count(), 22)
+        self.assertEqual(
+            LoggedAction.objects.filter(
+                flagged_type="needs_review_due_to_current_candidate_name_change"
+            ).count(),
+            1,
+        )
+
 
 @patch.object(Person, "diff_for_version", fake_diff_html)
 @patch("candidates.models.db.datetime")

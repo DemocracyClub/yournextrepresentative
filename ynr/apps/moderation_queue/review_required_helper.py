@@ -135,6 +135,37 @@ class EditMadeByBotDecider(BaseReviewRequiredDecider):
         return self.Status.UNDECIDED
 
 
+class CandidateCurrentNameDecider(BaseReviewRequiredDecider):
+    """
+    Marks an edit as not needing review if it was made by a bot
+    """
+
+    def review_description_text(self):
+        return "Edit of name of current candidate"
+
+    def needs_review(self):
+
+        if self.logged_action.user and self.logged_action.person:
+            la = self.logged_action
+            qs = la.person.memberships.filter(
+                ballot__election__current=True, ballot__candidates_locked=True
+            )
+            if qs.exists():
+                # This person is standing in a current election
+                for version_diff in la.person.version_diffs:
+                    if (
+                        version_diff["version_id"]
+                        == la.popit_person_new_version
+                    ):
+                        this_diff = version_diff["diffs"][0]["parent_diff"]
+                        for op in this_diff:
+
+                            if op["path"] == "name" and op["op"] == "replace":
+                                # this is an edit to a name
+                                return self.Status.NEEDS_REVIEW
+            return self.Status.UNDECIDED
+
+
 ReviewType = namedtuple("ReviewType", ["type", "label", "cls"])
 
 REVIEW_TYPES = (
@@ -162,5 +193,10 @@ REVIEW_TYPES = (
         type="needs_review_due_to_statement_edit",
         label="Edit of a statement to voters",
         cls=CandidateStatementEditDecider,
+    ),
+    ReviewType(
+        type="needs_review_due_to_current_candidate_name_change",
+        label="Edit of name of current candidate",
+        cls=CandidateCurrentNameDecider,
     ),
 )
