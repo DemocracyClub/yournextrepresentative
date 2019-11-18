@@ -251,6 +251,11 @@ class FlaggedEditSlackReplyer:
     def reply(self):
         self.mark_as_approved(self.action["value"])
         message = self.payload["message"]
+        message["replace_original"] = True
+        if message["blocks"][1].get("accessory"):
+            # Some sort of bug in Slack means you can't
+            # update a message with an accessory
+            del message["blocks"][1]["accessory"]
         message["blocks"] = [
             message["blocks"][0],
             message["blocks"][1],
