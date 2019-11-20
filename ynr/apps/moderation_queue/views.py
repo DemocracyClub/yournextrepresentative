@@ -320,6 +320,12 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             uploaded_by=uploaded_by
         )
 
+        if make_primary:
+            # Unset the is_primary flag on all other images
+            PersonImage.objects.filter(person_id=person_id).update(
+                is_primary=False
+            )
+
         PersonImage.objects.create_from_file(
             ntf.name,
             join("images", filename),
