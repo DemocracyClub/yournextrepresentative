@@ -55,7 +55,7 @@ class ResultsBot(object):
                     popit_person_new_version=change_metadata["version_id"],
                     person=membership.person,
                     source=source,
-                    edit_type=EditType.BOT,
+                    edit_type=EditType.BOT.name,
                 )
             else:
                 change_metadata[
@@ -122,5 +122,5 @@ class ResultsBot(object):
                     action_type="entered-results-data",
                     source=instance.source,
                     ballot=instance.ballot,
-                    edit_type=EditType.BOT,
+                    edit_type=EditType.BOT.name,
                 )

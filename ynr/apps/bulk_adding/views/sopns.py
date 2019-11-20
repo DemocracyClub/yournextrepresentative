@@ -248,7 +248,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     ip_address=get_client_ip(self.request),
                     ballot=ballot,
                     source="Suggested after bulk adding",
-                    edit_type=EditType.BULK_ADD,
+                    edit_type=EditType.BULK_ADD.name,
                 )
 
                 if hasattr(ballot, "rawpeople"):

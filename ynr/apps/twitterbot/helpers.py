@@ -39,5 +39,5 @@ class TwitterBot(object):
             ip_address=None,
             popit_person_new_version=metadata["version_id"],
             source=metadata["information_source"],
-            edit_type=EditType.BOT,
+            edit_type=EditType.BOT.name,
         )

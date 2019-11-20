@@ -25,7 +25,7 @@ def add_person(request, person_data):
         ip_address=get_client_ip(request),
         popit_person_new_version=change_metadata["version_id"],
         source=change_metadata["information_source"],
-        edit_type=EditType.BULK_ADD,
+        edit_type=EditType.BULK_ADD.name,
     )
     return person
 
@@ -94,7 +94,7 @@ def update_person(
         ip_address=get_client_ip(request),
         popit_person_new_version=change_metadata["version_id"],
         source=change_metadata["information_source"],
-        edit_type=EditType.BULK_ADD,
+        edit_type=EditType.BULK_ADD.name,
     )
 
 
