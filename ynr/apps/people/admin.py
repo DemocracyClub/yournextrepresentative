@@ -25,7 +25,7 @@ class PersonImageInline(admin.TabularInline):
     extra = 0
     model = PersonImage
     form = PersonImageInlineForm
-    fields = ("image", "is_primary")
+    fields = ("id", "image", "is_primary")
 
 
 class PersonAdmin(admin.ModelAdmin):
