@@ -42,9 +42,11 @@ DEFAULT_EMBLEMS = {
     "PP54": 54,
     # Animal Welfare Party
     "PP616": 3535,
+    # Heavy Woollen District Independents
+    "PP6453": 4907,
 }
 
-JOINT_DESCRIPTION_REGEX = "^(.*?) \(joint descriptions? with\s?(.*)\)"
+JOINT_DESCRIPTION_REGEX = r"^(.*?) \(joint descriptions? with\s?(.*)\)"
 
 # We change some party names in descriptions. This is because we assume the
 # description contains the sub-party name (see `JOINT_DESCRIPTION_REGEX`)
