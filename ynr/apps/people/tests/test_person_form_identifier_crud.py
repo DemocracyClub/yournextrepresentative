@@ -235,3 +235,38 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         self.assertEqual(pi.value, "democracyclub")
         self.assertEqual(pi.value_type, "twitter_username")
         self.assertEqual(pi.internal_identifier, None)
+
+    def test_duplicate_values_raises_form_error(self):
+
+        resp = self.app.get(
+            reverse("person-update", kwargs={"person_id": self.person.pk}),
+            user=self.user,
+        )
+
+        pi = PersonIdentifier.objects.create(
+            person=self.person,
+            value_type="facebook_personal_url",
+            value="https://www.facebook.com/example",
+        )
+
+        form = resp.forms[1]
+        form["source"] = "They changed their username"
+        form["tmp_person_identifiers-0-value_type"] = "email"
+        form["tmp_person_identifiers-0-value"] = "person@example.com"
+
+        form[
+            "tmp_person_identifiers-1-value"
+        ] = "https://www.facebook.com/example"
+        form["tmp_person_identifiers-1-value_type"] = "facebook_page_url"
+
+        form["tmp_person_identifiers-2-id"] = pi.pk
+        form["tmp_person_identifiers-2-value"] = ""
+        form["tmp_person_identifiers-2-value_type"] = "facebook_personal_url"
+
+        resp = form.submit()
+
+        self.assertEqual(resp.status_code, 302)
+        resp.follow()
+        self.assertEqual(
+            resp.context["person"].tmp_person_identifiers.count(), 2
+        )

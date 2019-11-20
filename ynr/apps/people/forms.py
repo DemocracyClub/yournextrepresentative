@@ -94,6 +94,10 @@ class PersonIdentifierForm(forms.ModelForm):
 
     def clean(self):
         if not self.cleaned_data.get("value", None):
+            if self.cleaned_data.get("id"):
+                # This is an existing PI that's been removed
+                # we need to delete the model
+                self.cleaned_data["id"].delete()
             self.cleaned_data["DELETE"] = True
             return self.cleaned_data
 
