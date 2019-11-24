@@ -26,6 +26,7 @@ class CandidateBot(object):
     def __init__(self, person_id):
         self.user = User.objects.get(username=settings.CANDIDATE_BOT_USERNAME)
         self.person = Person.objects.get(pk=person_id)
+        self.edits_made = False
 
     def get_change_metadata_for_bot(self, source):
         """
@@ -65,8 +66,12 @@ class CandidateBot(object):
         PersonIdentifier.objects.update_or_create(
             person=self.person, value_type=field_name, value=value
         )
+        self.edits_made = True
 
     def save(self, source, action_type="person-update"):
+        if not self.edits_made:
+            # No-op in this case
+            return self.person
         with transaction.atomic():
             metadata = self.get_change_metadata_for_bot(source)
             self.person.record_version(metadata)
