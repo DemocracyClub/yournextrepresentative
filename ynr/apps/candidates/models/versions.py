@@ -189,13 +189,17 @@ def revert_person_from_version_data(person, version_data):
                 ]
             )
             post = Post.objects.get(slug=standing_in["post_id"])
-            Membership.objects.create(
-                party=party,
+            Membership.objects.update_or_create(
                 person=person,
-                post=post,
-                elected=standing_in.get("elected"),
-                party_list_position=standing_in.get("party_list_position"),
                 ballot=election.ballot_set.get(post=post),
+                defaults={
+                    "party": party,
+                    "post": post,
+                    "elected": standing_in.get("elected"),
+                    "party_list_position": standing_in.get(
+                        "party_list_position"
+                    ),
+                },
             )
 
     person.save()

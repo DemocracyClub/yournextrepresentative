@@ -287,3 +287,23 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertTrue(
             CandidateResult.objects.filter(membership__person_id=2009).exists()
         )
+
+    def test_revert_with_memberships(self):
+        person = Person.objects.get(id=2009)
+        self.dulwich_post_ballot.candidates_locked = True
+        self.dulwich_post_ballot.save()
+        self.dulwich_post_ballot_earlier.candidates_locked = True
+        self.dulwich_post_ballot_earlier.save()
+
+        response = self.app.get("/person/2009/update", user=self.user)
+        form = response.forms[1]
+        form["source"] = "made up"
+        form.submit()
+
+        response = self.app.get("/person/2009/update", user=self.user)
+        revert_form = response.forms["revert-form-5469de7db0cbd155"]
+        revert_form[
+            "source"
+        ] = "Reverting to version 5469de7db0cbd155 for testing purposes"
+        response = revert_form.submit()
+        print(response)
