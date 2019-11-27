@@ -45,6 +45,7 @@ class CandidateBot(object):
             return self.save(source)
 
     def edit_field(self, field_name, field_value, update=False):
+        ignore_edit = False
         if field_name not in self.SUPPORTED_EDIT_FIELDS:
             raise ValueError(
                 "CandidateBot can't edit {} yet".format(field_name)
@@ -54,7 +55,7 @@ class CandidateBot(object):
         field_method = getattr(self, "clean_{}".format(field_name), None)
         if field_method:
             try:
-                field_value = field_method(field_value, update=update)
+                field_value = field_method(field_value)
             except ValueError:
                 if self.IGNORE_ERRORS:
                     # We can't edit this value, but we want to ignore errors
@@ -73,10 +74,13 @@ class CandidateBot(object):
             except IntegrityError:
                 if not update and not self.IGNORE_ERRORS:
                     raise
+                else:
+                    ignore_edit = True
 
-        self.edits_made = True
+        if not ignore_edit:
+            self.edits_made = True
 
-    def clean_email(self, value, update=False):
+    def clean_email(self, value):
         # The lightest of validation
         if "@" not in value:
             raise ValueError("{} is not a valid email".format(value))
