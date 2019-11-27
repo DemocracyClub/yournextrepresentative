@@ -25,7 +25,7 @@ class CandidateBot(object):
 
     def __init__(self, person_id):
         self.user = User.objects.get(username=settings.CANDIDATE_BOT_USERNAME)
-        self.person = Person.objects.get(pk=person_id)
+        self.person = Person.objects.get_by_id_with_redirects(pk=person_id)
         self.edits_made = False
 
     def get_change_metadata_for_bot(self, source):
@@ -74,11 +74,11 @@ class CandidateBot(object):
             except IntegrityError:
                 if not update and not self.IGNORE_ERRORS:
                     raise
-                else:
+                if self.IGNORE_ERRORS:
                     ignore_edit = True
 
-        if not ignore_edit:
-            self.edits_made = True
+            if not ignore_edit:
+                self.edits_made = True
 
     def clean_email(self, value):
         # The lightest of validation
@@ -100,15 +100,18 @@ class CandidateBot(object):
             metadata = self.get_change_metadata_for_bot(source)
             self.person.record_version(metadata)
             self.person.save()
-
-            LoggedAction.objects.create(
-                user=self.user,
-                person=self.person,
-                action_type=action_type,
-                ip_address=None,
-                popit_person_new_version=metadata["version_id"],
-                source=metadata["information_source"],
+            existing_action = LoggedAction.objects.filter(
+                popit_person_new_version=metadata["version_id"]
             )
+            if not existing_action.exists():
+                LoggedAction.objects.create(
+                    user=self.user,
+                    person=self.person,
+                    action_type=action_type,
+                    ip_address=None,
+                    popit_person_new_version=metadata["version_id"],
+                    source=metadata["information_source"],
+                )
         self.person.invalidate_identifier_cache()
         return self.person
 
