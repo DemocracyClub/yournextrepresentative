@@ -85,5 +85,5 @@ class PersonQuerySet(models.query.QuerySet):
                 ).new_person_id
                 self.get_by_id_with_redirects(person_id)
             except PersonRedirect.DoesNotExist:
-                person = None
+                raise self.model.DoesNotExist
         return person
