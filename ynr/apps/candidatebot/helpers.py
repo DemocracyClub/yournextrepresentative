@@ -25,7 +25,7 @@ class CandidateBot(object):
 
     def __init__(self, person_id):
         self.user = User.objects.get(username=settings.CANDIDATE_BOT_USERNAME)
-        self.person = Person.objects.get_by_id_with_redirects(pk=person_id)
+        self.person = Person.objects.get_by_id_with_redirects(person_id)
         self.edits_made = False
 
     def get_change_metadata_for_bot(self, source):
