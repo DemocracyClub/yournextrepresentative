@@ -393,6 +393,22 @@ class Person(Timestampable, models.Model):
     def get_facebook_personal_url(self):
         return self.get_single_identifier_value("facebook_personal_url")
 
+    def invalidate_identifier_cache(self):
+        """
+        Django can store a prefetch cache on a model, meaning
+        that `dest_person.tmp_person_identifiers.all()`
+        wont return the newly moved IDs. To save confusion
+        in downstream code, invalidate the cache after moving.
+        Do the same for the `get_all_identifiers` cache
+        """
+        attrs = ["_prefetched_objects_cache", "get_all_idenfitiers"]
+
+        for attr in attrs:
+            try:
+                delattr(self, attr)
+            except AttributeError:
+                pass
+
     @property
     def last_candidacy(self):
         ordered_candidacies = Membership.objects.filter(

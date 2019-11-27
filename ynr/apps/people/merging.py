@@ -146,23 +146,6 @@ class PersonMerger:
         keep.person = self.dest_person
         keep.save()
 
-    def _invalidate_pi_cache(self):
-        """
-        Django can store a prefetch cache on a model, meaning
-        that `dest_person.tmp_person_identifiers.all()`
-        wont return the newly moved IDs. To save confusion
-        in downstream code, invalidate the cache after moving.
-        Do the same for the `get_all_identifiers` cache
-        """
-        attrs = ["_prefetched_objects_cache", "get_all_idenfitiers"]
-
-        for person in [self.source_person, self.dest_person]:
-            for attr in attrs:
-                try:
-                    delattr(person, attr)
-                except AttributeError:
-                    pass
-
     def merge_person_identifiers(self):
         """
         Because we store the modified datetime for PersonIdentifiers,
@@ -179,7 +162,8 @@ class PersonMerger:
                 pi, self.dest_person.tmp_person_identifiers.get(value=pi.value)
             )
         if duplicate_pi_values:
-            self._invalidate_pi_cache()
+            for person in [self.source_person, self.dest_person]:
+                person.invalidate_identifier_cache()
 
         qs = self.source_person.tmp_person_identifiers.all()
         moved_any = qs.exists()

@@ -1,11 +1,12 @@
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.db import transaction
+from django.db import transaction, IntegrityError
 
 from candidates.models import LoggedAction
 from candidates.views.version_data import get_change_metadata
 from people.models import Person, PersonIdentifier
-from people.helpers import clean_twitter_username
+from people.helpers import clean_twitter_username, clean_wikidata_id
+from ynr_refactoring.settings import PersonIdentifierFields
 
 
 class CandidateBot(object):
@@ -14,13 +15,12 @@ class CandidateBot(object):
     and edit history.
     """
 
-    SUPPORTED_EDIT_FIELDS = [
-        "email",
-        "other_names",
-        "name",
-        "twitter_username",
-        "homepage_url",
-        "facebook_page_url",
+    # Set this to True if you want to ignore IntegrityErrors
+    # raised when adding values that already exist. Default to raise
+    IGNORE_ERRORS = False
+
+    SUPPORTED_EDIT_FIELDS = ["other_names", "name"] + [
+        f.name for f in PersonIdentifierFields
     ]
 
     def __init__(self, person_id):
@@ -39,34 +39,54 @@ class CandidateBot(object):
     def edit_fields(self, field_dict, source, save=True):
         for field_name, field_value in field_dict.items():
             if field_name in self.SUPPORTED_EDIT_FIELDS:
-                self._edit_field(field_name, field_value)
+                self.edit_field(field_name, field_value)
 
         if save:
             return self.save(source)
 
-    def _edit_field(self, field_name, field_value):
+    def edit_field(self, field_name, field_value, update=False):
         if field_name not in self.SUPPORTED_EDIT_FIELDS:
             raise ValueError(
                 "CandidateBot can't edit {} yet".format(field_name)
             )
 
-        value = field_value
+        field_value = field_value.strip()
+        field_method = getattr(self, "clean_{}".format(field_name), None)
+        if field_method:
+            try:
+                field_value = field_method(field_value, update=update)
+            except ValueError:
+                if self.IGNORE_ERRORS:
+                    # We can't edit this value, but we want to ignore errors
+                    # so just turn this in to a no-op
+                    return None
+                raise
 
-        if field_name == "email":
-            # The lightest of validation
-            if "@" in value:
-                if self.person.get_email:
-                    raise ValueError("Email already exists")
+        if hasattr(PersonIdentifierFields, field_name):
+            kwargs = {"person": self.person, "value_type": field_name}
+            if update:
+                kwargs["defaults"] = {"value": field_value}
             else:
-                ValueError("{} is not a valid email".format(value))
+                kwargs["value"] = field_value
+            try:
+                PersonIdentifier.objects.update_or_create(**kwargs)
+            except IntegrityError:
+                if not update and not self.IGNORE_ERRORS:
+                    raise
 
-        if field_name == "twitter_username":
-            value = clean_twitter_username(value)
-
-        PersonIdentifier.objects.update_or_create(
-            person=self.person, value_type=field_name, value=value
-        )
         self.edits_made = True
+
+    def clean_email(self, value, update=False):
+        # The lightest of validation
+        if "@" not in value:
+            raise ValueError("{} is not a valid email".format(value))
+        return value
+
+    def clean_twitter_username(self, value):
+        return clean_twitter_username(value)
+
+    def clean_wikidata_id(self, value):
+        return clean_wikidata_id(value)
 
     def save(self, source, action_type="person-update"):
         if not self.edits_made:
@@ -85,20 +105,20 @@ class CandidateBot(object):
                 popit_person_new_version=metadata["version_id"],
                 source=metadata["information_source"],
             )
-
+        self.person.invalidate_identifier_cache()
         return self.person
 
     def add_email(self, email):
         """
         A tiny wrapper around edit_fields to make adding a single field easier
         """
-        self._edit_field("email", email)
+        self.edit_field("email", email)
 
     def add_twitter_username(self, username):
-        self._edit_field("twitter_username", username)
+        self.edit_field("twitter_username", username)
 
     def add_homepage_url(self, username):
-        self._edit_field("homepage_url", username)
+        self.edit_field("homepage_url", username)
 
     def add_facebook_page_url(self, username):
-        self._edit_field("facebook_page_url", username)
+        self.edit_field("facebook_page_url", username)

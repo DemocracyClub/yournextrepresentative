@@ -2,6 +2,7 @@ import json
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.test import TestCase
 
 from candidatebot.helpers import CandidateBot
@@ -65,10 +66,46 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
         bot = CandidateBot(self.person.pk)
         bot.add_email("foo@bar.com")
         person = bot.save("a source")
-        del person.get_all_idenfitiers
         self.assertEqual(person.get_email, "foo@bar.com")
 
     def test_cant_edit_linkedin(self):
         bot = CandidateBot(self.person.pk)
         with self.assertRaises(ValueError):
-            bot._edit_field("linkedin", "https://linkedin.com/CandidateBot")
+            bot.edit_field("linkedin", "https://linkedin.com/CandidateBot")
+
+    def test_update_field(self):
+        self.person.tmp_person_identifiers.create(
+            value_type="email", value="foo@bar.com"
+        )
+        self.assertEqual(self.person.get_email, "foo@bar.com")
+        bot = CandidateBot(self.person.pk)
+        bot.edit_field("email", "foo@example.com", update=True)
+        person = bot.save("a source")
+        self.assertEqual(person.get_email, "foo@example.com")
+
+        # Now test this doesn't work if update==False
+        bot = CandidateBot(self.person.pk)
+        with self.assertRaises(IntegrityError):
+            bot.edit_field("email", "foo@bar.com", update=False)
+
+        # Now test we can ignore the above error if we want to
+        bot = CandidateBot(self.person.pk)
+        bot.IGNORE_ERRORS = True
+        bot.edit_field("email", "foo@bar.com", update=False)
+        person = bot.save("a source")
+        # The edit failed, but didn't raise an error
+        self.assertEqual(person.get_email, "foo@example.com")
+
+    def test_edit_invalid_value(self):
+        # First, make sure we can't do this
+        bot = CandidateBot(self.person.pk)
+        with self.assertRaises(ValueError):
+            bot.edit_field("email", "INVALID")
+
+        # Now, ignore errors and verify nothing changes, but no errors
+        # are raised
+        bot = CandidateBot(self.person.pk)
+        bot.IGNORE_ERRORS = True
+        bot.edit_field("email", "INVALID")
+        person = bot.save("a source")
+        self.assertEqual(person.get_email, None)
