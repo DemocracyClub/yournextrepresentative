@@ -83,7 +83,7 @@ class PersonQuerySet(models.query.QuerySet):
                 person_id = PersonRedirect.objects.get(
                     old_person_id=person_id
                 ).new_person_id
-                self.get_by_id_with_redirects(person_id)
+                return self.get_by_id_with_redirects(person_id)
             except PersonRedirect.DoesNotExist:
                 raise self.model.DoesNotExist
         return person
