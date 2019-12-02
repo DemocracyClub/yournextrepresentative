@@ -55,7 +55,7 @@ mock==1.0.1
 ndg-httpsclient==0.5.1
 numpy==1.16.2
 oauthlib==3.1.0
-path.py==11.5.0
+path.py==12.4.0
 pexpect==4.7.0
 pickleshare==0.7.5
 Pillow==6.1.0
