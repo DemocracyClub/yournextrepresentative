@@ -97,7 +97,7 @@ class Command(BaseCommand):
         call_command("uk_create_elections_from_every_election")
 
         self.stdout.write("Mirroring {}".format(self.ynr_url))
-        self.mirror_from_api(include_images=options["include_images"])
+        self.mirror_from_api(include_images=options.get("include_images"))
         call_command("parties_update_current_candidates")
 
     def get_api_results(self, endpoint, api_version="next"):
@@ -220,6 +220,7 @@ class Command(BaseCommand):
 
                     serializer = CandidacyOnPersonSerializer(data=candidacy)
                     if serializer.is_valid():
+                        person.not_standing.remove(ballot.election)
                         serializer.save(
                             person=person, ballot=ballot, party=party
                         )
