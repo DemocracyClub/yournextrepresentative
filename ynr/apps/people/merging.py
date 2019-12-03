@@ -85,6 +85,10 @@ class PersonMerger:
 
         return model.delete()
 
+    def _invalidate_pi_cache(self):
+        for person in [self.source_person, self.dest_person]:
+            person.invalidate_identifier_cache()
+
     def merge_versions_json(self):
         # Merge the reduced JSON representations:
         merge_popit_people(
@@ -162,8 +166,7 @@ class PersonMerger:
                 pi, self.dest_person.tmp_person_identifiers.get(value=pi.value)
             )
         if duplicate_pi_values:
-            for person in [self.source_person, self.dest_person]:
-                person.invalidate_identifier_cache()
+            self._invalidate_pi_cache()
 
         qs = self.source_person.tmp_person_identifiers.all()
         moved_any = qs.exists()
