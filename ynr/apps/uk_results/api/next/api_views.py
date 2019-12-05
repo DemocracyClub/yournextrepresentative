@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.helpers import DefaultPageNumberPagination
+from uk_results.api.next.filters import ResultSetFilter
 from uk_results.models import ResultSet
 
 from uk_results.api.next.serializers import ResultSerializer
@@ -19,6 +20,7 @@ class ResultViewSet(viewsets.ReadOnlyModelViewSet):
     )
     serializer_class = ResultSerializer
     pagination_class = DefaultPageNumberPagination
+    filterset_class = ResultSetFilter
 
     @action(detail=True, methods=["get"], name="Previous versions")
     def versions(self, request, ballot_paper_id=None, **kwargs):
