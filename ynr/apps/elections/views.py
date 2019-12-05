@@ -200,8 +200,10 @@ class BallotPaperView(TemplateView):
             context["sopn"] = None
 
         if ballot.polls_closed:
-            context["has_any_winners"] = any(
-                [m.elected for m in context["candidates"]]
+            winners = [m.elected for m in context["candidates"]]
+            context["has_any_winners"] = any(winners)
+            context["has_all_winners"] = (
+                winners.count(True) == ballot.winner_count
             )
 
         if self.request.user.is_authenticated:
