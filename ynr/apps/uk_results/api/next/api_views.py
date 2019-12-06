@@ -3,7 +3,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.helpers import DefaultPageNumberPagination
-from popolo.api.next.serializers import CandidacyOnBallotSerializer
 from popolo.models import Membership
 from uk_results.api.next.filters import ResultSetFilter, ElectedSetFilter
 from uk_results.models import ResultSet
