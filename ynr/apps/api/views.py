@@ -80,3 +80,7 @@ class CSVListView(TemplateView):
         context["past_elections"] = base_qs.past().exclude(current=True)
 
         return context
+
+
+class ResultsDocs(TemplateView):
+    template_name = "api/results.html"

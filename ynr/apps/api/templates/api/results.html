@@ -1,0 +1,274 @@
+{% extends "api/api-base.html" %}
+{% block api_page_title %}
+    <h1>Results data</h1>
+  {% endblock %}
+{% block api_content %}
+<h2>Types of results</h2>
+  <p><strong>At the moment, we only support results for elections that use First Past The Post.</strong></p>
+
+  <p>We store two different types of results: <strong>elected</strong> and <strong>votes cast</strong>.</p>
+
+  <p><strong>Elected</strong> results involve just setting a flag on the <em>candidacy</em>
+  that the person was elected. This is the simplest form of result, and is often the quickest and easiest
+  information to collect.</p>
+
+  <p><strong>Votes cast</strong> results are the numbers of votes cast per person. For first past the post
+  elections, the winners are set based on the number of winners for that ballot.</p>
+
+<h2 id="winners_csv">2019 General election 'elected' CSV</h2>
+<p>For the 2019 General election we are publishing a CSV of winners, overnight.</p>
+  <p>The CSV will contain a header row, and then one row per ballot containing information
+  about the winner. No <em>votes cast</em> data will be in the CSV</p>
+
+<a href="{% url "parl-2019-csv-results" %}" class="button">Download the CSV</a>
+
+<p>The headings of th CSV are:</p>
+  <table class="table api_defs">
+    <thead>
+      <tr>
+        <th>Column Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td><code>election_slug</code></td>
+        <td><code>parl.2019-12-12</code>. Here for future proofing the format.</td>
+      </tr>
+      <tr>
+        <td><code>ballot_paper_id</code></td>
+        <td>The Democracy Club ballot paper ID. See the
+          <a href="https://elections.democracyclub.org.uk/reference_definition/">reference definition</a>
+        for detailed information. Used to format URLs on most of our sites, and in the REST API</td>
+      </tr>
+      <tr>
+        <td><code>gss</code></td>
+        <td>The GSS code for the ballot</td>
+      </tr>
+      <tr>
+        <td><code>person_id</code></td>
+        <td>The numerical ID assigned to a person by this site.</td>
+      </tr>
+      <tr>
+        <td><code>person_name</code></td>
+        <td>The person's name</td>
+      </tr>
+      <tr>
+        <td><code>party_id</code></td>
+        <td>The Party ID of the elected person.
+        See the <a href="http://localhost:8001/api/docs/next/definitions/#Party"><code>Party</code></a>
+        documentation for more.
+        Look out for edge cases here, for example <code>joint-party:53-119</code>
+        is the ID for 'Labour and Co-operative Party', <code>ynmp-party:2</code> 'Independent' and
+        <code>joint-party:53-119</code> 'Speaker seeking re-election'. All other values should match
+          The Electoral Commission IDs</td>
+      </tr>
+      <tr>
+        <td><code>party_name</code></td>
+        <td>The party name</td>
+      </tr>
+      <tr>
+        <td><code>theyworkforyou_url</code></td>
+        <td>If the person has ever been elected as an MP, they will have a TheyWorkForYou
+        URL here. Note that this doesn't mean they are an "incumbent", as they might not have
+        been in MP in the last parliament.</td>
+      </tr>
+      <tr>
+        <td><code>wikidata_id</code></td>
+        <td>The person's Wikidata ID</td>
+      </tr>
+    </tbody>
+  </table>
+
+<h2>Votes Cast</h2>
+<p>Votes cast will be <a href="http://localhost:8001/api/docs/next/endpoints/#results_list">
+  published in our 'next' API</a>.</p>
+  <p>Use the <code>last_updated</code> param to poll for updates.</p>
+
+<h2 id="atom">ATOM feeds</h2>
+<p>There is an atom feed of recent election results available in two versions:</p>
+
+<ul>
+  <li><a href="{% url 'atom-results' %}">Atom feed with additional machine-readable elements</a></li>
+  <li><a href="{% url 'atom-results-basic' %}">Basic Atom feed</a></li>
+</ul>
+<p>Here is an example of the full feed - this is the contents of
+the feed with additional extra elements with a single
+result:</p>
+
+<pre class="feed-example">
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb"&gt;
+  &lt;title&gt;Election results from Democracy Club Candidates (with extra data)&lt;/title&gt;
+  &lt;link href="https://candidates.democracyclub.org.uk/" rel="alternate"/&gt;
+  &lt;link href="https://candidates.democracyclub.org.uk/results/all.atom" rel="self"/&gt;
+  &lt;id&gt;https://candidates.democracyclub.org.uk/&lt;/id&gt;
+  &lt;updated&gt;2017-06-09T10:36:38.110335+00:00&lt;/updated&gt;
+  &lt;entry&gt;
+    &lt;title&gt;David Cameron (Conservative and Unionist Party) won in Witney&lt;/title&gt;
+    &lt;link href="https://candidates.democracyclub.org.uk/#32346" rel="alternate"/&gt;
+    &lt;published&gt;2017-06-09T10:36:38.110335+00:00&lt;/published&gt;
+    &lt;updated&gt;2017-06-09T10:36:38.110335+00:00&lt;/updated&gt;
+    &lt;author&gt;
+      &lt;name&gt;joe&lt;/name&gt;
+    &lt;/author&gt;
+    &lt;id&gt;https://candidates.democracyclub.org.uk/#32346&lt;/id&gt;
+    &lt;summary type="html"&gt;A Democracy Club Candidates volunteer recorded at 2017-06-09 10:36:38 that David Cameron (Conservative and Unionist Party) won the ballot in Witney, quoting the source 'BBC news'.&lt;/summary&gt;
+    &lt;retraction&gt;0&lt;/retraction&gt;
+    &lt;election_slug&gt;parl.2017-06-08&lt;/election_slug&gt;
+    &lt;election_name&gt;2017 General Election&lt;/election_name&gt;
+    &lt;election_date&gt;2017-06-08&lt;/election_date&gt;
+    &lt;post_id&gt;WMC:E14001046&lt;/post_id&gt;
+    &lt;winner_person_id&gt;566&lt;/winner_person_id&gt;
+    &lt;winner_person_name&gt;David Cameron&lt;/winner_person_name&gt;
+    &lt;winner_party_id&gt;party:52&lt;/winner_party_id&gt;
+    &lt;winner_party_name&gt;Conservative and Unionist Party&lt;/winner_party_name&gt;
+    &lt;user_id&gt;3&lt;/user_id&gt;
+    &lt;post_name&gt;Witney&lt;/post_name&gt;
+    &lt;information_source&gt;BBC news&lt;/information_source&gt;
+    &lt;image_url&gt;https://candidates.democracyclub.org.uk/media/images/5517d858249b917507bee4f8.png&lt;/image_url&gt;
+    &lt;parlparse_id&gt;uk.org.publicwhip/person/10777&lt;/parlparse_id&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;
+</pre>
+
+<p>The corresponding basic Atom feed would look like:</p>
+
+<pre class="feed-example">
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb"&gt;
+  &lt;title&gt;Election results from Democracy Club Candidates (with extra data)&lt;/title&gt;
+  &lt;link href="https://candidates.democracyclub.org.uk/" rel="alternate"/&gt;
+  &lt;link href="https://candidates.democracyclub.org.uk/results/all.atom" rel="self"/&gt;
+  &lt;id&gt;https://candidates.democracyclub.org.uk/&lt;/id&gt;
+  &lt;updated&gt;2017-06-09T10:36:38.110335+00:00&lt;/updated&gt;
+  &lt;entry&gt;
+    &lt;title&gt;David Cameron (Conservative and Unionist Party) won in Witney&lt;/title&gt;
+    &lt;link href="https://candidates.democracyclub.org.uk/#32346" rel="alternate"/&gt;
+    &lt;published&gt;2017-06-09T10:36:38.110335+00:00&lt;/published&gt;
+    &lt;updated&gt;2017-06-09T10:36:38.110335+00:00&lt;/updated&gt;
+    &lt;author&gt;
+      &lt;name&gt;joe&lt;/name&gt;
+    &lt;/author&gt;
+    &lt;id&gt;https://candidates.democracyclub.org.uk/#32346&lt;/id&gt;
+    &lt;summary type="html"&gt;A Democracy Club Candidates volunteer recorded at 2017-06-09 10:36:38 that David Cameron (Conservative and Unionist Party) won the ballot in Witney, quoting the source 'BBC news'.&lt;/summary&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;
+</pre>
+
+<p>
+
+  If you're using this feed, please be aware that it's possible
+  that a volunteer will record the wrong winner in error. In
+  that case, there will be an entry in the feed to indicate that
+  that statement about the winner has been retracted. If you're
+  using the extended feed, that will have
+  a <tt>&lt;retraction&gt;1&lt;/retraction&gt;</tt> element. If
+  you're using the basic feed, then the entry will look like:
+</p>
+
+<pre class="feed-example">
+&lt;entry&gt;
+  &lt;title&gt;Correction: retracting the statement that Tessa Jowell (Labour Party) won in Dulwich and West Norwood&lt;/title&gt;
+  &lt;link href="http://example.com/#32" rel="alternate"/&gt;
+  &lt;published&gt;2017-06-09T11:25:00.110335+00:00&lt;/published&gt;
+  &lt;updated&gt;2017-06-09T11:25:00.110335+00:00&lt;/updated&gt;
+  &lt;author&gt;
+    &lt;name&gt;john&lt;/name&gt;
+  &lt;/author&gt;
+  &lt;id&gt;http://example.com/#32&lt;/id&gt;
+  &lt;summary type="html"&gt;At 2017-06-09 11:25:00, a example.com volunteer retracted the previous assertion that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Result recorded in error, retracting'.&lt;/summary&gt;
+&lt;/entry&gt;
+</pre>
+
+<p>
+  This feed contains results from any election, so if you just
+  want to get results for the 2017 General Election, say, you
+  should filter
+  for <tt>&lt;election_slug&gt;parl.2017-06-08&lt;/election_slug&gt;</tt>.
+</p>
+
+<p>
+  The additional XML elements in the extended feed have the following meaning:
+</p>
+
+<dl>
+
+  <dt>election_slug</dt>
+
+  <dd>The election ID
+    from <a href="https://elections.democracyclub.org.uk/">Every
+    Election</a> which is also used in URLs that refer to the election
+    on this site.</dd>
+
+  <dt>election_name</dt>
+
+  <dd>The human-readable name of this election</dd>
+
+  <dt>election_date</dt>
+
+  <dd>The date that the election is took place on</dd>
+
+  <dt>post_id</dt>
+
+  <dd>The ID of the post that the candidate has been elected
+  to. In the case of the 2017 general election in the UK, for
+  example, the post ID of <tt>WMC:E14001046</tt> represents the
+  UK parliament constituency of Witney, which
+  has <a href="https://en.wikipedia.org/wiki/ONS_coding_system">GSS
+  code</a> E14001046.</dd>
+
+  <dt>post_name</dt>
+
+  <dd>This is the human-readable short name of the post, which
+  is typically the name of the constituency or area the
+  candidate has been elected to represent, e.g. "Witney".</dd>
+
+  <dt>winner_person_id</dt>
+
+  <dd>The ID of the candidate who was elected to this post,
+    which is used to identify them on this website (e.g. in
+    URLs)
+  </dd>
+
+  <dt>winner_person_name</dt>
+
+  <dd>The name of the candidate who was elected to this post.</dd>
+
+  <dt>winner_party_id</dt>
+
+  <dd>The ID of the party of the winning candidate. This is used
+  in URLs on this website, and should be based on an official ID
+  for the party. e.g. in the UK, <tt>party:52</tt> is the
+  Conservative party,
+  which <a href="http://search.electoralcommission.org.uk/English/Registrations/PP52">has
+  ID 52 on the Electoral Commission's website</a>.</dd>
+
+  <dt>image_url</dt>
+
+  <dd>If present, a link to a square headshot image of the
+  candidate. (You can read about licensing of the photos
+  on <a href="https://candidates.democracyclub.org.uk/help/about">the
+  About page</a>.)</dd>
+
+  <dt>parlparse_id</dt>
+
+  <dd>If present, this means that the winning candidate has been
+  previously elected, and this is their ID that's used on
+  TheyWorkForYou, PublicWhip and parlparse.</dd>
+
+  <dt>user_id</dt>
+
+  <dd>The ID of the user of this site who recorded that this
+  candidate was elected. This is unlikely to be of any use to
+  you and will likely be removed in the future.</dd>
+
+  <dt>information_source</dt>
+
+  <dd>The source of information that this candidate was indeed
+  elected to that post.</dd>
+
+</dl>
+
+{% endblock %}

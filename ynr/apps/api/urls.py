@@ -14,6 +14,7 @@ from api.views import (
     APIDocsDefinitionsView,
     NextAPIDocsView,
     CSVListView,
+    ResultsDocs,
 )
 from parties.api.next.api_views import PartyViewSet, PartyRegisterList
 from uk_results.api.v09.api_views import (
@@ -94,6 +95,7 @@ urlpatterns = [
         name="api-terms",
     ),
     url(r"^api/docs/csv/$", CSVListView.as_view(), name="api_docs_csv"),
+    url(r"^api/docs/results/$", ResultsDocs.as_view(), name="api_docs_results"),
     url(
         r"^api/docs/next/$",
         NextAPIDocsView.as_view(patterns=next_api_router.urls, version="next"),
