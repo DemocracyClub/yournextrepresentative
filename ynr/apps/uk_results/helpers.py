@@ -72,6 +72,7 @@ class RecordBallotResultsHelper:
         candidacy.save()
         self.create_result_event(candidacy, source)
         self.set_not_elected()
+        self.save_version(candidacy.person, source, "set-candidate-elected")
 
     def create_result_event(self, candidacy, source, retraction=False):
         ResultEvent.objects.create(
@@ -90,16 +91,17 @@ class RecordBallotResultsHelper:
             retraction=retraction,
         )
 
-    def save_version(self, person, source):
+    def save_version(self, person, source, action_type):
         change_metadata = get_change_metadata(None, source, user=self.user)
         person.record_version(change_metadata)
         person.save()
 
         LoggedAction.objects.create(
             user=self.user,
-            action_type="set-candidate-elected",
+            action_type=action_type,
             popit_person_new_version=change_metadata["version_id"],
             person=person,
+            ballot=self.ballot,
             source=change_metadata["information_source"],
         )
 
@@ -140,6 +142,7 @@ class RecordBallotResultsHelper:
                 # we need to create a corresponding retraction
                 # ResultEvent.
                 self.create_result_event(candidacy, source, retraction=True)
+                self.save_version(candidacy.person, source, "retract-winner")
 
             if candidacy.elected is not None:
                 candidacy.elected = None

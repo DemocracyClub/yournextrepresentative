@@ -3,10 +3,10 @@
 
 {% block body_class %}{% endblock %}
 
-{% block title %}Confirm that {{ person.name }} won in {{ constituency_name }}{% endblock %}
+{% block title %}Winner already set for {{ ballot.ballot_paper_id }}{% endblock %}
 
 {% block hero %}
-  <h1>Confirm that {{ person.name }} won</h1>
+  <h1>Winner already set for {{ ballot.ballot_paper_id }}</h1>
 {% endblock %}
 
 {% block content %}
@@ -16,23 +16,27 @@
 {% csrf_token %}
 
 {{ form.non_field_errors }}
+<h2>Log of recent events for <a href="{{ ballot.get_absolute_url }}">{{ ballot.ballot_paper_id }}</a></h2>
+<table>
+  <thead>
+    <th>Updated</th>
+    <th>Person</th>
+    <th>Action</th>
+    <th>Source</th>
+  </thead>
+  <tbody>
+  {% for action in winner_logged_action %}
+    <tr>
+      <td>{{ action.updated }}</td>
+      <td>{{ action.person }}</td>
+      <td>{{ action.action_type }}</td>
+      <td>{{ action.source }}</td>
 
-{{ form.person_id }}
 
-<div>
-{{ form.source.errors }}
-{{ form.source.label_tag }}
-{{ form.source }}
-</div>
-
-<input
-    type="submit"
-    class="button"
-    value="Yes, {{ person.name }} ({{ person.last_party.name }}) won in {{ constituency_name }}"/>
-
-<p>
-<a href="{{ ballot.get_absolute_url }}" class="button">Cancel</a>
-</p>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
 
 </form>
 

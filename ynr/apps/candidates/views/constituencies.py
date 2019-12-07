@@ -21,9 +21,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
 
     def dispatch(self, request, *args, **kwargs):
 
-        person_id = self.request.POST.get(
-            "person_id", self.request.GET.get("person", "")
-        )
+        person_id = self.request.POST.get("person_id")
         self.election_data = self.get_election()
         self.person = get_object_or_404(Person, id=person_id)
         self.post_data = get_object_or_404(Post, slug=self.kwargs["post_id"])
@@ -41,11 +39,25 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         context["post_id"] = self.kwargs["post_id"]
         context["ballot"] = self.ballot
+        context["winner_logged_action"] = self.ballot.loggedaction_set.filter(
+            action_type="set-candidate-elected"
+        ).order_by("-created")
         context["constituency_name"] = self.post_data.label
         context["person"] = self.person
         return context
 
     def form_valid(self, form):
+        all_winners_set = (
+            self.ballot.membership_set.filter(elected=True).count()
+            >= self.ballot.get_winner_count
+        )
+        if all_winners_set:
+            form.add_error(
+                None,
+                "All the winners for this ballot have been set."
+                "If there is an error, you should unset them and reset the correct winner(s)",
+            )
+            return self.form_invalid(form)
         with transaction.atomic():
             recorder = RecordBallotResultsHelper(self.ballot, self.request.user)
             recorder.mark_person_as_elected(
