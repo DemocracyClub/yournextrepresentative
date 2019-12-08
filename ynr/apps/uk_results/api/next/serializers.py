@@ -70,4 +70,7 @@ class ResultSerializer(serializers.ModelSerializer):
 class ElectedSerializer(CandidacyOnBallotSerializer):
     class Meta:
         model = Membership
-        fields = CANDIDACY_ON_PERSON_FIELDS + ["ballot"]
+        fields = CANDIDACY_ON_PERSON_FIELDS + ["ballot", "person"]
+
+    def get_person(self, obj):
+        return PersonOnBallotSerializer(obj.person, context=self.context).data
