@@ -5,7 +5,10 @@ from parties.api.next.serializers import MinimalPartySerializer
 from popolo.api.next.serializers import (
     BallotOnCandidacySerializer,
     PersonOnBallotSerializer,
+    CandidacyOnBallotSerializer,
+    CANDIDACY_ON_PERSON_FIELDS,
 )
+from popolo.models import Membership
 from uk_results.models import ResultSet, CandidateResult
 
 
@@ -62,3 +65,9 @@ class ResultSerializer(serializers.ModelSerializer):
 
     ballot = BallotOnCandidacySerializer()
     candidate_results = CandidateResultSerializer(many=True)
+
+
+class ElectedSerializer(CandidacyOnBallotSerializer):
+    class Meta:
+        model = Membership
+        fields = CANDIDACY_ON_PERSON_FIELDS + ["ballot"]

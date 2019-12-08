@@ -7,12 +7,10 @@ from auth_helpers.views import GroupRequiredMixin
 from candidates.forms import ConstituencyRecordWinnerForm
 from elections.mixins import ElectionMixin
 from people.models import Person
-from popolo.models import Membership, Post
-from results.models import ResultEvent
+from popolo.models import Post
+from uk_results.helpers import RecordBallotResultsHelper
 
-from ..models import RESULT_RECORDERS_GROUP_NAME, Ballot, LoggedAction
-from .helpers import get_redirect_to_post
-from .version_data import get_change_metadata, get_client_ip
+from ..models import RESULT_RECORDERS_GROUP_NAME, Ballot
 
 
 class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
@@ -23,9 +21,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
 
     def dispatch(self, request, *args, **kwargs):
 
-        person_id = self.request.POST.get(
-            "person_id", self.request.GET.get("person", "")
-        )
+        person_id = self.request.POST.get("person_id")
         self.election_data = self.get_election()
         self.person = get_object_or_404(Person, id=person_id)
         self.post_data = get_object_or_404(Post, slug=self.kwargs["post_id"])
@@ -43,92 +39,32 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         context["post_id"] = self.kwargs["post_id"]
         context["ballot"] = self.ballot
+        context["winner_logged_action"] = self.ballot.loggedaction_set.filter(
+            action_type="set-candidate-elected"
+        ).order_by("-created")
         context["constituency_name"] = self.post_data.label
         context["person"] = self.person
         return context
 
     def form_valid(self, form):
-        change_metadata = get_change_metadata(
-            self.request, form.cleaned_data["source"]
+        all_winners_set = (
+            self.ballot.membership_set.filter(elected=True).count()
+            >= self.ballot.get_winner_count
         )
-
+        if all_winners_set:
+            form.add_error(
+                None,
+                "All the winners for this ballot have been set."
+                "If there is an error, you should unset them and reset the correct winner(s)",
+            )
+            return self.form_invalid(form)
         with transaction.atomic():
-            number_of_existing_winners = self.post_data.memberships.filter(
-                elected=True, ballot__election=self.election_data
-            ).count()
-            max_winners = self.ballot.get_winner_count
-            if max_winners >= 0 and number_of_existing_winners >= max_winners:
-                msg = (
-                    "There were already {n} winners of {post_label}"
-                    "and the maximum in election {election_name} is {max}"
-                )
-                raise Exception(
-                    msg.format(
-                        n=number_of_existing_winners,
-                        post_label=self.post_data.label,
-                        election_name=self.election_data.name,
-                        max=self.election_data.people_elected_per_post,
-                    )
-                )
-            # So now we know we can set this person as the winner:
-            candidate_role = self.election_data.candidate_membership_role
-            membership_new_winner = Membership.objects.get(
-                post=self.post_data,
-                person=self.person,
-                ballot__election=self.election_data,
-            )
-            membership_new_winner.elected = True
-            membership_new_winner.save()
-
-            ResultEvent.objects.create(
-                election=self.election_data,
-                winner=self.person,
-                old_post_id=self.post_data.slug,
-                old_post_name=self.post_data.label,
-                post=self.post_data,
-                winner_party=membership_new_winner.party,
-                source=form.cleaned_data["source"],
-                user=self.request.user,
-                parlparse_id=self.person.get_single_identifier_value(
-                    "theyworkforyou"
-                )
-                or "",
+            recorder = RecordBallotResultsHelper(self.ballot, self.request.user)
+            recorder.mark_person_as_elected(
+                self.person, form.cleaned_data["source"]
             )
 
-            self.person.record_version(change_metadata)
-            self.person.save()
-
-            LoggedAction.objects.create(
-                user=self.request.user,
-                action_type="set-candidate-elected",
-                ip_address=get_client_ip(self.request),
-                popit_person_new_version=change_metadata["version_id"],
-                person=self.person,
-                source=change_metadata["information_source"],
-            )
-
-            # Now, if the current number of winners is equal to the
-            # maximum number of winners, we can set everyone else as
-            # "not elected".
-            if max_winners >= 0:
-                max_reached = max_winners == (number_of_existing_winners + 1)
-                if max_reached:
-                    losing_candidacies = self.post_data.memberships.filter(
-                        ballot__election=self.election_data
-                    ).exclude(elected=True)
-                    for candidacy in losing_candidacies:
-                        if candidacy.elected is not False:
-                            candidacy.elected = False
-                            candidacy.save()
-                            candidate = candidacy.person
-                            change_metadata = get_change_metadata(
-                                self.request,
-                                'Setting as "not elected" by implication',
-                            )
-                            candidate.record_version(change_metadata)
-                            candidate.save()
-
-        return get_redirect_to_post(self.election_data, self.post_data)
+        return HttpResponseRedirect(self.ballot.get_absolute_url())
 
 
 class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
@@ -137,46 +73,13 @@ class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        post_id = self.kwargs["post_id"]
-        with transaction.atomic():
-            post = get_object_or_404(Post, slug=post_id)
-            constituency_name = post.short_label
-
-            all_candidacies = post.memberships.filter(
-                ballot__election=self.election_data
-            )
-            source = "Result recorded in error, retracting"
-            for candidacy in all_candidacies.all():
-                if candidacy.elected:
-                    # If elected is True then a ResultEvent will have
-                    # been created and been included in the feed, so
-                    # we need to create a corresponding retraction
-                    # ResultEvent.
-                    ResultEvent.objects.create(
-                        election=self.election_data,
-                        winner=candidacy.person,
-                        old_post_id=candidacy.ballot.post.slug,
-                        old_post_name=candidacy.ballot.post.label,
-                        post=candidacy.ballot.post,
-                        winner_party=candidacy.party,
-                        source=source,
-                        user=self.request.user,
-                        parlparse_id=candidacy.person.get_single_identifier_value(
-                            "theyworkforyou"
-                        )
-                        or "",
-                        retraction=True,
-                    )
-                if candidacy.elected is not None:
-                    candidacy.elected = None
-                    candidacy.save()
-                    candidate = candidacy.person
-                    change_metadata = get_change_metadata(self.request, source)
-                    candidate.record_version(change_metadata)
-                    candidate.save()
-
-        return HttpResponseRedirect(
-            self.election_data.ballot_set.get(
-                post__slug=post_id
-            ).get_absolute_url()
+        self.post_data = get_object_or_404(Post, slug=self.kwargs["post_id"])
+        self.ballot = Ballot.objects.get(
+            election=self.election_data, post=self.post_data
         )
+
+        with transaction.atomic():
+            recorder = RecordBallotResultsHelper(self.ballot, self.request.user)
+            recorder.retract_elected()
+
+        return HttpResponseRedirect(self.ballot.get_absolute_url())

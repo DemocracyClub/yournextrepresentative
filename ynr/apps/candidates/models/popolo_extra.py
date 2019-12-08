@@ -218,10 +218,16 @@ class Ballot(models.Model):
             return self.winner_count
         return 0
 
-    def user_can_edit_membership(self, user):
+    def user_can_edit_membership(self, user, allow_if_trusted_to_lock=True):
         """
         Can a given user edit this ballot?
 
+        :type user: django.contrib.auth.models.User
+        :type allow_if_trusted_to_lock: bool
+        :param allow_if_trusted_to_lock:  If a user is trusted to lock then they
+          can edit memberships. This is to support legacy behaviour that will be changed
+          in future. See https://github.com/DemocracyClub/yournextrepresentative/issues/991
+          for more
         """
 
         # users have to be logged in to an account
@@ -232,10 +238,10 @@ class Ballot(models.Model):
         if not self.candidates_locked:
             return True
 
-        # If a user is trusted to lock then they can edit memberships
-        # TODO: Is this right?
-        # https://github.com/DemocracyClub/yournextrepresentative/issues/991
-        if user.groups.filter(name=TRUSTED_TO_LOCK_GROUP_NAME).exists():
+        if (
+            allow_if_trusted_to_lock
+            and user.groups.filter(name=TRUSTED_TO_LOCK_GROUP_NAME).exists()
+        ):
             return True
 
         return False

@@ -21,7 +21,11 @@ def get_current_timestamp():
     return datetime.utcnow().isoformat()
 
 
-def get_change_metadata(request, information_source):
+def get_change_metadata(request, information_source, user=None):
+    """
+
+    :type user: django.contrib.auth.models.User
+    """
     result = {
         "information_source": information_source,
         "version_id": create_version_id(),
@@ -29,4 +33,6 @@ def get_change_metadata(request, information_source):
     }
     if request is not None:
         result["username"] = request.user.username
+    if user:
+        result["username"] = user.username
     return result

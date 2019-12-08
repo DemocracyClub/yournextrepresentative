@@ -1,5 +1,5 @@
 {% extends "api/api-base.html" %}
-{% block hero %}
+{% block api_page_title %}
   <h1>Candidate CSV downloads</h1>
 {% endblock %}
 {% block api_content %}
@@ -21,7 +21,7 @@ There is a row per candidacy, so if a single person has stood on 3 ballots,
     <h3>Election results</h3>
 
   <p>
-  There is <a href="{% url "help-results" %}">a separate page
+  There is <a href="{% url "api_docs_results" %}">a separate page
   explaining how to get election results from this site</a>.
   </p>
 

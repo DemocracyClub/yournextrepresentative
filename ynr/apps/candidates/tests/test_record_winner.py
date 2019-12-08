@@ -63,12 +63,13 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             self.dulwich_post_ballot.get_absolute_url(), user=self.user
         )
         csrftoken = self.app.cookies["csrftoken"]
+
         base_record_url = reverse(
             "record-winner",
             kwargs={"election": "parl.2015-05-07", "post_id": "65808"},
         )
-        form_get_response = self.app.get(
-            base_record_url + "?person=4322", expect_errors=True
+        form_get_response = self.app.post(
+            base_record_url, {"person_id": 4322}, expect_errors=True
         )
         self.assertEqual(form_get_response.status_code, 403)
         post_response = self.app.post(
@@ -84,26 +85,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(0, ResultEvent.objects.count())
 
     def test_record_winner_privileged(self):
-        base_record_url = reverse(
-            "record-winner",
-            kwargs={
-                "election": self.ballot.election.slug,
-                "post_id": self.ballot.post.slug,
-            },
-        )
-        form_get_response = self.app.get(
-            base_record_url + "?person=4322",
-            user=self.user_who_can_record_results,
-            expect_errors=True,
-        )
-        form = form_get_response.forms["record_winner"]
-        self.assertEqual(form_get_response.status_code, 200)
-        form["source"] = "BBC website"
-        submission_response = form.submit()
-        self.assertEqual(submission_response.status_code, 302)
-        self.assertEqual(
-            submission_response.location, self.ballot.get_absolute_url()
-        )
+        self._get_winner_button_form(self.ballot, 4322).submit()
 
         person = Person.objects.get(id=4322)
         self.assertTrue(person.get_elected(self.ballot.election))
@@ -117,50 +99,39 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertEqual(resultevent.post, self.ballot.post)
         self.assertEqual(resultevent.winner_party, self.labour_party)
-        self.assertEqual(resultevent.source, "BBC website")
+        self.assertEqual(
+            resultevent.source, "[Quick update from the constituency page]"
+        )
         self.assertEqual(resultevent.user, self.user_who_can_record_results)
         self.assertEqual(resultevent.parlparse_id, "")
         self.assertEqual(resultevent.retraction, False)
 
+    def _get_winner_button_form(self, ballot, person_id, user=None):
+        if not user:
+            user = self.user_who_can_record_results
+        form_id = "winner-confirm_{}".format(person_id)
+        req = self.app.get(self.ballot.get_absolute_url(), user=user)
+        return req.forms[form_id]
+
     def test_cannot_record_multiple_winners(self):
-        base_record_url = reverse(
-            "record-winner",
-            kwargs={
-                "election": self.ballot.election.slug,
-                "post_id": self.ballot.post.slug,
-            },
-        )
-        form_get_response = self.app.get(
-            base_record_url + "?person=4322",
-            user=self.user_who_can_record_results,
-            expect_errors=True,
-        )
-        form = form_get_response.forms["record_winner"]
-        self.assertEqual(form_get_response.status_code, 200)
-        form["source"] = "BBC website"
-        submission_response = form.submit()
-        self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(
-            submission_response.location, self.ballot.get_absolute_url()
+            self.ballot.membership_set.filter(elected=True).count(), 0
         )
 
-        person = Person.objects.get(id=4322)
-        self.assertTrue(person.get_elected(self.ballot.election))
-
-        form_get_response = self.app.get(
-            base_record_url + "?person=2009",
-            user=self.user_who_can_record_results,
-            expect_errors=True,
+        form1 = self._get_winner_button_form(self.ballot, self.winner.pk)
+        form2 = self._get_winner_button_form(self.ballot, 2009)
+        form1.submit()
+        form2_resp = form2.submit()
+        self.assertEqual(
+            self.ballot.membership_set.filter(elected=True).count(), 1
         )
-        self.assertEqual(form_get_response.status_code, 200)
-        form["source"] = "BBC website"
-        with self.assertRaises(Exception) as context:
-            submission_response = form.submit()
-            self.assertEqual(
-                "There were already 1 winners" in context.exception
-            )
-        self.assertEqual(1, ResultEvent.objects.count())
-        self.assertFalse(ResultEvent.objects.get().retraction)
+        self.assertEqual(
+            self.ballot.membership_set.get(elected=True).person, self.winner
+        )
+
+        self.assertEqual(form2_resp.status_code, 200)
+        self.assertContains(form2_resp, "Winner already set for")
+        self.assertEqual(form2_resp.context["winner_logged_action"].count(), 1)
 
     def test_record_multiple_winners(self):
         self.ballot.election.people_elected_per_post = 2
@@ -168,92 +139,8 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.ballot.winner_count = 2
         self.ballot.save()
 
-        base_record_url = reverse(
-            "record-winner",
-            kwargs={
-                "election": self.ballot.election.slug,
-                "post_id": self.ballot.post.slug,
-            },
-        )
-        form_get_response = self.app.get(
-            base_record_url + "?person=4322",
-            user=self.user_who_can_record_results,
-            expect_errors=True,
-        )
-        form = form_get_response.forms["record_winner"]
-        self.assertEqual(form_get_response.status_code, 200)
-        form["source"] = "BBC website"
-        submission_response = form.submit()
-        self.assertEqual(submission_response.status_code, 302)
-        self.assertEqual(
-            submission_response.location, self.ballot.get_absolute_url()
-        )
-
-        person = Person.objects.get(id=4322)
-        self.assertTrue(person.get_elected(self.ballot.election))
-
-        form_get_response = self.app.get(
-            base_record_url + "?person=2009",
-            user=self.user_who_can_record_results,
-            expect_errors=True,
-        )
-        form = form_get_response.forms["record_winner"]
-        self.assertEqual(form_get_response.status_code, 200)
-        form["source"] = "BBC website"
-        submission_response = form.submit()
-        self.assertEqual(submission_response.status_code, 302)
-        self.assertEqual(
-            submission_response.location, self.ballot.get_absolute_url()
-        )
-
-        person = Person.objects.get(id=2009)
-        self.assertTrue(person.get_elected(self.ballot.election))
-        self.assertEqual(2, ResultEvent.objects.count())
-        self.assertEqual(
-            2, ResultEvent.objects.filter(retraction=False).count()
-        )
-
-    def test_record_multiple_winners_per_post_setting(self):
-
-        self.ballot.winner_count = 2
-        self.ballot.save()
-        base_record_url = reverse(
-            "record-winner",
-            kwargs={
-                "election": self.ballot.election.slug,
-                "post_id": self.ballot.post.slug,
-            },
-        )
-        form_get_response = self.app.get(
-            base_record_url + "?person=4322",
-            user=self.user_who_can_record_results,
-            expect_errors=True,
-        )
-        form = form_get_response.forms["record_winner"]
-        self.assertEqual(form_get_response.status_code, 200)
-        form["source"] = "BBC website"
-        submission_response = form.submit()
-        self.assertEqual(submission_response.status_code, 302)
-        self.assertEqual(
-            submission_response.location, self.ballot.get_absolute_url()
-        )
-
-        person = Person.objects.get(id=4322)
-        self.assertTrue(person.get_elected(self.ballot.election))
-
-        form_get_response = self.app.get(
-            base_record_url + "?person=2009",
-            user=self.user_who_can_record_results,
-            expect_errors=True,
-        )
-        form = form_get_response.forms["record_winner"]
-        self.assertEqual(form_get_response.status_code, 200)
-        form["source"] = "BBC website"
-        submission_response = form.submit()
-        self.assertEqual(submission_response.status_code, 302)
-        self.assertEqual(
-            submission_response.location, self.ballot.get_absolute_url()
-        )
+        self._get_winner_button_form(self.ballot, "4322").submit()
+        self._get_winner_button_form(self.ballot, "2009").submit()
 
         person = Person.objects.get(id=2009)
         self.assertTrue(person.get_elected(self.ballot.election))

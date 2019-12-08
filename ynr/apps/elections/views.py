@@ -141,7 +141,7 @@ class BallotPaperView(TemplateView):
         # Check if adding and removing Memberships for this ballot
         # is allowed.
         context["membership_edits_allowed"] = ballot.user_can_edit_membership(
-            self.request.user
+            self.request.user, allow_if_trusted_to_lock=False
         )
 
         if context["membership_edits_allowed"]:
@@ -200,8 +200,10 @@ class BallotPaperView(TemplateView):
             context["sopn"] = None
 
         if ballot.polls_closed:
-            context["has_any_winners"] = any(
-                [m.elected for m in context["candidates"]]
+            winners = [m.elected for m in context["candidates"]]
+            context["has_any_winners"] = any(winners)
+            context["has_all_winners"] = (
+                winners.count(True) == ballot.winner_count
             )
 
         if self.request.user.is_authenticated:

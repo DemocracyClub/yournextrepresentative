@@ -2,56 +2,14 @@ from collections import OrderedDict
 
 from django import forms
 from django.db import transaction
+from django.db.models.functions import Coalesce
 
 from candidates.models import LoggedAction
-from candidates.views.version_data import get_change_metadata, get_client_ip
-from results.models import ResultEvent
+from candidates.views.version_data import get_client_ip
+from uk_results.helpers import RecordBallotResultsHelper
+from utils.db import LastWord
 
 from .models import ResultSet
-
-
-def mark_candidates_as_winner(request, instance):
-    for candidate_result in instance.candidate_results.all():
-        membership = candidate_result.membership
-        ballot = instance.ballot
-        election = ballot.election
-
-        source = instance.source
-
-        change_metadata = get_change_metadata(request, source)
-
-        if candidate_result.is_winner:
-            membership.elected = True
-            membership.save()
-
-            ResultEvent.objects.create(
-                election=election,
-                winner=membership.person,
-                post=ballot.post,
-                old_post_id=ballot.post.slug,
-                old_post_name=ballot.post.label,
-                winner_party=membership.party,
-                source=source,
-                user=request.user,
-            )
-
-            membership.person.record_version(change_metadata)
-            membership.person.save()
-
-            LoggedAction.objects.create(
-                user=instance.user,
-                action_type="set-candidate-elected",
-                popit_person_new_version=change_metadata["version_id"],
-                person=membership.person,
-                source=source,
-            )
-        else:
-            change_metadata[
-                "information_source"
-            ] = 'Setting as "not elected" by implication'
-            membership.person.record_version(change_metadata)
-            membership.elected = False
-            membership.save()
 
 
 class ResultSetForm(forms.ModelForm):
@@ -73,9 +31,14 @@ class ResultSetForm(forms.ModelForm):
 
         existing_fields = self.fields
         fields = OrderedDict()
-        memberships = ballot.membership_set.all()
-        memberships = sorted(
-            memberships, key=lambda member: member.person.name.split(" ")[-1]
+        memberships = (
+            ballot.membership_set.all()
+            .annotate(
+                sorted_name=Coalesce(
+                    "person__sort_name", LastWord("person__name")
+                )
+            )
+            .order_by("sorted_name")
         )
 
         for membership in memberships:
@@ -124,16 +87,21 @@ class ResultSetForm(forms.ModelForm):
             else:
                 winners = {}
 
+            recorder = RecordBallotResultsHelper(self.ballot, instance.user)
             for membership, field_name in self.memberships:
+                winner = bool(membership in winners.values())
                 instance.candidate_results.update_or_create(
                     membership=membership,
                     defaults={
-                        "is_winner": bool(membership in winners.values()),
+                        "is_winner": winner,
                         "num_ballots": self[field_name].value(),
                     },
                 )
+                if winner:
+                    recorder.mark_person_as_elected(
+                        membership.person, source=instance.source
+                    )
 
-            mark_candidates_as_winner(request, instance)
             instance.record_version()
 
             LoggedAction.objects.create(
