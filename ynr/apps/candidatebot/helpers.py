@@ -82,7 +82,7 @@ class CandidateBot(object):
 
     def clean_email(self, value):
         # The lightest of validation
-        if "@" not in value:
+        if value and "@" not in value:
             raise ValueError("{} is not a valid email".format(value))
         return value
 
