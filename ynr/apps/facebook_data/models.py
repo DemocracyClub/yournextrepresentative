@@ -11,8 +11,20 @@ def advert_image_path(instance, filename):
 
 
 class FacebookAdvert(models.Model):
-    ad_id = models.CharField(max_length=500)
-    ad_json = JSONField()
+    """
+    A Facebook Advert, as described in the Facebook Ad Library
+
+    https://www.facebook.com/ads/library/
+
+    """
+
+    ad_id = models.CharField(
+        max_length=500, help_text="The Facebook ID for this advert"
+    )
+    ad_json = JSONField(
+        help_text="The JSON returned from the Facebook "
+        "Graph API for this advert"
+    )
     person = models.ForeignKey("people.Person", on_delete=models.CASCADE)
     associated_url = models.CharField(
         max_length=800,
