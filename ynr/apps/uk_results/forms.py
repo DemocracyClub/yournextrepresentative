@@ -52,6 +52,7 @@ class ResultSetForm(forms.ModelForm):
                     membership.person.name, membership.party.name
                 ),
                 initial=initial,
+                required=False,
             )
             self.memberships.append((membership, name))
         self.fields = fields
@@ -72,23 +73,35 @@ class ResultSetForm(forms.ModelForm):
             instance.ip_address = get_client_ip(request)
             instance.save()
 
-            winner_count = self.ballot.winner_count
-            if winner_count:
-                winners = dict(
-                    sorted(
-                        [
-                            ("{}-{}".format(self[y].value(), x.person.id), x)
-                            for x, y in self.memberships
-                        ],
-                        reverse=True,
-                        key=lambda votes: int(votes[0].split("-")[0]),
-                    )[:winner_count]
-                )
-            else:
-                winners = {}
+            fields_with_values = [
+                x.value() for x in self.membership_fields() if x.value()
+            ]
+            winners = {}
+            if len(fields_with_values) == len(self.membership_fields()):
+                winner_count = self.ballot.winner_count
+                if winner_count:
+                    winners = dict(
+                        sorted(
+                            [
+                                (
+                                    "{}-{}".format(
+                                        self[y].value(), x.person.id
+                                    ),
+                                    x,
+                                )
+                                for x, y in self.memberships
+                            ],
+                            reverse=True,
+                            key=lambda votes: int(votes[0].split("-")[0]),
+                        )[:winner_count]
+                    )
+                else:
+                    winners = {}
 
             recorder = RecordBallotResultsHelper(self.ballot, instance.user)
             for membership, field_name in self.memberships:
+                if not self[field_name].value():
+                    continue
                 winner = bool(membership in winners.values())
                 instance.candidate_results.update_or_create(
                     membership=membership,
