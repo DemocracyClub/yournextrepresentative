@@ -78,6 +78,21 @@ class FacebookAdvert(models.Model):
     def get_male_impressions(self):
         return self._get_impressions_for_gender("male")
 
+    def get_impressions_by_ages_list(self):
+        demographic_distribution = self.ad_json.get("demographic_distribution")
+        ages = {}
+        for dd in demographic_distribution:
+            age = dd["age"]
+            if age not in ages.keys():
+                ages[age] = 0.0
+            ages[age] += float(dd["percentage"])
+        age_list = list(ages.keys())
+        age_list.sort(key=lambda a: int(a.split("-")[0].strip("+")))
+        sorted_ages = []
+        for age in age_list:
+            sorted_ages.append((age, ages[age] * 100))
+        return sorted_ages
+
     def _get_date(self, field):
         return parse(self.ad_json.get(field))
 
