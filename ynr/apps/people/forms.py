@@ -11,6 +11,7 @@ from candidates.models import (
     raise_if_unsafe_to_delete,
 )
 from elections.models import Election
+from facebook_data.tasks import extract_fb_page_id
 from parties.models import Party
 from people.helpers import parse_approximate_date
 from people.models import Person, PersonIdentifier
@@ -131,6 +132,12 @@ class PersonIdentifierForm(forms.ModelForm):
     def clean_email(self, email):
         validate_email(email)
         return email
+
+    def save(self, commit=True):
+        ret = super().save(commit=commit)
+        if commit and self.cleaned_data["value_type"].startswith("facebook"):
+            extract_fb_page_id.delay(self.instance.pk)
+        return ret
 
 
 PersonIdentifierFormsetFactory = forms.inlineformset_factory(

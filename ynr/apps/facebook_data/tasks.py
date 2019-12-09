@@ -16,6 +16,9 @@ from people.models import PersonIdentifier
 
 @shared_task(rate_limit="4/m")
 def get_ads_for_page(person_id, page_id, page_url):
+    if settings.RUNNING_TESTS:
+        # Never run during tests
+        return
     base_graph_url = "https://graph.facebook.com/v4.0/ads_archive"
     params = {
         "access_token": settings.FACEBOOK_TOKEN,
@@ -50,7 +53,6 @@ def get_ads_for_page(person_id, page_id, page_url):
         next_url = ad_data.get("paging", {}).get("next")
 
         if not ad_data.get("data"):
-            print(ad_data)
             continue
         for ad in ad_data["data"]:
             ad_id = ad["ad_snapshot_url"].split("id=")[-1].split("&")[0]
@@ -59,7 +61,9 @@ def get_ads_for_page(person_id, page_id, page_url):
                 person_id=person_id,
                 defaults={"ad_json": ad, "associated_url": page_url},
             )
-            save_advert_image.delay(ad_id)
+    qs = FacebookAdvert.objects.filter(image="", person_id=person_id)
+    if qs.exists():
+        save_advert_image.delay(qs.latest().ad_id)
 
 
 class FacebookExtractionError(ValueError):
@@ -130,6 +134,9 @@ class FacebookPageIDExtractor:
 
 @shared_task(rate_limit="4/m")
 def extract_fb_page_id(idetifier_pk):
+    if settings.RUNNING_TESTS:
+        # Never run during tests
+        return
     identifier = PersonIdentifier.objects.get(pk=idetifier_pk)
     extractor = FacebookPageIDExtractor(identifier.value)
 
@@ -151,6 +158,9 @@ def extract_fb_page_id(idetifier_pk):
 
 @shared_task(rate_limit="10/m")
 def save_advert_image(ad_id):
+    if settings.RUNNING_TESTS:
+        # Never run during tests
+        return
     advert = FacebookAdvert.objects.filter(ad_id=ad_id).first()
     url = advert.ad_json["ad_snapshot_url"]
     url = url.split("access_token=")[0]
@@ -175,6 +185,3 @@ def save_advert_image(ad_id):
             "{}.png".format(ad_id), File(open(saved_filename, "rb"))
         )
         advert.save()
-
-
-# webkit2png URL -o foo --selector="._8n-d"
