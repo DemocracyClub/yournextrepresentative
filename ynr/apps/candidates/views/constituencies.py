@@ -1,9 +1,12 @@
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
 from django.db import transaction
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
+from django.utils.decorators import method_decorator
 from django.views.generic import FormView, View
 
-from auth_helpers.views import GroupRequiredMixin
 from candidates.forms import ConstituencyRecordWinnerForm
 from elections.mixins import ElectionMixin
 from people.models import Person
@@ -13,11 +16,28 @@ from uk_results.helpers import RecordBallotResultsHelper
 from ..models import RESULT_RECORDERS_GROUP_NAME, Ballot
 
 
-class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
+class CanRecordResultsMixin:
+    permission_denied_template = "auth_helpers/group_permission_denied.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        if not self.can_record_results():
+            return render(request, self.permission_denied_template, status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def can_record_results(self):
+        if getattr(settings, "ALWAYS_ALLOW_RESULT_RECORDING", False):
+            return True
+        group = Group.objects.get(name=RESULT_RECORDERS_GROUP_NAME)
+        return group in self.request.user.groups.all()
+
+
+class ConstituencyRecordWinnerView(
+    ElectionMixin, CanRecordResultsMixin, FormView
+):
 
     form_class = ConstituencyRecordWinnerForm
     template_name = "candidates/record-winner.html"
-    required_group_name = RESULT_RECORDERS_GROUP_NAME
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -67,7 +87,7 @@ class ConstituencyRecordWinnerView(ElectionMixin, GroupRequiredMixin, FormView):
         return HttpResponseRedirect(self.ballot.get_absolute_url())
 
 
-class ConstituencyRetractWinnerView(ElectionMixin, GroupRequiredMixin, View):
+class ConstituencyRetractWinnerView(ElectionMixin, CanRecordResultsMixin, View):
 
     required_group_name = RESULT_RECORDERS_GROUP_NAME
     http_method_names = ["post"]
