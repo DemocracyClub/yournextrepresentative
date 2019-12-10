@@ -135,6 +135,7 @@ INSTALLED_APPS = (
     "frontend",
     "sopn_parsing",
     "django_celery_results",
+    "facebook_data",
 )
 
 CELERY_RESULT_BACKEND = "django-db"

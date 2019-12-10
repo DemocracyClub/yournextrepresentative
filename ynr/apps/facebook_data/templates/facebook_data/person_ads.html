@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+  <style>
+  table th {
+    vertical-align: top;
+  }
+  </style>
+  <h1>Adverts from {{ object.name }}</h1>
+  <h2>Up to £{{ total_max_spend|intcomma }} spent on {{ object.facebookadvert_set.count }} adverts</h2>
+  <hr>
+  {% for advert in object.facebookadvert_set.all %}
+    <section class="panel">
+
+      {% if advert.image %}
+      <figure>
+        <img src="{{ advert.image.url }}">
+      <figcaption>
+        <table class="table">
+          <tbody>
+            <tr>
+              <th>Date</th>
+              <td>{{ advert.start_date|date }} – {{ advert.stop_date|date }}</td>
+            </tr>
+            <tr>
+              <th>Spend</th>
+              <td>£{{ advert.get_spend_range.0|intcomma }} – £{{  advert.get_spend_range.1|intcomma}}</td>
+            </tr>
+            <tr>
+              <th>Paid for by</th>
+              <td>{{ advert.get_funding_entity }}</td>
+            </tr>
+            <tr>
+              <th>Impressions</th>
+              <td>
+                <table>
+                  <tbody>
+                    <tr>
+                      <th>Total</th>
+                      <td>{{ advert.get_impressions_range.0|intcomma }} - {{ advert.get_impressions_range.1|intcomma }}</td>
+                    </tr>
+                    <tr>
+                      <th>Female</th>
+                      <td><progress value="{{ advert.get_female_impressions }}" max="100">{{ advert.get_female_impressions }} %</progress></td>
+                    </tr>
+                    <tr>
+                      <th>Male</th>
+                      <td><progress value="{{ advert.get_male_impressions }}" max="100">{{ advert.get_male_impressions }} %</progress></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <th>Viewer ages</th>
+              <td>
+                <table>
+                  <tbody>
+                    {% for age, percent in advert.get_impressions_by_ages_list %}
+                    <tr>
+                      <th>{{ age }}</th>
+                      <td><progress value="{{ percent }}" max="100">{{ percent }} %</progress></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <th>Accompanying text</th>
+              <td>{{ advert.ad_json.ad_creative_body|linebreaksbr }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </figcaption>
+      </figure>
+      {% endif %}
+
+    </section>
+  {% endfor %}
+
+{% endblock %}
