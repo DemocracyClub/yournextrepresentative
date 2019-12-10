@@ -150,7 +150,9 @@ def extract_fb_page_id(idetifier_pk):
         identifier.internal_identifier = int(match.group(1))
         identifier.save()
         get_ads_for_page.delay(
-            identifier.person_id, identifier.internal_identifier
+            identifier.person_id,
+            identifier.internal_identifier,
+            identifier.value,
         )
     else:
         print("\t".join([str(identifier.person_id), identifier.value]))
