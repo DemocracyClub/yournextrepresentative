@@ -168,20 +168,33 @@ def save_advert_image(ad_id):
     url = url.split("access_token=")[0]
     url = "{}&access_token={}".format(url, settings.FACEBOOK_TOKEN)
 
-    with tempfile.NamedTemporaryFile() as f:
+    with tempfile.NamedTemporaryFile(suffix=".png") as f:
+        # args = [
+        #     "webkit2png",
+        #     "-F",
+        #     "-o",
+        #     f.name,
+        #     "--selector",
+        #     "._8n-d",
+        #     "--delay",
+        #     "2",
+        #     url,
+        # ]
         args = [
-            "webkit2png",
-            "-F",
-            "-o",
-            f.name,
-            "--selector",
-            "._8n-d",
-            "--delay",
-            "2",
+            "xvfb-run",
+            "wkhtmltoimage",
+            "--crop-x",
+            "240",
+            "--crop-y",
+            "114",
+            "--crop-w",
+            "550",
             url,
+            f.name,
         ]
+
         subprocess.call(args)
-        saved_filename = "{}-full.png".format(f.name)
+        saved_filename = f.name
 
         advert.image.save(
             "{}.png".format(ad_id), File(open(saved_filename, "rb"))
