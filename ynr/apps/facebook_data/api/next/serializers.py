@@ -29,4 +29,4 @@ class FacebookAdvertSerializer(serializers.HyperlinkedModelSerializer):
             del data["ad_snapshot_url"]
         except KeyError:
             pass
-        return json.dumps(data)
+        return data

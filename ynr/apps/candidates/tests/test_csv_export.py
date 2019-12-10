@@ -83,7 +83,9 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
 
         self.gb_person.tmp_person_identifiers.create(
-            internal_identifier="10326", value_type="theyworkforyou"
+            internal_identifier="uk.org.publicwhip/person/10326",
+            value_type="theyworkforyou",
+            value="http://www.theyworkforyou.com/mp/10326",
         )
         self.gb_person.tmp_person_identifiers.create(
             value_type="email", value="jowell@example.com"

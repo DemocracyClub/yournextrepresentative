@@ -310,8 +310,8 @@ class PersonSerializer(MinimalPersonSerializer):
         if obj.get_single_identifier_value("theyworkforyou"):
             ret.append(
                 {
-                    "identifier": "uk.org.publicwhip/person/{}".format(
-                        obj.get_single_identifier_value("theyworkforyou")
+                    "identifier": obj.get_single_identifier_value(
+                        "theyworkforyou"
                     ),
                     "scheme": "uk.org.publicwhip",
                 }

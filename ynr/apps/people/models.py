@@ -657,12 +657,8 @@ class Person(Timestampable, models.Model):
         parlparse_id = ""
         twfy_id = self.get_single_identifier_of_type("theyworkforyou")
         if twfy_id:
-            parlparse_id = "uk.org.publicwhip/person/{}".format(
-                twfy_id.internal_identifier
-            )
-            theyworkforyou_url = "http://www.theyworkforyou.com/mp/{}".format(
-                twfy_id.internal_identifier
-            )
+            parlparse_id = twfy_id.internal_identifier
+            theyworkforyou_url = twfy_id.value
 
         row = {
             "id": self.id,
