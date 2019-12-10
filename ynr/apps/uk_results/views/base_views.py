@@ -7,6 +7,7 @@ from django.views.generic import FormView, TemplateView
 
 from candidates.models import Ballot
 from popolo.models import Membership
+from results.models import ResultEvent
 from uk_results.forms import ResultSetForm
 
 
@@ -111,6 +112,9 @@ class Parl19ResultsCSVView(TemplateView):
             "party_name",
             "theyworkforyou_url",
             "wikidata_id",
+            "updated",
+            "previous_winner",
+            "previous_winner_party",
         ]
         writer = csv.DictWriter(response, fieldnames=fieldnames)
         writer.writeheader()
@@ -124,20 +128,48 @@ class Parl19ResultsCSVView(TemplateView):
                     twfy_id.internal_identifier
                 )
 
-            writer.writerow(
-                {
-                    "election_slug": membership.ballot.election.slug,
-                    "ballot_paper_id": membership.ballot.ballot_paper_id,
-                    "gss": membership.ballot.post.slug.split(":")[-1],
-                    "person_id": membership.person_id,
-                    "person_name": membership.person.name,
-                    "party_id": membership.party.ec_id,
-                    "party_name": membership.party.name,
-                    "theyworkforyou_url": theyworkforyou_url,
-                    "wikidata_id": membership.person.get_single_identifier_of_type(
-                        "wikidata_id"
-                    ).value,
-                }
+            result = ResultEvent.objects.filter(
+                election=membership.ballot.election,
+                post=membership.ballot.post,
+                winner=membership.person,
             )
+            if result.exists():
+                created = result.first().created
+            else:
+                created = None
+
+            previous_ballot = Ballot.objects.get_previous_ballot_for_post(
+                membership.ballot
+            )
+            previous_winner_qs = previous_ballot.membership_set.filter(
+                elected=True
+            )
+            if previous_winner_qs.exists():
+                previous_winner = previous_winner_qs.first()
+            else:
+                previous_winner = None
+
+            out = {
+                "election_slug": membership.ballot.election.slug,
+                "ballot_paper_id": membership.ballot.ballot_paper_id,
+                "gss": membership.ballot.post.slug.split(":")[-1],
+                "person_id": membership.person_id,
+                "person_name": membership.person.name,
+                "party_id": membership.party.ec_id,
+                "party_name": membership.party.name,
+                "theyworkforyou_url": theyworkforyou_url,
+                "wikidata_id": membership.person.get_single_identifier_of_type(
+                    "wikidata_id"
+                ).value,
+                "updated": created,
+            }
+            if previous_winner:
+                out.update(
+                    {
+                        "previous_winner": previous_winner.person_id,
+                        "previous_winner_party": previous_winner.party.ec_id,
+                    }
+                )
+            writer.writerow(out)
 
         return response
