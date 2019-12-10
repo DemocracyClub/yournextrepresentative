@@ -12,9 +12,10 @@
   {% for advert in object.facebookadvert_set.all %}
     <section class="panel">
 
-      {% if advert.image %}
       <figure>
+        {% if advert.image %}
         <img src="{{ advert.image.url }}">
+        {% endif %}
       <figcaption>
         <table class="table">
           <tbody>
@@ -74,7 +75,7 @@
         </table>
       </figcaption>
       </figure>
-      {% endif %}
+
 
     </section>
   {% endfor %}
