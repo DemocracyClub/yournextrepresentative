@@ -1,3 +1,5 @@
+import json
+
 from drf_yasg.utils import swagger_serializer_method
 from rest_framework import serializers
 
@@ -11,7 +13,7 @@ class FacebookAdvertSerializer(serializers.HyperlinkedModelSerializer):
         fields = ("ad_id", "ad_json", "person", "associated_url", "image")
         swagger_schema_fields = {"description": model.__doc__}
 
-    ad_json = serializers.JSONField(
+    ad_json = serializers.SerializerMethodField(
         help_text="The JSON object returned from the Facebook "
         "Graph API for this advert"
     )
@@ -20,3 +22,11 @@ class FacebookAdvertSerializer(serializers.HyperlinkedModelSerializer):
     @swagger_serializer_method(serializer_or_field=PersonOnBallotSerializer)
     def get_person(self, obj):
         return PersonOnBallotSerializer(obj.person, context=self.context).data
+
+    def get_ad_json(self, obj):
+        data = obj.ad_json
+        try:
+            del data["ad_snapshot_url"]
+        except KeyError:
+            pass
+        return json.dumps(data)
