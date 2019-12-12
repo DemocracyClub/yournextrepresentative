@@ -114,7 +114,7 @@ class HomePageView(ContributorsMixin, FormView):
 
         from popolo.models import Membership
 
-        election_slug = "parl.2017-06-08"
+        election_slug = "parl.2019-12-12"
 
         ballots_qs = (
             Ballot.objects.filter(election__slug=election_slug)
