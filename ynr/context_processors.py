@@ -83,7 +83,10 @@ def add_group_permissions(request):
         )
     }
     result["user_can_edit"] = settings.EDITS_ALLOWED or request.user.is_staff
-    if settings.ALWAYS_ALLOW_RESULT_RECORDING:
+    if (
+        settings.ALWAYS_ALLOW_RESULT_RECORDING
+        and request.user.loggedaction_set.count() > 10
+    ):
         result["user_can_record_results"] = True
     return result
 

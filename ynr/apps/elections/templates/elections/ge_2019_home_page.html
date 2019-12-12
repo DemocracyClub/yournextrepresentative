@@ -31,17 +31,23 @@
         {{ ballot.winner.party.name }}<br>
         <a href="{{ ballot.winner.person.get_absolute_url }}">{{ ballot.winner.person.name }}</a>
       {% else %}
+          {% if user_can_edit %}
           <a href="{{ ballot.get_absolute_url }}" class="button tiny">Set winner</a>
+          {% endif %}
       {% endif %}
     </td>
     <td>
-      <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}" class="button tiny">
       {% if ballot.resultset %}
-        Yes
+          Yes
       {% else %}
-        Enter votes
+        {% if user_can_edit %}
+        <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}" class="button tiny">
+          Enter votes
+        </a>
+        {% else %}
+          No
+        {% endif %}
       {% endif %}
-      </a>
     </td>
     </tr>
     {% endfor %}
