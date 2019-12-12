@@ -1,0 +1,53 @@
+{#<div class="flourish-map flourish-embed" data-src="visualisation/1042739"></div><script src="https://public.flourish.studio/resources/embed.js"></script>#}
+<div class="finder__forms">
+<div class="finder__forms__container" style="width:100%;">
+
+<div>
+  <dl class="sub-nav" role="menu" title="Filters">
+    <dt>Filter:</dt>
+    <dd {% if request.get_full_path == "/" %}class="active" {% endif %}><a href="/">All</a></dd>
+  {% for shortcut in ge_2019_results.shortcuts.list %}
+    <dd {% if shortcut.active %}class="active" {% endif %}><a href="/?{{ shortcut.querystring }}">{{ shortcut.label }}</a></dd>
+  {% endfor %}
+  </dl>
+
+</div>
+  <p>{{ ge_2019_results.ballots_with_result_info.qs.count }} results</p>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Ballot</th>
+      <th>Winner known</th>
+      <th>Votes Recorded</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for ballot in ge_2019_results.ballots_with_result_info.qs %}
+    <tr>
+    <td><a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a></td>
+    <td>
+      {% if ballot.winner %}
+        {{ ballot.winner.party.name }}<br>
+        <a href="{{ ballot.winner.person.get_absolute_url }}">{{ ballot.winner.person.name }}</a>
+      {% else %}
+          <a href="{{ ballot.get_absolute_url }}" class="button tiny">Set winner</a>
+      {% endif %}
+    </td>
+    <td>
+      <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}" class="button tiny">
+      {% if ballot.resultset %}
+        Yes
+      {% else %}
+        Enter votes
+      {% endif %}
+      </a>
+    </td>
+    </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
+
+</div>
+</div>

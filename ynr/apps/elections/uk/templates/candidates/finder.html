@@ -31,8 +31,8 @@
 {% block body_class %}finder{% endblock %}
 
 {% block hero %}
-
   <h1>Open candidate information for UK elections</h1>
+{% if not ge_2019_results.polls_closed %}
   <p class="lead">
     Used by <a href="https://whocanivotefor.co.uk?utm_source=ynr&utm_campaign=ynr_cta">
       ‘Who Can I Vote For?’</a>, The Electoral Commission, Google, Facebook,
@@ -40,11 +40,18 @@
   </p>
   <p class="lead">Join thousands of volunteers contributing information on candidates</p>
 
-
+{% endif %}
 {% endblock %}
 
 {% block content %}
 
+{% if ge_2019_results.polls_closed %}
+{% include "elections/ge_2019_home_page.html" %}
+
+
+
+
+{% else %}
 
   {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}
     <div class="finder__forms">
@@ -105,7 +112,7 @@
     {% endif %}
 
   </div>
-
+{% endif %}
 
   <div class="finder__activity">
     <div class="finder__activity__changes">
