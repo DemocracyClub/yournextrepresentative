@@ -2,7 +2,6 @@ from collections import OrderedDict
 
 from django import forms
 from django.db import transaction
-from django.db.models.functions import Coalesce
 
 from candidates.models import LoggedAction
 from candidates.views.version_data import get_client_ip
@@ -33,11 +32,7 @@ class ResultSetForm(forms.ModelForm):
         fields = OrderedDict()
         memberships = (
             ballot.membership_set.all()
-            .annotate(
-                sorted_name=Coalesce(
-                    "person__sort_name", LastWord("person__name")
-                )
-            )
+            .annotate(sorted_name=LastWord("person__name"))
             .order_by("sorted_name")
         )
 
@@ -60,7 +55,9 @@ class ResultSetForm(forms.ModelForm):
 
     def membership_fields(self):
         return [
-            field for field in self if field.name.startswith("memberships_")
+            self[field]
+            for field in self.fields
+            if field.startswith("memberships_")
         ]
 
     def save(self, request):
