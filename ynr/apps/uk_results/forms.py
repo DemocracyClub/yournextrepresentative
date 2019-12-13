@@ -95,6 +95,8 @@ class ResultSetForm(forms.ModelForm):
                 else:
                     winners = {}
 
+            if winners:
+                self.ballot.membership_set.update(elected=None)
             recorder = RecordBallotResultsHelper(self.ballot, instance.user)
             for membership, field_name in self.memberships:
                 if not self[field_name].value():
