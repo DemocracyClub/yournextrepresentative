@@ -32,15 +32,12 @@
 
 {% block hero %}
   <h1>Open candidate information for UK elections</h1>
-{% if not ge_2019_results.polls_closed %}
   <p class="lead">
     Used by <a href="https://whocanivotefor.co.uk?utm_source=ynr&utm_campaign=ynr_cta">
       ‘Who Can I Vote For?’</a>, The Electoral Commission, Google, Facebook,
     national newspapers and others.
   </p>
   <p class="lead">Join thousands of volunteers contributing information on candidates</p>
-
-{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -66,13 +63,6 @@
 {#        Enter details#}
 {#      </a>#}
 {#      <h4>or</h4>#}
-
-      <h3>2019 General election</h3>
-      <a href="/elections/parl.2019-12-12/" class="button">
-        View ballots in the 2019 general election
-      </a>
-      <h4>or</h4>
-
 
       <form id="form-postcode" action="{% url 'person-search' %}" method="get"
             {% if show_name_form %}style="display: none"{% endif %}>
