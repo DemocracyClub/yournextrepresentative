@@ -45,13 +45,6 @@
 
 {% block content %}
 
-{% if ge_2019_results.polls_closed %}
-{% include "elections/ge_2019_home_page.html" %}
-
-
-
-
-{% else %}
 
   {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}
     <div class="finder__forms">
@@ -112,7 +105,6 @@
     {% endif %}
 
   </div>
-{% endif %}
 
   <div class="finder__activity">
     <div class="finder__activity__changes">

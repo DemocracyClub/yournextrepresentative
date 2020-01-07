@@ -1,5 +1,3 @@
-import json
-
 from drf_yasg.utils import swagger_serializer_method
 from rest_framework import serializers
 
