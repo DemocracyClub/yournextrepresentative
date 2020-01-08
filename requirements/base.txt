@@ -86,7 +86,7 @@ sorl-thumbnail==12.5.0
 sqlparse==0.3.0
 tox
 traitlets==4.3.2
-Unidecode==1.0.23
+Unidecode==1.1.1
 urllib3>=1.21.1,<1.26
 waitress==1.4.2
 WebOb==1.8.5
