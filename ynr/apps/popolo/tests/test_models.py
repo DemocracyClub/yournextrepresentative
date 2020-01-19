@@ -39,12 +39,17 @@ class OrganizationTestCase(DateframeableTests, TimestampableTests, TestCase):
 
     def test_add_post(self):
         o = Organization.objects.create(name=faker.company())
-        o.add_post(label=u"CEO")
+        o.add_post(label=u"CEO", identifier="123")
         self.assertEqual(o.posts.count(), 1)
 
     def test_add_posts(self):
         o = Organization.objects.create(name=faker.company())
-        o.add_posts([{"label": u"Presidente"}, {"label": u"Vicepresidente"}])
+        o.add_posts(
+            [
+                {"label": u"Presidente", "identifier": 123},
+                {"label": u"Vicepresidente", "identifier": 456},
+            ]
+        )
         self.assertEqual(o.posts.count(), 2)
 
     def test_it_copies_the_foundation_date_to_start_date(self):

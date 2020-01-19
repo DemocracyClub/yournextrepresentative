@@ -120,6 +120,7 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
             post = factories.PostFactory.create(
                 elections=(cls.election, cls.earlier_election),
                 organization=cls.commons,
+                identifier=cons["id"],
                 slug=cons["id"],
                 label=label,
                 party_set=cls.gb_parties,

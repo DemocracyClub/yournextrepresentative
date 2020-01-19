@@ -54,6 +54,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             elections=(self.election, self.earlier_election),
             organization=self.commons,
             slug="66135",
+            identifier="66135",
             label="Member of Parliament for North Antrim",
             party_set=self.ni_parties,
         )

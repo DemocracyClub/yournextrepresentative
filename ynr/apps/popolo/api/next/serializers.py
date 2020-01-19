@@ -25,7 +25,8 @@ class MinimalPostSerializer(serializers.ModelSerializer):
         ref_name = None  # Tells swagger that this is always embedded
         fields = ("id", "label", "slug")
 
-    id = serializers.ReadOnlyField(source="slug")
+    id = serializers.ReadOnlyField(source="identifier")
+    slug = serializers.ReadOnlyField()
     label = serializers.ReadOnlyField()
 
 
