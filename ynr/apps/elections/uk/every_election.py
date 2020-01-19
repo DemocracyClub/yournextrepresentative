@@ -128,45 +128,66 @@ class EEElection(dict):
         return (self.party_set_object, self.party_set_created)
 
     def get_or_create_post(self):
+        """
+        Get or create a post based on the division and division set
+        from EveryElection
+
+        This is compex for a number of reasons:
+
+        1. Sometimes we have elections for organisations that don't have
+           sub-divisions. We need to make a post in that case anyway, so we use
+           information about the organisation to emulate a post here.
+
+        2. Some divisions have IDs that change over time, mainly because they
+           don't have GSS codes when we first see them. We need to detect this
+           case and update the IDs accordingly.
+        """
+
         if not self.parent or self.children:
             raise ValueError("Can't create YNR Post from a election group ID")
 
         # Make an organisation
-        self.get_or_create_organisation()
+        org, created = self.get_or_create_organisation()
 
         if self["division"]:
-            # Case 1, there is an organisational division relted to this
+            # Case 1, there is an organisational division related to this
             # post
-            slug = ":".join(
-                [
-                    self["division"]["division_type"],
-                    self["division"]["official_identifier"].split(":")[-1],
-                ]
-            )
+            slug = self["division"]["slug"]
             label = self["division"]["name"]
             role = self["division"]["official_identifier"]
+            identifier = self["division"]["official_identifier"]
+            start_date = self["division"]["divisionset"]["start_date"]
+            end_date = self["division"]["divisionset"]["end_date"]
+            territory_code = self["division"]["territory_code"]
         else:
             # Case 2, this organisation isn't split in to divisions for
             # this election, take the info from the organisation directly
             slug = self["organisation"]["slug"]
             label = self["organisation"]["official_name"]
             role = self["elected_role"]
+            identifier = self["organisation"]["official_identifier"]
+            start_date = self["organisation"]["start_date"]
+            end_date = self["organisation"]["end_date"]
+            territory_code = self["organisation"]["territory_code"]
 
-        cache_key = "--".join([slug, self.organization_object.slug, label])
+        cache_key = "--".join([slug, self.organization_object.slug, start_date])
         if cache_key in POST_CACHE:
             self.post_created = False
             self.post_object = POST_CACHE[cache_key]
         else:
             try:
                 self.post_object = Post.objects.get(
-                    slug=slug, organization=self.organization_object
+                    slug=slug,
+                    organization=self.organization_object,
+                    start_date=start_date,
                 )
                 self.post_created = False
             except Post.DoesNotExist:
                 self.post_object = Post(
-                    label=label,
                     organization=self.organization_object,
                     slug=slug,
+                    start_date=start_date,
+                    identifier=identifier,
                 )
                 self.post_created = True
 
@@ -174,7 +195,19 @@ class EEElection(dict):
             self.post_object.label = label
             self.post_object.party_set = self.get_or_create_partyset()[0]
             self.post_object.organization = self.organization_object
+
+            old_identifier = self.post_object.identifier
+
+            self.post_object.identifier = identifier
+            self.post_object.territory_code = territory_code
+            self.post_object.end_date = end_date
             self.post_object.save()
+
+            if old_identifier != identifier:
+                self.post_object.postidentifier_set.create(
+                    label="dc_slug", identifier=old_identifier
+                )
+
             POST_CACHE[cache_key] = self.post_object
         return (self.post_object, self.post_created)
 
