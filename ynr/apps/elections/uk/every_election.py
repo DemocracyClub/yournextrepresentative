@@ -245,7 +245,7 @@ class EEElection(dict):
                 # This is an interesting case:
                 # Sometimes by-elections are called in multi-seat wards
                 # and sometimes (or at least, sometimes in the past) we mark
-                # them asa by-election. This project has a unique constraint
+                # them as a by-election. This project has a unique constraint
                 # on (post, election) that's mostly useful, but does break
                 # in this case. As a fudge, let's just add 1 to the winner_count
                 # for the existing ballot, and ignore the `.by.` election ID
@@ -271,7 +271,18 @@ class EEElection(dict):
                     except Ballot.DoesNotExist:
                         raise
                 else:
-                    raise
+                    existing_ballot = Ballot.objects.get(
+                        post=self.post_object, election=parent.election_object
+                    )
+                    if ".by." in existing_ballot.ballot_paper_id:
+                        # This was created as a by-election, but we now
+                        # store it as a non-by-election in EE.
+                        # For now, we should accept this as created
+                        self.ballot_object = existing_ballot
+                        self.ballot_created = False
+                    else:
+                        raise
+
         return (self.ballot_object, self.ballot_created)
 
     def delete_ballot(self):
