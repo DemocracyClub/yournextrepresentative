@@ -53,7 +53,9 @@ class EEElection(dict):
             self.organization_created = False
         else:
             try:
-                organization = Organization.objects.get(slug=org_slug)
+                organization = Organization.objects.get(
+                    slug=org_slug, classification=classification
+                )
                 self.organization_created = False
             except Organization.DoesNotExist:
                 organization = Organization.objects.create(
