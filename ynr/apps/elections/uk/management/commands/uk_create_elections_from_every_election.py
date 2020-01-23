@@ -59,11 +59,12 @@ class Command(BaseCommand):
             election_dict.delete_election()
 
     def handle(self, *args, **options):
-
+        current_only = not any((options["full"], options["poll_open_date"]))
         with transaction.atomic():
-            # Mark all elections as not current, any that are current will
-            # be (re)set later
-            Election.objects.update(current=False)
+            if current_only:
+                # Mark all elections as not current, any that are current will
+                # be (re)set later
+                Election.objects.update(current=False)
 
             self.import_approved_elections(
                 full=options["full"], poll_open_date=options["poll_open_date"]
