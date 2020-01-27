@@ -29,6 +29,8 @@ def update_or_create_post_identifier(post):
             identifier_label = "unit_id"
         if identifier_value.startswith("gss"):
             identifier_label = "gss"
+        if identifier_value.startswith("osni_oid"):
+            identifier_label = "osni_oid"
         if re.match(r"^[A-Z]{3}", identifier_value.split(":")[0]):
             identifier_label = "dc_slug"
     else:
