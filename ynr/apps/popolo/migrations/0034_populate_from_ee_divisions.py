@@ -27,6 +27,8 @@ def update_or_create_post_identifier(post):
         identifier_value = post.identifier
         if identifier_value.startswith("unit_id"):
             identifier_label = "unit_id"
+        if identifier_value.startswith("gla"):
+            identifier_label = "legacy_slug"
         if identifier_value.startswith("gss"):
             identifier_label = "gss"
         if identifier_value.startswith("osni_oid"):
@@ -124,6 +126,12 @@ def populate_from_ee_no_divisions(apps, schema_editor):
         ballot.save()
 
 
+def clean_up_tmp_ids(apps, schema_editor):
+    Post = apps.get_model("popolo", "Post")
+    posts = Post.objects.filter(slug__in=["UTW:boaness-and-blackness"])
+    posts.update(identifier="gss:S13002936")
+
+
 class Migration(migrations.Migration):
 
     dependencies = [("popolo", "0033_unique_on_start_date")]
@@ -135,4 +143,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             populate_from_ee_no_divisions, migrations.RunPython.noop
         ),
+        migrations.RunPython(clean_up_tmp_ids, migrations.RunPython.noop),
     ]

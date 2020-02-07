@@ -99,6 +99,8 @@
 "pcc.greater-manchester.2020-05-07","E23000005","Greater Manchester Police","greater-manchester","2012-11-15","2017-05-08","ENG","police-area"
 "pcc.cleveland.2016-05-05","E23000013","Cleveland Police","cleveland","2012-11-15",,"ENG","police-area"
 "pcc.cleveland.2020-05-07","E23000013","Cleveland Police","cleveland","2012-11-15",,"ENG","police-area"
+"gla.a.2016-05-05","E12000007","Greater London assembly","gla","2000-07-03",,"ENG","gla"
+"gla.a.2020-05-07","E12000007","Greater London assembly","gla","2000-07-03",,"ENG","gla"
 "pcc.essex.2016-05-05","E23000028","Essex Police","essex","2012-11-15",,"ENG","police-area"
 "pcc.essex.2020-05-07","E23000028","Essex Police","essex","2012-11-15",,"ENG","police-area"
 "pcc.north-wales.2016-05-05","W15000001","North Wales Police","north-wales","2012-11-15",,"WLS","police-area"
