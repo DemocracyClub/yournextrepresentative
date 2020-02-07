@@ -1,3 +1,5 @@
+import re
+
 try:
     from django.contrib.contenttypes.fields import GenericRelation
 except ImportError:
@@ -251,9 +253,11 @@ class Post(Dateframeable, Timestampable, models.Model):
 
     @property
     def short_label(self):
-        from candidates.election_specific import shorten_post_label
-
-        return shorten_post_label(self.label)
+        label = re.sub(r"^Member of Parliament for ", "", self.label)
+        label = re.sub(r"^Member of the Scottish Parliament for ", "", label)
+        label = re.sub(r"^Assembly Member for ", "", label)
+        label = re.sub(r"^Member of the Legislative Assembly for ", "", label)
+        return label
 
     try:
         # PassTrhroughManager was removed in django-model-utils 2.4, see issue #22

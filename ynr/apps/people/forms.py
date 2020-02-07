@@ -281,7 +281,6 @@ class BasePersonForm(forms.Form):
 
 class NewPersonForm(BasePersonForm):
     def __init__(self, *args, **kwargs):
-        from candidates.election_specific import shorten_post_label
 
         election = kwargs.pop("election", None)
         hidden_post_widget = kwargs.pop("hidden_post_widget", None)
@@ -323,7 +322,7 @@ class NewPersonForm(BasePersonForm):
                 choices=[("", "")]
                 + sorted(
                     [
-                        (post.slug, shorten_post_label(post.label))
+                        (post.slug, post.short_label)
                         for post in Post.objects.filter(
                             elections__slug=election
                         )
@@ -436,8 +435,6 @@ class AddElectionFieldsMixin(object):
             self.add_election_fields(election_data)
 
     def add_election_fields(self, election_data):
-        from candidates.election_specific import shorten_post_label
-
         election = election_data.slug
         self.fields["standing_" + election] = forms.ChoiceField(
             label="Standing in %s" % election_data.name,
@@ -450,7 +447,7 @@ class AddElectionFieldsMixin(object):
             choices=[("", "")]
             + sorted(
                 [
-                    (post.slug, shorten_post_label(post.label))
+                    (post.slug, post.short_label)
                     for post in Post.objects.filter(elections__slug=election)
                 ],
                 key=lambda t: t[1],
