@@ -17,6 +17,7 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from model_utils import Choices
+from model_utils.models import TimeStampedModel
 from slugify import slugify
 
 from ynr_refactoring.settings import PersonIdentifierFields
@@ -180,6 +181,15 @@ class Post(Dateframeable, Timestampable, models.Model):
     see schema at http://popoloproject.com/schemas/json#
     """
 
+    identifier = models.CharField(
+        max_length=100,
+        null=True,
+        help_text="""
+        The identifier used in EveryElection for this division. This might
+        change over time, as some divisions don't have official IDs at the
+        point we create them.
+        """,
+    )
     label = models.CharField(
         "label",
         max_length=512,
@@ -230,6 +240,15 @@ class Post(Dateframeable, Timestampable, models.Model):
         "candidates.PartySet", blank=True, null=True, on_delete=models.CASCADE
     )
 
+    territory_code = models.CharField(
+        max_length=10,
+        blank=True,
+        help_text="""
+        The territory within Great Britain that this post is in.
+        One of SCT, WLS, ENG, NIR
+        """,
+    )
+
     @property
     def short_label(self):
         from candidates.election_specific import shorten_post_label
@@ -246,7 +265,20 @@ class Post(Dateframeable, Timestampable, models.Model):
         return self.label
 
     class Meta:
-        unique_together = ("slug", "organization")
+        unique_together = ("slug", "organization", "start_date")
+
+
+class PostIdentifier(TimeStampedModel):
+    """
+    A model that stores identifiers for a post.
+
+    Allows posts to have n IDs, both as the EE ones change over time,
+    but also, e.g. for Wiki[pedia|data] IDs, etc.
+    """
+
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    identifier = models.CharField(max_length=256, blank=False)
+    label = models.CharField(max_length=255, blank=True)
 
 
 class Membership(Dateframeable, Timestampable, models.Model):
@@ -359,7 +391,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
             "party_lists_in_use": self.ballot.election.party_lists_in_use,
             "mapit_url": "",
             "gss_code": "",
-            "post_id": self.ballot.post.slug,
+            "post_id": self.ballot.post.identifier,
             "post_label": self.ballot.post.short_label,
             "cancelled_poll": self.ballot.cancelled,
         }

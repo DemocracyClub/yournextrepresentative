@@ -17,6 +17,8 @@ from .ee_import_results import (
     each_type_of_election_on_one_day,
     local_highland,
     no_results,
+    pre_gss_result,
+    post_gss_result,
 )
 
 EE_BASE_URL = getattr(
@@ -487,10 +489,55 @@ class EE_ImporterTest(WebTest):
             "-slug", "-organization__name"
         )
 
-        self.assertEqual(post_a.slug, "DIW:st-michaels")
+        self.assertEqual(post_a.slug, "st-michaels")
+        self.assertEqual(post_a.identifier, "SUR:st-michaels")
+        self.assertEqual(post_a.start_date, "2019-05-02")
         self.assertEqual(
             post_a.organization.name, "Surrey Heath Borough Council"
         )
 
-        self.assertEqual(post_b.slug, "DIW:st-michaels")
+        self.assertEqual(post_b.slug, "st-michaels")
+        self.assertEqual(post_b.identifier, "ALL:st-michaels")
+        self.assertEqual(post_a.start_date, "2019-05-02")
         self.assertEqual(post_b.organization.name, "Allerdale Borough Council")
+
+    @patch("elections.uk.every_election.requests")
+    @freeze_time("2019-05-02")
+    def test_import_post_pre_and_post_gss(self, mock_requests):
+        """
+        Test that posts imported before GSS codes aren't duplicated
+        at the point we have GSS codes for them in EE
+        """
+
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {
+                urljoin(
+                    EE_BASE_URL,
+                    "/api/elections/?poll_open_date__gte=2019-04-02",
+                ): pre_gss_result,
+                urljoin(
+                    EE_BASE_URL,
+                    "/api/elections/?deleted=1&poll_open_date__gte=2019-04-02",
+                ): local_highland,
+            }
+        )
+
+        self.assertEqual(Post.objects.count(), 0)
+        call_command("uk_create_elections_from_every_election")
+        self.assertEqual(Post.objects.count(), 1)
+
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {
+                urljoin(
+                    EE_BASE_URL,
+                    "/api/elections/?poll_open_date__gte=2019-04-02",
+                ): post_gss_result,
+                urljoin(
+                    EE_BASE_URL,
+                    "/api/elections/?deleted=1&poll_open_date__gte=2019-04-02",
+                ): local_highland,
+            }
+        )
+
+        call_command("uk_create_elections_from_every_election")
+        self.assertEqual(Post.objects.count(), 1)

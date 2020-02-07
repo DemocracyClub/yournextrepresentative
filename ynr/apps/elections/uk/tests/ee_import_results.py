@@ -10840,7 +10840,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "",
         "slug": "greater-manchester-ca",
         "territory_code": "ENG",
-        "election_name": "Greater Manchester"
+        "election_name": "Greater Manchester",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "mayor.2019-01-17",
       "group_type": null,
@@ -10876,7 +10878,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "E09000012",
         "slug": "hackney",
         "territory_code": "ENG",
-        "election_name": "Hackney local election"
+        "election_name": "Hackney local election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "mayor.2019-01-17",
       "group_type": "organisation",
@@ -10912,7 +10916,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "W08000001",
         "slug": "naw",
         "territory_code": "WLS",
-        "election_name": "National Assembly for Wales election"
+        "election_name": "National Assembly for Wales election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": null,
       "group_type": "election",
@@ -10950,7 +10956,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "W08000001",
         "slug": "naw",
         "territory_code": "WLS",
-        "election_name": "National Assembly for Wales election"
+        "election_name": "National Assembly for Wales election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "naw.2019-01-17",
       "group_type": "subtype",
@@ -10992,7 +11000,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "W08000001",
         "slug": "naw",
         "territory_code": "WLS",
-        "election_name": "National Assembly for Wales election"
+        "election_name": "National Assembly for Wales election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "naw.c.2019-01-17",
       "group_type": null,
@@ -11048,7 +11058,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "W08000001",
         "slug": "naw",
         "territory_code": "WLS",
-        "election_name": "National Assembly for Wales election"
+        "election_name": "National Assembly for Wales election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "naw.c.2019-01-17",
       "group_type": null,
@@ -11104,7 +11116,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "W08000001",
         "slug": "naw",
         "territory_code": "WLS",
-        "election_name": "National Assembly for Wales election"
+        "election_name": "National Assembly for Wales election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "naw.2019-01-17",
       "group_type": "subtype",
@@ -11146,7 +11160,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "W08000001",
         "slug": "naw",
         "territory_code": "WLS",
-        "election_name": "National Assembly for Wales election"
+        "election_name": "National Assembly for Wales election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "naw.r.2019-01-17",
       "group_type": null,
@@ -11202,7 +11218,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "W08000001",
         "slug": "naw",
         "territory_code": "WLS",
-        "election_name": "National Assembly for Wales election"
+        "election_name": "National Assembly for Wales election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "naw.r.2019-01-17",
       "group_type": null,
@@ -11255,7 +11273,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "N07000001",
         "slug": "nia",
         "territory_code": "NIR",
-        "election_name": "Northern Ireland assembly election"
+        "election_name": "Northern Ireland assembly election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": null,
       "group_type": "election",
@@ -11289,7 +11309,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "N07000001",
         "slug": "nia",
         "territory_code": "NIR",
-        "election_name": "Northern Ireland assembly election"
+        "election_name": "Northern Ireland assembly election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "nia.2019-01-17",
       "group_type": null,
@@ -11342,7 +11364,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "",
         "slug": "parl",
         "territory_code": "GBN",
-        "election_name": "UK general election"
+        "election_name": "UK general election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": null,
       "group_type": "election",
@@ -11377,7 +11401,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "",
         "slug": "parl",
         "territory_code": "GBN",
-        "election_name": "UK general election"
+        "election_name": "UK general election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "parl.2019-01-17",
       "group_type": null,
@@ -11430,7 +11456,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "",
         "slug": "parl",
         "territory_code": "GBN",
-        "election_name": "UK general election"
+        "election_name": "UK general election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "parl.2019-01-17",
       "group_type": null,
@@ -11507,7 +11535,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "",
         "slug": "avon-and-somerset",
         "territory_code": "ENG",
-        "election_name": "Police and Crime Commissioner for Avon and Somerset Constabulary"
+        "election_name": "Police and Crime Commissioner for Avon and Somerset Constabulary",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "pcc.2019-01-17",
       "group_type": "organisation",
@@ -11543,7 +11573,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "S15000001",
         "slug": "sp",
         "territory_code": "SCT",
-        "election_name": "Scottish parliament election"
+        "election_name": "Scottish parliament election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": null,
       "group_type": "election",
@@ -11581,7 +11613,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "S15000001",
         "slug": "sp",
         "territory_code": "SCT",
-        "election_name": "Scottish parliament election"
+        "election_name": "Scottish parliament election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "sp.2019-01-17",
       "group_type": "subtype",
@@ -11623,7 +11657,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "S15000001",
         "slug": "sp",
         "territory_code": "SCT",
-        "election_name": "Scottish parliament election"
+        "election_name": "Scottish parliament election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "sp.c.2019-01-17",
       "group_type": null,
@@ -11679,7 +11715,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "S15000001",
         "slug": "sp",
         "territory_code": "SCT",
-        "election_name": "Scottish parliament election"
+        "election_name": "Scottish parliament election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "sp.c.2019-01-17",
       "group_type": null,
@@ -11735,7 +11773,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "S15000001",
         "slug": "sp",
         "territory_code": "SCT",
-        "election_name": "Scottish parliament election"
+        "election_name": "Scottish parliament election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "sp.2019-01-17",
       "group_type": "subtype",
@@ -11777,7 +11817,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "S15000001",
         "slug": "sp",
         "territory_code": "SCT",
-        "election_name": "Scottish parliament election"
+        "election_name": "Scottish parliament election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "sp.r.2019-01-17",
       "group_type": null,
@@ -11833,7 +11875,9 @@ each_type_of_election_on_one_day = json.loads(
         "gss": "S15000001",
         "slug": "sp",
         "territory_code": "SCT",
-        "election_name": "Scottish parliament election"
+        "election_name": "Scottish parliament election",
+        "start_date": "2011-04-01",
+        "end_date": null
       },
       "group": "sp.r.2019-01-17",
       "group_type": null,
@@ -12196,3 +12240,123 @@ duplicate_post_names = json.loads(
 }
 """
 )
+
+
+def get_changing_identifier_code_result(identifier):
+    string = """{
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [{
+            "election_id": "local.surrey-heath.2019-05-02",
+            "tmp_election_id": null,
+            "election_title": "Surrey Heath local election",
+            "poll_open_date": "2019-05-02",
+            "election_type": {
+                "name": "Local elections",
+                "election_type": "local"
+            },
+            "election_subtype": null,
+            "organisation": {
+                "url": "https://elections.democracyclub.org.uk/api/organisations/local-authority/SUR/1974-04-01/",
+                "official_identifier": "SUR",
+                "organisation_type": "local-authority",
+                "organisation_subtype": "NMD",
+                "official_name": "Surrey Heath Borough Council",
+                "common_name": "Surrey Heath",
+                "slug": "surrey-heath",
+                "territory_code": "ENG",
+                "election_name": "Surrey Heath local election",
+                "start_date": "1974-04-01",
+                "end_date": null
+            },
+            "group": "local.2019-05-02",
+            "group_type": "organisation",
+            "children": [
+                "local.surrey-heath.st-michaels.2019-05-02"
+            ],
+            "elected_role": "Local Councillor",
+            "seats_contested": null,
+            "division": null,
+            "voting_system": {
+                "slug": "FPTP",
+                "name": "First-past-the-post",
+                "uses_party_lists": false
+            },
+            "current": true,
+            "explanation": null,
+            "metadata": null,
+            "deleted": false,
+            "cancelled": false,
+            "replaces": null,
+            "replaced_by": null
+        },
+        {
+            "election_id": "local.surrey-heath.st-michaels.2019-05-02",
+            "tmp_election_id": null,
+            "election_title": "Surrey Heath local election St Michael's",
+            "poll_open_date": "2019-05-02",
+            "election_type": {
+                "name": "Local elections",
+                "election_type": "local"
+            },
+            "election_subtype": null,
+            "organisation": {
+                "url": "https://elections.democracyclub.org.uk/api/organisations/local-authority/SUR/1974-04-01/",
+                "official_identifier": "SUR",
+                "organisation_type": "local-authority",
+                "organisation_subtype": "NMD",
+                "official_name": "Surrey Heath Borough Council",
+                "common_name": "Surrey Heath",
+                "slug": "surrey-heath",
+                "territory_code": "ENG",
+                "election_name": "Surrey Heath local election",
+                "start_date": "1974-04-01",
+                "end_date": null
+            },
+            "group": "local.surrey-heath.2019-05-02",
+            "group_type": null,
+            "children": [],
+            "elected_role": "Local Councillor",
+            "seats_contested": 2,
+            "division": {
+                "divisionset": {
+                    "start_date": "2019-05-02",
+                    "end_date": null,
+                    "legislation_url": "",
+                    "consultation_url": "",
+                    "short_title": "The Surrey Heath (Electoral Changes) Order 2017",
+                    "notes": ""
+                },
+                "name": "St Michael's",
+                "official_identifier": "##########",
+                "slug": "st-michaels",
+                "division_type": "DIW",
+                "division_subtype": "",
+                "division_election_sub_type": "",
+                "seats_total": 2,
+                "territory_code": ""
+            },
+            "voting_system": {
+                "slug": "FPTP",
+                "name": "First-past-the-post",
+                "uses_party_lists": false
+            },
+            "current": true,
+            "explanation": null,
+            "metadata": null,
+            "deleted": false,
+            "cancelled": false,
+            "replaces": null,
+            "replaced_by": null
+        }
+        ]
+}
+    """.replace(
+        "##########", identifier
+    )
+    return json.loads(string)
+
+
+pre_gss_result = get_changing_identifier_code_result("SUR:st-michaels")
+post_gss_result = get_changing_identifier_code_result("gss:E05010885")

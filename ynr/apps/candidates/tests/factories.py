@@ -66,6 +66,7 @@ class PostFactory(factory.DjangoModelFactory):
 
     role = "Member of Parliament"
     slug = factory.LazyAttribute(lambda o: slugify(o.label))
+    identifier = factory.LazyAttribute(lambda o: slugify(o.label))
 
     @factory.post_generation
     def elections(self, create, extracted, **kwargs):
