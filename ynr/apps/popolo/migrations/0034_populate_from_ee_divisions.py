@@ -118,7 +118,7 @@ def populate_from_ee_no_divisions(apps, schema_editor):
 
         if line["gss"] != post.identifier:
             update_or_create_post_identifier(post)
-            post.identifier = line["gss"]
+            post.identifier = "gss:{}".format(line["gss"])
         post.slug = line["slug"]
 
         post.save()
