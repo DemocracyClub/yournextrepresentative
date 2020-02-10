@@ -57,7 +57,7 @@ class UpcomingElectionsView(View):
             else:
                 ballots = get_ballots_from_postcode(postcode)
         except Exception as e:
-            errors = {"error": e.message}
+            errors = {"error": str(e)}
 
         if errors:
             return HttpResponse(
@@ -107,7 +107,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
             else:
                 ballots = get_ballots_from_postcode(postcode)
         except Exception as e:
-            return self._error(e.message)
+            return self._error(str(e))
 
         results = []
         ballots = ballots.select_related(
