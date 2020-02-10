@@ -1,17 +1,7 @@
-try:
-    from django.contrib.contenttypes.fields import GenericRelation
-except ImportError:
-    # This fallback import is the version that was deprecated in
-    # Django 1.7 and is removed in 1.9:
-    from django.contrib.contenttypes.generic import GenericRelation
+import re
 
-try:
-    # PassTrhroughManager was removed in django-model-utils 2.4
-    # see issue #22 at https://github.com/openpolis/django-popolo/issues/22
-    from model_utils.managers import PassThroughManager
-except ImportError:
-    pass
 
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import pre_save
@@ -137,6 +127,8 @@ class Organization(Dateframeable, Timestampable, models.Model):
     slug = models.CharField(max_length=256, blank=True, unique=True)
     register = models.CharField(blank=True, max_length=512)
 
+    objects = OrganizationQuerySet.as_manager()
+
     def ec_id(self):
         if self.classification != "Party":
             raise ValueError("'{}' isn't a Party".format(str(self)))
@@ -147,12 +139,6 @@ class Organization(Dateframeable, Timestampable, models.Model):
             return party_id.identifier
         except:
             return "ynmp-party:2"
-
-    try:
-        # PassTrhroughManager was removed in django-model-utils 2.4, see issue #22
-        objects = PassThroughManager.for_queryset_class(OrganizationQuerySet)()
-    except:
-        objects = OrganizationQuerySet.as_manager()
 
     def add_member(self, person):
         m = Membership(organization=self, person=person)
@@ -249,17 +235,15 @@ class Post(Dateframeable, Timestampable, models.Model):
         """,
     )
 
+    objects = PostQuerySet.as_manager()
+
     @property
     def short_label(self):
-        from candidates.election_specific import shorten_post_label
-
-        return shorten_post_label(self.label)
-
-    try:
-        # PassTrhroughManager was removed in django-model-utils 2.4, see issue #22
-        objects = PassThroughManager.for_queryset_class(PostQuerySet)()
-    except:
-        objects = PostQuerySet.as_manager()
+        label = re.sub(r"^Member of Parliament for ", "", self.label)
+        label = re.sub(r"^Member of the Scottish Parliament for ", "", label)
+        label = re.sub(r"^Assembly Member for ", "", label)
+        label = re.sub(r"^Member of the Legislative Assembly for ", "", label)
+        return label
 
     def __str__(self):
         return self.label
@@ -342,6 +326,8 @@ class Membership(Dateframeable, Timestampable, models.Model):
     party_list_position = models.PositiveSmallIntegerField(null=True)
     ballot = models.ForeignKey("candidates.Ballot", on_delete=models.CASCADE)
 
+    objects = MembershipQuerySet.as_manager()
+
     def save(self, *args, **kwargs):
         if self.ballot and getattr(self, "check_for_broken", True):
             if self.ballot.election in self.person.not_standing.all():
@@ -358,12 +344,6 @@ class Membership(Dateframeable, Timestampable, models.Model):
                     )
                 )
         super().save(*args, **kwargs)
-
-    try:
-        # PassTrhroughManager was removed in django-model-utils 2.4, see issue #22
-        objects = PassThroughManager.for_queryset_class(MembershipQuerySet)()
-    except:
-        objects = MembershipQuerySet.as_manager()
 
     def __str__(self):
         return self.label
@@ -468,11 +448,7 @@ class ContactDetail(
         "Source", help_text="URLs to source documents about the contact detail"
     )
 
-    try:
-        # PassTrhroughManager was removed in django-model-utils 2.4, see issue #22
-        objects = PassThroughManager.for_queryset_class(ContactDetailQuerySet)()
-    except:
-        objects = ContactDetailQuerySet.as_manager()
+    objects = ContactDetailQuerySet.as_manager()
 
     def __str__(self):
         return u"{} - {}".format(self.value, self.contact_type)
@@ -494,11 +470,7 @@ class OtherName(Dateframeable, GenericRelatable, models.Model):
         help_text="A note, e.g. 'Birth name'",
     )
 
-    try:
-        # PassTrhroughManager was removed in django-model-utils 2.4, see issue #22
-        objects = PassThroughManager.for_queryset_class(OtherNameQuerySet)()
-    except:
-        objects = OtherNameQuerySet.as_manager()
+    objects = OtherNameQuerySet.as_manager()
 
     def __str__(self):
         return self.name

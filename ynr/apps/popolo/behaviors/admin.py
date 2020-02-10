@@ -1,13 +1,8 @@
-try:
-    from django.contrib.contenttypes.admin import (
-        GenericTabularInline,
-        GenericStackedInline,
-    )
-except ImportError:
-    from django.contrib.contenttypes.generic import (
-        GenericTabularInline,
-        GenericStackedInline,
-    )
+from django.contrib.contenttypes.admin import (
+    GenericTabularInline,
+    GenericStackedInline,
+)
+
 from popolo import models
 
 

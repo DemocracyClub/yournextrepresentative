@@ -4,11 +4,6 @@ from popolo import models
 
 from .behaviors import admin as generics
 
-try:
-    pass
-except ImportError:
-    pass
-
 
 class PostAdmin(admin.ModelAdmin):
     model = models.Post

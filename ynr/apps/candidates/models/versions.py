@@ -20,8 +20,6 @@ def get_person_as_version_data(person, new_person=False):
     # Prefetch to reduce the number of queries
     prefetch_related_objects([person], "tmp_person_identifiers")
 
-    from candidates.election_specific import shorten_post_label
-
     result = {}
     result["id"] = str(person.id)
 
@@ -86,7 +84,7 @@ def get_person_as_version_data(person, new_person=False):
             election = ballot.election
             standing_in[ballot.election.slug] = {
                 "post_id": post.slug,
-                "name": shorten_post_label(post.label),
+                "name": post.short_label,
             }
             if membership.elected is not None:
                 standing_in[election.slug]["elected"] = membership.elected
