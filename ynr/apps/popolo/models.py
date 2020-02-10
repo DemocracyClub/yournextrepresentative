@@ -1,12 +1,7 @@
 import re
 
-try:
-    from django.contrib.contenttypes.fields import GenericRelation
-except ImportError:
-    # This fallback import is the version that was deprecated in
-    # Django 1.7 and is removed in 1.9:
-    from django.contrib.contenttypes.generic import GenericRelation
 
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import pre_save
