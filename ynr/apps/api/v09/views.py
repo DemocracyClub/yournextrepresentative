@@ -8,7 +8,7 @@ import django
 from dateutil import parser
 from django.contrib.auth.models import User
 from django.db.models import Count, Prefetch, Q
-from django.http import HttpResponse, HttpResponsePermanentRedirect
+from django.http import HttpResponse, HttpResponsePermanentRedirect, Http404
 from django.views.generic import View
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -277,6 +277,19 @@ class PostViewSet(viewsets.ModelViewSet):
     lookup_field = "slug"
     serializer_class = serializers.PostSerializer
     pagination_class = DefaultPageNumberPagination
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        try:
+            post = queryset.get(identifier=self.kwargs["slug"])
+        except Post.DoesNotExist:
+            try:
+                post = queryset.get(
+                    postidentifier__identifier=self.kwargs["slug"]
+                )
+            except Post.DoesNotExist:
+                raise Http404
+        return post
 
 
 class ElectionViewSet(viewsets.ModelViewSet):
