@@ -3,11 +3,14 @@ from django_webtest import WebTest
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from parties.models import Party
+from parties.tests.fixtures import DefaultPartyFixtures
 
 from .factories import PartyDescriptionFactory
 
 
-class TestPartyChoices(TestUserMixin, UK2015ExamplesMixin, WebTest):
+class TestPartyChoices(
+    DefaultPartyFixtures, TestUserMixin, UK2015ExamplesMixin, WebTest
+):
     def test_hardly_any_candidates_at_all(self):
         party_choices = Party.objects.register("GB").party_choices()
         self.assertEqual(

@@ -17,6 +17,7 @@ from moderation_queue.tests.paths import (
 from parties.importer import ECParty, ECPartyImporter
 from parties.management.commands.parties_import_from_ec import Command
 from parties.models import Party, PartyDescription, PartyEmblem
+from parties.tests.fixtures import DefaultPartyFixtures
 
 from .factories import PartyDescriptionFactory, PartyFactory
 
@@ -57,7 +58,7 @@ def make_tmp_file_from_source(source):
             return ntf.name
 
 
-class TestECPartyImporter(TmpMediaRootMixin, TestCase):
+class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
     def setUp(self):
         super().setUp()
         self.storage = DefaultStorage()

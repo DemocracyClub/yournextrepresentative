@@ -7,10 +7,11 @@ from bulk_adding.models import RawPeople
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from official_documents.models import OfficialDocument
 from parties.tests.factories import PartyFactory
+from parties.tests.fixtures import DefaultPartyFixtures
 from sopn_parsing.models import ParsedSOPN
 
 
-class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
+class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
     def setUp(self):
         PartyFactory(ec_id="PP85", name="UK Independence Party (UKIP)")
 

@@ -85,9 +85,8 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         )
         self.test_reviewer.terms_agreement.assigned_to_dc = True
         self.test_reviewer.terms_agreement.save()
-        self.test_reviewer.groups.add(
-            Group.objects.get(name=PHOTO_REVIEWERS_GROUP_NAME)
-        )
+        group, _ = Group.objects.get_or_create(name=PHOTO_REVIEWERS_GROUP_NAME)
+        self.test_reviewer.groups.add(group)
         self.q1 = QueuedImage.objects.create(
             why_allowed="public-domain",
             justification_for_use="It's their Twitter avatar",

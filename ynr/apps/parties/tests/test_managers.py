@@ -8,6 +8,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from parties.models import Party
+from parties.tests.fixtures import DefaultPartyFixtures
 
 from .factories import PartyFactory
 
@@ -21,7 +22,7 @@ PARTY_DATES = (
 )
 
 
-class TestPartyManager(TestCase):
+class TestPartyManager(DefaultPartyFixtures, TestCase):
     def setUp(self):
         PartyFactory.reset_sequence()
         for party_date in PARTY_DATES:

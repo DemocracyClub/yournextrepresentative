@@ -15,6 +15,7 @@ class TestUserMixin(object):
         super(TestUserMixin, cls).setUpTestData()
         cls.users_to_delete = []
         for username, attr, group_names in (
+            ("TwitterBot", "user", []),
             ("john", "user", []),
             ("alice", "user_who_can_merge", [TRUSTED_TO_MERGE_GROUP_NAME]),
             ("charles", "user_who_can_lock", [TRUSTED_TO_LOCK_GROUP_NAME]),
@@ -41,7 +42,7 @@ class TestUserMixin(object):
             terms.assigned_to_dc = True
             terms.save()
             for group_name in group_names:
-                group = Group.objects.get(name=group_name)
+                group, _ = Group.objects.get_or_create(name=group_name)
                 group.user_set.add(u)
             setattr(cls, attr, u)
             cls.users_to_delete.append(u)
