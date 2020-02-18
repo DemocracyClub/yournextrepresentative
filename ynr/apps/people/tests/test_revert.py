@@ -306,4 +306,3 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "source"
         ] = "Reverting to version 5469de7db0cbd155 for testing purposes"
         response = revert_form.submit()
-        print(response)
