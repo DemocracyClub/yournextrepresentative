@@ -68,7 +68,10 @@ class Command(BaseCommand):
         # Write a file per election, optionally adding candidates
         # We still want a file to exist if there are no candidates yet,
         # as the files linked to as soon as the election is created
-        for election in Election.objects.all():
+        election_qs = Election.objects.all()
+        if election_slug:
+            election_qs = election_qs.filter(slug=election_slug)
+        for election in election_qs:
             safely_write(
                 self.slug_to_file_name(election.slug),
                 membership_by_election.get(election.slug, []),
