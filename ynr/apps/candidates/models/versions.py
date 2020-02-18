@@ -8,8 +8,6 @@ from django.db.models.query import prefetch_related_objects
 from parties.models import Party
 from ynr_refactoring.settings import PersonIdentifierFields
 
-# FIXME: check all the preserve_fields are dealt with
-
 
 def get_person_as_version_data(person, new_person=False):
     """
