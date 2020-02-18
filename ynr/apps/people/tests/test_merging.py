@@ -219,9 +219,8 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                             "start_date": None,
                         }
                     ],
-                    "party_memberships": {},
                     "party_ppc_page_url": "",
-                    "standing_in": {},
+                    "candidacies": {},
                     "twitter_username": "",
                     "wikidata_id": "",
                     "wikipedia_url": "",
@@ -575,22 +574,8 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         person_1.refresh_from_db()
         version_data = json.loads(person_1.versions)[0]["data"]
         self.assertEqual(
-            version_data["standing_in"],
-            {
-                "local.maidstone.2016-05-05": {
-                    "name": "Hoe Street",
-                    "post_id": "LBW:E05000601",
-                }
-            },
-        )
-        self.assertEqual(
-            version_data["party_memberships"],
-            {
-                "local.maidstone.2016-05-05": {
-                    "id": "party:63",
-                    "name": "Green Party",
-                }
-            },
+            version_data["candidacies"],
+            {"local.maidstone.LBW:E05000601.2016-05-05": {"party": "PP63"}},
         )
 
     def test_merge_with_result_event(self):

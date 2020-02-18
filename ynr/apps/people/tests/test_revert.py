@@ -193,23 +193,14 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     }
                 ],
                 "honorific_prefix": "",
-                "standing_in": {
-                    "parl.2010-05-06": {
-                        "post_id": "65808",
-                        "name": "Dulwich and West Norwood",
-                    }
+                "candidacies": {
+                    "parl.65808.2010-05-06": {"party": self.labour_party.ec_id}
                 },
                 "homepage_url": "http://example.org/tessajowell",
                 "twitter_username": "",
                 "wikipedia_url": "",
                 "youtube_profile": "",
                 "wikidata_id": "",
-                "party_memberships": {
-                    "parl.2010-05-06": {
-                        "id": self.labour_party.legacy_slug,
-                        "name": "Labour Party",
-                    }
-                },
                 "birth_date": "1947-09-17",
                 "death_date": "",
                 "biography": "",

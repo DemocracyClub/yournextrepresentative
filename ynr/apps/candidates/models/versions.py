@@ -58,10 +58,8 @@ def get_person_as_version_data(person, new_person=False):
             }
         )
 
-    extra_values = {}
     result["other_names"] = []
-    standing_in = {}
-    party_memberships = {}
+    candidacies = {}
 
     if not new_person:
         result["other_names"] = [
@@ -78,27 +76,17 @@ def get_person_as_version_data(person, new_person=False):
 
         for membership in person.memberships.all():
             ballot = membership.ballot
-            post = ballot.post
-            election = ballot.election
-            standing_in[ballot.election.slug] = {
-                "post_id": post.slug,
-                "name": post.short_label,
-            }
+            candidacy = {"party": membership.party.ec_id}
             if membership.elected is not None:
-                standing_in[election.slug]["elected"] = membership.elected
+                candidacy["elected"] = membership.elected
             if membership.party_list_position is not None:
-                standing_in[election.slug][
+                candidacy[
                     "party_list_position"
                 ] = membership.party_list_position
-            party = membership.party
-            party_memberships[ballot.election.slug] = {
-                "id": party.legacy_slug,
-                "name": party.name,
-            }
+            candidacies[ballot.ballot_paper_id] = candidacy
+
         for not_standing_in_election in person.not_standing.all():
-            standing_in[not_standing_in_election.slug] = None
-            # Delete party memberships if not standing in this election
-            party_memberships.pop(not_standing_in_election.slug, None)
+            candidacies[not_standing_in_election.slug] = None
 
     # Add `favourite_biscuits` to an `extra_fields` key
     # to re-produce the previous ExtraField model.
@@ -110,8 +98,7 @@ def get_person_as_version_data(person, new_person=False):
 
     result["extra_fields"] = extra_fields
 
-    result["standing_in"] = standing_in
-    result["party_memberships"] = party_memberships
+    result["candidacies"] = candidacies
     return result
 
 
