@@ -76,9 +76,9 @@ def get_person_as_version_data(person, new_person=False):
             )
         ]
 
-        for membership in person.memberships.filter(post__isnull=False):
-            post = membership.post
+        for membership in person.memberships.all():
             ballot = membership.ballot
+            post = ballot.post
             election = ballot.election
             standing_in[ballot.election.slug] = {
                 "post_id": post.slug,

@@ -49,9 +49,11 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
             organization=self.local_council,
         )
 
-        self.dest_person.memberships.create(ballot=self.local_ballot)
+        self.dest_person.memberships.create(
+            ballot=self.local_ballot, party=self.green_party
+        )
         self.source_person.memberships.create(
-            ballot=other_local_post.ballot_set.get()
+            ballot=other_local_post.ballot_set.get(), party=self.green_party
         )
 
         self.assertEqual(Person.objects.count(), 2)
@@ -75,8 +77,12 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(Person.objects.count(), 2)
 
     def test_merge_with_results(self):
-        self.source_person.memberships.create(ballot=self.local_ballot)
-        self.dest_person.memberships.create(ballot=self.local_ballot)
+        self.source_person.memberships.create(
+            ballot=self.local_ballot, party=self.green_party
+        )
+        self.dest_person.memberships.create(
+            ballot=self.local_ballot, party=self.green_party
+        )
 
         result_set = ResultSet.objects.create(
             ballot=self.local_ballot,
@@ -102,8 +108,12 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_merge_with_results_on_both_memberships(self):
-        self.source_person.memberships.create(ballot=self.local_ballot)
-        self.dest_person.memberships.create(ballot=self.local_ballot)
+        self.source_person.memberships.create(
+            ballot=self.local_ballot, party=self.green_party
+        )
+        self.dest_person.memberships.create(
+            ballot=self.local_ballot, party=self.green_party
+        )
 
         result_set = ResultSet.objects.create(
             ballot=self.local_ballot,
