@@ -751,6 +751,9 @@ class Person(Timestampable, models.Model):
            ballot for that post
         """
         standing_down_elections = []
+        if self.death_date:
+            # Don't show them as "standing down" if they've died.
+            return standing_down_elections
         elected_memberships = self.memberships.filter(elected=True)
         for membership in elected_memberships:
             elected_ballot = membership.ballot
