@@ -70,7 +70,7 @@ pytest-env
 pytest-flakes
 pytest-pep8
 python-dateutil==2.8.1
-python-magic==0.4.6
+python-magic==0.4.15
 python-memcached==1.59
 python-openid==2.2.5
 python-slugify==3.0.1
