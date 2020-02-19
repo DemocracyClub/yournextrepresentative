@@ -8,11 +8,18 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from official_documents.models import OfficialDocument
 from parties.tests.factories import PartyDescriptionFactory, PartyEmblemFactory
+from parties.tests.fixtures import DefaultPartyFixtures
 from people.models import PersonImage
 from people.tests.factories import PersonFactory
 
 
-class TestAPI(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, WebTest):
+class TestAPI(
+    DefaultPartyFixtures,
+    TmpMediaRootMixin,
+    TestUserMixin,
+    UK2015ExamplesMixin,
+    WebTest,
+):
     def setUp(self):
         super().setUp()
         self.storage = DefaultStorage()

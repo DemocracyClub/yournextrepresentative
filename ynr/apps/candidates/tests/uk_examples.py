@@ -55,6 +55,7 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
     @classmethod
     def setUpTestData(cls):
         super(UK2015ExamplesMixin, cls).setUpTestData()
+
         cls.gb_parties = factories.PartySetFactory.create(
             slug="gb", name="Great Britain"
         )

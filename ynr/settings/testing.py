@@ -5,6 +5,17 @@ from .base import *  # noqa
 DATABASES["default"]["CONN_MAX_AGE"] = 0  # noqa
 SITE_NAME = "example.com"
 
+
+class DisableMigrations(object):
+    def __contains__(self, item):
+        return True
+
+    def __getitem__(self, item):
+        return None
+
+
+MIGRATION_MODULES = DisableMigrations()
+
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
 
 
