@@ -360,6 +360,10 @@ class Membership(Dateframeable, Timestampable, models.Model):
                 continue
             identifier_dict[identifier.value_type] = identifier.value
 
+        gss = None
+        if self.ballot.post.identifier.startswith("gss:"):
+            gss = self.ballot.post.identifier[4:]
+
         membership_dict = {
             "election": self.ballot.election.slug,
             "election_date": self.ballot.election.election_date,
@@ -370,7 +374,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
             "party_list_position": self.party_list_position,
             "party_lists_in_use": self.ballot.election.party_lists_in_use,
             "mapit_url": "",
-            "gss_code": "",
+            "gss_code": gss,
             "post_id": self.ballot.post.identifier,
             "post_label": self.ballot.post.short_label,
             "cancelled_poll": self.ballot.cancelled,

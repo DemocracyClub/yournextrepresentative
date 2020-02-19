@@ -70,7 +70,7 @@ class BallotQueryset(models.QuerySet):
         qs = self.filter(
             post=ballot.post,
             election__election_date__lt=ballot.election.election_date,
-        ).order_by("election__election_date")
+        ).order_by("-election__election_date")
 
         if qs.exists():
             return qs.first()

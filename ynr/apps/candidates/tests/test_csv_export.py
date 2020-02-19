@@ -199,12 +199,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         self.assertSetEqual(
             set(self.storage.listdir(".")[1]),
             set(
-                [
-                    "candidates-parl.2010-05-06.csv",
-                    "candidates-parl.2015-05-07.csv",
-                    "candidates-local.maidstone.2016-05-05.csv",
-                    "candidates-2015-05-07.csv",
-                ]
+                ["candidates-parl.2015-05-07.csv", "candidates-2015-05-07.csv"]
             ),
         )
 
