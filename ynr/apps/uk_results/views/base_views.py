@@ -149,10 +149,14 @@ class Parl19ResultsCSVView(TemplateView):
             else:
                 previous_winner = None
 
+            gss = None
+            if membership.ballot.post.identifier.startswith("gss:"):
+                gss = membership.ballot.post.identifier[4:]
+
             out = {
                 "election_slug": membership.ballot.election.slug,
                 "ballot_paper_id": membership.ballot.ballot_paper_id,
-                "gss": membership.ballot.post.slug.split(":")[-1],
+                "gss": gss,
                 "person_id": membership.person_id,
                 "person_name": membership.person.name,
                 "party_id": membership.party.ec_id,
