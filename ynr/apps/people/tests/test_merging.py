@@ -414,19 +414,12 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                             "id": "50537",
                             "biography": "",
                             "wikipedia_url": "",
-                            "standing_in": {
-                                "local.wirral.2019-05-02": {
-                                    "name": "Clatterbridge",
-                                    "post_id": "MTW:E05000958",
+                            "candidacies": {
+                                "local.wirral.clatterbridge.2019-05-02": {
+                                    "party": self.conservative_party.ec_id
                                 }
                             },
                             "homepage_url": "",
-                            "party_memberships": {
-                                "local.wirral.2019-05-02": {
-                                    "name": "Conservative and Unionist Party",
-                                    "id": "party:52",
-                                }
-                            },
                             "facebook_personal_url": "",
                             "gender": "female",
                         },
@@ -459,19 +452,12 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                             "id": "50536",
                             "biography": "",
                             "wikipedia_url": "",
-                            "standing_in": {
-                                "local.wirral.2019-05-02": {
-                                    "name": "Clatterbridge",
-                                    "post_id": "MTW:E05000958",
+                            "candidacies": {
+                                "local.wirral.clatterbridge.2019-05-02": {
+                                    "party": self.conservative_party.ec_id
                                 }
                             },
                             "homepage_url": "",
-                            "party_memberships": {
-                                "local.wirral.2019-05-02": {
-                                    "name": "Conservative and Unionist Party",
-                                    "id": "party:52",
-                                }
-                            },
                             "facebook_personal_url": "",
                             "gender": "female",
                         },

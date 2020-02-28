@@ -33,31 +33,17 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
               "name": "Tessa Jowell",
               "id": "2009",
               "twitter_username": "",
-              "standing_in": {
-                "parl.2010-05-06": {
-                  "post_id": "65808",
-                  "name": "Dulwich and West Norwood",
-                  "mapit_url": "http://mapit.mysociety.org/area/65808"
+              "candidacies": {
+                "parl.65808.2010-05-06": {
+                  "party": "$slug"
                 },
-                "parl.2015-05-07": {
-                  "post_id": "65808",
-                  "name": "Dulwich and West Norwood",
-                  "mapit_url": "http://mapit.mysociety.org/area/65808"
+                "parl.65808.2015-05-07": {
+                  "party": "$slug"
                 }
               },
               "homepage_url": "",
               "birth_date": null,
               "wikipedia_url": "https://en.wikipedia.org/wiki/Tessa_Jowell",
-              "party_memberships": {
-                "parl.2010-05-06": {
-                  "id": "$slug",
-                  "name": "Labour Party"
-                },
-                "parl.2015-05-07": {
-                  "id": "$slug",
-                  "name": "Labour Party"
-                }
-              },
               "identifiers": [
                 {
                   "identifier": "uk.org.publicwhip/person/10326",
@@ -86,23 +72,15 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
               ],
               "id": "2009",
               "twitter_username": "",
-              "standing_in": {
-                "parl.2010-05-06": {
-                  "post_id": "65808",
-                  "name": "Dulwich and West Norwood",
-                  "mapit_url": "http://mapit.mysociety.org/area/65808"
+              "candidacies": {
+                "parl.65808.2010-05-06": {
+                  "party": "$slug"
                 }
               },
               "homepage_url": "http://example.org/tessajowell",
               "birth_date": "1947-09-17",
               "biography": "",
               "wikipedia_url": "",
-              "party_memberships": {
-                "parl.2010-05-06": {
-                  "id": "$slug",
-                  "name": "Labour Party"
-                }
-              },
               "identifiers": [
                 {
                   "identifier": "uk.org.publicwhip/person/10326",
@@ -123,7 +101,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             id=2009,
             name="Tessa Jowell",
             versions=self.version_template.substitute(
-                slug=self.labour_party.legacy_slug
+                slug=self.labour_party.ec_id
             ),
         )
         PersonIdentifier.objects.create(

@@ -165,17 +165,9 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "3aa8d7da968e10fa",
                 "data": {
                     "id": "24680",
-                    "standing_in": {
-                        "parl.2010-05-06": {
-                            "name": "South Cambridgeshire",
-                            "post_id": "65922",
-                            "mapit_url": "http://mapit.mysociety.org/area/65922",
-                        },
-                        "parl.2015-05-07": {
-                            "name": "Edinburgh North and Leith",
-                            "post_id": "14420",
-                            "mapit_url": "http://mapit.mysociety.org/area/14420",
-                        },
+                    "candidacies": {
+                        "parl.65922.2010-05-06": {"party": "PP58"},
+                        "parl.14420.2015-05-07": {"party": "PP85"},
                     },
                 },
             },
@@ -185,13 +177,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "fd105d1cf3b5ed0f",
                 "data": {
                     "id": "24680",
-                    "standing_in": {
-                        "parl.2010-05-06": {
-                            "name": "South Cambridgeshire",
-                            "post_id": "65922",
-                            "mapit_url": "http://mapit.mysociety.org/area/65922",
-                        }
-                    },
+                    "candidacies": {"parl.65922.2010-05-06": {"party": "PP58"}},
                 },
             },
         ]
@@ -204,15 +190,9 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "parent_version_ids": ["fd105d1cf3b5ed0f"],
                 "data": {
                     "id": "24680",
-                    "standing_in": {
-                        "parl.2010-05-06": {
-                            "name": "South Cambridgeshire",
-                            "post_id": "65922",
-                        },
-                        "parl.2015-05-07": {
-                            "name": "Edinburgh North and Leith",
-                            "post_id": "14420",
-                        },
+                    "candidacies": {
+                        "parl.65922.2010-05-06": {"party": "PP58"},
+                        "parl.14420.2015-05-07": {"party": "PP58"},
                     },
                 },
                 "diffs": [
@@ -221,7 +201,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_diff": [
                             {
                                 "op": "add",
-                                "path": "standing_in/parl.2015-05-07",
+                                "path": "candidacies/parl.14420.2015-05-07",
                                 "value": "is known to be standing in Edinburgh North and Leith in the 2015 General Election",
                             }
                         ],
@@ -235,12 +215,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "parent_version_ids": [],
                 "data": {
                     "id": "24680",
-                    "standing_in": {
-                        "parl.2010-05-06": {
-                            "name": "South Cambridgeshire",
-                            "post_id": "65922",
-                        }
-                    },
+                    "candidacies": {"parl.65922.2010-05-06": {"party": "PP58"}},
                 },
                 "diffs": [
                     {
@@ -249,7 +224,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                             {"op": "add", "path": "id", "value": "24680"},
                             {
                                 "op": "add",
-                                "path": "standing_in",
+                                "path": "candidacies",
                                 "value": "was known to be standing in South Cambridgeshire in the 2010 General Election",
                             },
                         ],
@@ -271,12 +246,8 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "698ae05960970b60",
                 "data": {
                     "id": "24680",
-                    "standing_in": {
-                        "parl.2010-05-06": {
-                            "name": "South Cambridgeshire",
-                            "post_id": "65922",
-                            "mapit_url": "http://mapit.mysociety.org/area/65922",
-                        },
+                    "candidacies": {
+                        "parl.65922.2010-05-06": {"party": "PP58"},
                         "parl.2015-05-07": None,
                     },
                 },
@@ -287,13 +258,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "d1fd9c3830d8d722",
                 "data": {
                     "id": "24680",
-                    "standing_in": {
-                        "parl.2010-05-06": {
-                            "name": "South Cambridgeshire",
-                            "post_id": "65922",
-                            "mapit_url": "http://mapit.mysociety.org/area/65922",
-                        }
-                    },
+                    "candidacies": {"parl.65922.2010-05-06": {"party": "PP58"}},
                 },
             },
         ]
@@ -306,11 +271,8 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "parent_version_ids": ["d1fd9c3830d8d722"],
                 "data": {
                     "id": "24680",
-                    "standing_in": {
-                        "parl.2010-05-06": {
-                            "name": "South Cambridgeshire",
-                            "post_id": "65922",
-                        },
+                    "candidacies": {
+                        "parl.65922.2010-05-06": {"party": "PP58"},
                         "parl.2015-05-07": None,
                     },
                 },
@@ -320,7 +282,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_diff": [
                             {
                                 "op": "add",
-                                "path": "standing_in/parl.2015-05-07",
+                                "path": "candidacies/parl.65922.2015-05-07",
                                 "value": "is known not to be standing in the 2015 General Election",
                             }
                         ],
@@ -334,12 +296,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "parent_version_ids": [],
                 "data": {
                     "id": "24680",
-                    "standing_in": {
-                        "parl.2010-05-06": {
-                            "name": "South Cambridgeshire",
-                            "post_id": "65922",
-                        }
-                    },
+                    "candidacies": {"parl.65922.2010-05-06": {"party": "PP58"}},
                 },
                 "diffs": [
                     {
@@ -348,7 +305,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                             {"op": "add", "path": "id", "value": "24680"},
                             {
                                 "op": "add",
-                                "path": "standing_in",
+                                "path": "candidacies",
                                 "value": "was known to be standing in South Cambridgeshire in the 2010 General Election",
                             },
                         ],
@@ -488,13 +445,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "65c16b93a0f41b00",
                 "data": {
                     "id": "24680",
-                    "standing_in": {
-                        "parl.2015-05-07": {
-                            "mapit_url": "http://mapit.mysociety.org/area/65659",
-                            "name": "Truro and Falmouth",
-                            "post_id": "65659",
-                        }
-                    },
+                    "candidacies": {"parl.65659.2015-05-07": {"party": "PP58"}},
                 },
             },
             {
@@ -503,13 +454,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "1a5144605b4c1498",
                 "data": {
                     "id": "24680",
-                    "standing_in": {
-                        "parl.2015-05-07": {
-                            "post_id": "65808",
-                            "name": "Dulwich and West Norwood",
-                            "mapit_url": "http://mapit.mysociety.org/area/65808",
-                        }
-                    },
+                    "candidacies": {"parl.65808.2015-05-07": {"party": "PP58"}},
                 },
             },
         ]
@@ -522,29 +467,18 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "parent_version_ids": ["1a5144605b4c1498"],
                 "data": {
                     "id": "24680",
-                    "standing_in": {
-                        "parl.2015-05-07": {
-                            "name": "Truro and Falmouth",
-                            "post_id": "65659",
-                        }
-                    },
+                    "candidacies": {"parl.65659.2015-05-07": {"party": "PP58"}},
                 },
                 "diffs": [
                     {
                         "parent_version_id": "1a5144605b4c1498",
                         "parent_diff": [
                             {
-                                "op": "replace",
-                                "path": "standing_in/parl.2015-05-07/name",
-                                "previous_value": "is known to be standing in Dulwich and West Norwood in the 2015 General Election",
-                                "value": "is known to be standing in Truro and Falmouth in the 2015 General Election",
-                            },
-                            {
-                                "op": "replace",
-                                "path": "standing_in/parl.2015-05-07/post_id",
-                                "previous_value": "is known to be standing for the post with ID 65808 in the 2015 General Election",
-                                "value": "is known to be standing for the post with ID 65659 in the 2015 General Election",
-                            },
+                                "op": "move",
+                                "path": "candidacies/parl.65659.2015-05-07",
+                                "from": "/candidacies/parl.65808.2015-05-07",
+                                "previous_value": "was known to be standing in parl.65659.2015-05-07",
+                            }
                         ],
                     }
                 ],
@@ -556,23 +490,20 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "parent_version_ids": [],
                 "data": {
                     "id": "24680",
-                    "standing_in": {
-                        "parl.2015-05-07": {
-                            "post_id": "65808",
-                            "name": "Dulwich and West Norwood",
-                        }
-                    },
+                    "candidacies": {"parl.65808.2015-05-07": {"party": "PP58"}},
                 },
                 "diffs": [
                     {
                         "parent_version_id": None,
                         "parent_diff": [
-                            {"op": "add", "path": "id", "value": "24680"},
                             {
                                 "op": "add",
-                                "path": "standing_in",
-                                "value": "is known to be standing in Dulwich and West Norwood in the 2015 General Election",
+                                "path": "candidacies",
+                                "value": {
+                                    "parl.65808.2015-05-07": {"party": "PP58"}
+                                },
                             },
+                            {"op": "add", "path": "id", "value": "24680"},
                         ],
                     }
                 ],
@@ -844,208 +775,6 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                                 ],
                                 "op": "add",
                             },
-                            {
-                                "path": "other_names",
-                                "value": [
-                                    {
-                                        "note": "",
-                                        "name": "Joseph Tribbiani",
-                                        "end_date": "",
-                                        "start_date": "",
-                                    },
-                                    {
-                                        "note": "Ballot paper",
-                                        "name": "Jonathan Francis Tribbiani",
-                                        "end_date": "",
-                                        "start_date": "",
-                                    },
-                                    {
-                                        "note": "",
-                                        "name": "Joey",
-                                        "end_date": "",
-                                        "start_date": "",
-                                    },
-                                ],
-                                "op": "add",
-                            },
-                        ],
-                    }
-                ],
-                "data": {
-                    "id": "24680",
-                    "identifiers": [],
-                    "other_names": [
-                        {
-                            "note": "",
-                            "name": "Joseph Tribbiani",
-                            "end_date": "",
-                            "start_date": "",
-                        },
-                        {
-                            "note": "Ballot paper",
-                            "name": "Jonathan Francis Tribbiani",
-                            "end_date": "",
-                            "start_date": "",
-                        },
-                        {
-                            "note": "",
-                            "name": "Joey",
-                            "end_date": "",
-                            "start_date": "",
-                        },
-                    ],
-                },
-            },
-        ]
-
-        # This shouldn't raise an exception, but does at the moment:
-        versions_with_diffs = get_version_diffs(versions)
-        sort_operations_for_comparison(versions_with_diffs)
-
-        self.assertEqual(expected_result, versions_with_diffs)
-
-    def test_index_error(self):
-        versions = [
-            {
-                "user": "john",
-                "information_source": "Manual correction by a user",
-                "timestamp": "2015-05-08T01:52:27.061038",
-                "version_id": "1d33caabf421c656",
-                "data": {
-                    "id": "24680",
-                    "identifiers": [],
-                    "other_names": [
-                        {
-                            "end_date": "",
-                            "name": "Joey",
-                            "note": "",
-                            "start_date": "",
-                        },
-                        {
-                            "end_date": "",
-                            "name": "Joseph Tribbiani",
-                            "note": "",
-                            "start_date": "",
-                        },
-                        {
-                            "end_date": "",
-                            "name": "Jonathan Francis Tribbiani",
-                            "note": "Ballot paper",
-                            "start_date": "",
-                        },
-                    ],
-                },
-            },
-            {
-                "information_source": "Updated by a script",
-                "timestamp": "2015-03-10T05:35:15.297559",
-                "version_id": "f7cc564751d31a2b",
-                "data": {
-                    "id": "24680",
-                    "identifiers": [],
-                    "other_names": [
-                        {
-                            "end_date": "",
-                            "name": "Joseph Tribbiani",
-                            "note": "",
-                            "start_date": "",
-                        },
-                        {
-                            "end_date": "",
-                            "name": "Jonathan Francis Tribbiani",
-                            "note": "Ballot paper",
-                            "start_date": "",
-                        },
-                        {
-                            "end_date": "",
-                            "name": "Joey",
-                            "note": "",
-                            "start_date": "",
-                        },
-                    ],
-                },
-            },
-        ]
-
-        expected_result = [
-            {
-                "information_source": "Manual correction by a user",
-                "timestamp": "2015-05-08T01:52:27.061038",
-                "version_id": "1d33caabf421c656",
-                "parent_version_ids": ["f7cc564751d31a2b"],
-                "diffs": [
-                    {
-                        "parent_version_id": "f7cc564751d31a2b",
-                        "parent_diff": [
-                            {
-                                "op": "add",
-                                "path": "other_names/2/note",
-                                "previous_value": "",
-                                "value": "Ballot paper",
-                            },
-                            {
-                                "op": "replace",
-                                "path": "other_names/0/name",
-                                "previous_value": "Joseph Tribbiani",
-                                "value": "Joey",
-                            },
-                            {
-                                "op": "replace",
-                                "path": "other_names/1/name",
-                                "previous_value": "Jonathan Francis Tribbiani",
-                                "value": "Joseph Tribbiani",
-                            },
-                            {
-                                "op": "replace",
-                                "path": "other_names/1/note",
-                                "previous_value": "Ballot paper",
-                                "value": "",
-                            },
-                            {
-                                "op": "replace",
-                                "path": "other_names/2/name",
-                                "previous_value": "Joey",
-                                "value": "Jonathan Francis Tribbiani",
-                            },
-                        ],
-                    }
-                ],
-                "data": {
-                    "id": "24680",
-                    "identifiers": [],
-                    "other_names": [
-                        {
-                            "note": "",
-                            "name": "Joey",
-                            "end_date": "",
-                            "start_date": "",
-                        },
-                        {
-                            "note": "",
-                            "name": "Joseph Tribbiani",
-                            "end_date": "",
-                            "start_date": "",
-                        },
-                        {
-                            "note": "Ballot paper",
-                            "name": "Jonathan Francis Tribbiani",
-                            "end_date": "",
-                            "start_date": "",
-                        },
-                    ],
-                },
-                "user": "john",
-            },
-            {
-                "information_source": "Updated by a script",
-                "timestamp": "2015-03-10T05:35:15.297559",
-                "version_id": "f7cc564751d31a2b",
-                "parent_version_ids": [],
-                "diffs": [
-                    {
-                        "parent_version_id": None,
-                        "parent_diff": [
-                            {"op": "add", "path": "id", "value": "24680"},
                             {
                                 "path": "other_names",
                                 "value": [
