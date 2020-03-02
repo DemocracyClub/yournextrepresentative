@@ -24,7 +24,7 @@
     <div class="status_not_started">
         <strong>No "SOPNs" uploaded yet</strong>.
         {% if user_can_upload_documents %}
-          <a href="{% url 'upload_document_view' election=ballot.election.slug post_id=ballot.post.slug %}">
+          <a href="{% url 'upload_document_view' ballot_paper_id=ballot.ballot_paper_id %}">
             Upload SOPN</a>
       {% endif %}
 

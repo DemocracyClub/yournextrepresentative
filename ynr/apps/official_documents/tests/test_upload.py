@@ -52,7 +52,7 @@ class TestModels(TestUserMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         upload_url = reverse(
             "upload_document_view",
-            kwargs={"election": self.election.slug, "post_id": self.post.slug},
+            kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
         )
         with open(self.example_image_filename, "rb") as f:
             response = self.app.post(
@@ -88,7 +88,7 @@ class TestModels(TestUserMixin, WebTest):
         response = self.app.get(
             reverse(
                 "upload_document_view",
-                args=(self.ballot.election.slug, self.ballot.post.slug),
+                kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
             ),
             user=self.user_who_can_upload_documents,
         )
