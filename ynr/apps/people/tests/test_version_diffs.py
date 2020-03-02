@@ -192,7 +192,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                     "id": "24680",
                     "candidacies": {
                         "parl.65922.2010-05-06": {"party": "PP58"},
-                        "parl.14420.2015-05-07": {"party": "PP58"},
+                        "parl.14420.2015-05-07": {"party": "PP85"},
                     },
                 },
                 "diffs": [
@@ -202,7 +202,7 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                             {
                                 "op": "add",
                                 "path": "candidacies/parl.14420.2015-05-07",
-                                "value": "is known to be standing in Edinburgh North and Leith in the 2015 General Election",
+                                "value": "stood for PP85",
                             }
                         ],
                     }
@@ -221,12 +221,14 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                     {
                         "parent_version_id": None,
                         "parent_diff": [
-                            {"op": "add", "path": "id", "value": "24680"},
                             {
                                 "op": "add",
                                 "path": "candidacies",
-                                "value": "was known to be standing in South Cambridgeshire in the 2010 General Election",
+                                "value": {
+                                    "parl.65922.2010-05-06": {"party": "PP58"}
+                                },
                             },
+                            {"op": "add", "path": "id", "value": "24680"},
                         ],
                     }
                 ],
@@ -246,10 +248,8 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "698ae05960970b60",
                 "data": {
                     "id": "24680",
-                    "candidacies": {
-                        "parl.65922.2010-05-06": {"party": "PP58"},
-                        "parl.2015-05-07": None,
-                    },
+                    "candidacies": {"parl.65922.2010-05-06": {"party": "PP58"}},
+                    "not_standing": ["parl.2015-05-07"],
                 },
             },
             {
@@ -271,10 +271,8 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "parent_version_ids": ["d1fd9c3830d8d722"],
                 "data": {
                     "id": "24680",
-                    "candidacies": {
-                        "parl.65922.2010-05-06": {"party": "PP58"},
-                        "parl.2015-05-07": None,
-                    },
+                    "candidacies": {"parl.65922.2010-05-06": {"party": "PP58"}},
+                    "not_standing": ["parl.2015-05-07"],
                 },
                 "diffs": [
                     {
@@ -282,8 +280,8 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_diff": [
                             {
                                 "op": "add",
-                                "path": "candidacies/parl.65922.2015-05-07",
-                                "value": "is known not to be standing in the 2015 General Election",
+                                "path": "not_standing",
+                                "value": ["parl.2015-05-07"],
                             }
                         ],
                     }
@@ -302,12 +300,14 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                     {
                         "parent_version_id": None,
                         "parent_diff": [
-                            {"op": "add", "path": "id", "value": "24680"},
                             {
                                 "op": "add",
                                 "path": "candidacies",
-                                "value": "was known to be standing in South Cambridgeshire in the 2010 General Election",
+                                "value": {
+                                    "parl.65922.2010-05-06": {"party": "PP58"}
+                                },
                             },
+                            {"op": "add", "path": "id", "value": "24680"},
                         ],
                     }
                 ],
@@ -327,15 +327,9 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "95ac9c97c1d72ebb",
                 "data": {
                     "id": "24680",
-                    "party_memberships": {
-                        "parl.2010-05-06": {
-                            "id": "party:58",
-                            "name": "Mebyon Kernow - The Party for Cornwall",
-                        },
-                        "parl.2015-05-07": {
-                            "id": "ynmp-party:2",
-                            "name": "Independent",
-                        },
+                    "candidacies": {
+                        "parl.stroud.2010-05-06": {"party": "party:58"},
+                        "parl.stroud.2015-05-07": {"party": "ynmp-party:2"},
                     },
                 },
             },
@@ -345,15 +339,9 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "version_id": "10fcaee60b9f5203",
                 "data": {
                     "id": "24680",
-                    "party_memberships": {
-                        "parl.2010-05-06": {
-                            "id": "party:58",
-                            "name": "Mebyon Kernow - The Party for Cornwall",
-                        },
-                        "parl.2015-05-07": {
-                            "id": "party:58",
-                            "name": "Mebyon Kernow - The Party for Cornwall",
-                        },
+                    "candidacies": {
+                        "parl.stroud.2010-05-06": {"party": "party:58"},
+                        "parl.stroud.2015-05-07": {"party": "party:58"},
                     },
                 },
             },
@@ -367,15 +355,9 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "parent_version_ids": ["10fcaee60b9f5203"],
                 "data": {
                     "id": "24680",
-                    "party_memberships": {
-                        "parl.2010-05-06": {
-                            "id": "party:58",
-                            "name": "Mebyon Kernow - The Party for Cornwall",
-                        },
-                        "parl.2015-05-07": {
-                            "id": "ynmp-party:2",
-                            "name": "Independent",
-                        },
+                    "candidacies": {
+                        "parl.stroud.2010-05-06": {"party": "party:58"},
+                        "parl.stroud.2015-05-07": {"party": "ynmp-party:2"},
                     },
                 },
                 "diffs": [
@@ -384,16 +366,10 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                         "parent_diff": [
                             {
                                 "op": "replace",
-                                "path": "party_memberships/parl.2015-05-07/id",
-                                "previous_value": "is known to be standing for the party with ID party:58 in the 2015 General Election",
-                                "value": "is known to be standing for the party with ID ynmp-party:2 in the 2015 General Election",
-                            },
-                            {
-                                "op": "replace",
-                                "path": "party_memberships/parl.2015-05-07/name",
-                                "previous_value": "is known to be standing for the party 'Mebyon Kernow - The Party for Cornwall' in the 2015 General Election",
-                                "value": "is known to be standing for the party 'Independent' in the 2015 General Election",
-                            },
+                                "path": "candidacies/parl.stroud.2015-05-07/party",
+                                "previous_value": "party:58",
+                                "value": "ynmp-party:2",
+                            }
                         ],
                     }
                 ],
@@ -405,27 +381,28 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 "parent_version_ids": [],
                 "data": {
                     "id": "24680",
-                    "party_memberships": {
-                        "parl.2010-05-06": {
-                            "id": "party:58",
-                            "name": "Mebyon Kernow - The Party for Cornwall",
-                        },
-                        "parl.2015-05-07": {
-                            "id": "party:58",
-                            "name": "Mebyon Kernow - The Party for Cornwall",
-                        },
+                    "candidacies": {
+                        "parl.stroud.2010-05-06": {"party": "party:58"},
+                        "parl.stroud.2015-05-07": {"party": "party:58"},
                     },
                 },
                 "diffs": [
                     {
                         "parent_version_id": None,
                         "parent_diff": [
-                            {"op": "add", "path": "id", "value": "24680"},
                             {
                                 "op": "add",
-                                "path": "party_memberships",
-                                "value": 'is known to be standing for the party "Mebyon Kernow - The Party for Cornwall" in the 2015 General Election and was known to be standing for the party "Mebyon Kernow - The Party for Cornwall" in the 2010 General Election',
+                                "path": "candidacies",
+                                "value": {
+                                    "parl.stroud.2010-05-06": {
+                                        "party": "party:58"
+                                    },
+                                    "parl.stroud.2015-05-07": {
+                                        "party": "party:58"
+                                    },
+                                },
                             },
+                            {"op": "add", "path": "id", "value": "24680"},
                         ],
                     }
                 ],
@@ -477,7 +454,6 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                                 "op": "move",
                                 "path": "candidacies/parl.65659.2015-05-07",
                                 "from": "/candidacies/parl.65808.2015-05-07",
-                                "previous_value": "was known to be standing in parl.65659.2015-05-07",
                             }
                         ],
                     }
@@ -509,7 +485,6 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
                 ],
             },
         ]
-
         versions_with_diffs = get_version_diffs(versions)
         sort_operations_for_comparison(versions_with_diffs)
 
@@ -699,140 +674,140 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
 
         expected_result = [
             {
+                "user": "john",
                 "information_source": "Manual correction by a user",
                 "timestamp": "2015-04-12T05:35:15.297559",
                 "version_id": "a2fd462d7b9ea219",
+                "data": {
+                    "id": "24680",
+                    "identifiers": [],
+                    "other_names": [
+                        {
+                            "end_date": "",
+                            "name": "Joey",
+                            "note": "",
+                            "start_date": "",
+                        },
+                        {
+                            "end_date": "",
+                            "name": "Joseph Tribbiani",
+                            "note": "",
+                            "start_date": "",
+                        },
+                        {
+                            "end_date": "",
+                            "name": "Jonathan Francis Tribbiani",
+                            "note": "Ballot paper",
+                            "start_date": "",
+                        },
+                    ],
+                },
                 "parent_version_ids": ["66b78855c5f19197"],
                 "diffs": [
                     {
                         "parent_version_id": "66b78855c5f19197",
                         "parent_diff": [
                             {
-                                "path": "other_names/0",
-                                "value": {
-                                    "note": "",
-                                    "name": "Joey",
-                                    "end_date": "",
-                                    "start_date": "",
-                                },
                                 "op": "add",
+                                "path": "other_names/2/note",
+                                "value": "Ballot paper",
+                                "previous_value": "",
                             },
                             {
-                                "path": "other_names/3",
-                                "previous_value": {
-                                    "note": "",
-                                    "name": "Joey",
-                                    "end_date": "",
-                                    "start_date": "",
-                                },
-                                "op": "remove",
+                                "op": "replace",
+                                "path": "other_names/0/name",
+                                "value": "Joey",
+                                "previous_value": "Joseph Tribbiani",
+                            },
+                            {
+                                "op": "replace",
+                                "path": "other_names/1/name",
+                                "value": "Joseph Tribbiani",
+                                "previous_value": "Jonathan Francis Tribbiani",
+                            },
+                            {
+                                "op": "replace",
+                                "path": "other_names/1/note",
+                                "value": "",
+                                "previous_value": "Ballot paper",
+                            },
+                            {
+                                "op": "replace",
+                                "path": "other_names/2/name",
+                                "value": "Jonathan Francis Tribbiani",
+                                "previous_value": "Joey",
                             },
                         ],
                     }
                 ],
-                "data": {
-                    "id": "24680",
-                    "identifiers": [],
-                    "other_names": [
-                        {
-                            "note": "",
-                            "name": "Joey",
-                            "end_date": "",
-                            "start_date": "",
-                        },
-                        {
-                            "note": "",
-                            "name": "Joseph Tribbiani",
-                            "end_date": "",
-                            "start_date": "",
-                        },
-                        {
-                            "note": "Ballot paper",
-                            "name": "Jonathan Francis Tribbiani",
-                            "end_date": "",
-                            "start_date": "",
-                        },
-                    ],
-                },
-                "user": "john",
             },
             {
                 "information_source": "Updated by a script",
                 "timestamp": "2015-03-10T05:35:15.297559",
                 "version_id": "66b78855c5f19197",
-                "parent_version_ids": [],
-                "diffs": [
-                    {
-                        "parent_version_id": None,
-                        "parent_diff": [
-                            {
-                                "path": "identifiers",
-                                "value": [
-                                    {
-                                        "scheme": "yournextmp-candidate",
-                                        "identifier": "2009",
-                                    }
-                                ],
-                                "op": "add",
-                            },
-                            {
-                                "path": "other_names",
-                                "value": [
-                                    {
-                                        "note": "",
-                                        "name": "Joseph Tribbiani",
-                                        "end_date": "",
-                                        "start_date": "",
-                                    },
-                                    {
-                                        "note": "Ballot paper",
-                                        "name": "Jonathan Francis Tribbiani",
-                                        "end_date": "",
-                                        "start_date": "",
-                                    },
-                                    {
-                                        "note": "",
-                                        "name": "Joey",
-                                        "end_date": "",
-                                        "start_date": "",
-                                    },
-                                ],
-                                "op": "add",
-                            },
-                        ],
-                    }
-                ],
                 "data": {
                     "id": "24680",
                     "identifiers": [],
                     "other_names": [
                         {
-                            "note": "",
+                            "end_date": "",
                             "name": "Joseph Tribbiani",
-                            "end_date": "",
-                            "start_date": "",
-                        },
-                        {
-                            "note": "Ballot paper",
-                            "name": "Jonathan Francis Tribbiani",
-                            "end_date": "",
-                            "start_date": "",
-                        },
-                        {
                             "note": "",
-                            "name": "Joey",
+                            "start_date": "",
+                        },
+                        {
                             "end_date": "",
+                            "name": "Jonathan Francis Tribbiani",
+                            "note": "Ballot paper",
+                            "start_date": "",
+                        },
+                        {
+                            "end_date": "",
+                            "name": "Joey",
+                            "note": "",
                             "start_date": "",
                         },
                     ],
                 },
+                "parent_version_ids": [],
+                "diffs": [
+                    {
+                        "parent_version_id": None,
+                        "parent_diff": [
+                            {"op": "add", "path": "id", "value": "24680"},
+                            {
+                                "op": "add",
+                                "path": "other_names",
+                                "value": [
+                                    {
+                                        "end_date": "",
+                                        "name": "Joseph Tribbiani",
+                                        "note": "",
+                                        "start_date": "",
+                                    },
+                                    {
+                                        "end_date": "",
+                                        "name": "Jonathan Francis Tribbiani",
+                                        "note": "Ballot paper",
+                                        "start_date": "",
+                                    },
+                                    {
+                                        "end_date": "",
+                                        "name": "Joey",
+                                        "note": "",
+                                        "start_date": "",
+                                    },
+                                ],
+                            },
+                        ],
+                    }
+                ],
             },
         ]
 
         # This shouldn't raise an exception, but does at the moment:
         versions_with_diffs = get_version_diffs(versions)
         sort_operations_for_comparison(versions_with_diffs)
-
         self.assertEqual(expected_result, versions_with_diffs)
 
     def test_alternative_names(self):

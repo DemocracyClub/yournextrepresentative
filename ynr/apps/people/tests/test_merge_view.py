@@ -545,18 +545,12 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "linkedin_url": "",
                       "name": "Shane Collins",
                       "other_names": [],
-                      "party_memberships": {
-                        "parl.2010-05-06": {
-                          "id": "party:63",
-                          "name": "Green Party"
-                        }
-                      },
+                      "candidacies": {},
                       "party_ppc_page_url": "",
                       "proxy_image": null,
-                      "standing_in": {
-                        "parl.2015-05-07": null,
-                        "2015": null
-                      },
+                      "not_standing": [
+                        "parl.2015"
+                      ],
                       "twitter_username": "",
                       "wikipedia_url": ""
                     },
@@ -679,7 +673,6 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = merge_form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
-        print(Person.objects.get().loggedaction_set.all())
 
     def test_merge_three_people(self):
         # Merge the first two people
