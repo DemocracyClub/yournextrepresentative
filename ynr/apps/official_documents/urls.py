@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
     url(
-        r"^upload/election/(?P<election>[^/]+)/post/(?P<post_id>[^/]+)/$",
+        r"^(?P<ballot_paper_id>[^/]+)/$",
         views.CreateDocumentView.as_view(),
         name="upload_document_view",
     ),

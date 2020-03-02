@@ -5,34 +5,32 @@ from django.views.generic import CreateView, DetailView, TemplateView
 from auth_helpers.views import GroupRequiredMixin
 from candidates.models import Ballot, LoggedAction
 from candidates.views.version_data import get_client_ip
-from elections.mixins import ElectionMixin
 from moderation_queue.models import SuggestedPostLock
-from popolo.models import Post
 
 from .forms import UploadDocumentForm
 from .models import DOCUMENT_UPLOADERS_GROUP_NAME, OfficialDocument
 
 
-class CreateDocumentView(ElectionMixin, GroupRequiredMixin, CreateView):
+class CreateDocumentView(GroupRequiredMixin, CreateView):
     required_group_name = DOCUMENT_UPLOADERS_GROUP_NAME
 
     form_class = UploadDocumentForm
     template_name = "official_documents/upload_document_form.html"
 
     def get_initial(self):
-        post = get_object_or_404(Post, slug=self.kwargs["post_id"])
-        ballot = Ballot.objects.get(post=post, election=self.election_data)
         return {
-            "election": self.election_data,
+            "ballot": Ballot.objects.get(
+                ballot_paper_id=self.kwargs["ballot_paper_id"]
+            ),
             "document_type": OfficialDocument.NOMINATION_PAPER,
-            "post": post,
-            "ballot": ballot,
         }
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post = get_object_or_404(Post, slug=self.kwargs["post_id"])
-        context["post_label"] = post.label
+        ballot = get_object_or_404(
+            Ballot, ballot_paper_id=self.kwargs["ballot_paper_id"]
+        )
+        context["post_label"] = ballot.post.label
         return context
 
     def form_valid(self, form):
