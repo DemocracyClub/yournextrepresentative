@@ -184,7 +184,7 @@ class MinimalPostSerializer(serializers.HyperlinkedModelSerializer):
         model = popolo_models.Post
         fields = ("id", "url", "label", "slug")
 
-    id = serializers.ReadOnlyField(source="slug")
+    id = serializers.ReadOnlyField(source="identifier")
     label = serializers.ReadOnlyField()
     url = serializers.HyperlinkedIdentityField(
         view_name="post-detail", lookup_field="slug", lookup_url_kwarg="slug"

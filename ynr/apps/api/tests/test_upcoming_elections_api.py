@@ -197,7 +197,7 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
                                     "url": "http://testserver/api/v0.9/persons/2009/",
                                 },
                                 "post": {
-                                    "id": "london",
+                                    "id": "assembly-member",
                                     "label": "Assembly Member",
                                     "slug": "london",
                                     "url": "http://testserver/api/v0.9/posts/london/",
