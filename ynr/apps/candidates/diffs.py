@@ -8,12 +8,9 @@ import re
 import jsonpatch
 import jsonpointer
 from dateutil.parser import parse
-from django.http import Http404
 from django.utils.timezone import now, make_aware
 
-from candidates.models import Ballot
 from candidates.models.versions import get_versions_parent_map
-from elections.models import Election
 
 
 def get_descriptive_value(operation, ballot_paper_id, attribute, value, leaf):

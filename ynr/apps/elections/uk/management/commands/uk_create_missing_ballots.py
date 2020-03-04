@@ -2,7 +2,6 @@ import requests
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from candidates.models import Ballot
 from elections.uk.every_election import EEElection
 
 data = """local.southwark.2018-05-03	LBW:london-bridge-and-west-bermondsey	https://elections.democracyclub.org.uk/elections/local.southwark.london-bridge-west-bermondsey.2018-05-03/
