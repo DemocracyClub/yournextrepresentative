@@ -148,9 +148,9 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "candidacies": {
                         "parl.65808.2010-05-06": {
                           "party": "PP63"
-                        },
-                        "parl.2015": null
+                        }
                       },
+                      "not_standing": ["parl.2015"],
                       "twitter_username": "",
                       "wikipedia_url": ""
                     },

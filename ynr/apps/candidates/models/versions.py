@@ -160,25 +160,22 @@ def revert_person_from_version_data(person, version_data):
     # known not to be standing in:
     person.not_standing.clear()
     for ballot_paper_id, candidacy in version_data["candidacies"].items():
-        # If the value for that election slug is None, then that means
-        # the person is known not to be standing:
-        if candidacy is None:
-            election = Election.objects.get(slug=ballot_paper_id)
-            person.not_standing.add(election)
-        else:
-            ballot = Ballot.objects.get(ballot_paper_id=ballot_paper_id)
-            # Get the corresponding party membership data:
-            party = Party.objects.get(ec_id=candidacy["party"])
-            Membership.objects.update_or_create(
-                person=person,
-                ballot=ballot,
-                defaults={
-                    "party": party,
-                    "post": ballot.post,  # TODO: Remove this
-                    "elected": candidacy.get("elected"),
-                    "party_list_position": candidacy.get("party_list_position"),
-                },
-            )
+        ballot = Ballot.objects.get(ballot_paper_id=ballot_paper_id)
+        # Get the corresponding party membership data:
+        party = Party.objects.get(ec_id=candidacy["party"])
+        Membership.objects.update_or_create(
+            person=person,
+            ballot=ballot,
+            defaults={
+                "party": party,
+                "post": ballot.post,  # TODO: Remove this
+                "elected": candidacy.get("elected"),
+                "party_list_position": candidacy.get("party_list_position"),
+            },
+        )
+    for election_slug in version_data.get("not_standing", []):
+        election = Election.objects.get(slug=election_slug)
+        person.not_standing.add(election)
 
     person.save()
 
