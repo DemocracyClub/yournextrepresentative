@@ -53,32 +53,18 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "id": "2009",
                       "honorific_suffix": "DBE",
                       "twitter_username": "",
-                      "standing_in": {
-                        "parl.2010-05-06": {
-                          "post_id": "65808",
-                          "name": "Dulwich and West Norwood",
-                          "mapit_url": "http://mapit.mysociety.org/area/65808"
+                      "candidacies": {
+                        "parl.65808.2010-05-06": {
+                          "party": "PP53"
                         },
-                        "parl.2015-05-07": {
-                          "post_id": "65808",
-                          "name": "Dulwich and West Norwood",
-                          "mapit_url": "http://mapit.mysociety.org/area/65808"
+                        "parl.65808.2015-05-07": {
+                            "party": "PP53"
                         }
                       },
                       "gender": "female",
                       "homepage_url": "",
                       "birth_date": null,
                       "wikipedia_url": "https://en.wikipedia.org/wiki/Tessa_Jowell",
-                      "party_memberships": {
-                        "parl.2010-05-06": {
-                          "id": "party:53",
-                          "name": "Labour Party"
-                        },
-                        "parl.2015-05-07": {
-                          "id": "party:53",
-                          "name": "Labour Party"
-                        }
-                      },
                       "email": "jowell@example.com"
                     }
                   },
@@ -92,22 +78,14 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "name": "Tessa Jowell",
                       "id": "2009",
                       "twitter_username": "",
-                      "standing_in": {
-                        "parl.2010-05-06": {
-                          "post_id": "65808",
-                          "name": "Dulwich and West Norwood",
-                          "mapit_url": "http://mapit.mysociety.org/area/65808"
+                      "candidacies": {
+                        "parl.65808.2010-05-06": {
+                          "party": "PP53"
                         }
                       },
                       "homepage_url": "http://example.org/tessajowell",
                       "birth_date": "1947-09-17",
                       "wikipedia_url": "",
-                      "party_memberships": {
-                        "parl.2010-05-06": {
-                          "id": "party:53",
-                          "name": "Labour Party"
-                        }
-                      },
                       "email": "tessa.jowell@example.com"
                     }
                   }
@@ -165,22 +143,14 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "linkedin_url": "",
                       "name": "Shane Collins",
                       "other_names": [],
-                      "party_memberships": {
-                        "parl.2010-05-06": {
-                          "id": "party:63",
-                          "name": "Green Party"
-                        }
-                      },
                       "party_ppc_page_url": "",
                       "proxy_image": null,
-                      "standing_in": {
-                        "parl.2010-05-06": {
-                          "mapit_url": "http://mapit.mysociety.org/area/65808",
-                          "name": "Dulwich and West Norwood",
-                          "post_id": "65808"
-                        },
-                        "2015": null
+                      "candidacies": {
+                        "parl.65808.2010-05-06": {
+                          "party": "PP63"
+                        }
                       },
+                      "not_standing": ["parl.2015"],
                       "twitter_username": "",
                       "wikipedia_url": ""
                     },
@@ -200,20 +170,12 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "id": "2007",
                       "identifiers": [],
                       "name": "Shane Collins",
-                      "party_memberships": {
-                        "parl.2010-05-06": {
-                          "id": "party:63",
-                          "name": "Green Party"
-                        }
-                      },
                       "party_ppc_page_url": null,
                       "phone": "07939 196612",
                       "slug": "shane-collins",
-                      "standing_in": {
-                        "parl.2010-05-06": {
-                          "mapit_url": "http://mapit.mysociety.org/area/65808",
-                          "name": "Dulwich and West Norwood",
-                          "post_id": "65808"
+                      "candidacies": {
+                        "parl.65808.2010-05-06": {
+                          "party": "PP63"
                         }
                       },
                       "twitter_username": null,
@@ -405,26 +367,12 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "linkedin_url": "",
                 "name": "Stuart Jeffery",
                 "other_names": [],
-                "party_memberships": {
-                    "parl.2010-05-06": {
-                        "id": "party:63",
-                        "name": "Green Party",
-                    },
-                    "parl.2015-05-07": {
-                        "id": "party:63",
-                        "name": "Green Party",
-                    },
-                },
                 "party_ppc_page_url": "https://my.greenparty.org.uk/candidates/105873",
-                "standing_in": {
-                    "parl.2010-05-06": {
-                        "name": "Maidstone and The Weald",
-                        "post_id": "65936",
-                    },
-                    "parl.2015-05-07": {
+                "candidacies": {
+                    "parl.65936.2010-05-06": {"party": "PP63"},
+                    "parl.65878.2015-05-07": {
                         "elected": False,
-                        "name": "Canterbury",
-                        "post_id": "65878",
+                        "party": "PP63",
                     },
                 },
                 "twitter_username": "stuartjeffery",
@@ -448,18 +396,11 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "linkedin_url": "",
                 "name": "Stuart Robert Jeffery",
                 "other_names": [],
-                "party_memberships": {
-                    "local.maidstone.2016-05-05": {
-                        "id": "party:63",
-                        "name": "Green Party",
-                    }
-                },
                 "party_ppc_page_url": "",
-                "standing_in": {
-                    "local.maidstone.2016-05-05": {
+                "candidacies": {
+                    "local.maidstone.DIW:E05005004.2016-05-05": {
                         "elected": False,
-                        "name": "Shepway South ward",
-                        "post_id": "DIW:E05005004",
+                        "party": "PP63",
                     }
                 },
                 "twitter_username": "",
@@ -604,18 +545,12 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                       "linkedin_url": "",
                       "name": "Shane Collins",
                       "other_names": [],
-                      "party_memberships": {
-                        "parl.2010-05-06": {
-                          "id": "party:63",
-                          "name": "Green Party"
-                        }
-                      },
+                      "candidacies": {},
                       "party_ppc_page_url": "",
                       "proxy_image": null,
-                      "standing_in": {
-                        "parl.2015-05-07": null,
-                        "2015": null
-                      },
+                      "not_standing": [
+                        "parl.2015"
+                      ],
                       "twitter_username": "",
                       "wikipedia_url": ""
                     },
@@ -738,7 +673,6 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = merge_form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
-        print(Person.objects.get().loggedaction_set.all())
 
     def test_merge_three_people(self):
         # Merge the first two people

@@ -49,9 +49,11 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
             organization=self.local_council,
         )
 
-        self.dest_person.memberships.create(ballot=self.local_ballot)
+        self.dest_person.memberships.create(
+            ballot=self.local_ballot, party=self.green_party
+        )
         self.source_person.memberships.create(
-            ballot=other_local_post.ballot_set.get()
+            ballot=other_local_post.ballot_set.get(), party=self.green_party
         )
 
         self.assertEqual(Person.objects.count(), 2)
@@ -75,8 +77,12 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(Person.objects.count(), 2)
 
     def test_merge_with_results(self):
-        self.source_person.memberships.create(ballot=self.local_ballot)
-        self.dest_person.memberships.create(ballot=self.local_ballot)
+        self.source_person.memberships.create(
+            ballot=self.local_ballot, party=self.green_party
+        )
+        self.dest_person.memberships.create(
+            ballot=self.local_ballot, party=self.green_party
+        )
 
         result_set = ResultSet.objects.create(
             ballot=self.local_ballot,
@@ -102,8 +108,12 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_merge_with_results_on_both_memberships(self):
-        self.source_person.memberships.create(ballot=self.local_ballot)
-        self.dest_person.memberships.create(ballot=self.local_ballot)
+        self.source_person.memberships.create(
+            ballot=self.local_ballot, party=self.green_party
+        )
+        self.dest_person.memberships.create(
+            ballot=self.local_ballot, party=self.green_party
+        )
 
         result_set = ResultSet.objects.create(
             ballot=self.local_ballot,
@@ -209,9 +219,8 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                             "start_date": None,
                         }
                     ],
-                    "party_memberships": {},
                     "party_ppc_page_url": "",
-                    "standing_in": {},
+                    "candidacies": {},
                     "twitter_username": "",
                     "wikidata_id": "",
                     "wikipedia_url": "",
@@ -405,19 +414,12 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                             "id": "50537",
                             "biography": "",
                             "wikipedia_url": "",
-                            "standing_in": {
-                                "local.wirral.2019-05-02": {
-                                    "name": "Clatterbridge",
-                                    "post_id": "MTW:E05000958",
+                            "candidacies": {
+                                "local.wirral.clatterbridge.2019-05-02": {
+                                    "party": self.conservative_party.ec_id
                                 }
                             },
                             "homepage_url": "",
-                            "party_memberships": {
-                                "local.wirral.2019-05-02": {
-                                    "name": "Conservative and Unionist Party",
-                                    "id": "party:52",
-                                }
-                            },
                             "facebook_personal_url": "",
                             "gender": "female",
                         },
@@ -450,19 +452,12 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                             "id": "50536",
                             "biography": "",
                             "wikipedia_url": "",
-                            "standing_in": {
-                                "local.wirral.2019-05-02": {
-                                    "name": "Clatterbridge",
-                                    "post_id": "MTW:E05000958",
+                            "candidacies": {
+                                "local.wirral.clatterbridge.2019-05-02": {
+                                    "party": self.conservative_party.ec_id
                                 }
                             },
                             "homepage_url": "",
-                            "party_memberships": {
-                                "local.wirral.2019-05-02": {
-                                    "name": "Conservative and Unionist Party",
-                                    "id": "party:52",
-                                }
-                            },
                             "facebook_personal_url": "",
                             "gender": "female",
                         },
@@ -565,22 +560,8 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         person_1.refresh_from_db()
         version_data = json.loads(person_1.versions)[0]["data"]
         self.assertEqual(
-            version_data["standing_in"],
-            {
-                "local.maidstone.2016-05-05": {
-                    "name": "Hoe Street",
-                    "post_id": "LBW:E05000601",
-                }
-            },
-        )
-        self.assertEqual(
-            version_data["party_memberships"],
-            {
-                "local.maidstone.2016-05-05": {
-                    "id": "party:63",
-                    "name": "Green Party",
-                }
-            },
+            version_data["candidacies"],
+            {"local.maidstone.LBW:E05000601.2016-05-05": {"party": "PP63"}},
         )
 
     def test_merge_with_result_event(self):

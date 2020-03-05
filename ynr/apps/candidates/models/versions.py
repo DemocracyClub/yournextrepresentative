@@ -5,10 +5,9 @@ from datetime import datetime
 from django.conf import settings
 from django.db.models.query import prefetch_related_objects
 
+from candidates.models import Ballot
 from parties.models import Party
 from ynr_refactoring.settings import PersonIdentifierFields
-
-# FIXME: check all the preserve_fields are dealt with
 
 
 def get_person_as_version_data(person, new_person=False):
@@ -60,10 +59,8 @@ def get_person_as_version_data(person, new_person=False):
             }
         )
 
-    extra_values = {}
     result["other_names"] = []
-    standing_in = {}
-    party_memberships = {}
+    candidacies = {}
 
     if not new_person:
         result["other_names"] = [
@@ -78,29 +75,19 @@ def get_person_as_version_data(person, new_person=False):
             )
         ]
 
-        for membership in person.memberships.filter(post__isnull=False):
-            post = membership.post
+        for membership in person.memberships.all():
             ballot = membership.ballot
-            election = ballot.election
-            standing_in[ballot.election.slug] = {
-                "post_id": post.slug,
-                "name": post.short_label,
-            }
+            candidacy = {"party": membership.party.ec_id}
             if membership.elected is not None:
-                standing_in[election.slug]["elected"] = membership.elected
+                candidacy["elected"] = membership.elected
             if membership.party_list_position is not None:
-                standing_in[election.slug][
+                candidacy[
                     "party_list_position"
                 ] = membership.party_list_position
-            party = membership.party
-            party_memberships[ballot.election.slug] = {
-                "id": party.legacy_slug,
-                "name": party.name,
-            }
+            candidacies[ballot.ballot_paper_id] = candidacy
+
         for not_standing_in_election in person.not_standing.all():
-            standing_in[not_standing_in_election.slug] = None
-            # Delete party memberships if not standing in this election
-            party_memberships.pop(not_standing_in_election.slug, None)
+            candidacies[not_standing_in_election.slug] = None
 
     # Add `favourite_biscuits` to an `extra_fields` key
     # to re-produce the previous ExtraField model.
@@ -112,14 +99,13 @@ def get_person_as_version_data(person, new_person=False):
 
     result["extra_fields"] = extra_fields
 
-    result["standing_in"] = standing_in
-    result["party_memberships"] = party_memberships
+    result["candidacies"] = candidacies
     return result
 
 
 def revert_person_from_version_data(person, version_data):
 
-    from popolo.models import Membership, Post
+    from popolo.models import Membership
     from candidates.models import raise_if_unsafe_to_delete
 
     from elections.models import Election
@@ -173,32 +159,23 @@ def revert_person_from_version_data(person, version_data):
     # Also remove the indications of elections that this person is
     # known not to be standing in:
     person.not_standing.clear()
-    for election_slug, standing_in in version_data["standing_in"].items():
+    for ballot_paper_id, candidacy in version_data["candidacies"].items():
+        ballot = Ballot.objects.get(ballot_paper_id=ballot_paper_id)
+        # Get the corresponding party membership data:
+        party = Party.objects.get(ec_id=candidacy["party"])
+        Membership.objects.update_or_create(
+            person=person,
+            ballot=ballot,
+            defaults={
+                "party": party,
+                "post": ballot.post,  # TODO: Remove this
+                "elected": candidacy.get("elected"),
+                "party_list_position": candidacy.get("party_list_position"),
+            },
+        )
+    for election_slug in version_data.get("not_standing", []):
         election = Election.objects.get(slug=election_slug)
-        # If the value for that election slug is None, then that means
-        # the person is known not to be standing:
-        if standing_in is None:
-            person.not_standing.add(election)
-        else:
-            # Get the corresponding party membership data:
-            party = Party.objects.get(
-                legacy_slug=version_data["party_memberships"][election_slug][
-                    "id"
-                ]
-            )
-            post = Post.objects.get(slug=standing_in["post_id"])
-            Membership.objects.update_or_create(
-                person=person,
-                ballot=election.ballot_set.get(post=post),
-                defaults={
-                    "party": party,
-                    "post": post,
-                    "elected": standing_in.get("elected"),
-                    "party_list_position": standing_in.get(
-                        "party_list_position"
-                    ),
-                },
-            )
+        person.not_standing.add(election)
 
     person.save()
 
