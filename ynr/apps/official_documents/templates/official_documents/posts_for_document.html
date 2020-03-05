@@ -22,7 +22,7 @@
         {{ document.ballot.cancelled_status_html }}
         {{ document.ballot.locked_status_html }}
         {% if not document.locked and not document.lock_suggested %}
-        <a href="{% url 'bulk_add_from_sopn' ballot_paper_id=document.ballot.ballot_paper_id %}" class="button tiny">
+        <a href="{{ document.ballot.get_bulk_add_url }}" class="button tiny">
         Add candidates</a>
         {% endif %}
     </li>

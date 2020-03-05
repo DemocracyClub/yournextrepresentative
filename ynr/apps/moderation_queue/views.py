@@ -633,9 +633,7 @@ class SOPNReviewRequiredView(ListView):
             if count:
                 random_offset = random.randrange(count)
                 ballot = qs[random_offset]
-                url = reverse(
-                    "bulk_add_from_sopn", args=(ballot.ballot_paper_id)
-                )
+                url = ballot.get_bulk_add_url()
                 return HttpResponseRedirect(url)
         return super().get(*args, **kwargs)
 

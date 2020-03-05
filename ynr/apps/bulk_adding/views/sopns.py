@@ -25,10 +25,7 @@ class BulkAddSOPNRedirectView(RedirectView):
             election__slug=kwargs["election"],
             post__identifier=kwargs["post_id"],
         )
-        return reverse(
-            "bulk_add_from_sopn",
-            kwargs={"ballot_paper_id": ballot.ballot_paper_id},
-        )
+        return ballot.get_bulk_add_url()
 
 
 class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
@@ -100,7 +97,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
                 if hasattr(ballot_qs.get(), "rawpeople"):
                     if self.ballot.rawpeople.is_trusted:
                         return HttpResponseRedirect(
-                            reverse("bulk_add_sopn_review", kwargs=kwargs)
+                            self.ballot.get_bulk_add_review_url()
                         )
         return super().get(request, *args, **kwargs)
 
@@ -159,12 +156,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             },
         )
 
-        return HttpResponseRedirect(
-            reverse(
-                "bulk_add_sopn_review",
-                kwargs={"ballot_paper_id": context["ballot"].ballot_paper_id},
-            )
-        )
+        return HttpResponseRedirect(context["ballot"].get_bulk_add_review_url())
 
     def form_invalid(self, context):
         return self.render_to_response(context)

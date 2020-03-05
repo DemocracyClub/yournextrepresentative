@@ -5,7 +5,7 @@
   <p>The document you have open has information on
     <strong>{{ remaining_posts.count }}
     more ward{{ remaining_posts.count|pluralize }}</strong>.</p>
-  <p><a href="{% url 'bulk_add_from_sopn' ballot_paper_id=remaining_posts.0.ballot.ballot_paper_id %}" class="button">
+  <p><a href="{{ remaining_posts.0.ballot.get_bulk_add_url }}" class="button">
   Continue adding candidates</a></p>
 {% else %}
 <p>There are still more documents that verifying!</p>
