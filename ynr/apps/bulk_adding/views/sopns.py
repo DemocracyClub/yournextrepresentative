@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.db.models import F
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import RedirectView, TemplateView
 
@@ -11,35 +12,33 @@ from bulk_adding.models import RawPeople
 from candidates.models import Ballot, LoggedAction
 from candidates.models.db import EditType
 from candidates.views.version_data import get_client_ip
-from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
 from official_documents.views import get_add_from_document_cta_flash_message
 from parties.models import Party
 from people.models import Person
-from popolo.models import Post
 
 
 class BulkAddSOPNRedirectView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
-        return reverse(
-            "bulk_add_from_sopn",
-            kwargs={
-                "election": kwargs["election"],
-                "post_id": kwargs["post_id"],
-            },
+        ballot = Ballot.objects.get(
+            election__slug=kwargs["election"],
+            post__identifier=kwargs["post_id"],
         )
+        return ballot.get_bulk_add_url()
 
 
 class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
     # required_group_name = models.TRUSTED_TO_BULK_ADD_GROUP_NAME
 
     def add_election_and_post_to_context(self, context):
-        context["post"] = Post.objects.get(slug=context["post_id"])
-        context["election_obj"] = Election.objects.get(slug=context["election"])
-        context["ballot"] = context["election_obj"].ballot_set.get(
-            post=context["post"]
-        )
+        if not hasattr(self, "ballot"):
+            self.ballot = get_object_or_404(
+                Ballot, ballot_paper_id=context["ballot_paper_id"]
+            )
+        context["ballot"] = self.ballot
+        context["post"] = self.ballot.post
+        context["election_obj"] = self.ballot.election
         kwargs = {"exclude_deregistered": True, "include_description_ids": True}
         if not self.request.POST:
             kwargs["include_non_current"] = False
@@ -48,7 +47,7 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
             **kwargs
         )
         try:
-            context["official_document"] = context["ballot"].sopn
+            context["official_document"] = self.ballot.sopn
         except OfficialDocument.DoesNotExist:
             context["official_document"] = None
         self.official_document = context["official_document"]
@@ -91,14 +90,14 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
     def get(self, request, *args, **kwargs):
         if not request.GET.get("edit"):
             ballot_qs = Ballot.objects.filter(
-                election__slug=kwargs["election"], post__slug=kwargs["post_id"]
-            )
+                ballot_paper_id=kwargs["ballot_paper_id"]
+            ).select_related("post", "election")
             if ballot_qs.exists():
-                ballot = ballot_qs.get()
+                self.ballot = ballot_qs.get()
                 if hasattr(ballot_qs.get(), "rawpeople"):
-                    if ballot.rawpeople.is_trusted:
+                    if self.ballot.rawpeople.is_trusted:
                         return HttpResponseRedirect(
-                            reverse("bulk_add_sopn_review", kwargs=kwargs)
+                            self.ballot.get_bulk_add_review_url()
                         )
         return super().get(request, *args, **kwargs)
 
@@ -157,15 +156,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             },
         )
 
-        return HttpResponseRedirect(
-            reverse(
-                "bulk_add_sopn_review",
-                kwargs={
-                    "election": context["election"],
-                    "post_id": context["post_id"],
-                },
-            )
-        )
+        return HttpResponseRedirect(context["ballot"].get_bulk_add_review_url())
 
     def form_invalid(self, context):
         return self.render_to_response(context)
@@ -235,8 +226,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
 
             if self.request.POST.get("suggest_locking") == "on":
                 ballot = Ballot.objects.get(
-                    post=context["post"],
-                    election=Election.objects.get(slug=context["election"]),
+                    ballot_paper_id=context["ballot"].ballot_paper_id
                 )
                 SuggestedPostLock.objects.create(
                     user=self.request.user, ballot=ballot

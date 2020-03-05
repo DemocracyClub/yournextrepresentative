@@ -102,7 +102,7 @@
               {{ ballot.locked_status_html }}
             {% else %}
               {% if ballot.officialdocument_set.exists and not ballot.suggestedpostlock_set.exists %}
-                <a href="{% url "bulk_add_from_sopn" ballot.election.slug ballot.post.slug %}" class="button tiny">Add candidates</a>
+                <a href="{{ ballot.get_bulk_add_url }}" class="button tiny">Add candidates</a>
               {% else %}
                 {% if ballot.suggestedpostlock_set.exists %}
                 {{ ballot.suggested_lock_html }}

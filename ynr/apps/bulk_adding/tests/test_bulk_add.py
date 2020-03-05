@@ -21,7 +21,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def testNoFormIfNoSopn(self):
         response = self.app.get(
-            "/bulk_adding/sopn/parl.2015-05-07/65808/",
+            "/bulk_adding/sopn/parl.65808.2015-05-07/",
             user=self.user_who_can_upload_documents,
         )
 
@@ -42,7 +42,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            "/bulk_adding/sopn/parl.2015-05-07/65808/",
+            "/bulk_adding/sopn/parl.65808.2015-05-07/",
             user=self.user_who_can_upload_documents,
         )
 
@@ -63,7 +63,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            "/bulk_adding/sopn/parl.2015-05-07/65808/", user=self.user
+            "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
         )
 
         form = response.forms["bulk_add_form"]
@@ -88,7 +88,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(56):
+        with self.assertNumQueries(54):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -125,7 +125,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:
         response = self.app.get(
-            "/bulk_adding/sopn/parl.2015-05-07/65808/?edit=1", user=self.user
+            "/bulk_adding/sopn/parl.65808.2015-05-07/?edit=1", user=self.user
         )
 
         form = response.forms["bulk_add_form"]
@@ -229,7 +229,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            "/bulk_adding/sopn/parl.2015-05-07/65808/", user=self.user
+            "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
         )
 
         form = response.forms["bulk_add_form"]
@@ -271,13 +271,13 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             data=[{"name": "Bart", "party_id": "PP52"}],
         )
         response = self.app.get(
-            "/bulk_adding/sopn/parl.2015-05-07/65808/", user=self.user
+            "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
         )
         self.assertEqual(response.status_code, 302)
         response.forms
 
         response = self.app.get(
-            "/bulk_adding/sopn/parl.2015-05-07/65808/?edit=1", user=self.user
+            "/bulk_adding/sopn/parl.65808.2015-05-07/?edit=1", user=self.user
         )
         self.assertEqual(response.status_code, 200)
 
@@ -289,7 +289,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
-            "/bulk_adding/sopn/parl.2015-05-07/65808/?edit=1", user=self.user
+            "/bulk_adding/sopn/parl.65808.2015-05-07/?edit=1", user=self.user
         )
         form = response.forms[1]
         response = form.submit()
@@ -316,7 +316,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
         response = self.app.get(
-            "/bulk_adding/sopn/parl.2015-05-07/65808/?edit=1", user=self.user
+            "/bulk_adding/sopn/parl.65808.2015-05-07/?edit=1", user=self.user
         )
         form = response.forms[1]
         response = form.submit()
@@ -347,7 +347,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            "/bulk_adding/sopn/parl.2015-05-07/{}/".format(
+            "/bulk_adding/sopn/parl.{}.2015-05-07/".format(
                 self.camberwell_post.slug
             ),
             user=self.user,
