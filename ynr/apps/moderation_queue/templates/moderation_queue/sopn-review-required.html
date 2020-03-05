@@ -23,7 +23,7 @@
       <a href="{{ ballot.get_absolute_url }}">
           {{ ballot.post.label }}
       </a>
-      <a href="{% url "bulk_add_from_sopn" ballot.election.slug ballot.post.slug %}" class="button tiny">
+      <a href="{% url "bulk_add_from_sopn" ballot.ballot_paper_id %}" class="button tiny">
           Add candidates from nomination paper</a>
       </li>
   {% endfor %}

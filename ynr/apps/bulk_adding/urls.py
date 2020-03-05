@@ -6,23 +6,19 @@ from . import views
 
 urlpatterns = [
     url(
-        r"^(?!.*party){election}/{post}/$".format(
+        r"^(?!.*party|sopn){election}/{post}/$".format(
             election=constants.ELECTION_ID_REGEX, post=constants.POST_ID_REGEX
         ),
         views.BulkAddSOPNRedirectView.as_view(),
         name="bulk_add",
     ),
     url(
-        r"^sopn/{election}/{post}/$".format(
-            election=constants.ELECTION_ID_REGEX, post=constants.POST_ID_REGEX
-        ),
+        r"^sopn/(?P<ballot_paper_id>[^/]+)/$",
         views.BulkAddSOPNView.as_view(),
         name="bulk_add_from_sopn",
     ),
     url(
-        r"^sopn/{election}/{post}/review/$".format(
-            election=constants.ELECTION_ID_REGEX, post=constants.POST_ID_REGEX
-        ),
+        r"^sopn/(?P<ballot_paper_id>[^/]+)/review/$",
         views.BulkAddSOPNReviewView.as_view(),
         name="bulk_add_sopn_review",
     ),

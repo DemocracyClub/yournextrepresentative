@@ -30,7 +30,7 @@
 <p>We might already have a profile for some of these candidates from previous elections.</p>
 <p>If you think someone has stood before, please select them from the tables below. If in doubt,
   just select "create a new person".</p>
-<p>Alternatively you can <a href="{% url "bulk_add_from_sopn" election post.slug %}?edit=1">edit these candidates</a>.</p>
+<p>Alternatively you can <a href="{% url "bulk_add_from_sopn" ballot.ballot_paper_id %}?edit=1">edit these candidates</a>.</p>
 
 {% include "bulk_add/sopns/_known-people.html" %}
 

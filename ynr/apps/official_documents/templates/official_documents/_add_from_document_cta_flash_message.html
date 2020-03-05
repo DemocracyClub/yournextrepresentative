@@ -2,10 +2,10 @@
 
 <p>…and while you're here…</p>
 {% if remaining_posts.exists and remaining_posts.count > 1 %}
-<p>The document you have open has information on
+  <p>The document you have open has information on
     <strong>{{ remaining_posts.count }}
     more ward{{ remaining_posts.count|pluralize }}</strong>.</p>
-<p><a href="{% url 'bulk_add_from_sopn' election=remaining_posts.0.ballot.election.slug post_id=remaining_posts.0.ballot.post.slug %}" class="button">
+  <p><a href="{% url 'bulk_add_from_sopn' ballot_paper_id=remaining_posts.0.ballot.ballot_paper_id %}" class="button">
   Continue adding candidates</a></p>
 {% else %}
 <p>There are still more documents that verifying!</p>
