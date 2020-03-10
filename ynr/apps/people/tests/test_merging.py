@@ -3,6 +3,8 @@ from datetime import date, timedelta
 
 from django_webtest import WebTest
 
+from django.conf import settings
+
 from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import PostFactory
@@ -291,7 +293,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertTrue(
             self.dest_person.images.get(is_primary=True).image.url.startswith(
-                "/media/images/images/image2"
+                "{}/images/images/image2".format(settings.MEDIA_ROOT)
             )
         )
 
@@ -334,7 +336,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertTrue(
             self.dest_person.images.get(is_primary=True).image.url.startswith(
-                "/media/images/images/image2"
+                "{}/images/images/image2".format(settings.MEDIA_ROOT)
             )
         )
 

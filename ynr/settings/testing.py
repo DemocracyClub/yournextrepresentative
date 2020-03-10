@@ -1,4 +1,5 @@
 import os
+from tempfile import mkdtemp
 
 from .base import *  # noqa
 
@@ -38,6 +39,9 @@ SHOW_SOPN_TRACKER = False
 SHOW_RESULTS_PROGRESS = False
 
 ALWAYS_ALLOW_RESULT_RECORDING = False
+
+DEFAULT_FILE_STORAGE = "ynr.storages.TestMediaStorage"
+MEDIA_ROOT = mkdtemp()
 
 if os.environ.get("TRAVIS"):
     try:

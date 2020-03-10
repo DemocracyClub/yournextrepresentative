@@ -2,6 +2,7 @@ import os
 
 from django.conf import settings
 from django.contrib.staticfiles.storage import ManifestFilesMixin
+from django.core.files.storage import FileSystemStorage
 from pipeline.storage import PipelineMixin
 from storages.backends.s3boto3 import S3Boto3Storage, SpooledTemporaryFile
 
@@ -57,3 +58,29 @@ class MediaStorage(PatchedS3Boto3Storage):
         so we emulate it here by calling URL with an empty key name.
         """
         return self.url("")
+
+
+class TestMediaStorage(FileSystemStorage):
+    """
+    A storage class for use when running tests.
+
+    This class is designed to help tests that interact with media. It will
+    set up and clean up a MEDIA_ROOT automatically.
+    """
+
+    def url(self, name):
+        """
+        Override the URL method to return the file path in the temp MEDIA_ROOT.
+
+        This is less than ideal, but is required because of the way Camelot
+        tried to open PDF files for parsing (as used in the SOPN parsing app).
+
+        The parser can either be passed a file path or a URL, however when
+        using in tests with files that are accessed by a URL, the URL is always
+        relative, meaning it starts with a `/`. Camelot assumes this to be
+        a file path and attempts to load the file on the local file system.
+
+        To get around this, we set the URL prefix of the file to the value of
+        the MEDIA_ROOT.
+        """
+        return "{}/{}".format(self.base_location, name)
