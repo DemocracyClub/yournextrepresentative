@@ -61,6 +61,7 @@ def get_person_as_version_data(person, new_person=False):
 
     result["other_names"] = []
     candidacies = {}
+    not_standing = []
 
     if not new_person:
         result["other_names"] = [
@@ -87,7 +88,7 @@ def get_person_as_version_data(person, new_person=False):
             candidacies[ballot.ballot_paper_id] = candidacy
 
         for not_standing_in_election in person.not_standing.all():
-            candidacies[not_standing_in_election.slug] = None
+            not_standing.append(not_standing_in_election.slug)
 
     # Add `favourite_biscuits` to an `extra_fields` key
     # to re-produce the previous ExtraField model.
@@ -100,6 +101,8 @@ def get_person_as_version_data(person, new_person=False):
     result["extra_fields"] = extra_fields
 
     result["candidacies"] = candidacies
+    if not_standing:
+        result["not_standing"] = not_standing
     return result
 
 

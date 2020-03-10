@@ -210,3 +210,40 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
                 "person",
             },
         )
+
+    def test_person_not_standing_version(self):
+        """
+        There was a bug where people with a "not_standing" entry couldn't be
+        edited due to the way thr versions were calculated.
+
+        This is a regression test to catch that previously untested case
+
+        """
+        # First set some versions up by making an edit
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        form = response.forms[1]
+        form["favourite_biscuit"] = "Ginger nut"
+        form["source"] = "Mumsnet"
+        form.submit()
+
+        # Now add to the person's `not_standing` list
+        self.person.not_standing.add(self.earlier_election)
+
+        # Now make another edit
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        form = response.forms[1]
+        form["favourite_biscuit"] = "Something else"
+        form["source"] = "Somewhere else"
+
+        # The bug this tests for would cause this to raise 500
+        response = form.submit().follow()
+        self.assertEqual(response.status_code, 200)
+        self.person.refresh_from_db()
+        version = json.loads(self.person.versions)[0]
+        self.assertEqual(version["data"]["not_standing"], ["parl.2010-05-06"])
