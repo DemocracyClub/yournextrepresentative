@@ -1,10 +1,8 @@
 from os.path import abspath, dirname, join
-from unittest import skip, skipIf
 
 from django.test import TestCase
 
 from sopn_parsing.helpers.text_helpers import clean_text
-from sopn_parsing.tests import should_skip_pdf_tests
 
 try:
     from sopn_parsing.helpers.pdf_helpers import SOPNDocument
@@ -12,8 +10,6 @@ except ImportError:
     pass
 
 
-@skip("Fix backend storage in tests")
-@skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
 class TestSOPNHelpers(TestCase):
     def test_clean_text(self):
         text = "\n C andidates (Namés)"
@@ -23,7 +19,8 @@ class TestSOPNHelpers(TestCase):
         example_doc_path = abspath(
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
         )
-        doc = SOPNDocument(example_doc_path)
+        doc = SOPNDocument(open(example_doc_path, "rb"))
+
         self.assertSetEqual(
             doc.document_heading,
             {
@@ -58,7 +55,7 @@ class TestSOPNHelpers(TestCase):
                 "28",
                 "thursday",
                 "edward",
-                "berrycr",
+                "berr",
                 "persons",
                 "liz",
                 "nominated",
@@ -80,7 +77,8 @@ class TestSOPNHelpers(TestCase):
         example_doc_path = abspath(
             join(dirname(__file__), "data/NI-Assembly-Election-2016.pdf")
         )
-        doc = SOPNDocument(example_doc_path)
+        doc = SOPNDocument(open(example_doc_path, "rb"))
+
         self.assertEqual(len(doc.pages), 9)
 
         na_wards = doc.get_pages_by_ward_name("north antrim")
