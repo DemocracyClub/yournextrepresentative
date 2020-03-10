@@ -24,6 +24,7 @@ class TestPartyModels(TmpMediaRootMixin, TestCase):
         party = PartyFactory()
         PartyEmblemFactory.create_batch(3, party=party)
         self.assertEqual(party.emblems.count(), 3)
+        print(party.emblems.first().image.url)
         self.assertTrue(
             party.emblems.first().image.url.startswith(
                 "{}/emblems/PP0/0_example".format(settings.MEDIA_ROOT)
