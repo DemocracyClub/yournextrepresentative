@@ -10,7 +10,7 @@ def extract_pages_for_ballot(ballot):
     Try to extract the page numbers for the latest SOPN document related to this
     ballot.
 
-    Beacuse documents can apply to more than one ballot, we also perform
+    Because documents can apply to more than one ballot, we also perform
     "drive by" parsing of other ballots contained in a given document.
 
     :type ballot: candidates.models.Ballot

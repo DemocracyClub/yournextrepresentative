@@ -1,4 +1,4 @@
 -r base.txt
 
-pdfminer==20191125
+pdfminer.six==20200124
 camelot-py[cv]

@@ -5,10 +5,14 @@ from pdfminer.layout import LAParams
 from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
 from pdfminer.pdfpage import PDFPage
 
-from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
+from sopn_parsing.helpers.text_helpers import (
+    NoTextInDocumentError,
+    clean_text,
+    clean_page_text,
+)
 
 # Used by SOPNPageText.get_page_heading
-HEADING_SIZE = 0.5
+HEADING_SIZE = 0.3
 
 # Used by SOPNPageText.detect_top_page
 CONTINUATION_THRESHOLD = 0.5
@@ -39,9 +43,7 @@ class SOPNDocument:
             PDFPage.get_pages(fp, check_extractable=True), start=1
         ):
             retstr = StringIO()
-            device = TextConverter(
-                rsrcmgr, retstr, codec=codec, laparams=laparams
-            )
+            device = TextConverter(rsrcmgr, retstr, laparams=laparams)
             interpreter = PDFPageInterpreter(rsrcmgr, device)
             interpreter.process_page(page)
             self.pages.append(SOPNPageText(page_no, retstr.getvalue()))
@@ -56,7 +58,7 @@ class SOPNDocument:
             if page.is_top_page:
                 if matched_pages:
                     return matched_pages
-                search_text = clean_text(page.get_page_heading())
+                search_text = page.get_page_heading()
                 wards = ward.split("/")
                 for ward in wards:
                     if ward in search_text:
@@ -81,7 +83,7 @@ class SOPNPageText:
     def __init__(self, page_number, text):
         self.page_number = page_number
         self.raw_text = text
-        self.text = clean_text(text)
+        self.text = clean_page_text(text)
         self.is_top_page = True
         self.matched = None
 

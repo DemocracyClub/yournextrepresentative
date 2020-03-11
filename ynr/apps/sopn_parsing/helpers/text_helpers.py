@@ -4,7 +4,19 @@ import unicodedata
 
 def clean_text(text, recheck=True):
     """
-    Generally clean up text to make matching and searching easier.
+    Simple interface for cleaning text in a generic way
+    """
+    text = _clean_text(text, recheck=True)
+    return text
+
+
+def clean_page_text(text):
+    return _clean_text(text, split_braces=False)
+
+
+def _clean_text(text, recheck=True, split_braces=True):
+    """
+    Internal interface for cleaning text
     """
     text = str(text)
     text = text.lower()
@@ -18,13 +30,14 @@ def clean_text(text, recheck=True):
     text = text.replace("-y-", " y ")
     text = text.replace("\n", " ")
     text = text.replace("\\n", " ")
-    text = re.sub("[\s]+", " ", text)
+    text = re.sub(r"[\s]+", " ", text)
     text = re.sub(r"(^[a-z])\s([a-z][a-z]+)", r"\1\2", text)
     text = re.sub(r"(^[0-9])\s", r"", text)
     text = text.replace("*", "")
-    text = text.split("(")[0].strip()
+    if split_braces:
+        text = text.split("(")[0].strip()
     if recheck:
-        return clean_text(text, recheck=False)
+        return _clean_text(text, recheck=False, split_braces=split_braces)
     return text.strip()
 
 
