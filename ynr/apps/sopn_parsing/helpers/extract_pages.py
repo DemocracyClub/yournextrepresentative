@@ -1,3 +1,5 @@
+from django.db.models.functions import Length
+
 from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.pdf_helpers import SOPNDocument
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
@@ -20,9 +22,11 @@ def extract_pages_for_ballot(ballot):
 
 
 def extract_pages_for_single_document(document):
-    other_doc_models = OfficialDocument.objects.filter(
-        source_url=document.source_url
-    ).select_related("ballot", "ballot__post")
+    other_doc_models = (
+        OfficialDocument.objects.filter(source_url=document.source_url)
+        .select_related("ballot", "ballot__post")
+        .order_by(-Length("ballot__post__label"))
+    )
 
     doc_file = document.uploaded_file.file
     if not doc_file:
