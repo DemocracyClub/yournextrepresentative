@@ -8,10 +8,10 @@ from pdfminer.pdfpage import PDFPage
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
 
 # Used by SOPNPageText.get_page_heading
-HEADING_SIZE = 0.3
+HEADING_SIZE = 0.5
 
 # Used by SOPNPageText.detect_top_page
-CONTINUATION_THRESHOLD = 0.4
+CONTINUATION_THRESHOLD = 0.5
 
 
 class SOPNDocument:
@@ -76,7 +76,8 @@ class SOPNPageText:
 
     def __init__(self, page_number, text):
         self.page_number = page_number
-        self.text = text
+        self.raw_text = text
+        self.text = clean_text(text)
         self.is_top_page = True
 
     def get_page_heading_set(self):
@@ -94,8 +95,9 @@ class SOPNPageText:
 
         Do some basic cleaning of the heading.
         """
-        threshold = int(len(self.text) * HEADING_SIZE)
-        search_text = self.text[0:threshold]
+        words = self.text.split(" ")
+        threshold = int(len(words) * HEADING_SIZE)
+        search_text = " ".join(words[0:threshold])
         search_text = search_text.replace("\n", " ")
         return search_text.lower()
 
