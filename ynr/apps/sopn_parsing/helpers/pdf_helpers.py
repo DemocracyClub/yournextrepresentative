@@ -53,7 +53,7 @@ class SOPNDocument:
     def get_pages_by_ward_name(self, ward):
         ward = clean_text(ward)
         matched_pages = []
-        for page in self.pages:
+        for page in self.unmatched_pages():
             if page.is_top_page:
                 if matched_pages:
                     return matched_pages
@@ -61,12 +61,17 @@ class SOPNDocument:
                 wards = ward.split("/")
                 for ward in wards:
                     if ward in search_text:
+                        page.matched = ward
                         matched_pages.append(page)
             else:
                 if matched_pages:
+                    page.matched = ward
                     matched_pages.append(page)
         if matched_pages:
             return matched_pages
+
+    def unmatched_pages(self):
+        return [p for p in self.pages if not p.matched]
 
 
 class SOPNPageText:
@@ -79,6 +84,7 @@ class SOPNPageText:
         self.raw_text = text
         self.text = clean_text(text)
         self.is_top_page = True
+        self.matched = None
 
     def get_page_heading_set(self):
         """
