@@ -31,8 +31,7 @@ class SOPNDocument:
     def parse_pages(self):
         rsrcmgr = PDFResourceManager()
 
-        codec = "utf-8"
-        laparams = LAParams()
+        laparams = LAParams(line_margin=0.1)
 
         fp = self.file
 
