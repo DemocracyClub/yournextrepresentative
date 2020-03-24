@@ -2,7 +2,7 @@ attrs==19.1.0
 aenum==2.1.2
 beautifulsoup4==4.7.1
 black==19.10b0;python_version>="3.6"
-bleach==3.1.0
+bleach==3.1.2
 boto3==1.10.48
 celery[redis]==4.3.0
 celery-haystack==0.10
