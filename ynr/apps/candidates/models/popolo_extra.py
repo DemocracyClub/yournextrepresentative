@@ -254,14 +254,20 @@ class Ballot(models.Model):
         if not user.is_authenticated:
             return False
 
-        # If the ballot is unlocked, anyone can edit the memberships
-        if not self.candidates_locked:
+        # If the ballot is unlocked and not cancelled, anyone
+        # can edit the memberships
+        if not self.candidates_locked and not self.cancelled:
             return True
 
         if (
             allow_if_trusted_to_lock
             and user.groups.filter(name=TRUSTED_TO_LOCK_GROUP_NAME).exists()
         ):
+            return True
+
+        # Special case where elections are cancelled before they are locked
+        # Don't allow most people to edit them, but do allow staff to
+        if self.cancelled and not self.candidates_locked and user.is_staff:
             return True
 
         return False
