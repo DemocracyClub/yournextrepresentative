@@ -2,6 +2,7 @@ from django.urls import reverse
 from django_webtest import WebTest
 
 from bulk_adding.models import RawPeople
+from candidates.forms import SingleElectionForm
 from candidates.models import Ballot
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
@@ -20,9 +21,7 @@ def update_lock(post, election, lock_status):
     return ballot
 
 
-class TestConstituencyLockAndUnlock(
-    TestUserMixin, UK2015ExamplesMixin, WebTest
-):
+class TestBallotLockAndUnlock(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
         update_lock(self.camberwell_post, self.election, True)
@@ -133,7 +132,7 @@ class TestConstituencyLockAndUnlock(
         self.assertNotIn("Camberwell", response.text)
 
 
-class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
+class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
         update_lock(self.camberwell_post, self.election, True)
@@ -288,3 +287,82 @@ class TestConstituencyLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         submission_response = form.submit()
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(submission_response.location, "/person/4322")
+
+    def test_locked_ballot_disabled_option(self):
+        form = SingleElectionForm(
+            initial={
+                "election": self.camberwell_post_ballot.election,
+                "user": self.user,
+            }
+        )
+        select_field = form.fields[
+            "constituency_{}".format(self.camberwell_post_ballot.election.slug)
+        ]
+        option = select_field.choices[1]
+        self.assertEqual(
+            option[1]["label"],
+            "{} 🔐".format(self.camberwell_post_ballot.post.short_label),
+        )
+        self.assertTrue(option[1]["disabled"])
+
+
+class TestCancelledBallots(TestUserMixin, UK2015ExamplesMixin, WebTest):
+    def setUp(self):
+        super().setUp()
+        self.ballot = self.camberwell_post_ballot
+        self.ballot.cancelled = True
+        self.ballot.candidates_locked = False
+        self.ballot.save()
+        self.staff_user = self.user_who_can_lock
+        self.staff_user.is_staff = True
+        self.staff_user.save()
+
+        self.person = PersonFactory.create(id=4170, name="Naomi Newstead")
+
+    def test_cancelled_ballot_no_add_button_on_ballot_page(self):
+
+        """
+        When a ballot is cancelled, we expect it to act like a locked ballot
+        for most users. Staff users can still edit candidates
+        """
+
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+        self.assertNotContains(response, "Add a new candidate")
+
+        # Staff users should see a button
+        response = self.app.get(
+            self.ballot.get_absolute_url(), user=self.staff_user
+        )
+        self.assertContains(response, "Add a new candidate")
+
+    def test_cancelled_option_disabled_on_person_update_form(self):
+        """
+        Make sure a person can't be added to a cancelled ballot,
+        and that the ballot is labeled as cancelled
+        """
+        form = SingleElectionForm(
+            initial={"election": self.ballot.election, "user": self.user}
+        )
+        select_field = form.fields[
+            "constituency_{}".format(self.ballot.election.slug)
+        ]
+        option = select_field.choices[1]
+        self.assertEqual(
+            option[1]["label"],
+            "{} (❌ cancelled)".format(self.ballot.post.short_label),
+        )
+        self.assertTrue(option[1]["disabled"])
+
+        # Staff users can still edit, though
+        form = SingleElectionForm(
+            initial={"election": self.ballot.election, "user": self.staff_user,}
+        )
+        select_field = form.fields[
+            "constituency_{}".format(self.ballot.election.slug)
+        ]
+        option = select_field.choices[1]
+        self.assertEqual(
+            option[1]["label"],
+            "{} (❌ cancelled)".format(self.ballot.post.short_label),
+        )
+        self.assertFalse("disabled" in option[1])

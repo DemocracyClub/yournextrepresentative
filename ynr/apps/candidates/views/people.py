@@ -550,4 +550,5 @@ class SingleElectionFormView(LoginRequiredMixin, FormView):
             Election.objects.all(), slug=self.kwargs["election"]
         )
         initial_data["election"] = election
+        initial_data["user"] = self.request.user
         return initial_data

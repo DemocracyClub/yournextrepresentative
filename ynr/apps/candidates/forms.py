@@ -53,6 +53,7 @@ class SingleElectionForm(AddElectionFieldsMixin, forms.Form):
         super().__init__(*args, **kwargs)
 
         election_data = kwargs["initial"]["election"]
+        user = kwargs["initial"]["user"]
 
         self.fields["extra_election_id"] = forms.CharField(
             max_length=256,
@@ -60,4 +61,4 @@ class SingleElectionForm(AddElectionFieldsMixin, forms.Form):
             initial=election_data.slug,
         )
 
-        self.add_election_fields(election_data)
+        self.add_election_fields(election_data, user=user)

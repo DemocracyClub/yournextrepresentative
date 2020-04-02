@@ -9,6 +9,7 @@ from candidates.models import (
     PartySet,
     UnsafeToDelete,
     raise_if_unsafe_to_delete,
+    Ballot,
 )
 from elections.models import Election
 from facebook_data.tasks import extract_fb_page_id
@@ -16,8 +17,49 @@ from parties.models import Party
 from people.helpers import parse_approximate_date
 from people.models import Person, PersonIdentifier
 from popolo.models import OtherName, Post
+from utils.widgets import SelectWithAttrs
 
 from .helpers import clean_twitter_username, clean_wikidata_id
+
+
+def get_ballot_choices(election, user=None):
+    """
+    Returns a list formatted for passing to a SelectWithAttrs widget
+    :type user: django.contrib.auth.models.User
+    :type election: elections.models.Election
+    :param user:
+    :return:
+    """
+    user_can_edit_cancelled = False
+    if user and user.is_staff:
+        user_can_edit_cancelled = True
+    ballots_qs = (
+        Ballot.objects.filter(election=election)
+        .select_related("post", "election")
+        .order_by("post__label")
+    )
+
+    choices = [("", "")]
+    for ballot in ballots_qs:
+        attrs = {}
+        ballot_label = ballot.post.short_label
+        if ballot.cancelled:
+            ballot_label = "{} {}".format(
+                ballot_label, ballot.cancelled_status_text
+            )
+            if not user_can_edit_cancelled:
+                attrs["disabled"] = True
+
+        if ballot.candidates_locked:
+            ballot_label = "{} {}".format(
+                ballot_label, ballot.locked_status_text
+            )
+            attrs["disabled"] = True
+
+        attrs["label"] = ballot_label
+
+        choices.append((ballot.post.slug, attrs))
+    return choices
 
 
 class StrippedCharField(forms.CharField):
@@ -319,17 +361,8 @@ class NewPersonForm(BasePersonForm):
                     election=election_data.name
                 ),
                 required=False,
-                choices=[("", "")]
-                + sorted(
-                    [
-                        (post.slug, post.short_label)
-                        for post in Post.objects.filter(
-                            elections__slug=election
-                        )
-                    ],
-                    key=lambda t: t[1],
-                ),
-                widget=forms.Select(attrs={"class": "post-select"}),
+                choices=get_ballot_choices(election_data),
+                widget=SelectWithAttrs(attrs={"class": "post-select"}),
             )
 
         self.fields["constituency_" + election] = post_field
@@ -434,25 +467,19 @@ class AddElectionFieldsMixin(object):
         for election_data in elections:
             self.add_election_fields(election_data)
 
-    def add_election_fields(self, election_data):
+    def add_election_fields(self, election_data, user=None):
         election = election_data.slug
         self.fields["standing_" + election] = forms.ChoiceField(
             label="Standing in %s" % election_data.name,
             choices=BasePersonForm.STANDING_CHOICES,
             widget=forms.Select(attrs={"class": "standing-select"}),
         )
+
         self.fields["constituency_" + election] = forms.ChoiceField(
             label="Constituency in %s" % election_data.name,
             required=False,
-            choices=[("", "")]
-            + sorted(
-                [
-                    (post.slug, post.short_label)
-                    for post in Post.objects.filter(elections__slug=election)
-                ],
-                key=lambda t: t[1],
-            ),
-            widget=forms.Select(attrs={"class": "post-select"}),
+            choices=get_ballot_choices(election_data, user),
+            widget=SelectWithAttrs(attrs={"class": "post-select"}),
         )
         for party_set, party_choices in self.party_sets_and_party_choices:
             self.fields[
