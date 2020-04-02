@@ -159,18 +159,32 @@ class Ballot(models.Model):
         self.delete()
 
     @property
+    def cancelled_status_text(self):
+        if self.cancelled:
+            return "(❌ cancelled)"
+
+    @property
     def cancelled_status_html(self):
         if self.cancelled:
             return mark_safe(
-                '<abbr title="The poll for this election was cancelled">(❌ cancelled)</abbr>'
+                '<abbr title="The poll for this election was cancelled">{}</abbr>'.format(
+                    self.cancelled_status_text
+                )
             )
         return ""
+
+    @property
+    def locked_status_text(self):
+        if self.candidates_locked:
+            return mark_safe("🔐")
 
     @property
     def locked_status_html(self):
         if self.candidates_locked:
             return mark_safe(
-                '<abbr title="Candidates verified and post locked">🔐</abbr>'
+                '<abbr title="Candidates verified and post locked">{}</abbr>'.format(
+                    self.locked_status_text
+                )
             )
         if self.has_lock_suggestion:
             self.suggested_lock_html
