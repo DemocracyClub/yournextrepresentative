@@ -1,10 +1,11 @@
-from os.path import abspath, dirname, join
-from unittest import skip, skipIf
+from os.path import dirname, join, abspath
+from unittest import skipIf
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase
 
+from candidates.tests.helpers import TmpMediaRootMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.extract_tables import extract_ballot_table
@@ -12,8 +13,7 @@ from sopn_parsing.models import ParsedSOPN
 from sopn_parsing.tests import should_skip_pdf_tests
 
 
-@skip("Fix backend storage in tests")
-class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
+class TestSOPNHelpers(TmpMediaRootMixin, UK2015ExamplesMixin, TestCase):
     def setUp(self):
         example_doc_path = abspath(
             join(

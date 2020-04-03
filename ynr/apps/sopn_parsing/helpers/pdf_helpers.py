@@ -5,13 +5,17 @@ from pdfminer.layout import LAParams
 from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
 from pdfminer.pdfpage import PDFPage
 
-from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
+from sopn_parsing.helpers.text_helpers import (
+    NoTextInDocumentError,
+    clean_text,
+    clean_page_text,
+)
 
 # Used by SOPNPageText.get_page_heading
 HEADING_SIZE = 0.3
 
 # Used by SOPNPageText.detect_top_page
-CONTINUATION_THRESHOLD = 0.4
+CONTINUATION_THRESHOLD = 0.5
 
 
 class SOPNDocument:
@@ -31,8 +35,7 @@ class SOPNDocument:
     def parse_pages(self):
         rsrcmgr = PDFResourceManager()
 
-        codec = "utf-8"
-        laparams = LAParams()
+        laparams = LAParams(line_margin=0.1)
 
         fp = self.file
 
@@ -40,9 +43,7 @@ class SOPNDocument:
             PDFPage.get_pages(fp, check_extractable=True), start=1
         ):
             retstr = StringIO()
-            device = TextConverter(
-                rsrcmgr, retstr, codec=codec, laparams=laparams
-            )
+            device = TextConverter(rsrcmgr, retstr, laparams=laparams)
             interpreter = PDFPageInterpreter(rsrcmgr, device)
             interpreter.process_page(page)
             self.pages.append(SOPNPageText(page_no, retstr.getvalue()))
@@ -53,20 +54,25 @@ class SOPNDocument:
     def get_pages_by_ward_name(self, ward):
         ward = clean_text(ward)
         matched_pages = []
-        for page in self.pages:
+        for page in self.unmatched_pages():
             if page.is_top_page:
                 if matched_pages:
                     return matched_pages
-                search_text = clean_text(page.get_page_heading())
+                search_text = page.get_page_heading()
                 wards = ward.split("/")
                 for ward in wards:
                     if ward in search_text:
+                        page.matched = ward
                         matched_pages.append(page)
             else:
                 if matched_pages:
+                    page.matched = ward
                     matched_pages.append(page)
         if matched_pages:
             return matched_pages
+
+    def unmatched_pages(self):
+        return [p for p in self.pages if not p.matched]
 
 
 class SOPNPageText:
@@ -76,8 +82,10 @@ class SOPNPageText:
 
     def __init__(self, page_number, text):
         self.page_number = page_number
-        self.text = text
+        self.raw_text = text
+        self.text = clean_page_text(text)
         self.is_top_page = True
+        self.matched = None
 
     def get_page_heading_set(self):
         """
@@ -94,8 +102,9 @@ class SOPNPageText:
 
         Do some basic cleaning of the heading.
         """
-        threshold = int(len(self.text) * HEADING_SIZE)
-        search_text = self.text[0:threshold]
+        words = self.text.split(" ")
+        threshold = int(len(words) * HEADING_SIZE)
+        search_text = " ".join(words[0:threshold])
         search_text = search_text.replace("\n", " ")
         return search_text.lower()
 
