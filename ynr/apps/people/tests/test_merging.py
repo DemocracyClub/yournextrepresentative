@@ -614,3 +614,22 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         GenderGuess.objects.create(gender="M", person=self.source_person)
         merger = PersonMerger(self.dest_person, self.source_person)
         merger.merge()
+
+    def test_all_fields_have_merge_function(self):
+        """
+        This is a test that's expected to pass until a new field or relationship
+        is added to the `Person` model. At that point, it should fail until a
+        merge function has been added.
+
+        """
+
+        supported_fields = set(PersonMerger.SUPPORTED_FIELDS.keys())
+
+        actual_relations = set(
+            [rel.name for rel in self.source_person._meta.related_objects]
+        )
+        actual_fields = set(
+            [field.name for field in self.source_person._meta.get_fields()]
+        )
+        actual_fields.update(actual_relations)
+        self.assertSetEqual(supported_fields, actual_fields)

@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 
 from django.conf import settings
 from django.contrib.admin.utils import NestedObjects
@@ -54,12 +55,54 @@ class PersonMerger:
        Person Identifier is used, based on it's modified datetime.
     """
 
+    # Map between field names and the method that merges them
+    SUPPORTED_FIELDS = OrderedDict(
+        (
+            # Person attrs
+            ("honorific_prefix", "merge_person_attrs"),
+            ("name", "merge_person_attrs"),
+            ("honorific_suffix", "merge_person_attrs"),
+            ("gender", "merge_person_attrs"),
+            ("birth_date", "merge_person_attrs"),
+            ("death_date", "merge_person_attrs"),
+            ("biography", "merge_person_attrs"),
+            ("other_names", "merge_person_attrs"),
+            ("family_name", "merge_person_attrs"),
+            ("national_identity", "merge_person_attrs"),
+            ("sort_name", "merge_person_attrs"),
+            ("additional_name", "merge_person_attrs"),
+            ("favourite_biscuit", "merge_person_attrs"),
+            ("given_name", "merge_person_attrs"),
+            ("patronymic_name", "merge_person_attrs"),
+            ("summary", "merge_person_attrs"),
+            # Relations
+            ("versions", "merge_versions_json"),
+            ("tmp_person_identifiers", "merge_person_identifiers"),
+            ("images", "merge_images"),
+            ("loggedaction", "merge_logged_actions"),
+            ("memberships", "merge_memberships"),
+            ("queuedimage", "merge_queued_images"),
+            ("not_standing", "merge_not_standing"),
+            ("resultevent", "merge_result_events"),
+            ("gender_guess", "merge_gender_guess"),
+            ("facebookadvert", "merge_facebookadvert"),
+            # Discarded
+            ("id", "discard_data"),
+            ("created_at", "discard_data"),
+            ("updated_at", "discard_data"),
+            ("edit_limitations", "discard_data"),
+            ("sources", "discard_data"),
+        )
+    )
+
     def __init__(self, person_a, person_b, request=None):
         """
         The params are called person A and B because we don't yet know
         what we'll use as source and dest.
 
         Request it optional, and used for creating logged actions
+        :type person_a: people.models.Person
+        :type person_b: people.models.Person
         :param request:
         """
 
@@ -89,6 +132,15 @@ class PersonMerger:
         for person in [self.source_person, self.dest_person]:
             person.invalidate_identifier_cache()
 
+    def discard_data(self):
+        """
+        A no-op method that will discard data when merging.
+
+        Used by self. SUPPORTED_FIELDS to explicetly mark some fields
+        as discarded.
+        """
+        pass
+
     def merge_versions_json(self):
         # Merge the reduced JSON representations:
         merge_popit_people(
@@ -109,13 +161,23 @@ class PersonMerger:
         Because source is a higher ID, and therefore newer, we assume that it's
         attributes should be kept, replacing dest's.
         """
-
-        for field in settings.SIMPLE_POPOLO_FIELDS:
-            source_value = getattr(self.source_person, field.name, None)
-            dest_value = getattr(self.dest_person, field.name, None)
+        attrs_to_merge = [f.name for f in settings.SIMPLE_POPOLO_FIELDS]
+        attrs_to_merge += [
+            "favourite_biscuit",
+            "additional_name",
+            "sort_name",
+            "national_identity",
+            "family_name",
+            "given_name",
+            "patronymic_name",
+            "summary",
+        ]
+        for field_name in attrs_to_merge:
+            source_value = getattr(self.source_person, field_name, None)
+            dest_value = getattr(self.dest_person, field_name, None)
 
             # Special case "name"
-            if field.name == "name":
+            if field_name == "name":
                 if source_value != dest_value:
                     self.dest_person.other_names.update_or_create(
                         name=source_value
@@ -128,7 +190,7 @@ class PersonMerger:
 
             # Assume we want to keep the value from source
             if source_value:
-                setattr(self.dest_person, field.name, source_value)
+                setattr(self.dest_person, field_name, source_value)
 
     def merge_images(self):
         # Change the secondary person's images to point at the primary
@@ -243,6 +305,9 @@ class PersonMerger:
     def merge_queued_images(self):
         self.source_person.queuedimage_set.update(person=self.dest_person)
 
+    def merge_facebookadvert(self):
+        self.source_person.facebookadvert_set.update(person=self.dest_person)
+
     def merge_not_standing(self):
         for election in self.source_person.not_standing.all():
             if not self.dest_person.memberships.filter(
@@ -282,16 +347,9 @@ class PersonMerger:
         """
         with transaction.atomic():
             # Merge all the things
-            self.merge_person_attrs()
-            self.merge_versions_json()
-            self.merge_person_identifiers()
-            self.merge_images()
-            self.merge_logged_actions()
-            self.merge_memberships()
-            self.merge_queued_images()
-            self.merge_not_standing()
-            self.merge_result_events()
-            self.merge_gender_guess()
+            for method_name in set(self.SUPPORTED_FIELDS.values()):
+                method = getattr(self, method_name)
+                method()
 
             # Post merging tasks
             # Save the dest person (don't assume the methods above do this)
