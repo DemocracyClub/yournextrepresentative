@@ -92,6 +92,7 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    "django.contrib.postgres",
     "django_extensions",
     "pipeline",
     "sorl.thumbnail",
@@ -134,6 +135,7 @@ INSTALLED_APPS = (
     "sopn_parsing",
     "django_celery_results",
     "facebook_data",
+    "search",
 )
 
 CELERY_RESULT_BACKEND = "django-db"
