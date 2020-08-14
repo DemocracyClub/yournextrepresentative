@@ -27,14 +27,6 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
 RUNNING_TESTS = True
 
-HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
-HAYSTACK_CONNECTIONS = {
-    "default": {
-        "ENGINE": "haystack.backends.whoosh_backend.WhooshEngine",
-        "STORAGE": "ram",
-    }
-}
-
 SECRET_KEY = "just here for testing"
 ALLOWED_HOSTS = ["candidates.democracyclub.org.uk"]
 

@@ -1,4 +1,3 @@
-from django.core.management import call_command
 from django_webtest import WebTest
 
 from candidates.models import LoggedAction
@@ -9,10 +8,6 @@ from people.tests.factories import PersonFactory
 
 
 class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
-    def setUp(self):
-        super().setUp()
-        call_command("rebuild_index", verbosity=0, interactive=False)
-
     def test_party_select(self):
         response = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/",
