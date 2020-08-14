@@ -481,6 +481,7 @@ class OtherName(Dateframeable, GenericRelatable, models.Model):
 
     class Meta:
         unique_together = ("name", "object_id", "content_type")
+        ordering = ("name",)
 
 
 class Identifier(GenericRelatable, models.Model):
