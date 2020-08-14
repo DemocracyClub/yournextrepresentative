@@ -94,18 +94,18 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
 class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
     def suggested_people(self, person_name):
         if person_name:
-            sqs = search_person_by_name(person_name)
-            return sqs[:5]
+            qs = search_person_by_name(person_name)
+            return qs[:5]
 
     def format_value(self, suggestion):
         """
         Turn the whole form in to a value string
         """
         name = suggestion.name
-        suggestion_dict = {"name": name, "object": suggestion.object}
+        suggestion_dict = {"name": name, "object": suggestion}
 
         candidacies = (
-            suggestion.object.memberships.select_related(
+            suggestion.memberships.select_related(
                 "post", "party", "ballot__election"
             )
             .prefetch_related(
@@ -146,9 +146,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         CHOICES = [("_new", "Add new person")]
         if suggestions:
             CHOICES += [
-                self.format_value(suggestion)
-                for suggestion in suggestions
-                if suggestion.object
+                self.format_value(suggestion) for suggestion in suggestions
             ]
         form.fields["select_person"] = forms.ChoiceField(
             choices=CHOICES, widget=forms.RadioSelect()

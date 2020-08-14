@@ -1,54 +1,54 @@
+import operator
+from functools import reduce
+
+from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
+from django.db.models import Count
+from django.forms import forms
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import escape
-from haystack.forms import SearchForm
-from haystack.generic_views import SearchView
-from haystack.query import SearchQuerySet
+from django.views.generic import TemplateView
+from slacker2 import Search
 
 from elections.uk.lib import is_valid_postcode
 from people.models import Person
+from popolo.models import Membership
 
 
-def search_person_by_name(name, sqs=None):
-    """
-    Becuase the default haystack operator is AND if you search for
-    John Quincy Adams then it looks for `John AND Quincy AND Adams'
-    and hence won't find John Adams. This results in missed matches
-    and duplicates. So if it looks like there's more than two names
-    split them and search using the whole name provided or just the
-    first and last. This results in
-    `(John AND Quincy AND Adams) OR (John AND Adams)` which is a bit
-    more tolerant.
-    """
-    parts = name.split()
-    if sqs is None:
-        sqs = SearchQuerySet().filter(content=name)
-    if len(parts) >= 2:
-        short_name = " ".join([parts[0], parts[-1]])
-        sqs = sqs.filter_or(content=short_name)
-
-    return sqs
+def or_term(term):
+    terms = [SearchQuery(term_sq) for term_sq in term.split(" ")]
+    if len(terms) == 1:
+        return terms[0]
+    return reduce(operator.or_, terms)
 
 
-class PersonSearchForm(SearchForm):
-    """
-    When Haystack indexed things into its sythesized text field
-    it HTML escapes everything. This means that we also need to
-    escape our search terms as otherwise names with apostrophes
-    and the like never match as the entry in the search index
-    is O&#39;Reilly and our search term is O'Reilly
-    """
+def search_person_by_name(name):
+    vector = SearchVector("name")
+    query = or_term(name)
 
+    qs = (
+        Person.objects
+        # .values("person_id")
+        .annotate(membership_count=Count("memberships"))
+        .filter(name__search=query)
+        .annotate(rank=SearchRank(vector, query))
+        .order_by("-rank", "-membership_count")
+        .defer("biography", "versions")
+    )
+
+    return qs
+
+
+class PersonSearchForm(forms.Form):
     def clean_q(self):
         return escape(self.cleaned_data["q"])
 
     def search(self):
-        sqs = super().search()
-        return search_person_by_name(self.cleaned_data["q"], sqs)
+        return search_person_by_name(self.cleaned_data["q"])[:10]
 
 
-class PersonSearch(SearchView):
-
+class PersonSearch(TemplateView):
+    template_name = "people/search/search.html"
     form_class = PersonSearchForm
 
     def get(self, request, *args, **kwargs):
@@ -56,7 +56,7 @@ class PersonSearch(SearchView):
         context = ret.context_data
 
         if context["looks_like_postcode"]:
-            if not context["object_list"]:
+            if not context.get("results"):
                 # This looks like a postcode, and we've found nothing else
                 # so redirect to a postcode view.
                 home_page = reverse("lookup-postcode")
@@ -68,12 +68,9 @@ class PersonSearch(SearchView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["query"] = self.request.GET.get("q")
         context["looks_like_postcode"] = is_valid_postcode(context["query"])
-        object_list = context["object_list"]
-        actual_pks = Person.objects.filter(
-            pk__in=[r.pk for r in object_list]
-        ).values_list("pk", flat=True)
-        context["object_list"] = [
-            o for o in object_list if int(o.pk) in actual_pks
-        ]
+        if context["query"]:
+            context["results"] = search_person_by_name(context["query"])[:10]
+
         return context
