@@ -19,8 +19,8 @@ from uk_results.models import CandidateResult, ResultSet
 
 class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
-        self.dest_person = PersonFactory(pk=1)
-        self.source_person = PersonFactory(pk=2)
+        self.dest_person = PersonFactory()
+        self.source_person = PersonFactory()
 
     def test_person_merging(self):
         """
@@ -189,11 +189,15 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_recorded_merge_data(self):
+        self.maxDiff = None
+        source_pk = self.source_person.pk
         merger = PersonMerger(self.dest_person, self.source_person)
         merger.merge()
         expected_versions = [
             {
-                "information_source": "After merging person 2",
+                "information_source": "After merging person {}".format(
+                    source_pk
+                ),
                 "version_id": "40e8cf2c0c6e9260",
                 "timestamp": "2019-01-28T16:08:53.112792",
                 "data": {
@@ -209,7 +213,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     "homepage_url": "",
                     "honorific_prefix": "",
                     "honorific_suffix": "",
-                    "id": "1",
+                    "id": str(self.dest_person.pk),
                     "instagram_url": "",
                     "linkedin_url": "",
                     "name": self.dest_person.name,
@@ -523,8 +527,8 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form[
             "source"
         ] = "Testing adding a new candidate to a locked constituency"
-        response = form.submit()
-        person_1 = response.context["object"]
+        response = form.submit().follow()
+        person_1 = response.context["person"]
 
         # Create person 2
         response = self.app.get(ballot.get_absolute_url(), user=self.user)
@@ -540,8 +544,8 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form[
             "source"
         ] = "Testing adding a new candidate to a locked constituency"
-        response = form.submit()
-        person_2 = response.context["object"]
+        response = form.submit().follow()
+        person_2 = response.context["person"]
 
         # Remove the membership for person 2
         response = self.app.get(
