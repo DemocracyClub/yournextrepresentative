@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Count, Prefetch
 from django.utils.safestring import SafeText
 
-from candidates.views.search import search_person_by_name
+from search.utils import search_person_by_name
 from official_documents.models import OfficialDocument
 from parties.models import Party
 from popolo.models import Membership
