@@ -1,8 +1,6 @@
 import json
 
-from candidates.tests.person_view_shared_tests_mixin import (
-    PersonViewSharedTestsMixin,
-)
+from people.tests.test_person_view import PersonViewSharedTestsMixin
 from candidates.views.version_data import get_change_metadata
 from candidates.tests.factories import ElectionFactory, BallotPaperFactory
 from people.models import EditLimitationStatuses

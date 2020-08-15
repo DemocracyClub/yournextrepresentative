@@ -5,6 +5,9 @@ from .base import *  # noqa
 
 DATABASES["default"]["CONN_MAX_AGE"] = 0  # noqa
 SITE_NAME = "example.com"
+if os.environ.get("CIRCLECI"):
+    DATABASES["default"]["NAME"] = "ynr"
+    DATABASES["default"]["USER"] = "ynr"
 
 
 class DisableMigrations(object):
@@ -42,9 +45,3 @@ ALWAYS_ALLOW_RESULT_RECORDING = False
 
 DEFAULT_FILE_STORAGE = "ynr.storages.TestMediaStorage"
 MEDIA_ROOT = mkdtemp()
-
-if os.environ.get("TRAVIS"):
-    try:
-        from .travis import *  # noqa
-    except ImportError:
-        pass

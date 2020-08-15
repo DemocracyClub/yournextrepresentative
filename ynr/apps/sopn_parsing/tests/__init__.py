@@ -1,6 +1,6 @@
 def should_skip_pdf_tests():
     try:
-        pass
+        import camelot  # noqa
 
         return False
     except ImportError:
