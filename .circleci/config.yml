@@ -1,0 +1,83 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+      - image: circleci/python:3.6-stretch
+        environment:
+          CIRCLECI: true
+          PGHOST: 127.0.0.1
+          RUN_ENV: test
+      - image: circleci/postgres:9.5.19-alpine-ram
+        environment:
+          POSTGRES_USER: ynr
+          POSTGRES_DB: ynr
+      - image: circleci/redis:3.2.12-alpine
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}
+
+      - run:
+          name: Install APT packages
+          command: |
+            sudo apt-get update
+            sudo apt-get install libopencv-dev python-opencv python-tk ghostscript
+
+      - run:
+          name: install Tox
+          command: |
+            python3 -m venv .venv
+            . .venv/bin/activate
+            pip install tox coveralls
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv .venv
+            . .venv/bin/activate
+            pip install -r requirements/testing.txt
+            tox --notest --workdir /home/circleci/repo/.tox/
+
+      - save_cache:
+          paths:
+            - ./.venv
+            - /home/circleci/repo/.tox/
+          key: v1-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}
+
+      # run tests!
+      - run:
+          name: run tests
+          environment:
+            CIRCLECI: true
+            RUN_ENV: test
+          command: |
+            . .venv/bin/activate
+            tox --workdir /home/circleci/repo/.tox/
+      # Coverage
+      - run:
+          name: Update Coveralls
+          command: |
+            . .venv/bin/activate
+            coveralls
+
+      - store_test_results:
+          path: test-results
+
+      - store_artifacts:
+          path: test-results
+
