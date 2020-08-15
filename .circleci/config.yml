@@ -44,7 +44,7 @@ jobs:
           command: |
             python3 -m venv .venv
             . .venv/bin/activate
-            pip install tox coveralls
+            pip install -U pip tox coveralls
       - run:
           name: install dependencies
           command: |
