@@ -1,4 +1,4 @@
 -r base.txt
 
-pdfminer.six==20200726
-camelot-py[cv]
+pdfminer.six==20200124
+camelot-py[cv]==0.7.3
