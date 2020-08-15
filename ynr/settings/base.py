@@ -92,13 +92,13 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    "django.contrib.postgres",
     "django_extensions",
     "pipeline",
     "sorl.thumbnail",
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
-    "haystack",
     "elections",
     "popolo",
     "elections.uk",
@@ -121,7 +121,6 @@ INSTALLED_APPS = (
     "raven.contrib.django.raven_compat",
     "uk_results",
     "bulk_adding",
-    "celery_haystack",
     "celery",
     "parties",
     "candidatebot",
@@ -136,6 +135,7 @@ INSTALLED_APPS = (
     "sopn_parsing",
     "django_celery_results",
     "facebook_data",
+    "search",
 )
 
 CELERY_RESULT_BACKEND = "django-db"
@@ -404,15 +404,6 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
 }
 
-HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
-
-
-HAYSTACK_CONNECTIONS = {
-    "default": {
-        "ENGINE": "haystack.backends.whoosh_backend.WhooshEngine",
-        "PATH": ".haystack",
-    }
-}
 
 # CORS config
 CORS_ORIGIN_ALLOW_ALL = True

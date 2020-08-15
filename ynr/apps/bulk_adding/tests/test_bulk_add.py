@@ -1,6 +1,5 @@
 import json
 
-from django.core.management import call_command
 from django_webtest import WebTest
 
 from bulk_adding.models import RawPeople
@@ -15,10 +14,6 @@ from popolo.models import Membership
 
 
 class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
-    def setUp(self):
-        super().setUp()
-        call_command("rebuild_index", verbosity=0, interactive=False)
-
     def testNoFormIfNoSopn(self):
         response = self.app.get(
             "/bulk_adding/sopn/parl.65808.2015-05-07/",
@@ -88,7 +83,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(52):
+        with self.assertNumQueries(50):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)

@@ -7,29 +7,29 @@
 <h2>Search candidates</h2>
 
     <form class="search" method="get" action="{% url 'person-search' %}">
-        <input type="search" placeholder="Find a candidate…" name="q" value="{{ form.q.value|default_if_none:'' }}"/>
+        <input type="search" placeholder="Find a candidate…" name="q" value="{{ query|default_if_none:'' }}"/>
         <button type="submit">Search</button>
     </form>
 
     {% if looks_like_postcode %}
     <h3>Looking information in your postcode?</h3>
-    <p>Try going to <a href="https://whocanivotefor.co.uk/elections/{{ form.q.value }}/">
+    <p>Try going to <a href="https://whocanivotefor.co.uk/elections/{{ query }}/">
         'Who Can I Vote For' for information on your candidates and elections</a></p>
     {% endif %}
 
-    {% if object_list %}
+    {% if results %}
     <h3>Existing candidates</h3>
 
         <ul class="candidate-list search_results">
-        {% for result in object_list %}
+        {% for result in results %}
 
             <li class="candidates-list__person">
-                <img class="person-avatar" src="{{ result.object.get_display_image_url }}" height="64" width="64"/>
+                <img class="person-avatar" src="{{ result.get_display_image_url }}" height="64" width="64"/>
                 <div class="person-name-and-party">
-                  <a href="{% url 'person-view' result.object.id result.object.name|slugify %}" class="candidate-name">{{ result.object.name }}</a>
-                  <span class="party">{{ result.object.last_party }}</span>
+                  <a href="{% url 'person-view' result.id result.name|slugify %}" class="candidate-name">{{ result.name }}</a>
+                  <span class="party">{{ result.last_party }}</span>
                 </div>
-                <a href="{% url 'person-update' person_id=result.object.pk %}" class="button secondary small">Add more details</a>
+                <a href="{% url 'person-update' person_id=result.pk %}" class="button secondary small">Add more details</a>
             </li>
         {% empty %}
         <p>No results found.</p>
@@ -51,8 +51,8 @@
     <p>If we don't have this person in our database already, you can add them yourself.</p>
     <p>Please check that they aren't in the results above first – you can update
       existing candidates if they are standing in another election!</p>
-    <a href="{{ select_election_view }}?name={{ form.q.value }}" class="button">
-      Add "{{ form.q.value }}" as a new candidate</a>
+    <a href="{{ select_election_view }}?name={{ query }}" class="button">
+      Add "{{ query }}" as a new candidate</a>
 
 
 

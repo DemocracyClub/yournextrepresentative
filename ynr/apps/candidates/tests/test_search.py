@@ -1,6 +1,5 @@
 import re
 
-from django.core.management import call_command
 from django_webtest import WebTest
 
 from people.models import Person
@@ -10,10 +9,6 @@ from .uk_examples import UK2015ExamplesMixin
 
 
 class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
-    def setUp(self):
-        super().setUp()
-        call_command("rebuild_index", verbosity=0, interactive=False)
-
     def test_search_page(self):
         # we have to create the candidate by submitting the form as otherwise
         # we're not making sure the index update hook fires

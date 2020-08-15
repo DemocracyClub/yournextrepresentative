@@ -66,16 +66,6 @@ class Command(BaseCommand):
 
     def handle(self, **options):
 
-        if (
-            settings.HAYSTACK_SIGNAL_PROCESSOR
-            != "haystack.signals.BaseSignalProcessor"
-        ):
-            self.stderr.write(
-                """WARNING: haystack will try to index all imported
-            people in real time, this will slow down the import a lot. Set
-            `HAYSTACK_SIGNAL_PROCESSOR` to "haystack.signals.BaseSignalProcessor"
-            in `local.py` for a massive speed boost."""
-            )
         self.image_storage = FileSystemStorage()
         self.ynr_url = options["site_url"]
         self.party_cache = {}

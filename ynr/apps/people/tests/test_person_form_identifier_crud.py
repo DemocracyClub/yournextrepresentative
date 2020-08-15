@@ -266,7 +266,7 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         resp = form.submit()
 
         self.assertEqual(resp.status_code, 302)
-        resp.follow()
+        resp = resp.follow()
         self.assertEqual(
             resp.context["person"].tmp_person_identifiers.count(), 2
         )

@@ -173,11 +173,6 @@ patterns_to_format = [
         "view": views.AskForCopyrightAssigment.as_view(),
         "name": "ask-for-copyright-assignment",
     },
-    {
-        "pattern": r"^search$",
-        "view": views.PersonSearch.as_view(),
-        "name": "person-search",
-    },
     # ----------------- Legacy redirect views
     {
         "pattern": r"^areas/(?P<type_and_area_ids>.*?)(?:/(?P<ignored_slug>.*))?$",
