@@ -37,7 +37,7 @@ jobs:
           name: Install APT packages
           command: |
             sudo apt-get update
-            sudo apt-get install libopencv-dev python-opencv python-tk ghostscript
+            sudo apt-get install python-tk ghostscript
 
       - run:
           name: install Tox
