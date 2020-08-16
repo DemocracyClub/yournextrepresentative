@@ -619,3 +619,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         actual_fields.update(actual_relations)
         self.assertSetEqual(supported_fields, actual_fields)
+
+        merge_methods = set(PersonMerger.SUPPORTED_FIELDS.values())
+        for method in merge_methods:
+            assert hasattr(PersonMerger, method)

@@ -12,6 +12,7 @@ from candidates.models import (
 )
 from candidates.models.versions import get_person_as_version_data
 from candidates.views.version_data import get_change_metadata, get_client_ip
+from duplicates.merge_helpers import alter_duplicate_suggestion_post_merge
 from results.models import ResultEvent
 
 
@@ -86,6 +87,8 @@ class PersonMerger:
             ("resultevent", "merge_result_events"),
             ("gender_guess", "merge_gender_guess"),
             ("facebookadvert", "merge_facebookadvert"),
+            ("duplicate_suggestion", "merge_duplicate_suggestion"),
+            ("duplicate_suggestion_other_person", "merge_duplicate_suggestion"),
             # Discarded
             ("id", "discard_data"),
             ("created_at", "discard_data"),
@@ -330,6 +333,11 @@ class PersonMerger:
         """
         if hasattr(self.source_person, "gender_guess"):
             self.source_person.gender_guess.delete()
+
+    def merge_duplicate_suggestion(self):
+        alter_duplicate_suggestion_post_merge(
+            self.source_person, self.dest_person
+        )
 
     def setup_redirect(self):
         # Create a redirect from the old person to the new person:
