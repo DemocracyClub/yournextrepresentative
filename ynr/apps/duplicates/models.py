@@ -44,22 +44,22 @@ class DuplicateSuggestion(StatusModel, TimeStampedModel):
     """
 
     STATUS = Choices(
-        ('suggested', 'Suggested'),
-        ('not_duplicate', 'Not duplicate'),
+        ("suggested", "Suggested"), ("not_duplicate", "Not duplicate")
     )
 
     person = models.ForeignKey(
-        'popolo.Person',
-        related_name="duplicate_suggestion"
+        "people.Person",
+        related_name="duplicate_suggestion",
+        on_delete=models.CASCADE,
     )
     other_person = models.ForeignKey(
-        'popolo.Person',
-        related_name="duplicate_suggestion_other_person"
+        "people.Person",
+        related_name="duplicate_suggestion_other_person",
+        on_delete=models.CASCADE,
     )
-    user = models.ForeignKey('auth.User')
-
+    user = models.ForeignKey("auth.User", on_delete=models.CASCADE)
 
     objects = PersonExtraQuerySet.as_manager()
 
     class Meta:
-        unique_together = ('person', 'other_person')
+        unique_together = ("person", "other_person")

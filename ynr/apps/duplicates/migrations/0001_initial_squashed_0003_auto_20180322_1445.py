@@ -13,43 +13,87 @@ import model_utils.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('popolo', '0002_update_models_from_upstream'),
+        ("popolo", "0002_update_models_from_upstream"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DuplicateSuggestion',
+            name="DuplicateSuggestion",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', django_extensions.db.fields.CreationDateTimeField(auto_now_add=True, verbose_name='created')),
-                ('modified', django_extensions.db.fields.ModificationDateTimeField(auto_now=True, verbose_name='modified')),
-                ('other_person', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='duplicate_suggestion_other_person', to='popolo.Person')),
-                ('person', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='duplicate_suggestion', to='popolo.Person')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created",
+                    django_extensions.db.fields.CreationDateTimeField(
+                        auto_now_add=True, verbose_name="created"
+                    ),
+                ),
+                (
+                    "modified",
+                    django_extensions.db.fields.ModificationDateTimeField(
+                        auto_now=True, verbose_name="modified"
+                    ),
+                ),
+                (
+                    "other_person",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="duplicate_suggestion_other_person",
+                        to="popolo.Person",
+                    ),
+                ),
+                (
+                    "person",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="duplicate_suggestion",
+                        to="popolo.Person",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-modified', '-created'),
-                'abstract': False,
-                'get_latest_by': 'modified',
+                "ordering": ("-modified", "-created"),
+                "abstract": False,
+                "get_latest_by": "modified",
             },
         ),
-        migrations.AlterModelOptions(
-            name='duplicatesuggestion',
-            options={},
+        migrations.AlterModelOptions(name="duplicatesuggestion", options={}),
+        migrations.AddField(
+            model_name="duplicatesuggestion",
+            name="status",
+            field=model_utils.fields.StatusField(
+                default="suggested",
+                max_length=100,
+                no_check_for_status=True,
+                verbose_name="status",
+            ),
         ),
         migrations.AddField(
-            model_name='duplicatesuggestion',
-            name='status',
-            field=model_utils.fields.StatusField(default='suggested', max_length=100, no_check_for_status=True, verbose_name='status'),
-        ),
-        migrations.AddField(
-            model_name='duplicatesuggestion',
-            name='status_changed',
-            field=model_utils.fields.MonitorField(default=django.utils.timezone.now, monitor='status', verbose_name='status changed'),
+            model_name="duplicatesuggestion",
+            name="status_changed",
+            field=model_utils.fields.MonitorField(
+                default=django.utils.timezone.now,
+                monitor="status",
+                verbose_name="status changed",
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='duplicatesuggestion',
-            unique_together=set([('person', 'other_person')]),
+            name="duplicatesuggestion",
+            unique_together=set([("person", "other_person")]),
         ),
     ]

@@ -1,9 +1,9 @@
 from django.test import TestCase
 
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import PersonFactory
 from duplicates import merge_helpers
 from duplicates.models import DuplicateSuggestion
+from people.tests.factories import PersonFactory
 
 
 class TestMergeHelper(TestUserMixin, TestCase):
@@ -16,16 +16,12 @@ class TestMergeHelper(TestUserMixin, TestCase):
 
         # suggest they're the same
         ds = DuplicateSuggestion.objects.create(
-            person=p2,
-            other_person=p1,
-            user=self.user,
+            person=p2, other_person=p1, user=self.user
         )
 
         # suggest someone else is the same
         ds = DuplicateSuggestion.objects.create(
-            person=p1,
-            other_person=p3,
-            user=self.user,
+            person=p1, other_person=p3, user=self.user
         )
 
         # Pretend we've merged p2 in to p1
@@ -45,9 +41,7 @@ class TestMergeHelper(TestUserMixin, TestCase):
         # We're going to merge p1 in to p2
         # but someone things p3 is a dupe of p2
         ds = DuplicateSuggestion.objects.create(
-            person=p2,
-            other_person=p3,
-            user=self.user,
+            person=p2, other_person=p3, user=self.user
         )
         self.assertEqual(DuplicateSuggestion.objects.first().person, p2)
         self.assertEqual(DuplicateSuggestion.objects.first().other_person, p3)
