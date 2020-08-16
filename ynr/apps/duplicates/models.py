@@ -10,7 +10,7 @@ from model_utils.models import StatusModel
 from model_utils import Choices
 
 
-class PersonExtraQuerySet(models.QuerySet):
+class DuplicateSuggestionQuerySet(models.QuerySet):
     def for_person(self, person):
         return self.for_person_id(person.pk)
 
@@ -59,7 +59,7 @@ class DuplicateSuggestion(StatusModel, TimeStampedModel):
     )
     user = models.ForeignKey("auth.User", on_delete=models.CASCADE)
 
-    objects = PersonExtraQuerySet.as_manager()
+    objects = DuplicateSuggestionQuerySet.as_manager()
 
     class Meta:
         unique_together = ("person", "other_person")
