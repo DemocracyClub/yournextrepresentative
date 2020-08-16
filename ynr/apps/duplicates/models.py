@@ -5,7 +5,6 @@ from django.db import models
 from django.db.models import Q
 
 from django_extensions.db.models import TimeStampedModel
-from model_utils.managers import QueryManager
 from model_utils.models import StatusModel
 from model_utils import Choices
 
