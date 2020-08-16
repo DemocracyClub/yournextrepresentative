@@ -14,8 +14,7 @@ def alter_duplicate_suggestion_post_merge(primary, secondary):
 
     # Case 2: The secondary person has a DS but we are merging it in to someone
     # else in this case we need to update the ID
-    DuplicateSuggestion.objects.filter(
-        person=secondary).update(person=primary)
-    DuplicateSuggestion.objects.filter(
-        other_person=secondary).update(other_person=primary)
-
+    DuplicateSuggestion.objects.filter(person=secondary).update(person=primary)
+    DuplicateSuggestion.objects.filter(other_person=secondary).update(
+        other_person=primary
+    )
