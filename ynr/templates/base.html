@@ -9,6 +9,7 @@
     <link rel="alternate" type="application/atom+xml" title="RSS" href="/feeds/changes.xml">
 
     {% block country_wide_extra_head %}
+      {% if "/person/" in request.path or "/election/" in request.path %}<meta name="robots" content="noindex">{% endif %}
     {% endblock %}
 
     {% block extra_head %}
@@ -31,6 +32,11 @@
 
     {% javascript 'all' %}
     {% block extra_js %}
+      {% if settings.RAVEN_CONFIG %}
+        {% load raven %}
+        <script src="https://cdn.ravenjs.com/3.15.0/raven.min.js"></script>
+        <script>Raven.config('{% sentry_public_dsn %}').install()</script>
+      {% endif %}
     {% endblock %}
 </head>
 
@@ -69,8 +75,10 @@
           <ul class="nav-links">
             {% block menu_bar_links %}
               <li class="nav-links__item"><a href="{% url 'help-about' %}">About</a></li>
-              <li class="nav-links__item"><a href="{% url 'posts' %}">Posts</a></li>
+              <li class="nav-links__item"><a href="{% url 'election_list_view' %}">Elections</a></li>
               <li class="nav-links__item"><a href="{% url 'reports_home' %}">Numbers</a></li>
+              <li class="nav-links__item"><a href="{% url 'results-home' %}">Results</a></li>
+              <li class="nav-links__item"><a href="{% url 'api-home' %}">Get the data</a></li>
             {% endblock %}
           </ul>
         </div>
@@ -142,12 +150,37 @@
       </div>
       <div class="footer__bylines">
         {% block footer_bylines %}
+          <p>
+            Supported by <a href="https://mysociety.org">mySociety</a>.
+          </p>
+          {% static "img/logo-with-text.png" as logo_url %}
+          <p>
+            Built by <a href="https://democracyclub.org.uk/">
+            <img src="{{ logo_url }}" alt="Democracy Club" class="dc-logo"></a>
+          </p>
         {% endblock %}
       </div>
     </div>
   </div>
 
-  {% block analytics %}{% endblock %}
+  {% block analytics %}
+    {% if settings.GOOGLE_ANALYTICS_ACCOUNT %}
+      <script>
+          var dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack || "0";
+          if (dnt != "1" && dnt != "yes") {
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+              ga('create', '{{ settings.GOOGLE_ANALYTICS_ACCOUNT }}', 'auto', {'allowLinker': true});
+              ga('require', 'linker');
+              ga('linker:autoLink', ['yournextmp.com'] );
+              ga('send', 'pageview');
+          }
+      </script>
+    {% endif %}
+  {% endblock %}
 
 </body>
 </html>
