@@ -2,6 +2,7 @@ import json
 import re
 
 from braces.views import LoginRequiredMixin
+from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
@@ -33,7 +34,12 @@ from popolo.models import NotStandingValidationError
 from ynr.apps.people.merging import PersonMerger, InvalidMergeError
 
 from ..diffs import get_version_diffs
-from ..models import TRUSTED_TO_MERGE_GROUP_NAME, LoggedAction, PersonRedirect
+from ..models import (
+    TRUSTED_TO_MERGE_GROUP_NAME,
+    LoggedAction,
+    PersonRedirect,
+    Ballot,
+)
 from ..models.auth import check_creation_allowed, check_update_allowed
 from ..models.versions import revert_person_from_version_data
 from .helpers import (
@@ -354,6 +360,49 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
         initial_data.update(person.get_initial_form_data())
         initial_data["person"] = person
         return initial_data
+
+    def hide_locked_ballots(self, form):
+        """
+        This is, let's say, not ideal
+
+        The problem is we don't let people change Ballots for people
+        if that ballot is locked. Previously we disabled the HTML widget,
+        but this means that browsers don't submit the form data. It's
+        impossible to distinguish between a user trying to delete a ballot
+        and a user not touching the form at all.
+
+        The best thing in this case is to not show the thing that can't be
+        changed, but we can't just remove the fields either, as that messes
+        up other elements of the dynamic field creation.
+
+        So, we end up just marking them all as hidden, at the point where we
+        get the form.
+
+        """
+        election_slugs = []
+        keys = ("standing", "constituency", "party_GB", "party_NI")
+        for field in form.fields:
+            if field.startswith("standing_"):
+                election_slugs.append(field[9:])
+        for slug in election_slugs:
+            ballot_locked = Ballot.objects.filter(
+                election__slug=slug,
+                membership__person=form.initial["person"],
+                candidates_locked=True,
+            ).exists()
+
+            if ballot_locked:
+                for prefix in keys:
+                    form.fields[
+                        "{}_{}".format(prefix, slug)
+                    ].widget = forms.HiddenInput()
+
+        return form
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form = self.hide_locked_ballots(form)
+        return form
 
     def get_context_data(self, **kwargs):
 
