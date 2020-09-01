@@ -86,7 +86,6 @@ class StrippedCharField(forms.CharField):
 
 class BaseCandidacyForm(forms.Form):
     person_id = StrippedCharField(label="Person ID", max_length=256)
-    post_id = StrippedCharField(label="Post ID", max_length=256)
 
 
 class CandidacyCreateForm(BaseCandidacyForm):

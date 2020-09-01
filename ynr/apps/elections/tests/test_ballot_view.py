@@ -288,21 +288,6 @@ class TestBallotView(
 
         form = response.forms["candidacy-delete_{}".format(person_to_mark.pk)]
         form["person_id"] = 9999
-        form["post_id"] = 14419
-        form["source"] = "test data"
-        response = form.submit(expect_errors=True)
-        self.assertEqual(response.status_code, 404)
-
-    def test_mark_not_standing_no_post(self):
-        self.create_memberships(self.past_ballot, self.parties)
-        person_to_mark = Person.objects.filter(
-            memberships__ballot=self.past_ballot
-        ).first()
-        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
-
-        form = response.forms["candidacy-delete_{}".format(person_to_mark.pk)]
-        form["person_id"] = person_to_mark.pk
-        form["post_id"] = 99999
         form["source"] = "test data"
         response = form.submit(expect_errors=True)
         self.assertEqual(response.status_code, 404)
@@ -316,22 +301,8 @@ class TestBallotView(
 
         form = response.forms["candidacy-create_{}".format(person_to_mark.pk)]
         form["person_id"] = 00000
-        form["post_id"] = 99999
         form["source"] = "test data"
-        response = form.submit(expect_errors=True)
-        self.assertEqual(response.status_code, 404)
 
-    def test_mark_standing_no_post(self):
-        self.create_memberships(self.past_ballot, self.parties)
-        person_to_mark = Person.objects.filter(
-            memberships__ballot=self.past_ballot
-        ).first()
-        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
-
-        form = response.forms["candidacy-create_{}".format(person_to_mark.pk)]
-        form["person_id"] = person_to_mark.pk
-        form["post_id"] = 99999
-        form["source"] = "test data"
         response = form.submit(expect_errors=True)
         self.assertEqual(response.status_code, 404)
 
@@ -344,7 +315,6 @@ class TestBallotView(
 
         form = response.forms["candidacy-delete_{}".format(person_to_mark.pk)]
         form["person_id"] = person_to_mark.pk
-        form["post_id"] = self.ballot.post.slug
         form["source"] = "test data"
         response = form.submit()
         self.assertEqual(response.status_code, 302)
@@ -365,7 +335,6 @@ class TestBallotView(
 
         form = response.forms["candidacy-create_{}".format(person_to_mark.pk)]
         form["person_id"] = person_to_mark.pk
-        form["post_id"] = self.ballot.post.slug
         form["source"] = "test data"
         response = form.submit()
         self.assertEqual(response.status_code, 302)
@@ -386,7 +355,6 @@ class TestBallotView(
 
         form = response.forms["candidacy-delete_{}".format(person_to_mark.pk)]
         form["person_id"] = person_to_mark.pk
-        form["post_id"] = self.ballot.post.slug
         form["source"] = "test data"
         response = form.submit()
         self.assertEqual(response.status_code, 302)
@@ -416,7 +384,6 @@ class TestBallotView(
 
         form = response.forms["candidacy-create_{}".format(person_to_mark.pk)]
         form["person_id"] = person_to_mark.pk
-        form["post_id"] = self.ballot.post.slug
         form["source"] = "test data"
         response = form.submit()
         self.assertEqual(response.status_code, 302)

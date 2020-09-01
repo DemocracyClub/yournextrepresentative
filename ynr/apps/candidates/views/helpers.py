@@ -28,11 +28,6 @@ def get_field_groupings():
     return (personal, demographic)
 
 
-def get_redirect_to_post(election, post):
-    ballot = election.ballot_set.get(post=post)
-    return HttpResponseRedirect(ballot.get_absolute_url())
-
-
 def get_person_form_fields(context, form):
     context["extra_fields"] = []
 

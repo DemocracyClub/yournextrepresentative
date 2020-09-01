@@ -1,9 +1,8 @@
 
 <div class="source-confirmation source-confirmation-{{ standing }}">
-  <form method="post" action="{% url action election=ballot.election.slug %}" id="{{ action }}_{{ person_id }}">
+  <form method="post" action="{% url action ballot_paper_id=ballot.ballot_paper_id %}" id="{{ action }}_{{ person_id }}">
     {% csrf_token %}
     <input type="hidden" name="person_id" value="{{ person_id }}"/>
-    <input type="hidden" name="post_id" value="{{ ballot.post.slug }}"/>
     <label for="id_source">Before we save that, can you show us <em>where</em> you heard it? {{ settings.SOURCE_HINTS }}</label>
     <input type="text" name="source" id="id_source" maxlength="512" required="required"/>
     <input type="submit" class="button tiny" value="Save changes" />

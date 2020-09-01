@@ -1,6 +1,6 @@
 from braces.views import LoginRequiredMixin
 from django.db import transaction
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
@@ -13,7 +13,6 @@ from people.models import Person
 from popolo.models import Membership, Post
 
 from ..models import TRUSTED_TO_LOCK_GROUP_NAME, LoggedAction
-from .helpers import get_redirect_to_post
 from .version_data import get_change_metadata, get_client_ip
 
 
@@ -30,12 +29,13 @@ def raise_if_locked(request, post, election):
 class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
 
     form_class = CandidacyCreateForm
+    template_name = "candidates/candidacy-create.html"
 
     def form_valid(self, form):
-        post_id = form.cleaned_data["post_id"]
         with transaction.atomic():
-            post = get_object_or_404(Post, slug=post_id)
-            raise_if_locked(self.request, post, self.election_data)
+            raise_if_locked(
+                self.request, self.ballot.post, self.ballot.election
+            )
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data["source"]
             )
@@ -52,22 +52,22 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
             )
 
             membership_exists = Membership.objects.filter(
-                person=person, post=post, ballot__election=self.election_data
+                person=person, ballot=self.ballot
             ).exists()
 
-            person.not_standing.remove(self.election_data)
+            person.not_standing.remove(self.ballot.election)
 
             if not membership_exists:
                 Membership.objects.create(
                     person=person,
-                    post=post,
+                    post=self.ballot.post,
                     party=person.last_party(),
-                    ballot=self.election_data.ballot_set.get(post=post),
+                    ballot=self.ballot,
                 )
 
             person.record_version(change_metadata)
             person.save()
-        return get_redirect_to_post(self.election_data, post)
+        return HttpResponseRedirect(self.ballot.get_absolute_url())
 
 
 class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
@@ -76,10 +76,10 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
     template_name = "candidates/candidacy-delete.html"
 
     def form_valid(self, form):
-        post_id = form.cleaned_data["post_id"]
         with transaction.atomic():
-            post = get_object_or_404(Post, slug=post_id)
-            raise_if_locked(self.request, post, self.election_data)
+            raise_if_locked(
+                self.request, self.ballot.post, self.ballot.election
+            )
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data["source"]
             )
@@ -96,7 +96,7 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
             )
 
             memberships_to_delete = person.memberships.filter(
-                post=post, ballot__election=self.election_data
+                ballot=self.ballot
             )
             for m in memberships_to_delete:
                 raise_if_unsafe_to_delete(m)
@@ -109,7 +109,7 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
             person.save()
         if self.request.is_ajax():
             return JsonResponse({"success": True})
-        return get_redirect_to_post(self.election_data, post)
+        return HttpResponseRedirect(self.ballot.get_absolute_url())
 
     def form_invalid(self, form):
         result = super(CandidacyDeleteView, self).form_invalid(form)

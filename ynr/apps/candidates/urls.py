@@ -30,12 +30,12 @@ patterns_to_format = [
         "name": "retract-winner",
     },
     {  # Rename to CandidacyCreateView
-        "pattern": r"^election/{election}/candidacy$",
+        "pattern": r"^election/(?P<ballot_paper_id>[^/]+)/candidacy$",
         "view": views.CandidacyView.as_view(),
         "name": "candidacy-create",
     },
     {
-        "pattern": r"^election/{election}/candidacy/delete$",
+        "pattern": r"^election/(?P<ballot_paper_id>[^/]+)/candidacy/delete$",
         "view": views.CandidacyDeleteView.as_view(),
         "name": "candidacy-delete",
     },
