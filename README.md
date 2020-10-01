@@ -1,6 +1,6 @@
 [![Build Status](https://circleci.com/gh/DemocracyClub/yournextrepresentative.svg?style=shield)](https://circleci.com/gh/DemocracyClub/yournextrepresentative)
 [![Coverage Status](https://coveralls.io/repos/github/DemocracyClub/yournextrepresentative/badge.svg)](https://coveralls.io/github/DemocracyClub/yournextrepresentative)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black) ![CodeQL](https://github.com/DemocracyClub/yournextrepresentative/workflows/CodeQL/badge.svg)
 
 
 # A website for crowd-sourcing structured election candidate data
