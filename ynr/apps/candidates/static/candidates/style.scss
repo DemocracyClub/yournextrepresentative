@@ -1,4 +1,4 @@
-@import "../foundation/scss/foundation/functions";
+@import "foundation/functions";
 
 $color-orange: #f97d3d;
 $color-red: #c55e59;
@@ -54,8 +54,8 @@ $code-font-family: Consolas, Monaco, 'Liberation Mono', Courier, monospace;
 
 $high_dpi_screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi';
 
-@import "../foundation/scss/normalize";
-@import "../foundation/scss/foundation";
+@import "normalize";
+@import "foundation";
 
 @import "mixins";
 
