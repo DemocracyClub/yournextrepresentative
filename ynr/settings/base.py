@@ -227,6 +227,7 @@ MEDIA_URL = "/media/"
 # Settings for staticfiles and Django pipeline:
 STATIC_URL = "/static/"
 STATIC_ROOT = root("static")
+STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, "assets"),)
 
 STATICFILES_LOCATION = "static"
 MEDIAFILES_LOCATION = "media"
@@ -262,10 +263,7 @@ PIPELINE = {
             "source_filenames": (
                 "candidates/style.scss",
                 "cached_counts/style.scss",
-                "select2/dist/css/select2.css",
-                "jquery/jquery-ui.css",
-                "jquery/jquery-ui.structure.css",
-                "jquery/jquery-ui.theme.css",
+                "scss/select2.css",
                 "moderation_queue/css/photo-upload.scss",
                 "frontend/css/frontend.scss",
             ),
@@ -291,26 +289,9 @@ PIPELINE = {
         },
         "all": {
             "source_filenames": (
-                "jquery/jquery-1.11.1.js",
-                "jquery/jquery-ui.js",
-                "foundation/js/foundation/foundation.js",
-                "foundation/js/foundation/foundation.equalizer.js",
-                "foundation/js/foundation/foundation.dropdown.js",
-                "foundation/js/foundation/foundation.tooltip.js",
-                "foundation/js/foundation/foundation.offcanvas.js",
-                "foundation/js/foundation/foundation.accordion.js",
-                "foundation/js/foundation/foundation.joyride.js",
-                "foundation/js/foundation/foundation.alert.js",
-                "foundation/js/foundation/foundation.topbar.js",
-                "foundation/js/foundation/foundation.reveal.js",
-                "foundation/js/foundation/foundation.slider.js",
-                "foundation/js/foundation/foundation.magellan.js",
-                "foundation/js/foundation/foundation.clearing.js",
-                "foundation/js/foundation/foundation.orbit.js",
-                "foundation/js/foundation/foundation.interchange.js",
-                "foundation/js/foundation/foundation.abide.js",
-                "foundation/js/foundation/foundation.tab.js",
-                "select2/dist/js/select2.full.js",
+                "js/jquery.js",
+                "js/foundation.js",
+                "js/select2.full.js",
                 "js/ballot.js",
                 "js/person_form.js",
                 "js/home_geolocation_form.js",
@@ -320,7 +301,7 @@ PIPELINE = {
         },
     },
     "COMPILERS": ("pipeline.compilers.sass.SASSCompiler",),
-    "SASS_BINARY": "sassc",
+    "SASS_BINARY": "pysassc",
     "CSS_COMPRESSOR": "pipeline.compressors.NoopCompressor",
     "JS_COMPRESSOR": "pipeline.compressors.yui.YUICompressor",
     # On some platforms this might be called "yuicompressor", so it may be
@@ -330,7 +311,7 @@ PIPELINE = {
     "YUI_JS_ARGUMENTS": "--nomunge",
 }
 
-SASS_INCLUDE_PATHS = (root("apps/candidates/static/foundation/scss"),)
+SASS_INCLUDE_PATHS = (root("assets/scss/"),)
 SASS_ARGUMENT_LIST = ["-I " + p for p in SASS_INCLUDE_PATHS]
 SASS_ARGUMENT_LIST.append("--style compressed")
 SASS_ARGUMENT_LIST.append("--sourcemap")
