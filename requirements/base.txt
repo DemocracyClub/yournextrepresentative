@@ -1,4 +1,4 @@
-attrs==19.1.0
+attrs==20.3.0
 aenum==2.1.2
 beautifulsoup4==4.7.1
 black==19.10b0;python_version>="3.6"
