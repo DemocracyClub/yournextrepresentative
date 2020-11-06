@@ -41,7 +41,7 @@
 
 
   {% if user.is_staff and user_can_upload_documents %}
-  {% url 'admin:official_documents_officialdocument_change' object.id as url %}
+  {% url 'admin:official_documents_officialdocument_change' object.sopn.id as url %}
   You can <a href="{{ url }}">edit this in the admin interface</a> (e.g. to delete it)
   {% endif %}
 
