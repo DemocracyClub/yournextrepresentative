@@ -13,7 +13,7 @@ cryptography==3.2
 decorator==4.4.0
 django-allauth==0.39.1
 django-appconf==1.0.3
-django-braces==1.13.0
+django-braces==1.14.0
 django-celery-results==1.1.2
 django-cors-headers==3.5.0
 django-date-extensions==3.0
