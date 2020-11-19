@@ -41,7 +41,7 @@ git+https://github.com/dessibelle/sorl-thumbnail-serializer-field.git#egg=sorl-t
 html5lib==1.0.1
 idna>=2.5,<2.9
 ipaddress==1.0.22
-ipdb==0.12.3
+ipdb==0.13.4
 ipython-genutils==0.2.0
 ipython==7.4.0
 jsonfield==2.0.2
