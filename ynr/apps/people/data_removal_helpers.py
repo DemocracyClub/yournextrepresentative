@@ -55,7 +55,10 @@ class PhotoCheck(BaseCheck):
 
 class VersionHistoryCheck(BaseCheck):
     def get_item_display_info(self, item):
-        return {"title": item[0], "description": "\n\t".join(sorted(item[1]))}
+        return {
+            "title": item[0],
+            "description": "\n\t".join(sorted([x for x in item[1] if x])),
+        }
 
     def run_collect(self, do_remove=False):
         version_data_to_remove = []
