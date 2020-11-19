@@ -1,6 +1,6 @@
 {% load prettyjson %}
 
-
+{% if request.user.is_authenticated %}
 <div class="person__versions">
     <h2>All versions</h2>
     {% for version in person.version_diffs %}
@@ -33,3 +33,4 @@
       </div>
     {% endfor %}
 </div>
+{% endif %}

@@ -95,3 +95,11 @@ class TestPersonView(PersonViewSharedTestsMixin):
         req = self.app.get(self.person.get_absolute_url())
         self.assertContains(req, "Photo Credit:")
         self.assertContains(req, "Taken from Wikipedia")
+
+    def test_versions_exist_when_logged_in(self):
+        response = self.app.get("/person/2009/tessa-jowell", user=self.user)
+        self.assertContains(response, "<h2>All versions</h2>")
+
+    def test_versions_hidden_when_not_logged_in(self):
+        response = self.app.get("/person/2009/tessa-jowell")
+        self.assertNotContains(response, "<h2>All versions</h2>")
