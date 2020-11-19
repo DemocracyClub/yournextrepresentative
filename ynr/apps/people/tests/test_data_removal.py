@@ -9,8 +9,9 @@ from people.data_removal_helpers import DataRemover
 from people.tests.test_merge_view import EXAMPLE_VERSIONS
 
 
-class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
+class TestDataRemoval(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
+        self.maxDiff = None
         super().setUp()
         # Create Tessa Jowell (the primary person)
         self.person = people.tests.factories.PersonFactory.create(
