@@ -1,0 +1,32 @@
+{% extends "admin/base_site.html" %}
+{% load markdown_deux_tags %}
+
+{% block content %}
+<div class="delete-confirmation">
+  <p><strong>Warning: This will remove all personal data for <a
+  href="{{ person.get_absolute_url }}">{{ person.name }}</a> and cannot be undone.</strong></p>
+
+  <h2>Data to be removed:</h2>
+  {% for check, to_remove in data_remover.items %}
+    <h3>{{ check }}</h3>
+      {% for item in to_remove %}
+      <p>
+      <strong>{{ item.title }}</strong>
+      {{ item.description|markdown }}
+      {% if item.image %}
+        <img src="{{ item.image }}" height="150px" width="150px" alt="{{ item.description }}">
+      {% endif %}
+      </p>
+      {% empty %}
+        Nothing to remove
+      {% endfor %}
+    <hr>
+  {% endfor %}
+
+  <form method="post">
+    {% csrf_token %}
+    <input type="submit" value="Confirm removal of the above data">
+    <a href="{% url "admin:people_person_change" object_id=object_id %}" class="button cancel-link">Never mind</a>
+  </form>
+</div>
+{% endblock %}

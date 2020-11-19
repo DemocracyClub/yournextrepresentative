@@ -1,0 +1,10 @@
+{% extends "admin/submit_line.html" %}
+
+{% block submit-row %}
+  {% if request.user.is_superuser %}
+  <p class="deletelink-box" style="padding-right:0.5em">
+    <a href="{% url "admin:remove_personal_data_view" object_id=object_id %}" class="deletelink">Remove all personal data</a>
+  </p>
+  {% endif %}
+  {{ block.super }}
+{% endblock %}

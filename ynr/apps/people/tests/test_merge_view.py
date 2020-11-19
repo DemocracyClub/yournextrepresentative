@@ -21,20 +21,7 @@ example_version_id = "5aa6418325c1a0bb"
 
 TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
 
-
-@override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
-@override_settings(TWITTER_APP_ONLY_BEARER_TOKEN=None)
-class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
-    def setUp(self):
-        super().setUp()
-        mkdir_p(TEST_MEDIA_ROOT)
-        # Create Tessa Jowell (the primary person)
-        person = people.tests.factories.PersonFactory.create(
-            id=2009,
-            name="Tessa Jowell",
-            gender="female",
-            honorific_suffix="DBE",
-            versions="""
+EXAMPLE_VERSIONS = """
                 [
                   {
                     "username": "symroe",
@@ -90,7 +77,22 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     }
                   }
                 ]
-            """,
+            """
+
+
+@override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
+@override_settings(TWITTER_APP_ONLY_BEARER_TOKEN=None)
+class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
+    def setUp(self):
+        super().setUp()
+        mkdir_p(TEST_MEDIA_ROOT)
+        # Create Tessa Jowell (the primary person)
+        person = people.tests.factories.PersonFactory.create(
+            id=2009,
+            name="Tessa Jowell",
+            gender="female",
+            honorific_suffix="DBE",
+            versions=EXAMPLE_VERSIONS,
         )
         person.tmp_person_identifiers.create(
             value="tessa.jowell@example.com", value_type="email"

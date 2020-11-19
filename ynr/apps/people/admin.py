@@ -1,11 +1,39 @@
 from django import forms
 from django.contrib import admin
+from django.http import HttpResponseRedirect
+from django.urls import path, reverse
+from django.views.generic import TemplateView
 from sorl.thumbnail.admin.current import AdminImageWidget
 
 from candidates.models import LoggedAction
 from candidates.views.version_data import get_client_ip
+from people.data_removal_helpers import DataRemover
 from people.models import EditLimitationStatuses, Person, PersonImage
 from popolo.models import Membership
+
+
+class RemovePersonalDataView(TemplateView):
+    template_name = "admin/people/person/remove_personal_data_confirm.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        person = Person.objects.get(pk=self.kwargs["object_id"])
+        context["person"] = person
+        context["title"] = "Remove personal data for {}".format(person.name)
+        self.data_remover = DataRemover(person)
+        context["data_remover"] = self.data_remover.collect()
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        self.data_remover.remove()
+        return HttpResponseRedirect(
+            reverse(
+                "admin:people_person_change",
+                kwargs={"object_id": context["person"].pk},
+            )
+        )
 
 
 class MembershipInline(admin.StackedInline):
@@ -63,6 +91,17 @@ class PersonAdmin(admin.ModelAdmin):
 
     list_filter = ("edit_limitations",)
     inlines = [PersonImageInline]
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                "<path:object_id>/remove_personal_data/",
+                self.admin_site.admin_view(RemovePersonalDataView.as_view()),
+                name="remove_personal_data_view",
+            )
+        ]
+        return custom_urls + urls
 
     def save_model(self, request, obj, form, change):
         if form.initial["edit_limitations"] != form["edit_limitations"].value():
