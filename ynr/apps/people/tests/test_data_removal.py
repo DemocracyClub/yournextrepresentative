@@ -29,16 +29,16 @@ class TestDataRemoval(TestUserMixin, UK2015ExamplesMixin, WebTest):
             {
                 "PhotoCheck": [],
                 "VersionHistoryCheck": [
-                    {"title": "gender", "description": "female"},
+                    {"title": "birth_date", "description": "1947-09-17"},
                     {
                         "title": "email",
                         "description": "jowell@example.com\n\ttessa.jowell@example.com",
                     },
+                    {"title": "gender", "description": "female"},
                     {
                         "title": "homepage_url",
                         "description": "http://example.org/tessajowell",
                     },
-                    {"title": "birth_date", "description": "1947-09-17"},
                 ],
             },
         )

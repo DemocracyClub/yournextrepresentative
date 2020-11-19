@@ -108,7 +108,7 @@ class VersionHistoryCheck(BaseCheck):
         if do_remove:
             self.person.versions = json.dumps(versions)
             self.person.save()
-        return version_data_to_remove
+        return sorted(version_data_to_remove, key=lambda item: item["title"])
 
     def run_remove(self):
         self.run_collect(do_remove=True)
