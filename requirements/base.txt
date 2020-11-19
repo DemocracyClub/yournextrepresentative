@@ -16,7 +16,7 @@ django-appconf==1.0.3
 django-braces==1.14.0
 django-celery-results==1.1.2
 django-cors-headers==3.5.0
-django-date-extensions==3.0
+django-date-extensions==3.1
 django-debug-toolbar-template-timings
 django-debug-toolbar==1.11
 django-extensions==2.1.6
