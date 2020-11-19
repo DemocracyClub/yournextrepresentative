@@ -232,3 +232,37 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
             {"name": ["This other name already exists"]},
         )
         self.assertEqual(2, self.person_other_names.other_names.count())
+
+    def test_edit_existing_alt_name_notes_field_regression(self):
+        """
+        Test for the fix for issue #1242
+        https://github.com/DemocracyClub/yournextrepresentative/issues/1242
+
+        """
+
+        # Add a new alt name with a note
+        response = self.app.get(
+            "/person/5678/other-name/{on_id}/update".format(
+                on_id=self.fozzie_bear.id
+            ),
+            user=self.user,
+        )
+        form = response.forms["person_update_other_name"]
+        form["name"] = "F Bear"
+        form["note"] = "Some reasonable explanation"
+        form.submit()
+        self.assertEqual(self.person_other_names.other_names.count(), 2)
+
+        # Now go and update the note
+        response = self.app.get(
+            "/person/5678/other-name/{on_id}/update".format(
+                on_id=self.fozzie_bear.id
+            ),
+            user=self.user,
+        )
+        form = response.forms["person_update_other_name"]
+        form["note"] = "A different explanation"
+        form["source"] = "Correcting note"
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.person_other_names.other_names.count(), 2)

@@ -606,6 +606,8 @@ class OtherNameForm(forms.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data["name"]
+        if "name" not in self.changed_data:
+            return name
         name_exists = self.instance.content_object.other_names.filter(
             name=name
         ).exists()
