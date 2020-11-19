@@ -1,5 +1,5 @@
 attrs==20.3.0
-aenum==2.1.2
+aenum==2.2.4
 beautifulsoup4==4.7.1
 black==19.10b0;python_version>="3.6"
 bleach==3.1.4
