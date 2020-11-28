@@ -9,26 +9,36 @@
   <h1>About this site</h1>
 {% endblock %}
 
+
+
 {% block content %}
 {% with email=settings.SUPPORT_EMAIL %}
 
 <div class="help-about">
 
+  <p>Democracy Club Candidates is an open source platform for crowdsourcing information about candidates standing for
+    political office in the UK.</p>
+
+  <p>The resulting data is open for anyone to use. This website powers Democracy Club's <a
+  href="https://whocanivotefor.co.uk">WhoCanIVoteFor.co.uk</a>, and the data has been used by The Electoral Commission
+    and many other sources.</p>
+
+  <p>The core data collected by Democracy Club Candidates includes who is standing, what party they’re standing for,
+    their contact details and social media accounts. The software requires that each change is submitted with a source,
+    so that the collected information can be independently checked.</p>
+
+
 <p>
 Please email <a href="mailto:{{ email }}">{{ email }}</a>
 with any feedback or bug reports. If you'd like to discuss this
 site or any other project relating to elections in the UK, we'd
-suggest that you post to
-the <a href="https://groups.google.com/forum/#!forum/democracy-club">Democracy
-Club Google Group</a>.
+suggest that you <a href="https://slack.democracyclub.org.uk/">join our Slack</a>.
 </p>
 
 <p>
 The source code for this site
-is <a href="https://github.com/mysociety/yournextrepresentative/">available
-on GitHub</a>, and you can find
-a <a href="https://github.com/mysociety/yournextrepresentative/issues">list
-of known bugs</a> there as well.
+is <a href="https://github.com/DemocracyClub/yournextrepresentative">available
+on GitHub</a>.
 </p>
 
 <p>
@@ -40,9 +50,8 @@ other contributors</a>, to whom we owe a debt of gratitude.
 
 <p>
 The data on candidates from the UK general election in
-2010 is all taken from Edmund von der
-Burg's <a href="http://www.yournextmp.com">YourNextMP.com</a>,
-with many thanks.
+2010 was taken from Edmund von der
+Burg's YourNextMP.com (now defunct), with many thanks.
 </p>
 
 {% url 'api-home' as api_url %}
@@ -55,7 +64,7 @@ terms of the Creative Commons licence
 </p>
 
 <ul>
-    <li>The party logos, which are taken from the Electoral Commission's website</li>
+    <li>The party logos, which are sourced from <a href="https://www.electoralcommission.org.uk">The Electoral Commission</a></li>
     <li>
 Candidate photos, which are typically either submitted by the candidates
 themselves, or from sources where it seems reasonable that we might use them on
@@ -69,17 +78,6 @@ If the CC-BY-SA licence is problematic for you, but you feel that you have a
 worthwhile use of the data in mind, please <a href="mailto:{{ email }}">contact
 us</a> to discuss your situation further.
 </p>
-
-<p>
-For complicated reasons relating to database licensing, we have put
-the data as of the 4th of March 2015 into the public domain by
-declaring it to
-be <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>. This
-data is available
-<a href="{{ MEDIA_URL }}csv-archives/cc0-snapshot-out-of-date/">here</a>
-but please be warned that this snapshot will become inaccurate very quickly
-- please use
-<a href="{{ api_url }}">the up-to-date data</a> instead.
 
 
 <h3>Privacy Policy</h3>
