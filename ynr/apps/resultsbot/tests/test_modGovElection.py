@@ -73,4 +73,4 @@ class TestModGov(KirkleesBatleyEastMixin, TestCase):
         mg_importer.get_data()
         for div in mg_importer.divisions():
             candidates = list(mg_importer.candidates(div))
-            print(candidates)
+            self.assertEqual(len(candidates), 5)

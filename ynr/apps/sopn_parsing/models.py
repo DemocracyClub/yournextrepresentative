@@ -22,7 +22,7 @@ class ParsedSOPN(TimeStampedModel):
     def as_pandas(self):
         import pandas
 
-        pandas.set_option("display.max_colwidth", -1)
+        pandas.set_option("display.max_colwidth", None)
         return pandas.DataFrame.from_dict(json.loads(self.raw_data))
 
     @property
