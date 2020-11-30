@@ -48,7 +48,7 @@ jsonfield==2.0.2
 jsonpatch==1.23
 jsonpointer==2.0
 libsass==0.19.2
-lxml==4.5.2
+lxml==4.6.2
 mock==1.0.1
 ndg-httpsclient==0.5.1
 numpy==1.18.4
