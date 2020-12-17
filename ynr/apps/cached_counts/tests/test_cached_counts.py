@@ -5,7 +5,6 @@ from django_webtest import WebTest
 import people.tests.factories
 from candidates.tests import factories
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from compat import text_type
 from people.models import Person
 
 
@@ -82,7 +81,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                 {
                     "current_or_future": True,
                     "dates": {
-                        text_type(self.election.election_date.isoformat()): [
+                        str(self.election.election_date.isoformat()): [
                             {
                                 "elections": [
                                     {
@@ -95,9 +94,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                                 "role": "Member of Parliament",
                             }
                         ],
-                        text_type(
-                            self.local_election.election_date.isoformat()
-                        ): [
+                        str(self.local_election.election_date.isoformat()): [
                             {
                                 "elections": [
                                     {
@@ -115,9 +112,7 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                 {
                     "current_or_future": False,
                     "dates": {
-                        text_type(
-                            self.earlier_election.election_date.isoformat()
-                        ): [
+                        str(self.earlier_election.election_date.isoformat()): [
                             {
                                 "elections": [
                                     {

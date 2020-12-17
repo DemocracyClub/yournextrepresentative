@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.test.utils import override_settings
 from django.urls import reverse
-from django.utils.six import text_type
 from django_webtest import WebTest
 from mock import Mock, patch
 from webtest import Upload
@@ -244,6 +243,6 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
                 "http://foo.com/bar.jpg", max_size_bytes=512
             )
         self.assertEqual(
-            text_type(context.exception),
+            str(context.exception),
             "The image exceeded the maximum allowed size",
         )

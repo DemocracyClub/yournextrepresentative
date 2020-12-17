@@ -1,7 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from compat import text_type
 from elections.uk.geo_helpers import (
     BadPostcodeException,
     UnknownGeoException,
@@ -26,5 +25,5 @@ class PostcodeForm(forms.Form):
             # result is cached, so this doesn't cause a double lookup.)
             get_ballots_from_postcode(postcode)
         except (UnknownGeoException, BadPostcodeException) as e:
-            raise ValidationError(text_type(e))
+            raise ValidationError(str(e))
         return postcode

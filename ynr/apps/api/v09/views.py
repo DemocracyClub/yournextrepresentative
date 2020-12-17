@@ -18,7 +18,6 @@ from rest_framework.viewsets import ViewSet
 from api.helpers import DefaultPageNumberPagination
 from api.v09 import serializers
 from candidates import models as extra_models
-from compat import text_type
 from elections.models import Election
 from elections.uk.geo_helpers import (
     get_ballots_from_coords,
@@ -72,7 +71,7 @@ class UpcomingElectionsView(View):
                     "post_name": ballot.post.label,
                     "post_slug": ballot.post.slug,
                     "organization": ballot.post.organization.name,
-                    "election_date": text_type(ballot.election.election_date),
+                    "election_date": str(ballot.election.election_date),
                     "election_name": ballot.election.name,
                     "election_id": ballot.election.slug,
                 }
@@ -137,7 +136,7 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                     ).data
                 )
             election = {
-                "election_date": text_type(ballot.election.election_date),
+                "election_date": str(ballot.election.election_date),
                 "election_name": ballot.election.name,
                 "election_id": ballot.election.slug,
                 "post": {
@@ -164,7 +163,7 @@ class CurrentElectionsView(View):
             qs = qs.future()
         for election in qs:
             results[election.slug] = {
-                "election_date": text_type(election.election_date),
+                "election_date": str(election.election_date),
                 "name": election.name,
                 "url": reverse(
                     "election-detail",

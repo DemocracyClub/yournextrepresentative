@@ -10,7 +10,6 @@ from candidates.tests.factories import (
     ParliamentaryChamberFactory,
     PostFactory,
 )
-from compat import text_type
 from official_documents.models import OfficialDocument
 
 
@@ -34,7 +33,7 @@ class TestModels(TestCase):
         )
 
         self.assertEqual(
-            text_type(doc),
+            str(doc),
             "parl.dulwich-and-west-norwood.2015-05-07 (http://example.com/)",
         )
 
