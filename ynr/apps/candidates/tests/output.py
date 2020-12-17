@@ -1,13 +1,12 @@
 import sys
+from io import StringIO
 from contextlib import contextmanager
-
-from django.utils import six
 
 
 @contextmanager
 def capture_output():
     # Suggested here: http://stackoverflow.com/a/17981937/223092
-    new_out, new_err = six.StringIO(), six.StringIO()
+    new_out, new_err = StringIO(), StringIO()
     old_out, old_err = sys.stdout, sys.stderr
     try:
         sys.stdout, sys.stderr = new_out, new_err
