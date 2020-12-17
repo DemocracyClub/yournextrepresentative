@@ -24,7 +24,7 @@ django-filter==2.2.0
 django-markdown-deux==1.0.5
 django-model-utils==4.0.0
 django-pipeline==1.6.14
-django-storages==1.6.6
+django-storages==1.11
 django-webtest==1.9.7
 Django==2.2.16
 djangorestframework-jsonp==1.0.2
