@@ -1,8 +1,9 @@
+from urllib.parse import urlunsplit
+
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
-from django.utils.six.moves.urllib_parse import urlunsplit
 
 from compat import text_type
 

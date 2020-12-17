@@ -1,6 +1,7 @@
+from urllib.parse import urljoin
+
 from django.conf import settings
 from django.core.management import call_command
-from django.utils.six.moves.urllib_parse import urljoin
 from django_webtest import WebTest
 from freezegun import freeze_time
 from mock import Mock, patch

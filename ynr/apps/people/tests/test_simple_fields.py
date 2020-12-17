@@ -1,7 +1,7 @@
 import re
+from urllib.parse import urlsplit
 
 from django.conf import settings
-from django.utils.six.moves.urllib_parse import urlsplit
 from django_webtest import WebTest
 
 from candidates.tests.auth import TestUserMixin

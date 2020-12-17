@@ -1,7 +1,7 @@
 from datetime import date, timedelta
+from urllib.parse import urljoin
 
 from django.conf import settings
-from django.utils.six.moves.urllib_parse import urljoin
 from django_webtest import WebTest
 from mock import Mock, patch
 

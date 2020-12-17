@@ -2,12 +2,12 @@ import re
 from io import BytesIO
 from os.path import dirname, join, realpath
 from shutil import rmtree
+from urllib.parse import urlsplit
 
 from django.contrib.auth.models import Group, User
 from django.core.files.storage import FileSystemStorage
 from django.test.utils import override_settings
 from django.urls import reverse
-from django.utils.six.moves.urllib_parse import urlsplit
 from django_webtest import WebTest
 from mock import patch
 from PIL import Image
