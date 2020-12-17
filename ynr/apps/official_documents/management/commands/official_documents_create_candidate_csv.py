@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from compat import BufferDictWriter
+from utils.dict_io import BufferDictWriter
 from official_documents.models import OfficialDocument
 from popolo.models import Membership
 

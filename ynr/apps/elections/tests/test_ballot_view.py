@@ -14,7 +14,7 @@ from candidates.tests.factories import (
     OrganizationFactory,
     PostFactory,
 )
-from compat import BufferDictReader
+from utils.dict_io import BufferDictReader
 from elections.tests.data_timeline_helper import DataTimelineHTMLAssertions
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from parties.tests.factories import PartyFactory
