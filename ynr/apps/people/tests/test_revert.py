@@ -8,10 +8,10 @@ import people.tests.factories
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from compat import deep_sort
 from people.models import Person, PersonIdentifier
 from popolo.models import Membership
 from uk_results.models import CandidateResult, ResultSet
+from utils.testing_utils import deep_sort
 
 example_timestamp = "2014-09-29T10:11:59.216159"
 example_version_id = "5aa6418325c1a0bb"
