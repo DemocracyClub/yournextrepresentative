@@ -3,7 +3,7 @@ from collections import defaultdict
 from django.conf import settings
 
 from candidates.models import PersonRedirect
-from compat import BufferDictWriter
+from utils.dict_io import BufferDictWriter
 from popolo.models import Membership
 
 

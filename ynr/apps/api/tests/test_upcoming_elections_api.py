@@ -1,7 +1,7 @@
 from datetime import date, timedelta
+from urllib.parse import urljoin
 
 from django.conf import settings
-from django.utils.six.moves.urllib_parse import urljoin
 from django_webtest import WebTest
 from mock import Mock, patch
 
@@ -12,7 +12,6 @@ from candidates.tests.factories import (
     PostFactory,
 )
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from compat import text_type
 from elections.uk.tests.ee_postcode_results import (
     ee_se240ag_result,
     ee_sw1a1aa_result,
@@ -107,7 +106,7 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
         expected = [
             {
                 "organization": "London Assembly",
-                "election_date": text_type(self.future_date.isoformat()),
+                "election_date": str(self.future_date.isoformat()),
                 "election_id": "gla.c.2016-05-05",
                 "election_name": "2016 London Assembly Election (Constituencies)",
                 "post_name": "Assembly Member for Lambeth and Southwark",
@@ -115,7 +114,7 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
             },
             {
                 "organization": "London Assembly",
-                "election_date": text_type(self.future_date.isoformat()),
+                "election_date": str(self.future_date.isoformat()),
                 "election_id": "gla.a.2016-05-05",
                 "election_name": "2016 London Assembly Election (Additional)",
                 "post_name": "Assembly Member",
@@ -150,7 +149,7 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
         expected = [
             {
                 "candidates": [],
-                "election_date": text_type(self.future_date.isoformat()),
+                "election_date": str(self.future_date.isoformat()),
                 "election_id": "gla.c.2016-05-05",
                 "election_name": "2016 London Assembly Election (Constituencies)",
                 "organization": "London Assembly",
@@ -216,7 +215,7 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
                         "url": "http://testserver/api/v0.9/persons/2009/",
                     }
                 ],
-                "election_date": text_type(self.future_date.isoformat()),
+                "election_date": str(self.future_date.isoformat()),
                 "election_id": "gla.a.2016-05-05",
                 "election_name": "2016 London Assembly Election (Additional)",
                 "organization": "London Assembly",

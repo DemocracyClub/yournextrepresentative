@@ -2,6 +2,7 @@ import json
 from datetime import date
 from enum import Enum, unique
 import uuid
+from urllib.parse import urljoin, quote_plus
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
@@ -14,7 +15,6 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.html import format_html
-from django.utils.six.moves.urllib_parse import quote_plus, urljoin
 from django_extensions.db.models import TimeStampedModel
 from slugify import slugify
 from sorl.thumbnail import get_thumbnail

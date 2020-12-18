@@ -2,12 +2,12 @@ import json
 import re
 from datetime import datetime
 from os.path import join
+from urllib.parse import urlsplit, parse_qs
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
 from django.core.management.base import BaseCommand
 from django.test import Client
-from django.utils.six.moves.urllib_parse import parse_qs, urlsplit
 
 
 def path_and_query(url):

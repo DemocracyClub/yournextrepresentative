@@ -1,6 +1,7 @@
+from urllib.parse import urlparse
+
 from django.http import HttpResponseRedirect
 from django.utils.http import urlquote
-from django.utils.six.moves.urllib_parse import urlparse
 from django.views.generic import FormView
 
 from candidates.forms import UserTermsAgreementForm

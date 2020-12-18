@@ -1,7 +1,7 @@
 import re
+from urllib.parse import urljoin, urlsplit
 
 from django.conf import settings
-from django.utils.six.moves.urllib_parse import urljoin, urlsplit
 from django_webtest import WebTest
 from mock import Mock, patch
 

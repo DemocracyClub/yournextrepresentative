@@ -7,8 +7,6 @@ from tempfile import mkdtemp
 from django.conf import settings
 from django.test import TestCase, override_settings
 
-from compat import text_type
-
 
 def p(*args):
     """A helper for printing to stderr"""
@@ -25,7 +23,7 @@ def deep_cast_to_unicode(obj):
          [u'a', u'b', u'c', {u'x': u'y'}])
     True
     """
-    if isinstance(obj, text_type):
+    if isinstance(obj, str):
         return obj
     elif isinstance(obj, bytes):
         return obj.decode("utf-8")

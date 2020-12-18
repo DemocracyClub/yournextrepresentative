@@ -3,12 +3,12 @@
 
 import logging
 import re
+from urllib.parse import urljoin
 
 import requests
 from django.conf import settings
 from django.core.cache import cache
 from django.utils.http import urlquote
-from django.utils.six.moves.urllib_parse import urljoin
 
 from candidates.models import Ballot
 

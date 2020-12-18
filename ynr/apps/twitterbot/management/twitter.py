@@ -1,6 +1,5 @@
 import requests
 from django.conf import settings
-from django.utils.six import text_type
 
 from people.models import PersonIdentifier
 
@@ -34,7 +33,7 @@ class TwitterAPIData(object):
         self.user_id_to_photo_url = {}
 
     def update_id_mapping(self, data):
-        user_id = text_type(data["id"])
+        user_id = str(data["id"])
         screen_name = data["screen_name"]
         self.screen_name_to_user_id[screen_name.lower()] = user_id
         self.user_id_to_screen_name[user_id] = screen_name

@@ -8,7 +8,6 @@ from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.urls import reverse
 from django.utils.html import escape
-from django.utils.six import text_type
 
 from moderation_queue.review_required_helper import REVIEW_TYPES
 from moderation_queue.slack import post_action_to_slack
@@ -144,7 +143,7 @@ class LoggedAction(models.Model):
                 self.popit_person_new_version, inline_style=True
             )
         except VersionNotFound as e:
-            return "<p>{}</p>".format(escape(text_type(e)))
+            return "<p>{}</p>".format(escape(str(e)))
 
     def set_review_required(self):
         """

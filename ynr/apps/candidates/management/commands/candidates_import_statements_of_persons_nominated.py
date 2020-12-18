@@ -11,7 +11,7 @@ from django.core.files.storage import DefaultStorage
 from django.core.management.base import BaseCommand
 
 from candidates.models import Ballot
-from compat import BufferDictReader
+from utils.dict_io import BufferDictReader
 from official_documents.models import OfficialDocument
 from sopn_parsing.tasks import extract_and_parse_tables_for_ballot
 

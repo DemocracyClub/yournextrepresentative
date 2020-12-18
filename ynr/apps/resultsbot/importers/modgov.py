@@ -1,7 +1,8 @@
+from urllib.parse import urljoin
+
 import requests
 from bs4 import BeautifulSoup
 from dateutil import parser
-from django.utils.six.moves.urllib_parse import urljoin
 
 from elections.models import Election
 from resultsbot.matchers.candidate import CandidateMatcher
@@ -231,7 +232,7 @@ class ModGovElectionMatcher(object):
                     heading.get_text().split(" - ")[-1].strip()
                 ).date()
             except:
-                print(title_str)
+                print("title_str")
 
     def uses_election_feature(self):
         try:
@@ -256,7 +257,7 @@ class ModGovElectionMatcher(object):
         i = self.start_id
         while i < self.lookahead:
             election = self.get_election_by_id(i)
-            if not "<election />" in election.text:
+            if "<election />" not in election.text:
                 self.lookahead += 1
                 self.elections_by_id[i] = ModGovElection(election.text)
                 self.elections_by_id[i].url = election.url

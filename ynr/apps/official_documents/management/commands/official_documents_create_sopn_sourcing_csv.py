@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from candidates.models import Ballot
-from compat import BufferDictWriter
+from utils.dict_io import BufferDictWriter
 
 
 class Command(BaseCommand):

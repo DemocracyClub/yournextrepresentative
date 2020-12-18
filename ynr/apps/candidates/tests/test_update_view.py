@@ -1,6 +1,6 @@
 import json
+from urllib.parse import urlsplit
 
-from django.utils.six.moves.urllib_parse import urlsplit
 from django_webtest import WebTest
 from webtest.forms import Text
 

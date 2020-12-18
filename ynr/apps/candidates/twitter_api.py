@@ -1,7 +1,6 @@
 import requests
 from django.conf import settings
 from django.core.cache import cache
-from django.utils.six import text_type
 
 
 class TwitterAPITokenMissing(Exception):
@@ -37,7 +36,7 @@ def get_twitter_user_id(twitter_screen_name):
                     )
                 )
         else:
-            result = text_type(data[0]["id"])
+            result = str(data[0]["id"])
     else:
         result = ""
     # Cache Twitter screen name -> user ID results for 5 minutes -
