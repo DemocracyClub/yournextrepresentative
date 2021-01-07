@@ -3,16 +3,18 @@
 
 {% block hero %}
   <div class="person__hero">
-    <h1>Reports</h1>
+    <h1>Numbers</h1>
   </div>
 {% endblock hero %}
 
 {% block content %}
 
-  <h2>Which posts have fewest candidates so far?</h2>
+  <h2>Summaries of candidates per election</h2>
+
+  <p>This page provides an overview of every election covered by the Democracy Club database, including total number of candidates and links to breakdowns by seat and party.</p>
 
   <p>{% url 'attention_needed' as url %}
-      You can see a list of all the posts in current elections
+      You can also see a list of all the posts in current elections
       <a href="{{ url }}">ordered starting with those with the fewest
         candidates</a>.
   </p>
