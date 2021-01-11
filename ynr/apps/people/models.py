@@ -273,7 +273,7 @@ class Person(Timestampable, models.Model):
     # Former 'extra' fields
     # This field stores JSON data with previous version information
     # (as it did in PopIt).
-    versions = models.TextField(blank=True)
+    versions = JSONField(null=True)
     not_standing = models.ManyToManyField(
         "elections.Election", related_name="persons_not_standing_tmp"
     )
