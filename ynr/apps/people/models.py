@@ -1,4 +1,3 @@
-import json
 from datetime import date
 from enum import Enum, unique
 import uuid
@@ -310,7 +309,7 @@ class Person(Timestampable, models.Model):
 
         versions = []
         if self.versions:
-            versions = json.loads(self.versions)
+            versions = self.versions
         new_version = change_metadata.copy()
         new_version["data"] = get_person_as_version_data(
             self, new_person=new_person
@@ -328,7 +327,7 @@ class Person(Timestampable, models.Model):
         if should_insert:
             versions.insert(0, new_version)
 
-        self.versions = json.dumps(versions)
+        self.versions = versions
 
     def get_slug(self):
         return slugify(self.name)
@@ -511,12 +510,12 @@ class Person(Timestampable, models.Model):
     def version_diffs(self):
         versions = self.versions
         if not versions:
-            versions = "[]"
-        return get_version_diffs(json.loads(versions))
+            versions = []
+        return get_version_diffs(versions)
 
     def diff_for_version(self, version_id, inline_style=False):
         versions = self.versions or []
-        all_version_diffs = get_version_diffs(json.loads(versions))
+        all_version_diffs = get_version_diffs(versions)
         right_version_diff = None
         for version_diff in all_version_diffs:
             if version_diff["version_id"] == version_id:

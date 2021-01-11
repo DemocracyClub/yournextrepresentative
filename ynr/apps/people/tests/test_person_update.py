@@ -1,5 +1,3 @@
-import json
-
 from people.tests.test_person_view import PersonViewSharedTestsMixin
 from candidates.views.version_data import get_change_metadata
 from candidates.tests.factories import ElectionFactory, BallotPaperFactory
@@ -21,19 +19,19 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
 
         self.person.refresh_from_db()
         self.assertEqual(self.person.favourite_biscuit, "Ginger nut")
-        version = json.loads(self.person.versions)[0]
+        version = self.person.versions[0]
         self.assertEqual(version["information_source"], "Mumsnet")
 
     def test_no_duplicate_versions(self):
         self.person.record_version(get_change_metadata(None, "First update"))
-        self.assertEqual(len(json.loads(self.person.versions)), 1)
+        self.assertEqual(len(self.person.versions), 1)
 
         self.person.record_version(get_change_metadata(None, "Nothing changed"))
-        self.assertEqual(len(json.loads(self.person.versions)), 1)
+        self.assertEqual(len(self.person.versions), 1)
 
         self.person.name = "New Name"
         self.person.record_version(get_change_metadata(None, "Nothing changed"))
-        self.assertEqual(len(json.loads(self.person.versions)), 2)
+        self.assertEqual(len(self.person.versions), 2)
 
     def test_set_death_date(self):
         self.assertEqual(self.person.death_date, "")
@@ -243,5 +241,5 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         response = form.submit().follow()
         self.assertEqual(response.status_code, 200)
         self.person.refresh_from_db()
-        version = json.loads(self.person.versions)[0]
+        version = self.person.versions[0]
         self.assertEqual(version["data"]["not_standing"], ["parl.2010-05-06"])

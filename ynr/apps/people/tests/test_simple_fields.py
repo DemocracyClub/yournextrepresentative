@@ -30,7 +30,7 @@ class SimpleFieldsTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.person = Person.objects.create(
             name="John the Well-Described",
             additional_name="Very Well-Described",
-            versions="[]",
+            versions=[],
         )
 
     def test_create_form_has_fields(self):

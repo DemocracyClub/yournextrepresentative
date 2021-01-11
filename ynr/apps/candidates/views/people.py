@@ -1,4 +1,3 @@
-import json
 import re
 
 from braces.views import LoginRequiredMixin
@@ -164,7 +163,7 @@ class RevertPersonView(LoginRequiredMixin, View):
 
             person = get_object_or_404(Person, id=person_id)
 
-            versions = json.loads(person.versions)
+            versions = person.versions
 
             data_to_revert_to = None
             for version in versions:
@@ -273,7 +272,7 @@ class CorrectNotStandingMergeView(
     required_group_name = TRUSTED_TO_MERGE_GROUP_NAME
 
     def extract_not_standing_edit(self, election, versions):
-        versions_json = json.loads(versions)
+        versions_json = versions
         for version in versions_json:
             try:
                 membership = version["data"]["standing_in"][election.slug]
@@ -419,7 +418,7 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
             self.request.user
         )
 
-        context["versions"] = get_version_diffs(json.loads(person.versions))
+        context["versions"] = get_version_diffs(person.versions)
 
         context = get_person_form_fields(context, context["form"])
 

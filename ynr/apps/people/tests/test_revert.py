@@ -1,6 +1,3 @@
-import json
-from string import Template
-
 from django_webtest import WebTest
 from mock import patch
 
@@ -20,89 +17,78 @@ example_version_id = "5aa6418325c1a0bb"
 
 
 class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
-
-    version_template = Template(
-        """[
-          {
-            "username": "symroe",
-            "information_source": "Just adding example data",
-            "ip": "127.0.0.1",
-            "version_id": "35ec2d5821176ccc",
-            "timestamp": "2014-10-28T14:32:36.835429",
-            "data": {
-              "name": "Tessa Jowell",
-              "id": "2009",
-              "twitter_username": "",
-              "candidacies": {
-                "parl.65808.2010-05-06": {
-                  "party": "$slug"
+    def version_template(self, party_slug):
+        return [
+            {
+                "username": "symroe",
+                "information_source": "Just adding example data",
+                "ip": "127.0.0.1",
+                "version_id": "35ec2d5821176ccc",
+                "timestamp": "2014-10-28T14:32:36.835429",
+                "data": {
+                    "name": "Tessa Jowell",
+                    "id": "2009",
+                    "twitter_username": "",
+                    "candidacies": {
+                        "parl.65808.2010-05-06": {"party": party_slug},
+                        "parl.65808.2015-05-07": {"party": party_slug},
+                    },
+                    "homepage_url": "",
+                    "birth_date": None,
+                    "wikipedia_url": "https://en.wikipedia.org/wiki/Tessa_Jowell",
+                    "identifiers": [
+                        {
+                            "identifier": "uk.org.publicwhip/person/10326",
+                            "scheme": "uk.org.publicwhip",
+                        }
+                    ],
+                    "email": "jowell@example.com",
+                    "extra_fields": {},
                 },
-                "parl.65808.2015-05-07": {
-                  "party": "$slug"
-                }
-              },
-              "homepage_url": "",
-              "birth_date": null,
-              "wikipedia_url": "https://en.wikipedia.org/wiki/Tessa_Jowell",
-              "identifiers": [
-                {
-                  "identifier": "uk.org.publicwhip/person/10326",
-                  "scheme": "uk.org.publicwhip"
-                }
-              ],
-              "email": "jowell@example.com",
-              "extra_fields": {}
-            }
-          },
-          {
-            "username": "mark",
-            "information_source": "An initial version",
-            "ip": "127.0.0.1",
-            "version_id": "5469de7db0cbd155",
-            "timestamp": "2014-10-01T15:12:34.732426",
-            "data": {
-              "name": "Tessa Jowell",
-              "other_names": [
-                {
-                  "name": "Tessa Palmer",
-                  "note": "maiden name",
-                  "start_date": null,
-                  "end_date": null
-                }
-              ],
-              "id": "2009",
-              "twitter_username": "",
-              "candidacies": {
-                "parl.65808.2010-05-06": {
-                  "party": "$slug"
-                }
-              },
-              "homepage_url": "http://example.org/tessajowell",
-              "birth_date": "1947-09-17",
-              "biography": "",
-              "wikipedia_url": "",
-              "identifiers": [
-                {
-                  "identifier": "uk.org.publicwhip/person/10326",
-                  "scheme": "uk.org.publicwhip"
-                }
-              ],
-              "email": "tessa.jowell@example.com",
-              "extra_fields": {}
-            }
-          }
+            },
+            {
+                "username": "mark",
+                "information_source": "An initial version",
+                "ip": "127.0.0.1",
+                "version_id": "5469de7db0cbd155",
+                "timestamp": "2014-10-01T15:12:34.732426",
+                "data": {
+                    "name": "Tessa Jowell",
+                    "other_names": [
+                        {
+                            "name": "Tessa Palmer",
+                            "note": "maiden name",
+                            "start_date": None,
+                            "end_date": None,
+                        }
+                    ],
+                    "id": "2009",
+                    "twitter_username": "",
+                    "candidacies": {
+                        "parl.65808.2010-05-06": {"party": party_slug}
+                    },
+                    "homepage_url": "http://example.org/tessajowell",
+                    "birth_date": "1947-09-17",
+                    "biography": "",
+                    "wikipedia_url": "",
+                    "identifiers": [
+                        {
+                            "identifier": "uk.org.publicwhip/person/10326",
+                            "scheme": "uk.org.publicwhip",
+                        }
+                    ],
+                    "email": "tessa.jowell@example.com",
+                    "extra_fields": {},
+                },
+            },
         ]
-    """
-    )
 
     def setUp(self):
         super().setUp()
         person = people.tests.factories.PersonFactory.create(
             id=2009,
             name="Tessa Jowell",
-            versions=self.version_template.substitute(
-                slug=self.labour_party.ec_id
-            ),
+            versions=self.version_template(party_slug=self.labour_party.ec_id),
         )
         PersonIdentifier.objects.create(
             person=person, value="jowell@example.com", value_type="email"
@@ -147,7 +133,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         person = Person.objects.get(id=2009)
 
         # First check that a new version has been created:
-        new_versions = json.loads(person.versions)
+        new_versions = person.versions
 
         self.maxDiff = None
         expected_new_version = {

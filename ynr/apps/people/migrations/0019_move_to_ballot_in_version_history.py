@@ -80,7 +80,7 @@ def move_to_ballot_in_version_history(apps, schema_editor):
         return ballot_cache[key]
 
     for person in Person.objects.all():
-        versions = json.loads(person.versions)
+        versions = person.versions
         for i, version in enumerate(versions):
             data = version["data"]
             data["candidacies"] = {}

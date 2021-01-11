@@ -1,4 +1,3 @@
-import json
 from datetime import date, timedelta
 
 from django_webtest import WebTest
@@ -234,7 +233,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 },
             }
         ]
-        actual = json.loads(self.dest_person.versions)
+        actual = self.dest_person.versions
         self.assertEqual(
             actual[0]["information_source"],
             expected_versions[0]["information_source"],
@@ -401,79 +400,75 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         person_1 = PersonFactory(
             pk=50536,
-            versions=json.dumps(
-                [
-                    {
-                        "data": {
-                            "birth_date": "",
-                            "extra_fields": {"favourite_biscuits": ""},
-                            "other_names": [],
-                            "facebook_page_url": "",
-                            "email": "",
-                            "linkedin_url": "",
-                            "party_ppc_page_url": "https://www.wirralconservatives.com/helencameron",
-                            "death_date": "",
-                            "honorific_suffix": "",
-                            "honorific_prefix": "",
-                            "name": "Helen Cameron",
-                            "twitter_username": "",
-                            "id": "50537",
-                            "biography": "",
-                            "wikipedia_url": "",
-                            "candidacies": {
-                                "local.wirral.clatterbridge.2019-05-02": {
-                                    "party": self.conservative_party.ec_id
-                                }
-                            },
-                            "homepage_url": "",
-                            "facebook_personal_url": "",
-                            "gender": "female",
+            versions=[
+                {
+                    "data": {
+                        "birth_date": "",
+                        "extra_fields": {"favourite_biscuits": ""},
+                        "other_names": [],
+                        "facebook_page_url": "",
+                        "email": "",
+                        "linkedin_url": "",
+                        "party_ppc_page_url": "https://www.wirralconservatives.com/helencameron",
+                        "death_date": "",
+                        "honorific_suffix": "",
+                        "honorific_prefix": "",
+                        "name": "Helen Cameron",
+                        "twitter_username": "",
+                        "id": "50537",
+                        "biography": "",
+                        "wikipedia_url": "",
+                        "candidacies": {
+                            "local.wirral.clatterbridge.2019-05-02": {
+                                "party": self.conservative_party.ec_id
+                            }
                         },
-                        "information_source": "https://www.wirralconservatives.com/helencameron",
-                        "timestamp": "2019-03-28T14:37:30.958127",
-                        "version_id": "0036d8081d566648",
-                        "username": "harry14",
-                    }
-                ]
-            ),
+                        "homepage_url": "",
+                        "facebook_personal_url": "",
+                        "gender": "female",
+                    },
+                    "information_source": "https://www.wirralconservatives.com/helencameron",
+                    "timestamp": "2019-03-28T14:37:30.958127",
+                    "version_id": "0036d8081d566648",
+                    "username": "harry14",
+                }
+            ],
         )
         person_2 = PersonFactory(
             pk=50537,
-            versions=json.dumps(
-                [
-                    {
-                        "data": {
-                            "birth_date": "",
-                            "extra_fields": {"favourite_biscuits": ""},
-                            "other_names": [],
-                            "facebook_page_url": "",
-                            "email": "",
-                            "linkedin_url": "",
-                            "party_ppc_page_url": "https://www.wirralconservatives.com/helencameron",
-                            "death_date": "",
-                            "honorific_suffix": "",
-                            "honorific_prefix": "",
-                            "name": "Helen Cameron",
-                            "twitter_username": "",
-                            "id": "50536",
-                            "biography": "",
-                            "wikipedia_url": "",
-                            "candidacies": {
-                                "local.wirral.clatterbridge.2019-05-02": {
-                                    "party": self.conservative_party.ec_id
-                                }
-                            },
-                            "homepage_url": "",
-                            "facebook_personal_url": "",
-                            "gender": "female",
+            versions=[
+                {
+                    "data": {
+                        "birth_date": "",
+                        "extra_fields": {"favourite_biscuits": ""},
+                        "other_names": [],
+                        "facebook_page_url": "",
+                        "email": "",
+                        "linkedin_url": "",
+                        "party_ppc_page_url": "https://www.wirralconservatives.com/helencameron",
+                        "death_date": "",
+                        "honorific_suffix": "",
+                        "honorific_prefix": "",
+                        "name": "Helen Cameron",
+                        "twitter_username": "",
+                        "id": "50536",
+                        "biography": "",
+                        "wikipedia_url": "",
+                        "candidacies": {
+                            "local.wirral.clatterbridge.2019-05-02": {
+                                "party": self.conservative_party.ec_id
+                            }
                         },
-                        "information_source": "https://www.wirralconservatives.com/helencameron",
-                        "timestamp": "2019-03-28T14:37:30.958127",
-                        "version_id": "0036d8081d566648",
-                        "username": "harry14",
-                    }
-                ]
-            ),
+                        "homepage_url": "",
+                        "facebook_personal_url": "",
+                        "gender": "female",
+                    },
+                    "information_source": "https://www.wirralconservatives.com/helencameron",
+                    "timestamp": "2019-03-28T14:37:30.958127",
+                    "version_id": "0036d8081d566648",
+                    "username": "harry14",
+                }
+            ],
         )
 
         merger = PersonMerger(person_1, person_2)
@@ -564,7 +559,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         merger = PersonMerger(person_1, person_2)
         merger.merge()
         person_1.refresh_from_db()
-        version_data = json.loads(person_1.versions)[0]["data"]
+        version_data = person_1.versions[0]["data"]
         self.assertEqual(
             version_data["candidacies"],
             {"local.maidstone.LBW:E05000601.2016-05-05": {"party": "PP63"}},

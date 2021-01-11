@@ -21,63 +21,48 @@ example_version_id = "5aa6418325c1a0bb"
 
 TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
 
-EXAMPLE_VERSIONS = """
-                [
-                  {
-                    "username": "symroe",
-                    "information_source": "Just adding example data",
-                    "ip": "127.0.0.1",
-                    "version_id": "35ec2d5821176ccc",
-                    "timestamp": "2014-10-28T14:32:36.835429",
-                    "data": {
-                      "name": "Tessa Jowell",
-                      "other_names": [
-                        {
-                          "name": "Tessa Palmer",
-                          "note": "maiden name"
-                        }
-                      ],
-                      "id": "2009",
-                      "honorific_suffix": "DBE",
-                      "twitter_username": "",
-                      "candidacies": {
-                        "parl.65808.2010-05-06": {
-                          "party": "PP53"
-                        },
-                        "parl.65808.2015-05-07": {
-                            "party": "PP53"
-                        }
-                      },
-                      "gender": "female",
-                      "homepage_url": "",
-                      "birth_date": null,
-                      "wikipedia_url": "https://en.wikipedia.org/wiki/Tessa_Jowell",
-                      "email": "jowell@example.com"
-                    }
-                  },
-                  {
-                    "username": "mark",
-                    "information_source": "An initial version",
-                    "ip": "127.0.0.1",
-                    "version_id": "5469de7db0cbd155",
-                    "timestamp": "2014-10-01T15:12:34.732426",
-                    "data": {
-                      "name": "Tessa Jowell",
-                      "id": "2009",
-                      "twitter_username": "",
-                      "candidacies": {
-                        "parl.65808.2010-05-06": {
-                          "party": "PP53"
-                        }
-                      },
-                      "homepage_url": "http://example.org/tessajowell",
-                      "birth_date": "1947-09-17",
-                      "wikipedia_url": "",
-                      "email": "tessa.jowell@example.com"
-                    }
-                  }
-                ]
-            """
+EXAMPLE_VERSIONS = [
+    {
+        "username": "symroe",
+        "information_source": "Just adding example data",
+        "ip": "127.0.0.1",
+        "version_id": "35ec2d5821176ccc",
+        "timestamp": "2014-10-28T14:32:36.835429",
+        "data": {
+            "name": "Tessa Jowell",
+            "other_names": [{"name": "Tessa Palmer", "note": "maiden name"}],
+            "id": "2009",
+            "honorific_suffix": "DBE",
+            "twitter_username": "",
+            "candidacies": {
+                "parl.65808.2010-05-06": {"party": "PP53"},
+                "parl.65808.2015-05-07": {"party": "PP53"},
+            },
+            "gender": "female",
+            "homepage_url": "",
+            "birth_date": None,
+            "wikipedia_url": "https://en.wikipedia.org/wiki/Tessa_Jowell",
+            "email": "jowell@example.com",
+        },
+    },
+    {
+        "username": "mark",
+        "information_source": "An initial version",
+        "ip": "127.0.0.1",
+        "version_id": "5469de7db0cbd155",
+        "timestamp": "2014-10-01T15:12:34.732426",
+        "data": {
+            "name": "Tessa Jowell",
+            "id": "2009",
+            "twitter_username": "",
+            "candidacies": {"parl.65808.2010-05-06": {"party": "PP53"}},
+            "homepage_url": "http://example.org/tessajowell",
+            "birth_date": "1947-09-17",
+            "wikipedia_url": "",
+            "email": "tessa.jowell@example.com",
+        },
+    },
+]
 
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
@@ -127,69 +112,63 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             name="Shane Collins",
             gender="male",
             honorific_prefix="Mr",
-            versions="""
-                [
-                  {
+            versions=[
+                {
                     "data": {
-                      "birth_date": null,
-                      "email": "shane@gn.apc.org",
-                      "facebook_page_url": "",
-                      "facebook_personal_url": "",
-                      "gender": "male",
-                      "homepage_url": "",
-                      "honorific_prefix": "Mr",
-                      "honorific_suffix": "",
-                      "id": "2007",
-                      "identifiers": [],
-                      "image": null,
-                      "linkedin_url": "",
-                      "name": "Shane Collins",
-                      "other_names": [],
-                      "party_ppc_page_url": "",
-                      "proxy_image": null,
-                      "candidacies": {
-                        "parl.65808.2010-05-06": {
-                          "party": "PP63"
-                        }
-                      },
-                      "not_standing": ["parl.2015"],
-                      "twitter_username": "",
-                      "wikipedia_url": ""
+                        "birth_date": None,
+                        "email": "shane@gn.apc.org",
+                        "facebook_page_url": "",
+                        "facebook_personal_url": "",
+                        "gender": "male",
+                        "homepage_url": "",
+                        "honorific_prefix": "Mr",
+                        "honorific_suffix": "",
+                        "id": "2007",
+                        "identifiers": [],
+                        "image": None,
+                        "linkedin_url": "",
+                        "name": "Shane Collins",
+                        "other_names": [],
+                        "party_ppc_page_url": "",
+                        "proxy_image": None,
+                        "candidacies": {
+                            "parl.65808.2010-05-06": {"party": "PP63"}
+                        },
+                        "not_standing": ["parl.2015"],
+                        "twitter_username": "",
+                        "wikipedia_url": "",
                     },
                     "information_source": "http://www.lambeth.gov.uk/sites/default/files/ec-dulwich-and-west-norwood-candidates-and-notice-of-poll-2015.pdf",
                     "timestamp": "2015-04-09T20:32:09.237610",
                     "username": "JPCarrington",
-                    "version_id": "274e50504df330e4"
-                  },
-                  {
+                    "version_id": "274e50504df330e4",
+                },
+                {
                     "data": {
-                      "birth_date": null,
-                      "email": "shane@gn.apc.org",
-                      "facebook_page_url": null,
-                      "facebook_personal_url": null,
-                      "gender": "male",
-                      "homepage_url": null,
-                      "id": "2007",
-                      "identifiers": [],
-                      "name": "Shane Collins",
-                      "party_ppc_page_url": null,
-                      "phone": "07939 196612",
-                      "slug": "shane-collins",
-                      "candidacies": {
-                        "parl.65808.2010-05-06": {
-                          "party": "PP63"
-                        }
-                      },
-                      "twitter_username": null,
-                      "wikipedia_url": null
+                        "birth_date": None,
+                        "email": "shane@gn.apc.org",
+                        "facebook_page_url": None,
+                        "facebook_personal_url": None,
+                        "gender": "male",
+                        "homepage_url": None,
+                        "id": "2007",
+                        "identifiers": [],
+                        "name": "Shane Collins",
+                        "party_ppc_page_url": None,
+                        "phone": "07939 196612",
+                        "slug": "shane-collins",
+                        "candidacies": {
+                            "parl.65808.2010-05-06": {"party": "PP63"}
+                        },
+                        "twitter_username": None,
+                        "wikipedia_url": None,
                     },
                     "information_source": "Imported from YourNextMP data from 2010",
                     "timestamp": "2014-11-21T18:16:47.670167",
                     "username": "JPCarrington",
-                    "version_id": "68a452284d95d9ab"
-                  }
-                ]
-            """,
+                    "version_id": "68a452284d95d9ab",
+                },
+            ],
         )
         person.tmp_person_identifiers.create(
             value="shane@gn.apc.org", value_type="email"
@@ -531,36 +510,36 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         person_a = Person.objects.create(
             pk=1,
             name="Person A",
-            versions="""[{
+            versions=[
+                {
                     "data": {
-                      "birth_date": null,
-                      "email": "shane@gn.apc.org",
-                      "facebook_page_url": "",
-                      "facebook_personal_url": "",
-                      "gender": "male",
-                      "homepage_url": "",
-                      "honorific_prefix": "Mr",
-                      "honorific_suffix": "",
-                      "id": "1",
-                      "identifiers": [],
-                      "image": null,
-                      "linkedin_url": "",
-                      "name": "Shane Collins",
-                      "other_names": [],
-                      "candidacies": {},
-                      "party_ppc_page_url": "",
-                      "proxy_image": null,
-                      "not_standing": [
-                        "parl.2015"
-                      ],
-                      "twitter_username": "",
-                      "wikipedia_url": ""
+                        "birth_date": None,
+                        "email": "shane@gn.apc.org",
+                        "facebook_page_url": "",
+                        "facebook_personal_url": "",
+                        "gender": "male",
+                        "homepage_url": "",
+                        "honorific_prefix": "Mr",
+                        "honorific_suffix": "",
+                        "id": "1",
+                        "identifiers": [],
+                        "image": None,
+                        "linkedin_url": "",
+                        "name": "Shane Collins",
+                        "other_names": [],
+                        "candidacies": {},
+                        "party_ppc_page_url": "",
+                        "proxy_image": None,
+                        "not_standing": ["parl.2015"],
+                        "twitter_username": "",
+                        "wikipedia_url": "",
                     },
                     "information_source": "http://www.lambeth.gov.uk/sites/default/files/ec-dulwich-and-west-norwood-candidates-and-notice-of-poll-2015.pdf",
                     "timestamp": "2015-04-09T20:32:09.237610",
                     "username": "JPCarrington",
-                    "version_id": "274e50504df330e4"
-                  }]""",
+                    "version_id": "274e50504df330e4",
+                }
+            ],
         )
         person_a.not_standing.add(self.dulwich_post_ballot.election)
 

@@ -1,5 +1,3 @@
-import json
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -27,7 +25,7 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
         edit = {"email": "tessa@example.com"}
 
         self.assertFalse(LoggedAction.objects.all().exists())
-        self.assertEqual(self.person.versions, "[]")
+        self.assertEqual(self.person.versions, [])
         person = bot.edit_fields(edit, "a source", save=True)
         expected = {
             "biography": "",
@@ -54,7 +52,7 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
             "wikipedia_url": "",
             "youtube_profile": "",
         }
-        got = json.loads(person.versions)
+        got = person.versions
         self.assertEqual(got[0]["data"], expected)
         self.assertEqual(got[0]["information_source"], "a source")
         self.assertEqual(got[0]["username"], settings.CANDIDATE_BOT_USERNAME)
