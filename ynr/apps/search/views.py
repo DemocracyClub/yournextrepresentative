@@ -28,7 +28,7 @@ class PersonSearch(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["query"] = self.request.GET.get("q")
+        context["query"] = self.request.GET.get("q", "")
         context["looks_like_postcode"] = is_valid_postcode(context["query"])
         if context["query"]:
             context["results"] = search_person_by_name(context["query"])[:10]
