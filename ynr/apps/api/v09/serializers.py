@@ -1,8 +1,8 @@
 from rest_framework import serializers
+from rest_framework.fields import JSONField
 from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
 
 import people.models
-from api.helpers import JSONSerializerField
 from candidates import models as candidates_models
 from elections import models as election_models
 from parties.models import Party
@@ -274,7 +274,7 @@ class PersonSerializer(MinimalPersonSerializer):
 
     email = serializers.SerializerMethodField()
 
-    versions = JSONSerializerField(read_only=True)
+    versions = JSONField(read_only=True)
 
     memberships = MembershipSerializer(many=True, read_only=True)
 

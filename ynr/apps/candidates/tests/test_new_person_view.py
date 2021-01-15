@@ -1,4 +1,3 @@
-import json
 from urllib.parse import urlsplit
 
 from django_webtest import WebTest
@@ -97,9 +96,9 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "http://en.wikipedia.org/wiki/Lizzie_Bennet",
         )
 
-        self.assertNotEqual(person.versions, "[]")
+        self.assertNotEqual(person.versions, [])
 
-        versions = json.loads(person.versions)
+        versions = person.versions
         self.assertEqual(len(versions), 1)
         self.assertEqual(
             versions[0]["information_source"],

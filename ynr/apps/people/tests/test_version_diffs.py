@@ -972,52 +972,54 @@ class TestSingleVersionRendering(UK2015ExamplesMixin, TestCase):
         super().setUp()
         self.example_person = people.tests.factories.PersonFactory.create(
             name="Sarah Jones",
-            versions="""[{
-                "data": {
-                    "honorific_prefix": "Mrs",
-                    "honorific_suffix": "",
-                    "id": "6704",
-                    "identifiers": [],
-                    "image": null,
-                    "linkedin_url": "",
-                    "name": "Sarah Jones",
-                    "other_names": [{
-                        "id": "552f80d0ed1c6ee164eeae50",
-                        "name": "Sarah Smith",
-                        "note": "Maiden name"
-                    }],
-                    "party_ppc_page_url": "",
-                    "proxy_image": null,
-                    "twitter_username": "",
-                    "wikipedia_url": ""
+            versions=[
+                {
+                    "data": {
+                        "honorific_prefix": "Mrs",
+                        "honorific_suffix": "",
+                        "id": "6704",
+                        "identifiers": [],
+                        "image": None,
+                        "linkedin_url": "",
+                        "name": "Sarah Jones",
+                        "other_names": [
+                            {
+                                "id": "552f80d0ed1c6ee164eeae50",
+                                "name": "Sarah Smith",
+                                "note": "Maiden name",
+                            }
+                        ],
+                        "party_ppc_page_url": "",
+                        "proxy_image": None,
+                        "twitter_username": "",
+                        "wikipedia_url": "",
+                    },
+                    "information_source": "Made up 2",
+                    "timestamp": "2015-05-08T01:52:27.061038",
+                    "username": "test",
+                    "version_id": "3fc494d54f61a157",
                 },
-                "information_source": "Made up 2",
-                "timestamp": "2015-05-08T01:52:27.061038",
-                "username": "test",
-                "version_id": "3fc494d54f61a157"
-            },
-            {
-                "data": {
-                    "honorific_prefix": "Mrs",
-                    "honorific_suffix": "",
-                    "id": "6704",
-                    "identifiers": [],
-                    "image": null,
-                    "linkedin_url": "",
-                    "name": "Sarah Jones",
-                    "other_names": [
-                        {"name": "Sarah Smith"}
-                    ],
-                    "party_ppc_page_url": "",
-                    "proxy_image": null,
-                    "twitter_username": "",
-                    "wikipedia_url": ""
+                {
+                    "data": {
+                        "honorific_prefix": "Mrs",
+                        "honorific_suffix": "",
+                        "id": "6704",
+                        "identifiers": [],
+                        "image": None,
+                        "linkedin_url": "",
+                        "name": "Sarah Jones",
+                        "other_names": [{"name": "Sarah Smith"}],
+                        "party_ppc_page_url": "",
+                        "proxy_image": None,
+                        "twitter_username": "",
+                        "wikipedia_url": "",
+                    },
+                    "information_source": "Made up 1",
+                    "timestamp": "2015-03-10T05:35:15.297559",
+                    "username": "test",
+                    "version_id": "2f07734529a83242",
                 },
-                "information_source": "Made up 1",
-                "timestamp": "2015-03-10T05:35:15.297559",
-                "username": "test",
-                "version_id": "2f07734529a83242"
-            }]""",
+            ],
         )
 
     def test_get_single_parent_diff(self):

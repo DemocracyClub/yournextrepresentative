@@ -6,4 +6,4 @@ class PersonFactory(factory.DjangoModelFactory):
         model = "people.Person"
 
     name = factory.Faker("name")
-    versions = "[]"
+    versions = []

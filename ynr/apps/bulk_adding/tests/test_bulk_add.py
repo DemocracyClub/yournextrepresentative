@@ -1,5 +1,3 @@
-import json
-
 from django_webtest import WebTest
 
 from bulk_adding.models import RawPeople
@@ -89,7 +87,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(Person.objects.count(), 1)
         homer = Person.objects.get()
         self.assertEqual(homer.name, "Homer Simpson")
-        homer_versions = json.loads(homer.versions)
+        homer_versions = homer.versions
         self.assertEqual(len(homer_versions), 2)
         self.assertEqual(
             homer_versions[0]["information_source"], "http://example.com"

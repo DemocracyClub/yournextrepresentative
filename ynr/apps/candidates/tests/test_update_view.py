@@ -1,4 +1,3 @@
-import json
 from urllib.parse import urlsplit
 
 from django_webtest import WebTest
@@ -143,7 +142,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         person = Person.objects.get(id="2009")
         self.assertEqual(person.birth_date, "1875-04-01")
-        versions_data = json.loads(person.versions)
+        versions_data = person.versions
         self.assertEqual(
             versions_data[0]["data"]["extra_fields"], {"favourite_biscuits": ""}
         )

@@ -1,5 +1,3 @@
-import json
-
 from django_webtest import WebTest
 
 import people.tests.factories
@@ -58,7 +56,7 @@ class TestDataRemoval(TestUserMixin, UK2015ExamplesMixin, WebTest):
         dr.remove()
         self.person.refresh_from_db()
         self.assertEqual(
-            json.loads(self.person.versions),
+            self.person.versions,
             [
                 {
                     "username": "symroe",

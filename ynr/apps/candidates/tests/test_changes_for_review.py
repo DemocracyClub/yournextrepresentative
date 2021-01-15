@@ -500,7 +500,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
 class TestDiffHTML(TestCase):
     def test_missing_version(self):
         person = people.tests.factories.PersonFactory.create(
-            name="John Smith", id="1234567", versions="[]"
+            name="John Smith", id="1234567"
         )
         la = LoggedAction.objects.create(
             person=person, popit_person_new_version="1376abcd9234"
@@ -515,45 +515,47 @@ class TestDiffHTML(TestCase):
         person = people.tests.factories.PersonFactory.create(
             name="Sarah Jones",
             id="1234567",
-            versions="""[{
-                "data": {
-                    "honorific_prefix": "Mrs",
-                    "honorific_suffix": "",
-                    "id": "6704",
-                    "identifiers": [],
-                    "image": null,
-                    "linkedin_url": "",
-                    "name": "Sarah Jones",
-                    "party_ppc_page_url": "",
-                    "proxy_image": null,
-                    "twitter_username": "",
-                    "wikipedia_url": ""
+            versions=[
+                {
+                    "data": {
+                        "honorific_prefix": "Mrs",
+                        "honorific_suffix": "",
+                        "id": "6704",
+                        "identifiers": [],
+                        "image": None,
+                        "linkedin_url": "",
+                        "name": "Sarah Jones",
+                        "party_ppc_page_url": "",
+                        "proxy_image": None,
+                        "twitter_username": "",
+                        "wikipedia_url": "",
+                    },
+                    "information_source": "Made up 2",
+                    "timestamp": "2015-05-08T01:52:27.061038",
+                    "username": "test",
+                    "version_id": "3fc494d54f61a157",
                 },
-                "information_source": "Made up 2",
-                "timestamp": "2015-05-08T01:52:27.061038",
-                "username": "test",
-                "version_id": "3fc494d54f61a157"
-            },
-            {
-                "data": {
-                    "email": "sarah@example.com",
-                    "honorific_prefix": "Mrs",
-                    "honorific_suffix": "",
-                    "id": "6704",
-                    "identifiers": [],
-                    "image": null,
-                    "linkedin_url": "",
-                    "name": "Sarah Jones",
-                    "party_ppc_page_url": "",
-                    "proxy_image": null,
-                    "twitter_username": "",
-                    "wikipedia_url": ""
+                {
+                    "data": {
+                        "email": "sarah@example.com",
+                        "honorific_prefix": "Mrs",
+                        "honorific_suffix": "",
+                        "id": "6704",
+                        "identifiers": [],
+                        "image": None,
+                        "linkedin_url": "",
+                        "name": "Sarah Jones",
+                        "party_ppc_page_url": "",
+                        "proxy_image": None,
+                        "twitter_username": "",
+                        "wikipedia_url": "",
+                    },
+                    "information_source": "Made up 1",
+                    "timestamp": "2015-03-10T05:35:15.297559",
+                    "username": "test",
+                    "version_id": "2f07734529a83242",
                 },
-                "information_source": "Made up 1",
-                "timestamp": "2015-03-10T05:35:15.297559",
-                "username": "test",
-                "version_id": "2f07734529a83242"
-            }]""",
+            ],
         )
         la = LoggedAction.objects.create(
             person=person, popit_person_new_version="3fc494d54f61a157"

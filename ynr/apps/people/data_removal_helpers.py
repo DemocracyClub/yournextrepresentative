@@ -5,7 +5,6 @@ interface, typically after a GDPR request for removal.
 
 """
 import abc
-import json
 from collections import defaultdict
 
 DELETED_STR = "<DELETED>"
@@ -76,7 +75,7 @@ class VersionHistoryCheck(BaseCheck):
         ]
         never_remove_identifiers = ["uk.org.publicwhip"]
         to_remove = defaultdict(set)
-        versions = json.loads(self.person.versions)
+        versions = self.person.versions
         for version in versions:
             for key, value in version.get("data").items():
                 if key not in never_remove:
@@ -106,7 +105,7 @@ class VersionHistoryCheck(BaseCheck):
                 continue
             version_data_to_remove.append(self.get_item_display_info(remove))
         if do_remove:
-            self.person.versions = json.dumps(versions)
+            self.person.versions = versions
             self.person.save()
         return sorted(version_data_to_remove, key=lambda item: item["title"])
 

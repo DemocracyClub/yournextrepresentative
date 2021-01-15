@@ -1,5 +1,3 @@
-import json
-
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -21,7 +19,7 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **options):
         for person in Person.objects.all():
-            version = json.loads(person.versions)[0]
+            version = person.versions[0]
             for ballot_paper_id, candidacy in (
                 version["data"].get("candidacies", {}).items()
             ):

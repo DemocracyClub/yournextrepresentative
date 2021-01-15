@@ -1,4 +1,3 @@
-import json
 from collections import OrderedDict
 
 from django.conf import settings
@@ -150,9 +149,9 @@ class PersonMerger:
 
         # Make sure the secondary person's version history is appended, so it
         # isn't lost.
-        dest_person_versions = json.loads(self.dest_person.versions)
-        dest_person_versions += json.loads(self.source_person.versions)
-        self.dest_person.versions = json.dumps(dest_person_versions)
+        dest_person_versions = self.dest_person.versions
+        dest_person_versions += self.source_person.versions
+        self.dest_person.versions = dest_person_versions
 
     def merge_person_attrs(self):
         """

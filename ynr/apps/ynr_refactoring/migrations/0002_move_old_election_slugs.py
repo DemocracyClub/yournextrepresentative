@@ -121,7 +121,7 @@ def _merge_election(Election, old_list):
 
 
 def _update_versions(person, old, new):
-    versions = json.loads(person.versions)
+    versions = person.versions
     for version in versions:
         if version["data"].get("standing_in"):
             if old in version["data"]["standing_in"]:
