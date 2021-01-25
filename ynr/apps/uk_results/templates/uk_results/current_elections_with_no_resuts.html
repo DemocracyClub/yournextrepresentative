@@ -13,5 +13,9 @@
       </li>
     {% endfor %}
   </ul>
+{% empty %}
+<p>There are no recent elections requiring results!</p>
+
+<p>Why not view the <a href="https://candidates.democracyclub.org.uk/elections/">list of upcoming elections</a>instead?</p>
 {% endfor %}
 {% endblock content %}
