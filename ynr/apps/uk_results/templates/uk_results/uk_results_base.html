@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block hero %}
+  <h1>Results (beta)</h1>
+{% endblock %}
+
 {% block content %}
 {% if show_results_feature %}
 <nav class="top-bar" data-topbar role="navigation">
@@ -11,10 +15,6 @@
   </section>
 </nav>
 {% endif %}
-
-{% block results_title %}
-<h1>Results</h1>
-{% endblock results_title %}
 
 {% block results_content %}
 {% endblock results_content %}
