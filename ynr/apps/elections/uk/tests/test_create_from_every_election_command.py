@@ -6,7 +6,13 @@ from django_webtest import WebTest
 from freezegun import freeze_time
 from mock import Mock, patch
 
-from candidates.tests.factories import MembershipFactory
+from candidates.models import Ballot
+from candidates.tests.factories import (
+    MembershipFactory,
+    PostFactory,
+    ElectionFactory,
+    OrganizationFactory,
+)
 from elections.uk import every_election
 from people.tests.factories import PersonFactory
 from popolo.models import Post
@@ -20,6 +26,7 @@ from .ee_import_results import (
     no_results,
     pre_gss_result,
     post_gss_result,
+    replaced_election,
 )
 
 EE_BASE_URL = getattr(
@@ -542,3 +549,42 @@ class EE_ImporterTest(WebTest):
 
         call_command("uk_create_elections_from_every_election")
         self.assertEqual(Post.objects.count(), 1)
+
+    @patch("elections.uk.every_election.requests")
+    @freeze_time("2019-05-02")
+    def test_adds_replaces(self, mock_requests):
+        "local.highland.wester-ross-strathpeffer-and-lochalsh.by.2018-12-06"
+        # PostFactory.create()
+        org = OrganizationFactory(name="Highland Council")
+        election = ElectionFactory.create(
+            slug="local.highland.2017-12-06",
+            election_date="2017-12-06",
+            organization=org,
+        )
+        PostFactory.create(
+            elections=(election,),
+            slug="wester-ross-strathpeffer-and-lochalsh.by",
+            label="Councillor",
+            organization=org,
+        )
+
+        self.assertEqual(Ballot.objects.all().count(), 1)
+        old_ballot = Ballot.objects.get()
+
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {
+                urljoin(
+                    EE_BASE_URL,
+                    "/api/elections/?poll_open_date__gte=2019-04-02",
+                ): replaced_election,
+                urljoin(
+                    EE_BASE_URL,
+                    "/api/elections/?deleted=1&poll_open_date__gte=2019-04-02",
+                ): no_results,
+            }
+        )
+
+        call_command("uk_create_elections_from_every_election")
+        self.assertEqual(Ballot.objects.all().count(), 2)
+        new_ballot = Ballot.objects.order_by("pk").last()
+        self.assertEqual(new_ballot.replaces, old_ballot)

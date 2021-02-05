@@ -213,6 +213,15 @@ class EEElection(dict):
             POST_CACHE[cache_key] = self.post_object
         return (self.post_object, self.post_created)
 
+    def get_replaced_ballot(self):
+        replaces = self.get("replaces")
+        if not replaces:
+            return None
+        try:
+            return Ballot.objects.get(ballot_paper_id=replaces)
+        except Ballot.DoesNotExist:
+            return None
+
     def get_or_create_ballot(self, parent):
         if hasattr(self, "ballot_object"):
             self.ballot_created = False
@@ -241,6 +250,7 @@ class EEElection(dict):
                         "election": parent.election_object,
                         "winner_count": winner_count,
                         "cancelled": self["cancelled"],
+                        "replaces": self.get_replaced_ballot(),
                     },
                 )
             except:
