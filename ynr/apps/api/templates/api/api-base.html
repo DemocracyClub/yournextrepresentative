@@ -1,6 +1,10 @@
 {% extends "base.html" %}
-{% block content %}
 
+{% block hero %}
+  <h1>Candidates and results data</h1>
+{% endblock %}
+
+{% block content %}
 
   <div class="row">
     <div class="columns large-2">
@@ -25,9 +29,7 @@
       </ul>
     </div>
     <div class="columns large-10">
-  {% block api_page_title %}
-    <h1>Candidates and results data</h1>
-  {% endblock %}
+
       {% block api_content %}
 
       {% endblock %}
