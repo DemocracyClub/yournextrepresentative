@@ -16,6 +16,8 @@ from people.models import PersonIdentifier
 
 @shared_task(rate_limit="4/m")
 def get_ads_for_page(person_id, page_id, page_url):
+    if not hasattr(settings, "FACEBOOK_TOKEN"):
+        return
     if settings.RUNNING_TESTS:
         # Never run during tests
         return
