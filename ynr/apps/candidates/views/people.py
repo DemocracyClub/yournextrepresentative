@@ -1,7 +1,6 @@
 import re
 
 from braces.views import LoginRequiredMixin
-from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
@@ -39,12 +38,11 @@ from ..models import (
     PersonRedirect,
     Ballot,
 )
-from ..models.auth import check_creation_allowed, check_update_allowed
+from ..models.auth import check_creation_allowed
 from ..models.versions import revert_person_from_version_data
 from .helpers import (
     ProcessInlineFormsMixin,
     get_field_groupings,
-    get_person_form_fields,
 )
 from .version_data import get_change_metadata, get_client_ip
 
@@ -105,18 +103,9 @@ class PersonView(TemplateView):
         context["has_current_elections"] = (
             context["elections_to_list"].current_or_future().exists()
         )
-        context["simple_fields"] = [
-            field.name for field in settings.SIMPLE_POPOLO_FIELDS
-        ]
 
         context["person_edits_allowed"] = self.person.user_can_edit(
             self.request.user
-        )
-
-        personal_fields, demographic_fields = get_field_groupings()
-        context["has_demographics"] = any(
-            demographic in context["simple_fields"]
-            for demographic in demographic_fields
         )
 
         return context
@@ -353,56 +342,6 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
 
         return kwargs
 
-    def get_initial(self):
-        initial_data = super().get_initial()
-        person = get_object_or_404(Person, pk=self.kwargs["person_id"])
-        initial_data.update(person.get_initial_form_data())
-        initial_data["person"] = person
-        return initial_data
-
-    def hide_locked_ballots(self, form):
-        """
-        This is, let's say, not ideal
-
-        The problem is we don't let people change Ballots for people
-        if that ballot is locked. Previously we disabled the HTML widget,
-        but this means that browsers don't submit the form data. It's
-        impossible to distinguish between a user trying to delete a ballot
-        and a user not touching the form at all.
-
-        The best thing in this case is to not show the thing that can't be
-        changed, but we can't just remove the fields either, as that messes
-        up other elements of the dynamic field creation.
-
-        So, we end up just marking them all as hidden, at the point where we
-        get the form.
-
-        """
-        election_slugs = []
-        keys = ("standing", "constituency", "party_GB", "party_NI")
-        for field in form.fields:
-            if field.startswith("standing_"):
-                election_slugs.append(field[9:])
-        for slug in election_slugs:
-            ballot_locked = Ballot.objects.filter(
-                election__slug=slug,
-                membership__person=form.initial["person"],
-                candidates_locked=True,
-            ).exists()
-
-            if ballot_locked:
-                for prefix in keys:
-                    form.fields[
-                        "{}_{}".format(prefix, slug)
-                    ].widget = forms.HiddenInput()
-
-        return form
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form = self.hide_locked_ballots(form)
-        return form
-
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
@@ -420,11 +359,10 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
 
         context["versions"] = get_version_diffs(person.versions)
 
-        context = get_person_form_fields(context, context["form"])
-
         return context
 
     def form_valid(self, all_forms):
+
         form = all_forms["form"]
 
         if not (settings.EDITS_ALLOWED or self.request.user.is_staff):
@@ -443,17 +381,9 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
             identifiers_formset.save()
 
             old_name = person.name
-            old_candidacies = person.current_or_future_candidacies
-            person.update_from_form(form)
             new_name = person.name
-            new_candidacies = person.current_or_future_candidacies
-            check_update_allowed(
-                self.request.user,
-                old_name,
-                old_candidacies,
-                new_name,
-                new_candidacies,
-            )
+
+            # TODO: Move to Form
             if old_name != new_name:
                 person.other_names.update_or_create(
                     name=old_name,
@@ -528,11 +458,6 @@ class NewPersonView(
         "identifiers_formset": PersonIdentifierFormsetFactory
     }
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["election"] = self.election
-        return kwargs
-
     def get_initial(self):
         result = super().get_initial()
         result["standing_" + self.election] = "standing"
@@ -544,13 +469,11 @@ class NewPersonView(
 
         context["add_candidate_form"] = context["form"]
 
-        context = get_person_form_fields(context, context["add_candidate_form"])
         return context
 
     def form_valid(self, all_forms):
         form = all_forms["form"]
         identifiers_formset = all_forms["identifiers_formset"]
-        context = self.get_context_data()
         with transaction.atomic():
 
             person = Person.create_from_form(form)

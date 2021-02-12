@@ -11,7 +11,7 @@ from auth_helpers.views import GroupRequiredMixin
 from candidates.csv_helpers import list_to_csv, memberships_dicts_for_csv
 from candidates.forms import ToggleLockForm
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
-from candidates.views.helpers import get_person_form_fields
+
 from candidates.views.version_data import get_client_ip
 from elections.mixins import ElectionMixin
 from elections.models import Election
@@ -149,15 +149,7 @@ class BallotPaperView(TemplateView):
 
             # New person form
             context["add_candidate_form"] = NewPersonForm(
-                election=ballot.election.slug,
-                initial={
-                    ("constituency_" + ballot.election.slug): ballot.post.slug,
-                    ("standing_" + ballot.election.slug): "standing",
-                },
-                hidden_post_widget=True,
-            )
-            context = get_person_form_fields(
-                context, context["add_candidate_form"]
+                initial={"ballot_paper_id": ballot.ballot_paper_id,},
             )
             context["identifiers_formset"] = PersonIdentifierFormsetFactory()
 

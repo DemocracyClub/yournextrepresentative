@@ -107,30 +107,23 @@
   <dl>
     <dt>Name</dt>
     <dd>{{ person.name_with_honorifics }}</dd>
-    {% if person.other_names.exists or 'additional_name' in simple_fields and person.additional_name %}
+    {% if person.other_names.exists %}
       <dt>Also known as</dt>
-    {% endif %}
-    {% if 'additional_name' in simple_fields and person.additional_name %}
-      <dd>{{ person.additional_name }} (additional name)</dd>
     {% endif %}
     {% for other_name in person.other_names.all %}
       <dd>{{ other_name.name }}{% if other_name.note %} ({{ other_name.note }}){% endif %}</dd>
     {% endfor %}
-    {% if 'email' in simple_fields %}
+    {% if person.get_email  %}
       <dt>Email</dt>
-      <dd>{% if person.get_email %}<a href="mailto:{{ person.get_email }}">{{ person.get_email }}</a>{% endif %}</dd>
+      <dd><a href="mailto:{{ person.get_email }}">{{ person.get_email }}</a></dd>
     {% endif %}
     {% if last_candidacy %}
       <dt>Party</dt>
       <dd>{{ last_candidacy.party.name }}</dd>
     {% endif %}
-    {% if 'summary' in simple_fields %}
-      <dt>Summary</dt>
-      <dd>{% if person.summary %}{{ person.summary }}{% endif %}</dd>
-    {% endif %}
-    {% if 'biography' in simple_fields %}
+    {% if person.biography %}
       <dt>Statement to voters</dt>
-      <dd class="person_biography">{% if person.biography %}{{ person.biography|linebreaks }}{% endif %}</dd>
+      <dd class="person_biography">{{ person.biography|linebreaks }}</dd>
     {% endif %}
   </dl>
 
@@ -164,15 +157,11 @@
     {% endfor %}
   </dl>
 
-  {% if has_demographics %}
     <h2>Demographics:</h2>
 
     <dl>
-      {% if 'gender' in simple_fields %}
         <dt>Gender</dt>
         <dd>{% if person.gender %}{{ person.gender|title }}{% else %}Unknown{% endif %}</dd>
-      {% endif %}
-
 
       <dt>Age</dt>
       {% if person.birth_date %}
@@ -193,7 +182,6 @@
       {% endif %}
 
     </dl>
-  {% endif %}
 
   {% if person.favourite_biscuit %}
     <h2>Additional information:</h2>

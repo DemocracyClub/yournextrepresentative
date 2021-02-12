@@ -16,13 +16,6 @@ from moderation_queue.review_required_helper import (
 from moderation_queue.slack import post_action_to_slack
 
 
-def merge_dicts_with_list_values(dict_a, dict_b):
-    return {
-        k: dict_a.get(k, []) + dict_b.get(k, [])
-        for k in set(dict_a.keys()) | set(dict_b.keys())
-    }
-
-
 class LoggedActionQuerySet(models.QuerySet):
     def in_recent_days(self, days=5):
         return self.filter(created__gte=(datetime.now() - timedelta(days=days)))
