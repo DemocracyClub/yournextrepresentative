@@ -2,133 +2,60 @@ from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from django.db.models import Count
-from django.forms import BaseFormSet, BaseModelFormSet, BaseInlineFormSet
-from django.forms.formsets import DELETION_FIELD_NAME
 from django.utils.functional import cached_property
-from candidates.models import (
-    PartySet,
-    Ballot,
-)
-from elections.models import Election
+from candidates.models import PartySet, Ballot
 from facebook_data.tasks import extract_fb_page_id
 from parties.models import Party
-from people.helpers import parse_approximate_date
+from people.forms.fields import (
+    CurrentUnlockedBallotsField,
+    PartyIdentiferField,
+    StrippedCharField,
+    BlankApproximateDateFormField,
+)
 from people.models import Person, PersonIdentifier
-from popolo.models import OtherName, Post, Membership
-from utils.widgets import SelectWithAttrs
+from popolo.models import OtherName, Membership
 
-from .helpers import clean_twitter_username, clean_wikidata_id
+from people.helpers import clean_twitter_username, clean_wikidata_id
 
-
-class CurrentUnlockedBallotsField(forms.CharField):
-    ballot = None
-
-    def clean(self, value):
-        value = value.lower()
-        if len(value.split(".")) < 3:
-            raise ValidationError("Invalid ballot paper ID")
-        base_qs = Ballot.objects.all().select_related("election")
-        try:
-            if not self.ballot:
-                self.ballot = base_qs.get(ballot_paper_id=value.strip())
-            if self.ballot.candidates_locked:
-                raise ValidationError(
-                    "Cannot add candidates to a locked " "ballot"
-                )
-            if not self.ballot.election.current:
-                raise ValidationError(
-                    "Cannot update an election that isn't 'current'"
-                )
-            return self.ballot
-        except Ballot.DoesNotExist:
-            raise ValidationError("Unknown ballot paper ID")
-
-    def to_python(self, value):
-        if not value:
-            return None
-        if not self.ballot:
-            self.ballot = Ballot.objects.get(ballot_paper_id=value)
-        return self.ballot
-
-class PartyIdentiferField(forms.CharField):
-    party = None
-
-    def clean(self, value):
-        value = value.strip()
-        base_qs = Party.objects.all()
-        try:
-            if not self.party:
-                self.party = base_qs.get(ec_id=value)
-            return self.party
-        except Party.DoesNotExist:
-            raise ValidationError(f"No party with ID {value} exists")
-
-    def to_python(self, value):
-        if not self.party:
-            self.party = Party.objects.get(ec_id=value)
-        return self.party
-
-def get_ballot_choices(election, user=None):
-    """
-    Returns a list formatted for passing to a SelectWithAttrs widget
-    :type user: django.contrib.auth.models.User
-    :type election: elections.models.Election
-    :param user:
-    :return:
-    """
-    user_can_edit_cancelled = False
-    if user and user.is_staff:
-        user_can_edit_cancelled = True
-    ballots_qs = (
-        Ballot.objects.filter(election=election)
-        .select_related("post", "election")
-        .order_by("post__label")
-    )
-
-    choices = [("", "")]
-    for ballot in ballots_qs:
-        attrs = {}
-        ballot_label = ballot.post.short_label
-        if ballot.cancelled:
-            ballot_label = "{} {}".format(
-                ballot_label, ballot.cancelled_status_text
-            )
-            if not user_can_edit_cancelled:
-                attrs["disabled"] = True
-
-        if ballot.candidates_locked:
-            ballot_label = "{} {}".format(
-                ballot_label, ballot.locked_status_text
-            )
-            attrs["disabled"] = True
-
-        attrs["label"] = ballot_label
-
-        choices.append((ballot.post.slug, attrs))
-    return choices
-
-
-class StrippedCharField(forms.CharField):
-    """A backport of the Django 1.9 ``CharField`` ``strip`` option.
-
-    If ``strip`` is ``True`` (the default), leading and trailing
-    whitespace is removed.
-    """
-
-    def __init__(
-        self, max_length=None, min_length=None, strip=True, *args, **kwargs
-    ):
-        self.strip = strip
-        super().__init__(
-            max_length=max_length, min_length=min_length, *args, **kwargs
-        )
-
-    def to_python(self, value):
-        value = super().to_python(value)
-        if self.strip:
-            value = value.strip()
-        return value
+# TODO: Use with JS
+# def get_ballot_choices(election, user=None):
+#     """
+#     Returns a list formatted for passing to a SelectWithAttrs widget
+#     :type user: django.contrib.auth.models.User
+#     :type election: elections.models.Election
+#     :param user:
+#     :return:
+#     """
+#     user_can_edit_cancelled = False
+#     if user and user.is_staff:
+#         user_can_edit_cancelled = True
+#     ballots_qs = (
+#         Ballot.objects.filter(election=election)
+#         .select_related("post", "election")
+#         .order_by("post__label")
+#     )
+#
+#     choices = [("", "")]
+#     for ballot in ballots_qs:
+#         attrs = {}
+#         ballot_label = ballot.post.short_label
+#         if ballot.cancelled:
+#             ballot_label = "{} {}".format(
+#                 ballot_label, ballot.cancelled_status_text
+#             )
+#             if not user_can_edit_cancelled:
+#                 attrs["disabled"] = True
+#
+#         if ballot.candidates_locked:
+#             ballot_label = "{} {}".format(
+#                 ballot_label, ballot.locked_status_text
+#             )
+#             attrs["disabled"] = True
+#
+#         attrs["label"] = ballot_label
+#
+#         choices.append((ballot.post.slug, attrs))
+#     return choices
 
 
 class BaseCandidacyForm(forms.Form):
@@ -228,19 +155,6 @@ class PersonIdentifierForm(forms.ModelForm):
         return ret
 
 
-PersonIdentifierFormsetFactory = forms.inlineformset_factory(
-    Person,
-    PersonIdentifier,
-    form=PersonIdentifierForm,
-    can_delete=True,
-    widgets={
-        "value_type": forms.Select(
-            choices=PersonIdentifier.objects.select_choices()
-        )
-    },
-)
-
-
 class PersonMembershipForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         if kwargs.get("instance", None):
@@ -260,35 +174,18 @@ class PersonMembershipForm(forms.ModelForm):
 
         fields = ("ballot_paper_id", "party_identifier", "party_list_position")
 
-    party_identifier = forms.CharField()
+    party_identifier = PartyIdentiferField()
     ballot_paper_id = CurrentUnlockedBallotsField()
 
     party_list_position = forms.IntegerField(
         max_value=20, min_value=1, required=False
     )
 
-
-class MembershipFormSet(BaseInlineFormSet):
-    def add_fields(self, form, index):
-        super().add_fields(form, index)
-        # Don't allow deleting locked ballots
-        if form.instance.pk and form.instance.ballot.candidates_locked:
-            del form.fields[DELETION_FIELD_NAME]
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.filter(ballot__candidates_locked=False)
-
-
-PersonMembershipFormsetFactory = forms.inlineformset_factory(
-    Person,
-    Membership,
-    form=PersonMembershipForm,
-    formset=MembershipFormSet,
-    # TODO: Prevent editing locked ballots here
-    can_delete=True,
-    extra=1,
-)
+    def save(self, commit=True):
+        self.instance.ballot = self.cleaned_data["ballot_paper_id"]
+        self.instance.post = self.instance.ballot.post
+        self.instance.party = self.cleaned_data["party_identifier"]
+        return super().save(commit)
 
 
 class BasePersonForm(forms.ModelForm):
@@ -317,20 +214,18 @@ class BasePersonForm(forms.ModelForm):
         label="Name (style: Ali Smith not SMITH Ali)", required=True
     )
     honorific_suffix = StrippedCharField(
-        label="Post-nominal letters (e.g. CBE, DSO, etc.)", required=False,
+        label="Post-nominal letters (e.g. CBE, DSO, etc.)", required=False
     )
 
     gender = StrippedCharField(
-        label="Gender (e.g. “male”, “female”)", required=False,
+        label="Gender (e.g. “male”, “female”)", required=False
     )
 
-    birth_date = StrippedCharField(
-        label="Date of birth (a four digit year or a full date)",
-        required=False,
+    birth_date = BlankApproximateDateFormField(
+        label="Date of birth (a four digit year or a full date)", required=False
     )
-    death_date = StrippedCharField(
-        label="Date of death (a four digit year or a full date)",
-        required=False,
+    death_date = BlankApproximateDateFormField(
+        label="Date of death (a four digit year or a full date)", required=False
     )
 
     biography = StrippedCharField(
@@ -370,35 +265,11 @@ class BasePersonForm(forms.ModelForm):
         ("not-standing", "No"),
     )
 
-    def _clean_date(self, date):
-        if not date:
-            return ""
-
-        if len(date) > 20:
-            raise ValidationError("The date entered was too long")
-        try:
-            parsed_date = parse_approximate_date(date)
-        except ValueError:
-            raise ValidationError(
-                "That date of birth could not be understood. Try using DD/MM/YYYY instead"
-            )
-        return parsed_date
-
-    def clean_birth_date(self):
-        birth_date = self.cleaned_data["birth_date"]
-        return self._clean_date(birth_date)
-
-    def clean_death_date(self):
-        death_date = self.cleaned_data["death_date"]
-        return self._clean_date(death_date)
-
 
 class NewPersonForm(BasePersonForm):
     # TODO: Deal with party lists
     class Meta(BasePersonForm.Meta):
-        exclude = BasePersonForm.Meta.exclude + (
-            "death_date",
-        )
+        exclude = BasePersonForm.Meta.exclude + ("death_date",)
 
     party_identifier = PartyIdentiferField()
     ballot_paper_id = CurrentUnlockedBallotsField(widget=forms.HiddenInput)

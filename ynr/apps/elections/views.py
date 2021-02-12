@@ -18,7 +18,8 @@ from elections.models import Election
 from moderation_queue.forms import SuggestedPostLockForm
 from official_documents.models import OfficialDocument
 from parties.models import Party
-from people.forms import NewPersonForm, PersonIdentifierFormsetFactory
+from people.forms.forms import NewPersonForm
+from people.forms.formsets import PersonIdentifierFormsetFactory
 from popolo.models import Membership
 
 

@@ -16,16 +16,16 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.http import urlquote
 from django.views.decorators.cache import cache_control
-from django.views.generic import FormView, TemplateView, View
+from django.views.generic import FormView, TemplateView, View, UpdateView
 
 from auth_helpers.views import GroupRequiredMixin, user_in_group
 from candidates.forms import SingleElectionForm
 from elections.mixins import ElectionMixin
 from elections.models import Election
-from people.forms import (
-    NewPersonForm,
+from people.forms.forms import NewPersonForm, UpdatePersonForm
+from people.forms.formsets import (
     PersonIdentifierFormsetFactory,
-    UpdatePersonForm,
+    PersonMembershipFormsetFactory,
 )
 from people.models import Person
 from popolo.models import NotStandingValidationError
@@ -40,10 +40,7 @@ from ..models import (
 )
 from ..models.auth import check_creation_allowed
 from ..models.versions import revert_person_from_version_data
-from .helpers import (
-    ProcessInlineFormsMixin,
-    get_field_groupings,
-)
+from .helpers import ProcessInlineFormsMixin, get_field_groupings
 from .version_data import get_change_metadata, get_client_ip
 
 
@@ -68,13 +65,16 @@ def get_call_to_action_flash_message(person, new_person=False):
             "create_for_election_options": [
                 (
                     reverse(
-                        "person-create", kwargs={"election": election_data.slug}
+                        "person-create",
+                        kwargs={"ballot_paper_id": ballot.ballot_paper_id},
                     ),
-                    election_data.name,
+                    ballot.post.label,
                 )
-                for election_data in Election.objects.filter(
-                    ballot__membership__person=person, current=True
-                ).distinct()
+                for ballot in Ballot.objects.filter(
+                    membership__person=person, election__current=True
+                )
+                .select_related("post")
+                .distinct()
             ],
         },
     )
@@ -323,20 +323,20 @@ class CorrectNotStandingMergeView(
         return HttpResponseRedirect(merged_person.get_absolute_url())
 
 
-class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
+class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
     template_name = "candidates/person-edit.html"
+    queryset = Person.objects.all()
+    pk_url_kwarg = "person_id"
     form_class = UpdatePersonForm
     inline_formset_classes = {
-        "identifiers_formset": PersonIdentifierFormsetFactory
+        "identifiers_formset": PersonIdentifierFormsetFactory,
+        "memberships_formset": PersonMembershipFormsetFactory,
     }
 
     def get_inline_formset_kwargs(self, formset_name):
         kwargs = {}
 
         if formset_name == "identifiers_formset":
-            kwargs.update(
-                {"instance": Person.objects.get(pk=self.kwargs["person_id"])}
-            )
             model = self.inline_formset_classes["identifiers_formset"].model
             kwargs.update({"queryset": model.objects.editable_value_types()})
 
@@ -346,7 +346,7 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
 
         context = super().get_context_data(**kwargs)
 
-        person = get_object_or_404(Person, pk=self.kwargs["person_id"])
+        person = self.object
         context["person"] = person
 
         context["user_can_merge"] = user_in_group(
@@ -356,7 +356,9 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
         context["person_edits_allowed"] = person.user_can_edit(
             self.request.user
         )
-
+        context["current_locked_ballots"] = person.memberships.filter(
+            ballot__election__current=True, ballot__candidates_locked=True
+        )
         context["versions"] = get_version_diffs(person.versions)
 
         return context
@@ -373,12 +375,15 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
             raise PermissionDenied
 
         identifiers_formset = all_forms["identifiers_formset"]
+        membership_formset = all_forms["memberships_formset"]
 
         with transaction.atomic():
 
             person = context["person"]
             identifiers_formset.instance = person
             identifiers_formset.save()
+
+            membership_formset.save()
 
             old_name = person.name
             new_name = person.name
@@ -391,7 +396,7 @@ class UpdatePersonView(ProcessInlineFormsMixin, LoginRequiredMixin, FormView):
                         "note": "Added when main name changed on person edit form"
                     },
                 )
-
+            person = form.save()
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data.pop("source")
             )
@@ -460,7 +465,7 @@ class NewPersonView(
 
     def get_initial(self):
         result = super().get_initial()
-        result["standing_" + self.election] = "standing"
+        result["ballot_paper_id"] = self.get_ballot()
         result["name"] = self.request.GET.get("name")
         return result
 
@@ -476,7 +481,7 @@ class NewPersonView(
         identifiers_formset = all_forms["identifiers_formset"]
         with transaction.atomic():
 
-            person = Person.create_from_form(form)
+            person = form.save()
 
             identifiers_formset.instance = person
             identifiers_formset.save()

@@ -184,7 +184,7 @@ class ProcessInlineFormsMixin:
     3. On POST to the view, `is_valid` is called on each inline formset, as well
        as the main `form` object.
     4. If all forms are valid, self.form_valid is called, with a dict of each
-       form as the first arguement. This is a breaking change from using the
+       form as the first argument. This is a breaking change from using the
        standard FormView that expects a single Form class.
     5. if not, self.form_invalid is called with a dict of all forms.
 
@@ -201,6 +201,8 @@ class ProcessInlineFormsMixin:
     def get_inline_formset(self, formset_name):
         formset = self.get_inline_formsets()[formset_name]
         kwargs = self.get_inline_formset_kwargs(formset_name)
+        if hasattr(self, "get_object"):
+            kwargs["instance"] = self.object
         if self.request.method == "POST":
             return formset(self.request.POST, self.request.FILES, **kwargs)
         else:
@@ -219,6 +221,9 @@ class ProcessInlineFormsMixin:
 
         Copied from Django's `ProcessFormView`
         """
+
+        if hasattr(self, "get_object"):
+            self.object = self.get_object()
         form = self.get_form()
         all_forms = self.get_all_initialized_inline_formsets()
         all_forms["form"] = form

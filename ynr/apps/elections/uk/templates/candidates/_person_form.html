@@ -1,162 +1,200 @@
+{% csrf_token %}
 
+{% for field in form.hidden_fields %}
+  {{ field }}
+{% endfor %}
 
-    {% csrf_token %}
+{% if form.errors %}
+  <div class="form-error-summary">
+    <h2>Oops!</h2>
+    <p>We could not accept some of the changes you made.</p>
+    {% if form.non_field_errors %}
+      {{ form.non_field_errors.as_ul }}
+    {% else %}
+      <p>Please check your information matches our requirements, below.</p>
+    {% endif %}
+  </div>
+{% endif %}
 
-    {% if form.errors %}
-      <div class="form-error-summary">
-        <h2>Oops!</h2>
-        <p>We could not accept some of the changes you made.</p>
-        {% if form.non_field_errors %}
-          {{ form.non_field_errors.as_ul }}
-        {% else %}
-          <p>Please check your information matches our requirements, below.</p>
-        {% endif %}
-      </div>
+<h2>Personal details:</h2>
+{# honorific_prefix #}
+<div class="form-item {% if form.honorific_prefix.errors %}form-item--errors{% endif %}">
+  <p>
+    {{ form.honorific_prefix.label_tag }}
+    {% if form.honorific_prefix.help_text %}
+      <p class="help_text">{{ form.honorific_prefix.help_text }}</p>
+    {% endif %}
+  {{ form.honorific_prefix }}
+  </p>
+  {{ form.honorific_prefix.errors }}
+</div>
+
+{# Name #}
+<div class="form-item {% if form.name.errors %}form-item--errors{% endif %}">
+  <p>
+    {{ form.name.label_tag }}
+    {% if form.name.help_text %}
+      <p class="help_text">{{ form.name.help_text }}</p>
+    {% endif %}
+  {{ form.name }}
+  </p>
+  {{ form.name.errors }}
+  <button class="titleCaseNameField button tiny secondary" type="button">Title Case</button>
+
+  {% if not add_candidate_form %}
+    <p class="alternative-names">
+      {% if person.other_names.exists %}
+        Also known as {{ person.other_names.all|join:", " }}<br>
+      {% endif %}
+      <a href="{% url 'person-other-names' person_id=person.id %}">
+        Manage alternative names...
+      </a></p>
+  {% endif %}
+</div>
+
+{# honorific_suffix #}
+<div class="form-item {% if form.honorific_suffix.errors %}form-item--errors{% endif %}">
+  <p>
+    {{ form.honorific_suffix.label_tag }}
+    {% if form.honorific_suffix.help_text %}
+      <p class="help_text">{{ form.honorific_suffix.help_text }}</p>
+    {% endif %}
+  {{ form.honorific_suffix }}
+  </p>
+  {{ form.honorific_suffix.errors }}
+</div>
+
+{# biography #}
+<div class="form-item {% if form.biography.errors %}form-item--errors{% endif %}">
+  <p>
+    {{ form.biography.label_tag }}
+    {% if form.biography.help_text %}
+      <p class="help_text">{{ form.biography.help_text }}</p>
+    {% endif %}
+  {{ form.biography }}
+  </p>
+  {{ form.biography.errors }}
+</div>
+
+  <div>
+    <h2>Candidacy:</h2>
+    {% if current_locked_ballots %}
+      <table class="table">
+      <caption>Current locked ballots</caption>
+      <thead>
+        <th>Ballot</th>
+        <th>Party</th>
+      </thead>
+      <tbody>
+      {% for membership in current_locked_ballots %}
+        <tr>
+          <td>{{ membership.ballot.ballot_paper_id }}</td>
+          <td>{{ membership.party.name }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+      </table>
+
     {% endif %}
 
-    <h2>Personal details:</h2>
 
-    {% for simple_field in personal_fields %}
-    <div class="form-item {% if simple_field.errors %}form-item--errors{% endif %}">
-      <p>
-        {{ simple_field.label_tag }}
-        {% if simple_field.help_text %}
-            <p class="help_text">{{ simple_field.help_text }}</p>
-        {% endif %}
-        {{ simple_field }}
-      </p>
-      {{ simple_field.errors }}
-      {% if simple_field.name == 'name'%}
-        {% if user_can_merge %}
-          <button class="titleCaseNameField button tiny secondary" type="button">Title Case</button>
-        {% endif %}
-
-        {% if not add_candidate_form %}
-          <p class="alternative-names">
-            {% if person.other_names.exists %}
-              Also known as {{ person.other_names.all|join:", " }}<br>
-            {% endif %}
-            <a href="{% url 'person-other-names' person_id=person.id %}">
-              Manage alternative names...
-          </a></p>
-        {% endif %}
-      {% endif %}
-
-    </div>
-
-    {% endfor %}
-
-    <div>
-      <h2>Candidacy:</h2>
-
-        {% for constituency_fields in constituencies_form_fields %}
-
-          <h3>{{ constituency_fields.election_name }}</h3>
-
-          {% if constituency_fields.standing.is_hidden %}
-            {{ constituency_fields.standing }}
-          {% else %}
-          <div class="form-item {% if constituency_fields.standing.errors %}form-item--errors{% endif %}">
-            <p>
-              {{ constituency_fields.standing.label_tag }}
-              {{ constituency_fields.standing }}
-            </p>
-            {{ constituency_fields.standing.errors }}
-          </div>
-          {% endif %}
-
-          {% if constituency_fields.constituency.is_hidden %}
-            {{ constituency_fields.constituency }}
-          {% else %}
-          <div class="form-item {% if constituency_fields.constituency.errors %}form-item--errors{% endif %}">
-            <p>
-              {{ constituency_fields.constituency.label_tag }}
-              {{ constituency_fields.constituency }}
-            </p>
-            {{ constituency_fields.constituency.errors }}
-          </div>
-          {% endif %}
-
-          {% for party_field, party_list_position_field in constituency_fields.party_fields %}
-
-            {% if party_field.is_hidden %}
-                {{ party_field }}
-            {% else %}
-              <div class="form-item {% if party_field.errors %}form-item--errors{% endif %}">
-                <p>
-                  {{ party_field.label_tag }}
-                  {{ party_field }}
-                </p>
-                {{ party_field.errors }}
-              </div>
-
-              {% if party_list_position_field %}
-                <div class="form-item {% if party_list_position_field.errors %}form-item--errors{% endif %}">
-                  <p>
-                    {{ party_list_position_field.label_tag }}
-                    {{ party_list_position_field }}
-                  </p>
-                  {{ party_list_position_field.errors }}
-                </div>
-              {% endif %}
-            {% endif %}
-
+    {% if memberships_formset %}
+    {{ memberships_formset.management_form }}
+    {% for membership_form in memberships_formset %}
+      <div class="row">
+        <fieldset>
+          {% for field in membership_form.hidden_fields %}
+            {{ field }}
           {% endfor %}
-
-        {% endfor %}
-
-        <div class="form-item">
-          <hr>
-          <a class="small secondary button" id="add_election_button">Add a new election for this person</a>
-
-          <div class="add_more_elections_field">
-            <label for="add_more_elections">Add new election:</label>
-            <input type="hidden" id="add_more_elections" style="width:100%">
-          </div>
-
-        </div>
-        <div class="extra_elections_forms"></div>
-
-    </div>
-
-    <h2>Links and social media:</h2>
-    {% include "people/forms/person_identifier_inline_formset.html" %}
-
-    <h2>Demographics:</h2>
-
-    {% for simple_field in demographic_fields %}
-    <div class="form-item {% if simple_field.errors %}form-item--errors{% endif %}">
-      <p>
-        {{ simple_field.label_tag }}
-        {{ simple_field }}
-      </p>
-      {{ simple_field.errors }}
-    </div>
-
-    {% endfor %}
-
-
-      <h2>Additional information:</h2>
-      <div class="form-item {% if form.favourite_biscuit.errors %}form-item--errors{% endif %}">
-        <p>
-          {{ form.favourite_biscuit.label_tag }}
-          {{ form.favourite_biscuit }}
-        </p>
-        {{ form.favourite_biscuit.errors }}
-      </div>
-
-
-    <div class="source-confirmation {% if form.source.errors %}source-confirmation--errors{% endif %}">
-      <p>
-        <label for="{{ form.source.id_for_label }}">
-          {% if form.source.errors %}
-            <strong>You forgot to reference a source!</strong> Can you show us <em>where</em> you got this information?
+          <legend>{% if membership_form.instance.pk %}
+            {{ membership_form.instance.ballot.ballot_paper_id }}
           {% else %}
-            What’s your <strong>source of information</strong> for this candidate?
+            New Ballot
           {% endif %}
-          {{ settings.SOURCE_HINTS }}
-        </label>
-        {{ form.source }}
-      </p>
-    </div>
-    <input type="submit" class="button" value="Save changes">
+          </legend>
+          <div class="row">
+            <div class="large-12 columns">
+              {{ membership_form.ballot_paper_id.label }}
+              {{ membership_form.ballot_paper_id }}
+              {{ membership_form.ballot_paper_id.errors }}
+            </div>
+            <div class="large-8 columns">
+              {{ membership_form.party_identifier.label }}
+              {{ membership_form.party_identifier }}
+              {{ membership_form.party_identifier.errors }}
+            </div>
+            <div class="large-4 columns">
+              {{ membership_form.party_list_position.label }}
+              {{ membership_form.party_list_position }}
+            </div>
+          </div>
+        </fieldset>
+
+      </div>
+    {% endfor %}
+    {% endif %}
+    {% if form.party_identifier %}
+    {# We're on a new person form on the ballot, so we know the ballot already #}
+      {{ form.party_identifier.label }}
+      {{ form.party_identifier }}
+      {{ form.party_identifier.errors }}
+    {% endif %}
+  </div>
+
+
+
+
+<h2>Links and social media:</h2>
+{% include "people/forms/person_identifier_inline_formset.html" %}
+
+<h2>Demographics:</h2>
+
+<div class="form-item {% if gender.errors %}form-item--errors{% endif %}">
+  <p>
+    {{ form.gender.label_tag }}
+    {{ form.gender }}
+  </p>
+  {{ form.gender.errors }}
+</div>
+
+<div class="form-item {% if form.birth_date.errors %}form-item--errors{% endif %}">
+  <p>
+    {{ form.birth_date.label_tag }}
+    {{ form.birth_date }}
+  </p>
+  {{ form.birth_date.errors }}
+</div>
+
+<div class="form-item {% if death_date.errors %}form-item--errors{% endif %}">
+  <p>
+    {{ form.death_date.label_tag }}
+    {{ form.death_date }}
+  </p>
+  {{ form.death_date.errors }}
+</div>
+
+
+<h2>Additional information:</h2>
+<div class="form-item {% if form.favourite_biscuit.errors %}form-item--errors{% endif %}">
+  <p>
+    {{ form.favourite_biscuit.label_tag }}
+    {{ form.favourite_biscuit }}
+  </p>
+  {{ form.favourite_biscuit.errors }}
+</div>
+
+
+<div class="source-confirmation {% if form.source.errors %}source-confirmation--errors{% endif %}">
+  <p>
+    <label for="{{ form.source.id_for_label }}">
+      {% if form.source.errors %}
+        <strong>You forgot to reference a source!</strong> Can you show us <em>where</em> you got this information?
+      {% else %}
+        What’s your <strong>source of information</strong> for this candidate?
+      {% endif %}
+      {{ settings.SOURCE_HINTS }}
+    </label>
+    {{ form.source }}
+  </p>
+</div>
+<input type="submit" class="button" value="Save changes">

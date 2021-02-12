@@ -1,3 +1,5 @@
+from webtest import Text
+
 from people.tests.test_person_view import PersonViewSharedTestsMixin
 from candidates.views.version_data import get_change_metadata
 from candidates.tests.factories import ElectionFactory, BallotPaperFactory
@@ -70,7 +72,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         form["death_date"] = ("a really really really long string",)
         form["source"] = "BBC News"
         response = form.submit()
-        self.assertContains(response, "The date entered was too long")
+        self.assertContains(response, "Please enter a valid date.")
 
     def test_set_birth_date_invalid_date(self):
         """
@@ -189,6 +191,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         self.assertEqual(
             set(response.context["form"].initial.keys()),
             {
+                "id",
                 "honorific_prefix",
                 "name",
                 "honorific_suffix",
@@ -197,20 +200,19 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
                 "death_date",
                 "biography",
                 "favourite_biscuit",
-                "standing_parl.2015-05-07",
-                "constituency_parl.2015-05-07",
-                "party_GB_parl.2015-05-07",
-                "standing_parl.2050-01-01",
-                "constituency_parl.2050-01-01",
-                "party_GB_parl.2050-01-01",
-                "person",
+                # "standing_parl.2015-05-07",
+                # "constituency_parl.2015-05-07",
+                # "party_GB_parl.2015-05-07",
+                # "constituency_parl.2050-01-01",
+                # "party_GB_parl.2050-01-01",
+                # "person",
             },
         )
 
     def test_person_not_standing_version(self):
         """
         There was a bug where people with a "not_standing" entry couldn't be
-        edited due to the way thr versions were calculated.
+        edited due to the way the versions were calculated.
 
         This is a regression test to catch that previously untested case
 
@@ -243,3 +245,59 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         self.person.refresh_from_db()
         version = self.person.versions[0]
         self.assertEqual(version["data"]["not_standing"], ["parl.2010-05-06"])
+
+    def test_person_update_ids_and_add_candidacy(self):
+        """
+        https://github.com/DemocracyClub/yournextrepresentative/issues/1307
+
+        """
+        # First set some versions up by making an edit
+        self.assertEqual(self.person.tmp_person_identifiers.count(), 0)
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        form = response.forms[1]
+        form["tmp_person_identifiers-0-value"] = "https://facebook.com/example/"
+        form["tmp_person_identifiers-0-value_type"] = "facebook_page_url"
+
+        form["source"] = "Mumsnet"
+        form.submit()
+
+        self.person.refresh_from_db()
+        self.assertEqual(self.person.tmp_person_identifiers.count(), 1)
+
+        # Not perform the edit that caused the error
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        future_election = ElectionFactory(
+            election_date="2050-01-01", slug="parl.2050-01-01", current=False
+        )
+        BallotPaperFactory(
+            election=future_election,
+            post=self.dulwich_post,
+            ballot_paper_id="parl.foo.2050-01-01",
+        )
+
+        form = response.forms[1]
+        extra_fields = [
+            ("extra_election_id", "parl.2050-01-01"),
+            ("party_GB_parl.2050-01-01", self.labour_party.ec_id),
+            ("constituency_parl.2050-01-01", self.dulwich_post.identifier),
+            ("standing_parl.2050-01-01", "standing"),
+            ("source", "Testing dynamic election addition"),
+        ]
+        start_pos = len(form.field_order)
+        for pos, data in enumerate(extra_fields):
+            name, value = data
+            field = Text(form, "input", name, start_pos + pos, value)
+            form.field_order.append((name, field))
+            form.fields[name] = [field]
+
+        form["tmp_person_identifiers-0-value"] = ""
+        form["tmp_person_identifiers-0-value_type"] = ""
+        form["tmp_person_identifiers-1-value"] = "https://example.com/"
+        form["tmp_person_identifiers-1-value_type"] = ""
+        form.submit()
