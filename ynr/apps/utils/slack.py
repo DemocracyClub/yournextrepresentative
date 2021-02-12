@@ -6,7 +6,9 @@ from slacker2 import Slacker
 
 class SlackHelper:
     def __init__(self, user=settings.CANDIDATE_BOT_USERNAME):
-        self.client = Slacker(settings.SLACK_TOKEN)
+        self.FAKE_MODE = not hasattr(settings, "SLACK_TOKEN")
+        if not self.FAKE_MODE:
+            self.client = Slacker(settings.SLACK_TOKEN)
         self.user = user
 
     def post_message(self, to, message_text, attachments=None, extra_dict=None):
@@ -18,7 +20,8 @@ class SlackHelper:
         }
         if extra_dict:
             kwargs.update(extra_dict)
-        self.client.chat.post_message(to, **kwargs)
+        if not self.FAKE_MODE:
+            self.client.chat.post_message(to, **kwargs)
 
     @property
     def random_happy(self):
