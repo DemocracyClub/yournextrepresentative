@@ -164,9 +164,12 @@ class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(
             self.camberwell_post_ballot.get_absolute_url(), user=self.user
         )
+        self.camberwell_post_ballot.refresh_from_db()
+        self.assertTrue(self.camberwell_post_ballot.candidates_locked)
         csrftoken = self.app.cookies["csrftoken"]
+        ballot_paper_id = self.camberwell_post_ballot.ballot_paper_id
         response = self.app.post(
-            "/election/parl.2015-05-07/person/create/",
+            f"/election/{ballot_paper_id}/person/create/",
             params={
                 "tmp_person_identifiers-TOTAL_FORMS": "2",
                 "tmp_person_identifiers-INITIAL_FORMS": "0",
@@ -328,7 +331,7 @@ class TestCancelledBallots(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         # Staff users can still edit, though
         form = SingleElectionForm(
-            initial={"election": self.ballot.election, "user": self.staff_user,}
+            initial={"election": self.ballot.election, "user": self.staff_user}
         )
         select_field = form.fields[
             "constituency_{}".format(self.ballot.election.slug)

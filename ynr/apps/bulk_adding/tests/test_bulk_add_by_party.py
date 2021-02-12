@@ -5,6 +5,7 @@ from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from people.tests.factories import PersonFactory
+from utils.testing_utils import FuzzyInt
 
 
 class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -117,7 +118,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms[1]
 
         # Now submit the valid form
-        with self.assertNumQueries(50):
+        with self.assertNumQueries(FuzzyInt(50, 56)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
             response = form.submit().follow()
 

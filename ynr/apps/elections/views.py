@@ -150,7 +150,7 @@ class BallotPaperView(TemplateView):
 
             # New person form
             context["add_candidate_form"] = NewPersonForm(
-                initial={"ballot_paper_id": ballot.ballot_paper_id,},
+                initial={"ballot_paper_id": ballot.ballot_paper_id}
             )
             context["identifiers_formset"] = PersonIdentifierFormsetFactory()
 
