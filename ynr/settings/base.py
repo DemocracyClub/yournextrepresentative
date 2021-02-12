@@ -480,3 +480,5 @@ def _is_running_tests():
 
 if _is_running_tests():
     from .testing import *  # noqa
+else:
+    RUNNING_TESTS = False
