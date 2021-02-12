@@ -4,7 +4,6 @@ from candidates.models import (
     RESULT_RECORDERS_GROUP_NAME,
     TRUSTED_TO_LOCK_GROUP_NAME,
     TRUSTED_TO_MERGE_GROUP_NAME,
-    TRUSTED_TO_RENAME_GROUP_NAME,
 )
 from moderation_queue.models import VERY_TRUSTED_USER_GROUP_NAME
 from official_documents.models import DOCUMENT_UPLOADERS_GROUP_NAME
@@ -26,11 +25,7 @@ class TestUserMixin(object):
                 "user_who_can_upload_documents",
                 [DOCUMENT_UPLOADERS_GROUP_NAME],
             ),
-            (
-                "ermintrude",
-                "user_who_can_rename",
-                [TRUSTED_TO_RENAME_GROUP_NAME],
-            ),
+            ("ermintrude", "user_who_can_rename", []),
             (
                 "frankie",
                 "user_who_can_record_results",
