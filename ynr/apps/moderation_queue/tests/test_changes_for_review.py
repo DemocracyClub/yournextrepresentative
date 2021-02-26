@@ -183,6 +183,34 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
             1,
         )
 
+    def make_edit_to_dead_person(self, user, example_person):
+        response = self.app.get(
+            "/person/{person_id}/update".format(person_id=example_person.id),
+            user=user,
+        )
+        form = response.forms["person-details"]
+        form["biography"] = "Now this is a story all about how..."
+        form["source"] = "Bel air"
+        form.submit()
+
+    def test_some_users_dont_need_review(self):
+        """
+        Because some wombles are more equal than others
+        """
+
+        example_person = people.tests.factories.PersonFactory.create(
+            id="2009", name="Tessa Jowell", death_date="2018-01-01",
+        )
+
+
+        # Very trusted user edit that should case a review normally
+        self.assertEqual(LoggedAction.objects.all().count(), 0)
+        self.make_edit_to_dead_person(self.very_trusted_user, example_person)
+        self.assertEqual(LoggedAction.objects.all().count(), 1)
+        la = LoggedAction.objects.get()
+        self.assertEqual(la.flagged_type, "")
+
+
 
 @patch.object(Person, "diff_for_version", fake_diff_html)
 @patch("candidates.models.db.datetime")

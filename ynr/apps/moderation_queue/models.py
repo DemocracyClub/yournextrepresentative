@@ -7,6 +7,7 @@ from django.db import models
 from django.urls import reverse
 
 PHOTO_REVIEWERS_GROUP_NAME = "Photo Reviewers"
+VERY_TRUSTED_USER_GROUP_NAME = "Very Trusted User"
 
 
 class CopyrightOptions:

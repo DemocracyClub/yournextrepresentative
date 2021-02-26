@@ -135,6 +135,28 @@ class EditMadeByBotDecider(BaseReviewRequiredDecider):
         return self.Status.UNDECIDED
 
 
+class EditMadeByTrustedUserDecider(BaseReviewRequiredDecider):
+    """
+    Marks an edit as not needing review if it was made by a bot
+    """
+
+    def review_description_text(self):
+        return "Edit made by very trusted user"
+
+    def needs_review(self):
+        if not self.logged_action.user:
+            return self.Status.UNDECIDED
+
+        trusted_permissions = [
+            VERY_TRUSTED_USER_GROUP_NAME,
+        ]
+
+        qs = self.logged_action.user.groups.filter(name__in=trusted_permissions)
+        if qs.exists():
+            return self.Status.NO_REVIEW_NEEDED
+        return self.Status.UNDECIDED
+
+
 class CandidateCurrentNameDecider(BaseReviewRequiredDecider):
     """
     Marks an edit as not needing review if it was made by a bot
@@ -169,6 +191,11 @@ class CandidateCurrentNameDecider(BaseReviewRequiredDecider):
 ReviewType = namedtuple("ReviewType", ["type", "label", "cls"])
 
 REVIEW_TYPES = (
+    ReviewType(
+        type="no_review_needed_due_to_user_being_very_trusted",
+        label="Edit made by very trusted user",
+        cls=EditMadeByTrustedUserDecider,
+    ),
     ReviewType(
         type="no_review_needed_due_to_user_being_a_bot",
         label="Edit made by bot",
