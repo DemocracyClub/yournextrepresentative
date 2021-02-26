@@ -73,7 +73,7 @@ class Command(BaseCommand):
         self.stdout.write(
             "Importing parties from The Electoral Commission (using `parties_import_from_ec`)"
         )
-        call_command("parties_import_from_ec")
+        call_command("parties_import_from_ec", verbosity=options["verbosity"])
 
         self.stdout.write(
             "Importing elections from {}".format(
@@ -84,11 +84,17 @@ class Command(BaseCommand):
                 )
             )
         )
-        call_command("uk_create_elections_from_every_election")
+        call_command(
+            "uk_create_elections_from_every_election",
+            verbosity=options["verbosity"],
+            full=True,
+        )
 
         self.stdout.write("Mirroring {}".format(self.ynr_url))
         self.mirror_from_api(include_images=options.get("include_images"))
-        call_command("parties_update_current_candidates")
+        call_command(
+            "parties_update_current_candidates", verbosity=options["verbosity"]
+        )
 
     def get_api_results(self, endpoint, api_version="next"):
         page = 1
@@ -139,9 +145,11 @@ class Command(BaseCommand):
     def import_organizations(self):
         for organization_data in self.get_api_results("organizations"):
             with show_data_on_error("organization_data", organization_data):
+                slug = organization_data["slug"]
+                classification = slug.split(":")[0]
                 try:
                     instance = pmodels.Organization.objects.get(
-                        slug=organization_data["slug"]
+                        slug=slug, classification=classification
                     )
                 except pmodels.Organization.DoesNotExist:
                     instance = None
@@ -161,6 +169,7 @@ class Command(BaseCommand):
                     instance = people.models.Person.objects.get(
                         pk=person_data["id"]
                     )
+                    instance.tmp_person_identifiers.all().delete()
                 except people.models.Person.DoesNotExist:
                     instance = None
 
@@ -198,6 +207,7 @@ class Command(BaseCommand):
                         try:
                             ballot = self.get_cached_ballot(ballot_paper_id)
                         except Ballot.DoesNotExist:
+                            ballot = None
                             self.stderr.write(
                                 "WARNING: Can't find Ballot {}, skipping".format(
                                     ballot_paper_id
@@ -210,10 +220,11 @@ class Command(BaseCommand):
 
                     serializer = CandidacyOnPersonSerializer(data=candidacy)
                     if serializer.is_valid():
-                        person.not_standing.remove(ballot.election)
-                        serializer.save(
-                            person=person, ballot=ballot, party=party
-                        )
+                        if ballot:
+                            person.not_standing.remove(ballot.election)
+                            serializer.save(
+                                person=person, ballot=ballot, party=party
+                            )
                     else:
                         raise ValueError(serializer.errors)
 
