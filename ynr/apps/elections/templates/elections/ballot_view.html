@@ -44,7 +44,15 @@
     {% if ballot.cancelled %}
     <div class="panel">
       ❌ The poll for this election was cancelled
+      {% if ballot.replaced_by %}
+      and <a href="{{ ballot.replaced_by.get_absolute_url }}">replaced by {{ ballot.replaced_by.ballot_paper_id }}</a>
+      {% endif %}
     </div>
+    {% endif %}
+    {% if ballot.replaces %}
+      <div class="panel">
+        🔄 This ballot replaces a <a href="{{ ballot.replaces.get_absolute_url }}">previously cancelled ballot</a>
+      </div>
     {% endif %}
 
     {% if not ballot.candidates_locked and candidates.exists %}

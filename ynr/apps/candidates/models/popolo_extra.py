@@ -116,6 +116,14 @@ class Ballot(models.Model):
     candidates_locked = models.BooleanField(default=False)
     winner_count = models.PositiveSmallIntegerField(blank=True, null=True)
     cancelled = models.BooleanField(default=False)
+    replaces = models.OneToOneField(
+        "Ballot",
+        null=True,
+        blank=True,
+        related_name="replaced_by",
+        on_delete=models.DO_NOTHING,
+    )
+
     UnsafeToDelete = UnsafeToDelete
 
     objects = BallotQueryset.as_manager()
