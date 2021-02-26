@@ -81,7 +81,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(53):
+        with self.assertNumQueries(56):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)

@@ -9,7 +9,10 @@ from django.db.models.signals import post_save
 from django.urls import reverse
 from django.utils.html import escape
 
-from moderation_queue.review_required_helper import REVIEW_TYPES
+from moderation_queue.review_required_helper import (
+    REVIEW_TYPES,
+    POST_DECISION_REVIEW_TYPES,
+)
 from moderation_queue.slack import post_action_to_slack
 
 
@@ -151,16 +154,18 @@ class LoggedAction(models.Model):
         and sets the flags accordingly
 
         """
-
-        for review_type in REVIEW_TYPES:
-            decider = review_type.cls(self)
-            decision = decider.needs_review()
-            if decision == review_type.cls.Status.NEEDS_REVIEW:
-                self.flagged_type = review_type.type
-                self.flagged_reason = decider.review_description_text()
-                break
-            if decision == review_type.cls.Status.NO_REVIEW_NEEDED:
-                break
+        for review_stage in [REVIEW_TYPES, POST_DECISION_REVIEW_TYPES]:
+            for review_type in review_stage:
+                decider = review_type.cls(self)
+                decision = decider.needs_review()
+                if decision == review_type.cls.Status.NEEDS_REVIEW:
+                    self.flagged_type = review_type.type
+                    self.flagged_reason = decider.review_description_text()
+                    break
+                if decision == review_type.cls.Status.NO_REVIEW_NEEDED:
+                    self.flagged_type = ""
+                    self.flagged_reason = ""
+                    break
 
     def save(self, **kwargs):
         has_initial_pk = self.pk

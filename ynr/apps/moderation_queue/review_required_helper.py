@@ -4,6 +4,11 @@ from enum import Enum, unique
 
 from django.conf import settings
 
+# How many previously approved edits of a type are ok before we stop flagging?
+from moderation_queue.models import VERY_TRUSTED_USER_GROUP_NAME
+
+PREVIOUSLY_APPROVED_COUNT = 20
+
 
 class BaseReviewRequiredDecider(metaclass=abc.ABCMeta):
     """
@@ -113,6 +118,31 @@ class CandidateStatementEditDecider(BaseReviewRequiredDecider):
         return self.Status.UNDECIDED
 
 
+class PreviouslyApprovedEditsOfTypeDecider(BaseReviewRequiredDecider):
+    """
+    Run after other decisions have been made, can override them
+    """
+
+    def review_description_text(self):
+        return "Made enough approved edits of type"
+
+    def needs_review(self):
+        if not self.logged_action.flagged_type:
+            return self.Status.UNDECIDED
+        if not self.logged_action.user:
+            return self.Status.UNDECIDED
+
+        previous_approved_of_type = self.logged_action.__class__.objects.filter(
+            user=self.logged_action.user,
+            flagged_type=self.logged_action.flagged_type,
+        ).exclude(approved=None)
+
+        if previous_approved_of_type.count() >= PREVIOUSLY_APPROVED_COUNT:
+            return self.Status.NO_REVIEW_NEEDED
+
+        return self.Status.UNDECIDED
+
+
 class EditMadeByBotDecider(BaseReviewRequiredDecider):
     """
     Marks an edit as not needing review if it was made by a bot
@@ -147,9 +177,7 @@ class EditMadeByTrustedUserDecider(BaseReviewRequiredDecider):
         if not self.logged_action.user:
             return self.Status.UNDECIDED
 
-        trusted_permissions = [
-            VERY_TRUSTED_USER_GROUP_NAME,
-        ]
+        trusted_permissions = [VERY_TRUSTED_USER_GROUP_NAME]
 
         qs = self.logged_action.user.groups.filter(name__in=trusted_permissions)
         if qs.exists():
@@ -225,5 +253,13 @@ REVIEW_TYPES = (
         type="needs_review_due_to_current_candidate_name_change",
         label="Edit of name of current candidate",
         cls=CandidateCurrentNameDecider,
+    ),
+)
+
+POST_DECISION_REVIEW_TYPES = (
+    ReviewType(
+        type="made_enough_previously_approved_edits_of_type",
+        label="Made enough approved edits of type",
+        cls=PreviouslyApprovedEditsOfTypeDecider,
     ),
 )
