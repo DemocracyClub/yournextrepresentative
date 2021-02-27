@@ -216,9 +216,25 @@ class CandidateCurrentNameDecider(BaseReviewRequiredDecider):
             return self.Status.UNDECIDED
 
 
+class EditTypesThatNeverNeedReview(BaseReviewRequiredDecider):
+    def review_description_text(self):
+        return "Type of edit that never needs a review"
+
+    def needs_review(self):
+        NO_REVIEW_TYPES = ["photo-upload"]
+        if self.logged_action.action_type in NO_REVIEW_TYPES:
+            return self.Status.NO_REVIEW_NEEDED
+        return self.Status.UNDECIDED
+
+
 ReviewType = namedtuple("ReviewType", ["type", "label", "cls"])
 
 REVIEW_TYPES = (
+    ReviewType(
+        type="edit_types_that_never_need_review",
+        label="Type of edit that never needs a review",
+        cls=EditTypesThatNeverNeedReview,
+    ),
     ReviewType(
         type="no_review_needed_due_to_user_being_very_trusted",
         label="Edit made by very trusted user",

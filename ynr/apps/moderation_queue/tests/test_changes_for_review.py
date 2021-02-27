@@ -331,6 +331,16 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         dt = self.current_datetime - timedelta(minutes=2)
         change_updated_and_created(la, dt)
 
+        # Create a photo upload - this shouldn't show in needs review
+        LoggedAction.objects.create(
+            id=(3500 + i),
+            user=self.new_only_one,
+            action_type="photo-upload",
+            person=example_person,
+            popit_person_new_version=random_person_id(),
+            source="Just for tests",
+        )
+
         # Create a candidate with a death date, and edit of that
         # candidate:
         dead_person = people.tests.factories.PersonFactory.create(
