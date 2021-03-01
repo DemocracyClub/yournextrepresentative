@@ -6,6 +6,7 @@ from candidates.models import (
     TRUSTED_TO_MERGE_GROUP_NAME,
     TRUSTED_TO_RENAME_GROUP_NAME,
 )
+from moderation_queue.models import VERY_TRUSTED_USER_GROUP_NAME
 from official_documents.models import DOCUMENT_UPLOADERS_GROUP_NAME
 
 
@@ -18,6 +19,7 @@ class TestUserMixin(object):
             ("TwitterBot", "user", []),
             ("john", "user", []),
             ("alice", "user_who_can_merge", [TRUSTED_TO_MERGE_GROUP_NAME]),
+            ("sjorford", "very_trusted_user", [VERY_TRUSTED_USER_GROUP_NAME]),
             ("charles", "user_who_can_lock", [TRUSTED_TO_LOCK_GROUP_NAME]),
             (
                 "delilah",

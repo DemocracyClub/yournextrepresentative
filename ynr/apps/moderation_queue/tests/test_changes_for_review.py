@@ -13,11 +13,12 @@ from mock import patch
 import people.tests.factories
 from candidates.models import LoggedAction
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from moderation_queue.review_required_helper import PREVIOUSLY_APPROVED_COUNT
 from parties.models import Party
 from people.models import Person
 from people.tests.test_version_diffs import tidy_html_whitespace
 
-from .auth import TestUserMixin
+from candidates.tests.auth import TestUserMixin
 
 
 def random_person_id():
@@ -183,6 +184,76 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
             1,
         )
 
+    def make_edit_to_dead_person(self, user, example_person):
+        response = self.app.get(
+            "/person/{person_id}/update".format(person_id=example_person.id),
+            user=user,
+        )
+        form = response.forms["person-details"]
+        form["biography"] = "Now this is a story all about how..."
+        form["source"] = "Bel air"
+        form.submit()
+
+    def test_some_users_dont_need_review(self):
+        """
+        Because some wombles are more equal than others
+        """
+
+        example_person = people.tests.factories.PersonFactory.create(
+            id="2009", name="Tessa Jowell", death_date="2018-01-01"
+        )
+
+        # Very trusted user edit that should case a review normally
+        self.assertEqual(LoggedAction.objects.all().count(), 0)
+        self.make_edit_to_dead_person(self.very_trusted_user, example_person)
+        self.assertEqual(LoggedAction.objects.all().count(), 1)
+        la = LoggedAction.objects.get()
+        self.assertEqual(la.flagged_type, "")
+
+    def test_users_with_past_approved_edits_dont_need_review(self):
+        """
+        If past edits of this type by this user has been approved,
+        assume future edits of that type don't need review
+
+        """
+        example_person = people.tests.factories.PersonFactory.create(
+            id="2009", name="Tessa Jowell", death_date="2018-01-01"
+        )
+
+        self.assertEqual(LoggedAction.objects.count(), 0)
+        self.make_edit_to_dead_person(self.user, example_person)
+        self.assertEqual(LoggedAction.objects.count(), 1)
+
+        for i in range(PREVIOUSLY_APPROVED_COUNT + 10):
+            LoggedAction.objects.create(
+                id=(1000 + i),
+                user=self.user,
+                action_type="person-update",
+                person=example_person,
+                popit_person_new_version=random_person_id(),
+                source="Just for tests...",
+                flagged_type="needs_review_due_to_candidate_having_died",
+                flagged_reason="Edit of a candidate who has died",
+                approved={
+                    "via": "slack",
+                    "datetime": "2019-11-16T15:24:19.043292",
+                    "username": "slack_user",
+                },
+            )
+        self.assertEqual(
+            LoggedAction.objects.filter(
+                flagged_type="needs_review_due_to_candidate_having_died"
+            ).count(),
+            PREVIOUSLY_APPROVED_COUNT + 1,
+        )
+        self.make_edit_to_dead_person(self.user, example_person)
+        self.assertEqual(
+            LoggedAction.objects.filter(
+                flagged_type="needs_review_due_to_candidate_having_died"
+            ).count(),
+            PREVIOUSLY_APPROVED_COUNT + 1,
+        )
+
 
 @patch.object(Person, "diff_for_version", fake_diff_html)
 @patch("candidates.models.db.datetime")
@@ -259,6 +330,16 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         )
         dt = self.current_datetime - timedelta(minutes=2)
         change_updated_and_created(la, dt)
+
+        # Create a photo upload - this shouldn't show in needs review
+        LoggedAction.objects.create(
+            id=(3500 + i),
+            user=self.new_only_one,
+            action_type="photo-upload",
+            person=example_person,
+            popit_person_new_version=random_person_id(),
+            source="Just for tests",
+        )
 
         # Create a candidate with a death date, and edit of that
         # candidate:
