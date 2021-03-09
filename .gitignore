@@ -20,3 +20,6 @@ ynr/assets/*
 .pytest_cache
 *.css.map
 test-results
+env/
+node_modules/
+.vscode/
