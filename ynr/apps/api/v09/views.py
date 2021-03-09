@@ -206,18 +206,6 @@ class VersionView(View):
         return HttpResponse(json.dumps(result), content_type="application/json")
 
 
-class PostIDToPartySetView(View):
-
-    http_method_names = ["get"]
-
-    def get(self, request, *args, **kwargs):
-        qs = extra_models.Ballot.objects.current_or_future().values_list(
-            "post__slug", "post__party_set__slug"
-        )
-        result = dict([(k, v.upper()) for k, v in qs])
-        return HttpResponse(json.dumps(result), content_type="application/json")
-
-
 # Now the django-rest-framework based API views:
 class PersonViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
