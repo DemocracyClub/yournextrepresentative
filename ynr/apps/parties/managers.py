@@ -2,6 +2,7 @@ import re
 
 from django.db import models
 from django.utils import timezone
+from django.utils.functional import cached_property
 
 from .constants import JOINT_DESCRIPTION_REGEX
 
@@ -55,7 +56,6 @@ class PartyQuerySet(models.QuerySet):
         # list of candidates if there are enough that such an ordering
         # makes sense.  Otherwise the fallback is to rank
         # alphabetically.
-        pass
 
         party_filter_kwargs = {}
         party_order_by = ["name"]
@@ -100,3 +100,10 @@ class PartyQuerySet(models.QuerySet):
 
             result.append(party_names)
         return result
+
+    def default_party_choices(self):
+        return self.party_choices(
+            include_descriptions=True,
+            include_non_current=False,
+            exclude_deregistered=True,
+        )

@@ -606,7 +606,7 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         ] = "http://en.wikipedia.org/wiki/Lizzie_Bennet"
         form["tmp_person_identifiers-1-value_type"] = "wikipedia_url"
 
-        form["party_identifier"] = self.labour_party.ec_id
+        form["party_identifier_1"] = self.labour_party.ec_id
         form["ballot_paper_id"] = self.camberwell_post_ballot.ballot_paper_id
         form["source"] = "bar bar"
 
@@ -619,7 +619,7 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms["new-candidate-form"]
         form["name"] = "Foo Bar"
         election_slug = self.local_ballot.election.slug
-        form["party_identifier"] = self.labour_party.ec_id
+        form["party_identifier_1"] = self.labour_party.ec_id
         form["ballot_paper_id"] = self.local_ballot.ballot_paper_id
         form["source"] = "foo bar"
 
@@ -671,7 +671,7 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms["new-candidate-form"]
         form["name"] = "Foo Bar"
         election_slug = self.earlier_election.slug
-        form["party_identifier"] = self.labour_party.ec_id
+        form["party_identifier_1"] = self.labour_party.ec_id
         form[
             "ballot_paper_id"
         ] = self.dulwich_post_ballot_earlier.ballot_paper_id

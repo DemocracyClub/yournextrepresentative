@@ -514,7 +514,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(ballot.get_absolute_url(), user=self.user)
         form = response.forms["new-candidate-form"]
         form["name"] = "Imaginary Candidate"
-        form["party_identifier"] = self.green_party.ec_id
+        form["party_identifier_1"] = self.green_party.ec_id
         form[
             "source"
         ] = "Testing adding a new candidate to a locked constituency"
@@ -525,7 +525,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(ballot.get_absolute_url(), user=self.user)
         form = response.forms["new-candidate-form"]
         form["name"] = "Imaginary Candidate"
-        form["party_identifier"] = self.green_party.ec_id
+        form["party_identifier_1"] = self.green_party.ec_id
         form[
             "source"
         ] = "Testing adding a new candidate to a locked constituency"

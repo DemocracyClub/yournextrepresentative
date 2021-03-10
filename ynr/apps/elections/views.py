@@ -4,6 +4,7 @@ from django.db.models import Count, Prefetch
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.cache import cache_control
 from django.views.generic import DetailView, TemplateView, UpdateView
 
@@ -317,3 +318,32 @@ class PartyForBallotView(DetailView):
             party=context["party"]
         ).order_by("party_list_position")
         return context
+
+
+class BallotsForSelectAjaxView(View):
+    def get(self, request, *args, **kwargs):
+        qs = (
+            Ballot.objects.filter(
+                election__current=True, candidates_locked=False
+            )
+            .select_related("election", "post")
+            .order_by("election__election_date", "election__name")
+        )
+        data = []
+        election_name = None
+        for ballot in qs:
+            if ballot.election.name != election_name:
+                election_name = ballot.election.name
+                if data:
+                    data.append("</optgroup>")
+                data.append(f"<optgroup label='{election_name}'>")
+
+            data.append(
+                f"    <option value='{ballot.ballot_paper_id}' "
+                f"data-party-register='{ballot.post.party_set_id}'>"
+                f"{ballot.post.label}"
+                f"</option>"
+            )
+        data.append("</optgroup>")
+
+        return HttpResponse("\n".join(data))

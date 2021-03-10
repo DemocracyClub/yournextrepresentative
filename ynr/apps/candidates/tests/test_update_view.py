@@ -67,7 +67,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "tmp_person_identifiers-0-value"
         ] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
         form["tmp_person_identifiers-0-value_type"] = "wikipedia_url"
-        form["memberships-0-party_identifier"] = self.labour_party.ec_id
+        form["memberships-0-party_identifier_1"] = self.labour_party.ec_id
         form["source"] = "Some source of this information"
         submission_response = form.submit(user=self.user_refused)
         split_location = urlsplit(submission_response.location)
@@ -85,7 +85,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         ] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
         form["tmp_person_identifiers-0-value_type"] = "wikipedia_url"
 
-        form["memberships-0-party_identifier"] = self.labour_party.ec_id
+        form["memberships-0-party_identifier_1"] = self.labour_party.ec_id
         form["source"] = "Some source of this information"
         submission_response = form.submit()
 
@@ -155,7 +155,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Now fake the addition of elements to the form as would
         # happen with the Javascript addition of a new candidacy.
         form = response.forms["person-details"]
-        form["memberships-1-party_identifier"] = self.labour_party.ec_id
+        form["memberships-1-party_identifier_1"] = self.labour_party.ec_id
         form[
             "memberships-1-ballot_paper_id"
         ] = self.local_ballot.ballot_paper_id

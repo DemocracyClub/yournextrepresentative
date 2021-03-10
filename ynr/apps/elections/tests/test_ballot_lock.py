@@ -177,7 +177,7 @@ class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "tmp_person_identifiers-MAX_NUM_FORMS": "1000",
                 "csrfmiddlewaretoken": csrftoken,
                 "name": "Imaginary Candidate",
-                "party_identifier": self.green_party.ec_id,
+                "party_identifier_1": self.green_party.ec_id,
                 "ballot_paper_id": ballot_paper_id,
                 "source": "Testing adding a new candidate to a locked constituency",
             },
@@ -198,7 +198,7 @@ class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms["new-candidate-form"]
         form["name"] = "Imaginary Candidate"
-        form["party_identifier"] = self.green_party.ec_id
+        form["party_identifier_1"] = self.green_party.ec_id
         form[
             "source"
         ] = "Testing adding a new candidate to a locked constituency"
@@ -257,7 +257,7 @@ class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get("/person/4322/update", user=self.user)
         form = response.forms["person-details"]
         form["source"] = "Testing a party change in an unlocked constituency"
-        form["memberships-0-party_identifier"] = self.conservative_party.ec_id
+        form["memberships-0-party_identifier_1"] = self.conservative_party.ec_id
         submission_response = form.submit()
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(submission_response.location, "/person/4322")

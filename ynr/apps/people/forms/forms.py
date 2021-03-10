@@ -8,10 +8,10 @@ from facebook_data.tasks import extract_fb_page_id
 from parties.models import Party
 from people.forms.fields import (
     CurrentUnlockedBallotsField,
-    PartyIdentiferField,
     StrippedCharField,
     BlankApproximateDateFormField,
 )
+from parties.forms import PartyIdentifierField
 from people.models import Person, PersonIdentifier
 from popolo.models import OtherName, Membership
 
@@ -163,7 +163,7 @@ class PersonMembershipForm(forms.ModelForm):
                     "ballot_paper_id": kwargs[
                         "instance"
                     ].ballot.ballot_paper_id,
-                    "party_identifier": kwargs["instance"].party.ec_id,
+                    "party_identifier": ["", kwargs["instance"].party.ec_id],
                 }
             )
 
@@ -174,7 +174,9 @@ class PersonMembershipForm(forms.ModelForm):
 
         fields = ("ballot_paper_id", "party_identifier", "party_list_position")
 
-    party_identifier = PartyIdentiferField()
+    party_identifier = PartyIdentifierField(
+        require_all_fields=False, required=True
+    )
     ballot_paper_id = CurrentUnlockedBallotsField()
 
     party_list_position = forms.IntegerField(
@@ -271,7 +273,9 @@ class NewPersonForm(BasePersonForm):
     class Meta(BasePersonForm.Meta):
         exclude = BasePersonForm.Meta.exclude + ("death_date",)
 
-    party_identifier = PartyIdentiferField()
+    party_identifier = PartyIdentifierField(
+        require_all_fields=False, required=True
+    )
     ballot_paper_id = CurrentUnlockedBallotsField(widget=forms.HiddenInput)
 
     def save(self, commit=True):

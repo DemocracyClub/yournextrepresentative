@@ -3,10 +3,20 @@ from django.core.exceptions import ValidationError
 from django_date_extensions.fields import ApproximateDateFormField
 
 from candidates.models import Ballot
-from parties.models import Party
+
+
+class BallotInputWidget(forms.TextInput):
+    def __init__(self, attrs=None):
+        super().__init__(attrs)
+        existing_class = self.attrs.get("class", "")
+        self.attrs["class"] = " ".join(
+            existing_class.split(" ") + ["js-ballot-input"]
+        ).strip()
 
 
 class CurrentUnlockedBallotsField(forms.CharField):
+    widget = BallotInputWidget
+
     def clean(self, value):
         if not value:
             return value
@@ -36,29 +46,6 @@ class CurrentUnlockedBallotsField(forms.CharField):
         if not value:
             return value
         return Ballot.objects.get(ballot_paper_id=value)
-
-
-class PartyIdentiferField(forms.CharField):
-    party = None
-
-    def clean(self, value):
-        if not value:
-            return value
-        value = value.strip()
-        base_qs = Party.objects.all()
-        try:
-            if not self.party:
-                self.party = base_qs.get(ec_id=value)
-            return self.party
-        except Party.DoesNotExist:
-            raise ValidationError(f"No party with ID {value} exists")
-
-    def to_python(self, value):
-        if not value:
-            return value
-        if not self.party:
-            self.party = Party.objects.get(ec_id=value)
-        return self.party
 
 
 class StrippedCharField(forms.CharField):
