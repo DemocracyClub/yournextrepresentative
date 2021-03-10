@@ -300,6 +300,24 @@ class Membership(Dateframeable, Timestampable, models.Model):
         on_delete=models.PROTECT,
     )
 
+    party_description = models.ForeignKey(
+        to="parties.PartyDescription",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text="The party description for this membership",
+    )
+    party_name = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="The name of the associated party at the time of this membership. This is useful if the associated party subsequently changed name",
+    )
+    party_description_text = models.CharField(
+        max_length=800,
+        blank=True,
+        help_text="The text of the party description at the time of this membership. This is useful if the associated party description subsequently changed",
+    )
+
     # reference to "http://popoloproject.com/schemas/post.json#"
     post = models.ForeignKey(
         "Post",
