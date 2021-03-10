@@ -6,9 +6,11 @@ from candidates.tests.factories import MembershipFactory
 from candidates.tests.test_update_view import membership_id_set
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from official_documents.models import OfficialDocument
+from parties.tests.factories import PartyDescriptionFactory
 from people.models import Person
 from people.tests.factories import PersonFactory
 from popolo.models import Membership
+from utils.testing_utils import FuzzyInt
 
 
 class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -54,6 +56,10 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
+        # Add a party description
+        party_description = PartyDescriptionFactory(
+            description="Green Party Stop Fracking Now", party=self.green_party
+        )
 
         response = self.app.get(
             "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
@@ -61,7 +67,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms["bulk_add_form"]
         form["form-0-name"] = "Homer Simpson"
-        form["form-0-party"] = self.green_party.ec_id
+        party_id = f"{self.green_party.ec_id}__{party_description.pk}"
+        form["form-0-party"] = party_id
 
         response = form.submit()
         self.assertEqual(response.status_code, 302)
@@ -81,7 +88,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(56):
+        with self.assertNumQueries(FuzzyInt(54, 58)):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -103,6 +110,11 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             membership.post.label,
             "Member of Parliament for Dulwich and West Norwood",
+        )
+        self.assertEqual(membership.party_name, "Green Party")
+        self.assertEqual(membership.party_description, party_description)
+        self.assertEqual(
+            membership.party_description_text, "Green Party Stop Fracking Now"
         )
 
     def _run_wizard_to_end(self):

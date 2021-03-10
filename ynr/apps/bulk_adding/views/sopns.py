@@ -179,12 +179,15 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
         for candidacy in raw_ballot_data:
             form = {}
             party = Party.objects.get(ec_id=candidacy["party_id"])
+
+            form["party_description_text"] = party.name
             if candidacy.get("description_id"):
-                form["party_description"] = party.descriptions.get(
+                party_description = party.descriptions.get(
                     pk=candidacy["description_id"]
-                ).description
-            else:
-                form["party_description"] = party.name
+                )
+                form["party_description"] = party_description
+                form["party_description_text"] = party_description.description
+
             form["name"] = candidacy["name"]
             form["party"] = party.ec_id
             form["source"] = context["official_document"].source_url
@@ -209,19 +212,21 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
         with transaction.atomic():
             for person_form in context["formset"]:
                 data = person_form.cleaned_data
+
                 if data.get("select_person") == "_new":
                     # Add a new person
                     person = helpers.add_person(self.request, data)
                 else:
                     person = Person.objects.get(pk=int(data["select_person"]))
+
+                party = Party.objects.get(ec_id=data["party"])
                 helpers.update_person(
-                    self.request,
-                    person,
-                    Party.objects.get(
-                        ec_id=person_form.cleaned_data["party"].split("__")[0]
-                    ),
-                    context["ballot"],
-                    data["source"],
+                    request=self.request,
+                    person=person,
+                    party=party,
+                    ballot=context["ballot"],
+                    source=data["source"],
+                    party_description=data["party_description"],
                 )
 
             if self.request.POST.get("suggest_locking") == "on":

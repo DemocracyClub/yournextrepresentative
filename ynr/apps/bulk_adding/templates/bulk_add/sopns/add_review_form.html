@@ -51,7 +51,7 @@
       <div>
 
         <h3 style="clear:left;">{{ form.name.value }}</h3>
-        <h4><em>“{{ form.party_description.value }}”</em></h4>
+        <h4><em>“{{ form.party_description_text.value }}”</em></h4>
         <table class="table sopn_adding_suggestions_table">
           <thead>
             <th>Action</th>
@@ -81,6 +81,7 @@
             {{ form.name }}
             {{ form.source }}
             {{ form.party }}
+            {{ form.party_description }}
           </tbody>
         </table>
       </div>

@@ -228,6 +228,8 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                         person = Person.objects.get(
                             pk=int(data["select_person"])
                         )
+
+                    # TODO check about updating PartyDescription here
                     # Update the person's candacies
                     helpers.update_person(
                         self.request,

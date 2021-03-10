@@ -37,6 +37,7 @@ def update_person(
     ballot=None,
     source=None,
     list_position=None,
+    party_description=None,
 ):
     election = ballot.election
 
@@ -44,16 +45,24 @@ def update_person(
 
     check_creation_allowed(request.user, person.current_or_future_candidacies)
 
+    defaults = {
+        "party": party,
+        "party_list_position": list_position,
+        "elected": None,
+        "role": election.candidate_membership_role,
+        "party_name": party.name,
+    }
+
+    if party_description:
+        defaults.update(
+            {
+                "party_description": party_description,
+                "party_description_text": party_description.description,
+            }
+        )
+
     membership, _ = Membership.objects.update_or_create(
-        post=ballot.post,
-        person=person,
-        ballot=ballot,
-        defaults={
-            "party": party,
-            "party_list_position": list_position,
-            "elected": None,
-            "role": election.candidate_membership_role,
-        },
+        post=ballot.post, person=person, ballot=ballot, defaults=defaults
     )
 
     # Now remove other memberships in this election for that
