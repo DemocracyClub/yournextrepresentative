@@ -7,6 +7,7 @@ YourNextRepresentative requires python >=3.5 and PostgreSQL
 ## Install python dependencies
 
 ```
+pip install -U pip
 pip install -r requirements.txt
 ```
 
@@ -14,6 +15,11 @@ pip install -r requirements.txt
 
 ```
 sudo -u postgres createdb ynr
+```
+
+If using mac-os/homebrew
+```
+createdb ynr
 ```
 
 ```
@@ -31,6 +37,13 @@ Add database credentials to `DATABASES` dict in `local.py`
 ```
 git submodule init
 git submodule update
+```
+
+## Build frontend assets
+
+```
+npm install
+npm run build
 ```
 
 ## (Optional) Code linting
