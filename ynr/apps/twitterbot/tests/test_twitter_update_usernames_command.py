@@ -290,11 +290,11 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
             self.screen_name_and_user_id.get_twitter_username,
             "notatwitteraccounteither",
         )
+
         with capture_output() as (out, err):
             call_command("twitterbot_update_usernames")
 
-        self.assertIsNone(self.just_userid.get_twitter_username)
-        self.assertEqual(self.just_userid.get_twitter_username, None)
+        self.assertIsNone(self.just_userid.get_twitter_username, None)
 
         # Clear the cached_property for this object
         del self.screen_name_and_user_id.get_all_idenfitiers
