@@ -16,18 +16,20 @@ def get_twitter_user_id(twitter_screen_name):
     if not token:
         raise TwitterAPITokenMissing()
     headers = {"Authorization": "Bearer {token}".format(token=token)}
-    r = requests.post(
-        "https://api.twitter.com/1.1/users/lookup.json",
-        data={"screen_name": twitter_screen_name},
+    r = requests.get(
+        "https://api.twitter.com/2/users/by?usernames=",
+        data={"username": twitter_screen_name},
         headers=headers,
     )
     data = r.json()
     if data:
         if "errors" in data:
             all_errors = data["errors"]
-            if any(d["code"] == 17 for d in all_errors):
-                # (That's the error code for not being able to find the
-                # user.)
+            if any(
+                d["detail"]
+                == f"Could not find user with usernames: [{twitter_screen_name}]"
+                for d in all_errors
+            ):
                 result = ""
             else:
                 raise Exception(
