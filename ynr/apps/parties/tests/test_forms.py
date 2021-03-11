@@ -1,15 +1,23 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from django.forms import forms
+from django import forms
 
-from parties.forms import PartyIdentifierField
+from candidates.tests.factories import MembershipFactory
+from candidates.tests.uk_examples import UK2015ExamplesMixin
+from parties.forms import PartyIdentifierField, PopulatePartiesMixin
+from parties.models import Party
 from parties.tests.factories import PartyFactory
 from parties.tests.fixtures import DefaultPartyFixtures
+from people.forms.fields import CurrentUnlockedBallotsField
+from people.forms.forms import PersonMembershipForm
+from people.tests.factories import PersonFactory
 
 
-class TestPartyFields(DefaultPartyFixtures, TestCase):
+class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
     def setUp(self):
+        Party.objects.all().delete()
+
         class DefaultPartyForm(forms.Form):
             party = PartyIdentifierField(required=False)
 
@@ -91,3 +99,53 @@ class TestPartyFields(DefaultPartyFixtures, TestCase):
         msg = "'PP99' is not a current party identifier"
         with self.assertRaisesMessage(ValidationError, msg):
             field.clean(["", "PP99"])
+
+    def test_select_with_initial_contains_party(self):
+        """
+        If a user has selected a party previously, it should be a selected
+        option in the dropdown, even if it normally wouldn't be in there
+        """
+        PartyFactory(ec_id="PP12", name="New party")
+        PartyFactory(
+            ec_id="PP13",
+            name="New party without candidates",
+            current_candidates=0,
+        )
+        field = PartyIdentifierField(required=False)
+        # Make sure PP13 isn't in the default list
+        self.assertEqual(
+            field.fields[0].choices, [("", ""), ("PP12", "New party")]
+        )
+
+        class PartyForm(PopulatePartiesMixin, forms.Form):
+            ballot = CurrentUnlockedBallotsField()
+            party = PartyIdentifierField(
+                required=False, require_all_fields=False
+            )
+
+        form = PartyForm(initial={"party": ["", "PP13"]})
+        self.assertEqual(
+            form["party"].field.fields[0].choices,
+            [
+                ("", ""),
+                ("PP13", "New party without candidates"),
+                ("PP12", "New party"),
+            ],
+        )
+
+    def test_update_model_form_populates_other_parties(self):
+        """
+        PersonMembershipForm uses PopulatePartiesMixin, so should add our new
+        party to the default choices
+
+        """
+        new_party = PartyFactory(ec_id="PP12", name="New party")
+        person = PersonFactory()
+        membership = MembershipFactory(
+            ballot=self.dulwich_post_ballot, person=person, party=new_party
+        )
+        form = PersonMembershipForm(instance=membership)
+        self.assertEqual(
+            form["party_identifier"].field.fields[0].choices[1],
+            ("PP12", "New party"),
+        )

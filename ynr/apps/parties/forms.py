@@ -2,6 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from parties.models import Party
+from people.forms.fields import CurrentUnlockedBallotsField
 
 
 class PartyIdentifierInput(forms.CharField):
@@ -33,28 +34,75 @@ class PartySelectField(forms.MultiWidget):
 class PartyIdentifierField(forms.MultiValueField):
     def compress(self, data_list):
         if data_list:
-            return data_list
+            return self.to_python([v for v in data_list if v][-1])
         return None
 
     def __init__(self, *args, **kwargs):
-        choices = Party.objects.default_party_choices()
+        choices = kwargs.pop("choices", Party.objects.default_party_choices())
+
+        kwargs["require_all_fields"] = False
 
         fields = (
-            forms.ChoiceField(required=False, choices=choices),
+            forms.ChoiceField(required=False),
             PartyIdentifierInput(required=False),
         )
-        self.widget = PartySelectField(choices=choices)
         super().__init__(fields, *args, **kwargs)
-
-    def clean(self, value):
-        value = super().clean(value)
-        if not any(value):
-            return value
-        # Always return the value from the char field if it exists, else the
-        # select
-        return self.to_python([v for v in value if v][-1])
+        self.widget = PartySelectField(choices=choices)
+        self.widget.widgets[0].choices = choices
+        self.fields[0].choices = choices
 
     def to_python(self, value):
         if not value:
             return value
         return Party.objects.get(ec_id=value)
+
+
+class PopulatePartiesMixin:
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        register = None
+        for field_name, field_class in self.fields.items():
+            if not isinstance(field_class, CurrentUnlockedBallotsField):
+                continue
+            if field_name in self.initial:
+                ballot = field_class.to_python(self.initial[field_name])
+                register = ballot.post.party_set.slug
+
+        # Popluate the choices
+        for field_name, field_class in self.fields.items():
+            if not isinstance(field_class, PartyIdentifierField):
+                continue
+
+            if field_name not in self.initial:
+                continue
+
+            initial_for_field = self.initial[field_name]
+
+            if not isinstance(initial_for_field, (list, tuple)):
+                continue
+
+            if not len(initial_for_field) == 2:
+                continue
+
+            extra_party_id = initial_for_field[1]
+            if not extra_party_id:
+                continue
+
+            # Set the initial value of the select
+            self.initial[field_name][0] = extra_party_id
+
+            choices = Party.objects.default_party_choices(register)
+            existing_ids = []
+            for p_id, value in choices:
+                if isinstance(value, list):
+                    for item in value:
+                        existing_ids.append(item[0])
+                else:
+                    existing_ids.append(p_id)
+            already_in_select = extra_party_id in existing_ids
+
+            if not already_in_select:
+                extra_party = Party.objects.get(ec_id=extra_party_id).name
+                choices.insert(1, (extra_party_id, extra_party))
+            self.fields[field_name] = PartyIdentifierField(choices=choices)
+            self.fields[field_name].fields[0].choices = choices

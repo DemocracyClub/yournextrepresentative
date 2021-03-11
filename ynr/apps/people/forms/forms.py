@@ -11,7 +11,7 @@ from people.forms.fields import (
     StrippedCharField,
     BlankApproximateDateFormField,
 )
-from parties.forms import PartyIdentifierField
+from parties.forms import PartyIdentifierField, PopulatePartiesMixin
 from people.models import Person, PersonIdentifier
 from popolo.models import OtherName, Membership
 
@@ -155,7 +155,7 @@ class PersonIdentifierForm(forms.ModelForm):
         return ret
 
 
-class PersonMembershipForm(forms.ModelForm):
+class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         if kwargs.get("instance", None):
             kwargs.update(
