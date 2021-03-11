@@ -31,6 +31,12 @@ def get_twitter_user_id(twitter_screen_name):
                 for d in all_errors
             ):
                 result = ""
+            elif any(
+                d["detail"]
+                == f"User has been suspended: [{twitter_screen_name}]."
+                for d in all_errors
+            ):
+                result = str(data[0]["id"])
             else:
                 raise Exception(
                     "The Twitter API says: {error_messages}".format(
