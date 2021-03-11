@@ -1,6 +1,7 @@
+import requests
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
-
 from people.models import Person
 from twitterbot.helpers import TwitterBot
 
@@ -33,7 +34,6 @@ class Command(BaseCommand):
         for identifier in twitter_identifiers:
             screen_name = identifier.value or None
             user_id = identifier.internal_identifier
-
             if user_id:
                 verbose(
                     "{person} has a Twitter user ID: {user_id}".format(
@@ -41,6 +41,23 @@ class Command(BaseCommand):
                     )
                 )
                 if user_id not in self.twitter_data.user_id_to_screen_name:
+                    token = settings.TWITTER_APP_ONLY_BEARER_TOKEN
+                    headers = {
+                        "Authorization": "Bearer {token}".format(token=token)
+                    }
+                    r = requests.get(
+                        "https://api.twitter.com/1.1/users/show.json",
+                        params={"screen_name": screen_name},
+                        headers=headers,
+                    )
+                    data = r.json()
+
+                    if data:
+                        if any(d["code"] == 63 for d in data["errors"]):
+                            return verbose(
+                                f"{person}'s Twitter account (id: {user_id}) is currently suspended."
+                            )
+                        # def LoggedAction to show that account was suspended
                     print(
                         "Removing user ID {user_id} for {person_name} as it is not a valid Twitter user ID. {person_url}".format(
                             user_id=user_id,
@@ -94,6 +111,31 @@ class Command(BaseCommand):
                     screen_name.lower()
                     not in self.twitter_data.screen_name_to_user_id
                 ):
+                    token = settings.TWITTER_APP_ONLY_BEARER_TOKEN
+                    headers = {
+                        "Authorization": "Bearer {token}".format(token=token)
+                    }
+                    r = requests.get(
+                        "https://api.twitter.com/1.1/users/show.json",
+                        params={"screen_name": screen_name},
+                        headers=headers,
+                    )
+                    data = r.json()
+
+                    if data:
+                        if any(d["code"] == 63 for d in data["errors"]):
+                            return verbose(
+                                f"{person}'s Twitter account (id: {user_id}) is currently suspended."
+                            )
+                        # def LoggedAction to show that account was suspended
+
+                    print(
+                        "Removing user ID {user_id} for {person_name} as it is not a valid Twitter user ID. {person_url}".format(
+                            user_id=user_id,
+                            person_name=person.name,
+                            person_url=person.get_absolute_url(),
+                        )
+                    )
                     print(
                         "Removing screen name {screen_name} for {person_name} as it is not a valid Twitter screen name. {person_url}".format(
                             screen_name=screen_name,
