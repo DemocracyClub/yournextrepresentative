@@ -101,9 +101,13 @@ class PartyQuerySet(models.QuerySet):
             result.append(party_names)
         return result
 
-    def default_party_choices(self):
-        return self.party_choices(
+    def default_party_choices(self, register=None):
+        qs = self
+        if register:
+            qs = qs.register(register)
+        choices = qs.party_choices(
             include_descriptions=True,
             include_non_current=False,
             exclude_deregistered=True,
         )
+        return choices
