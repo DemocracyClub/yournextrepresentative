@@ -3,6 +3,7 @@
     {% if ballot.candidates_locked %}
       <input type="hidden" name="lock" value="unlock">
     {% else %}
+      <input type="hidden" name="hashed_memberships" value="{{ ballot.hashed_memberships }}">
       <input type="hidden" name="lock" value="lock">
     {% endif %}
   </form>

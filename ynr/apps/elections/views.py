@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.db import transaction
 from django.db.models import Count, Prefetch
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -220,6 +221,17 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
     slug_url_kwarg = "ballot_id"
     slug_field = "ballot_paper_id"
     form_class = ToggleLockForm
+
+    def form_invalid(self, form):
+        if self.request.is_ajax():
+            return JsonResponse(data={"ballot_updated": True})
+
+        messages.error(
+            request=self.request,
+            message="Locking failed as it looks like the ballot was changed by another user since loading. Please review any new changes before attempting to lock again.",
+            extra_tags="safe ballot-changed",
+        )
+        return HttpResponseRedirect(self.object.get_absolute_url())
 
     def form_valid(self, form):
         with transaction.atomic():

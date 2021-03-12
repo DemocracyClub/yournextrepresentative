@@ -9,6 +9,8 @@
           Someone else will double check it soon.
         </p>
       {% else %}
+        <input type="hidden" name="hashed_memberships" value="{{ ballot.hashed_memberships }}">
+        <input type="hidden" name="lock" value="lock">
         <input type="submit" class="button small" value="Lock candidate list">
       {% endif %}
 
