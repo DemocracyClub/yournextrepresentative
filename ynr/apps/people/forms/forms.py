@@ -180,7 +180,10 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
     ballot_paper_id = CurrentUnlockedBallotsField()
 
     party_list_position = forms.IntegerField(
-        max_value=20, min_value=1, required=False
+        max_value=20,
+        min_value=1,
+        required=False,
+        widget=forms.NumberInput(attrs={"class": "party-list-position"}),
     )
 
     def save(self, commit=True):

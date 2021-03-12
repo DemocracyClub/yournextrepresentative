@@ -21,7 +21,13 @@ class PartyIdentifierInput(forms.CharField):
 
 class PartySelectField(forms.MultiWidget):
     def __init__(self, choices, attrs=None):
-        widgets = [forms.Select(choices=choices), forms.TextInput()]
+        widgets = [
+            forms.Select(
+                choices=choices,
+                attrs={"disabled": True, "class": "party_widget_select"},
+            ),
+            forms.TextInput(attrs={"class": "party_widget_input"}),
+        ]
         super().__init__(widgets, attrs)
 
     def decompress(self, value):
@@ -43,7 +49,7 @@ class PartyIdentifierField(forms.MultiValueField):
         kwargs["require_all_fields"] = False
 
         fields = (
-            forms.ChoiceField(required=False),
+            forms.ChoiceField(required=False, disabled=True),
             PartyIdentifierInput(required=False),
         )
         super().__init__(fields, *args, **kwargs)

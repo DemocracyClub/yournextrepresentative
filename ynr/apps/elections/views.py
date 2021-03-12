@@ -340,7 +340,8 @@ class BallotsForSelectAjaxView(View):
 
             data.append(
                 f"    <option value='{ballot.ballot_paper_id}' "
-                f"data-party-register='{ballot.post.party_set_id}'>"
+                f"data-party-register='{ballot.post.party_set_id}' "
+                f"data-uses-party-lists='{ballot.election.party_lists_in_use}'>"
                 f"{ballot.post.label}"
                 f"</option>"
             )
