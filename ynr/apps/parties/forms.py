@@ -47,6 +47,7 @@ class PartyIdentifierField(forms.MultiValueField):
         choices = kwargs.pop("choices", Party.objects.default_party_choices())
 
         kwargs["require_all_fields"] = False
+        kwargs["label"] = "Party"
 
         fields = (
             forms.ChoiceField(required=False, disabled=True),

@@ -46,6 +46,12 @@ var setup_ballot_select2 = function(ballots) {
 var populate_ballot_selects = function() {
   var BallotInput = $(BALLOT_INPUT_CLASS)
 
+  $(PARTY_LIST_POSITION_INPUT_CLASS).each(function() {
+    var el= $(this);
+    if (el.val() === "") {
+      el.parent().hide();
+    }
+  })
 
   BallotInput.select2();
   $.ajax({

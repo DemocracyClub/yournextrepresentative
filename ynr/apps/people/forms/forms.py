@@ -177,7 +177,7 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
     party_identifier = PartyIdentifierField(
         require_all_fields=False, required=True
     )
-    ballot_paper_id = CurrentUnlockedBallotsField()
+    ballot_paper_id = CurrentUnlockedBallotsField(label="Ballot")
 
     party_list_position = forms.IntegerField(
         max_value=20,
