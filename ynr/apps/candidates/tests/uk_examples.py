@@ -6,6 +6,7 @@ from django.core.management import call_command
 
 import people.tests.factories
 from parties.tests.factories import PartyFactory
+from people.models import Person
 
 from . import factories
 
@@ -55,7 +56,7 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
     @classmethod
     def setUpTestData(cls):
         super(UK2015ExamplesMixin, cls).setUpTestData()
-
+        Person.objects.update_name_search_trigger()
         cls.gb_parties = factories.PartySetFactory.create(
             slug="gb", name="Great Britain"
         )

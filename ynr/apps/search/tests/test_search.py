@@ -4,8 +4,10 @@ from django_webtest import WebTest
 
 from people.models import Person
 
-from .auth import TestUserMixin
-from .uk_examples import UK2015ExamplesMixin
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
+from people.tests.factories import PersonFactory
+from search.utils import search_person_by_name
 
 
 class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -102,3 +104,11 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertTrue(
             re.search(r"""<a[^>]*>Elizabeth Bennet""", response.text)
         )
+
+    def test_search_finds_other_names(self):
+        person = PersonFactory(name="Henry Jekyll")
+        person.other_names.create(name="Edward Hyde")
+        person.save()
+        qs = search_person_by_name("Edward Hyde")
+        self.assertEqual(qs.count(), 1)
+        self.assertEqual(qs.first().name, "Henry Jekyll")

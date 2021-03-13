@@ -6,6 +6,8 @@ from urllib.parse import urljoin, quote_plus
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.indexes import GistIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.template import loader
@@ -290,8 +292,15 @@ class Person(Timestampable, models.Model):
         ],
     )
 
+    name_search_vector = SearchVectorField(null=True)
+
     class Meta:
         verbose_name_plural = "People"
+        indexes = (
+            GistIndex(
+                fields=["name_search_vector"], name="name_vector_search_index"
+            ),
+        )
 
     objects = PersonQuerySet.as_manager()
 
