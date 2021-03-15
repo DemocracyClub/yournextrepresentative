@@ -9,12 +9,16 @@ from official_documents.models import OfficialDocument
 from parties.tests.factories import PartyFactory
 from parties.tests.fixtures import DefaultPartyFixtures
 from sopn_parsing.models import ParsedSOPN
+from unittest import skipIf
+
+from sopn_parsing.tests import should_skip_pdf_tests
 
 
 class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
     def setUp(self):
         PartyFactory(ec_id="PP85", name="UK Independence Party (UKIP)")
 
+    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_basic_parsing(self):
         self.assertFalse(RawPeople.objects.exists())
         doc = OfficialDocument.objects.create(

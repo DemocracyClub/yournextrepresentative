@@ -12,8 +12,8 @@ from popolo.models import Post
 from sopn_parsing.tests import should_skip_pdf_tests
 
 
+@skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
 class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
-    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_extract_pages_management_command(self):
         example_doc_path = abspath(
             join(
