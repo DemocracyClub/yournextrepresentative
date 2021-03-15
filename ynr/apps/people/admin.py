@@ -8,7 +8,12 @@ from sorl.thumbnail.admin.current import AdminImageWidget
 from candidates.models import LoggedAction
 from candidates.views.version_data import get_client_ip
 from people.data_removal_helpers import DataRemover
-from people.models import EditLimitationStatuses, Person, PersonImage
+from people.models import (
+    EditLimitationStatuses,
+    Person,
+    PersonImage,
+    PersonNameSynonym,
+)
 from popolo.models import Membership
 
 
@@ -125,4 +130,10 @@ class PersonAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
+class PersonNameSynonymAdmin(admin.ModelAdmin):
+    search_fields = ("term", "synonym")
+    list_display = ("term", "synonym")
+
+
 admin.site.register(Person, PersonAdmin)
+admin.site.register(PersonNameSynonym, PersonNameSynonymAdmin)

@@ -7,9 +7,14 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.fields import JSONField
 from django.contrib.postgres.indexes import GistIndex
-from django.contrib.postgres.search import SearchVectorField
+from django.contrib.postgres.search import (
+    SearchVectorField,
+    SearchQuery,
+    SearchQueryField,
+)
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.db.models import Lookup
 from django.template import loader
 from django.templatetags.static import static
 from django.urls import reverse
@@ -773,6 +778,50 @@ class Person(Timestampable, models.Model):
                 if self.not_standing.filter(slug=next_ballot.election.slug):
                     standing_down_elections.append(next_ballot.election)
         return standing_down_elections
+
+
+class PersonNameSynonym(models.Model):
+    class Meta:
+        ordering = ("-term",)
+
+    term = SearchQueryField(help_text="The term entered")
+    synonym = SearchQueryField(help_text="An alternative word for the term")
+
+    def __str__(self):
+        return f"{self.term}->{self.synonym}"
+
+
+class PersonNameSynonymLookup(Lookup):
+    lookup_name = "synonym"
+
+    def process_rhs(self, qn, connection):
+        if not hasattr(self.rhs, "resolve_expression"):
+            config = getattr(self.lhs, "config", None)
+            self.rhs = SearchQuery(self.rhs, config=config)
+        rhs, rhs_params = super().process_rhs(qn, connection)
+        return rhs, rhs_params
+
+    def as_sql(self, qn, connection):
+        lhs, lhs_params = self.process_lhs(qn, connection)
+        rhs, rhs_params = self.process_rhs(qn, connection)
+        params = lhs_params + rhs_params
+        return (
+            """
+            %s @@
+                tsquery_or(
+                    %s,
+                    ts_rewrite(
+                        %s,
+                        'SELECT term, synonym FROM people_personnamesynonym'
+                    )
+                )
+            """
+            % (lhs, rhs, rhs),
+            params + params,
+        )
+
+
+SearchVectorField.register_lookup(PersonNameSynonymLookup)
 
 
 class GenderGuess(models.Model):
