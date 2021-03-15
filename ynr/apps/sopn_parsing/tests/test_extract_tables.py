@@ -168,6 +168,7 @@ class TestSOPNHelpers(TmpMediaRootMixin, UK2015ExamplesMixin, TestCase):
             },
         )
 
+    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_extract_command_current(self):
         self.assertEqual(ParsedSOPN.objects.count(), 0)
         call_command("sopn_parsing_extract_tables", current=True)

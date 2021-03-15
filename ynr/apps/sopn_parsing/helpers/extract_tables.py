@@ -1,7 +1,5 @@
 import json
 
-import camelot
-
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
 from sopn_parsing.models import ParsedSOPN
 
@@ -14,6 +12,8 @@ def extract_ballot_table(ballot, parse_flavor="lattice"):
     :type ballot: candidates.models.Ballot
 
     """
+    import camelot  # import here to avoid import error running tests without pdf deps installed
+
     document = ballot.sopn
     if not document.relevant_pages:
         raise ValueError(

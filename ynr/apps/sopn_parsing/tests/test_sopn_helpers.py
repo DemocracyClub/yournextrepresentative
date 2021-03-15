@@ -1,8 +1,10 @@
 from os.path import abspath, dirname, join
 
 from django.test import TestCase
+from unittest import skipIf
 
 from sopn_parsing.helpers.text_helpers import clean_text
+from sopn_parsing.tests import should_skip_pdf_tests
 
 try:
     from sopn_parsing.helpers.pdf_helpers import SOPNDocument
@@ -15,6 +17,7 @@ class TestSOPNHelpers(TestCase):
         text = "\n C andidates (Namés)"
         self.assertEqual(clean_text(text), "candidates")
 
+    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_sopn_document(self):
         example_doc_path = abspath(
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
@@ -77,6 +80,7 @@ class TestSOPNHelpers(TestCase):
             doc.get_pages_by_ward_name("berkeley")[0].page_number, 1
         )
 
+    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_multipage_doc(self):
         example_doc_path = abspath(
             join(dirname(__file__), "data/NI-Assembly-Election-2016.pdf")
