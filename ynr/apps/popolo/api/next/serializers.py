@@ -52,7 +52,13 @@ class CandidacyResultsSerializer(serializers.HyperlinkedModelSerializer):
     elected = serializers.ReadOnlyField(source="is_winner")
 
 
-BASE_CANDIDACY_FIELDS = ["elected", "party_list_position", "party"]
+BASE_CANDIDACY_FIELDS = [
+    "elected",
+    "party_list_position",
+    "party",
+    "party_name",
+    "party_description_text",
+]
 
 CANDIDACY_ON_BALLOT_FIELDS = BASE_CANDIDACY_FIELDS + ["person", "result"]
 CANDIDACY_ON_PERSON_FIELDS = BASE_CANDIDACY_FIELDS + ["ballot"]
