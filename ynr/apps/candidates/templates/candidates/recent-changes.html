@@ -79,7 +79,7 @@
 <div class="pagination">
     <span class="step-links">
         {% if actions.has_previous %}
-            <a href="{% url "recent-changes" %}?username={{ action.user.username }}&amp;page={{ actions.previous_page_number }}">previous</a>
+          <a href="{{ actions.number.paginator.previous_page_number }}">previous</a>
         {% endif %}
 
         <span class="current">
@@ -87,7 +87,7 @@
         </span>
 
         {% if actions.has_next %}
-            <a href="{% url "recent-changes" %}?username={{ action.user.username }}&amp;page={{ actions.next_page_number }}">next</a>
+          <a href="{{ actions.number.paginator.next_page_number }}">next</a>
         {% endif %}
     </span>
 </div>
