@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 
 from parties.models import Party
 from people.forms.fields import CurrentUnlockedBallotsField
+from utils.widgets import SelectWithAttrs
 
 
 class PartyIdentifierInput(forms.CharField):
@@ -22,7 +23,7 @@ class PartyIdentifierInput(forms.CharField):
 class PartySelectField(forms.MultiWidget):
     def __init__(self, choices, attrs=None):
         widgets = [
-            forms.Select(
+            SelectWithAttrs(
                 choices=choices,
                 attrs={"disabled": True, "class": "party_widget_select"},
             ),
@@ -98,18 +99,8 @@ class PopulatePartiesMixin:
             # Set the initial value of the select
             self.initial[field_name][0] = extra_party_id
 
-            choices = Party.objects.default_party_choices(register)
-            existing_ids = []
-            for p_id, value in choices:
-                if isinstance(value, list):
-                    for item in value:
-                        existing_ids.append(item[0])
-                else:
-                    existing_ids.append(p_id)
-            already_in_select = extra_party_id in existing_ids
-
-            if not already_in_select:
-                extra_party = Party.objects.get(ec_id=extra_party_id).name
-                choices.insert(1, (extra_party_id, extra_party))
+            choices = Party.objects.party_choices(
+                extra_party_ids=[extra_party_id], include_description_ids=True
+            )
             self.fields[field_name] = PartyIdentifierField(choices=choices)
             self.fields[field_name].fields[0].choices = choices

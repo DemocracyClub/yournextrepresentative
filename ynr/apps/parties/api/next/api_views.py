@@ -64,8 +64,11 @@ class AllPartiesJSONView(View):
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):
+        register = self.request.GET.get("register", None)
         status_code = 200
         ps = Party.objects.current()
+        if register:
+            ps = ps.register(register)
         ret = {"items": []}
         qs = ps.party_choices(
             exclude_deregistered=True, include_description_ids=True
@@ -73,14 +76,26 @@ class AllPartiesJSONView(View):
 
         for party in qs:
             item = {}
+
             if type(party[1]) == list:
+                # This is a party with descriptions
                 item["text"] = party[0]
                 item["children"] = []
                 for child in party[1]:
-                    item["children"].append({"id": child[0], "text": child[1]})
+                    item["children"].append(
+                        {
+                            "id": child[0],
+                            "text": child[1]["label"],
+                            "register": child[1]["register"],
+                        }
+                    )
             else:
-                item["id"] = party[0]
-                item["text"] = party[1]
+                # This party doesn't have descriptions
+                item = {
+                    "id": party[0],
+                    "text": party[1]["label"],
+                    "register": party[1].get("register", "all"),
+                }
 
             ret["items"].append(item)
 

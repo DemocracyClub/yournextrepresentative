@@ -48,6 +48,7 @@ class PartyQuerySet(models.QuerySet):
         exclude_deregistered=False,
         include_description_ids=False,
         include_non_current=True,
+        extra_party_ids=None,
     ):
         # For various reasons, we've found it's best to order the
         # parties by those that have the most candidates - this means
@@ -70,21 +71,31 @@ class PartyQuerySet(models.QuerySet):
             .order_by(*party_order_by)
             .only("date_deregistered", "name", "ec_id")
         )
+        if extra_party_ids:
+            extra_qs = self.model.objects.filter(ec_id__in=extra_party_ids)
+            parties_current_qs = extra_qs | parties_current_qs
 
         if include_descriptions:
             parties_current_qs = parties_current_qs.prefetch_related(
                 "descriptions"
             )
 
-        result = [("", "")]
+        result = [("", {"label": ""})]
 
         for party in parties_current_qs:
-
             if party.date_deregistered:
                 if party.is_deregistered and exclude_deregistered:
                     continue
             if include_descriptions and party.descriptions.exists():
-                names = [(party.ec_id, party.format_name)]
+                names = [
+                    (
+                        party.ec_id,
+                        {
+                            "label": party.format_name,
+                            "register": party.register or "all",
+                        },
+                    )
+                ]
                 for description in party.descriptions.all():
                     joint_text = re.compile(JOINT_DESCRIPTION_REGEX, re.I)
                     party_id_str = str(party.ec_id)
@@ -93,10 +104,24 @@ class PartyQuerySet(models.QuerySet):
                             party_id_str, description.pk
                         )
                     if not joint_text.search(description.description):
-                        names.append((party_id_str, description.description))
+                        names.append(
+                            (
+                                party_id_str,
+                                {
+                                    "label": description.description,
+                                    "register": party.register or "all",
+                                },
+                            )
+                        )
                 party_names = (party.format_name, names)
             else:
-                party_names = (str(party.ec_id), party.format_name)
+                party_names = (
+                    str(party.ec_id),
+                    {
+                        "label": party.format_name,
+                        "register": party.register or "all",
+                    },
+                )
 
             result.append(party_names)
         return result
@@ -109,5 +134,6 @@ class PartyQuerySet(models.QuerySet):
             include_descriptions=True,
             include_non_current=False,
             exclude_deregistered=True,
+            include_description_ids=True,
         )
         return choices

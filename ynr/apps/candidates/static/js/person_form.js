@@ -97,14 +97,18 @@ var setup_single_party_select = function(i, partySelect) {
       partySelect.trigger('change.select2');
 
       $.getJSON('/all-parties.json', function(items) {
-        $.each(items['items'], function(party_id, descs) {
+        $.each(items['items'], function(i, descs) {
           var group = $('<optgroup label="' + descs.text + '" />');
           if (descs['children']) {
-            $.each(descs['children'], function(child) {
-              $('<option value="'+this.id+'"/>').html(this.text).appendTo(group);
+            $.each(descs['children'], function(i, child) {
+              // $('<option value="'+this.id+'"/>').html(this.text).appendTo(group);
+              var newOption = new Option(child.text, child.id, false, false);
+              group.append(newOption);
             });
           } else {
-            $('<option value="'+descs.id+'"/>').html(descs.text).appendTo(group);
+            var newOption = new Option(descs.text.label, descs.id, false, false);
+            group.append(newOption);
+            // $('<option value="'+descs.id+'"/>').html(descs.text).appendTo(group);
           }
           group.appendTo(partySelect);
         });
