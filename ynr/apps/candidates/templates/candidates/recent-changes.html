@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load humanize %}
+{% load get_query %}
 
 {% block body_class %}{% endblock %}
 
@@ -79,7 +80,7 @@
 <div class="pagination">
     <span class="step-links">
         {% if actions.has_previous %}
-          <a href="{{ actions.number.paginator.previous_page_number }}">previous</a>
+          <a href="{% query_string request.GET page=actions.previous_page_number %}">previous</a>
         {% endif %}
 
         <span class="current">
@@ -87,7 +88,7 @@
         </span>
 
         {% if actions.has_next %}
-          <a href="{{ actions.number.paginator.next_page_number }}">next</a>
+          <a href="{% query_string request.GET page=actions.next_page_number %}">next</a>
         {% endif %}
     </span>
 </div>
