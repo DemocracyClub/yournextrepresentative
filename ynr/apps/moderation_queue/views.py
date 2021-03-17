@@ -604,7 +604,7 @@ class SuggestLockReviewListView(
                     ).prefetch_related("person__other_names"),
                 ),
             )
-            .order_by("?")
+            .order_by("election")
         )
 
         qs = qs.exclude(suggestedpostlock__user=self.request.user)
