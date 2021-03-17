@@ -5,7 +5,7 @@ from django.utils.safestring import SafeText
 
 from search.utils import search_person_by_name
 from official_documents.models import OfficialDocument
-from parties.models import Party
+from parties.models import Party, PartyDescription
 from popolo.models import Membership
 
 
@@ -220,7 +220,12 @@ class ReviewSinglePersonForm(ReviewSinglePersonNameOnlyForm):
     source = forms.CharField(
         required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
     )
-    party_description = forms.CharField(
+    party_description = forms.ModelChoiceField(
+        required=False,
+        widget=forms.HiddenInput(),
+        queryset=PartyDescription.objects.all(),
+    )
+    party_description_text = forms.CharField(
         required=False, widget=forms.HiddenInput()
     )
 
