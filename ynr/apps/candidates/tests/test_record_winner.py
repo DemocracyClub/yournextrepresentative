@@ -44,10 +44,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "Mark candidate as elected")
         record_url = reverse(
             "record-winner",
-            kwargs={
-                "election": self.ballot.election.slug,
-                "post_id": self.ballot.post.slug,
-            },
+            kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
         )
         self.assertContains(response, record_url)
 
@@ -66,7 +63,9 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         base_record_url = reverse(
             "record-winner",
-            kwargs={"election": "parl.2015-05-07", "post_id": "65808"},
+            kwargs={
+                "ballot_paper_id": self.dulwich_post_ballot.ballot_paper_id
+            },
         )
         form_get_response = self.app.post(
             base_record_url, {"person_id": 4322}, expect_errors=True

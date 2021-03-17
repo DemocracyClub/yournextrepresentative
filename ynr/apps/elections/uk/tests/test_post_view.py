@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
 from django_webtest import WebTest
 
-from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
+from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
