@@ -88,10 +88,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, CanRecordResultsMixin, View):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        self.post_data = get_object_or_404(Post, slug=self.kwargs["post_id"])
-        self.ballot = Ballot.objects.get(
-            election=self.election_data, post=self.post_data
-        )
+        self.ballot = self.get_ballot()
 
         with transaction.atomic():
             recorder = RecordBallotResultsHelper(self.ballot, self.request.user)

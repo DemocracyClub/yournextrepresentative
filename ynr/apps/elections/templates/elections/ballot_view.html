@@ -134,7 +134,7 @@
       </table>
 
       {% if user_can_record_results and has_any_winners %}
-        <form action="{% url 'retract-winner' election=ballot.election.slug post_id=ballot.post.slug %}" method="post">
+        <form action="{% url 'retract-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
           {% csrf_token %}
           <input type="submit" class="button alert small" value="Unset the current winners, if incorrect">
         </form>

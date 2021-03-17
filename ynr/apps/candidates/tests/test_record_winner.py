@@ -179,10 +179,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "Unset the current winners")
         record_url = reverse(
             "retract-winner",
-            kwargs={
-                "election": self.ballot.election.slug,
-                "post_id": self.ballot.post.slug,
-            },
+            kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
         )
         self.assertContains(response, record_url)
 
@@ -196,10 +193,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         base_record_url = reverse(
             "retract-winner",
-            kwargs={
-                "election": self.ballot.election.slug,
-                "post_id": self.ballot.post.slug,
-            },
+            kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
         )
         form_get_response = self.app.get(
             base_record_url + "?person=4322", expect_errors=True
@@ -225,10 +219,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
         csrftoken = self.app.cookies["csrftoken"]
         base_record_url = reverse(
             "retract-winner",
-            kwargs={
-                "election": self.ballot.election.slug,
-                "post_id": self.ballot.post.slug,
-            },
+            kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
         )
         response = self.app.post(
             base_record_url,
