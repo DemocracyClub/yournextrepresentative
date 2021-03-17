@@ -587,9 +587,7 @@ class SuggestLockReviewListView(
     def get_lock_suggestions(self):
         # TODO optimize this
         qs = (
-            Ballot.objects.filter(
-                election__current=True, candidates_locked=False
-            )
+            Ballot.objects.filter(candidates_locked=False)
             .exclude(suggestedpostlock=None)
             .exclude(officialdocument=None)
             .select_related("election", "post")
