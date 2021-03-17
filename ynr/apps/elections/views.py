@@ -11,7 +11,12 @@ from django.views.generic import DetailView, TemplateView, UpdateView
 from auth_helpers.views import GroupRequiredMixin
 from candidates.csv_helpers import list_to_csv, memberships_dicts_for_csv
 from candidates.forms import ToggleLockForm
-from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
+from candidates.models import (
+    TRUSTED_TO_LOCK_GROUP_NAME,
+    Ballot,
+    LoggedAction,
+    PartySet,
+)
 
 from candidates.views.version_data import get_client_ip
 from elections.mixins import ElectionMixin
@@ -329,9 +334,14 @@ class BallotsForSelectAjaxView(View):
             .select_related("election", "post")
             .order_by("election__election_date", "election__name")
         )
+        partyset_ids = {
+            partyset_id: slug
+            for partyset_id, slug in PartySet.objects.values_list("pk", "slug")
+        }
         data = []
         election_name = None
         for ballot in qs:
+            partyset_slug = partyset_ids[ballot.post.party_set_id].upper()
             if ballot.election.name != election_name:
                 election_name = ballot.election.name
                 if data:
@@ -340,7 +350,7 @@ class BallotsForSelectAjaxView(View):
 
             data.append(
                 f"    <option value='{ballot.ballot_paper_id}' "
-                f"data-party-register='{ballot.post.party_set_id}' "
+                f"data-party-register='{partyset_slug}' "
                 f"data-uses-party-lists='{ballot.election.party_lists_in_use}'>"
                 f"{ballot.post.label}"
                 f"</option>"

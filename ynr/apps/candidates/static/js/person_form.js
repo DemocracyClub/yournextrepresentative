@@ -28,6 +28,14 @@ var setup_ballot_select2 = function(ballots) {
       } else {
         party_list_input.hide();
       }
+
+     var register =  selected_ballot.data("partyRegister");
+     var current_register = $(ballot_formset).data("partyRegister")
+      if (register !== current_register) {
+        $(ballot_formset).find(PARTY_WIDGET_SELECT_CLASS).val(null).trigger('change');
+        $(ballot_formset).find(PARTY_WIDGET_INPUT_CLASS).val(null);
+      }
+     $(ballot_formset).data("partyRegister", register)
     });
     var selected_data = BallotSelect.select2("data");
     if ($.isEmptyObject(selected_data) !== true) {
@@ -67,7 +75,7 @@ var setup_single_party_select = function(i, partySelect) {
   var select_options = {
     width: '100%',
     placeholder: 'Select a party',
-    allowClear: true
+    allowClear: true,
   }
   partySelect = $(partySelect);
   var ballot_formset = partySelect.closest("fieldset");
@@ -81,7 +89,20 @@ var setup_single_party_select = function(i, partySelect) {
   select_options.matcher = function(params, data) {
     var match = partySelect.select2.defaults.defaults.matcher(params, data);
     if (match) {
-      return match;
+      var party_register;
+      var selected_register = $(ballot_formset).data("partyRegister");
+      if (data.children !== undefined) {
+        party_register =  data.children[0].element.getAttribute("register");
+      } else {
+        party_register = match.element.getAttribute("register");
+      }
+      if (selected_register === party_register) {
+        return match;
+      } else if (party_register === null) {
+        return match;
+      } else {
+        return null;
+      }
     }
     if (data.id === "0") {
       return data;
@@ -99,6 +120,7 @@ var setup_single_party_select = function(i, partySelect) {
       $.getJSON('/all-parties.json', function(items) {
         $.each(items['items'], function(i, descs) {
           var group = $('<optgroup label="' + descs.text + '" />');
+          group.attr("data-register", descs.register)
           if (descs['children']) {
             $.each(descs['children'], function(i, child) {
               // $('<option value="'+this.id+'"/>').html(this.text).appendTo(group);
@@ -108,7 +130,6 @@ var setup_single_party_select = function(i, partySelect) {
           } else {
             var newOption = new Option(descs.text.label, descs.id, false, false);
             group.append(newOption);
-            // $('<option value="'+descs.id+'"/>').html(descs.text).appendTo(group);
           }
           group.appendTo(partySelect);
         });
