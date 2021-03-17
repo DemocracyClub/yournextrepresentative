@@ -109,7 +109,7 @@ class QueryStringNode(Node):
             qdict = QueryDict(None, mutable=True)
         elif isinstance(qdict, QueryDict):
             qdict = qdict.copy()
-        elif isinstance(qdict, basestring):
+        elif isinstance(qdict, (str, bytes)):
             if qdict.startswith("?"):
                 qdict = qdict[1:]
             qdict = QueryDict(qdict, mutable=True)
@@ -123,13 +123,13 @@ class QueryStringNode(Node):
             # Enter each pair into QueryDict object:
             try:
                 for k, v in pairs:
-                    # Convert values to unicode so that detecting
+                    # Convert values to str so that detecting
                     # membership works for numbers.
                     if isinstance(v, (list, tuple)):
                         for e in v:
-                            qdict.appendlist(k, unicode(e))
+                            qdict.appendlist(k, str(e))
                     else:
-                        qdict.appendlist(k, unicode(v))
+                        qdict.appendlist(k, str(v))
             except:
                 # Wrong data structure, qdict remains empty.
                 pass
@@ -144,7 +144,7 @@ class QueryStringNode(Node):
         # Deal with lists only.
         if not isinstance(val, (list, tuple)):
             val = [val]
-        val = [unicode(v) for v in val]
+        val = [str(v) for v in val]
         # Remove
         if op == "-":
             for v in val:
