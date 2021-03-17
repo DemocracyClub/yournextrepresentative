@@ -9,7 +9,8 @@ class ElectionMixin(object):
 
     def get_ballot(self):
         ballot_paper_id = self.kwargs["ballot_paper_id"]
-        return get_object_or_404(Ballot, ballot_paper_id=ballot_paper_id)
+        ballot_qs = Ballot.objects.all().select_related("post", "election")
+        return get_object_or_404(ballot_qs, ballot_paper_id=ballot_paper_id)
 
     def get_election(self):
         election = self.kwargs.get("election")
