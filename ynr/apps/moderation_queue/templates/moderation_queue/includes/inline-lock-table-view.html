@@ -94,26 +94,30 @@
   });
 
   $('.known-person-not-standing').on('click', function(e){
+        var $this = $(this);
         e.preventDefault();
 
         // remove all old rows with inline forms
         $('.inline-edit-row').remove();
 
-        $person = $($(this).parents('tr')[0]);
+        $person = $($this.parents('tr')[0]);
         $link = $person.find('.known-person-not-standing');
 
         var $inline_edit = $( $('.known-person-not-standing-form').html() );
 
         $inline_edit.insertAfter($person);
         $form = $inline_edit.find('form');
-        console.log($form.find('button[type=submit]'));
         $form.find('button[type=submit]').on('click', function(e){
             e.preventDefault();
-            console.log("Asdasdasd");
+
             $form.find('#candidacyerr').remove();
             $form.find('.alert').remove();
             $form.find('.errorlist').remove();
             $source = $form.find('input[name="source"]').val();
+
+            // get the lock form for this ballot
+            // sure there is a better way to do this
+            $lockForm = $($this.parents('table')[1]).find('.lock_button_container').find('form');
             $.ajax({
                 url: $link.attr('href'),
                 type: "POST",
@@ -128,6 +132,8 @@
                     if (json['success']) {
                         $person.remove();
                         remove_old_inline_forms();
+                        // set the value of the hashed_memberships field to newly returned hash
+                        $lockForm.find('input[name="hashed_memberships"]').val(json.ballot_hash)
                     } else {
                         if (json['errors']) {
                             for (var err in json.errors) {

@@ -1,3 +1,4 @@
+import hashlib
 import datetime
 
 from django.contrib.admin.utils import NestedObjects
@@ -245,6 +246,26 @@ class Ballot(models.Model):
         if self.winner_count:
             return self.winner_count
         return 0
+
+    @property
+    def hashed_memberships(self):
+        """
+        Return an md5 hash based on the party, person and list position of the
+        ballots candidates
+        """
+        membership_data = self.membership_set.values_list(
+            "party", "person", "party_list_position"
+        )
+        membership_str = "".join(str(val) for val in membership_data)
+        return hashlib.md5(membership_str.encode()).hexdigest()
+
+    def delete_outdated_suggested_locks(self):
+        """
+        Deletes all SuggestedPostLock objects with outdated membership hash
+        """
+        return self.suggestedpostlock_set.exclude(
+            ballot_hash=self.hashed_memberships
+        ).delete()
 
     def user_can_edit_membership(self, user, allow_if_trusted_to_lock=True):
         """

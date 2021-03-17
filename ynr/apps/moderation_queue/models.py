@@ -120,3 +120,13 @@ class SuggestedPostLock(models.Model):
         blank=True,
         help_text="e.g I've reviewed the nomination paper for this area",
     )
+    ballot_hash = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        """
+        On creation, stores the hashed membership of the related ballot. This
+        allows us to detect out of date lock suggestions based on the hash.
+        """
+        if not self.pk:
+            self.ballot_hash = self.ballot.hashed_memberships
+        return super().save(*args, **kwargs)

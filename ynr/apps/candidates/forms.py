@@ -23,14 +23,27 @@ class UserTermsAgreementForm(forms.Form):
 
 
 class ToggleLockForm(forms.ModelForm):
+
+    hashed_memberships = forms.CharField(
+        widget=forms.HiddenInput, required=False
+    )
+    lock = forms.CharField(widget=forms.HiddenInput(), required=False)
+    candidates_locked = forms.HiddenInput()
+
     class Meta:
         model = Ballot
         fields = ("candidates_locked",)
 
-    candidates_locked = forms.HiddenInput()
-
     def clean(self):
-        if self.data.get("lock") == "lock":
+        if self.cleaned_data.get("lock") == "lock":
+            if (
+                self.cleaned_data["hashed_memberships"]
+                != self.instance.hashed_memberships
+            ):
+                raise ValidationError(
+                    "Someone changed the ballot since loading, please recheck"
+                )
+
             self.cleaned_data["candidates_locked"] = True
         else:
             self.cleaned_data[

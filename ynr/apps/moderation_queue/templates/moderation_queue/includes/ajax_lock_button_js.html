@@ -47,6 +47,11 @@
               dataType: 'json',
               data: form.serialize(),
               success: function(data) {
+
+                if (data['ballot_updated']) {
+                  return form.parent().html("<strong>Locking failed as the ballot has been updated.</strong><br>It looks like someone updated the ballot since loading. Please refresh the page to review these changes and try again.")
+                };
+
                 if (data['locked']) {
                   this_button.html(UNLOCKED_TEXT);
                   this_button.data("op", 'unlock');

@@ -108,7 +108,9 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
             person.record_version(change_metadata)
             person.save()
         if self.request.is_ajax():
-            return JsonResponse({"success": True})
+            return JsonResponse(
+                {"success": True, "ballot_hash": self.ballot.hashed_memberships}
+            )
         return HttpResponseRedirect(self.ballot.get_absolute_url())
 
     def form_invalid(self, form):

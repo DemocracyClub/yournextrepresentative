@@ -229,10 +229,13 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     party_description=data["party_description"],
                 )
 
+            # ballot has changed so we should remove any out of date suggestions
+            ballot = Ballot.objects.get(
+                ballot_paper_id=context["ballot"].ballot_paper_id
+            )
+            ballot.delete_outdated_suggested_locks()
+
             if self.request.POST.get("suggest_locking") == "on":
-                ballot = Ballot.objects.get(
-                    ballot_paper_id=context["ballot"].ballot_paper_id
-                )
                 SuggestedPostLock.objects.create(
                     user=self.request.user, ballot=ballot
                 )
