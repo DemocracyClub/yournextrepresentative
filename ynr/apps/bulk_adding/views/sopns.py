@@ -21,10 +21,7 @@ from people.models import Person
 
 class BulkAddSOPNRedirectView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
-        ballot = Ballot.objects.get(
-            election__slug=kwargs["election"],
-            post__identifier=kwargs["post_id"],
-        )
+        ballot = Ballot.objects.get(ballot_paper_id=kwargs["ballot_paper_id"])
         return ballot.get_bulk_add_url()
 
 
