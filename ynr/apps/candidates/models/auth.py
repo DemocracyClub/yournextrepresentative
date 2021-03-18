@@ -32,29 +32,22 @@ def get_constituency_lock_from_person_data(
     return get_constituency_lock(user, api, standing_in_election.get("post_id"))
 
 
-def get_constituency_lock(user, post, election):
+def get_constituency_lock(user, ballot=None, post=None, election=None):
     """
     Return whether the constituency is locked and whether this user can edit
-
-    You should make sure that 'extra' is populated on the post that's
-    passed in to avoid an extra query.
-
     """
+    if not ballot:
+        # TODO: remove this when we remove `check_update_allowed`
+        ballot = election.ballot_set.get(post=post)
 
-    if post is None:
-        return False, True
-    ballot = election.ballot_set.get(post=post)
-    # Use the cached version because it'll be faster than going to
-    # PopIt, even if it brings in embeds that we don't need:
     edits_allowed = ballot.user_can_edit_membership(user)
     return ballot.candidates_locked, edits_allowed
 
 
 def check_creation_allowed(user, new_candidacies):
     for candidacy in new_candidacies:
-        post = candidacy.ballot.post
-        election = candidacy.ballot.election
-        dummy, edits_allowed = get_constituency_lock(user, post, election)
+        ballot = candidacy.ballot
+        dummy, edits_allowed = get_constituency_lock(user, ballot)
         if not edits_allowed:
             raise ChangeToLockedConstituencyDisallowedException(
                 "The candidates for this ballot are locked now"
@@ -79,7 +72,9 @@ def check_update_allowed(
     old_posts = {(c.post, c.ballot.election) for c in old_candidacies}
     new_posts = {(c.post, c.ballot.election) for c in new_candidacies}
     for post, election in old_posts ^ new_posts:
-        dummy, edits_allowed = get_constituency_lock(user, post, election)
+        dummy, edits_allowed = get_constituency_lock(
+            user, post=post, election=election
+        )
         if not edits_allowed:
             raise ChangeToLockedConstituencyDisallowedException(
                 (
@@ -92,7 +87,9 @@ def check_update_allowed(
     for post, election in old_posts & new_posts:
         old_party = next(c.party for c in old_candidacies if c.post == post)
         new_party = next(c.party for c in new_candidacies if c.post == post)
-        dummy, edits_allowed = get_constituency_lock(user, post, election)
+        dummy, edits_allowed = get_constituency_lock(
+            user, post=post, election=election
+        )
         if not edits_allowed and (old_party != new_party):
             raise ChangeToLockedConstituencyDisallowedException(
                 (

@@ -161,7 +161,9 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.local_ballot.election.save()
 
         example_person.memberships.create(
-            ballot=self.local_ballot, party=self.green_party
+            ballot=self.local_ballot,
+            party=self.green_party,
+            post=self.local_ballot.post,
         )
 
         response = self.app.get(

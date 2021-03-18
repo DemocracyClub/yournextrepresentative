@@ -284,7 +284,7 @@ class EEElection(dict):
                         raise
                 else:
                     existing_ballot = Ballot.objects.get(
-                        post=self.post_object, election=parent.election_object
+                        ballot_paper_id=self["election_id"]
                     )
                     if ".by." in existing_ballot.ballot_paper_id:
                         # This was created as a by-election, but we now

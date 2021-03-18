@@ -36,11 +36,8 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertNotIn("suggest_lock_form", response.forms)
 
     def test_suggest_post_lock_not_offered_with_document_when_locked(self):
-        ballot = Ballot.objects.get(
-            election__slug="parl.2015-05-07", post__slug="14419"
-        )
-        ballot.candidates_locked = True
-        ballot.save()
+        self.edinburgh_east_post_ballot.candidates_locked = True
+        self.edinburgh_east_post_ballot.save()
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
@@ -110,20 +107,14 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
 
-        ballot = Ballot.objects.get(
-            election__slug="parl.2015-05-07", post__slug="14419"
-        )
-
         SuggestedPostLock.objects.create(
-            ballot=ballot,
+            ballot=self.edinburgh_east_post_ballot,
             user=self.users_to_delete[-1],
             justification="I liked totally reviewed the SOPN",
         )
 
         SuggestedPostLock.objects.create(
-            ballot=Ballot.objects.get(
-                election__slug="parl.2010-05-06", post__slug="14419"
-            ),
+            ballot=self.edinburgh_east_post_ballot_earlier,
             user=self.user,
             justification="I liked totally reviewed the SOPN",
         )
@@ -159,12 +150,8 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
 
-        ballot = Ballot.objects.get(
-            election__slug="parl.2015-05-07", post__slug="14419"
-        )
-
         SuggestedPostLock.objects.create(
-            ballot=ballot,
+            ballot=self.edinburgh_east_post_ballot,
             user=self.user,
             justification="I liked totally reviewed the SOPN",
         )
@@ -194,12 +181,8 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
 
-        ballot = Ballot.objects.get(
-            election__slug="parl.2015-05-07", post__slug="14419"
-        )
-
         SuggestedPostLock.objects.create(
-            ballot=ballot,
+            ballot=self.edinburgh_east_post_ballot,
             user=self.users_to_delete[-1],
             justification="I liked totally reviewed the SOPN",
         )
@@ -214,12 +197,8 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.user.groups.add(group)
         self.user.save()
 
-        ballot = Ballot.objects.get(
-            election__slug="parl.2015-05-07", post__slug="14419"
-        )
-
         SuggestedPostLock.objects.create(
-            ballot=ballot,
+            ballot=self.edinburgh_east_post_ballot,
             user=self.users_to_delete[-1],
             justification="I liked totally reviewed the SOPN",
         )

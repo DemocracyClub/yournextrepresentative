@@ -12,7 +12,7 @@ from django_webtest import WebTest
 from mock import patch
 from PIL import Image
 
-from candidates.models import Ballot, LoggedAction
+from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
@@ -453,9 +453,7 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertNotContains(response, "<h3>")
 
     def test_suggested_lock_review_view_with_suggestions(self):
-        ballot = Ballot.objects.get(
-            post=self.dulwich_post, election=self.election
-        )
+        ballot = self.dulwich_post_ballot
         SuggestedPostLock.objects.create(
             ballot=ballot, user=self.user, justification="test data"
         )
