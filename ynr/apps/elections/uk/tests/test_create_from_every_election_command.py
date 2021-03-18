@@ -27,6 +27,7 @@ from .ee_import_results import (
     pre_gss_result,
     post_gss_result,
     replaced_election,
+    duplicate_post_and_election,
 )
 
 EE_BASE_URL = getattr(
@@ -588,3 +589,24 @@ class EE_ImporterTest(WebTest):
         self.assertEqual(Ballot.objects.all().count(), 2)
         new_ballot = Ballot.objects.order_by("pk").last()
         self.assertEqual(new_ballot.replaces, old_ballot)
+
+    @patch("elections.uk.every_election.requests")
+    @freeze_time("2019-05-02")
+    def test_create_duplicate_post_election(self, mock_requests):
+        self.assertEqual(Ballot.objects.all().count(), 0)
+
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {
+                urljoin(
+                    EE_BASE_URL,
+                    "/api/elections/?poll_open_date__gte=2019-04-02",
+                ): duplicate_post_and_election,
+                urljoin(
+                    EE_BASE_URL,
+                    "/api/elections/?deleted=1&poll_open_date__gte=2019-04-02",
+                ): no_results,
+            }
+        )
+
+        call_command("uk_create_elections_from_every_election")
+        self.assertEqual(Ballot.objects.all().count(), 2)
