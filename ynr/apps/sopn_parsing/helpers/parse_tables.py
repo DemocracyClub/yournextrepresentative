@@ -99,13 +99,17 @@ def guess_description_field(row):
 
 def clean_name(name):
     name = name.replace("\n", "")
-    return re.sub(r"([A-Z\-]+)\s([A-Za-z\-\s]+)", r"\g<2> \g<1>", name).title()
+    name = name.replace("`", "'")
+    return re.sub(
+        r"([A-Z\-\']+)\s([A-Za-z\-\s]+)", r"\g<2> \g<1>", name
+    ).title()
 
 
 def clean_description(description):
     description = str(description)
     description = description.replace("\\n", "")
     description = description.replace("\n", "")
+    description = description.replace("`", "'")
     description = re.sub(r"\s+", " ", description)
     return description
 

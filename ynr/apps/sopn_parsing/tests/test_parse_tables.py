@@ -249,3 +249,32 @@ class TestParseTablesUnitTests(TestCase):
                 result = parse_tables.order_name_fields(name_fields)
                 assert result == case["ordered_name_fields"]
 
+    def test_clean_name_replaces_backticks(self):
+        name = parse_tables.clean_name("D`SOUZA")
+        assert "`" not in name
+        assert "'" in name
+
+    def test_clean_name_replaces_newlines(self):
+        name = parse_tables.clean_name(
+            "A Very Long Name That Splits \nOver Lines"
+        )
+        assert "\n" not in name
+
+    def test_clean_name_capitalized_last_and_titalized(self):
+        name = parse_tables.clean_name("SMITH John")
+        assert name == "John Smith"
+
+    def test_clean_description_removes_newlines(self):
+        cleaned_description = parse_tables.clean_description(
+            "A Long Description That Splits \nOver \\nLines"
+        )
+        assert "\n" not in cleaned_description
+        assert "\\n" not in cleaned_description
+
+    def test_clean_description_replaces_backticks(self):
+        cleaned_description = parse_tables.clean_description(
+            "All People`s Party"
+        )
+        assert "`" not in cleaned_description
+        assert "'" in cleaned_description
+        assert cleaned_description == "All People's Party"
