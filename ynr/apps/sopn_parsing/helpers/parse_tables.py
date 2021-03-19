@@ -16,6 +16,10 @@ NAME_FIELDS = (
     "surname",
     "candidates surname",
     "other name",
+    "candidate surname",
+    "candidate forename",
+    "other names",
+    "last name",
 )
 
 INDEPENDENT_VALUES = ("Independent", "")
@@ -55,11 +59,33 @@ def looks_like_header(row, avg_row):
     return False
 
 
-def guess_name_field(row):
-    for cell in row:
-        if cell in NAME_FIELDS:
-            return cell
-    raise ValueError("No name guess for {}".format(row))
+def order_name_fields(name_fields):
+    """
+    Takes a list of name fields and attempts to reorder them so that the
+    'surname' field is last in the returned list
+    """
+    last = None
+    for index, field in enumerate(name_fields):
+        if "surname" in field or "last" in field:
+            last = index
+            break
+
+    if last is not None:
+        # move value at stored index to the end of the list
+        name_fields.append(name_fields.pop(last))
+
+    return name_fields
+
+
+def get_name_fields(row):
+    """
+    Returns a list of name fields. This could be a single field or multiple
+    fields.
+    """
+    name_fields = [cell for cell in row if cell in NAME_FIELDS]
+    if not name_fields:
+        raise ValueError("No name guess for {}".format(row))
+    return name_fields
 
 
 def guess_description_field(row):
@@ -73,14 +99,14 @@ def guess_description_field(row):
 
 def clean_name(name):
     name = name.replace("\n", "")
-    return re.sub(r"([A-Z\-]+)\s([A-Za-z\-\s]+)", "\g<2> \g<1>", name).title()
+    return re.sub(r"([A-Z\-]+)\s([A-Za-z\-\s]+)", r"\g<2> \g<1>", name).title()
 
 
 def clean_description(description):
     description = str(description)
     description = description.replace("\\n", "")
     description = description.replace("\n", "")
-    description = re.sub("\s+", " ", description)
+    description = re.sub(r"\s+", " ", description)
     return description
 
 
@@ -134,12 +160,26 @@ def get_party(description_model, description, sopn):
     return party_obj
 
 
+def get_name(row, name_fields):
+    """
+    Takes a list of name fields and returns a string of the values of each of
+    the name fields in the row
+    """
+    return " ".join([row[field] for field in name_fields])
+
+
 def parse_table(sopn, data):
+
     data.columns = clean_row(data.columns)
     try:
-        name_field = guess_name_field(data.columns)
+        name_fields = get_name_fields(data.columns)
     except ValueError:
         return None
+
+    # if we have more than one name field try to order them
+    if len(name_fields) > 1:
+        name_fields = order_name_fields(name_fields)
+
     try:
         description_field = guess_description_field(data.columns)
     except ValueError:
@@ -147,7 +187,8 @@ def parse_table(sopn, data):
 
     ballot_data = []
     for row in iter_rows(data):
-        name = clean_name(row[name_field])
+        name = get_name(row, name_fields)
+        name = clean_name(name)
         description = get_description(row[description_field], sopn)
         party = get_party(description, row[description_field], sopn)
         data = {"name": name, "party_id": party.ec_id}
@@ -162,7 +203,6 @@ def parse_raw_data_for_ballot(ballot):
 
     :type ballot: candidates.models.Ballot
     """
-
     if ballot.candidates_locked:
         raise ValueError("Can't parse a locked ballot")
 
@@ -171,7 +211,6 @@ def parse_raw_data_for_ballot(ballot):
 
     parsed_sopn_model = ballot.sopn.parsedsopn
     data = parsed_sopn_model.as_pandas
-
     cell_counts = [len(merge_row_cells(c)) for c in iter_rows(data)]
 
     header_found = False
