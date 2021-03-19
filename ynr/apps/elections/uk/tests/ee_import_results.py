@@ -12473,3 +12473,174 @@ replaced_election = json.loads(
   ]
 }"""
 )
+
+
+duplicate_post_and_election = json.loads(
+    """
+{
+  "count": 3,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "election_id": "local.highland.2018-12-06",
+      "tmp_election_id": null,
+      "election_title": "Highland local election",
+      "poll_open_date": "2018-12-06",
+      "election_type": {
+        "name": "Local elections",
+        "election_type": "local"
+      },
+      "election_subtype": null,
+      "organisation": {
+        "url": "http://127.0.0.1:8001/api/organisations/local-authority/HLD/1996-04-01.json",
+        "official_identifier": "HLD",
+        "organisation_type": "local-authority",
+        "organisation_subtype": "CA",
+        "official_name": "The Highland Council",
+        "common_name": "Highland",
+        "slug": "highland",
+        "territory_code": "SCT",
+        "election_name": "Highland local election",
+        "start_date": "1996-04-01",
+        "end_date": null
+      },
+      "group": "local.2018-12-06",
+      "group_type": "organisation",
+      "children": [
+        "local.highland.wester-ross-strathpeffer-and-lochalsh.by.2018-12-06",
+        "local.highland.wester-ross-strathpeffer-and-lochalsh.2018-12-06"
+      ],
+      "elected_role": "Local Councillor",
+      "seats_contested": null,
+      "division": null,
+      "voting_system": {
+        "slug": "STV",
+        "name": "Single Transferable Vote",
+        "uses_party_lists": false
+      },
+      "current": true,
+      "explanation": null,
+      "metadata": null,
+      "deleted": true,
+      "cancelled": false
+    },
+    {
+      "election_id": "local.highland.wester-ross-strathpeffer-and-lochalsh.2018-12-06",
+      "tmp_election_id": null,
+      "election_title": "Highland local election Wester Ross, Strathpeffer and Lochalsh by-election",
+      "poll_open_date": "2018-12-06",
+      "election_type": {
+        "name": "Local elections",
+        "election_type": "local"
+      },
+      "election_subtype": null,
+      "organisation": {
+        "url": "http://127.0.0.1:8001/api/organisations/local-authority/HLD/1996-04-01.json",
+        "official_identifier": "HLD",
+        "organisation_type": "local-authority",
+        "organisation_subtype": "CA",
+        "official_name": "The Highland Council",
+        "common_name": "Highland",
+        "slug": "highland",
+        "territory_code": "SCT",
+        "election_name": "Highland local election",
+        "start_date": "1996-04-01",
+        "end_date": null
+      },
+      "group": "local.highland.2018-12-06",
+      "group_type": null,
+      "children": [],
+      "elected_role": "Local Councillor",
+      "seats_contested": 1,
+      "division": {
+        "divisionset": {
+          "start_date": "2017-05-04",
+          "end_date": null,
+          "legislation_url": "http://www.legislation.gov.uk/ssi/2016/278/contents/made",
+          "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/highland/",
+          "short_title": "The Highland (Electoral Arrangements) Order 2016",
+          "notes": ""
+        },
+        "name": "Wester Ross, Strathpeffer and Lochalsh",
+        "official_identifier": "gss:S13002994",
+        "slug": "wester-ross-strathpeffer-and-lochalsh",
+        "division_type": "UTW",
+        "division_subtype": "",
+        "division_election_sub_type": "",
+        "seats_total": 4,
+        "territory_code": ""
+      },
+      "voting_system": {
+        "slug": "STV",
+        "name": "Single Transferable Vote",
+        "uses_party_lists": false
+      },
+      "current": true,
+      "explanation": null,
+      "metadata": null,
+      "deleted": true,
+      "cancelled": true,
+      "replaces": null
+    },
+    {
+      "election_id": "local.highland.wester-ross-strathpeffer-and-lochalsh.by.2018-12-06",
+      "tmp_election_id": null,
+      "election_title": "Highland local election Wester Ross, Strathpeffer and Lochalsh by-election",
+      "poll_open_date": "2018-12-06",
+      "election_type": {
+        "name": "Local elections",
+        "election_type": "local"
+      },
+      "election_subtype": null,
+      "organisation": {
+        "url": "http://127.0.0.1:8001/api/organisations/local-authority/HLD/1996-04-01.json",
+        "official_identifier": "HLD",
+        "organisation_type": "local-authority",
+        "organisation_subtype": "CA",
+        "official_name": "The Highland Council",
+        "common_name": "Highland",
+        "slug": "highland",
+        "territory_code": "SCT",
+        "election_name": "Highland local election",
+        "start_date": "1996-04-01",
+        "end_date": null
+      },
+      "group": "local.highland.2018-12-06",
+      "group_type": null,
+      "children": [],
+      "elected_role": "Local Councillor",
+      "seats_contested": 1,
+      "division": {
+        "divisionset": {
+          "start_date": "2017-05-04",
+          "end_date": null,
+          "legislation_url": "http://www.legislation.gov.uk/ssi/2016/278/contents/made",
+          "consultation_url": "http://www.lgbc-scotland.gov.uk/reviews/5th_electoral/highland/",
+          "short_title": "The Highland (Electoral Arrangements) Order 2016",
+          "notes": ""
+        },
+        "name": "Wester Ross, Strathpeffer and Lochalsh",
+        "official_identifier": "gss:S13002994",
+        "slug": "wester-ross-strathpeffer-and-lochalsh",
+        "division_type": "UTW",
+        "division_subtype": "",
+        "division_election_sub_type": "",
+        "seats_total": 4,
+        "territory_code": ""
+      },
+      "voting_system": {
+        "slug": "STV",
+        "name": "Single Transferable Vote",
+        "uses_party_lists": false
+      },
+      "current": true,
+      "explanation": null,
+      "metadata": null,
+      "deleted": true,
+      "cancelled": false,
+      "replaces": null
+    }
+  ]
+}"""
+)

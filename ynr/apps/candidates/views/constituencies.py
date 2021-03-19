@@ -10,10 +10,9 @@ from django.views.generic import FormView, View
 from candidates.forms import ConstituencyRecordWinnerForm
 from elections.mixins import ElectionMixin
 from people.models import Person
-from popolo.models import Post
 from uk_results.helpers import RecordBallotResultsHelper
 
-from ..models import RESULT_RECORDERS_GROUP_NAME, Ballot
+from ..models import RESULT_RECORDERS_GROUP_NAME
 
 
 class CanRecordResultsMixin:
@@ -42,12 +41,8 @@ class ConstituencyRecordWinnerView(
     def dispatch(self, request, *args, **kwargs):
 
         person_id = self.request.POST.get("person_id")
-        self.election_data = self.get_election()
+        self.ballot = self.get_ballot()
         self.person = get_object_or_404(Person, id=person_id)
-        self.post_data = get_object_or_404(Post, slug=self.kwargs["post_id"])
-        self.ballot = Ballot.objects.get(
-            election=self.election_data, post=self.post_data
-        )
         return super().dispatch(request, *args, **kwargs)
 
     def get_initial(self):
@@ -57,12 +52,12 @@ class ConstituencyRecordWinnerView(
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["post_id"] = self.kwargs["post_id"]
+        context["post_id"] = self.ballot.post.slug
         context["ballot"] = self.ballot
         context["winner_logged_action"] = self.ballot.loggedaction_set.filter(
             action_type="set-candidate-elected"
         ).order_by("-created")
-        context["constituency_name"] = self.post_data.label
+        context["constituency_name"] = self.ballot.post.label
         context["person"] = self.person
         return context
 
@@ -93,10 +88,7 @@ class ConstituencyRetractWinnerView(ElectionMixin, CanRecordResultsMixin, View):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        self.post_data = get_object_or_404(Post, slug=self.kwargs["post_id"])
-        self.ballot = Ballot.objects.get(
-            election=self.election_data, post=self.post_data
-        )
+        self.ballot = self.get_ballot()
 
         with transaction.atomic():
             recorder = RecordBallotResultsHelper(self.ballot, self.request.user)

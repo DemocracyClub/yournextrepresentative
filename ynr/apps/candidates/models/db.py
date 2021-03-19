@@ -97,21 +97,8 @@ class LoggedAction(models.Model):
         )
 
     @property
-    def ballot_guess(self):
-        """
-        FIXME: Note that this won't always be correct because
-        LoggedAction objects only reference Post at the moment,
-        rather than a Post and an Election (or a Ballot).
-        """
-        from candidates.models import Ballot
-
-        if self.post:
-            election = self.post.elections.order_by("-current").first()
-            return Ballot.objects.get(election=election, post=self.post)
-
-    @property
     def subject_url(self):
-        ballot = self.ballot_guess
+        ballot = self.ballot
         if ballot:
             return ballot.get_absolute_url()
         elif self.person:
@@ -120,7 +107,7 @@ class LoggedAction(models.Model):
 
     @property
     def subject_html(self):
-        ballot = self.ballot_guess
+        ballot = self.ballot
         if ballot:
             return '<a href="{url}">{text} ({post_slug})</a>'.format(
                 url=self.subject_url,

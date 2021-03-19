@@ -111,7 +111,7 @@
                   {% if user_can_record_results %}
                     {% if ballot.ballot_paper_id|slice:":5" == 'parl.' %}
                       {% if not has_all_winners %}
-                        <form class="winner-confirm" id="winner-confirm_{{ candidate.person_id }}" action="{% url 'record-winner' election=ballot.election.slug post_id=ballot.post.slug %}" method="post">
+                        <form class="winner-confirm" id="winner-confirm_{{ candidate.person_id }}" action="{% url 'record-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
                           {% csrf_token %}
                           <input type="hidden" name="person_id" value="{{ candidate.person_id }}">
                           <input type="hidden" name="source" value="[Quick update from the constituency page]">
@@ -134,7 +134,7 @@
       </table>
 
       {% if user_can_record_results and has_any_winners %}
-        <form action="{% url 'retract-winner' election=ballot.election.slug post_id=ballot.post.slug %}" method="post">
+        <form action="{% url 'retract-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
           {% csrf_token %}
           <input type="submit" class="button alert small" value="Unset the current winners, if incorrect">
         </form>

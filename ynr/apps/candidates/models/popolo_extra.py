@@ -129,9 +129,6 @@ class Ballot(models.Model):
 
     objects = BallotQueryset.as_manager()
 
-    class Meta:
-        unique_together = ("election", "post")
-
     def __str__(self):
         fmt = "<Ballot ballot_paper_id='{e}'{locked}{w}>"
         return fmt.format(

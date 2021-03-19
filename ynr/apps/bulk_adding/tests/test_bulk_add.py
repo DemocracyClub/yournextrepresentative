@@ -265,7 +265,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_old_url_redirects(self):
         response = self.app.get(
-            "/bulk_adding/parl.2015-05-07/65808/", user=self.user
+            "/bulk_adding/parl.65808.2015-05-07/", user=self.user
         )
 
         self.assertEqual(response.status_code, 302)

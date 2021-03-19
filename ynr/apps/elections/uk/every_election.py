@@ -239,61 +239,20 @@ class EEElection(dict):
 
             # Get the winner count
             winner_count = self["seats_contested"]
-            try:
-                (
-                    self.ballot_object,
-                    self.ballot_created,
-                ) = Ballot.objects.update_or_create(
-                    ballot_paper_id=self["election_id"],
-                    defaults={
-                        "post": self.post_object,
-                        "election": parent.election_object,
-                        "winner_count": winner_count,
-                        "cancelled": self["cancelled"],
-                        "replaces": self.get_replaced_ballot(),
-                    },
-                )
-            except:
-                # This is an interesting case:
-                # Sometimes by-elections are called in multi-seat wards
-                # and sometimes (or at least, sometimes in the past) we mark
-                # them as a by-election. This project has a unique constraint
-                # on (post, election) that's mostly useful, but does break
-                # in this case. As a fudge, let's just add 1 to the winner_count
-                # for the existing ballot, and ignore the `.by.` election ID
-                # from EE
-                if ".by." in self["election_id"]:
-                    try:
-                        print(self["election_id"].replace(".by.", "."))
-                        existing_ballot = Ballot.objects.get(
-                            ballot_paper_id=self["election_id"].replace(
-                                ".by.", "."
-                            )
-                        )
-                        if not existing_ballot.winner_count:
-                            # We don't always set winners, but a by election
-                            # and scheduled election means there has to be at
-                            # least 2
-                            existing_ballot.winner_count = 2
-                        else:
-                            existing_ballot.winner_count += 1
-                        existing_ballot.save()
-                        self.ballot_object = existing_ballot
-                        self.ballot_created = False
-                    except Ballot.DoesNotExist:
-                        raise
-                else:
-                    existing_ballot = Ballot.objects.get(
-                        post=self.post_object, election=parent.election_object
-                    )
-                    if ".by." in existing_ballot.ballot_paper_id:
-                        # This was created as a by-election, but we now
-                        # store it as a non-by-election in EE.
-                        # For now, we should accept this as created
-                        self.ballot_object = existing_ballot
-                        self.ballot_created = False
-                    else:
-                        raise
+
+            (
+                self.ballot_object,
+                self.ballot_created,
+            ) = Ballot.objects.update_or_create(
+                ballot_paper_id=self["election_id"],
+                defaults={
+                    "post": self.post_object,
+                    "election": parent.election_object,
+                    "winner_count": winner_count,
+                    "cancelled": self["cancelled"],
+                    "replaces": self.get_replaced_ballot(),
+                },
+            )
 
         return (self.ballot_object, self.ballot_created)
 
