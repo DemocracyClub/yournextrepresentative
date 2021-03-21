@@ -3,7 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils.functional import cached_property
-from candidates.models import PartySet, Ballot
+from candidates.models import PartySet
 from facebook_data.tasks import extract_fb_page_id
 from parties.models import Party
 from people.forms.fields import (

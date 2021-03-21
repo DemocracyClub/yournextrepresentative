@@ -2,10 +2,6 @@ from collections import defaultdict
 
 from django.conf import settings
 
-from elections.models import Election
-
-from ..models import PartySet
-
 
 def get_field_groupings():
     personal = [

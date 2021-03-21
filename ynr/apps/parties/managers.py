@@ -2,7 +2,6 @@ import re
 
 from django.db import models
 from django.utils import timezone
-from django.utils.functional import cached_property
 
 from .constants import JOINT_DESCRIPTION_REGEX
 

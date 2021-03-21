@@ -1,7 +1,3 @@
-from django.conf import settings
-
-from auth_helpers.views import user_in_group
-
 TRUSTED_TO_MERGE_GROUP_NAME = "Trusted To Merge"
 TRUSTED_TO_LOCK_GROUP_NAME = "Trusted To Lock"
 RESULT_RECORDERS_GROUP_NAME = "Result Recorders"

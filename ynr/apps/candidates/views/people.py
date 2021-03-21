@@ -40,7 +40,7 @@ from ..models import (
 )
 from ..models.auth import check_creation_allowed
 from ..models.versions import revert_person_from_version_data
-from .helpers import ProcessInlineFormsMixin, get_field_groupings
+from .helpers import ProcessInlineFormsMixin
 from .version_data import get_change_metadata, get_client_ip
 
 
