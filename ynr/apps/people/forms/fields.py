@@ -14,8 +14,13 @@ class BallotInputWidget(forms.TextInput):
         ).strip()
 
 
-class CurrentUnlockedBallotsField(forms.CharField):
+class ValidBallotField(forms.CharField):
     widget = BallotInputWidget
+
+    def to_python(self, value):
+        if not value:
+            return value
+        return Ballot.objects.get(ballot_paper_id=value)
 
     def clean(self, value):
         if not value:
@@ -26,26 +31,26 @@ class CurrentUnlockedBallotsField(forms.CharField):
         base_qs = Ballot.objects.all().select_related("election")
         try:
             ballot = base_qs.get(ballot_paper_id__iexact=value.strip())
-            if ballot.candidates_locked:
-                raise ValidationError(
-                    "Cannot add candidates to a locked " "ballot"
-                )
-            if not ballot.election.current:
-                raise ValidationError(
-                    "Cannot update an election that isn't 'current'"
-                )
-            if ballot.cancelled:
-                raise ValidationError(
-                    "Cannot add candidates to a cancelled election"
-                )
             return ballot
         except Ballot.DoesNotExist:
             raise ValidationError("Unknown ballot paper ID")
 
-    def to_python(self, value):
-        if not value:
-            return value
-        return Ballot.objects.get(ballot_paper_id=value)
+
+class CurrentUnlockedBallotsField(ValidBallotField):
+    def clean(self, value):
+        ballot = super().clean(value)
+
+        if ballot.candidates_locked:
+            raise ValidationError("Cannot add candidates to a locked " "ballot")
+        if not ballot.election.current:
+            raise ValidationError(
+                "Cannot update an election that isn't 'current'"
+            )
+        if ballot.cancelled:
+            raise ValidationError(
+                "Cannot add candidates to a cancelled election"
+            )
+        return ballot
 
 
 class StrippedCharField(forms.CharField):

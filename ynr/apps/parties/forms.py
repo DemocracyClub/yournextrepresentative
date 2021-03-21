@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from parties.models import Party
-from people.forms.fields import CurrentUnlockedBallotsField
+from people.forms.fields import BallotInputWidget
 from utils.widgets import SelectWithAttrs
 
 
@@ -104,15 +104,18 @@ class PartyIdentifierField(forms.MultiValueField):
 class PopulatePartiesMixin:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.populate_parties()
+
+    def populate_parties(self):
         register = None
         for field_name, field_class in self.fields.items():
-            if not isinstance(field_class, CurrentUnlockedBallotsField):
+            if not isinstance(field_class.widget, BallotInputWidget):
                 continue
             if field_name in self.initial:
                 ballot = field_class.to_python(self.initial[field_name])
                 register = ballot.post.party_set.slug
 
-        # Popluate the choices
+        # Populate the choices
         for field_name, field_class in self.fields.items():
             if not isinstance(field_class, PartyIdentifierField):
                 continue
