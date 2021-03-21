@@ -60,7 +60,7 @@ class SelectPartyForm(BasePartyBulkAddView, FormView):
                 "bulk_add_by_party",
                 kwargs={
                     "election": self.get_election().slug,
-                    "party_id": form.cleaned_data["party"],
+                    "party_id": form.cleaned_data["party"]["party_id"],
                 },
             )
         )

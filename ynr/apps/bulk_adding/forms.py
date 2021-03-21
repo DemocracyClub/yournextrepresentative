@@ -1,11 +1,13 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db.models import Count, Prefetch
+from django.db.models import Prefetch
 from django.utils.safestring import SafeText
 
+from parties.forms import PartyIdentifierField, PopulatePartiesMixin
+from people.forms.fields import BallotInputWidget, ValidBallotField
 from search.utils import search_person_by_name
 from official_documents.models import OfficialDocument
-from parties.models import Party, PartyDescription
+from parties.models import PartyDescription
 from popolo.models import Membership
 
 
@@ -31,41 +33,10 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
 
     def add_fields(self, form, index):
         super().add_fields(form, index)
+        form.initial["ballot"] = self.ballot.ballot_paper_id
         if hasattr(self, "parties"):
-            form.fields["party"] = forms.ChoiceField(
-                choices=self.parties,
-                widget=forms.Select(
-                    attrs={
-                        "class": "party-select",
-                        "show_load_more": 1,
-                        "data-partyset": self.party_set_slug,
-                    }
-                ),
-            )
-            if self.initial:
-                # If we have raw people with parties that wouldn't normally
-                # be in the party list (beacuse they have no current
-                # candidates yet) then we should manually add them,
-                # so that the dropdown isn't empty.
-                existing_ids = set(
-                    [v[0][0] for k, v in form.fields["party"].choices if v]
-                )
-                extra_parties = set()
-                for row in self.initial:
-                    if row.get("party"):
-                        party_id = row["party"].split("__")[0]
-                        if party_id in existing_ids:
-                            continue
-                        extra_parties.add(party_id)
-                party_qs = Party.objects.filter(
-                    ec_id__in=extra_parties
-                ).prefetch_related("descriptions")
-
-                for party_obj in party_qs:
-                    names = [(party_obj.ec_id, party_obj.format_name)]
-                    for description in party_obj.descriptions.all():
-                        names.append((party_obj.ec_id, description.description))
-                    form.fields["party"].choices.extend(names)
+            form.fields["party"] = PartyIdentifierField()
+            form.populate_parties()
 
             if "party" in getattr(form, "_hide", []):
                 form.fields["party"].widget = forms.HiddenInput()
@@ -198,19 +169,22 @@ class NameOnlyPersonForm(forms.Form):
     name = forms.CharField(
         label="Name (style: Ali Smith, not SMITH Ali)", required=True
     )
+    ballot = ValidBallotField(
+        widget=BallotInputWidget(attrs={"type": "hidden"})
+    )
 
 
-class QuickAddSinglePersonForm(NameOnlyPersonForm):
+class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
     source = forms.CharField(required=True)
 
     def has_changed(self, *args, **kwargs):
-        if self.changed_data == ["source"] and not self["name"].data:
+        if self.changed_data == ["ballot"] and not self["name"].data:
             return False
         else:
             return super().has_changed(*args, **kwargs)
 
 
-class ReviewSinglePersonNameOnlyForm(forms.Form):
+class ReviewSinglePersonNameOnlyForm(PopulatePartiesMixin, forms.Form):
     name = forms.CharField(
         required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
     )
@@ -245,19 +219,6 @@ BulkAddReviewNameOnlyFormSet = forms.formset_factory(
 BulkAddReviewFormSet = forms.formset_factory(
     ReviewSinglePersonForm, extra=0, formset=BaseBulkAddReviewFormSet
 )
-
-
-class SelectAnythingChoiceField(forms.ChoiceField):
-    """
-    Because we don't always show all parties on the initial page load (we
-    leave JavaScript to add the non-current parties sometimes), we need to
-    ignore any input value for this field type. The next page will
-    raise a 404 if the party isn't actually found, so there's no problem with
-    ignoring validation here.
-    """
-
-    def validate(self, value):
-        return True
 
 
 class BaseBulkAddByPartyFormset(forms.BaseFormSet):
@@ -311,7 +272,7 @@ PartyBulkAddReviewNameOnlyFormSet = forms.formset_factory(
 )
 
 
-class SelectPartyForm(forms.Form):
+class SelectPartyForm(PopulatePartiesMixin, forms.Form):
     def __init__(self, *args, **kwargs):
 
         election = kwargs.pop("election")
@@ -322,29 +283,19 @@ class SelectPartyForm(forms.Form):
             election.ballot_set.all()
             .order_by("post__party_set")
             .values_list("post__party_set__slug", flat=True)
-            .annotate(Count("post__party_set"))
         )
 
         registers = set([p.upper() for p in party_set_qs])
         for register in registers:
-            self.fields[
-                "party_{}".format(register)
-            ] = SelectAnythingChoiceField(
-                required=False,
-                choices=Party.objects.register(register).party_choices(
-                    exclude_deregistered=True,
-                    include_descriptions=False,
-                    include_non_current=False,
-                ),
-                widget=forms.Select(
-                    attrs={
-                        "class": "party-select",
-                        "show_load_more": 1,
-                        "data-partyset": register,
-                    }
-                ),
-                label="{} Parties".format(register),
+            self.fields[f"party_{register}"] = PartyIdentifierField(
+                label=f"{register} parties"
             )
+            self.fields[f"party_{register}"].widget.attrs[
+                "data-party-register"
+            ] = register
+            self.fields[f"party_{register}"].widget.attrs["register"] = register
+
+        self.populate_parties()
 
     def clean(self):
         form_data = self.cleaned_data

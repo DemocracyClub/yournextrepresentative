@@ -14,7 +14,6 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/bulk_adding/party/parl.2015-05-07/",
             user=self.user_who_can_upload_documents,
         )
-
         self.assertContains(response, "GB Parties")
 
     def test_party_select_invalid_party(self):
@@ -22,7 +21,8 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/bulk_adding/party/parl.2015-05-07/",
             user=self.user_who_can_upload_documents,
         ).forms[1]
-        form["party_GB"] = ""
+        form["party_GB_1"] = ""
+        form["party_GB_0"] = ""
         response = form.submit()
         self.assertContains(response, "Select one and only one party")
 
@@ -39,7 +39,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/bulk_adding/party/parl.2015-05-07/",
             user=self.user_who_can_upload_documents,
         ).forms[1]
-        form["party_GB"].force_value("PP63")
+        form["party_GB_1"] = "PP63"
         response = form.submit()
         self.assertEqual(response.status_code, 302)
 
@@ -48,7 +48,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/bulk_adding/party/parl.2015-05-07/",
             user=self.user_who_can_upload_documents,
         ).forms[1]
-        form["party_GB"] = self.conservative_party.ec_id
+        form["party_GB_1"] = self.conservative_party.ec_id
         response = form.submit().follow()
 
         self.assertEqual(response.status_code, 200)

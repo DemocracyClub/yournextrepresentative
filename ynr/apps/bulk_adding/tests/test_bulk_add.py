@@ -68,7 +68,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms["bulk_add_form"]
         form["form-0-name"] = "Homer Simpson"
         party_id = f"{self.green_party.ec_id}__{party_description.pk}"
-        form["form-0-party"] = party_id
+        form["form-0-party_1"] = party_id
 
         response = form.submit()
         self.assertEqual(response.status_code, 302)
@@ -88,7 +88,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(FuzzyInt(54, 61)):
+        with self.assertNumQueries(FuzzyInt(54, 81)):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -135,8 +135,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms["bulk_add_form"]
         form["form-0-name"] = "Bart Simpson"
-        form["form-0-party"] = self.green_party.ec_id
-
+        form["form-0-party_1"] = self.green_party.ec_id
         response = form.submit()
         self.assertEqual(RawPeople.objects.count(), 1)
         self.assertEqual(
@@ -239,7 +238,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms["bulk_add_form"]
         form["form-0-name"] = "Bart Simpson"
-        form["form-0-party"] = self.green_party.ec_id
+        form["form-0-party_1"] = self.green_party.ec_id
 
         response = form.submit()
         self.assertEqual(response.status_code, 302)
@@ -360,7 +359,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms["bulk_add_form"]
         form["form-0-name"] = "Bart Simpson"
-        form["form-0-party"] = self.green_party.ec_id
+        form["form-0-party_1"] = self.green_party.ec_id
 
         response = form.submit()
 

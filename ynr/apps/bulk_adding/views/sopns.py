@@ -130,12 +130,8 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
         for form_data in context["formset"].cleaned_data:
             if not form_data or form_data.get("DELETE"):
                 continue
-            if "__" in form_data["party"]:
-                party_id, description_id = form_data["party"].split("__")
-            else:
-                party_id = form_data["party"]
-                description_id = None
-
+            party_id = form_data["party"]["party_id"]
+            description_id = form_data["party"]["description_id"]
             raw_ballot_data.append(
                 {
                     "name": form_data["name"],
@@ -217,6 +213,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     person = Person.objects.get(pk=int(data["select_person"]))
 
                 party = Party.objects.get(ec_id=data["party"])
+
                 helpers.update_person(
                     request=self.request,
                     person=person,
