@@ -6,18 +6,54 @@ from people.forms.fields import CurrentUnlockedBallotsField
 from utils.widgets import SelectWithAttrs
 
 
+def party_and_description_dict_from_string(value):
+    """
+    Given an input string in the form of "party" or "party__description"
+    return a dict containing party and description name, id and objects
+
+    """
+    if not value:
+        return value
+    if "__" in value:
+        party_id, description_id = value.split("__")
+    else:
+        party_id = value
+        description_id = None
+    try:
+        party = Party.objects.current().get(ec_id__iexact=party_id.strip())
+        ret = {
+            "party_obj": party,
+            "party_id": party.ec_id,
+            "party_name": party.name,
+            "description_id": None,
+            "description_obj": None,
+            "description_text": None,
+        }
+        if description_id:
+            description = party.descriptions.get(pk=description_id)
+            ret.update(
+                {
+                    "description_id": description.pk,
+                    "description_obj": description,
+                    "description_text": description.description,
+                }
+            )
+        return ret
+    except Party.DoesNotExist:
+        raise ValidationError(
+            f"'{value}' is not a current party " f"identifier"
+        )
+
+
 class PartyIdentifierInput(forms.CharField):
     def clean(self, value):
-        if not value:
-            return value
-        try:
-            return (
-                Party.objects.current().get(ec_id__iexact=value.strip()).ec_id
-            )
-        except Party.DoesNotExist:
-            raise ValidationError(
-                f"'{value}' is not a current party " f"identifier"
-            )
+        return party_and_description_dict_from_string(value)
+
+
+class PartyChoiceField(forms.ChoiceField):
+    def clean(self, value):
+        value = super().clean(value)
+        return party_and_description_dict_from_string(value)
 
 
 class PartySelectField(forms.MultiWidget):
@@ -51,7 +87,7 @@ class PartyIdentifierField(forms.MultiValueField):
         kwargs["label"] = "Party"
 
         fields = (
-            forms.ChoiceField(required=False, disabled=True),
+            PartyChoiceField(required=False, disabled=True),
             PartyIdentifierInput(required=False),
         )
         super().__init__(fields, *args, **kwargs)
@@ -62,7 +98,7 @@ class PartyIdentifierField(forms.MultiValueField):
     def to_python(self, value):
         if not value:
             return value
-        return Party.objects.get(ec_id=value)
+        return value
 
 
 class PopulatePartiesMixin:
@@ -80,7 +116,6 @@ class PopulatePartiesMixin:
         for field_name, field_class in self.fields.items():
             if not isinstance(field_class, PartyIdentifierField):
                 continue
-
             if field_name not in self.initial:
                 continue
 

@@ -83,9 +83,40 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
 
         field = PartyIdentifierField(required=False)
         # We should get the last value from right to left
-        self.assertEqual(field.clean(["", "PP13"]), party2)
-        self.assertEqual(field.clean(["PP12", "PP13"]), party2)
-        self.assertEqual(field.clean(["PP12", ""]), party1)
+        self.maxDiff = None
+        self.assertEqual(
+            field.clean(["", "PP13"]),
+            {
+                "description_obj": None,
+                "description_id": None,
+                "description_text": None,
+                "party_obj": party2,
+                "party_id": "PP13",
+                "party_name": "New party without candidates",
+            },
+        )
+        self.assertEqual(
+            field.clean(["PP12", "PP13"]),
+            {
+                "description_obj": None,
+                "description_id": None,
+                "description_text": None,
+                "party_obj": party2,
+                "party_id": "PP13",
+                "party_name": "New party without candidates",
+            },
+        )
+        self.assertEqual(
+            field.clean(["PP12", ""]),
+            {
+                "description_obj": None,
+                "description_id": None,
+                "description_text": None,
+                "party_obj": party1,
+                "party_id": "PP12",
+                "party_name": "New party",
+            },
+        )
 
     def test_validation_errors(self):
         PartyFactory(ec_id="PP12", name="New party")

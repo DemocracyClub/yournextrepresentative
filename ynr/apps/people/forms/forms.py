@@ -189,7 +189,10 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
     def save(self, commit=True):
         self.instance.ballot = self.cleaned_data["ballot_paper_id"]
         self.instance.post = self.instance.ballot.post
-        self.instance.party = self.cleaned_data["party_identifier"]
+        party_data = self.cleaned_data["party_identifier"]
+        self.instance.party = party_data["party_obj"]
+        self.instance.party_name = party_data["party_name"]
+        self.instance.party_description = party_data["description_text"]
         return super().save(commit)
 
 
@@ -284,9 +287,12 @@ class NewPersonForm(BasePersonForm):
     def save(self, commit=True):
         person = super().save(commit)
         if person.pk:
+            party_data = self.cleaned_data["party_identifier"]
             person.memberships.create(
                 ballot=self.cleaned_data["ballot_paper_id"],
-                party=self.cleaned_data["party_identifier"],
+                party=party_data["party_obj"],
+                party_name=party_data["party_name"],
+                party_description=party_data["description_text"],
                 post=self.cleaned_data["ballot_paper_id"].post,
             )
         return person
