@@ -81,7 +81,7 @@ class PartyIdentifierField(forms.MultiValueField):
         return None
 
     def __init__(self, *args, **kwargs):
-        choices = kwargs.pop("choices", Party.objects.default_party_choices())
+        choices = kwargs.pop("choices", ("", ""))
 
         kwargs["require_all_fields"] = False
         kwargs["label"] = kwargs.get("label", "Party")
