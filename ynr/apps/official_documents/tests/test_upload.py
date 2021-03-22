@@ -14,6 +14,8 @@ from candidates.tests.factories import (
 )
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from official_documents.models import OfficialDocument
+from unittest.mock import patch
+
 
 TEST_MEDIA_ROOT = realpath(
     join(dirname(__file__), "..", "..", "moderation_queue", "tests", "media")
@@ -92,8 +94,19 @@ class TestModels(TestUserMixin, WebTest):
         form["source_url"] = "http://example.org/foo"
         with open(self.example_image_filename, "rb") as f:
             form["uploaded_file"] = Upload("pilot.jpg", f.read())
-        response = form.submit()
-        self.assertEqual(response.status_code, 302)
+
+        with patch(
+            "official_documents.views.extract_pages_for_ballot"
+        ) as extract_pages, patch(
+            "official_documents.views.extract_ballot_table"
+        ) as extract_tables, patch(
+            "official_documents.views.parse_raw_data_for_ballot"
+        ) as parse_tables:
+            response = form.submit()
+            self.assertEqual(response.status_code, 302)
+            extract_pages.assert_called_once()
+            extract_tables.assert_called_once()
+            parse_tables.assert_called_once()
 
         ods = OfficialDocument.objects.all()
         self.assertEqual(ods.count(), 1)

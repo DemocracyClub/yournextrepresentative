@@ -1,3 +1,4 @@
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.views.generic import CreateView, DetailView, TemplateView
@@ -6,6 +7,10 @@ from auth_helpers.views import GroupRequiredMixin
 from candidates.models import Ballot, LoggedAction
 from candidates.views.version_data import get_client_ip
 from moderation_queue.models import SuggestedPostLock
+from sopn_parsing.helpers.extract_pages import extract_pages_for_ballot
+from sopn_parsing.helpers.extract_tables import extract_ballot_table
+from sopn_parsing.helpers.parse_tables import parse_raw_data_for_ballot
+from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
 from .forms import UploadDocumentForm
 from .models import DOCUMENT_UPLOADERS_GROUP_NAME, OfficialDocument
@@ -34,14 +39,31 @@ class CreateDocumentView(GroupRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
+        """
+        Saves the SOPN and attempts to parse the PDF to extract the candidate
+        information. This fails silently to avoid a 500 error if the PDF cannot
+        be parsed. We always save the file even if it cannot be parsed, then
+        create a LoggedAction and redirect the user.
+        """
+        self.object = form.save()
+        try:
+            extract_pages_for_ballot(self.object.ballot)
+            extract_ballot_table(self.object.ballot)
+            parse_raw_data_for_ballot(self.object.ballot)
+        except (ValueError, NoTextInDocumentError):
+            # If PDF couldnt be parsed continue
+            # TODO should be log this error?
+            pass
+
         LoggedAction.objects.create(
             user=self.request.user,
-            ballot=form.instance.ballot,
+            ballot=self.object.ballot,
             action_type="sopn-upload",
             ip_address=get_client_ip(self.request),
-            source=form.cleaned_data["source_url"],
+            source=self.object.source_url,
         )
-        return super().form_valid(form)
+
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class PostsForDocumentView(DetailView):
