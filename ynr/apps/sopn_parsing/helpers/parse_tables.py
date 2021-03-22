@@ -9,14 +9,19 @@ from bulk_adding.models import RawPeople
 from parties.models import Party, PartyDescription
 from sopn_parsing.helpers.text_helpers import clean_text
 
-NAME_FIELDS = (
-    "name of candidate",
-    "names of candidate",
-    "candidate name",
+FIRST_NAME_FIELDS = ["other name", "other names", "candidate forename"]
+LAST_NAME_FIELDS = [
     "surname",
+    "candidate surname",
     "candidates surname",
-    "other name",
+    "last name",
+]
+NAME_FIELDS = (
+    FIRST_NAME_FIELDS
+    + LAST_NAME_FIELDS
+    + ["name of candidate", "names of candidate", "candidate name"]
 )
+
 
 INDEPENDENT_VALUES = ("Independent", "")
 
@@ -55,11 +60,30 @@ def looks_like_header(row, avg_row):
     return False
 
 
-def guess_name_field(row):
-    for cell in row:
-        if cell in NAME_FIELDS:
-            return cell
-    raise ValueError("No name guess for {}".format(row))
+def order_name_fields(name_fields):
+    """
+    Takes a list of name fields and attempts to find a field with in the
+    LAST_NAME_FIELDS and move to the end of the list
+    """
+    for index, field in enumerate(name_fields):
+        if field in LAST_NAME_FIELDS:
+            # found the fieldname we think is for the last name,
+            # so move that to the end of our name fields
+            name_fields.append(name_fields.pop(index))
+            break
+
+    return name_fields
+
+
+def get_name_fields(row):
+    """
+    Returns a list of name fields. This could be a single field or multiple
+    fields.
+    """
+    name_fields = [cell for cell in row if cell in NAME_FIELDS]
+    if not name_fields:
+        raise ValueError("No name guess for {}".format(row))
+    return name_fields
 
 
 def guess_description_field(row):
@@ -72,15 +96,27 @@ def guess_description_field(row):
 
 
 def clean_name(name):
+    """
+    - Strips some special characters from the name string
+    - Splits the string in to a list, removing any empty strings
+    - Build a string to represent the last name by looking for all words that are in all caps
+    - Build a string to represent the other names by looking for all words not in all caps
+    - Strip whitespace in case last_names is empty and return string titleized
+    """
     name = name.replace("\n", "")
-    return re.sub(r"([A-Z\-]+)\s([A-Za-z\-\s]+)", "\g<2> \g<1>", name).title()
+    name = name.replace("`", "'")
+    names = list(filter(None, name.split(" ")))
+    last_names = " ".join([name for name in names if name.isupper()])
+    first_names = " ".join([name for name in names if not name.isupper()])
+    return f"{first_names} {last_names}".strip().title()
 
 
 def clean_description(description):
     description = str(description)
     description = description.replace("\\n", "")
     description = description.replace("\n", "")
-    description = re.sub("\s+", " ", description)
+    description = description.replace("`", "'")
+    description = re.sub(r"\s+", " ", description)
     return description
 
 
@@ -134,12 +170,26 @@ def get_party(description_model, description, sopn):
     return party_obj
 
 
+def get_name(row, name_fields):
+    """
+    Takes a list of name fields and returns a string of the values of each of
+    the name fields in the row
+    """
+    return " ".join([row[field] for field in name_fields])
+
+
 def parse_table(sopn, data):
+
     data.columns = clean_row(data.columns)
     try:
-        name_field = guess_name_field(data.columns)
+        name_fields = get_name_fields(data.columns)
     except ValueError:
         return None
+
+    # if we have more than one name field try to order them
+    if len(name_fields) > 1:
+        name_fields = order_name_fields(name_fields)
+
     try:
         description_field = guess_description_field(data.columns)
     except ValueError:
@@ -147,7 +197,8 @@ def parse_table(sopn, data):
 
     ballot_data = []
     for row in iter_rows(data):
-        name = clean_name(row[name_field])
+        name = get_name(row, name_fields)
+        name = clean_name(name)
         description = get_description(row[description_field], sopn)
         party = get_party(description, row[description_field], sopn)
         data = {"name": name, "party_id": party.ec_id}
@@ -162,7 +213,6 @@ def parse_raw_data_for_ballot(ballot):
 
     :type ballot: candidates.models.Ballot
     """
-
     if ballot.candidates_locked:
         raise ValueError("Can't parse a locked ballot")
 
@@ -171,7 +221,6 @@ def parse_raw_data_for_ballot(ballot):
 
     parsed_sopn_model = ballot.sopn.parsedsopn
     data = parsed_sopn_model.as_pandas
-
     cell_counts = [len(merge_row_cells(c)) for c in iter_rows(data)]
 
     header_found = False
