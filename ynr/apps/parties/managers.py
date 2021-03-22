@@ -68,7 +68,7 @@ class PartyQuerySet(models.QuerySet):
         parties_current_qs = (
             self.filter(**party_filter_kwargs)
             .order_by(*party_order_by)
-            .only("date_deregistered", "name", "ec_id")
+            .only("date_deregistered", "name", "ec_id", "register")
         )
         if extra_party_ids:
             extra_qs = self.model.objects.filter(ec_id__in=extra_party_ids)
