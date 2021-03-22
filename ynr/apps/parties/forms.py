@@ -80,9 +80,9 @@ class PartyIdentifierField(forms.MultiValueField):
             return self.to_python([v for v in data_list if v][-1])
         return None
 
-    def __init__(self, *args, **kwargs):
-        choices = kwargs.pop("choices", ("", ""))
-
+    def __init__(self, *args, choices=None, **kwargs):
+        if not choices:
+            choices = [("", "")]
         kwargs["require_all_fields"] = False
         kwargs["label"] = kwargs.get("label", "Party")
 
@@ -102,7 +102,12 @@ class PartyIdentifierField(forms.MultiValueField):
 
 
 class PopulatePartiesMixin:
+    _cached_choices = None
+
     def __init__(self, **kwargs):
+        party_choices = kwargs.pop("party_choices", None)
+        if party_choices:
+            self._cached_choices = party_choices
         super().__init__(**kwargs)
         self.populate_parties()
 
@@ -119,26 +124,28 @@ class PopulatePartiesMixin:
         for field_name, field_class in self.fields.items():
             if not isinstance(field_class, PartyIdentifierField):
                 continue
-            if field_name not in self.initial:
-                continue
 
-            initial_for_field = self.initial[field_name]
+            choices_kwargs = {"include_description_ids": True}
+            if field_name in self.initial:
+                initial_for_field = self.initial[field_name]
+                if not isinstance(initial_for_field, (list, tuple)):
+                    raise ValueError("list or tuple required for initial")
 
-            if not isinstance(initial_for_field, (list, tuple)):
-                continue
+                if not len(initial_for_field) == 2:
+                    continue
 
-            if not len(initial_for_field) == 2:
-                continue
+                extra_party_id = initial_for_field[1]
 
-            extra_party_id = initial_for_field[1]
-            if not extra_party_id:
-                continue
+                if extra_party_id:
+                    choices_kwargs["extra_party_ids"] = ([extra_party_id],)
 
-            # Set the initial value of the select
-            self.initial[field_name][0] = extra_party_id
+                # Set the initial value of the select
+                self.initial[field_name][0] = extra_party_id
 
-            choices = Party.objects.party_choices(
-                extra_party_ids=[extra_party_id], include_description_ids=True
-            )
+            if not self._cached_choices:
+                self._cached_choices = Party.objects.party_choices(
+                    **choices_kwargs
+                )
+            choices = self._cached_choices
             self.fields[field_name] = PartyIdentifierField(choices=choices)
             self.fields[field_name].fields[0].choices = choices

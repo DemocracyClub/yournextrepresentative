@@ -26,8 +26,6 @@ class BulkAddSOPNRedirectView(RedirectView):
 
 
 class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
-    # required_group_name = models.TRUSTED_TO_BULK_ADD_GROUP_NAME
-
     def add_election_and_post_to_context(self, context):
         if not hasattr(self, "ballot"):
             self.ballot = get_object_or_404(
@@ -36,13 +34,6 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         context["ballot"] = self.ballot
         context["post"] = self.ballot.post
         context["election_obj"] = self.ballot.election
-        kwargs = {"exclude_deregistered": True, "include_description_ids": True}
-        if not self.request.POST:
-            kwargs["include_non_current"] = False
-        register = context["post"].party_set.slug.upper()
-        context["parties"] = Party.objects.register(register).party_choices(
-            **kwargs
-        )
         try:
             context["official_document"] = self.ballot.sopn
         except OfficialDocument.DoesNotExist:
@@ -101,11 +92,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        form_kwargs = {
-            "parties": context["parties"],
-            "party_set": context["post"].party_set,
-            "ballot": context["ballot"],
-        }
+        form_kwargs = {"ballot": context["ballot"]}
 
         if hasattr(context["ballot"], "rawpeople"):
             form_kwargs.update(context["ballot"].rawpeople.as_form_kwargs())
@@ -188,15 +175,11 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
 
         if self.request.POST:
             context["formset"] = forms.BulkAddReviewFormSet(
-                self.request.POST,
-                parties=context["parties"],
-                ballot=context["ballot"],
+                self.request.POST, ballot=context["ballot"]
             )
         else:
             context["formset"] = forms.BulkAddReviewFormSet(
-                initial=initial,
-                parties=context["parties"],
-                ballot=context["ballot"],
+                initial=initial, ballot=context["ballot"]
             )
         return context
 

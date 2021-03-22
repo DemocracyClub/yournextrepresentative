@@ -43,7 +43,6 @@ urlpatterns = [
         TemplateView.as_view(template_name="candidates/update-disallowed.html"),
         name="update-disallowed",
     ),
-
     # General views across the site (move to a "core" type app?)
     url(
         r"^all-edits-disallowed$",

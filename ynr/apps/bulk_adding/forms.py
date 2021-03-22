@@ -7,20 +7,13 @@ from parties.forms import PartyIdentifierField, PopulatePartiesMixin
 from people.forms.fields import BallotInputWidget, ValidBallotField
 from search.utils import search_person_by_name
 from official_documents.models import OfficialDocument
-from parties.models import PartyDescription
+from parties.models import PartyDescription, Party
 from popolo.models import Membership
 
 
 class BaseBulkAddFormSet(forms.BaseFormSet):
     def __init__(self, *args, **kwargs):
-        if "parties" in kwargs:
-            self.parties = kwargs["parties"]
-            del kwargs["parties"]
-        if "party_set" in kwargs:
-            self.party_set_slug = kwargs["party_set"].slug
-            del kwargs["party_set"]
-        else:
-            self.party_set_slug = None
+
         if "source" in kwargs:
             self.source = kwargs["source"]
             del kwargs["source"]
@@ -29,17 +22,21 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
             self.ballot = kwargs["ballot"]
             del kwargs["ballot"]
 
+        self.party_register = self.ballot.post.party_set.slug.upper()
+        self.parties = Party.objects.register(
+            self.party_register
+        ).default_party_choices()
+
         super().__init__(*args, **kwargs)
+
+    def get_form_kwargs(self, index):
+        kwargs = super().get_form_kwargs(index)
+        kwargs["party_choices"] = self.parties
+        return kwargs
 
     def add_fields(self, form, index):
         super().add_fields(form, index)
         form.initial["ballot"] = self.ballot.ballot_paper_id
-        if hasattr(self, "parties"):
-            form.fields["party"] = PartyIdentifierField()
-            form.populate_parties()
-
-            if "party" in getattr(form, "_hide", []):
-                form.fields["party"].widget = forms.HiddenInput()
 
         if hasattr(self, "source"):
             form.fields["source"].initial = self.source
@@ -176,6 +173,7 @@ class NameOnlyPersonForm(forms.Form):
 
 class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
     source = forms.CharField(required=True)
+    party = PartyIdentifierField()
 
     def has_changed(self, *args, **kwargs):
         if self.changed_data == ["ballot"] and not self["name"].data:
@@ -184,7 +182,11 @@ class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
             return super().has_changed(*args, **kwargs)
 
 
-class ReviewSinglePersonNameOnlyForm(PopulatePartiesMixin, forms.Form):
+class ReviewSinglePersonNameOnlyForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("party_choices", None)
+        super().__init__(*args, **kwargs)
+
     name = forms.CharField(
         required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
     )
@@ -272,7 +274,7 @@ PartyBulkAddReviewNameOnlyFormSet = forms.formset_factory(
 )
 
 
-class SelectPartyForm(PopulatePartiesMixin, forms.Form):
+class SelectPartyForm(forms.Form):
     def __init__(self, *args, **kwargs):
 
         election = kwargs.pop("election")
@@ -287,15 +289,17 @@ class SelectPartyForm(PopulatePartiesMixin, forms.Form):
 
         registers = set([p.upper() for p in party_set_qs])
         for register in registers:
-            self.fields[f"party_{register}"] = PartyIdentifierField(
-                label=f"{register} parties"
+            choices = Party.objects.register(register).party_choices(
+                include_description_ids=True
             )
-            self.fields[f"party_{register}"].widget.attrs[
-                "data-party-register"
-            ] = register
-            self.fields[f"party_{register}"].widget.attrs["register"] = register
+            field = PartyIdentifierField(
+                label=f"{register} parties", choices=choices
+            )
 
-        self.populate_parties()
+            field.fields[0].choices = choices
+            field.widget.attrs["data-party-register"] = register
+            field.widget.attrs["register"] = register
+            self.fields[f"party_{register}"] = field
 
     def clean(self):
         form_data = self.cleaned_data

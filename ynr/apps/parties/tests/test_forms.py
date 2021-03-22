@@ -19,7 +19,9 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
         Party.objects.all().delete()
 
         class DefaultPartyForm(forms.Form):
-            party = PartyIdentifierField(required=False)
+            party = PartyIdentifierField(
+                required=False, choices=Party.objects.default_party_choices()
+            )
 
         self.default_form = DefaultPartyForm
 
@@ -64,7 +66,9 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
             name="New party without candidates",
             current_candidates=0,
         )
-        field = PartyIdentifierField(required=False)
+        field = PartyIdentifierField(
+            required=False, choices=Party.objects.default_party_choices()
+        )
         self.assertEqual(
             field.fields[0].choices,
             [
@@ -81,7 +85,9 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
             current_candidates=0,
         )
 
-        field = PartyIdentifierField(required=False)
+        field = PartyIdentifierField(
+            required=False, choices=Party.objects.default_party_choices()
+        )
         # We should get the last value from right to left
         self.maxDiff = None
         self.assertEqual(
@@ -148,7 +154,9 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
             name="New party without candidates",
             current_candidates=0,
         )
-        field = PartyIdentifierField(required=False)
+        field = PartyIdentifierField(
+            required=False, choices=Party.objects.default_party_choices()
+        )
         # Make sure PP13 isn't in the default list
         self.assertEqual(
             field.fields[0].choices,
