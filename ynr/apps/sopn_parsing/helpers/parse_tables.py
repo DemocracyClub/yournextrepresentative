@@ -96,11 +96,19 @@ def guess_description_field(row):
 
 
 def clean_name(name):
+    """
+    - Strips some special characters from the name string
+    - Splits the string in to a list, removing any empty strings
+    - Build a string to represent the last name by looking for all words that are in all caps
+    - Build a string to represent the other names by looking for all words not in all caps
+    - Strip whitespace in case last_names is empty and return string titleized
+    """
     name = name.replace("\n", "")
     name = name.replace("`", "'")
-    return re.sub(
-        r"([A-Z\-\']+)\s([A-Za-z\-\s]+)", r"\g<2> \g<1>", name
-    ).title()
+    names = list(filter(None, name.split(" ")))
+    last_names = " ".join([name for name in names if name.isupper()])
+    first_names = " ".join([name for name in names if not name.isupper()])
+    return f"{first_names} {last_names}".strip().title()
 
 
 def clean_description(description):

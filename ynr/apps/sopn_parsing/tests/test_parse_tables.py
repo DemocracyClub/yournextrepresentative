@@ -264,6 +264,22 @@ class TestParseTablesUnitTests(TestCase):
         name = parse_tables.clean_name("SMITH John")
         assert name == "John Smith"
 
+    def test_clean_name_two_word_surnames(self):
+        names = [
+            ("EDE COOPER \nPalmer", "Palmer Ede Cooper"),
+            ("VAN DULKEN \nRichard Michael", "Richard Michael Van Dulken"),
+            ("ARMSTRONG LILLEY \nLynne", "Lynne Armstrong Lilley"),
+            (
+                " D`SOUZA  Aaron Anthony Jose \nHasan",
+                "Aaron Anthony Jose Hasan D'Souza",
+            ),
+            ("Michael James Collins", "Michael James Collins"),
+            ("   Michael    James    Collins   ", "Michael James Collins"),
+        ]
+        for name in names:
+            with self.subTest(name=names[0]):
+                assert parse_tables.clean_name(name[0]) == name[1]
+
     def test_clean_description_removes_newlines(self):
         cleaned_description = parse_tables.clean_description(
             "A Long Description That Splits \nOver \\nLines"
