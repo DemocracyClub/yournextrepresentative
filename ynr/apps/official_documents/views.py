@@ -47,9 +47,11 @@ class CreateDocumentView(GroupRequiredMixin, CreateView):
         """
         self.object = form.save()
         try:
-            extract_pages_for_ballot(self.object.ballot)
-            extract_ballot_table(self.object.ballot)
-            parse_raw_data_for_ballot(self.object.ballot)
+            extract_pages_for_ballot(
+                ballot=self.object.ballot, manual_upload=True
+            )
+            extract_ballot_table(ballot=self.object.ballot)
+            parse_raw_data_for_ballot(ballot=self.object.ballot)
         except (ValueError, NoTextInDocumentError):
             # If PDF couldnt be parsed continue
             # TODO should be log this error?
