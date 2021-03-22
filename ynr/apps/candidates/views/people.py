@@ -75,6 +75,7 @@ def get_call_to_action_flash_message(person, new_person=False):
                 )
                 .select_related("post")
                 .distinct()
+                .order_by("ballot_paper_id")
             ],
         },
     )
