@@ -1,5 +1,4 @@
 from os.path import dirname, join, realpath
-from unittest import skip
 
 from django.urls import reverse
 from django_webtest import WebTest

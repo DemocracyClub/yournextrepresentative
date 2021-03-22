@@ -38,7 +38,7 @@ def extract_pages_for_single_document(document):
         sopn = SOPNDocument(doc_file)
     except (NoTextInDocumentError):
         raise NoTextInDocumentError(
-            "No text in {}, skipping".format(document.uploaded_file.url)
+            "No text in {}, skipping".format(document.uploaded_file.path)
         )
     for doc in all_documents_with_source:
         pages = sopn.get_pages_by_ward_name(doc.ballot.post.label)
