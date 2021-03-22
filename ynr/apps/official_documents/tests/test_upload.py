@@ -73,7 +73,6 @@ class TestModels(TestUserMixin, WebTest):
             response.text,
         )
 
-    @skip("SOPN Upload form on ballot page")
     def test_upload_authorized(self):
         self.assertFalse(LoggedAction.objects.exists())
         response = self.app.get(
@@ -81,9 +80,7 @@ class TestModels(TestUserMixin, WebTest):
             user=self.user_who_can_upload_documents,
         )
 
-        self.assertInHTML(
-            "Upload the Statement of Persons Nominated", response.text
-        )
+        self.assertInHTML("Upload SOPN", response.text)
 
         response = self.app.get(
             reverse(
@@ -121,9 +118,6 @@ class TestModels(TestUserMixin, WebTest):
         self.assertEqual(qs.get().source, "http://example.org/foo")
 
         response = self.app.get(
-            self.ballot.get_absolute_url(),
-            user=self.user_who_can_upload_documents,
+            self.ballot.get_sopn_url(), user=self.user_who_can_upload_documents
         )
-        self.assertInHTML(
-            "Change Statement of Persons Nominated document", response.text
-        )
+        self.assertInHTML("Update SOPN", response.text)

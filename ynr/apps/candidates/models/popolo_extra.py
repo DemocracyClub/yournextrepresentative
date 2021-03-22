@@ -143,14 +143,17 @@ class Ballot(models.Model):
             ),
         )
 
-    def get_absolute_url(self):
-        return reverse("election_view", args=[self.ballot_paper_id])
+    def get_absolute_url(self, viewname="election_view"):
+        return reverse(viewname, args=[self.ballot_paper_id])
 
     def get_bulk_add_url(self):
-        return reverse("bulk_add_from_sopn", args=[self.ballot_paper_id])
+        return self.get_absolute_url("bulk_add_from_sopn")
 
     def get_bulk_add_review_url(self):
-        return reverse("bulk_add_sopn_review", args=[self.ballot_paper_id])
+        return self.get_absolute_url("bulk_add_sopn_review")
+
+    def get_sopn_url(self):
+        return self.get_absolute_url("ballot_paper_sopn")
 
     def safe_delete(self):
         collector = NestedObjects(using=connection.cursor().db.alias)
