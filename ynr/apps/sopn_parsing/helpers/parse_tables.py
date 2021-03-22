@@ -9,18 +9,19 @@ from bulk_adding.models import RawPeople
 from parties.models import Party, PartyDescription
 from sopn_parsing.helpers.text_helpers import clean_text
 
-NAME_FIELDS = (
-    "name of candidate",
-    "names of candidate",
-    "candidate name",
+FIRST_NAME_FIELDS = ["other name", "other names", "candidate forename"]
+LAST_NAME_FIELDS = [
     "surname",
-    "candidates surname",
-    "other name",
     "candidate surname",
-    "candidate forename",
-    "other names",
+    "candidates surname",
     "last name",
+]
+NAME_FIELDS = (
+    FIRST_NAME_FIELDS
+    + LAST_NAME_FIELDS
+    + ["name of candidate", "names of candidate", "candidate name"]
 )
+
 
 INDEPENDENT_VALUES = ("Independent", "")
 
@@ -61,18 +62,15 @@ def looks_like_header(row, avg_row):
 
 def order_name_fields(name_fields):
     """
-    Takes a list of name fields and attempts to reorder them so that the
-    'surname' field is last in the returned list
+    Takes a list of name fields and attempts to find a field with in the
+    LAST_NAME_FIELDS and move to the end of the list
     """
-    last = None
     for index, field in enumerate(name_fields):
-        if "surname" in field or "last" in field:
-            last = index
+        if field in LAST_NAME_FIELDS:
+            # found the fieldname we think is for the last name,
+            # so move that to the end of our name fields
+            name_fields.append(name_fields.pop(index))
             break
-
-    if last is not None:
-        # move value at stored index to the end of the list
-        name_fields.append(name_fields.pop(last))
 
     return name_fields
 
