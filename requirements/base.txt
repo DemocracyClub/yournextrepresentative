@@ -75,7 +75,7 @@ python-magic==0.4.6
 python-memcached==1.59
 python-openid==2.2.5
 python-slugify==3.0.1
-PyYAML==5.3
+PyYAML==5.4
 raven==6.10.0
 requests-oauthlib==1.2.0
 requests==2.25.0
