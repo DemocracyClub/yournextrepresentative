@@ -33,7 +33,7 @@ docutils==0.14
 drf-yasg==1.20.0
 elasticsearch==2.4.1
 factory-boy==2.12.0
-Faker==2.0.1
+Faker==6.6.3
 freezegun==0.3.12
 futures==3.1.1
 gender-detector==0.1.0
