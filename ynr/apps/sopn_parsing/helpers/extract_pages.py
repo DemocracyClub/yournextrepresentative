@@ -37,10 +37,25 @@ def extract_pages_for_single_document(document, manual_upload):
     if not doc_file:
         return
 
-    # if manual upload dont check for shared sources as this might be the first
-    if not manual_upload and all_documents_with_source.count() == 1:
-        yield document, "all"
-        return
+    # if there are multiple documents with the same source it suggests multi
+    # page SOPN covering multiple ballots
+    if all_documents_with_source.count() == 1:
+
+        # if not a manual upload assume all pages relate to the ballot
+        if not manual_upload:
+            yield document, "all"
+            return
+
+        #  check if the ballot is for a by-election - if so it is very likely to
+        # be for a single ballot
+        ballot = all_documents_with_source.get().ballot
+        if ".by." in ballot.ballot_paper_id:
+            yield document, "all"
+            return
+
+    # ... otherwise parse is as if we had multiple sources as the document
+    # may contain multiple ballots, but this is the first time parsing it
+
     try:
         sopn = SOPNDocument(doc_file)
     except (NoTextInDocumentError):
