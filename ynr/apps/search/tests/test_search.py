@@ -2,10 +2,12 @@ import re
 
 from django_webtest import WebTest
 
-from people.models import Person
+from people.models import Person, PersonNameSynonym
 
-from .auth import TestUserMixin
-from .uk_examples import UK2015ExamplesMixin
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
+from people.tests.factories import PersonFactory
+from search.utils import search_person_by_name
 
 
 class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -102,3 +104,25 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertTrue(
             re.search(r"""<a[^>]*>Elizabeth Bennet""", response.text)
         )
+
+    def test_search_finds_other_names(self):
+        person = PersonFactory(name="Henry Jekyll")
+        person.other_names.create(name="Edward Hyde")
+        person.save()
+        qs = search_person_by_name("Edward Hyde")
+        self.assertEqual(qs.count(), 1)
+        self.assertEqual(qs.first().name, "Henry Jekyll")
+
+    def test_name_synonyms(self):
+        """
+        Make sure "Bertie" doesn't find "Bertram" until we add
+        a name synonym asserting that "Bertram" and "Bertie" should
+        be considered the same.
+
+        """
+        person = PersonFactory(name="Bertram Wilberforce Wooster")
+        person.save()
+        self.assertFalse(search_person_by_name("Bertie").exists())
+
+        PersonNameSynonym.objects.create(term="bertie", synonym="Bertram")
+        self.assertFalse(search_person_by_name("Bertie").exists())
