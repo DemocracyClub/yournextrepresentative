@@ -172,7 +172,8 @@ def get_version_diffs(versions):
 
     The first version is the most recent; the last is the original
     version."""
-
+    if not versions:
+        return []
     id_to_parent_ids = get_versions_parent_map(versions)
     id_to_version = {v["version_id"]: v for v in versions}
     result = []
