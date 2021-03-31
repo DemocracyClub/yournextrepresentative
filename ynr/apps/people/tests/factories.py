@@ -7,3 +7,10 @@ class PersonFactory(factory.DjangoModelFactory):
 
     name = factory.Faker("name")
     versions = []
+
+
+class PersonIdentifierFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = "people.PersonIdentifier"
+
+    person = factory.SubFactory(PersonFactory)

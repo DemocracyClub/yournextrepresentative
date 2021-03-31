@@ -1,9 +1,6 @@
-import requests
-from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from people.models import Person
-from candidates.models import LoggedAction
 from twitterbot.helpers import TwitterBot
 
 from ..twitter import TwitterAPIData
@@ -32,6 +29,9 @@ class Command(BaseCommand):
         # anyone who had a user ID set but not a screen name
         # (which should be rare).  If the user ID is not a valid
         # Twitter user ID, it is deleted.
+
+        # TODO can forloop be removed? As twitter_identifiers should only be 1
+        # due to unique_together constraint on PersonIdentifier model?
         for identifier in twitter_identifiers:
             screen_name = identifier.value or None
             user_id = identifier.internal_identifier
@@ -41,59 +41,37 @@ class Command(BaseCommand):
                         person=person, user_id=user_id
                     )
                 )
+
                 if user_id not in self.twitter_data.user_id_to_screen_name:
-                    token = settings.TWITTER_APP_ONLY_BEARER_TOKEN
-                    headers = {
-                        "Authorization": "Bearer {token}".format(token=token)
-                    }
-                    r = requests.get(
-                        "https://api.twitter.com/1.1/users/show.json",
-                        params={"screen_name": screen_name},
-                        headers=headers,
+
+                    # user ID not in our list our prefertched twitter_data but
+                    # before we delete them do a check to see if they were
+                    # suspended
+                    if self.twitterbot.is_user_suspended(
+                        screen_name=screen_name
+                    ):
+                        # log the suspension but keep the identifier and move on
+                        verbose(
+                            f"{person}'s Twitter account ({user_id}) is currently suspended."
+                        )
+                        self.twitterbot.handle_suspended(identifier=identifier)
+                        continue
+
+                    # otherwise we know to remove them
+                    print(
+                        "Removing user ID {user_id} for {person_name} as it is not a valid Twitter user ID. {person_url}".format(
+                            user_id=user_id,
+                            person_name=person.name,
+                            person_url=person.get_absolute_url(),
+                        )
                     )
-                    data = r.json()
+                    self.twitterbot.save(
+                        person,
+                        msg="This Twitter user ID no longer exists; removing it ",
+                    )
+                    identifier.delete()
+                    continue
 
-                    if data:
-                        if any(d["code"] == 63 for d in data["errors"]):
-                            verbose(
-                                f"{person}'s Twitter account (id: {user_id}) is currently suspended."
-                            )
-                            if identifier.extra_data == {
-                                "status": "Twitter account (id: {user_id}) is currently suspended."
-                            }:
-                                continue
-                            else:
-                                identifier.extra_data = {
-                                    "status": "Twitter account (id: {user_id}) is currently suspended"
-                                }
-                                identifier.save()
-                                LoggedAction.objects.create(
-                                    user=self.user,
-                                    person=self.person,
-                                    source="TwitterBot",
-                                    action_type="suspended-twitter-account",
-                                )
-                                return identifier.extra_data
-                        else:
-                            print(
-                                "Removing user ID {user_id} for {person_name} as it is not a valid Twitter user ID. {person_url}".format(
-                                    user_id=user_id,
-                                    person_name=person.name,
-                                    person_url=person.get_absolute_url(),
-                                )
-                            )
-                            self.twitterbot.save(
-                                person,
-                                msg="This Twitter user ID no longer exists; removing it ",
-                            )
-                            if screen_name:
-                                self.twitterbot.save(
-                                    person,
-                                    msg="This Twitter screen name no longer exists; removing it ",
-                                )
-                            identifier.delete()
-
-                    return
                 correct_screen_name = self.twitter_data.user_id_to_screen_name[
                     user_id
                 ]
@@ -124,26 +102,27 @@ class Command(BaseCommand):
                         person=person, screen_name=screen_name
                     )
                 )
+
                 if (
                     screen_name.lower()
                     not in self.twitter_data.screen_name_to_user_id
                 ):
-                    token = settings.TWITTER_APP_ONLY_BEARER_TOKEN
-                    headers = {
-                        "Authorization": "Bearer {token}".format(token=token)
-                    }
-                    r = requests.get(
-                        "https://api.twitter.com/1.1/users/show.json",
-                        params={"screen_name": screen_name},
-                        headers=headers,
-                    )
-                    data = r.json()
 
-                    if data:
-                        if any(d["code"] == 63 for d in data["errors"]):
-                            verbose(
-                                f"{person}'s Twitter account (id: {user_id}) is currently suspended."
-                            )
+                    # at this point we have a screen name stored but it is not
+                    # in the `twitter_data` with valid names and ID's so we do a
+                    # final check to see if the user is currently suspended
+                    # before removing
+                    if self.twitterbot.is_user_suspended(
+                        screen_name=screen_name
+                    ):
+                        # log the suspension and move on to the next one
+                        verbose(
+                            f"{person}'s Twitter account ({screen_name}) is currently suspended."
+                        )
+                        self.twitterbot.handle_suspended(identifier=identifier)
+                        continue
+
+                    # otherwise we know the name is not valid so remove it
                     print(
                         "Removing screen name {screen_name} for {person_name} as it is not a valid Twitter screen name. {person_url}".format(
                             screen_name=screen_name,
@@ -151,9 +130,11 @@ class Command(BaseCommand):
                             person_url=person.get_absolute_url(),
                         )
                     )
+                    # TODO check should the object be deleted here?
                     identifier.value = ""
                     identifier.save()
                     return
+
                 print(
                     "Adding the user ID {user_id}".format(
                         user_id=self.twitter_data.screen_name_to_user_id[
