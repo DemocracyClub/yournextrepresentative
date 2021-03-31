@@ -59,6 +59,16 @@ class MediaStorage(PatchedS3Boto3Storage):
         """
         return self.url("")
 
+    def path(self, name):
+        """
+        This is a hack to allow us to use uploaded_file.path in application code
+        in extract_ballot_table which helps with local development.
+
+        Path is not implemented by S3BotoStorage so we call the url method to
+        return the URL to the media in our S3 bucket.
+        """
+        return self.url(name)
+
 
 class TestMediaStorage(FileSystemStorage):
     """
