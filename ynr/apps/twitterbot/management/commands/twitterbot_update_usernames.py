@@ -82,9 +82,13 @@ class Command(BaseCommand):
                     )
                     print(msg)
                     identifier.value = correct_screen_name
+                    identifier.extra_data["status"] = "active"
                     identifier.save()
                     self.twitterbot.save(person, msg)
                 else:
+                    if identifier.extra_data.get("status") != "active":
+                        identifier.extra_data["status"] = "active"
+                        identifier.save()
                     verbose(
                         "The screen name ({screen_name}) was already correct".format(
                             screen_name=screen_name
@@ -150,7 +154,8 @@ class Command(BaseCommand):
                     defaults={
                         "internal_identifier": self.twitter_data.screen_name_to_user_id[
                             screen_name.lower()
-                        ]
+                        ],
+                        "extra_data": {"status": "active"},
                     },
                 )
                 self.twitterbot.save(person)
