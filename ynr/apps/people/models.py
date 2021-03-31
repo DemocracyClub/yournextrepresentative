@@ -116,7 +116,7 @@ class PersonIdentifier(TimeStampedModel):
     extra_data = JSONField(
         help_text="""For storing any additional data against this field.
                      Used by bots, not humans.""",
-        null=True,
+        default=dict,
     )
 
     objects = PersonIdentifierQuerySet.as_manager()
