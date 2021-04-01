@@ -2,6 +2,7 @@ import hashlib
 import datetime
 
 from django.contrib.admin.utils import NestedObjects
+from django.contrib.postgres.fields import JSONField
 from django.db import connection, models
 from django.urls import reverse
 from django.utils import timezone
@@ -124,6 +125,8 @@ class Ballot(models.Model):
         related_name="replaced_by",
         on_delete=models.DO_NOTHING,
     )
+
+    tags = JSONField(default=dict)
 
     UnsafeToDelete = UnsafeToDelete
 

@@ -32,6 +32,12 @@ Add database credentials to `DATABASES` dict in `local.py`
 ./manage.py migrate
 ```
 
+To populate the database run from the live site run:
+
+```
+python manage.py candidates_import_from_live_site
+```
+
 ## Install Front-End Dependencies
 
 ```
