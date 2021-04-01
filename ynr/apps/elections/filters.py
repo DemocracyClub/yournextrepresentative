@@ -28,6 +28,24 @@ def current_election_types_choices():
     return _get_election_types_choices_for_qs(qs)
 
 
+def region_choices():
+    """
+    Return a list of tuples with NUTS1 code and label. Used by the region filter
+    on the BaseBallotFilter
+    """
+    return [
+        ("UKC", "North East"),
+        ("UKD", "North West"),
+        ("UKE", "Yorkshire and the Humber"),
+        ("UKF", "East Midlands"),
+        ("UKG", "West Midlands"),
+        ("UKH", "East of England"),
+        ("UKI", "London"),
+        ("UKJ", "South East"),
+        ("UKK", "South West"),
+    ]
+
+
 class AnyBooleanWidget(forms.Select):
     """
     Same as BooleanWidget, but the default option is "any" rather than "unknown"
@@ -82,6 +100,12 @@ class BaseBallotFilter(django_filters.FilterSet):
     def election_type_filter(self, queryset, name, value):
         return queryset.filter(election__slug__startswith=value)
 
+    def region_filter(self, queryset, name, value):
+        """
+        Filter queryset by region using the NUTS1 code
+        """
+        return queryset.filter(tags__NUTS1__key=value)
+
     review_required = django_filters.ChoiceFilter(
         field_name="review_required",
         method="lock_status",
@@ -111,6 +135,13 @@ class BaseBallotFilter(django_filters.FilterSet):
         choices=election_types_choices,
         label="Election Type",
         help_text="A valid [election type](https://elections.democracyclub.org.uk/election_types/)",
+    )
+
+    filter_by_region = django_filters.ChoiceFilter(
+        widget=LinkWidget(),
+        method="region_filter",
+        label="Filter by region",
+        choices=region_choices,
     )
 
     class Meta:
