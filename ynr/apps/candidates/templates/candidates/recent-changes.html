@@ -11,43 +11,47 @@
 {% endblock %}
 
 {% block content %}
-<section class="filters">
-  <div>
-    <dl class="sub-nav" role="menu" title="Filters">
-      <dt>Filter:</dt>
-      <dd {% if request.get_full_path == "/recent-changes" %}class="active" {% endif %}><a href="{% url "recent-changes" %}">All</a></dd>
-    {% for shortcut in shortcuts.list %}
-      <dd {% if shortcut.active %}class="active" {% endif %}><a href="{% url "recent-changes" %}?{{ shortcut.querystring }}">{{ shortcut.label }}</a></dd>
-    {% endfor %}
-    </dl>
 
-  </div>
-  <div>
-      <details class="advance_filters" {% if filter.data %}open{% endif %}>
-        <summary>Advanced filters</summary>
-        <div class="filter_links">
-          <form>
-            {{ filter.form.as_p }}
-            <button type="submit">Filter</button>
-          </form>
+  <style>
+      .recent-changes td {
+          vertical-align: top;
+      }
+      .recent-changes th:first-child {
+          width: 10%;
+      }
+  </style>
+  <aside class="ds-filter" aria-labelledby="filter-label" style="margin-bottom: 2em;">
+    <div class="ds-filter-cluster">
+      <ul>
+        <li id="filter-label" class="ds-filter-label" aria-hidden="true">Filter:</li>
+        <li><a href="{% url "recent-changes" %}" {% if request.get_full_path == "/recent-changes" %}aria-current="true" {% endif %}>All</a></li>
+        {% for shortcut in shortcuts.list %}
+          <li><a href="{% url "recent-changes" %}?{{ shortcut.querystring }}" {% if shortcut.active %}aria-current="true" {% endif %}>{{ shortcut.label }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <form>
+    <details {% if filter.data %}open=""{% endif %}>
+      <summary>Advanced filters</summary>
+      <div class="ds-advanced-filters">
+        <div class="ds-filter-cluster">
+
+          {% for field in filter.form %}
+            <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+              <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">{{ field.label }}:</li>
+              {{ field }}
+            </ul>
+          {% endfor %}
+
 
         </div>
-      </details>
-    </div>
-<script>
-    $('#id_action_type').select2({
-        width: 400,
-    })
-</script>
-</section>
-<style>
-.recent-changes td {
-  vertical-align: top;
-}
-.recent-changes th:first-child {
-  width: 10%;
-}
-</style>
+      </div>
+      <button type="submit" class="button">Filter</button>
+    </details>
+    </form>
+  </aside>
+
+
 <table class="table recent-changes">
   <tr>
     <th>User</th>

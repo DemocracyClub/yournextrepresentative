@@ -42,29 +42,34 @@
     }
   </style>
 
-  <section class="filters">
 
-    <div>
-      <dl class="sub-nav" role="menu" title="Filters">
-        <dt>Filter:</dt>
-        <dd {% if request.get_full_path == "/elections/" %}class="active" {% endif %}><a href="{% url "election_list_view" %}">All</a></dd>
-      {% for shortcut in shortcuts.list %}
-        <dd {% if shortcut.active %}class="active" {% endif %}><a href="{% url "election_list_view" %}?{{ shortcut.querystring }}">{{ shortcut.label }}</a></dd>
-      {% endfor %}
-      </dl>
 
+  <aside class="ds-filter" aria-labelledby="filter-label">
+    <div class="ds-filter-cluster">
+      <ul>
+        <li id="filter-label" class="ds-filter-label" aria-hidden="true">Filter:</li>
+        <li><a href="{% url "election_list_view" %}" {% if request.get_full_path == "/elections/" %}aria-current="true" {% endif %}>All</a></li>
+        {% for shortcut in shortcuts.list %}
+          <li><a href="{% url "election_list_view" %}?{{ shortcut.querystring }}" {% if shortcut.active %}aria-current="true" {% endif %}>{{ shortcut.label }}</a></li>
+        {% endfor %}
+      </ul>
     </div>
+    <details {% if filter.data %}open=""{% endif %}>
+      <summary>Advanced filters</summary>
+      <div class="ds-advanced-filters">
+        <div class="ds-filter-cluster">
+            {% for field in filter.form %}
+              <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+              <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">{{ field.label }}:</li>
+              {{ field }}
+              </ul>
+            {% endfor %}
 
-    <div>
-      <details class="advance_filters" {% if filter.data %}open{% endif %}>
-        <summary>Advanced filters</summary>
-        <div class="filter_links">
-          {{ filter.form.as_p }}
         </div>
-      </details>
-    </div>
+      </div>
+    </details>
+  </aside>
 
-  </section>
 
   {% regroup queryset by election.election_date as ballots_by_date %}
   {% for group in ballots_by_date %}

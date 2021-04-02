@@ -1,0 +1,66 @@
+// Ripped from the design system, remove this when the design system is implemented
+
+
+.ds-filter {
+  background-color: #f2fafd;
+  padding: 1.25em;
+}
+
+.ds-filter > * + * {
+  margin-top: calc(0.25rem);
+}
+
+.ds-filter-cluster > * {
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  line-height: 1.125;
+  margin-bottom: 1.5625rem;
+}
+
+.ds-filter-cluster > * > * {
+  margin-right: 0.4em;
+}
+
+.ds-filter-cluster > * + * {
+  margin-top: 1.4em;
+}
+
+.ds-filter ul a {
+  display: inline-block;
+  text-decoration: none;
+  border: 2px solid;
+  padding: 0.5em;
+  margin:0.2em;
+  border-color: #027e94;
+}
+
+.ds-filter ul a[aria-current] {
+  display: inline-block;
+  color: $white;
+  background-color: #027e94;
+}
+
+.ds-filter-label {
+  text-transform: uppercase;
+}
+
+.ds-filter summary {
+  font-size: inherit;
+}
+
+.ds-filter details ul {
+  font-size: 0.85em;
+}
+.ds-filter details {
+  padding: 1rem 0;
+  border-style: solid;
+  border-width: 1px 0;
+}
+
+.ds-advanced-filters > * + * {
+  margin-top:1em;
+}
