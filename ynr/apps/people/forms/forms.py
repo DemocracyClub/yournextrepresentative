@@ -212,6 +212,7 @@ class BasePersonForm(forms.ModelForm):
             "patronymic_name",
             "summary",
             "national_identity",
+            "name_search_vector",
         )
 
     honorific_prefix = StrippedCharField(
