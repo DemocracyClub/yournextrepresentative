@@ -76,7 +76,7 @@
   {{ form.biography.errors }}
 </div>
 
-  <div>
+  <div class="form-item">
     <h2>Candidacy:</h2>
     {% if current_locked_ballots %}
       <table class="table">
@@ -135,9 +135,19 @@
     {% endif %}
     {% if form.party_identifier %}
     {# We're on a new person form on the ballot, so we know the ballot already #}
-      {{ form.party_identifier.label }}
-      {{ form.party_identifier }}
-      {{ form.party_identifier.errors }}
+      <div class="row ballot_group"
+           data-party-register="{{ ballot.post.party_set.slug|upper }}"
+           data-uses-party-lists="{{ ballot.election.party_lists_in_use }}">
+        <div class="large-12 columns">
+          {{ form.party_identifier.label }}
+          {{ form.party_identifier }}
+          {{ form.party_identifier.errors }}
+        </div>
+        <div class="large-12 columns">
+          {{ form.party_list_position.label }}
+          {{ form.party_list_position }}
+        </div>
+      </div>
     {% endif %}
   </div>
 

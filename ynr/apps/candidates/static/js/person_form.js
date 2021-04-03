@@ -54,9 +54,19 @@ var populate_ballot_selects = function() {
 
   $(PARTY_LIST_POSITION_INPUT_CLASS).each(function() {
     var el= $(this);
-    if (el.val() === "") {
-      el.parent().hide();
+    var selected_ballot = el.parents(BALLOT_GROUP_CLASS);
+
+    var uses_party_lists = selected_ballot.data("usesPartyLists");
+    if (uses_party_lists === "True") {
+      el.parent().show();
+    } else {
+      if (el.val() === "") {
+        el.parent().hide();
+      }
     }
+
+
+
   });
 
   BallotInput.select2();

@@ -240,13 +240,20 @@ class BasePersonForm(forms.ModelForm):
 
 
 class NewPersonForm(BasePersonForm):
-    # TODO: Deal with party lists
     class Meta(BasePersonForm.Meta):
         exclude = BasePersonForm.Meta.exclude + ("death_date",)
 
     party_identifier = PartyIdentifierField(
         require_all_fields=False, required=True
     )
+
+    party_list_position = forms.IntegerField(
+        max_value=20,
+        min_value=1,
+        required=False,
+        widget=forms.NumberInput(attrs={"class": "party-list-position"}),
+    )
+
     ballot_paper_id = CurrentUnlockedBallotsField(widget=forms.HiddenInput)
 
     def save(self, commit=True):
