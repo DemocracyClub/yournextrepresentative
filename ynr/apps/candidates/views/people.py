@@ -19,7 +19,6 @@ from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, TemplateView, View, UpdateView
 
 from auth_helpers.views import GroupRequiredMixin, user_in_group
-from candidates.forms import SingleElectionForm
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from people.forms.forms import NewPersonForm, UpdatePersonForm
@@ -518,17 +517,3 @@ class NewPersonView(
         return HttpResponseRedirect(
             reverse("person-view", kwargs={"person_id": person.id})
         )
-
-
-class SingleElectionFormView(LoginRequiredMixin, FormView):
-    template_name = "candidates/person-edit-add-single-election.html"
-    form_class = SingleElectionForm
-
-    def get_initial(self):
-        initial_data = super().get_initial()
-        election = get_object_or_404(
-            Election.objects.all(), slug=self.kwargs["election"]
-        )
-        initial_data["election"] = election
-        initial_data["user"] = self.request.user
-        return initial_data

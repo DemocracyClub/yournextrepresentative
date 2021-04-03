@@ -1,10 +1,7 @@
-from unittest import skip
-
 from django.urls import reverse
 from django_webtest import WebTest
 
 from bulk_adding.models import RawPeople
-from candidates.forms import SingleElectionForm
 from candidates.models import Ballot
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory

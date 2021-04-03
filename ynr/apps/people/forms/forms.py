@@ -17,46 +17,6 @@ from popolo.models import OtherName, Membership
 
 from people.helpers import clean_twitter_username, clean_wikidata_id
 
-# TODO: Use with JS
-# def get_ballot_choices(election, user=None):
-#     """
-#     Returns a list formatted for passing to a SelectWithAttrs widget
-#     :type user: django.contrib.auth.models.User
-#     :type election: elections.models.Election
-#     :param user:
-#     :return:
-#     """
-#     user_can_edit_cancelled = False
-#     if user and user.is_staff:
-#         user_can_edit_cancelled = True
-#     ballots_qs = (
-#         Ballot.objects.filter(election=election)
-#         .select_related("post", "election")
-#         .order_by("post__label")
-#     )
-#
-#     choices = [("", "")]
-#     for ballot in ballots_qs:
-#         attrs = {}
-#         ballot_label = ballot.post.short_label
-#         if ballot.cancelled:
-#             ballot_label = "{} {}".format(
-#                 ballot_label, ballot.cancelled_status_text
-#             )
-#             if not user_can_edit_cancelled:
-#                 attrs["disabled"] = True
-#
-#         if ballot.candidates_locked:
-#             ballot_label = "{} {}".format(
-#                 ballot_label, ballot.locked_status_text
-#             )
-#             attrs["disabled"] = True
-#
-#         attrs["label"] = ballot_label
-#
-#         choices.append((ballot.post.slug, attrs))
-#     return choices
-
 
 class BaseCandidacyForm(forms.Form):
     person_id = StrippedCharField(label="Person ID", max_length=256)
