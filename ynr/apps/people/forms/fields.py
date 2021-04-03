@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 from django_date_extensions.fields import ApproximateDateFormField
 
@@ -15,6 +16,14 @@ class BallotInputWidget(forms.TextInput):
 
 
 class ValidBallotField(forms.CharField):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        if user:
+            self.user = user
+        else:
+            self.user = AnonymousUser
+        super().__init__(*args, **kwargs)
+
     widget = BallotInputWidget
 
     def to_python(self, value):
@@ -46,7 +55,7 @@ class CurrentUnlockedBallotsField(ValidBallotField):
             raise ValidationError(
                 "Cannot update an election that isn't 'current'"
             )
-        if ballot.cancelled:
+        if ballot.cancelled and not self.user.is_staff:
             raise ValidationError(
                 "Cannot add candidates to a cancelled election"
             )

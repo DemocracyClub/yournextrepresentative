@@ -337,6 +337,9 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
     def get_inline_formset_kwargs(self, formset_name):
         kwargs = {}
 
+        if formset_name == "memberships_formset":
+            kwargs.update({"form_kwargs": {"user": self.request.user}})
+
         if formset_name == "identifiers_formset":
             model = self.inline_formset_classes["identifiers_formset"].model
             kwargs.update({"queryset": model.objects.editable_value_types()})

@@ -157,6 +157,7 @@ class PersonIdentifierForm(forms.ModelForm):
 
 class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
         if kwargs.get("instance", None):
             kwargs.update(
                 initial={
@@ -168,6 +169,9 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
             )
 
         super().__init__(*args, **kwargs)
+        self.fields["ballot_paper_id"] = CurrentUnlockedBallotsField(
+            label="Ballot", user=self.user
+        )
 
     class Meta:
         model = Membership

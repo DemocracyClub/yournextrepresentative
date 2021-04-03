@@ -10,6 +10,7 @@ from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from parties.tests.factories import PartyFactory
+from people.forms.forms import PersonMembershipForm
 from people.models import Person
 from people.tests.factories import PersonFactory
 from popolo.models import Post
@@ -310,35 +311,37 @@ class TestCancelledBallots(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertContains(response, "Add a new candidate")
 
-    @skip("until JS form is implemented")
-    def test_cancelled_option_disabled_on_person_update_form(self):
+    def test_cancelled_ballot_fails_form_validation_for_normal_user(self):
         """
-        Make sure a person can't be added to a cancelled ballot,
-        and that the ballot is labeled as cancelled
+        Make sure a person can't be added to a cancelled ballot
         """
-        form = SingleElectionForm(
-            initial={"election": self.ballot.election, "user": self.user}
+        form = PersonMembershipForm(
+            data={
+                "ballot_paper_id": self.camberwell_post_ballot.ballot_paper_id,
+                "party_identifier_1": self.green_party.ec_id,
+            }
         )
-        select_field = form.fields[
-            "constituency_{}".format(self.ballot.election.slug)
-        ]
-        option = select_field.choices[1]
+        form.is_valid()
         self.assertEqual(
-            option[1]["label"],
-            "{} (❌ cancelled)".format(self.ballot.post.short_label),
+            form.errors,
+            {
+                "ballot_paper_id": [
+                    "Cannot add candidates to a cancelled election"
+                ]
+            },
         )
-        self.assertTrue(option[1]["disabled"])
 
-        # Staff users can still edit, though
-        form = SingleElectionForm(
-            initial={"election": self.ballot.election, "user": self.staff_user}
+    def test_cancelled_ballot_validates_for_staff_user(self):
+        """
+        Make sure a person's membership of a cancelled ballot can be edited
+        by a staff user
+        """
+        form = PersonMembershipForm(
+            data={
+                "ballot_paper_id": self.camberwell_post_ballot.ballot_paper_id,
+                "party_identifier_1": self.green_party.ec_id,
+            },
+            user=self.staff_user,
         )
-        select_field = form.fields[
-            "constituency_{}".format(self.ballot.election.slug)
-        ]
-        option = select_field.choices[1]
-        self.assertEqual(
-            option[1]["label"],
-            "{} (❌ cancelled)".format(self.ballot.post.short_label),
-        )
-        self.assertFalse("disabled" in option[1])
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.errors, {})
