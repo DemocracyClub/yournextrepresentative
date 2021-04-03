@@ -243,6 +243,11 @@ class BaseBulkAddByPartyFormset(forms.BaseFormSet):
                 widget=forms.NumberInput(attrs={"class": "party-position"}),
             )
 
+        if self.ballot.candidates_locked:
+            for name, field in form.fields.items():
+                field.disabled = True
+                form.fields[name] = field
+
 
 BulkAddByPartyFormset = forms.formset_factory(
     NameOnlyPersonForm,
@@ -260,6 +265,19 @@ class PartyBulkAddReviewFormSet(BaseBulkAddReviewFormSet):
         del kwargs["ballot"]
 
         super().__init__(*args, **kwargs)
+
+    def clean(self):
+        """
+        Use this method to prevent users from adding candidates to ballots
+        that can't have candidates added to them, like locked or cancelled
+        ballots
+        """
+        if self.ballot.candidates_locked:
+            raise ValidationError("Cannot add candidates to a locked ballot")
+        if self.ballot.cancelled:
+            raise ValidationError(
+                "Cannot add candidates to a cancelled election"
+            )
 
     def add_fields(self, form, index):
         super().add_fields(form, index)
