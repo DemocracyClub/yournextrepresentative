@@ -1,51 +1,10 @@
 import re
 
-from django.conf import settings
 from django.contrib.auth import logout
-from django.contrib.sites.models import Site
-from django.core.mail import send_mail
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.cache import add_never_cache_headers
 from django.utils.http import urlquote
-
-from candidates.models.auth import (
-    ChangeToLockedConstituencyDisallowedException,
-    NameChangeDisallowedException,
-)
-
-
-class DisallowedUpdateMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        response = self.get_response(request)
-        return response
-
-    def process_exception(self, request, exc):
-        if isinstance(exc, NameChangeDisallowedException):
-            intro = "As a precaution, an update was blocked:"
-            outro = "If this update is appropriate, someone should apply it manually."
-
-            # Then email the support address about the name change...
-            message = "{intro}\n\n  {message}\n\n{outro}".format(
-                intro=intro, message=exc, outro=outro
-            )
-            send_mail(
-                "Disallowed {site_name} update for checking".format(
-                    site_name=Site.objects.get_current().name
-                ),
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [settings.SUPPORT_EMAIL],
-                fail_silently=False,
-            )
-            # And redirect to a page explaining to the user what has happened
-            disallowed_explanation_url = reverse("update-disallowed")
-            return HttpResponseRedirect(disallowed_explanation_url)
-        elif isinstance(exc, ChangeToLockedConstituencyDisallowedException):
-            return HttpResponseForbidden()
 
 
 class CopyrightAssignmentMiddleware:
@@ -80,7 +39,7 @@ class CopyrightAssignmentMiddleware:
                 return None
         if not request.user.is_authenticated:
             return None
-        if request.session.get("terms_agreement_assigned_to_dc") == True:
+        if request.session.get("terms_agreement_assigned_to_dc") is True:
             return None
 
         already_assigned = request.user.terms_agreement.assigned_to_dc

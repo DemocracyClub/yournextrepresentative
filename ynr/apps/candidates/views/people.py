@@ -37,7 +37,6 @@ from ..models import (
     PersonRedirect,
     Ballot,
 )
-from ..models.auth import check_creation_allowed
 from ..models.versions import revert_person_from_version_data
 from .helpers import ProcessInlineFormsMixin
 from .version_data import get_change_metadata, get_client_ip
@@ -489,9 +488,6 @@ class NewPersonView(
             identifiers_formset.instance = person
             identifiers_formset.save()
 
-            check_creation_allowed(
-                self.request.user, person.current_or_future_candidacies
-            )
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data["source"]
             )

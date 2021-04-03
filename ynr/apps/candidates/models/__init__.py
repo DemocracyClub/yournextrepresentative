@@ -2,7 +2,6 @@ from candidates.models.auth import (  # noqa
     RESULT_RECORDERS_GROUP_NAME,
     TRUSTED_TO_LOCK_GROUP_NAME,
     TRUSTED_TO_MERGE_GROUP_NAME,
-    get_constituency_lock,
 )
 from candidates.models.db import (  # noqa
     LoggedAction,
