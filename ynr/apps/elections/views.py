@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.decorators.cache import cache_control
+from django.views.decorators.cache import cache_control, cache_page
 from django.views.generic import DetailView, TemplateView, UpdateView
 
 from auth_helpers.views import GroupRequiredMixin
@@ -326,13 +326,15 @@ class PartyForBallotView(DetailView):
 
 
 class BallotsForSelectAjaxView(View):
+    @method_decorator(cache_page(60 * 60 * 2))
+    @method_decorator(cache_control(max_age=60 * 60 * 2))
     def get(self, request, *args, **kwargs):
         qs = (
-            Ballot.objects.filter(
-                election__current=True, candidates_locked=False
-            )
+            Ballot.objects.filter(election__current=True)
             .select_related("election", "post")
-            .order_by("election__election_date", "election__name")
+            .order_by(
+                "election__election_date", "election__name", "post__label"
+            )
         )
         partyset_ids = {
             partyset_id: slug
@@ -348,13 +350,23 @@ class BallotsForSelectAjaxView(View):
                     data.append("</optgroup>")
                 data.append(f"<optgroup label='{election_name}'>")
 
-            data.append(
-                f"    <option value='{ballot.ballot_paper_id}' "
-                f"data-party-register='{partyset_slug}' "
-                f"data-uses-party-lists='{ballot.election.party_lists_in_use}'>"
-                f"{ballot.post.label}"
-                f"</option>"
+            option_attrs = {
+                "value": ballot.ballot_paper_id,
+                "data-party-register": partyset_slug,
+                "data-uses-party-lists": ballot.election.party_lists_in_use,
+            }
+
+            ballot_label = ballot.post.label
+            if ballot.cancelled:
+                ballot_label = f"{ballot_label} {ballot.cancelled_status_text}"
+            if ballot.candidates_locked:
+                ballot_label = f"{ballot_label} {ballot.locked_status_text}"
+                option_attrs["disabled"] = True
+
+            attrs_str = " ".join(
+                [f"{k}='{v}'" for k, v in option_attrs.items()]
             )
+            data.append(f"<option {attrs_str}>" f"{ballot_label}" f"</option>")
         data.append("</optgroup>")
 
         return HttpResponse("\n".join(data))

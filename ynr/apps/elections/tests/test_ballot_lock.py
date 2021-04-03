@@ -263,24 +263,6 @@ class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(submission_response.location, "/person/4322")
 
-    @skip("until JS form is implemented")
-    def test_locked_ballot_disabled_option(self):
-        form = SingleElectionForm(
-            initial={
-                "election": self.camberwell_post_ballot.election,
-                "user": self.user,
-            }
-        )
-        select_field = form.fields[
-            "constituency_{}".format(self.camberwell_post_ballot.election.slug)
-        ]
-        option = select_field.choices[1]
-        self.assertEqual(
-            option[1]["label"],
-            "{} 🔐".format(self.camberwell_post_ballot.post.short_label),
-        )
-        self.assertTrue(option[1]["disabled"])
-
 
 class TestCancelledBallots(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
