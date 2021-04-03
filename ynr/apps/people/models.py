@@ -424,10 +424,14 @@ class Person(Timestampable, models.Model):
 
     @property
     def last_candidacy(self):
-        ordered_candidacies = Membership.objects.filter(
-            person=self, ballot__election__isnull=False
-        ).order_by(
-            "ballot__election__current", "ballot__election__election_date"
+        ordered_candidacies = (
+            Membership.objects.filter(
+                person=self, ballot__election__isnull=False
+            )
+            .select_related("ballot", "ballot__post", "ballot__election")
+            .order_by(
+                "ballot__election__current", "ballot__election__election_date"
+            )
         )
         return ordered_candidacies.last()
 

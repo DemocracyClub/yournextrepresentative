@@ -29,7 +29,9 @@ class ValidBallotField(forms.CharField):
     def to_python(self, value):
         if not value:
             return value
-        return Ballot.objects.get(ballot_paper_id=value)
+        return Ballot.objects.select_related(
+            "post", "election", "post__party_set"
+        ).get(ballot_paper_id=value)
 
     def clean(self, value):
         if not value:
