@@ -9,7 +9,7 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
 
     def test_ajax_view_cache_headers(self):
         resp = self.app.get(reverse("ajax_ballots_for_select"))
-        self.assertEqual(resp.headers["Cache-Control"], "max-age=7200")
+        self.assertEqual(resp.headers["Cache-Control"], "max-age=60")
 
     def test_ajax_view(self):
         resp = self.app.get(reverse("ajax_ballots_for_select"))
