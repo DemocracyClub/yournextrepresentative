@@ -154,7 +154,6 @@ MIDDLEWARE = (
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "candidates.middleware.LogoutDisabledUsersMiddleware",
     "candidates.middleware.CopyrightAssignmentMiddleware",
-    "candidates.middleware.DisallowedUpdateMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "candidates.middleware.DisableCachingForAuthenticatedUsers",
@@ -356,9 +355,6 @@ THUMBNAIL_DEBUG = DEBUG
 
 # Settings for restricting user activity to reduce abuse:
 
-# If this is true, you have to be in the 'Trusted to Rename' group in
-# order to change the name of a candidate:
-RESTRICT_RENAMES = False
 
 # If this is set to false, then no edits of people are allowed.
 EDITS_ALLOWED = True
@@ -483,3 +479,5 @@ def _is_running_tests():
 
 if _is_running_tests():
     from .testing import *  # noqa
+else:
+    RUNNING_TESTS = False

@@ -2,12 +2,12 @@ from django.urls import reverse
 from django_webtest import WebTest
 
 from bulk_adding.models import RawPeople
-from candidates.forms import SingleElectionForm
 from candidates.models import Ballot
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from parties.tests.factories import PartyFactory
+from people.forms.forms import PersonMembershipForm
 from people.models import Person
 from people.tests.factories import PersonFactory
 from popolo.models import Post
@@ -17,7 +17,7 @@ def update_lock(post, election, lock_status):
     ballot = post.ballot_set.get(election=election)
     ballot.candidates_locked = lock_status
     ballot.save()
-
+    ballot.refresh_from_db()
     return ballot
 
 
@@ -162,9 +162,12 @@ class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(
             self.camberwell_post_ballot.get_absolute_url(), user=self.user
         )
+        self.camberwell_post_ballot.refresh_from_db()
+        self.assertTrue(self.camberwell_post_ballot.candidates_locked)
         csrftoken = self.app.cookies["csrftoken"]
+        ballot_paper_id = self.camberwell_post_ballot.ballot_paper_id
         response = self.app.post(
-            "/election/parl.2015-05-07/person/create/",
+            f"/election/{ballot_paper_id}/person/create/",
             params={
                 "tmp_person_identifiers-TOTAL_FORMS": "2",
                 "tmp_person_identifiers-INITIAL_FORMS": "0",
@@ -172,14 +175,16 @@ class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "tmp_person_identifiers-MAX_NUM_FORMS": "1000",
                 "csrfmiddlewaretoken": csrftoken,
                 "name": "Imaginary Candidate",
-                "party_GB_parl.2015-05-07": self.green_party.ec_id,
-                "constituency_parl.2015-05-07": "65913",
-                "standing_parl.2015-05-07": "standing",
+                "party_identifier_1": self.green_party.ec_id,
+                "ballot_paper_id": ballot_paper_id,
                 "source": "Testing adding a new candidate to a locked constituency",
             },
             expect_errors=True,
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.context["form"].errors,
+            {"ballot_paper_id": ["Cannot add candidates to a locked ballot"]},
+        )
 
     def test_add_when_unlocked_allowed(self):
         self.camberwell_post_ballot.candidates_locked = False
@@ -191,7 +196,7 @@ class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms["new-candidate-form"]
         form["name"] = "Imaginary Candidate"
-        form["party_GB_parl.2015-05-07"] = self.green_party.ec_id
+        form["party_identifier_1"] = self.green_party.ec_id
         form[
             "source"
         ] = "Testing adding a new candidate to a locked constituency"
@@ -204,39 +209,31 @@ class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/person/{}".format(expected_person.id),
         )
 
-    def test_move_into_locked_unprivileged_disallowed(self):
-        response = self.app.get("/person/4322/update", user=self.user)
-        form = response.forms["person-details"]
-        form["source"] = "Testing a switch to a locked constituency"
-        form["constituency_parl.2015-05-07"] = "65913"
-        submission_response = form.submit(expect_errors=True)
-        self.assertEqual(submission_response.status_code, 403)
-
     def test_move_into_locked_privileged_allowed(self):
+        self.camberwell_post_ballot.refresh_from_db()
         response = self.app.get(
             "/person/4322/update", user=self.user_who_can_lock
         )
         form = response.forms["person-details"]
         form["source"] = "Testing a switch to a locked constituency"
-        form["constituency_parl.2015-05-07"] = "65913"
-        submission_response = form.submit()
-        self.assertEqual(submission_response.status_code, 302)
-        self.assertEqual(submission_response.location, "/person/4322")
-
-    def test_move_out_of_locked_unprivileged_disallowed(self):
-        response = self.app.get("/person/4170/update", user=self.user)
-        form = response.forms["person-details"]
-        form["source"] = "Testing a switch to a unlocked constituency"
-        form["constituency_parl.2015-05-07"] = "65808"
-        submission_response = form.submit(expect_errors=True)
-        # self.assertEqual(submission_response.status_code, 200)
         self.assertEqual(
-            submission_response.context["form"].errors,
-            {
-                "constituency_parl.2015-05-07": [
-                    "Can't delete a membership of a locked ballot (parl.65913.2015-05-07)"
-                ]
-            },
+            form["memberships-0-ballot_paper_id"].value,
+            self.dulwich_post_ballot.ballot_paper_id,
+        )
+        form[
+            "memberships-0-ballot_paper_id"
+        ] = self.camberwell_post_ballot.ballot_paper_id
+        submission_response = form.submit()
+        self.assertEqual(
+            submission_response.context["memberships_formset"].errors,
+            [
+                {
+                    "ballot_paper_id": [
+                        "Cannot add candidates to a locked ballot"
+                    ]
+                },
+                {},
+            ],
         )
 
     def test_move_out_of_locked_privileged_disallowed(self):
@@ -244,66 +241,24 @@ class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/person/4170/update", user=self.user_who_can_lock
         )
         form = response.forms["person-details"]
-        form["source"] = "Testing a switch to a unlocked constituency"
-        form["constituency_parl.2015-05-07"] = "65808"
-        submission_response = form.submit()
-        self.assertEqual(submission_response.status_code, 200)
-        self.assertEqual(
-            submission_response.context["form"].errors,
-            {
-                "constituency_parl.2015-05-07": [
-                    "Can't delete a membership of a locked ballot (parl.65913.2015-05-07)"
-                ]
-            },
-        )
-
-    # Now the tests to check that the only privileged users can change
-    # the parties of people in locked constituecies.
-
-    def test_change_party_in_locked_unprivileged_disallowed(self):
-        response = self.app.get("/person/4170/update", user=self.user)
-        form = response.forms["person-details"]
-        form["source"] = "Testing a party change in a locked constituency"
-        form["party_GB_parl.2015-05-07"] = self.conservative_party.ec_id
-        submission_response = form.submit(expect_errors=True)
-        self.assertEqual(submission_response.status_code, 403)
+        self.assertContains(response, "Current locked ballots")
+        self.assertEqual(form["memberships-0-ballot_paper_id"].value, "")
 
     def test_change_party_in_locked_privileged_allowed(self):
         response = self.app.get(
             "/person/4170/update", user=self.user_who_can_lock
         )
-        form = response.forms["person-details"]
-        form["source"] = "Testing a party change in a locked constituency"
-        form["party_GB_parl.2015-05-07"] = self.conservative_party.ec_id
-        submission_response = form.submit()
-        self.assertEqual(submission_response.status_code, 302)
-        self.assertEqual(submission_response.location, "/person/4170")
+        self.assertContains(response, "Current locked ballots")
+        self.assertContains(response, "parl.65913.2015-05-07")
 
     def test_change_party_in_unlocked_unprivileged_allowed(self):
         response = self.app.get("/person/4322/update", user=self.user)
         form = response.forms["person-details"]
         form["source"] = "Testing a party change in an unlocked constituency"
-        form["party_GB_parl.2015-05-07"] = self.conservative_party.ec_id
+        form["memberships-0-party_identifier_1"] = self.conservative_party.ec_id
         submission_response = form.submit()
         self.assertEqual(submission_response.status_code, 302)
         self.assertEqual(submission_response.location, "/person/4322")
-
-    def test_locked_ballot_disabled_option(self):
-        form = SingleElectionForm(
-            initial={
-                "election": self.camberwell_post_ballot.election,
-                "user": self.user,
-            }
-        )
-        select_field = form.fields[
-            "constituency_{}".format(self.camberwell_post_ballot.election.slug)
-        ]
-        option = select_field.choices[1]
-        self.assertEqual(
-            option[1]["label"],
-            "{} 🔐".format(self.camberwell_post_ballot.post.short_label),
-        )
-        self.assertTrue(option[1]["disabled"])
 
 
 class TestCancelledBallots(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -335,34 +290,37 @@ class TestCancelledBallots(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertContains(response, "Add a new candidate")
 
-    def test_cancelled_option_disabled_on_person_update_form(self):
+    def test_cancelled_ballot_fails_form_validation_for_normal_user(self):
         """
-        Make sure a person can't be added to a cancelled ballot,
-        and that the ballot is labeled as cancelled
+        Make sure a person can't be added to a cancelled ballot
         """
-        form = SingleElectionForm(
-            initial={"election": self.ballot.election, "user": self.user}
+        form = PersonMembershipForm(
+            data={
+                "ballot_paper_id": self.camberwell_post_ballot.ballot_paper_id,
+                "party_identifier_1": self.green_party.ec_id,
+            }
         )
-        select_field = form.fields[
-            "constituency_{}".format(self.ballot.election.slug)
-        ]
-        option = select_field.choices[1]
+        form.is_valid()
         self.assertEqual(
-            option[1]["label"],
-            "{} (❌ cancelled)".format(self.ballot.post.short_label),
+            form.errors,
+            {
+                "ballot_paper_id": [
+                    "Cannot add candidates to a cancelled election"
+                ]
+            },
         )
-        self.assertTrue(option[1]["disabled"])
 
-        # Staff users can still edit, though
-        form = SingleElectionForm(
-            initial={"election": self.ballot.election, "user": self.staff_user,}
+    def test_cancelled_ballot_validates_for_staff_user(self):
+        """
+        Make sure a person's membership of a cancelled ballot can be edited
+        by a staff user
+        """
+        form = PersonMembershipForm(
+            data={
+                "ballot_paper_id": self.camberwell_post_ballot.ballot_paper_id,
+                "party_identifier_1": self.green_party.ec_id,
+            },
+            user=self.staff_user,
         )
-        select_field = form.fields[
-            "constituency_{}".format(self.ballot.election.slug)
-        ]
-        option = select_field.choices[1]
-        self.assertEqual(
-            option[1]["label"],
-            "{} (❌ cancelled)".format(self.ballot.post.short_label),
-        )
-        self.assertFalse("disabled" in option[1])
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.errors, {})

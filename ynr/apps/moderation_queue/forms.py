@@ -4,7 +4,7 @@ import requests
 from django import forms
 from django.core.exceptions import ValidationError
 
-from people.forms import StrippedCharField
+from people.forms.forms import StrippedCharField
 
 from .models import CopyrightOptions, QueuedImage, SuggestedPostLock
 

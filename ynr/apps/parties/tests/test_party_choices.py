@@ -11,18 +11,35 @@ from .factories import PartyDescriptionFactory
 class TestPartyChoices(
     DefaultPartyFixtures, TestUserMixin, UK2015ExamplesMixin, WebTest
 ):
+    maxDiff = None
+
     def test_hardly_any_candidates_at_all(self):
         party_choices = Party.objects.register("GB").party_choices()
         self.assertEqual(
             party_choices,
             [
-                ("", ""),
-                (self.conservative_party.ec_id, "Conservative Party"),
-                (self.green_party.ec_id, "Green Party"),
-                ("ynmp-party:2", "Independent"),
-                (self.labour_party.ec_id, "Labour Party"),
-                (self.ld_party.ec_id, "Liberal Democrats"),
-                ("ynmp-party:12522", "Speaker seeking re-election"),
+                ("", {"label": ""}),
+                (
+                    self.conservative_party.ec_id,
+                    {"label": "Conservative Party", "register": "GB"},
+                ),
+                (
+                    self.green_party.ec_id,
+                    {"label": "Green Party", "register": "GB"},
+                ),
+                ("ynmp-party:2", {"label": "Independent", "register": "all"}),
+                (
+                    self.labour_party.ec_id,
+                    {"label": "Labour Party", "register": "GB"},
+                ),
+                (
+                    self.ld_party.ec_id,
+                    {"label": "Liberal Democrats", "register": "GB"},
+                ),
+                (
+                    "ynmp-party:12522",
+                    {"label": "Speaker seeking re-election", "register": "all"},
+                ),
             ],
         )
 
@@ -34,13 +51,28 @@ class TestPartyChoices(
         self.assertEqual(
             party_choices,
             [
-                ("", ""),
-                (self.labour_party.ec_id, "Labour Party"),
-                (self.ld_party.ec_id, "Liberal Democrats"),
-                (self.conservative_party.ec_id, "Conservative Party"),
-                (self.green_party.ec_id, "Green Party"),
-                ("ynmp-party:2", "Independent"),
-                ("ynmp-party:12522", "Speaker seeking re-election"),
+                ("", {"label": ""}),
+                (
+                    self.labour_party.ec_id,
+                    {"label": "Labour Party", "register": "GB"},
+                ),
+                (
+                    self.ld_party.ec_id,
+                    {"label": "Liberal Democrats", "register": "GB"},
+                ),
+                (
+                    self.conservative_party.ec_id,
+                    {"label": "Conservative Party", "register": "GB"},
+                ),
+                (
+                    self.green_party.ec_id,
+                    {"label": "Green Party", "register": "GB"},
+                ),
+                ("ynmp-party:2", {"label": "Independent", "register": "all"}),
+                (
+                    "ynmp-party:12522",
+                    {"label": "Speaker seeking re-election", "register": "all"},
+                ),
             ],
         )
 
@@ -53,13 +85,28 @@ class TestPartyChoices(
         self.assertEqual(
             party_choices,
             [
-                ("", ""),
-                (self.ld_party.ec_id, "Liberal Democrats"),
-                (self.green_party.ec_id, "Green Party"),
-                (self.conservative_party.ec_id, "Conservative Party"),
-                ("ynmp-party:2", "Independent"),
-                (self.labour_party.ec_id, "Labour Party"),
-                ("ynmp-party:12522", "Speaker seeking re-election"),
+                ("", {"label": ""}),
+                (
+                    self.ld_party.ec_id,
+                    {"label": "Liberal Democrats", "register": "GB"},
+                ),
+                (
+                    self.green_party.ec_id,
+                    {"label": "Green Party", "register": "GB"},
+                ),
+                (
+                    self.conservative_party.ec_id,
+                    {"label": "Conservative Party", "register": "GB"},
+                ),
+                ("ynmp-party:2", {"label": "Independent", "register": "all"}),
+                (
+                    self.labour_party.ec_id,
+                    {"label": "Labour Party", "register": "GB"},
+                ),
+                (
+                    "ynmp-party:12522",
+                    {"label": "Speaker seeking re-election", "register": "all"},
+                ),
             ],
         )
 
@@ -74,19 +121,40 @@ class TestPartyChoices(
         self.assertEqual(
             party_choices,
             [
-                ("", ""),
+                ("", {"label": ""}),
                 (
                     "Liberal Democrats",
                     [
-                        (self.ld_party.ec_id, "Liberal Democrats"),
-                        (self.ld_party.ec_id, "Scottish Liberal Democrats"),
+                        (
+                            "PP90",
+                            {"label": "Liberal Democrats", "register": "GB"},
+                        ),
+                        (
+                            "PP90",
+                            {
+                                "label": "Scottish Liberal Democrats",
+                                "register": "GB",
+                            },
+                        ),
                     ],
                 ),
-                (self.green_party.ec_id, "Green Party"),
-                (self.conservative_party.ec_id, "Conservative Party"),
-                ("ynmp-party:2", "Independent"),
-                (self.labour_party.ec_id, "Labour Party"),
-                ("ynmp-party:12522", "Speaker seeking re-election"),
+                (
+                    self.green_party.ec_id,
+                    {"label": "Green Party", "register": "GB"},
+                ),
+                (
+                    self.conservative_party.ec_id,
+                    {"label": "Conservative Party", "register": "GB"},
+                ),
+                ("ynmp-party:2", {"label": "Independent", "register": "all"}),
+                (
+                    self.labour_party.ec_id,
+                    {"label": "Labour Party", "register": "GB"},
+                ),
+                (
+                    "ynmp-party:12522",
+                    {"label": "Speaker seeking re-election", "register": "all"},
+                ),
             ],
         )
 
@@ -102,12 +170,27 @@ class TestPartyChoices(
         self.assertEqual(
             party_choices,
             [
-                ("", ""),
-                (self.conservative_party.ec_id, "Conservative Party"),
-                (self.ld_party.ec_id, "Liberal Democrats"),
-                (self.green_party.ec_id, "Green Party"),
-                (self.labour_party.ec_id, "Labour Party"),
-                ("ynmp-party:2", "Independent"),
-                ("ynmp-party:12522", "Speaker seeking re-election"),
+                ("", {"label": ""}),
+                (
+                    self.conservative_party.ec_id,
+                    {"label": "Conservative Party", "register": "GB"},
+                ),
+                (
+                    self.ld_party.ec_id,
+                    {"label": "Liberal Democrats", "register": "GB"},
+                ),
+                (
+                    self.green_party.ec_id,
+                    {"label": "Green Party", "register": "GB"},
+                ),
+                (
+                    self.labour_party.ec_id,
+                    {"label": "Labour Party", "register": "GB"},
+                ),
+                ("ynmp-party:2", {"label": "Independent", "register": "all"}),
+                (
+                    "ynmp-party:12522",
+                    {"label": "Speaker seeking re-election", "register": "all"},
+                ),
             ],
         )

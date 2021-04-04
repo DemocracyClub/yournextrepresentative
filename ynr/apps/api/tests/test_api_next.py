@@ -133,35 +133,53 @@ class TestAPI(
         self.assertTrue(result_json["images"][0]["is_primary"])
 
     def test_all_parties_view(self):
-        # Test with no register
-        response = self.app.get("/all-parties.json", expect_errors=True)
-        self.assertEqual(response.status_code, 400)
-
+        self.maxDiff = None
         # Test with GB register
         response = self.app.get("/all-parties.json?register=GB")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.json,
             {
                 "items": [
-                    {"id": "", "text": ""},
-                    {"id": "PP52", "text": "Conservative Party"},
-                    {"id": "PP63", "text": "Green Party"},
-                    {"id": "ynmp-party:2", "text": "Independent"},
+                    {"id": "", "text": "", "register": "all"},
+                    {
+                        "id": "PP52",
+                        "text": "Conservative Party",
+                        "register": "GB",
+                    },
+                    {"id": "PP63", "text": "Green Party", "register": "GB"},
+                    {
+                        "id": "ynmp-party:2",
+                        "text": "Independent",
+                        "register": "all",
+                    },
                     {
                         "children": [
-                            {"id": "PP53", "text": "Labour Party"},
-                            {"id": "PP53__1", "text": "Labour Party Candidate"},
+                            {
+                                "id": "PP53",
+                                "text": "Labour Party",
+                                "register": "GB",
+                            },
+                            {
+                                "id": "PP53__1",
+                                "text": "Labour Party " "Candidate",
+                                "register": "GB",
+                            },
                         ],
                         "text": "Labour Party",
                     },
-                    {"id": "PP90", "text": "Liberal Democrats"},
+                    {
+                        "id": "PP90",
+                        "text": "Liberal Democrats",
+                        "register": "GB",
+                    },
                     {
                         "id": "ynmp-party:12522",
                         "text": "Speaker seeking re-election",
+                        "register": "all",
                     },
                 ]
             },
+            response.json,
         )
 
         # Test with NI register
@@ -171,12 +189,17 @@ class TestAPI(
             response.json,
             {
                 "items": [
-                    {"id": "", "text": ""},
-                    {"id": "ynmp-party:2", "text": "Independent"},
-                    {"id": "PP39", "text": "Sinn Féin"},
+                    {"id": "", "text": "", "register": "all"},
+                    {
+                        "id": "ynmp-party:2",
+                        "text": "Independent",
+                        "register": "all",
+                    },
+                    {"id": "PP39", "text": "Sinn Féin", "register": "NI"},
                     {
                         "id": "ynmp-party:12522",
                         "text": "Speaker seeking re-election",
+                        "register": "all",
                     },
                 ]
             },

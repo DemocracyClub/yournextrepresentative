@@ -156,7 +156,7 @@
 
       {% if membership_edits_allowed %}
         <p>
-          <a class="show-new-candidate-form button" href="{% url 'person-create' election=ballot.election.slug %}">
+          <a class="show-new-candidate-form button" href="{% url 'person-create' ballot_paper_id=ballot.ballot_paper_id %}">
             Add a new candidate
           </a>
         </p>
@@ -179,7 +179,7 @@
       {% if add_candidate_form %}
         <div class="candidates__new" {% if add_candidate_form.errors %}style="display: block"{% endif %}>
           <h4>Add a new candidate</h4>
-          <form id="new-candidate-form" name="new-candidate-form" action="{% url 'person-create' election=ballot.election.slug %}" method="post">
+          <form id="new-candidate-form" name="new-candidate-form" action="{% url 'person-create' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
           {% with form=add_candidate_form identifiers_formset=identifiers_formset %}
             {% include 'candidates/_person_form.html' %}
           {% endwith %}

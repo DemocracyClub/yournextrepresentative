@@ -7,7 +7,7 @@ from django.utils.functional import cached_property
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from candidates.models import LoggedAction
-from people.forms import OtherNameForm
+from people.forms.forms import OtherNameForm
 from people.models import Person
 from popolo.models import OtherName
 

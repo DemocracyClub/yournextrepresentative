@@ -41,4 +41,9 @@ urlpatterns = [
         views.BallotPaperCSVView.as_view(),
         name="ballot_paper_csv",
     ),
+    url(
+        r"^ajax/ballots/ballots_for_select.json",
+        views.BallotsForSelectAjaxView.as_view(),
+        name="ajax_ballots_for_select",
+    ),
 ]

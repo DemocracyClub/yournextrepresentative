@@ -60,7 +60,7 @@ class SelectPartyForm(BasePartyBulkAddView, FormView):
                 "bulk_add_by_party",
                 kwargs={
                     "election": self.get_election().slug,
-                    "party_id": form.cleaned_data["party"],
+                    "party_id": form.cleaned_data["party"]["party_id"],
                 },
             )
         )
@@ -84,7 +84,6 @@ class BulkAddPartyView(BasePartyBulkAddView):
                 post=ballot.post,
                 party=context["party"],
             )
-            extra_forms = ballot.winner_count or WINNER_COUNT_IF_NONE
             form_kwargs = {"ballot": ballot}
             if self.request.POST:
                 formset = forms.BulkAddByPartyFormset(
@@ -162,11 +161,12 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
 
             if self.request.POST:
                 formset = forms.PartyBulkAddReviewNameOnlyFormSet(
-                    self.request.POST,
+                    data=self.request.POST,
                     initial=post["data"],
                     prefix=ballot.pk,
                     ballot=ballot,
                 )
+                formset.is_valid()
             else:
                 formset = forms.PartyBulkAddReviewNameOnlyFormSet(
                     initial=post["data"], prefix=ballot.pk, ballot=ballot

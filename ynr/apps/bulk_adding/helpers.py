@@ -2,7 +2,6 @@ import csv
 
 from bulk_adding.models import RawPeople
 from candidates.models import LoggedAction, raise_if_unsafe_to_delete
-from candidates.models.auth import check_creation_allowed
 from candidates.models.db import EditType
 from candidates.views.version_data import get_change_metadata, get_client_ip
 from parties.models import Party, PartyDescription
@@ -42,8 +41,6 @@ def update_person(
     election = ballot.election
 
     person.not_standing.remove(election)
-
-    check_creation_allowed(request.user, person.current_or_future_candidacies)
 
     defaults = {
         "party": party,

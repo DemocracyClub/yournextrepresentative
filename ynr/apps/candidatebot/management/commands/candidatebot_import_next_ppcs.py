@@ -159,9 +159,6 @@ class Command(BaseCommand):
             return
         except Exception as e:
             print(e)
-            import ipdb
-
-            ipdb.set_trace()
 
         bot = CandidateBot(person.pk)
         bot.save(

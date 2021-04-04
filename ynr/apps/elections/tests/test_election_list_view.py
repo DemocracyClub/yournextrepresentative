@@ -71,19 +71,3 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             dict(response.context["filter"].data), {"election_type": ["local"]}
         )
-
-
-class TestPostIDToPartySetView(UK2015ExamplesMixin, WebTest):
-    def test_post_id_to_party_set_json(self):
-
-        response = self.app.get("/post-id-to-party-set.json")
-        self.assertEqual(
-            response.json,
-            {
-                "14419": "GB",
-                "14420": "GB",
-                "65808": "GB",
-                "65913": "GB",
-                "DIW:E05005004": "GB",
-            },
-        )

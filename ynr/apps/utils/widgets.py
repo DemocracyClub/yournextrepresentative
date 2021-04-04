@@ -8,7 +8,7 @@ class SelectWithAttrs(Select):
     """
     Subclass of Django's select widget that allows passing attrs to each item
 
-    For example, to diable a single option, pass:
+    For example, to disable a single option, pass:
 
     choices=[(value, {'label': 'option label', 'disabled': True})]
     """
@@ -17,6 +17,7 @@ class SelectWithAttrs(Select):
         self, name, value, label, selected, index, subindex=None, attrs=None
     ):
         if type(label) == dict:
+            label = dict(label)
             label_text = label.pop("label")
         else:
             label_text = label

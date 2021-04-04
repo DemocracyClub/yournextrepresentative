@@ -34,7 +34,7 @@ urlpatterns = [
         name="candidacy-delete",
     ),
     url(
-        r"^election/(?P<election>[^/]+)/person/create/$",
+        r"^election/(?P<ballot_paper_id>[^/]+)/person/create/$",
         views.NewPersonView.as_view(),
         name="person-create",
     ),

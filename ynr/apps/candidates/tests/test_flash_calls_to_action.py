@@ -42,8 +42,11 @@ class TestGetFlashMessage(UK2015ExamplesMixin, TestCase):
             ' <ul> <li> <a href="/person/42/update">Edit Wreck-it-Ralph again</a> </li>'
             ' <li> Add a candidate for <a href="/numbers/attention-needed">one '
             "of the posts with fewest candidates</a> </li>"
-            ' <li> <a href="/election/parl.2015-05-07/person/create/">Add another '
-            "candidate in the 2015 General Election</a> </li> </ul> ",
+            ' <li> <a href="/election/parl.14419.2015-05-07/person/create/">Add another'
+            " candidate in the Member of Parliament for Edinburgh East</a> </li> <li> "
+            '<a href="/election/parl.14420.2015-05-07/person/create/">Add another candidate '
+            "in the Member of Parliament for Edinburgh North and Leith</a> "
+            "</li> </ul> ",
             normalize_whitespace(
                 get_call_to_action_flash_message(
                     self.fake_person, new_person=True
@@ -52,14 +55,17 @@ class TestGetFlashMessage(UK2015ExamplesMixin, TestCase):
         )
 
     def test_get_flash_message_updated_person(self):
+        self.maxDiff = None
         self.assertEqual(
             ' Thank-you for updating <a href="/person/42">Wreck-it-Ralph</a>! '
-            "Now you can carry on to:"
-            ' <ul> <li> <a href="/person/42/update">Edit Wreck-it-Ralph again</a> </li>'
-            ' <li> Add a candidate for <a href="/numbers/attention-needed">one '
-            "of the posts with fewest candidates</a> </li>"
-            ' <li> <a href="/election/parl.2015-05-07/person/create/">Add another '
-            "candidate in the 2015 General Election</a> </li> </ul> ",
+            'Now you can carry on to: <ul> <li> <a href="/person/42/update">Edit '
+            "Wreck-it-Ralph again</a> </li> <li> Add a candidate for "
+            '<a href="/numbers/attention-needed">one of the posts with fewest candidates</a> '
+            '</li> <li> <a href="/election/parl.14419.2015-05-07/person/create/">Add '
+            "another candidate in the Member of Parliament for Edinburgh East</a> </li> "
+            '<li> <a href="/election/parl.14420.2015-05-07/person/create/">Add another '
+            "candidate in the Member of Parliament for Edinburgh North and Leith</a> "
+            "</li> </ul> ",
             normalize_whitespace(
                 get_call_to_action_flash_message(
                     self.fake_person, new_person=False

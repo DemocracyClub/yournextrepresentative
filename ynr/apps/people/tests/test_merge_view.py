@@ -439,7 +439,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response = self.app.get(
                 "/person/{}/update".format(person.pk), user=self.user
             )
-            form = response.forms[1]
+            form = response.forms["person-details"]
             form[field] = value
             form["source"] = source
             form.submit()
@@ -606,9 +606,8 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         ] = "http://en.wikipedia.org/wiki/Lizzie_Bennet"
         form["tmp_person_identifiers-1-value_type"] = "wikipedia_url"
 
-        form["party_GB_parl.2015-05-07"] = self.labour_party.ec_id
-        form["standing_parl.2015-05-07"] = "standing"
-        form["constituency_parl.2015-05-07"] = "65913"
+        form["party_identifier_1"] = self.labour_party.ec_id
+        form["ballot_paper_id"] = self.camberwell_post_ballot.ballot_paper_id
         form["source"] = "bar bar"
 
         form.submit()
@@ -620,11 +619,8 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms["new-candidate-form"]
         form["name"] = "Foo Bar"
         election_slug = self.local_ballot.election.slug
-        form["party_GB_{}".format(election_slug)] = self.labour_party.ec_id
-        form["standing_{}".format(election_slug)] = "standing"
-        form[
-            "constituency_{}".format(election_slug)
-        ] = self.local_ballot.post.slug
+        form["party_identifier_1"] = self.labour_party.ec_id
+        form["ballot_paper_id"] = self.local_ballot.ballot_paper_id
         form["source"] = "foo bar"
 
         response = form.submit()
@@ -675,11 +671,10 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms["new-candidate-form"]
         form["name"] = "Foo Bar"
         election_slug = self.earlier_election.slug
-        form["party_GB_{}".format(election_slug)] = self.labour_party.ec_id
-        form["standing_{}".format(election_slug)] = "standing"
+        form["party_identifier_1"] = self.labour_party.ec_id
         form[
-            "constituency_{}".format(election_slug)
-        ] = self.dulwich_post_ballot_earlier.post.slug
+            "ballot_paper_id"
+        ] = self.dulwich_post_ballot_earlier.ballot_paper_id
         form["source"] = "foo bar"
 
         response = form.submit()

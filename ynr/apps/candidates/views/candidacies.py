@@ -8,7 +8,7 @@ from auth_helpers.views import user_in_group
 from candidates.models import raise_if_unsafe_to_delete
 from candidates.models.constraints import check_no_candidancy_for_election
 from elections.mixins import ElectionMixin
-from people.forms import CandidacyCreateForm, CandidacyDeleteForm
+from people.forms.forms import CandidacyCreateForm, CandidacyDeleteForm
 from people.models import Person
 from popolo.models import Membership, Post
 

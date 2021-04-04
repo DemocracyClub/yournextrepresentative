@@ -9,7 +9,7 @@
 
 {% block content %}
 <div class="person__details" id="person-details">
-<form id="new-candidate-form" name="new-candidate-form" action="{% url 'person-create' election=election %}" method="post">
+<form id="new-candidate-form" name="new-candidate-form" action="{% url 'person-create' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
 {% with form=add_candidate_form %}
   {% include 'candidates/_person_form.html' %}
 {% endwith %}

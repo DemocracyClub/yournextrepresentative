@@ -4,7 +4,8 @@ from auth_helpers.migrations import (
     get_migration_group_create,
     get_migration_group_delete,
 )
-from candidates.models import TRUSTED_TO_RENAME_GROUP_NAME
+
+TRUSTED_TO_RENAME_GROUP_NAME = "Trusted To Rename"
 
 
 class Migration(migrations.Migration):

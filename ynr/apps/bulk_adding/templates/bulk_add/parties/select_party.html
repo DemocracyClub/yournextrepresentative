@@ -11,7 +11,15 @@
 
 <form method=post>
   {% csrf_token %}
-  {{ form.as_p }}
+  {{ form.non_field_errors }}
+  {% for field in form %}
+    <fieldset name="{{ field.field.widget.attrs.register }} Parties">
+      <div class="ballot_group" data-party-register="{{ field.field.widget.attrs.register }}">
+        {{ field }}
+      </div>
+    </fieldset>
+  {% endfor %}
+
   <button type=submit>Next</button>
 </form>
 {% endblock content %}

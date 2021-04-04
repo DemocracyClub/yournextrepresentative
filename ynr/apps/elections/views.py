@@ -4,21 +4,28 @@ from django.db.models import Count, Prefetch
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_control
+from django.views import View
+from django.views.decorators.cache import cache_control, cache_page
 from django.views.generic import DetailView, TemplateView, UpdateView
 
 from auth_helpers.views import GroupRequiredMixin
 from candidates.csv_helpers import list_to_csv, memberships_dicts_for_csv
 from candidates.forms import ToggleLockForm
-from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
-from candidates.views.helpers import get_person_form_fields
+from candidates.models import (
+    TRUSTED_TO_LOCK_GROUP_NAME,
+    Ballot,
+    LoggedAction,
+    PartySet,
+)
+
 from candidates.views.version_data import get_client_ip
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from moderation_queue.forms import SuggestedPostLockForm
 from official_documents.models import OfficialDocument
 from parties.models import Party
-from people.forms import NewPersonForm, PersonIdentifierFormsetFactory
+from people.forms.forms import NewPersonForm
+from people.forms.formsets import PersonIdentifierFormsetFactory
 from popolo.models import Membership
 
 
@@ -149,15 +156,7 @@ class BallotPaperView(TemplateView):
 
             # New person form
             context["add_candidate_form"] = NewPersonForm(
-                election=ballot.election.slug,
-                initial={
-                    ("constituency_" + ballot.election.slug): ballot.post.slug,
-                    ("standing_" + ballot.election.slug): "standing",
-                },
-                hidden_post_widget=True,
-            )
-            context = get_person_form_fields(
-                context, context["add_candidate_form"]
+                initial={"ballot_paper_id": ballot.ballot_paper_id}
             )
             context["identifiers_formset"] = PersonIdentifierFormsetFactory()
 
@@ -324,3 +323,50 @@ class PartyForBallotView(DetailView):
             party=context["party"]
         ).order_by("party_list_position")
         return context
+
+
+class BallotsForSelectAjaxView(View):
+    @method_decorator(cache_page(60 * 60 * 2))
+    @method_decorator(cache_control(max_age=60 * 60 * 2))
+    def get(self, request, *args, **kwargs):
+        qs = (
+            Ballot.objects.filter(election__current=True)
+            .select_related("election", "post")
+            .order_by(
+                "election__election_date", "election__name", "post__label"
+            )
+        )
+        partyset_ids = {
+            partyset_id: slug
+            for partyset_id, slug in PartySet.objects.values_list("pk", "slug")
+        }
+        data = []
+        election_name = None
+        for ballot in qs:
+            partyset_slug = partyset_ids[ballot.post.party_set_id].upper()
+            if ballot.election.name != election_name:
+                election_name = ballot.election.name
+                if data:
+                    data.append("</optgroup>")
+                data.append(f"<optgroup label='{election_name}'>")
+
+            option_attrs = {
+                "value": ballot.ballot_paper_id,
+                "data-party-register": partyset_slug,
+                "data-uses-party-lists": ballot.election.party_lists_in_use,
+            }
+
+            ballot_label = ballot.post.label
+            if ballot.cancelled:
+                ballot_label = f"{ballot_label} {ballot.cancelled_status_text}"
+            if ballot.candidates_locked:
+                ballot_label = f"{ballot_label} {ballot.locked_status_text}"
+                option_attrs["disabled"] = True
+
+            attrs_str = " ".join(
+                [f"{k}='{v}'" for k, v in option_attrs.items()]
+            )
+            data.append(f"<option {attrs_str}>" f"{ballot_label}" f"</option>")
+        data.append("</optgroup>")
+
+        return HttpResponse("\n".join(data))

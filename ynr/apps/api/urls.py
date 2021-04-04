@@ -124,11 +124,6 @@ urlpatterns = [
         name="current-elections",
     ),
     url(
-        r"^post-id-to-party-set.json$",
-        cache_page(60 * 60)(v09views.PostIDToPartySetView.as_view()),
-        name="post-id-to-party-set",
-    ),
-    url(
         r"^all-parties.json$",
         cache_page(60 * 60)(
             parties.api.next.api_views.AllPartiesJSONView.as_view()

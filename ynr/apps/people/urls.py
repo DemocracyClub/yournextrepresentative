@@ -1,5 +1,4 @@
 from django.conf.urls import url
-from django.views.decorators.cache import cache_page
 
 import candidates.views as views
 
@@ -48,11 +47,6 @@ urlpatterns = [
         r"^person/create/select_election$",
         views.NewPersonSelectElectionView.as_view(),
         name="person-create-select-election",
-    ),
-    url(
-        r"^person/(?P<person_id>\d+)/update/single_election_form/(?P<election>[^/]+)$",
-        cache_page(60 * 60)(views.SingleElectionFormView.as_view()),
-        name="person-update-single-election",
     ),
     url(
         r"^person/(?P<person_id>\d+)(?:/(?P<ignored_slug>.*))?$",
