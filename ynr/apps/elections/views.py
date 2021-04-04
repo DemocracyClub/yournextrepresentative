@@ -326,8 +326,8 @@ class PartyForBallotView(DetailView):
 
 
 class BallotsForSelectAjaxView(View):
-    @method_decorator(cache_page(60 * 60 * 2))
-    @method_decorator(cache_control(max_age=60 * 60 * 2))
+    @method_decorator(cache_page(60))
+    @method_decorator(cache_control(max_age=60))
     def get(self, request, *args, **kwargs):
         qs = (
             Ballot.objects.filter(election__current=True)
