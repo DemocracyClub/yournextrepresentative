@@ -102,7 +102,12 @@
     {{ memberships_formset.management_form }}
     {% for membership_form in memberships_formset %}
       <div class="row">
-        <fieldset>
+        <fieldset class="ballot_group"
+          {% if membership_form.instance.pk %}
+                  data-party-register="{{ membership_form.instance.ballot.post.party_set.slug|upper }}"
+                  data-uses-party-lists="{{ membership_form.instance.ballot.election.party_lists_in_use }}"
+          {% endif %}
+        >
           {% for field in membership_form.hidden_fields %}
             {{ field }}
           {% endfor %}
