@@ -63,7 +63,11 @@ class DisableCachingForAuthenticatedUsers:
         response = self.process_response(request, self.get_response(request))
         return response
 
-    EXCLUDED_PATHS = (re.compile(r"^/static"), re.compile(r"^/media"))
+    EXCLUDED_PATHS = (
+        re.compile(r"^/static"),
+        re.compile(r"^/media"),
+        re.compile(r"^/ajax/ballots/ballots_for_select.json"),
+    )
 
     def process_response(self, request, response):
         if hasattr(request, "user") and request.user.is_authenticated:
