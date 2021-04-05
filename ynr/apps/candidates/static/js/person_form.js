@@ -50,8 +50,6 @@ var setup_ballot_select2 = function(ballots) {
 };
 
 var populate_ballot_selects = function() {
-  var BallotInput = $(BALLOT_INPUT_CLASS);
-
   $(PARTY_LIST_POSITION_INPUT_CLASS).each(function() {
     var el= $(this);
     var selected_ballot = el.parents(BALLOT_GROUP_CLASS);
@@ -64,12 +62,8 @@ var populate_ballot_selects = function() {
         el.parent().hide();
       }
     }
-
-
-
   });
 
-  BallotInput.select2();
   $.ajax({
     url: "/ajax/ballots/ballots_for_select.json",
     success: function(result){
