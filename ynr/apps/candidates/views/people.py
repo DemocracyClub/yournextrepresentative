@@ -21,6 +21,7 @@ from django.views.generic import FormView, TemplateView, View, UpdateView
 from auth_helpers.views import GroupRequiredMixin, user_in_group
 from elections.mixins import ElectionMixin
 from elections.models import Election
+from elections.uk.forms import SelectBallotForm
 from people.forms.forms import NewPersonForm, UpdatePersonForm
 from people.forms.formsets import (
     PersonIdentifierFormsetFactory,
@@ -426,7 +427,7 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
         )
 
 
-class NewPersonSelectElectionView(LoginRequiredMixin, TemplateView):
+class NewPersonSelectElectionView(LoginRequiredMixin, FormView):
     """
     For when we know new person's name, but not the election they are standing
     in.  This is normally because we've not come via a post page to add a new
@@ -434,26 +435,25 @@ class NewPersonSelectElectionView(LoginRequiredMixin, TemplateView):
     """
 
     template_name = "candidates/person-create-select-election.html"
+    form_class = SelectBallotForm
 
     def get_context_data(self, **kwargs):
         context = super(NewPersonSelectElectionView, self).get_context_data(
             **kwargs
         )
-        context["name"] = self.request.GET.get("name")
-        elections = []
-        local_elections = []
-        for election in Election.objects.current_or_future().order_by("slug"):
-            election_type = election.slug.split(".")[0]
-            if election_type == "local":
-                election.type_name = "Local Elections"
-                local_elections.append(election)
-            else:
-                election.type_name = election.name
-                elections.append(election)
-        elections += local_elections
-        context["elections"] = elections
-
+        context["name"] = self.request.GET.get("name")[:150]
         return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        name = context["name"]
+        ballot_paper_id = form.cleaned_data["ballot"].ballot_paper_id
+        return HttpResponseRedirect(
+            reverse(
+                "person-create", kwargs={"ballot_paper_id": ballot_paper_id}
+            )
+            + f"?name={name}"
+        )
 
 
 class NewPersonView(

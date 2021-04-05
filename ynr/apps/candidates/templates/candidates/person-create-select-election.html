@@ -2,19 +2,15 @@
 
 
 {% block content %}
-<h2>Select the election that "{{ name }}" is standing in</p>
-{% regroup elections by type_name as election_list %}
+<h2>Select the election that "{{ name }}" is standing in</h2>
 
-{% for election_type in election_list %}
-    <h3>{{ election_type.grouper }}</h3>
-    <div role="list">
-    {% for election in election_type.list %}
-      <p role="listitem">
-        <a href="{% url 'person-create' election=election.slug%}?name={{ name }}" class="button">
-          Add {{ name }} to the {{ election.name }}
-        </a>
-      </p>
-    {% endfor %}
-    </div>
-{% endfor %}
+  <form method="post" id="select_ballot_form">
+  {% csrf_token %}
+  <div class="ballot_group">
+    {{ form.as_p }}
+  </div>
+  <button>Add candidate</button>
+  </form>
+
+
 {% endblock content %}
