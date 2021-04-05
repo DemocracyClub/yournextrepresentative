@@ -264,7 +264,7 @@ class NewPersonForm(BasePersonForm):
                 ballot=self.cleaned_data["ballot_paper_id"],
                 party=party_data["party_obj"],
                 party_name=party_data["party_name"],
-                party_description=party_data["description_text"],
+                party_description=party_data["description_obj"],
                 post=self.cleaned_data["ballot_paper_id"].post,
             )
         return person
