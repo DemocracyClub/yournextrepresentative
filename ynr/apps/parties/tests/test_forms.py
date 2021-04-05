@@ -52,7 +52,7 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
             form.errors,
             {
                 "party": [
-                    "Select a valid choice. not a party is not one of the available choices.",
+                    "'not a party' is not a current party identifier",
                     "'not a party' is not a current party identifier",
                 ]
             },
@@ -133,9 +133,7 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
         )
 
         field = PartyIdentifierField(required=False)
-        msg = (
-            "'Select a valid choice. PP99 is not one of the available choices.'"
-        )
+        msg = "'PP99' is not a current party identifier"
         with self.assertRaisesMessage(ValidationError, msg):
             field.clean(["PP99", ""])
 

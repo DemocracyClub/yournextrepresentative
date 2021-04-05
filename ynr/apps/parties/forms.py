@@ -55,6 +55,20 @@ class PartyChoiceField(forms.ChoiceField):
         value = super().clean(value)
         return party_and_description_dict_from_string(value)
 
+    def validate(self, value):
+        """
+        Because we don't always show all parties on the initial page load (we
+        leave JavaScript to add the non-current parties sometimes), we need to
+        ignore any input value for this field type. The MultiWidget will
+        raise a ValidataionError if the party isn't actually found, so there's
+        no problem with ignoring validation here.
+        """
+        try:
+            Party.objects.current().get(ec_id__iexact=value.strip())
+            return True
+        except Party.DoesNotExist:
+            return False
+
 
 class PartySelectField(forms.MultiWidget):
     def __init__(self, choices, attrs=None):

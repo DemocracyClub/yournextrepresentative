@@ -6,6 +6,7 @@ from elections.uk.geo_helpers import (
     UnknownGeoException,
     get_ballots_from_postcode,
 )
+from people.forms.fields import CurrentUnlockedBallotsField
 
 
 class PostcodeForm(forms.Form):
@@ -27,3 +28,12 @@ class PostcodeForm(forms.Form):
         except (UnknownGeoException, BadPostcodeException) as e:
             raise ValidationError(str(e))
         return postcode
+
+
+class SelectBallotForm(forms.Form):
+    """
+    Just a ballot picker
+
+    """
+
+    ballot = CurrentUnlockedBallotsField()

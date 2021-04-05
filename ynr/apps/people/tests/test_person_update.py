@@ -1,3 +1,4 @@
+from django.urls import reverse
 from webtest import Text
 
 from people.tests.test_person_view import PersonViewSharedTestsMixin
@@ -301,3 +302,16 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         form["tmp_person_identifiers-1-value"] = "https://example.com/"
         form["tmp_person_identifiers-1-value_type"] = ""
         form.submit()
+
+    def test_person_create_select_election(self):
+        resp = self.app.get(
+            reverse("person-create-select-election") + "?name=foo",
+            user=self.user,
+        )
+        self.assertEqual(resp.status_code, 200)
+        form = resp.forms["select_ballot_form"]
+        form["ballot"] = self.dulwich_post_ballot.ballot_paper_id
+        resp = form.submit()
+        self.assertEqual(
+            resp.url, "/election/parl.65808.2015-05-07/person/create/?name=foo"
+        )
