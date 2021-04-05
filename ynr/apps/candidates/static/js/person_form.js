@@ -17,7 +17,7 @@ var setup_ballot_select2 = function(ballots) {
       .append($(ballots))
       .val(BallotInput.val())
       .insertAfter(BallotInput);
-    BallotInput.hide();
+    BallotInput.hide().attr("required", false);
 
     BallotSelect.select2();
     BallotSelect.on('select2:select', function (e) {
