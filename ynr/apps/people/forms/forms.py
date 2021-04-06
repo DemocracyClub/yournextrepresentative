@@ -156,7 +156,10 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
         party_data = self.cleaned_data["party_identifier"]
         self.instance.party = party_data["party_obj"]
         self.instance.party_name = party_data["party_name"]
-        self.instance.party_description = party_data["description_text"]
+        self.instance.party_description = party_data["description_obj"]
+        self.instance.party_description_text = (
+            party_data["description_text"] or ""
+        )
         return super().save(commit)
 
 
