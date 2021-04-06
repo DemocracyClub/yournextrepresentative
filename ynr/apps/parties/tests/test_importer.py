@@ -132,7 +132,7 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
             EXAMPLE_IMAGE_FILENAME
         )
         self.assertEqual(Party.objects.count(), 2)
-        self.assertEqual(PartyDescription.objects.count(), 0)
+        self.assertEqual(PartyDescription.objects.count(), 2)
         self.assertFalse(PartyEmblem.objects.all().exists())
         party = ECParty(FAKE_PARTY_DICT)
         party.save()

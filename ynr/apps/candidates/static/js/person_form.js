@@ -120,18 +120,21 @@ var setup_single_party_select = function(i, partySelect) {
 
       $.getJSON('/all-parties.json', function(items) {
         $.each(items['items'], function(i, descs) {
-          var group = $('<optgroup label="' + descs.text + '" />');
-          group.attr("data-register", descs.register);
+
           if (descs['children']) {
+            var group = $('<optgroup label="' + descs.text + '" />');
+            group.attr("data-register", descs.register);
             $.each(descs['children'], function(i, child) {
               var newOption = new Option(child.text, child.id, false, false);
               group.append(newOption);
             });
+            group.appendTo(partySelect);
           } else {
-            var newOption = new Option(descs.text.label, descs.id, false, false);
-            group.append(newOption);
+            var newOption = new Option(descs.text, descs.id, false, false);
+            $(newOption).attr("data-register", descs.register);
+            $(newOption).appendTo(partySelect);
           }
-          group.appendTo(partySelect);
+
         });
         partySelect.find('option[value="0"]').remove();
         partySelect.select2("open");

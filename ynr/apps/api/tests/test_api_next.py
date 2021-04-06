@@ -148,9 +148,24 @@ class TestAPI(
                     },
                     {"id": "PP63", "text": "Green Party", "register": "GB"},
                     {
-                        "id": "ynmp-party:2",
+                        "children": [
+                            {
+                                "id": "ynmp-party:2",
+                                "register": "all",
+                                "text": "Independent",
+                            },
+                            {
+                                "id": "ynmp-party:2__1001",
+                                "register": "all",
+                                "text": "[No party listed]",
+                            },
+                            {
+                                "id": "ynmp-party:2__1000",
+                                "register": "all",
+                                "text": "[blank]",
+                            },
+                        ],
                         "text": "Independent",
-                        "register": "all",
                     },
                     {
                         "children": [
@@ -191,9 +206,24 @@ class TestAPI(
                 "items": [
                     {"id": "", "text": "", "register": "all"},
                     {
-                        "id": "ynmp-party:2",
+                        "children": [
+                            {
+                                "id": "ynmp-party:2",
+                                "register": "all",
+                                "text": "Independent",
+                            },
+                            {
+                                "id": "ynmp-party:2__1001",
+                                "register": "all",
+                                "text": "[No party listed]",
+                            },
+                            {
+                                "id": "ynmp-party:2__1000",
+                                "register": "all",
+                                "text": "[blank]",
+                            },
+                        ],
                         "text": "Independent",
-                        "register": "all",
                     },
                     {"id": "PP39", "text": "Sinn Féin", "register": "NI"},
                     {

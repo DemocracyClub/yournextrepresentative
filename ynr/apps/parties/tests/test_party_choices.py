@@ -27,7 +27,23 @@ class TestPartyChoices(
                     self.green_party.ec_id,
                     {"label": "Green Party", "register": "GB"},
                 ),
-                ("ynmp-party:2", {"label": "Independent", "register": "all"}),
+                (
+                    "Independent",
+                    [
+                        (
+                            "ynmp-party:2",
+                            {"label": "Independent", "register": "all"},
+                        ),
+                        (
+                            "ynmp-party:2",
+                            {"label": "[No party listed]", "register": "all"},
+                        ),
+                        (
+                            "ynmp-party:2",
+                            {"label": "[blank]", "register": "all"},
+                        ),
+                    ],
+                ),
                 (
                     self.labour_party.ec_id,
                     {"label": "Labour Party", "register": "GB"},
@@ -68,7 +84,23 @@ class TestPartyChoices(
                     self.green_party.ec_id,
                     {"label": "Green Party", "register": "GB"},
                 ),
-                ("ynmp-party:2", {"label": "Independent", "register": "all"}),
+                (
+                    "Independent",
+                    [
+                        (
+                            "ynmp-party:2",
+                            {"label": "Independent", "register": "all"},
+                        ),
+                        (
+                            "ynmp-party:2",
+                            {"label": "[No party listed]", "register": "all"},
+                        ),
+                        (
+                            "ynmp-party:2",
+                            {"label": "[blank]", "register": "all"},
+                        ),
+                    ],
+                ),
                 (
                     "ynmp-party:12522",
                     {"label": "Speaker seeking re-election", "register": "all"},
@@ -98,7 +130,23 @@ class TestPartyChoices(
                     self.conservative_party.ec_id,
                     {"label": "Conservative Party", "register": "GB"},
                 ),
-                ("ynmp-party:2", {"label": "Independent", "register": "all"}),
+                (
+                    "Independent",
+                    [
+                        (
+                            "ynmp-party:2",
+                            {"label": "Independent", "register": "all"},
+                        ),
+                        (
+                            "ynmp-party:2",
+                            {"label": "[No party listed]", "register": "all"},
+                        ),
+                        (
+                            "ynmp-party:2",
+                            {"label": "[blank]", "register": "all"},
+                        ),
+                    ],
+                ),
                 (
                     self.labour_party.ec_id,
                     {"label": "Labour Party", "register": "GB"},
@@ -146,7 +194,23 @@ class TestPartyChoices(
                     self.conservative_party.ec_id,
                     {"label": "Conservative Party", "register": "GB"},
                 ),
-                ("ynmp-party:2", {"label": "Independent", "register": "all"}),
+                (
+                    "Independent",
+                    [
+                        (
+                            "ynmp-party:2",
+                            {"label": "Independent", "register": "all"},
+                        ),
+                        (
+                            "ynmp-party:2",
+                            {"label": "[No party listed]", "register": "all"},
+                        ),
+                        (
+                            "ynmp-party:2",
+                            {"label": "[blank]", "register": "all"},
+                        ),
+                    ],
+                ),
                 (
                     self.labour_party.ec_id,
                     {"label": "Labour Party", "register": "GB"},
@@ -187,7 +251,23 @@ class TestPartyChoices(
                     self.labour_party.ec_id,
                     {"label": "Labour Party", "register": "GB"},
                 ),
-                ("ynmp-party:2", {"label": "Independent", "register": "all"}),
+                (
+                    "Independent",
+                    [
+                        (
+                            "ynmp-party:2",
+                            {"label": "Independent", "register": "all"},
+                        ),
+                        (
+                            "ynmp-party:2",
+                            {"label": "[No party listed]", "register": "all"},
+                        ),
+                        (
+                            "ynmp-party:2",
+                            {"label": "[blank]", "register": "all"},
+                        ),
+                    ],
+                ),
                 (
                     "ynmp-party:12522",
                     {"label": "Speaker seeking re-election", "register": "all"},
