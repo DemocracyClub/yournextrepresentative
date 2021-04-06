@@ -132,7 +132,7 @@ class PopulatePartiesMixin:
                 continue
             if field_name in self.initial:
                 ballot = field_class.to_python(self.initial[field_name])
-                register = ballot.post.party_set.slug
+                register = ballot.post.party_set.slug.upper()
 
         # Populate the choices
         for field_name, field_class in self.fields.items():
@@ -157,9 +157,10 @@ class PopulatePartiesMixin:
                 self.initial[field_name][0] = extra_party_id
 
             if not self._cached_choices:
-                self._cached_choices = Party.objects.party_choices(
-                    **choices_kwargs
-                )
+                base_qs = Party.objects.all().current()
+                if register:
+                    base_qs = base_qs.register(register)
+                self._cached_choices = base_qs.party_choices(**choices_kwargs)
             choices = self._cached_choices
             self.fields[field_name] = PartyIdentifierField(choices=choices)
             self.fields[field_name].fields[0].choices = choices
