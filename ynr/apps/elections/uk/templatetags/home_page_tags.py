@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db.models import Sum
 
 from candidates.models import Ballot
+from elections.filters import region_choices
 from elections.models import Election
 from popolo.models import Membership
 
@@ -63,6 +64,16 @@ def sopn_import_progress(context):
         context["sopn_progress"] = sopn_progress_by_election(
             election_qs=election_qs
         )
+
+        context["sopn_progress_by_region"] = {}
+        for nuts1_id, region_name in region_choices():
+            region_qs = election_qs.filter(ballot__tags__NUTS1__key=nuts1_id)
+            if region_qs.exists():
+                context["sopn_progress_by_region"][nuts1_id] = {
+                    "name": region_name,
+                    "sopn_progress": sopn_progress_by_election(region_qs),
+                }
+
     return context
 
 
