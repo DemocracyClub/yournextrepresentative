@@ -425,6 +425,9 @@ class TestBallotFilter(SingleBallotStatesMixin, WebTest):
             ("UKI", "London"),
             ("UKJ", "South East"),
             ("UKK", "South West"),
+            ("UKL", "Wales"),
+            ("UKM", "Scotland"),
+            ("UKN", "Northern Ireland"),
         ]
 
     def test_region_filter(self):
@@ -440,7 +443,7 @@ class TestBallotFilter(SingleBallotStatesMixin, WebTest):
                 tags={"NUTS1": {"key": region[0], "value": region[1]}},
             )
         queryset = Ballot.objects.all()
-        self.assertEqual(queryset.count(), 9)
+        self.assertEqual(queryset.count(), 12)
         ballot_filter = BaseBallotFilter()
         for region in region_choices():
             with self.subTest(msg=region[0]):
