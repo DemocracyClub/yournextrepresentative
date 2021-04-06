@@ -14,6 +14,7 @@ from django.contrib.sites.models import Site
 from django.core.files import File
 from django.core.mail import send_mail
 from django.db import models
+from django.db.models import Count, Q
 from django.http import (
     HttpResponseBadRequest,
     HttpResponseRedirect,
@@ -35,6 +36,7 @@ from candidates.management.images import (
 )
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.views.version_data import get_change_metadata, get_client_ip
+from elections.models import Election
 from people.models import Person, PersonImage
 from popolo.models import Membership
 
@@ -585,9 +587,33 @@ class SuggestLockReviewListView(
     required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
 
     def get_lock_suggestions(self):
-        # TODO optimize this
+        num_lock_suggestions = Count(
+            "ballot", filter=Q(ballot__suggestedpostlock__isnull=False)
+        )
+        num_unlocked = Count(
+            "ballot", filter=Q(ballot__candidates_locked=False)
+        )
+        num_with_official_document = Count(
+            "ballot", filter=Q(ballot__officialdocument__isnull=False)
+        )
+        elections = (
+            Election.objects.annotate(num_lock_suggestions=num_lock_suggestions)
+            .annotate(num_unlocked=num_unlocked)
+            .annotate(num_with_official_document=num_with_official_document)
+        )
+
+        election = (
+            elections.filter(
+                num_lock_suggestions__gte=1,
+                num_unlocked__gte=1,
+                num_with_official_document__gte=1,
+            )
+            .order_by("?")
+            .first()
+        )
+
         qs = (
-            Ballot.objects.filter(candidates_locked=False)
+            election.ballot_set.filter(candidates_locked=False)
             .exclude(suggestedpostlock=None)
             .exclude(officialdocument=None)
             .select_related("election", "post")
@@ -604,7 +630,6 @@ class SuggestLockReviewListView(
                     ).prefetch_related("person__other_names"),
                 ),
             )
-            .order_by("election")
         )
 
         qs = qs.exclude(suggestedpostlock__user=self.request.user)
