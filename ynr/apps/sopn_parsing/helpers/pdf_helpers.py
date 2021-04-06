@@ -54,6 +54,7 @@ class SOPNDocument:
     def get_pages_by_ward_name(self, ward):
         ward = clean_text(ward)
         matched_pages = []
+
         for page in self.unmatched_pages():
             if page.is_top_page:
                 if matched_pages:
@@ -123,6 +124,9 @@ class SOPNPageText:
 
         """
         similar_len = document_heading.intersection(self.get_page_heading_set())
-        if len(similar_len) / len(document_heading) < CONTINUATION_THRESHOLD:
+        if (
+            len(similar_len) / len(document_heading) < CONTINUATION_THRESHOLD
+            or not len(similar_len) / len(document_heading) == 1
+        ):
             self.is_top_page = False
         return self.is_top_page
