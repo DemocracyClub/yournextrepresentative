@@ -176,7 +176,7 @@ class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
     party = PartyIdentifierField()
 
     def has_changed(self, *args, **kwargs):
-        if self.changed_data == ["ballot"] and not self["name"].data:
+        if "name" not in self.changed_data:
             return False
         else:
             return super().has_changed(*args, **kwargs)
