@@ -5,6 +5,7 @@ from django_webtest import WebTest
 from sorl.thumbnail import get_thumbnail
 
 from candidates.models import PartySet
+from candidates.models.popolo_extra import Ballot
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.dates import date_in_near_future, date_in_near_past
 from candidates.tests.factories import (
@@ -14,6 +15,7 @@ from candidates.tests.factories import (
     OrganizationFactory,
     PostFactory,
 )
+from elections.filters import BaseBallotFilter, region_choices
 from utils.dict_io import BufferDictReader
 from elections.tests.data_timeline_helper import DataTimelineHTMLAssertions
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
@@ -40,12 +42,15 @@ class SingleBallotStatesMixin:
         org = OrganizationFactory(name="Baz council")
         return PostFactory(label=post_label, organization=org, party_set=ps)
 
-    def create_ballot(self, ballot_paper_id, election, post, winner_count=1):
+    def create_ballot(
+        self, ballot_paper_id, election, post, winner_count=1, **kwargs
+    ):
         return BallotPaperFactory(
             ballot_paper_id=ballot_paper_id,
             election=election,
             post=post,
             winner_count=winner_count,
+            **kwargs,
         )
 
     def create_party(self):
@@ -402,3 +407,48 @@ class TestBallotView(
             user=self.user_who_can_record_results,
         )
         response.mustcontain(no="Unset the current winners")
+
+
+class TestBallotFilter(SingleBallotStatesMixin, WebTest):
+    def setUp(self):
+        self.election = self.create_election("Foo Election")
+        self.post = self.create_post("Bar")
+
+    def test_region_choices(self):
+        assert region_choices() == [
+            ("UKC", "North East"),
+            ("UKD", "North West"),
+            ("UKE", "Yorkshire and the Humber"),
+            ("UKF", "East Midlands"),
+            ("UKG", "West Midlands"),
+            ("UKH", "East of England"),
+            ("UKI", "London"),
+            ("UKJ", "South East"),
+            ("UKK", "South West"),
+        ]
+
+    def test_region_filter(self):
+        """
+        Create a single ballot with a nuts1 tag for each region.
+        Then filter by each region and assert the expected ballot is returned.
+        """
+        for region in region_choices():
+            self.create_ballot(
+                f"local.{region[0]}.2021-05-06",
+                self.election,
+                self.post,
+                tags={"NUTS1": {"key": region[0], "value": region[1]}},
+            )
+        queryset = Ballot.objects.all()
+        self.assertEqual(queryset.count(), 9)
+        ballot_filter = BaseBallotFilter()
+        for region in region_choices():
+            with self.subTest(msg=region[0]):
+                results = ballot_filter.region_filter(
+                    queryset=queryset, name=region[1], value=region[0]
+                )
+                expected = Ballot.objects.get(
+                    ballot_paper_id=f"local.{region[0]}.2021-05-06"
+                )
+                self.assertIn(expected, results)
+                self.assertEqual(results.count(), 1)

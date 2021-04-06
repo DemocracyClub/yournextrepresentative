@@ -251,6 +251,7 @@ class EEElection(dict):
                     "winner_count": winner_count,
                     "cancelled": self["cancelled"],
                     "replaces": self.get_replaced_ballot(),
+                    "tags": self.get("tags", {}),
                 },
             )
 

@@ -1,10 +1,10 @@
 from urllib.parse import urlencode
 
 import django_filters
-from django_filters.widgets import LinkWidget
 
 from candidates.models import LoggedAction
 from candidates.models.db import EditType
+from elections.filters import DSLinkWidget
 from moderation_queue.review_required_helper import REVIEW_TYPES
 
 
@@ -42,12 +42,12 @@ class LoggedActionRecentChangesFilter(django_filters.FilterSet):
             for t in REVIEW_TYPES
             if not t.type.startswith("no_review_")
         ],
-        widget=LinkWidget(),
+        widget=DSLinkWidget(),
     )
 
     edit_type = django_filters.ChoiceFilter(
         choices=[(edit_type.name, edit_type.value) for edit_type in EditType],
-        widget=LinkWidget(),
+        widget=DSLinkWidget(),
     )
 
     action_type = django_filters.AllValuesMultipleFilter(

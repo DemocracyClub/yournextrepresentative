@@ -1,6 +1,9 @@
 from urllib.parse import urlencode
 
 import django_filters
+from django.db.models import BLANK_CHOICE_DASH
+from django.utils.encoding import force_str
+from django.utils.safestring import mark_safe
 from django_filters.widgets import LinkWidget
 
 from django import forms
@@ -26,6 +29,24 @@ def election_types_choices():
 def current_election_types_choices():
     qs = Election.objects.current_or_future()
     return _get_election_types_choices_for_qs(qs)
+
+
+def region_choices():
+    """
+    Return a list of tuples with NUTS1 code and label. Used by the region filter
+    on the BaseBallotFilter
+    """
+    return [
+        ("UKC", "North East"),
+        ("UKD", "North West"),
+        ("UKE", "Yorkshire and the Humber"),
+        ("UKF", "East Midlands"),
+        ("UKG", "West Midlands"),
+        ("UKH", "East of England"),
+        ("UKI", "London"),
+        ("UKJ", "South East"),
+        ("UKK", "South West"),
+    ]
 
 
 class AnyBooleanWidget(forms.Select):
@@ -55,6 +76,48 @@ class HasResultsFilter(django_filters.BooleanFilter):
             return qs
 
 
+class DSLinkWidget(LinkWidget):
+    """
+    The LinkWidget doesn't allow iterating over choices in the template layer
+    to change the HTML wrappig the widget.
+
+    This breaks the way that Django *should* work, so we have to subclass
+    and alter the HTML in Python :/
+
+    https://github.com/carltongibson/django-filter/issues/880
+    """
+
+    def render(self, name, value, attrs=None, choices=(), renderer=None):
+        if not hasattr(self, "data"):
+            self.data = {}
+        if value is None:
+            value = ""
+        final_attrs = self.build_attrs(self.attrs, extra_attrs=attrs)
+        output = []
+        options = self.render_options(choices, [value], name)
+        if options:
+            output.append(options)
+        # output.append('</ul>')
+        return mark_safe("\n".join(output))
+
+    def render_option(self, name, selected_choices, option_value, option_label):
+        option_value = force_str(option_value)
+        if option_label == BLANK_CHOICE_DASH[0][1]:
+            option_label = "All"
+        data = self.data.copy()
+        data[name] = option_value
+        selected = data == self.data or option_value in selected_choices
+        try:
+            url = data.urlencode()
+        except AttributeError:
+            url = urlencode(data)
+        return self.option_string() % {
+            "attrs": selected and ' aria-current="true"' or "",
+            "query_string": url,
+            "label": force_str(option_label),
+        }
+
+
 class BaseBallotFilter(django_filters.FilterSet):
     def lock_status(self, queryset, name, value):
         """
@@ -82,10 +145,16 @@ class BaseBallotFilter(django_filters.FilterSet):
     def election_type_filter(self, queryset, name, value):
         return queryset.filter(election__slug__startswith=value)
 
+    def region_filter(self, queryset, name, value):
+        """
+        Filter queryset by region using the NUTS1 code
+        """
+        return queryset.filter(tags__NUTS1__key=value)
+
     review_required = django_filters.ChoiceFilter(
         field_name="review_required",
         method="lock_status",
-        widget=LinkWidget(),
+        widget=DSLinkWidget(),
         label="Lock status",
         help_text="One of `locked`, `suggestion` or `unlocked`.",
         choices=[
@@ -98,7 +167,7 @@ class BaseBallotFilter(django_filters.FilterSet):
     has_sopn = django_filters.ChoiceFilter(
         field_name="has_sopn",
         method="has_sopn_filter",
-        widget=LinkWidget(),
+        widget=DSLinkWidget(),
         label="Has SoPN",
         help_text="""Boolean, `1` for ballots that have a
             SOPN uploaded or `0` for ballots without SOPNs""",
@@ -106,11 +175,18 @@ class BaseBallotFilter(django_filters.FilterSet):
     )
 
     election_type = django_filters.ChoiceFilter(
-        widget=LinkWidget(),
+        widget=DSLinkWidget(),
         method="election_type_filter",
         choices=election_types_choices,
         label="Election Type",
         help_text="A valid [election type](https://elections.democracyclub.org.uk/election_types/)",
+    )
+
+    filter_by_region = django_filters.ChoiceFilter(
+        widget=DSLinkWidget(),
+        method="region_filter",
+        label="Filter by region",
+        choices=region_choices,
     )
 
     class Meta:
@@ -179,7 +255,7 @@ class CurrentOrFutureBallotFilter(BaseBallotFilter):
     """
 
     election_type = django_filters.ChoiceFilter(
-        widget=LinkWidget(),
+        widget=DSLinkWidget(),
         method="election_type_filter",
         choices=current_election_types_choices,
         label="Election Type",
