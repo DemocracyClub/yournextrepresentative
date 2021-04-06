@@ -301,6 +301,51 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response, "At least one person required on this ballot"
         )
 
+    def test_invalid_when_no_party_selected(self):
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/?edit=1", user=self.user
+        )
+
+        form = response.forms["bulk_add_form"]
+        form["form-0-name"] = "Bart Simpson"
+
+        response = form.submit()
+        form = response.context["formset"][0]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("party", form.errors)
+        self.assertIn("This field is required.", form.errors["party"])
+        self.assertContains(response, "This field is required.")
+
+    def test_valid_when_second_form_only_party_changed(self):
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/?edit=1", user=self.user
+        )
+
+        form = response.forms["bulk_add_form"]
+        form["form-0-name"] = "Bart Simpson"
+        form["form-0-party_1"] = self.green_party.ec_id
+        # change party on a second form, but not the name
+        form["form-1-party_1"] = self.green_party.ec_id
+
+        response = form.submit()
+
+        self.assertEqual(response.status_code, 302)
+        response = response.follow()
+        self.assertNotContains(response, "This field is required.")
+
     def test_valid_with_memberships_and_no_raw_people(self):
         existing_person = PersonFactory.create(
             id="1234567", name="Bart Simpson"
