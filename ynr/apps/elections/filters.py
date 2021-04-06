@@ -46,6 +46,9 @@ def region_choices():
         ("UKI", "London"),
         ("UKJ", "South East"),
         ("UKK", "South West"),
+        ("UKL", "Wales"),
+        ("UKM", "Scotland"),
+        ("UKN", "Northern Ireland"),
     ]
 
 
