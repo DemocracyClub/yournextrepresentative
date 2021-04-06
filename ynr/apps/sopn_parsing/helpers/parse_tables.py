@@ -2,12 +2,12 @@ import json
 import re
 from os.path import join
 
+from bulk_adding.models import RawPeople
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
-
-from bulk_adding.models import RawPeople
 from parties.models import Party, PartyDescription
 from sopn_parsing.helpers.text_helpers import clean_text
+from nameparser import HumanName
 
 FIRST_NAME_FIELDS = ["other name", "other names", "candidate forename"]
 LAST_NAME_FIELDS = [
@@ -103,12 +103,22 @@ def clean_name(name):
     - Build a string to represent the other names by looking for all words not in all caps
     - Strip whitespace in case last_names is empty and return string titleized
     """
+
     name = name.replace("\n", "")
     name = name.replace("`", "'")
     names = list(filter(None, name.split(" ")))
-    last_names = " ".join([name for name in names if name.isupper()])
+    last_names = clean_last_names(names)
     first_names = " ".join([name for name in names if not name.isupper()])
-    return f"{first_names} {last_names}".strip().title()
+    full_name = f"{first_names} {last_names}".strip()
+    return full_name
+
+
+## Handles Mc and Mac and other mixed titlecase names
+def clean_last_names(names):
+    last_names = " ".join([name for name in names if name.isupper()])
+    last_names = HumanName(last_names)
+    last_names.capitalize()
+    return str(last_names)
 
 
 def clean_description(description):

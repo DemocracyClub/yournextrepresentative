@@ -264,6 +264,10 @@ class TestParseTablesUnitTests(TestCase):
         name = parse_tables.clean_name("SMITH John")
         assert name == "John Smith"
 
+    def test_clean_last_names(self):
+        name = parse_tables.clean_last_names(["MACDONALD", "John"])
+        assert name == "MacDonald"
+
     def test_clean_name_two_word_surnames(self):
         names = [
             ("EDE COOPER \nPalmer", "Palmer Ede Cooper"),
