@@ -10,7 +10,6 @@ from parties.tests.factories import PartyDescriptionFactory
 from people.models import Person
 from people.tests.factories import PersonFactory
 from popolo.models import Membership
-from utils.testing_utils import FuzzyInt
 
 
 class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -112,7 +111,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(FuzzyInt(54, 81)):
+        with self.assertNumQueries(55):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)

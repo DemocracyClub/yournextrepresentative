@@ -186,7 +186,9 @@ class BallotPaperView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["ballot"] = ballot = get_object_or_404(
-            Ballot.objects.all().select_related("post", "election"),
+            Ballot.objects.all().select_related(
+                "post", "election", "resultset"
+            ),
             ballot_paper_id=context["election"],
         )
 

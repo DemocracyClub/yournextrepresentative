@@ -7,6 +7,7 @@ from django.db import connection, models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import mark_safe
+from django.utils.functional import cached_property
 
 from candidates.models.auth import TRUSTED_TO_LOCK_GROUP_NAME
 from elections.models import Election
@@ -214,7 +215,7 @@ class Ballot(models.Model):
             document_type=self.officialdocument_set.model.NOMINATION_PAPER
         ).latest()
 
-    @property
+    @cached_property
     def has_results(self):
         if getattr(self, "resultset", None):
             return True
