@@ -241,6 +241,17 @@ class BasePersonForm(forms.ModelForm):
         ("not-standing", "No"),
     )
 
+    def save(self, commit=True):
+        if "name" in self.changed_data and self.initial["name"]:
+            old_name = self.initial["name"]
+            self.instance.other_names.update_or_create(
+                name=old_name,
+                defaults={
+                    "note": "Added when main name changed on person edit form"
+                },
+            )
+        return super().save(commit)
+
 
 class NewPersonForm(PopulatePartiesMixin, BasePersonForm):
     class Meta(BasePersonForm.Meta):
