@@ -22,6 +22,7 @@ class TestSOPNHelpers(TestCase):
         example_doc_path = abspath(
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
         )
+
         doc = SOPNDocument(open(example_doc_path, "rb"))
         self.assertSetEqual(
             doc.document_heading,
@@ -88,8 +89,6 @@ class TestSOPNHelpers(TestCase):
         doc = SOPNDocument(open(example_doc_path, "rb"))
 
         self.assertEqual(len(doc.pages), 9)
-
-        na_wards = doc.get_pages_by_ward_name("north antrim")
-
-        self.assertEqual(len(na_wards), 5)
-        self.assertEqual(na_wards[0].page_number, 5)
+        na_wards = doc.get_pages_by_ward_name("ulster")
+        self.assertEqual(len(na_wards), 9)
+        self.assertEqual(na_wards[0].page_number, 1)
