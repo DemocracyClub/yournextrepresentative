@@ -1,12 +1,13 @@
 from urllib.parse import urlsplit
 
+from django.urls import reverse
 from django_webtest import WebTest
 
 from candidates.models import LoggedAction
 from people.models import Person
 
-from .auth import TestUserMixin
-from .uk_examples import UK2015ExamplesMixin
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
 class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -108,3 +109,42 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         last_logged_action = LoggedAction.objects.all().order_by("-created")[0]
         self.assertEqual(last_logged_action.person_id, person.id)
         self.assertEqual(last_logged_action.action_type, "person-create")
+
+    def test_new_person_view(self):
+        self.assertFalse(
+            Person.objects.filter(name="Elizabeth Bennet").exists()
+        )
+        url = reverse(
+            "person-create",
+            kwargs={
+                "ballot_paper_id": self.dulwich_post_ballot.ballot_paper_id
+            },
+        )
+        response = self.app.get(url, user=self.user)
+        self.assertEqual(response.status_code, 200)
+
+        # make sure we've got the PersonIdentifiers
+        self.assertTrue(
+            response.html.find(
+                "input", {"name": "tmp_person_identifiers-0-value"}
+            )
+        )
+        # make sure we've got the simple personal fields
+        self.assertTrue(response.html.find("input", {"id": "id_name"}))
+
+        self.assertTrue(
+            response.html.find("input", {"id": "id_ballot_paper_id"})
+        )
+        self.assertEqual(
+            response.html.find("input", {"id": "id_ballot_paper_id"})["value"],
+            self.dulwich_post_ballot.ballot_paper_id,
+        )
+        #
+        form = response.forms["new-candidate-form"]
+        form["name"] = "Elizabeth Bennet"
+
+        form["party_identifier_1"] = self.labour_party.ec_id
+        form["source"] = "Testing adding a new person to a post"
+        submission_response = form.submit()
+        self.assertEqual(submission_response.status_code, 302)
+        person = Person.objects.get(name="Elizabeth Bennet")
