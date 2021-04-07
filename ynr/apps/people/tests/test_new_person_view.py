@@ -8,6 +8,7 @@ from people.models import Person
 
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from parties.models import Party
 
 
 class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -142,9 +143,28 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         #
         form = response.forms["new-candidate-form"]
         form["name"] = "Elizabeth Bennet"
-
         form["party_identifier_1"] = self.labour_party.ec_id
         form["source"] = "Testing adding a new person to a post"
         submission_response = form.submit()
         self.assertEqual(submission_response.status_code, 302)
         person = Person.objects.get(name="Elizabeth Bennet")
+
+    def test_party_identifier_has_choices(self):
+        url = reverse(
+            "person-create",
+            kwargs={
+                "ballot_paper_id": self.dulwich_post_ballot.ballot_paper_id
+            },
+        )
+        response = self.app.get(url, user=self.user)
+        form = response.forms["new-candidate-form"]
+        # get the display value from the party choices loaded by the form
+        party_choices = [
+            party[-1] for party in form["party_identifier_0"].options
+        ]
+        # get all party names from the db
+        party_names = Party.objects.values_list("name", flat=True)
+        # check parties are in the choices
+        for name in party_names:
+            with self.subTest(msg=name):
+                self.assertIn(name, party_choices)

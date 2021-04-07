@@ -242,7 +242,7 @@ class BasePersonForm(forms.ModelForm):
     )
 
 
-class NewPersonForm(BasePersonForm):
+class NewPersonForm(PopulatePartiesMixin, BasePersonForm):
     class Meta(BasePersonForm.Meta):
         exclude = BasePersonForm.Meta.exclude + ("death_date",)
 
