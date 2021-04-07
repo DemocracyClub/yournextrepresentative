@@ -89,7 +89,7 @@ tox
 traitlets==4.3.2
 Unidecode==1.1.1
 urllib3>=1.21.1,<1.26
-waitress==1.4.4
+waitress==2.0.0
 WebOb==1.8.5
 WebTest==2.0.35
 Whoosh==2.7.4
