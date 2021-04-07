@@ -38,7 +38,7 @@ class Command(BaseCommand):
             Ballot.objects.filter(
                 election__election_date=options["election_date"]
             )
-            .select_related("election", "postextra", "post")
+            .select_related("election", "post")
             .order_by("election__slug")
         )
 
