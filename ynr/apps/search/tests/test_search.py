@@ -126,3 +126,10 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         PersonNameSynonym.objects.create(term="bertie", synonym="Bertram")
         self.assertFalse(search_person_by_name("Bertie").exists())
+
+    def test_double_space_regression(self):
+        """
+        Test that an input with more than one space in a row is valid
+        """
+        PersonFactory(name="Henry Jekyll")
+        self.assertTrue(search_person_by_name("Henry   Jekyll").exists())
