@@ -63,16 +63,15 @@ class RawPeople(TimeStampedModel):
             return {}
         initial = []
         for candidacy in self.data:
-            if candidacy.get("description_id"):
-                party = "{}__{}".format(
-                    candidacy["party_id"], candidacy["description_id"]
-                )
-            else:
-                party = candidacy["party_id"]
+            party_id = candidacy["party_id"]
+            description_id = candidacy.get("description_id")
+            if description_id:
+                party_id = f"{party_id}__{description_id}"
+
             initial.append(
                 {
                     "name": candidacy["name"],
-                    "party": party,
+                    "party": [party_id, party_id],
                     "source": self.source,
                 }
             )

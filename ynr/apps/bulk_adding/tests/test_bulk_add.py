@@ -47,6 +47,29 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertContains(response, "Review")
 
+    def test_with_raw_people_regression_test(self):
+        """
+        Simple test to check that the page renders when a RawPeople object
+        exists for the ballot. This is a regression test, as previously the
+        BulkAddFormSet would initialise with party data returned as a string
+        but now expects a list or tuple.
+        """
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            data=[{"name": "Bart", "party_id": "PP52"}],
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
+        )
+        self.assertEqual(response.status_code, 200)
+
     def test_submitting_form(self):
         post = self.dulwich_post
 
