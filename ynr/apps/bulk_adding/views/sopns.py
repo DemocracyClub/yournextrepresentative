@@ -2,6 +2,7 @@ from braces.views import LoginRequiredMixin
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import F
+from django.db.models.query import Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -26,11 +27,33 @@ class BulkAddSOPNRedirectView(RedirectView):
 
 
 class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
+    def get_ballot(self):
+        """
+        Get the ballot object with related objects prefetched where possible to
+        help performance.
+        """
+        queryset = Ballot.objects.select_related(
+            "post", "election", "rawpeople", "post__party_set"
+        ).prefetch_related(
+            "membership_set",
+            "membership_set__person",
+            "membership_set__person__other_names",
+            "membership_set__party",
+            "membership_set__party__descriptions",
+            Prefetch(
+                "officialdocument_set",
+                queryset=OfficialDocument.objects.filter(
+                    document_type=OfficialDocument.NOMINATION_PAPER
+                ),
+            ),
+        )
+        return get_object_or_404(
+            queryset, ballot_paper_id=self.kwargs["ballot_paper_id"]
+        )
+
     def add_election_and_post_to_context(self, context):
         if not hasattr(self, "ballot"):
-            self.ballot = get_object_or_404(
-                Ballot, ballot_paper_id=context["ballot_paper_id"]
-            )
+            self.ballot = self.get_ballot()
         context["ballot"] = self.ballot
         context["post"] = self.ballot.post
         context["election_obj"] = self.ballot.election
@@ -76,17 +99,14 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
     template_name = "bulk_add/sopns/add_form.html"
 
     def get(self, request, *args, **kwargs):
+
         if not request.GET.get("edit"):
-            ballot_qs = Ballot.objects.filter(
-                ballot_paper_id=kwargs["ballot_paper_id"]
-            ).select_related("post", "election")
-            if ballot_qs.exists():
-                self.ballot = ballot_qs.get()
-                if hasattr(ballot_qs.get(), "rawpeople"):
-                    if self.ballot.rawpeople.is_trusted:
-                        return HttpResponseRedirect(
-                            self.ballot.get_bulk_add_review_url()
-                        )
+            self.ballot = self.get_ballot()
+            if hasattr(self.ballot, "rawpeople"):
+                if self.ballot.rawpeople.is_trusted:
+                    return HttpResponseRedirect(
+                        self.ballot.get_bulk_add_review_url()
+                    )
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -207,9 +227,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                 )
 
             # ballot has changed so we should remove any out of date suggestions
-            ballot = Ballot.objects.get(
-                ballot_paper_id=context["ballot"].ballot_paper_id
-            )
+            ballot = context["ballot"]
             ballot.delete_outdated_suggested_locks()
 
             if self.request.POST.get("suggest_locking") == "on":

@@ -84,9 +84,10 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             description="Green Party Stop Fracking Now", party=self.green_party
         )
 
-        response = self.app.get(
-            "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
-        )
+        with self.assertNumQueries(25):
+            response = self.app.get(
+                "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
+            )
 
         form = response.forms["bulk_add_form"]
         form["form-0-name"] = "Homer Simpson"

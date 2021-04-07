@@ -15,7 +15,7 @@
 {% block content %}
 <h2>Add candidates to {{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h2>
 {% if official_document %}
-  <a href="{{ ballot.sopn.get_absolute_url }}" target="_blank" class="button tiny">Nomination paper (SoPN)</a>
+  <a href="{{ official_document.get_absolute_url }}" target="_blank" class="button tiny">Nomination paper (SoPN)</a>
   <details open class="panel">
   <summary>How to add or check candidates</summary>
 
