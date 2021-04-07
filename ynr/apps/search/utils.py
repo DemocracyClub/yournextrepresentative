@@ -5,8 +5,9 @@ from people.models import Person
 
 
 def search_person_by_name(name, synonym=True):
-    and_name = " & ".join(name.strip().split(" "))
-    or_name = " | ".join(name.strip().split(" "))
+    name = " ".join(name.strip().split())
+    and_name = " & ".join(name.split(" "))
+    or_name = " | ".join(name.split(" "))
     name = f"({and_name}) | ({or_name})"
     query = SearchQuery(name, search_type="raw", config="english")
 
