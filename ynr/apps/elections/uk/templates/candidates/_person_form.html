@@ -12,6 +12,18 @@
       {{ form.non_field_errors.as_ul }}
     {% else %}
       <p>Please check your information matches our requirements, below.</p>
+      {% if form.errors %}
+      <dl>
+        {% for field, error_list in form.errors.items %}
+          <dt>{{ field }}</dt>
+          {% for error in error_list %}
+            <dd>{{ error }}</dd>
+          {% endfor %}
+        {% endfor %}
+      </dl>
+      {% endif %}
+
+
     {% endif %}
   </div>
 {% endif %}

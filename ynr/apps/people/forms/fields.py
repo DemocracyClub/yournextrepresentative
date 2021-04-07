@@ -26,6 +26,11 @@ class ValidBallotField(forms.CharField):
 
     widget = BallotInputWidget
 
+    def prepare_value(self, value):
+        if isinstance(value, Ballot):
+            return value.ballot_paper_id
+        return value
+
     def to_python(self, value):
         if not value:
             return value
