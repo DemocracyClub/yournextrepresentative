@@ -86,7 +86,7 @@ git+https://github.com/symroe/slacker.git
 sorl-thumbnail==12.5.0
 sqlparse==0.3.0
 tox
-traitlets==4.3.2
+traitlets==5.0.5
 Unidecode==1.1.1
 urllib3>=1.21.1,<1.26
 WebOb==1.8.5
