@@ -387,18 +387,6 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
             identifiers_formset.save()
 
             membership_formset.save()
-
-            old_name = person.name
-            new_name = person.name
-
-            # TODO: Move to Form
-            if old_name != new_name:
-                person.other_names.update_or_create(
-                    name=old_name,
-                    defaults={
-                        "note": "Added when main name changed on person edit form"
-                    },
-                )
             person = form.save()
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data.pop("source")
