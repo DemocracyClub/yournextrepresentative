@@ -133,7 +133,7 @@ class Ballot(models.Model):
         on_delete=models.DO_NOTHING,
     )
 
-    tags = JSONField(default=dict)
+    tags = JSONField(default=dict, blank=True)
 
     UnsafeToDelete = UnsafeToDelete
 
