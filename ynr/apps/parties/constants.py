@@ -14,7 +14,7 @@ EC_EMBLEM_BASE = (
 # Normally we're safe to use the emblem with the lowest numerical ID returned by
 # the API for the party, however in the following cases the lowest ID emblem
 # isn't the best to use. This is an override for the emblem we will call
-# deafult.
+# default.
 DEFAULT_EMBLEMS = {
     # Labour Party
     "PP53": 52,
@@ -44,6 +44,10 @@ DEFAULT_EMBLEMS = {
     "PP616": 3535,
     # Heavy Woollen District Independents
     "PP6453": 4907,
+    # Reform UK
+    "PP7931": 7762,
+    # All for Unity Unity Party
+    "PP12579": 7697,
 }
 
 JOINT_DESCRIPTION_REGEX = r"^(.*?) \(joint descriptions? with\s?(.*)\)"
