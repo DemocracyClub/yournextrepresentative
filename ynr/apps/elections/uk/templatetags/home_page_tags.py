@@ -1,9 +1,9 @@
 from django import template
 from django.conf import settings
-from django.db.models import Sum
+from django.db.models import Sum, IntegerField, Count
+from django.db.models.functions import Cast
 
 from candidates.models import Ballot
-from elections.filters import region_choices
 from elections.models import Election
 from popolo.models import Membership
 
@@ -15,35 +15,41 @@ def sopn_progress_by_election_slug_prefix(self, election_slug_prefix):
     return self.sopn_progress_by_election(election_qs)
 
 
-def sopn_progress_by_election(election_qs):
-    context = {}
-    if not election_qs.exists():
-        return context
-    ballot_qs = Ballot.objects.filter(election__in=election_qs)
-    context["posts_total"] = ballot_qs.count()
+def sopn_progress_by_value(base_qs, lookup_value, label_field=None):
+    values = [lookup_value]
 
-    context["sopns_imported"] = ballot_qs.exclude(officialdocument=None).count()
-    context["sopns_imported_percent"] = round(
-        float(context["sopns_imported"]) / float(context["posts_total"]) * 100
-    )
+    if label_field:
+        values.append(label_field)
 
-    locked_ballot_qs = ballot_qs.filter(candidates_locked=True)
-    context["posts_locked"] = locked_ballot_qs.count()
-    context["posts_locked_percent"] = round(
-        float(context["posts_locked"]) / float(context["posts_total"]) * 100
-    )
+    ballot_qs = base_qs.values(*values).distinct()
+    ballot_qs = ballot_qs.annotate(
+        has_sopn_count=Sum("officialdocument"),
+        locked_count=Sum(Cast("candidates_locked", IntegerField())),
+        locksuggested_count=Count("suggestedpostlock"),
+        count=Count("ballot_paper_id"),
+    ).order_by(lookup_value)
+    values_dict = {}
 
-    context["posts_lock_suggested"] = (
-        ballot_qs.exclude(suggestedpostlock=None).count()
-        + context["posts_locked"]
-    )
-    context["posts_locked_suggested_percent"] = round(
-        float(context["posts_lock_suggested"])
-        / float(context["posts_total"])
-        * 100
-    )
+    for row in ballot_qs:
+        if label_field:
+            row["label"] = row.get(label_field)
+        row["posts_total"] = row["count"]
+        row["sopns_imported"] = row["has_sopn_count"] or 0
+        row["sopns_imported_percent"] = round(
+            float(row["sopns_imported"]) / float(row["posts_total"]) * 100
+        )
 
-    return context
+        row["posts_locked"] = row["locked_count"]
+        row["posts_locked_percent"] = round(
+            float(row["posts_locked"]) / float(row["posts_total"]) * 100
+        )
+        row["posts_lock_suggested"] = row["locksuggested_count"]
+        row["posts_locked_suggested_percent"] = round(
+            float(row["posts_lock_suggested"]) / float(row["posts_total"]) * 100
+        )
+        values_dict[str(row[lookup_value])] = row
+
+    return values_dict
 
 
 @register.inclusion_tag(
@@ -58,21 +64,18 @@ def sopn_import_progress(context):
         context["sopn_tracker_election_name"] = settings.SOPN_TRACKER_INFO[
             "election_name"
         ]
-        election_qs = Election.objects.filter(
-            election_date=settings.SOPN_TRACKER_INFO["election_date"]
-        )
-        context["sopn_progress"] = sopn_progress_by_election(
-            election_qs=election_qs
-        )
 
-        context["sopn_progress_by_region"] = {}
-        for nuts1_id, region_name in region_choices():
-            region_qs = election_qs.filter(ballot__tags__NUTS1__key=nuts1_id)
-            if region_qs.exists():
-                context["sopn_progress_by_region"][nuts1_id] = {
-                    "name": region_name,
-                    "sopn_progress": sopn_progress_by_election(region_qs),
-                }
+        value = settings.SOPN_TRACKER_INFO["election_date"]
+        context["sopn_progress"] = sopn_progress_by_value(
+            Ballot.objects.filter(election__election_date=value),
+            lookup_value="election__election_date",
+        )[value]
+
+        context["sopn_progress_by_region"] = sopn_progress_by_value(
+            Ballot.objects.filter(election__election_date=value),
+            lookup_value="tags__NUTS1__key",
+            label_field="tags__NUTS1__value",
+        )
 
     return context
 
