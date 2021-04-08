@@ -62,7 +62,7 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
 class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
     def suggested_people(self, person_name):
         if person_name:
-            qs = search_person_by_name(person_name)
+            qs = search_person_by_name(person_name, synonym=False)
             return qs[:5]
 
     def format_value(self, suggestion):
