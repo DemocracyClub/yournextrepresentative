@@ -95,7 +95,7 @@ class MembershipQuerySet(DateframeableQuerySet):
         qs = self.filter(ballot=ballot)
         qs = qs.annotate(last_name=LastWord("person__name"))
         qs = qs.order_by(*order_by)
-        qs = qs.select_related("person", "party").prefetch_related(
+        qs = qs.select_related("person", "party", "result").prefetch_related(
             "person__images"
         )
 
