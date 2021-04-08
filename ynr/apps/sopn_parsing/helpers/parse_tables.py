@@ -9,6 +9,8 @@ from parties.models import Party, PartyDescription
 from sopn_parsing.helpers.text_helpers import clean_text
 from nameparser import HumanName
 
+from sopn_parsing.models import ParsedSOPN
+
 FIRST_NAME_FIELDS = ["other name", "other names", "candidate forename"]
 LAST_NAME_FIELDS = [
     "surname",
@@ -241,7 +243,11 @@ def parse_raw_data_for_ballot(ballot):
     if ballot.suggestedpostlock_set.exists():
         raise ValueError("Can't parse a ballot with lock suggestions")
 
-    parsed_sopn_model = ballot.sopn.parsedsopn
+    try:
+        parsed_sopn_model = ballot.sopn.parsedsopn
+    except ParsedSOPN.DoesNotExist:
+        raise ValueError("No Parsed SOPN")
+
     data = parsed_sopn_model.as_pandas
     cell_counts = [len(merge_row_cells(c)) for c in iter_rows(data)]
 
