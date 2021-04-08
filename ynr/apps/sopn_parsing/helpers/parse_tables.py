@@ -139,26 +139,37 @@ def get_description(description, sopn):
         return None
 
     register = sopn.sopn.ballot.post.party_set.slug.upper()
+
+    # First try to get Party object with an exact match between parsed
+    # description and the Party name
     try:
-        description_model = PartyDescription.objects.get(
+        # If we find one, return None, so that the pain Party object
+        # is parsed in get_party below, and this will then be preselected
+        # for the user on the form.
+        Party.objects.get(name=description)
+        return None
+    except Party.DoesNotExist:
+        pass
+
+    try:
+        return PartyDescription.objects.get(
             description=description, party__register=register
         )
     except PartyDescription.DoesNotExist:
-        try:
-            return PartyDescription.objects.filter(
-                description__istartswith=description, party__register=register
-            ).first()
-        except PartyDescription.DoesNotExist:
-            try:
-                # If this is a Welsh version of a description, it will be at
-                # the end of the description
-                return PartyDescription.objects.filter(
-                    description__endswith="| {}".format(description),
-                    party__register=register,
-                ).first()
-            except PartyDescription.DoesNotExist:
-                return None
-    return description_model
+        pass
+
+    # try to find any that start with parsed description
+    qs = PartyDescription.objects.filter(
+        description__istartswith=description, party__register=register
+    )
+    if qs.exists():
+        return qs.first()
+
+    # final check - if this is a Welsh version of a description, it will be at
+    # the end of the description
+    return PartyDescription.objects.filter(
+        description__endswith=f"| {description}", party__register=register
+    ).first()
 
 
 def get_party(description_model, description, sopn):
