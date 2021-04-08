@@ -45,7 +45,7 @@
   {% endcache %}
 
 
-  {% cache 300 region_tracker %}
+  {% cache 300 election_type_tracker %}
     <h2>By election type</h2>
     <div class="region-grid" style="display: flex;flex-wrap: wrap;margin: -0.5em;">
       {% for election_type, stats in sopn_progress_by_election_type.items %}
