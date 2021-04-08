@@ -140,25 +140,24 @@ def get_description(description, sopn):
 
     register = sopn.sopn.ballot.post.party_set.slug.upper()
     try:
-        description_model = PartyDescription.objects.get(
+        return PartyDescription.objects.get(
             description=description, party__register=register
         )
     except PartyDescription.DoesNotExist:
-        try:
-            return PartyDescription.objects.filter(
-                description__istartswith=description, party__register=register
-            ).first()
-        except PartyDescription.DoesNotExist:
-            try:
-                # If this is a Welsh version of a description, it will be at
-                # the end of the description
-                return PartyDescription.objects.filter(
-                    description__endswith="| {}".format(description),
-                    party__register=register,
-                ).first()
-            except PartyDescription.DoesNotExist:
-                return None
-    return description_model
+        pass
+
+    # try to find any that start with parsed description
+    qs = PartyDescription.objects.filter(
+        description__istartswith=description, party__register=register
+    )
+    if qs.exists():
+        return qs.first()
+
+    # final check - if this is a Welsh version of a description, it will be at
+    # the end of the description
+    return PartyDescription.objects.filter(
+        description__endswith=f"| {description}", party__register=register
+    ).first()
 
 
 def get_party(description_model, description, sopn):
