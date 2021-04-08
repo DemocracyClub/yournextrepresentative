@@ -147,6 +147,18 @@ def get_description(description, sopn):
         return None
 
     register = sopn.sopn.ballot.post.party_set.slug.upper()
+
+    # First try to get Party object with an exact match between parsed
+    # description and the Party name
+    try:
+        # If we find one, return None, so that the pain Party object
+        # is parsed in get_party below, and this will then be preselected
+        # for the user on the form.
+        Party.objects.get(name=description)
+        return None
+    except Party.DoesNotExist:
+        pass
+
     try:
         return PartyDescription.objects.get(
             description=description, party__register=register
