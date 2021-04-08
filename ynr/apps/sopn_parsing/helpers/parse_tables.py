@@ -153,7 +153,7 @@ def get_description(description, sopn):
     # If we find one, return None, so that the pain Party object
     # is parsed in get_party below, and this will then be preselected
     # for the user on the form.
-    party = Party.objects.register(register).filter(name=description)
+    party = Party.objects.register(register).current().filter(name=description)
     if party.exists():
         return None
 
@@ -183,7 +183,8 @@ def get_party(description_model, description, sopn):
         return description_model.party
 
     party_name = clean_description(description)
-    qs = Party.objects.register(sopn.sopn.ballot.post.party_set.slug.upper())
+    register = sopn.sopn.ballot.post.party_set.slug.upper()
+    qs = Party.objects.register(register).current()
     if not party_name or party_name in INDEPENDENT_VALUES:
         return Party.objects.get(ec_id="ynmp-party:2")
 
