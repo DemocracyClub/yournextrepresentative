@@ -15,22 +15,22 @@
   {% for nuts1_id, region in sopn_progress_by_region.items %}
     <section style="flex: 1 0 45%;margin: 0.5em;">
     <hr>
-      <h3><a href="{% url "election_list_view" %}?filter_by_region={{ nuts1_id }}">{{ region.name }}
-        <br>{{ region.sopn_progress.posts_total }} ballots</a></h3>
+      <h3><a href="{% url "election_list_view" %}?filter_by_region={{ nuts1_id }}">{{ region.label }}
+        <br>{{ region.posts_total }} ballots</a></h3>
     <div class="row">
     <div class="columns large-6">
-      <h4><strong>{{region.sopn_progress.posts_lock_suggested|intcomma }}</strong> entered</h4>
+      <h4><strong>{{region.posts_lock_suggested|intcomma }}</strong> entered</h4>
       <div class="radius progress success large-12" role="progressbar"
-           aria-valuenow="{{region.sopn_progress.posts_lock_suggested }}"
-           aria-valuemin="0" aria-valuemax="{{region.sopn_progress.posts_total }}">
+           aria-valuenow="{{region.posts_lock_suggested }}"
+           aria-valuemin="0" aria-valuemax="{{region.posts_total }}">
         <span class="meter" style="width: {{region.sopn_progress.posts_locked_suggested_percent }}%"></span>
       </div>
     </div>
     <div class="columns large-6">
-      <h4><strong>{{region.sopn_progress.posts_locked|intcomma }}</strong> double-checked</h4>
+      <h4><strong>{{region.posts_locked|intcomma }}</strong> double-checked</h4>
       <div class="radius progress success large-12" role="progressbar"
-           aria-valuenow="{{region.sopn_progress.posts_locked }}" aria-valuemin="0"
-           aria-valuemax="{{region.sopn_progress.posts_total }}">
+           aria-valuenow="{{region.posts_locked }}" aria-valuemin="0"
+           aria-valuemax="{{region.posts_total }}">
         <span class="meter" style="width: {{region.sopn_progress.posts_locked_percent }}%"></span>
       </div>
     </div>
@@ -40,8 +40,8 @@
 
 
 
-    <p>Out of {{region.sopn_progress.posts_total|intcomma }} areas in total
-      {{region.sopn_progress.sopns_imported|intcomma }}</strong> areas have SoPNs
+    <p>Out of {{region.posts_total|intcomma }} areas in total
+      <strong>{{ region.sopns_imported|intcomma }}</strong> areas have SoPNs
       imported.
     </p>
     </section>
