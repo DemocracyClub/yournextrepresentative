@@ -23,7 +23,7 @@ def sopn_progress_by_value(base_qs, lookup_value, label_field=None):
 
     ballot_qs = base_qs.values(*values).distinct()
     ballot_qs = ballot_qs.annotate(
-        has_sopn_count=Sum("officialdocument"),
+        has_sopn_count=Count("officialdocument"),
         locked_count=Sum(Cast("candidates_locked", IntegerField())),
         locksuggested_count=Count("suggestedpostlock"),
         count=Count("ballot_paper_id"),
@@ -33,17 +33,19 @@ def sopn_progress_by_value(base_qs, lookup_value, label_field=None):
     for row in ballot_qs:
         if label_field:
             row["label"] = row.get(label_field)
-        row["posts_total"] = row["count"]
+            if not row["label"]:
+                continue
+        row["posts_total"] = row["count"] or 0
         row["sopns_imported"] = row["has_sopn_count"] or 0
         row["sopns_imported_percent"] = round(
             float(row["sopns_imported"]) / float(row["posts_total"]) * 100
         )
 
-        row["posts_locked"] = row["locked_count"]
+        row["posts_locked"] = row["locked_count"] or 0
         row["posts_locked_percent"] = round(
             float(row["posts_locked"]) / float(row["posts_total"]) * 100
         )
-        row["posts_lock_suggested"] = row["locksuggested_count"]
+        row["posts_lock_suggested"] = row["locksuggested_count"] or 0
         row["posts_locked_suggested_percent"] = round(
             float(row["posts_lock_suggested"]) / float(row["posts_total"]) * 100
         )
@@ -75,6 +77,11 @@ def sopn_import_progress(context):
             Ballot.objects.filter(election__election_date=value),
             lookup_value="tags__NUTS1__key",
             label_field="tags__NUTS1__value",
+        )
+        context["sopn_progress_by_election_type"] = sopn_progress_by_value(
+            Ballot.objects.filter(election__election_date=value),
+            lookup_value="election__for_post_role",
+            label_field="election__for_post_role",
         )
 
     return context

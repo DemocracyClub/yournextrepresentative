@@ -11,42 +11,73 @@
     </a>
   </p>
 {% cache 300 region_tracker %}
+  <h2>By region</h2>
   <div class="region-grid" style="display: flex;flex-wrap: wrap;margin: -0.5em;">
-  {% for nuts1_id, region in sopn_progress_by_region.items %}
+  {% for nuts1_id, stats in sopn_progress_by_region.items %}
     <section style="flex: 1 0 45%;margin: 0.5em;">
     <hr>
-      <h3><a href="{% url "election_list_view" %}?filter_by_region={{ nuts1_id }}">{{ region.label }}
-        <br>{{ region.posts_total }} ballots</a></h3>
+      <h3 style="font-size: 1.2em"><a href="{% url "election_list_view" %}?filter_by_region={{ nuts1_id }}">{{ stats.label }}: {{ stats.posts_total }} ballots</a></h3>
     <div class="row">
     <div class="columns large-6">
-      <h4><strong>{{region.posts_lock_suggested|intcomma }}</strong> entered</h4>
+      <p style="margin-bottom: 0"><strong>{{stats.posts_lock_suggested|intcomma }}</strong> entered</p>
       <div class="radius progress success large-12" role="progressbar"
-           aria-valuenow="{{region.posts_lock_suggested }}"
-           aria-valuemin="0" aria-valuemax="{{region.posts_total }}">
-        <span class="meter" style="width: {{region.sopn_progress.posts_locked_suggested_percent }}%"></span>
+           aria-valuenow="{{stats.posts_lock_suggested }}"
+           aria-valuemin="0" aria-valuemax="{{stats.posts_total }}">
+        <span class="meter" style="width: {{stats.sopn_progress.posts_locked_suggested_percent }}%"></span>
       </div>
     </div>
     <div class="columns large-6">
-      <h4><strong>{{region.posts_locked|intcomma }}</strong> double-checked</h4>
+      <p style="margin-bottom: 0"><strong>{{stats.posts_locked|intcomma }}</strong> double-checked</p>
       <div class="radius progress success large-12" role="progressbar"
-           aria-valuenow="{{region.posts_locked }}" aria-valuemin="0"
-           aria-valuemax="{{region.posts_total }}">
-        <span class="meter" style="width: {{region.sopn_progress.posts_locked_percent }}%"></span>
+           aria-valuenow="{{stats.posts_locked }}" aria-valuemin="0"
+           aria-valuemax="{{stats.posts_total }}">
+        <span class="meter" style="width: {{stats.sopn_progress.posts_locked_percent }}%"></span>
       </div>
     </div>
     </div>
-
-
-
-
-
-    <p>Out of {{region.posts_total|intcomma }} areas in total
-      <strong>{{ region.sopns_imported|intcomma }}</strong> areas have SoPNs
+    <p>Out of {{stats.posts_total|intcomma }} areas in total
+      <strong>{{ stats.sopns_imported|intcomma }}</strong> areas have SoPNs
       imported.
     </p>
     </section>
   {% endfor %}
   </div>
   {% endcache %}
+
+
+  {% cache 300 region_tracker %}
+    <h2>By election type</h2>
+    <div class="region-grid" style="display: flex;flex-wrap: wrap;margin: -0.5em;">
+      {% for election_type, stats in sopn_progress_by_election_type.items %}
+        <section style="flex: 1 0 45%;margin: 0.5em;">
+          <hr>
+          <h3 style="font-size: 1.2em"><a href="{% url "election_list_view" %}?election_type={{ election_type }}">{{ stats.label }}: {{ stats.posts_total }} ballots</a></h3>
+          <div class="row">
+            <div class="columns large-6">
+              <p style="margin-bottom: 0"><strong>{{stats.posts_lock_suggested|intcomma }}</strong> entered</p>
+              <div class="radius progress success large-12" role="progressbar"
+                   aria-valuenow="{{stats.posts_lock_suggested }}"
+                   aria-valuemin="0" aria-valuemax="{{stats.posts_total }}">
+                <span class="meter" style="width: {{stats.sopn_progress.posts_locked_suggested_percent }}%"></span>
+              </div>
+            </div>
+            <div class="columns large-6">
+              <p style="margin-bottom: 0"><strong>{{stats.posts_locked|intcomma }}</strong> double-checked</p>
+              <div class="radius progress success large-12" role="progressbar"
+                   aria-valuenow="{{stats.posts_locked }}" aria-valuemin="0"
+                   aria-valuemax="{{stats.posts_total }}">
+                <span class="meter" style="width: {{stats.sopn_progress.posts_locked_percent }}%"></span>
+              </div>
+            </div>
+          </div>
+          <p>Out of {{stats.posts_total|intcomma }} areas in total
+            <strong>{{ stats.sopns_imported|intcomma }}</strong> areas have SoPNs
+            imported.
+          </p>
+        </section>
+      {% endfor %}
+    </div>
+  {% endcache %}
+
 
 {% endif %}
