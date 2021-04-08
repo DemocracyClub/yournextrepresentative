@@ -1,6 +1,6 @@
 from django import template
 from django.conf import settings
-from django.db.models import Sum, IntegerField, Count
+from django.db.models import Sum, IntegerField, Count, Func, F, Value, TextField
 from django.db.models.functions import Cast
 
 from candidates.models import Ballot
@@ -81,9 +81,18 @@ def sopn_import_progress(context):
             lookup_value="tags__NUTS1__key",
             label_field="tags__NUTS1__value",
         )
+        election_type = Func(
+            F("election__slug"),
+            Value("."),
+            Value(1),
+            function="split_part",
+            output=TextField(),
+        )
         context["sopn_progress_by_election_type"] = sopn_progress_by_value(
-            Ballot.objects.filter(election__election_date=value),
-            lookup_value="election__for_post_role",
+            Ballot.objects.filter(election__election_date=value).annotate(
+                election_type=election_type
+            ),
+            lookup_value="election_type",
             label_field="election__for_post_role",
         )
 
