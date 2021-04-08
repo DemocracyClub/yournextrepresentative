@@ -1,4 +1,5 @@
 import json
+import pandas as pd
 
 from django.core.management import call_command
 from django.test import TestCase
@@ -88,6 +89,20 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
                 {"name": "Melanie Jenner", "party_id": "PP53"},
             ],
         )
+
+    def test_values_contain_header_like_strings(self):
+        df = pd.DataFrame(
+            {
+                "Name of \nCandidate": [
+                    "BRADBURY \nAndrew John",
+                    "COLLINS \nDave",
+                    "Name of \nCandidate",
+                ]
+            }
+        )
+
+        result = parse_tables.values_contain_header_like_strings(df)
+        self.assertTrue(result)
 
 
 class TestParseTablesUnitTests(TestCase):
