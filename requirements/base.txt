@@ -43,7 +43,7 @@ idna>=2.5,<2.9
 ipaddress==1.0.22
 ipdb==0.13.4
 ipython-genutils==0.2.0
-ipython==7.21.0
+ipython==7.22.0
 jsonfield==2.0.2
 jsonpatch==1.23
 jsonpointer==2.0
@@ -70,7 +70,7 @@ pytest-env==0.6.2
 pytest-flakes==4.0.1
 pytest-pep8==1.0.6
 python-dateutil==2.8.1
-pytest-black==0.3.10
+pytest-black==0.3.12
 pytest-subtests<1.0
 python-magic==0.4.6
 python-memcached==1.59
