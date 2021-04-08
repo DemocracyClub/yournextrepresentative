@@ -5,9 +5,9 @@ from sopn_parsing.helpers.parse_tables import parse_raw_data_for_ballot
 
 class Command(BaseSOPNParsingCommand):
     help = """
-    Convert the raw extracted tables on the ParsedSOPN model to a parsed 
+    Convert the raw extracted tables on the ParsedSOPN model to a parsed
     RawPeople model, and set the status as parsed.
-    
+
     """
 
     def handle(self, *args, **options):
@@ -17,7 +17,9 @@ class Command(BaseSOPNParsingCommand):
             if options["reparse"]:
                 # If reparsing, only reparse RawPeople created by parsing
                 # from a PDF
-                filter_kwargs["rawpeople"] = RawPeople.SOURCE_PARSED_PDF
+                filter_kwargs[
+                    "rawpeople__source_type"
+                ] = RawPeople.SOURCE_PARSED_PDF
             else:
                 # Where no parsed data already exists
                 filter_kwargs[
