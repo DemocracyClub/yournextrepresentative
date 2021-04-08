@@ -1,3 +1,4 @@
+import csv
 import errno
 import hashlib
 import mimetypes
@@ -11,7 +12,6 @@ from django.core.files.storage import DefaultStorage
 from django.core.management.base import BaseCommand
 
 from candidates.models import Ballot
-from utils.dict_io import BufferDictReader
 from official_documents.models import OfficialDocument
 from sopn_parsing.tasks import extract_and_parse_tables_for_ballot
 
@@ -69,7 +69,7 @@ class Command(BaseCommand):
 
         r = requests.get(csv_url)
         r.encoding = "utf-8"
-        reader = BufferDictReader(r.text)
+        reader = csv.DictReader(r.text.splitlines())
         for row in reader:
             ballot = Ballot.objects.get(ballot_paper_id=row["ballot_paper_id"])
             document_url = row["Link to PDF"]
@@ -172,4 +172,7 @@ class Command(BaseCommand):
                 "Successfully added the Statement of Persons Nominated for {0}"
             )
             print(message.format(ballot.ballot_paper_id))
-            extract_and_parse_tables_for_ballot.delay(ballot.ballot_paper_id)
+            try:
+                extract_and_parse_tables_for_ballot(ballot.ballot_paper_id)
+            except Exception as e:
+                print(e)
