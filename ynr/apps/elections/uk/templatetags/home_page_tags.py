@@ -45,7 +45,10 @@ def sopn_progress_by_value(base_qs, lookup_value, label_field=None):
         row["posts_locked_percent"] = round(
             float(row["posts_locked"]) / float(row["posts_total"]) * 100
         )
-        row["posts_lock_suggested"] = row["locksuggested_count"] or 0
+        row["posts_lock_suggested"] = min(
+            (row["locksuggested_count"] or 0) + row["posts_locked"],
+            row["posts_total"],
+        )
         row["posts_locked_suggested_percent"] = round(
             float(row["posts_lock_suggested"]) / float(row["posts_total"]) * 100
         )
