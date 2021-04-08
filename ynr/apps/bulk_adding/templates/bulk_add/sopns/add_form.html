@@ -72,7 +72,7 @@
     </div>
   {% endif %}
 
-  <table class="table sopn_adding_table ballot_group" data-party-register="{{ ballot.post.party_set.slug|upper }}">
+  <table class="table sopn_adding_table" >
     {% for form in formset %}
       {% for field in form.hidden_fields %}
         {{ field }}
@@ -84,7 +84,7 @@
           </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="ballot_group" data-party-register="{{ ballot.post.party_set.slug|upper }}">
       <tr>
         <th>
           {{ form.name.errors }}
