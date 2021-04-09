@@ -6,10 +6,11 @@ from candidates.tests.factories import MembershipFactory
 from candidates.tests.test_update_view import membership_id_set
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from official_documents.models import OfficialDocument
-from parties.tests.factories import PartyDescriptionFactory
+from parties.tests.factories import PartyDescriptionFactory, PartyFactory
 from people.models import Person
 from people.tests.factories import PersonFactory
 from popolo.models import Membership
+from utils.testing_utils import FuzzyInt
 
 
 class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -69,6 +70,55 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertEqual(response.status_code, 200)
 
+    def test_with_party_not_from_default_choices(self):
+        """
+        Regression test to check that when a Party is selected that was not
+        included in the initially loaded parties from the default_party_choices
+        method, that the review step validates and passes. Previously this was
+        causing a 500 error see:
+        https://sentry.io/organizations/democracy-club-gp/issues/2326522296/?project=169287&query=is%3Aunresolved
+        """
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        # create a party that isnt included in the default_party_choices as it
+        # doesnt have any current candidates
+        barnsley_independents = PartyFactory(
+            ec_id="PP530",
+            name="Barnsley Independent Group",
+            legacy_slug="party:530",
+            register="GB",
+            current_candidates=0,
+        )
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
+        )
+        form = response.forms["bulk_add_form"]
+        form["form-0-name"] = "Homer Simpson"
+        # get ec_ids from PartySelectField choices that were initially loaded
+        party_choices_ec_ids = [
+            choice[0] for choice in form["form-0-party_0"].options
+        ]
+        self.assertNotIn(barnsley_independents.ec_id, party_choices_ec_ids)
+        # set value to party that wasnt loaded initially - mimicking the
+        # "load more parties" flow
+        form["form-0-party_1"] = barnsley_independents.ec_id
+        # submit the form to proceed to review step
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+        response = response.follow()
+        #  confirm as a new person and submit lock suggestion
+        form = response.forms[1]
+        form["form-0-select_person"].select("_new")
+        response = form.submit().follow()
+        # previously this raised a 500 error caused by
+        # AttributeError: 'ReviewSinglePersonFormFormSet' object has no
+        # attribute 'cleaned_data'
+        self.assertEqual(response.status_code, 200)
+
     def test_submitting_form(self):
         post = self.dulwich_post
 
@@ -111,7 +161,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(55):
+        with self.assertNumQueries(FuzzyInt(55, 58)):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)

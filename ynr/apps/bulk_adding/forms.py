@@ -122,8 +122,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         form.fields["select_person"].initial = "_new"
 
         if hasattr(self, "parties"):
-            form.fields["party"] = forms.ChoiceField(
-                choices=self.parties,
+            form.fields["party"] = forms.CharField(
                 widget=forms.HiddenInput(
                     attrs={"readonly": "readonly", "class": "party-select"}
                 ),
