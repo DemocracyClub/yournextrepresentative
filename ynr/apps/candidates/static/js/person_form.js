@@ -99,7 +99,7 @@ var setup_single_party_select = function(i, partySelect) {
       }
       if (selected_register === party_register) {
         return match;
-      } else if (party_register === null) {
+      } else if (party_register === "all") {
         return match;
       } else {
         return null;
