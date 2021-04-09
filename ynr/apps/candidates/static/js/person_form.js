@@ -101,6 +101,8 @@ var setup_single_party_select = function(i, partySelect) {
         return match;
       } else if (party_register === "all") {
         return match;
+      } else if (party_register === null) {
+        return match;
       } else {
         return null;
       }
