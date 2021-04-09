@@ -15,7 +15,9 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
         resp = self.app.get(reverse("ajax_ballots_for_select"))
         self.assertHTMLEqual(
             resp.text,
-            """<optgroup label='Maidstone local election'>
+            """
+            <option></option>
+            <optgroup label='Maidstone local election'>
             <option value='local.maidstone.DIW:E05005004.2016-05-05' data-party-register='GB' data-uses-party-lists='False'>Shepway South Ward</option>
             </optgroup>
             <optgroup label='2015 General Election'>
@@ -35,13 +37,14 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
         resp = self.app.get(reverse("ajax_ballots_for_select"))
         self.assertHTMLEqual(
             resp.text,
-            """<optgroup label='Maidstone local election'>
-        <option value='local.maidstone.DIW:E05005004.2016-05-05' data-party-register='GB' data-uses-party-lists='False'>Shepway South Ward</option>
-        </optgroup>
-        <optgroup label='2015 General Election'>
-        <option value='parl.65913.2015-05-07' data-party-register='GB' data-uses-party-lists='False'>Member of Parliament for Camberwell and Peckham (❌ cancelled)</option>
-        <option data-party-register="GB" data-uses-party-lists="False" disabled="True" value="parl.65808.2015-05-07">Member of Parliament for Dulwich and West Norwood 🔐</option>
-        <option value='parl.14419.2015-05-07' data-party-register='GB' data-uses-party-lists='False'>Member of Parliament for Edinburgh East</option>
-        <option value='parl.14420.2015-05-07' data-party-register='GB' data-uses-party-lists='False'>Member of Parliament for Edinburgh North and Leith</option>
-        </optgroup>""",
+            """<option></option>
+            <optgroup label='Maidstone local election'>
+            <option value='local.maidstone.DIW:E05005004.2016-05-05' data-party-register='GB' data-uses-party-lists='False'>Shepway South Ward</option>
+            </optgroup>
+            <optgroup label='2015 General Election'>
+            <option value='parl.65913.2015-05-07' data-party-register='GB' data-uses-party-lists='False'>Member of Parliament for Camberwell and Peckham (❌ cancelled)</option>
+            <option data-party-register="GB" data-uses-party-lists="False" disabled="True" value="parl.65808.2015-05-07">Member of Parliament for Dulwich and West Norwood 🔐</option>
+            <option value='parl.14419.2015-05-07' data-party-register='GB' data-uses-party-lists='False'>Member of Parliament for Edinburgh East</option>
+            <option value='parl.14420.2015-05-07' data-party-register='GB' data-uses-party-lists='False'>Member of Parliament for Edinburgh North and Leith</option>
+            </optgroup>""",
         )

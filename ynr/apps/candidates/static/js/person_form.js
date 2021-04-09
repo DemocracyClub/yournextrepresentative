@@ -19,7 +19,11 @@ var setup_ballot_select2 = function(ballots) {
       .insertAfter(BallotInput);
     BallotInput.hide().attr("required", false);
 
-    BallotSelect.select2();
+    BallotSelect.select2({
+      placeholder: "Select a ballot",
+      width: '100%',
+      allowClear: true
+    });
     BallotSelect.on('select2:select', function (e) {
       var selected_ballot = $(e.params.data.element);
       var uses_party_lists = selected_ballot.data("usesPartyLists");
