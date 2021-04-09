@@ -349,6 +349,7 @@ class BallotsForSelectAjaxView(View):
             if ballot.election.name != election_name:
                 election_name = ballot.election.name
                 if data:
+
                     data.append("</optgroup>")
                 data.append(f"<optgroup label='{election_name}'>")
 
@@ -370,5 +371,8 @@ class BallotsForSelectAjaxView(View):
             )
             data.append(f"<option {attrs_str}>" f"{ballot_label}" f"</option>")
         data.append("</optgroup>")
-
+        # empty option needs to be included for select2 to display a placeholder
+        # see https://select2.org/placeholders#single-select-placeholders
+        #  https://github.com/DemocracyClub/yournextrepresentative/issues/1435
+        data.insert(0, "<option></option>")
         return HttpResponse("\n".join(data))
