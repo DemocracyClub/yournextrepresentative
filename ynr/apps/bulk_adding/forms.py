@@ -22,17 +22,7 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
             self.ballot = kwargs["ballot"]
             del kwargs["ballot"]
 
-        self.party_register = self.ballot.post.party_set.slug.upper()
-        self.parties = Party.objects.register(
-            self.party_register
-        ).default_party_choices()
-
         super().__init__(*args, **kwargs)
-
-    def get_form_kwargs(self, index):
-        kwargs = super().get_form_kwargs(index)
-        kwargs["party_choices"] = self.parties
-        return kwargs
 
     def add_fields(self, form, index):
         super().add_fields(form, index)
@@ -57,6 +47,19 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
                     )
 
         return super().clean()
+
+
+class BulkAddFormSet(BaseBulkAddFormSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.parties = Party.objects.register(
+            self.ballot.post.party_set.slug.upper()
+        ).default_party_choices()
+
+    def get_form_kwargs(self, index):
+        kwargs = super().get_form_kwargs(index)
+        kwargs["party_choices"] = self.parties
+        return kwargs
 
 
 class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
@@ -121,13 +124,12 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         )
         form.fields["select_person"].initial = "_new"
 
-        if hasattr(self, "parties"):
-            form.fields["party"] = forms.CharField(
-                widget=forms.HiddenInput(
-                    attrs={"readonly": "readonly", "class": "party-select"}
-                ),
-                required=False,
-            )
+        form.fields["party"] = forms.CharField(
+            widget=forms.HiddenInput(
+                attrs={"readonly": "readonly", "class": "party-select"}
+            ),
+            required=False,
+        )
 
     def clean(self):
         errors = []
@@ -205,11 +207,8 @@ class ReviewSinglePersonForm(ReviewSinglePersonNameOnlyForm):
     )
 
 
-BulkAddFormSet = forms.formset_factory(
-    QuickAddSinglePersonForm,
-    extra=15,
-    formset=BaseBulkAddFormSet,
-    can_delete=True,
+BulkAddFormSetFactory = forms.formset_factory(
+    QuickAddSinglePersonForm, extra=15, formset=BulkAddFormSet, can_delete=True
 )
 
 

@@ -124,11 +124,11 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             form_kwargs["source"] = context["official_document"].source_url
 
         if self.request.POST:
-            context["formset"] = forms.BulkAddFormSet(
+            context["formset"] = forms.BulkAddFormSetFactory(
                 self.request.POST, **form_kwargs
             )
         else:
-            context["formset"] = forms.BulkAddFormSet(**form_kwargs)
+            context["formset"] = forms.BulkAddFormSetFactory(**form_kwargs)
 
         return context
 
