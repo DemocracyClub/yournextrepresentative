@@ -70,9 +70,13 @@ class PartyQuerySet(models.QuerySet):
             .order_by(*party_order_by)
             .only("date_deregistered", "name", "ec_id", "register")
         )
-        if extra_party_ids:
-            extra_qs = self.model.objects.filter(ec_id__in=extra_party_ids)
-            parties_current_qs = extra_qs | parties_current_qs
+        if not extra_party_ids:
+            extra_party_ids = []
+        if isinstance(extra_party_ids, tuple):
+            extra_party_ids = list(extra_party_ids)
+        extra_party_ids.append("ynmp-party:2")
+        extra_qs = self.model.objects.filter(ec_id__in=extra_party_ids)
+        parties_current_qs = extra_qs | parties_current_qs
 
         if include_descriptions:
             parties_current_qs = parties_current_qs.prefetch_related(
