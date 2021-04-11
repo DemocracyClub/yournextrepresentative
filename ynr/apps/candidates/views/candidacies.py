@@ -126,6 +126,6 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
         context["person"] = get_object_or_404(
             Person, id=self.request.POST.get("person_id")
         )
-        post = get_object_or_404(Post, slug=self.request.POST.get("post_id"))
-        context["post_label"] = post.label
+        # post = get_object_or_404(Post, slug=self.request.POST.get("post_id"))
+        # context["post_label"] = post.label
         return context

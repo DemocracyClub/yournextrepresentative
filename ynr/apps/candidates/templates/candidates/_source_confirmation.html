@@ -4,7 +4,7 @@
     {% csrf_token %}
     <input type="hidden" name="person_id" value="{{ person_id }}"/>
     <label for="id_source">Before we save that, can you show us <em>where</em> you heard it? {{ settings.SOURCE_HINTS }}</label>
-    <input type="text" name="source" id="id_source" maxlength="512" required="required"/>
+    <input type="text" name="source" id="id_source" maxlength="512" required="required" value="{{ source|default:"" }}"/>
     <input type="submit" class="button tiny" value="Save changes" />
   </form>
 </div>
