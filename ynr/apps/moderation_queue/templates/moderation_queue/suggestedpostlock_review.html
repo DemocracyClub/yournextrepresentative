@@ -61,11 +61,11 @@
     {% endfor %}
   {% endfor %}
 
-
-
+  <a href="{% url "suggestions-to-lock-review-list" %}" class="button">Reload page</a>
 
 {% else %}
   All ballots with lock suggestions have been locked! (not including your own lock suggestions)
+
 {% endif %}
 
 
