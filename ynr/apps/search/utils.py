@@ -8,7 +8,7 @@ from people.models import Person
 
 def search_person_by_name(name, synonym=True):
     name = name.lower()
-    name = re.sub(r"[^a-z ]", "", name)
+    name = re.sub(r"[^a-z ]", " ", name)
     name = " ".join(name.strip().split())
     and_name = " & ".join(name.split(" "))
     or_name = " | ".join(name.split(" "))
