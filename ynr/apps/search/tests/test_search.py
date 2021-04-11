@@ -133,3 +133,15 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         """
         PersonFactory(name="Henry Jekyll")
         self.assertTrue(search_person_by_name("Henry   Jekyll").exists())
+
+    def test_backtick_regression(self):
+        """
+        Test the queries with backticks and other chars still work
+        """
+
+        PersonFactory(name="Henry Jekyll")
+        self.assertTrue(
+            search_person_by_name(
+                "` ' £$$^*   ($ £%  Henry   " "Jekyll \t"
+            ).exists()
+        )
