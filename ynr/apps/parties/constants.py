@@ -48,6 +48,8 @@ DEFAULT_EMBLEMS = {
     "PP7931": 7762,
     # All for Unity Unity Party
     "PP12579": 7697,
+    # Newcastle Independents
+    "PP905": 7315,
 }
 
 JOINT_DESCRIPTION_REGEX = r"^(.*?) \(joint descriptions? with\s?(.*)\)"
