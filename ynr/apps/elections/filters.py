@@ -301,7 +301,11 @@ def filter_shortcuts(request):
         {
             "name": "data_input",
             "label": "Ready for data input",
-            "query": {"review_required": ["unlocked"], "has_sopn": ["1"]},
+            "query": {
+                "review_required": ["unlocked"],
+                "has_sopn": ["1"],
+                "cancelled": [0],
+            },
         }
     ]
 
