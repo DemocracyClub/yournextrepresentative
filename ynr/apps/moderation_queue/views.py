@@ -14,6 +14,7 @@ from django.contrib.sites.models import Site
 from django.core.files import File
 from django.core.mail import send_mail
 from django.db import models
+from django.db.models import Count, Q
 from django.http import (
     HttpResponseBadRequest,
     HttpResponseRedirect,
@@ -35,6 +36,7 @@ from candidates.management.images import (
 )
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.views.version_data import get_change_metadata, get_client_ip
+from elections.models import Election
 from people.models import Person, PersonImage
 from popolo.models import Membership
 
@@ -584,12 +586,35 @@ class SuggestLockReviewListView(
     template_name = "moderation_queue/suggestedpostlock_review.html"
     required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
 
+    def get_random_election(self):
+        """
+        Get a random Election which has ballots with lock suggestions not
+        belonging to the user.
+        """
+        # using annotate and order_by('?') produces strange results
+        # see https://code.djangoproject.com/ticket/26390
+        # so first do the annotation and filtering
+        num_lock_suggestions = Count(
+            "ballot",
+            filter=Q(ballot__suggestedpostlock__isnull=False)
+            & ~Q(ballot__suggestedpostlock__user=self.request.user),
+        )
+        elections = Election.objects.annotate(
+            num_lock_suggestions=num_lock_suggestions
+        ).filter(num_lock_suggestions__gte=1)
+        # then use that QS to get the QS to randomise and return an object
+        return Election.objects.filter(pk__in=elections).order_by("?").first()
+
     def get_lock_suggestions(self):
-        # TODO optimize this
-        qs = (
-            Ballot.objects.filter(candidates_locked=False)
-            .exclude(suggestedpostlock=None)
-            .exclude(officialdocument=None)
+        """
+        Return a QuerySet of Ballot objects with lock suggestions unrelated to
+        the user in the request.
+        """
+        return (
+            Ballot.objects.exclude(
+                Q(suggestedpostlock__isnull=True)
+                | Q(suggestedpostlock__user=self.request.user)
+            )
             .select_related("election", "post")
             .prefetch_related(
                 "officialdocument_set",
@@ -604,18 +629,14 @@ class SuggestLockReviewListView(
                     ).prefetch_related("person__other_names"),
                 ),
             )
-            .order_by("?")
         )
-
-        qs = qs.exclude(suggestedpostlock__user=self.request.user)
-        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        all_ballots = self.get_lock_suggestions()
-        context["total_ballots"] = all_ballots.count()
-        context["ballots"] = all_ballots[:10]
-
+        ballots = self.get_lock_suggestions()
+        election = self.get_random_election()
+        context["total_ballots"] = ballots.count()
+        context["ballots"] = ballots.filter(election=election)[:10]
         return context
 
 
