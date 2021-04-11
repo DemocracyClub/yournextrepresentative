@@ -61,9 +61,7 @@
 {% include "bulk_add/sopns/_known-people.html" %}
 
   <form method=POST id="bulk_add_form">
-  {% if known_people %}
     <button type=submit>Review</button>
-  {% endif %}
   {% csrf_token %}
   {{ formset.management_form }}
   {% if formset.non_form_errors %}
