@@ -1,95 +1,148 @@
 {% load humanize %}
 {% if known_people %}
-<section class="bulk-add__known-people">
-  <h3>Existing people</h3>
-    <p>There {{ known_people|pluralize:"is,are" }} {{ known_people|length|apnumber }} candidate{{ known_people|pluralize }} listed in this area already:</p>
-  <p>If {{ known_people|pluralize:"this person is,any of these people are" }} not listed on the nomination paper, please mark them as not standing in this specific election.</p>
-  <table class="table sopn_adding_table">
-    <thead>
-      <tr>
-        <th class="name">Name</th>
-        <th>Also known as</th>
-        <th>Party</th>
-      </tr>
-    </thead>
-    {% for person in known_people %}
-    <tbody>
-      <tr>
-        <td class="name">
-          <a href="{% url 'person-view' person.pk %}" target="_blank">{{ person }}</a>
-        </td>
-        <td>
-          {% if person.other_names.exists %}
-          <ul class="other-names">
-          {% for name in person.other_names.all %}
-              <li class="other-name">{{ name }}</li>
-          {% endfor %}
-          </ul>
-          {% endif %}
-        </td>
-        <td>
-          {{ person.party.name }}
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td colspan=2 class="actions">
-          {% if person.edits_allowed %}
-          <a href="{% url 'person-update' person.pk %}" target="_blank" class="button secondary tiny">
-            Edit candidate
-          </a>
-          <a href="{% url 'person-other-name-create' person.pk %}" class="button secondary tiny js-bulk-known-person-alternate-name">
-            Nomination paper shows different name variant
-          </a>
-          <a data-person-id="{{ person.pk }}" data-post-id="{{ post.slug }}" href="{% url 'candidacy-delete' election=election %}" class="button secondary tiny js-bulk-known-person-not-standing">
-            Not standing
-          </a>
-          {% endif %}
-        </td>
-
-        <script type="text/html" class="js-bulk-known-person-alternate-name-form">
+  <section class="bulk-add__known-people">
+    <h3>Existing people</h3>
+    <p>There {{ known_people|pluralize:"is,are" }} {{ known_people|length|apnumber }}
+      candidate{{ known_people|pluralize }} listed in this area already:</p>
+    <p>If {{ known_people|pluralize:"this person is,any of these people are" }} not listed on the nomination paper,
+      please mark them as not standing in this specific election.</p>
+    <table class="table sopn_adding_table">
+      <thead>
+        <tr>
+          <th class="name">Name</th>
+          <th>Also known as</th>
+          <th>Party</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      {% for person in known_people %}
+        <tbody>
           <tr>
-            <td colspan="3" class="js-row">
-              <form action="" method="post">
-                  {% csrf_token %}
-                  <p>
+            <td class="name">
+              <a href="{% url 'person-view' person.pk %}" target="_blank">{{ person }}</a>
+            </td>
+            <td>
+              {% if person.other_names.exists %}
+                <ul class="other-names">
+                  {% for name in person.other_names.all %}
+                    <li class="other-name">{{ name }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </td>
+            <td>
+              {{ person.party.name }}
+            </td>
+            <td><a class="button tiny js-toggle-source-confirmation not-standing">
+              Not actually standing?
+            </a>
+              {% include 'candidates/_source_confirmation.html' with standing='not-standing' action='candidacy-delete' person_id=person.id source=official_document.source_url %}
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td colspan=2 class="actions">
+              {% if person.edits_allowed %}
+                <a href="{% url 'person-update' person.pk %}" target="_blank" class="button secondary tiny">
+                  Edit candidate
+                </a>
+                <a href="{% url 'person-other-name-create' person.pk %}"
+                   class="button secondary tiny js-bulk-known-person-alternate-name">
+                  Nomination paper shows different name variant
+                </a>
+                <a data-person-id="{{ person.pk }}" data-post-id="{{ post.slug }}"
+                   href="{% url 'candidacy-delete' election=election %}"
+                   class="button secondary tiny js-bulk-known-person-not-standing">
+                  Not standing
+                </a>
+              {% endif %}
+            </td>
+            <td></td>
+            <script type="text/html" class="js-bulk-known-person-alternate-name-form">
+              <tr>
+                <td colspan="3" class="js-row">
+                  <form action="" method="post">
+                    {% csrf_token %}
+                    <p>
                       <label for="alt-name">Name as it appears on nomination paper:</label>
                       <input id="alt-name" name="name" type="text">
-                  </p>
-                  <p>
+                    </p>
+                    <p>
                       <input id="alt-source" name="source" type="hidden" value="{{ official_document.source_url }}">
-                  </p>
-                  <p>
-                      <button type="button" class="button secondary js-bulk-known-person-alternate-name-cancel">Cancel</button>
+                    </p>
+                    <p>
+                      <button type="button" class="button secondary js-bulk-known-person-alternate-name-cancel">Cancel
+                      </button>
                       <button type="submit" class="button primary">Add alternate name</button>
-                  </p>
-              </form>
-            </td>
-          </tr>
-        </script>
+                    </p>
+                  </form>
+                </td>
+              </tr>
+            </script>
 
-        <script type="text/html" class="js-bulk-known-person-not-standing-form">
-          <tr>
-            <td colspan="3" class="js-row">
-                <form action="" method="post">
-                  {% csrf_token %}
-                  <p>
+            <script type="text/html" class="js-bulk-known-person-not-standing-form">
+              <tr>
+                <td colspan="3" class="js-row">
+                  <form action="" method="post">
+                    {% csrf_token %}
+                    <p>
                       Are you sure you want to mark this candidate as not standing?
                       <input id="alt-source" name="source" type="hidden" value="{{ official_document.source_url }}">
-                  </p>
-                  <p>
-                      <button type="button" class="button secondary js-bulk-known-person-not-standing-cancel">Cancel</button>
+                    </p>
+                    <p>
+                      <button type="button" class="button secondary js-bulk-known-person-not-standing-cancel">Cancel
+                      </button>
                       <button type="submit" class="button primary">Mark Not Standing</button>
-                  </p>
-              </form>
-            </td>
+                    </p>
+                  </form>
+                </td>
+              </tr>
+            </script>
+
+
           </tr>
-        </script>
+        </tbody>
+      {% endfor %}
+    </table>
+    <script>
+      $('a.not-standing').next('.source-confirmation-not-standing').find('form').on('submit', function (e) {
+        e.preventDefault();
+        var form = $(e.target);
+
+        $.ajax({
+          url: form.attr('action'),
+          type: "POST",
+          data: {
+            csrfmiddlewaretoken: form.find('input[type="hidden"]').val(),
+            person_id: form.find('[name=person_id]').val(),
+            source : form.find('input[name="source"]').val()
+          },
+
+          success: function(json) {
+            if (json['success']) {
+              form.parents('tbody').remove();
+            } else {
+              if (json['errors']) {
+                for (var err in json.errors) {
+                  if (!json.errors.hasOwnProperty(err)) { continue; }
+                  el = form.find('input[name="' + err + '"]');
+                  el.before('<ul class="errorlist"><li>' + json.errors[err] + '</li></ul>')
+                }
+              }
+            }
+          },
+
+          error: function(xhr,errmsg,err) {
+            form.prepend("<div class='alert-box alert radius' id='candidacyerr'>There was a problem removing the candidacy, please try again</div>");
+          }
+        });
+
+      })
 
 
-      </tr>
-    </tbody>
-    {% endfor %}
-  </table>
-</section>
+
+
+    </script>
+
+  </section>
 {% endif %}
