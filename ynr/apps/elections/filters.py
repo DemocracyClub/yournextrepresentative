@@ -145,6 +145,18 @@ class BaseBallotFilter(django_filters.FilterSet):
         else:
             return queryset.filter(officialdocument=None)
 
+    def is_by_election_filter(self, queryset, name, value):
+        if int(value):
+            return queryset.filter(ballot_paper_id__contains=".by.")
+        else:
+            return queryset.exclude(ballot_paper_id__contains=".by.")
+
+    def is_cancelled_filter(self, queryset, name, value):
+        if int(value):
+            return queryset.filter(cancelled=True)
+        else:
+            return queryset.filter(cancelled=False)
+
     def election_type_filter(self, queryset, name, value):
         return queryset.filter(election__slug__startswith=value)
 
@@ -190,6 +202,25 @@ class BaseBallotFilter(django_filters.FilterSet):
         method="region_filter",
         label="Filter by region",
         choices=region_choices,
+    )
+
+    is_by_election = django_filters.ChoiceFilter(
+        field_name="is_by_election",
+        method="is_by_election_filter",
+        widget=DSLinkWidget(),
+        label="By election",
+        help_text="""Boolean, `1` for by-elections `0` for scheduled
+        elections""",
+        choices=[(1, "Yes"), (0, "No")],
+    )
+
+    is_cancelled = django_filters.ChoiceFilter(
+        field_name="is_cancelled",
+        method="is_cancelled_filter",
+        widget=DSLinkWidget(),
+        label="Cancelled",
+        help_text="""Boolean, `1` for cancelled `0` taking place""",
+        choices=[(1, "Yes"), (0, "No")],
     )
 
     class Meta:
