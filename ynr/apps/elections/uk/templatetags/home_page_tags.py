@@ -71,13 +71,16 @@ def sopn_import_progress(context):
         ]
 
         value = settings.SOPN_TRACKER_INFO["election_date"]
+
+        base_ballot_qs = Ballot.objects.filter(
+            election__election_date=value
+        ).filter(cancelled=False)
         context["sopn_progress"] = sopn_progress_by_value(
-            Ballot.objects.filter(election__election_date=value),
-            lookup_value="election__election_date",
+            base_ballot_qs, lookup_value="election__election_date"
         )[value]
 
         context["sopn_progress_by_region"] = sopn_progress_by_value(
-            Ballot.objects.filter(election__election_date=value),
+            base_ballot_qs,
             lookup_value="tags__NUTS1__key",
             label_field="tags__NUTS1__value",
         )
@@ -89,9 +92,7 @@ def sopn_import_progress(context):
             output=TextField(),
         )
         context["sopn_progress_by_election_type"] = sopn_progress_by_value(
-            Ballot.objects.filter(election__election_date=value).annotate(
-                election_type=election_type
-            ),
+            base_ballot_qs.annotate(election_type=election_type),
             lookup_value="election_type",
             label_field="election__for_post_role",
         )
