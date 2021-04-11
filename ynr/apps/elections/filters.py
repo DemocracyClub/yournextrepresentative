@@ -304,7 +304,7 @@ def filter_shortcuts(request):
             "query": {
                 "review_required": ["unlocked"],
                 "has_sopn": ["1"],
-                "cancelled": [0],
+                "is_cancelled": ["0"],
             },
         }
     ]
