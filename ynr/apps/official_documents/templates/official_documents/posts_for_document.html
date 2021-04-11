@@ -10,7 +10,7 @@
 {% block hero %}<h1>{{ object.document_type }}</h1>{% endblock hero %}
 
 {% block content %}
-<p>The document we cached from <a href="{{ object.get_absolute_url }}">{{ object.source_url }}</a>
+<p>The document we cached from <a href="{{ object.source_url }}">{{ object.source_url }}</a>
     contains information on {{ document_posts.count }}
     area{{ document_posts.count|pluralize }}.</p>
 
