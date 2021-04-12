@@ -44,6 +44,7 @@ class BaseReport:
             .exclude(ballot_paper_id__contains=".by.")
             .filter(post__party_set__slug=register.lower())
             .exclude(cancelled=True)
+            .exclude(membership=None)
         )
 
         self.membership_qs = (
@@ -78,7 +79,6 @@ class BaseReport:
 def report_runner(name, date, election_type=None, register=None):
     this_module = sys.modules[__name__]
     if hasattr(this_module, name):
-        print(name)
         return getattr(this_module, name)(
             date=date, election_type=election_type, register=register
         ).run()
@@ -283,14 +283,16 @@ class TwoWayRace(BaseReport):
         qs = self.get_qs()
         report_list = []
         for ballot in qs:
-            ballot = Ballot.objects.get(
+            ballot_obj = Ballot.objects.get(
                 ballot_paper_id=ballot["ballot_paper_id"]
             )
             parties = []
-            for membership in ballot.membership_set.distinct(
+
+            for membership in ballot_obj.membership_set.distinct(
                 "party_id"
             ).order_by("party_id"):
                 parties.append(membership.party.name)
+
             report_list.append(
                 [ballot["ballot_paper_id"], ballot["candidates"]] + parties
             )
