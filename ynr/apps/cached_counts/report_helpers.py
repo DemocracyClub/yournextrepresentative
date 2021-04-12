@@ -69,7 +69,10 @@ class BaseReport:
             Membership.objects.filter(ballot__election__election_date=self.date)
             .filter(ballot__ballot_paper_id__startswith=election_type)
             .filter(ballot__post__party_set__slug=register.lower())
-            .exclude(ballot__ballot_paper_id__contains=".by.")
+            # as discussed with Peter, dont exclude all by elections this year
+            # only those in Wales/Scotland
+            # .exclude(ballot__ballot_paper_id__contains=".by.")
+            .exclude(ballot__ballot_paper_id__in=EXCLUSION_IDS)
         )
 
         template = "%(function)s(%(expressions)s AS FLOAT)"
@@ -412,6 +415,7 @@ class PartyMovers(BaseReport):
             Membership.objects.filter(person__in=people_for_date)
             .values("person_id", "person__name")
             .annotate(party_count=Count("party_id", distinct=True))
+            .order_by("person_id")
             .filter(party_count__gt=1)
         )
 
