@@ -32,6 +32,21 @@ ALL_REPORT_CLASSES = [
 ]
 
 
+EXCLUSION_IDS = [
+    "local.flintshire.gwernymynydd.by.2021-05-06",
+    "local.newport.victoria.by.2021-05-06",
+    "local.bridgend.nant-y-moel.by.2021-05-06",
+    "local.isle-of-anglesey.caergybi.by.2021-05-06",
+    "local.isle-of-anglesey.seiriol.by.2021-05-06",
+    "local.neath-port-talbot.aberavon.by.2021-05-06",
+    "local.rhondda-cynon-taff.llantwit-fardre.by.2021-05-06",
+    "local.rhondda-cynon-taff.penrhiwceiber.by.2021-05-06",
+    "local.swansea.castle.by.2021-05-06",
+    "local.swansea.llansamlet.by.2021-05-06",
+    "local.stirling.forth-and-endrick.by.2021-05-06",
+]
+
+
 class BaseReport:
     def __init__(self, date, election_type=None, register=None):
         self.date = date
@@ -41,7 +56,10 @@ class BaseReport:
         self.ballot_qs = (
             Ballot.objects.filter(election__election_date=self.date)
             .filter(ballot_paper_id__startswith=election_type)
-            .exclude(ballot_paper_id__contains=".by.")
+            # as discussed with Peter, dont exclude all by elections this year
+            # only those in Wales/Scotland
+            # .exclude(ballot_paper_id__contains=".by.")
+            .exclude(ballot_paper_id__in=EXCLUSION_IDS)
             .filter(post__party_set__slug=register.lower())
             .exclude(cancelled=True)
             .exclude(membership=None)
