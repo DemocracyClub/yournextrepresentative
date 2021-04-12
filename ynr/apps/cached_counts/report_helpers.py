@@ -16,9 +16,27 @@ from people.models import Person
 from popolo.models import Membership
 
 
+ALL_REPORT_CLASSES = [
+    "NumberOfCandidates",
+    "NumberOfSeats",
+    "CandidatesPerParty",
+    "UncontestedBallots",
+    "NcandidatesPerSeat",
+    "TwoWayRace",
+    "TwoWayRaceForNewParties",
+    "TwoWayRaceForNcandidates",
+    "MostPerSeat",
+    "NewParties",
+    "GenderSplit",
+    "PartyMovers",
+]
+
+
 class BaseReport:
-    def __init__(self, date, election_type="parl", register="GB"):
+    def __init__(self, date, election_type=None, register=None):
         self.date = date
+        election_type = election_type or "local"
+        register = register or "GB"
 
         self.ballot_qs = (
             Ballot.objects.filter(election__election_date=self.date)
@@ -57,10 +75,13 @@ class BaseReport:
         print(self.report())
 
 
-def report_runner(date, name):
+def report_runner(name, date, election_type=None, register=None):
     this_module = sys.modules[__name__]
     if hasattr(this_module, name):
-        return getattr(this_module, name)(date).run()
+        print(name)
+        return getattr(this_module, name)(
+            date=date, election_type=election_type, register=register
+        ).run()
     else:
         raise ValueError(
             "{} is unknown. Pick one of: {}".format(
@@ -193,9 +214,9 @@ class UncontestedBallots(BaseReport):
 
 
 class NcandidatesPerSeat(BaseReport):
-    def __init__(self, date, n=2):
+    def __init__(self, date, n=2, **kwargs):
         self.n = 1 / n
-        super().__init__(date)
+        super().__init__(date, **kwargs)
 
     @property
     def name(self):
