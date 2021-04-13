@@ -13,6 +13,7 @@ from django.db.models import Count, ExpressionWrapper, F, FloatField, Func, Sum
 
 from candidates.models import Ballot
 from elections.filters import region_choices
+from parties.models import Party
 from people.models import Person
 from popolo.models import Membership
 
@@ -31,6 +32,7 @@ ALL_REPORT_CLASSES = [
     "GenderSplit",
     "PartyMovers",
     "RegionalNumCandidatesPerSeat",
+    "SmallPartiesCandidatesCouncilAreas",
 ]
 
 
@@ -515,6 +517,59 @@ class RegionalNumCandidatesPerSeat(BaseReport):
 
             report_list.append(
                 [name, code, seats_contested, candidates, candidates_per_seat]
+            )
+
+        return "\n".join(
+            ["\t".join([str(cell) for cell in row]) for row in report_list]
+        )
+
+
+class SmallPartiesCandidatesCouncilAreas(BaseReport):
+    PARTIES = [
+        "Reform UK",
+        "Trade Unionist and Socialist Coalition",
+        "UK Independence Party (UKIP)",
+        "Freedom Alliance- Integrity, Society, Economy",
+        "Social Democratic Party",
+        "The For Britain Movement",
+    ]
+
+    name = "Where small parties have concentrated candidates"
+
+    def get_qs(self, parties=None):
+        parties = parties or self.PARTIES
+        party_ids = (
+            Party.objects.filter(name__in=parties, register="GB")
+            .values_list("ec_id", flat=True)
+            .distinct()
+        )
+        return self.membership_qs.filter(party__ec_id__in=party_ids).order_by(
+            "party_id", "ballot__election__slug"
+        )
+
+    def report(self):
+        report_list = []
+        headers = [
+            "Party Name",
+            "Ballot Paper ID",
+            "Council Area",
+            "Total For Council Area",
+        ]
+        report_list.append(headers)
+        qs = self.get_qs()
+        for candidacy in qs:
+
+            count = qs.filter(
+                party=candidacy.party,
+                ballot__election=candidacy.ballot.election,
+            ).count()
+            report_list.append(
+                [
+                    candidacy.party.name,
+                    candidacy.ballot.ballot_paper_id,
+                    candidacy.ballot.election.slug.split(".")[1].title(),
+                    count,
+                ]
             )
 
         return "\n".join(
