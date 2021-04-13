@@ -274,6 +274,15 @@ class NcandidatesPerSeat(BaseReport):
     def report(self):
         qs = self.get_qs()
         report_list = []
+        headers = [
+            "Ballot Paper ID",
+            "Candidate Name",
+            "Party Name",
+            "Seats per candidate",
+            "Seats Contested",
+            "Will Win",
+        ]
+        report_list.append(headers)
         for ballot in qs:
             if ballot.cancelled is True:
                 continue
@@ -324,6 +333,13 @@ class TwoWayRace(BaseReport):
     def report(self):
         qs = self.get_qs()
         report_list = []
+        headers = [
+            "Ballot Paper ID",
+            "Num candidates",
+            "Party Name",
+            "Party Name",
+        ]
+        report_list.append(headers)
         for ballot in qs:
             ballot_obj = Ballot.objects.get(
                 ballot_paper_id=ballot["ballot_paper_id"]
@@ -345,7 +361,8 @@ class TwoWayRace(BaseReport):
 class TwoWayRaceForNewParties(TwoWayRace):
     def get_qs(self):
         qs = super().get_qs()
-        qs = qs.filter(membership__party__date_registered__year="2019")
+        year = self.date.split("-")[0]
+        qs = qs.filter(membership__party__date_registered__year=year)
         return qs
 
 
@@ -387,7 +404,9 @@ class NewParties(BaseReport):
 
     def report(self):
         qs = self.get_qs()
-        report_list = [[]]
+        report_list = []
+        headers = ["Party Name", "Ballot Paper ID", "Candidate name"]
+        report_list.append(headers)
         for membership in qs:
             report_list.append(
                 [
@@ -414,6 +433,7 @@ class GenderSplit(BaseReport):
     def report(self):
         qs = self.get_qs()
         report_list = []
+        headers = ["Gender", "Gender Count", "Party Name"]
         for gender in qs:
             report_list.append(
                 [
@@ -443,6 +463,8 @@ class PartyMovers(BaseReport):
     def report(self):
         qs = self.get_qs()
         report_list = []
+        headers = ["Person ID", "Person Name", "Party Count"]
+        report_list.append(headers)
         for person_dict in qs:
             person = Person.objects.get(pk=person_dict["person_id"])
             memberships = person.memberships.all().order_by(
@@ -466,15 +488,15 @@ class RegionalNumCandidatesPerSeat(BaseReport):
     name = "Number of candidates per seat per region"
 
     def report(self):
-        report_list = [
-            [
-                "Region Name",
-                "Region Code",
-                "Num Seats",
-                "Num Candidates",
-                "Num Candidates Per Seats",
-            ]
+        report_list = []
+        headers = [
+            "Region Name",
+            "Region Code",
+            "Num Seats",
+            "Num Candidates",
+            "Num Candidates Per Seats",
         ]
+        report_list.append(headers)
         for region in region_choices():
             code = region[0]
             name = region[1]
