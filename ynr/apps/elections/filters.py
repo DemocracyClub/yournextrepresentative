@@ -164,7 +164,7 @@ class BaseBallotFilter(django_filters.FilterSet):
         """
         Filter queryset by region using the NUTS1 code
         """
-        return queryset.filter(tags__NUTS1__key=value)
+        return queryset.by_region(code=value)
 
     review_required = django_filters.ChoiceFilter(
         field_name="review_required",

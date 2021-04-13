@@ -110,6 +110,12 @@ class BallotQueryset(models.QuerySet):
             | models.Q(election__election_date__gt=timezone.now())
         )
 
+    def by_region(self, code):
+        """
+        Filter by NUTS1 code stored in the objects tags.
+        """
+        return self.filter(tags__NUTS1__key=code)
+
 
 class Ballot(models.Model):
     post = models.ForeignKey("popolo.Post", on_delete=models.CASCADE)
