@@ -12,6 +12,7 @@ from collections import Counter
 from django.db.models import Count, ExpressionWrapper, F, FloatField, Func, Sum
 
 from candidates.models import Ballot
+from elections.filters import region_choices
 from people.models import Person
 from popolo.models import Membership
 
@@ -29,6 +30,7 @@ ALL_REPORT_CLASSES = [
     "NewParties",
     "GenderSplit",
     "PartyMovers",
+    "RegionalNumCandidatesPerSeat",
 ]
 
 
@@ -411,6 +413,7 @@ class PartyMovers(BaseReport):
         people_for_date = Membership.objects.filter(
             ballot__election__election_date=self.date
         ).values("person_id")
+        print(people_for_date)
         return (
             Membership.objects.filter(person__in=people_for_date)
             .values("person_id", "person__name")
@@ -439,3 +442,41 @@ class PartyMovers(BaseReport):
                 + list(id_set)
             )
         return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
+
+
+class RegionalNumCandidatesPerSeat(BaseReport):
+    name = "Number of candidates per seat per region"
+
+    def report(self):
+        report_list = [
+            [
+                "Region Name",
+                "Region Code",
+                "Num Seats",
+                "Num Candidates",
+                "Num Candidates Per Seats",
+            ]
+        ]
+        for region in region_choices():
+            code = region[0]
+            name = region[1]
+            qs = self.ballot_qs.by_region(code=code)
+            candidates = (
+                qs.aggregate(Count("membership"))["membership__count"] or 0
+            )
+            seats_contested = (
+                qs.aggregate(Sum("winner_count"))["winner_count__sum"] or 0
+            )
+
+            try:
+                candidates_per_seat = round(candidates / seats_contested, 2)
+            except ZeroDivisionError:
+                candidates_per_seat = 0
+
+            report_list.append(
+                [name, code, seats_contested, candidates, candidates_per_seat]
+            )
+
+        return "\n".join(
+            ["\t".join([str(cell) for cell in row]) for row in report_list]
+        )
