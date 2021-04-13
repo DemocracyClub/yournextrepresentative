@@ -10,6 +10,7 @@ import sys
 from collections import Counter
 
 from django.db.models import Count, ExpressionWrapper, F, FloatField, Func, Sum
+from django.db.models.query_utils import Q
 
 from candidates.models import Ballot
 from elections.filters import region_choices
@@ -57,7 +58,7 @@ class BaseReport:
     ):
         self.date = date
         self.england_only = england_only
-        election_type = election_type or "local"
+        self.election_type = election_type or "local"
         register = register or "GB"
         self.england_nuts_1 = [
             "UKC",
@@ -73,7 +74,7 @@ class BaseReport:
 
         self.ballot_qs = (
             Ballot.objects.filter(election__election_date=self.date)
-            .filter(ballot_paper_id__startswith=election_type)
+            .filter(ballot_paper_id__startswith=self.election_type)
             # as discussed with Peter, dont exclude all by elections this year
             # only those in Wales/Scotland
             # .exclude(ballot_paper_id__contains=".by.")
@@ -85,7 +86,7 @@ class BaseReport:
 
         self.membership_qs = (
             Membership.objects.filter(ballot__election__election_date=self.date)
-            .filter(ballot__ballot_paper_id__startswith=election_type)
+            .filter(ballot__ballot_paper_id__startswith=self.election_type)
             .filter(ballot__post__party_set__slug=register.lower())
             # as discussed with Peter, dont exclude all by elections this year
             # only those in Wales/Scotland
@@ -568,6 +569,49 @@ class SmallPartiesCandidatesCouncilAreas(BaseReport):
                 ).count()
                 council_area = election_slug.split(".")[1]
                 report_list.append([party.name, council_area.title(), count])
+
+        return "\n".join(
+            ["\t".join([str(cell) for cell in row]) for row in report_list]
+        )
+
+
+class NumCandidatesStandingInMultipleSeats(BaseReport):
+
+    name = "Candidates standing in multiple seats"
+
+    def get_qs(self):
+        """
+        Get all distinct people standing
+        """
+        people_ids = self.membership_qs.values_list(
+            "person", flat=True
+        ).distinct()
+        people = Person.objects.filter(pk__in=people_ids)
+        current_candidacies = Count(
+            "memberships",
+            filter=Q(memberships__ballot__election__election_date=self.date)
+            | Q(
+                memberships__ballot__election__slug__startswith=self.election_type
+            ),
+        )
+        return people.annotate(num_candidacies=current_candidacies)
+
+    def report(self):
+        report_list = []
+        headers = [
+            "Num Candidacies",
+            "Total Candidates standing for this number of candidacies",
+        ]
+        report_list.append(headers)
+        qs = self.get_qs()
+
+        # very arbritary safeguard but im assuming you would never have someone
+        # stand on this many ballots for the same election type and date
+        for num in range(1, 10):
+            count = qs.filter(num_candidacies=num).count()
+            if count == 0:
+                break
+            report_list.append([num, count])
 
         return "\n".join(
             ["\t".join([str(cell) for cell in row]) for row in report_list]
