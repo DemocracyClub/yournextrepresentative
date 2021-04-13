@@ -50,7 +50,9 @@ EXCLUSION_IDS = [
 
 
 class BaseReport:
-    def __init__(self, date, election_type=None, register=None):
+    def __init__(
+        self, date, election_type=None, register=None, england_only=False
+    ):
         self.date = date
         election_type = election_type or "local"
         register = register or "GB"
@@ -77,6 +79,25 @@ class BaseReport:
             .exclude(ballot__ballot_paper_id__in=EXCLUSION_IDS)
         )
 
+        england_nuts_1 = [
+            "UKC",
+            "UKD",
+            "UKE",
+            "UKF",
+            "UKG",
+            "UKH",
+            "UKI",
+            "UKJ",
+            "UKK",
+        ]
+        if england_only:
+            self.ballot_qs = self.ballot_qs.filter(
+                tags__NUTS1__key__in=england_nuts_1
+            )
+            self.membership_qs.filter(
+                ballot__tags__NUTS1__key__in__in=england_nuts_1
+            )
+
         template = "%(function)s(%(expressions)s AS FLOAT)"
         self.f_candidates = Func(
             F("candidates"), function="CAST", template=template
@@ -99,12 +120,10 @@ class BaseReport:
         print(self.report())
 
 
-def report_runner(name, date, election_type=None, register=None):
+def report_runner(name, date, **kwargs):
     this_module = sys.modules[__name__]
     if hasattr(this_module, name):
-        return getattr(this_module, name)(
-            date=date, election_type=election_type, register=register
-        ).run()
+        return getattr(this_module, name)(date=date, **kwargs).run()
     else:
         raise ValueError(
             "{} is unknown. Pick one of: {}".format(
@@ -413,7 +432,6 @@ class PartyMovers(BaseReport):
         people_for_date = Membership.objects.filter(
             ballot__election__election_date=self.date
         ).values("person_id")
-        print(people_for_date)
         return (
             Membership.objects.filter(person__in=people_for_date)
             .values("person_id", "person__name")
