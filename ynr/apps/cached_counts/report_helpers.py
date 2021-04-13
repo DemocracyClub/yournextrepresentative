@@ -12,28 +12,93 @@ from collections import Counter
 from django.db.models import Count, ExpressionWrapper, F, FloatField, Func, Sum
 
 from candidates.models import Ballot
+from elections.filters import region_choices
+from parties.models import Party
 from people.models import Person
 from popolo.models import Membership
 
 
+ALL_REPORT_CLASSES = [
+    "NumberOfCandidates",
+    "NumberOfSeats",
+    "CandidatesPerParty",
+    "UncontestedBallots",
+    "NcandidatesPerSeat",
+    "TwoWayRace",
+    "TwoWayRaceForNewParties",
+    "TwoWayRaceForNcandidates",
+    "MostPerSeat",
+    "NewParties",
+    "GenderSplit",
+    "PartyMovers",
+    "RegionalNumCandidatesPerSeat",
+    "SmallPartiesCandidatesCouncilAreas",
+]
+
+
+EXCLUSION_IDS = [
+    "local.flintshire.gwernymynydd.by.2021-05-06",
+    "local.newport.victoria.by.2021-05-06",
+    "local.bridgend.nant-y-moel.by.2021-05-06",
+    "local.isle-of-anglesey.caergybi.by.2021-05-06",
+    "local.isle-of-anglesey.seiriol.by.2021-05-06",
+    "local.neath-port-talbot.aberavon.by.2021-05-06",
+    "local.rhondda-cynon-taff.llantwit-fardre.by.2021-05-06",
+    "local.rhondda-cynon-taff.penrhiwceiber.by.2021-05-06",
+    "local.swansea.castle.by.2021-05-06",
+    "local.swansea.llansamlet.by.2021-05-06",
+    "local.stirling.forth-and-endrick.by.2021-05-06",
+]
+
+
 class BaseReport:
-    def __init__(self, date, election_type="parl", register="GB"):
+    def __init__(
+        self, date, election_type=None, register=None, england_only=False
+    ):
         self.date = date
+        election_type = election_type or "local"
+        register = register or "GB"
 
         self.ballot_qs = (
             Ballot.objects.filter(election__election_date=self.date)
             .filter(ballot_paper_id__startswith=election_type)
-            .exclude(ballot_paper_id__contains=".by.")
+            # as discussed with Peter, dont exclude all by elections this year
+            # only those in Wales/Scotland
+            # .exclude(ballot_paper_id__contains=".by.")
+            .exclude(ballot_paper_id__in=EXCLUSION_IDS)
             .filter(post__party_set__slug=register.lower())
             .exclude(cancelled=True)
+            .exclude(membership=None)
         )
 
         self.membership_qs = (
             Membership.objects.filter(ballot__election__election_date=self.date)
             .filter(ballot__ballot_paper_id__startswith=election_type)
             .filter(ballot__post__party_set__slug=register.lower())
-            .exclude(ballot__ballot_paper_id__contains=".by.")
+            # as discussed with Peter, dont exclude all by elections this year
+            # only those in Wales/Scotland
+            # .exclude(ballot__ballot_paper_id__contains=".by.")
+            .exclude(ballot__ballot_paper_id__in=EXCLUSION_IDS)
         )
+
+        england_nuts_1 = [
+            "UKC",
+            "UKD",
+            "UKE",
+            "UKF",
+            "UKG",
+            "UKH",
+            "UKI",
+            "UKJ",
+            "UKK",
+        ]
+        if england_only:
+            self.ballot_qs = self.ballot_qs.filter(
+                tags__NUTS1__key__in=england_nuts_1
+            )
+            self.membership_qs.filter(
+                ballot__tags__NUTS1__key__in__in=england_nuts_1
+            )
 
         template = "%(function)s(%(expressions)s AS FLOAT)"
         self.f_candidates = Func(
@@ -57,10 +122,10 @@ class BaseReport:
         print(self.report())
 
 
-def report_runner(date, name):
+def report_runner(name, date, **kwargs):
     this_module = sys.modules[__name__]
     if hasattr(this_module, name):
-        return getattr(this_module, name)(date).run()
+        return getattr(this_module, name)(date=date, **kwargs).run()
     else:
         raise ValueError(
             "{} is unknown. Pick one of: {}".format(
@@ -193,9 +258,9 @@ class UncontestedBallots(BaseReport):
 
 
 class NcandidatesPerSeat(BaseReport):
-    def __init__(self, date, n=2):
+    def __init__(self, date, n=2, **kwargs):
         self.n = 1 / n
-        super().__init__(date)
+        super().__init__(date, **kwargs)
 
     @property
     def name(self):
@@ -211,6 +276,15 @@ class NcandidatesPerSeat(BaseReport):
     def report(self):
         qs = self.get_qs()
         report_list = []
+        headers = [
+            "Ballot Paper ID",
+            "Candidate Name",
+            "Party Name",
+            "Seats per candidate",
+            "Seats Contested",
+            "Will Win",
+        ]
+        report_list.append(headers)
         for ballot in qs:
             if ballot.cancelled is True:
                 continue
@@ -261,15 +335,24 @@ class TwoWayRace(BaseReport):
     def report(self):
         qs = self.get_qs()
         report_list = []
+        headers = [
+            "Ballot Paper ID",
+            "Num candidates",
+            "Party Name",
+            "Party Name",
+        ]
+        report_list.append(headers)
         for ballot in qs:
-            ballot = Ballot.objects.get(
+            ballot_obj = Ballot.objects.get(
                 ballot_paper_id=ballot["ballot_paper_id"]
             )
             parties = []
-            for membership in ballot.membership_set.distinct(
+
+            for membership in ballot_obj.membership_set.distinct(
                 "party_id"
             ).order_by("party_id"):
                 parties.append(membership.party.name)
+
             report_list.append(
                 [ballot["ballot_paper_id"], ballot["candidates"]] + parties
             )
@@ -280,7 +363,8 @@ class TwoWayRace(BaseReport):
 class TwoWayRaceForNewParties(TwoWayRace):
     def get_qs(self):
         qs = super().get_qs()
-        qs = qs.filter(membership__party__date_registered__year="2019")
+        year = self.date.split("-")[0]
+        qs = qs.filter(membership__party__date_registered__year=year)
         return qs
 
 
@@ -322,7 +406,9 @@ class NewParties(BaseReport):
 
     def report(self):
         qs = self.get_qs()
-        report_list = [[]]
+        report_list = []
+        headers = ["Party Name", "Ballot Paper ID", "Candidate name"]
+        report_list.append(headers)
         for membership in qs:
             report_list.append(
                 [
@@ -349,6 +435,7 @@ class GenderSplit(BaseReport):
     def report(self):
         qs = self.get_qs()
         report_list = []
+        headers = ["Gender", "Gender Count", "Party Name"]
         for gender in qs:
             report_list.append(
                 [
@@ -371,12 +458,15 @@ class PartyMovers(BaseReport):
             Membership.objects.filter(person__in=people_for_date)
             .values("person_id", "person__name")
             .annotate(party_count=Count("party_id", distinct=True))
+            .order_by("person_id")
             .filter(party_count__gt=1)
         )
 
     def report(self):
         qs = self.get_qs()
         report_list = []
+        headers = ["Person ID", "Person Name", "Party Count"]
+        report_list.append(headers)
         for person_dict in qs:
             person = Person.objects.get(pk=person_dict["person_id"])
             memberships = person.memberships.all().order_by(
@@ -394,3 +484,88 @@ class PartyMovers(BaseReport):
                 + list(id_set)
             )
         return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
+
+
+class RegionalNumCandidatesPerSeat(BaseReport):
+    name = "Number of candidates per seat per region"
+
+    def report(self):
+        report_list = []
+        headers = [
+            "Region Name",
+            "Region Code",
+            "Num Seats",
+            "Num Candidates",
+            "Num Candidates Per Seats",
+        ]
+        report_list.append(headers)
+        for region in region_choices():
+            code = region[0]
+            name = region[1]
+            qs = self.ballot_qs.by_region(code=code)
+            candidates = (
+                qs.aggregate(Count("membership"))["membership__count"] or 0
+            )
+            seats_contested = (
+                qs.aggregate(Sum("winner_count"))["winner_count__sum"] or 0
+            )
+
+            try:
+                candidates_per_seat = round(candidates / seats_contested, 2)
+            except ZeroDivisionError:
+                candidates_per_seat = 0
+
+            report_list.append(
+                [name, code, seats_contested, candidates, candidates_per_seat]
+            )
+
+        return "\n".join(
+            ["\t".join([str(cell) for cell in row]) for row in report_list]
+        )
+
+
+class SmallPartiesCandidatesCouncilAreas(BaseReport):
+    PARTIES = [
+        "Reform UK",
+        "Trade Unionist and Socialist Coalition",
+        "UK Independence Party (UKIP)",
+        "Freedom Alliance- Integrity, Society, Economy",
+        "Social Democratic Party",
+        "The For Britain Movement",
+    ]
+
+    name = (
+        "Number of candidates stood in each council area for smaller candidates"
+    )
+
+    def get_qs(self, parties=None):
+        parties = parties or self.PARTIES
+        return Party.objects.filter(name__in=parties, register="GB").distinct()
+
+    def report(self):
+        report_list = []
+        headers = [
+            "Party Name",
+            "Council Area",
+            "Total Candidates For Council Area",
+        ]
+        report_list.append(headers)
+        parties = self.get_qs()
+
+        for party in parties:
+            candidacies = self.membership_qs.filter(party=party)
+            elections_for_party = (
+                candidacies.order_by("ballot__election__name")
+                .values_list("ballot__election__slug", flat=True)
+                .distinct()
+            )
+            for election_slug in elections_for_party:
+                count = candidacies.filter(
+                    ballot__election__slug=election_slug
+                ).count()
+                council_area = election_slug.split(".")[1]
+                report_list.append([party.name, council_area.title(), count])
+
+        return "\n".join(
+            ["\t".join([str(cell) for cell in row]) for row in report_list]
+        )
