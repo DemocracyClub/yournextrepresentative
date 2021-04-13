@@ -534,43 +534,37 @@ class SmallPartiesCandidatesCouncilAreas(BaseReport):
         "The For Britain Movement",
     ]
 
-    name = "Where small parties have concentrated candidates"
+    name = (
+        "Number of candidates stood in each council area for smaller candidates"
+    )
 
     def get_qs(self, parties=None):
         parties = parties or self.PARTIES
-        party_ids = (
-            Party.objects.filter(name__in=parties, register="GB")
-            .values_list("ec_id", flat=True)
-            .distinct()
-        )
-        return self.membership_qs.filter(party__ec_id__in=party_ids).order_by(
-            "party_id", "ballot__election__slug"
-        )
+        return Party.objects.filter(name__in=parties, register="GB").distinct()
 
     def report(self):
         report_list = []
         headers = [
             "Party Name",
-            "Ballot Paper ID",
             "Council Area",
-            "Total For Council Area",
+            "Total Candidates For Council Area",
         ]
         report_list.append(headers)
-        qs = self.get_qs()
-        for candidacy in qs:
+        parties = self.get_qs()
 
-            count = qs.filter(
-                party=candidacy.party,
-                ballot__election=candidacy.ballot.election,
-            ).count()
-            report_list.append(
-                [
-                    candidacy.party.name,
-                    candidacy.ballot.ballot_paper_id,
-                    candidacy.ballot.election.slug.split(".")[1].title(),
-                    count,
-                ]
+        for party in parties:
+            candidacies = self.membership_qs.filter(party=party)
+            elections_for_party = (
+                candidacies.order_by("ballot__election__name")
+                .values_list("ballot__election__slug", flat=True)
+                .distinct()
             )
+            for election_slug in elections_for_party:
+                count = candidacies.filter(
+                    ballot__election__slug=election_slug
+                ).count()
+                council_area = election_slug.split(".")[1]
+                report_list.append([party.name, council_area.title(), count])
 
         return "\n".join(
             ["\t".join([str(cell) for cell in row]) for row in report_list]
