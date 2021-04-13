@@ -56,8 +56,20 @@ class BaseReport:
         self, date, election_type=None, register=None, england_only=False
     ):
         self.date = date
+        self.england_only = england_only
         election_type = election_type or "local"
         register = register or "GB"
+        self.england_nuts_1 = [
+            "UKC",
+            "UKD",
+            "UKE",
+            "UKF",
+            "UKG",
+            "UKH",
+            "UKI",
+            "UKJ",
+            "UKK",
+        ]
 
         self.ballot_qs = (
             Ballot.objects.filter(election__election_date=self.date)
@@ -81,23 +93,12 @@ class BaseReport:
             .exclude(ballot__ballot_paper_id__in=EXCLUSION_IDS)
         )
 
-        england_nuts_1 = [
-            "UKC",
-            "UKD",
-            "UKE",
-            "UKF",
-            "UKG",
-            "UKH",
-            "UKI",
-            "UKJ",
-            "UKK",
-        ]
-        if england_only:
+        if self.england_only:
             self.ballot_qs = self.ballot_qs.filter(
-                tags__NUTS1__key__in=england_nuts_1
+                tags__NUTS1__key__in=self.england_nuts_1
             )
-            self.membership_qs.filter(
-                ballot__tags__NUTS1__key__in__in=england_nuts_1
+            self.membership_qs = self.membership_qs.filter(
+                ballot__tags__NUTS1__key__in=self.england_nuts_1
             )
 
         template = "%(function)s(%(expressions)s AS FLOAT)"
@@ -198,9 +199,11 @@ class CandidatesPerParty(BaseReport):
     def report(self):
         report = ["Party Name\tParty Register\tCandidates\tPercent of seats"]
 
-        total_seats = Ballot.objects.filter(
-            election__election_date=self.date
-        ).aggregate(seats=Sum("winner_count"))["seats"]
+        ballots = Ballot.objects.filter(election__election_date=self.date)
+        if self.england_only:
+            ballots = ballots.filter(tags__NUTS1__key__in=self.england_nuts_1)
+
+        total_seats = ballots.aggregate(seats=Sum("winner_count"))["seats"]
 
         for party in self.get_qs():
             report.append(
