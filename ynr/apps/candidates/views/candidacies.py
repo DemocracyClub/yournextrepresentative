@@ -10,7 +10,7 @@ from candidates.models.constraints import check_no_candidancy_for_election
 from elections.mixins import ElectionMixin
 from people.forms.forms import CandidacyCreateForm, CandidacyDeleteForm
 from people.models import Person
-from popolo.models import Membership, Post
+from popolo.models import Membership
 
 from ..models import TRUSTED_TO_LOCK_GROUP_NAME, LoggedAction
 from .version_data import get_change_metadata, get_client_ip

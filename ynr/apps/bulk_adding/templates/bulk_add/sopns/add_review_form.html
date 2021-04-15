@@ -35,7 +35,7 @@
 {% include "bulk_add/sopns/_known-people.html" %}
 
 
-<form method=POST>
+<form method=POST id="bulk_add_review_formset">
   {% csrf_token %}
   {{ formset.management_form }}
   {% if formset.non_form_errors %}
