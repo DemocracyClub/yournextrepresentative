@@ -111,7 +111,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 302)
         response = response.follow()
         #  confirm as a new person and submit lock suggestion
-        form = response.forms[1]
+        form = response.forms["bulk_add_review_formset"]
         form["form-0-select_person"].select("_new")
         response = form.submit().follow()
         # previously this raised a 500 error caused by
@@ -150,7 +150,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # as a new person or alternative radio buttons if any
         # candidates with similar names were found.
         response = response.follow()
-        form = response.forms[1]
+        form = response.forms["bulk_add_review_formset"]
         form["form-0-select_person"].select("_new")
 
         # As Chris points out[1], this is quite a large number, and also quite
@@ -219,7 +219,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # as a new person or alternative radio buttons if any
         # candidates with similar names were found.
         response = response.follow()
-        form = response.forms[1]
+        form = response.forms["bulk_add_review_formset"]
         form["form-0-select_person"].select("1234567")
         response = form.submit()
 
@@ -320,7 +320,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # as a new person or alternative radio buttons if any
         # candidates with similar names were found.
         response = response.follow()
-        form = response.forms[1]
+        form = response.forms["bulk_add_review_formset"]
         form["form-0-select_person"].select("1234567")
         response = form.submit()
 
@@ -368,7 +368,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(
             "/bulk_adding/sopn/parl.65808.2015-05-07/?edit=1", user=self.user
         )
-        form = response.forms[1]
+        form = response.forms["bulk_add_form"]
         response = form.submit()
         self.assertContains(
             response, "At least one person required on this ballot"
@@ -440,7 +440,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(
             "/bulk_adding/sopn/parl.65808.2015-05-07/?edit=1", user=self.user
         )
-        form = response.forms[1]
+        form = response.forms["bulk_add_form"]
         response = form.submit()
         self.assertEqual(response.status_code, 302)
 
@@ -482,7 +482,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = form.submit()
 
         response = response.follow()
-        form = response.forms[1]
+        form = response.forms["bulk_add_review_formset"]
         form["form-0-select_person"].select("1234567")
         response = form.submit()
         self.assertEqual(response.context["formset"].is_valid(), False)
