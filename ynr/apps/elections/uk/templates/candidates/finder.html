@@ -167,6 +167,8 @@
               removed an alternate name for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
             {% elif action.action_type == 'person-other-name-update' %}
               changed an alternate name for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
+            {% elif action.action_type == 'suspended-twitter-account' %}
+              updated twitter account status for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>  
             {% else %}
               {% if action.person %}
                 updated <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>

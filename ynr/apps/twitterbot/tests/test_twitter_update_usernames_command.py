@@ -5,6 +5,8 @@ from mock import Mock, patch
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.output import capture_output, split_output
 from people.tests.factories import PersonFactory
+from twitterbot.helpers import TwitterBot
+from twitterbot.management.twitter import TwitterAPIData
 
 
 def fake_post_for_username_updater(*args, **kwargs):
@@ -290,11 +292,11 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
             self.screen_name_and_user_id.get_twitter_username,
             "notatwitteraccounteither",
         )
+
         with capture_output() as (out, err):
             call_command("twitterbot_update_usernames")
 
-        self.assertIsNone(self.just_userid.get_twitter_username)
-        self.assertEqual(self.just_userid.get_twitter_username, None)
+        self.assertIsNone(self.just_userid.get_twitter_username, None)
 
         # Clear the cached_property for this object
         del self.screen_name_and_user_id.get_all_idenfitiers
@@ -319,3 +321,90 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
                 ),
             ],
         )
+
+
+@override_settings(TWITTER_APP_ONLY_BEARER_TOKEN="madeuptoken")
+class TestTwitterSuspendedUser(TestUserMixin, TestCase):
+    @patch.object(TwitterAPIData, "update_from_api")
+    @patch.object(TwitterBot, "is_user_suspended")
+    def test_marked_suspended(self, is_user_suspended, update_from_api):
+        suspended_person = PersonFactory(name="Suspended User")
+        suspended_person.tmp_person_identifiers.create(
+            value_type="twitter_username", value="suspendeduser"
+        )
+
+        is_user_suspended.return_value = True
+
+        call_command("twitterbot_update_usernames", verbosity=3)
+
+        identifier = suspended_person.tmp_person_identifiers.get(
+            value_type="twitter_username"
+        )
+        update_from_api.assert_called_once()
+        is_user_suspended.assert_called_once()
+        assert identifier.extra_data["status"] == "suspended"
+        assert identifier.value == "suspendeduser"
+
+    @patch.object(TwitterAPIData, "update_from_api")
+    @patch.object(TwitterBot, "is_user_suspended")
+    def test_identifier_value_removed(self, is_user_suspended, update_from_api):
+        person = PersonFactory(name="Suspended User")
+        person.tmp_person_identifiers.create(
+            value_type="twitter_username", value="deactivated"
+        )
+
+        is_user_suspended.return_value = False
+
+        call_command("twitterbot_update_usernames", verbosity=3)
+
+        identifier = person.tmp_person_identifiers.get(
+            value_type="twitter_username"
+        )
+        update_from_api.assert_called_once()
+        is_user_suspended.assert_called_once()
+        assert identifier.value == ""
+
+    @patch.object(TwitterAPIData, "update_from_api")
+    @patch.object(TwitterBot, "is_user_suspended")
+    def test_identifier_deleted_if_we_have_id(
+        self, is_user_suspended, update_from_api
+    ):
+        person = PersonFactory(name="Suspended User")
+        person.tmp_person_identifiers.create(
+            value_type="twitter_username",
+            value="deactivated",
+            internal_identifier="403",
+        )
+
+        is_user_suspended.return_value = False
+
+        call_command("twitterbot_update_usernames", verbosity=3)
+
+        update_from_api.assert_called_once()
+        is_user_suspended.assert_called_once()
+        assert person.tmp_person_identifiers.count() == 0
+
+    @patch.object(TwitterAPIData, "update_from_api")
+    @patch.object(TwitterBot, "is_user_suspended")
+    def test_identifier_not_deleted_person_with_id(
+        self, is_user_suspended, update_from_api
+    ):
+        person = PersonFactory(name="Suspended User")
+        person.tmp_person_identifiers.create(
+            value_type="twitter_username",
+            value="suspended",
+            internal_identifier="403",
+        )
+
+        is_user_suspended.return_value = True
+
+        call_command("twitterbot_update_usernames", verbosity=3)
+
+        identifier = person.tmp_person_identifiers.get(
+            value_type="twitter_username"
+        )
+        update_from_api.assert_called_once()
+        is_user_suspended.assert_called_once()
+        assert identifier.internal_identifier == "403"
+        assert identifier.value == "suspended"
+        assert identifier.extra_data["status"] == "suspended"
