@@ -185,6 +185,7 @@ class TestBallotView(
         self.assertDictEqual(
             dict(row_dicts[0]),
             {
+                "ballot_paper_id": "local.foo.bar.2019-08-03",
                 "blog_url": "",
                 "birth_date": "",
                 "cancelled_poll": "False",
