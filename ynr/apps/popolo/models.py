@@ -383,6 +383,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
             gss = self.ballot.post.identifier[4:]
 
         membership_dict = {
+            "ballot_paper_id": self.ballot.ballot_paper_id,
             "election": self.ballot.election.slug,
             "election_date": self.ballot.election.election_date,
             "election_current": self.ballot.election.current,
