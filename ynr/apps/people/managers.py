@@ -104,20 +104,6 @@ class PersonQuerySet(models.query.QuerySet):
     def alive_now(self):
         return self.filter(death_date="")
 
-    def joins_for_csv_output(self):
-        from popolo.models import Membership
-
-        return self.prefetch_related(
-            models.Prefetch(
-                "memberships",
-                Membership.objects.select_related(
-                    "ballot", "ballot__election", "party", "post"
-                ),
-            ),
-            "images__uploading_user",
-            "tmp_person_identifiers",
-        )
-
     def get_by_id_with_redirects(self, person_id):
         try:
             person = self.get(id=person_id)
