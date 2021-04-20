@@ -38,7 +38,7 @@ def get_twitter_user_id(twitter_screen_name):
                     )
                 )
         else:
-            result = str(data[0]["id"])
+            result = str(data["id"])
     else:
         result = ""
     # Cache Twitter screen name -> user ID results for 5 minutes -
