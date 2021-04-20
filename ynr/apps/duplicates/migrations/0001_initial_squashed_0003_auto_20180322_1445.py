@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="duplicate_suggestion_other_person",
-                        to="popolo.Person",
+                        to="people.Person",
                     ),
                 ),
                 (
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="duplicate_suggestion",
-                        to="popolo.Person",
+                        to="people.Person",
                     ),
                 ),
                 (
