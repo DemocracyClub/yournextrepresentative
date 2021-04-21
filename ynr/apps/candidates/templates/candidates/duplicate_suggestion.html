@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  {% if error %}
+    <h1><a href="{{ person.get_absolute_url }}">{{ person.name }}</a></h1>
+    <h2>Error Merging</h2>
+    <p>Sorry, something went wrong. The error message was:</p>
+    <p><code>{{ error }}</code></p>
+
+  {% else %}
+    <h1>Merge Suggestion</h1>
+    <h2>You are suggesting:</h2>
+
+    <h3>{{ other_person.name }}</h3>
+    <p>should be merged in to</p>
+    <h3>{{ person.name }}</h3>
+    <p>Would you like to proceed?</p>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" name="action" value="merge">Merge</button>
+      <button type="submit" name="action" value="suggest">Suggest</button>
+    </form>
+    {% endif %}
+
+
+{% endblock %}

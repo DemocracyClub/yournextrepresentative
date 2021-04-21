@@ -17,8 +17,10 @@ from django.utils.decorators import method_decorator
 from django.utils.http import urlquote
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, TemplateView, View, UpdateView
+from django.views.generic.detail import DetailView
 
 from auth_helpers.views import GroupRequiredMixin, user_in_group
+from duplicates.models import DuplicateSuggestion
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from elections.uk.forms import SelectBallotForm
@@ -195,6 +197,45 @@ class MergePeopleMixin:
         )
 
         return merger.merge(delete=True)
+
+
+class DuplicatePersonView(GroupRequiredMixin, MergePeopleMixin, DetailView):
+    """
+    A view that allows a user to suggest a duplicate person. Users with merge
+    permissions can merge directly rather than creating a DuplicateSuggestion
+    """
+
+    http_method_names = ["get", "post"]
+    required_group_name = TRUSTED_TO_MERGE_GROUP_NAME
+    template_name = "candidates/duplicate_suggestion.html"
+    model = Person
+    context_object_name = "person"
+    pk_url_kwarg = "person_id"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        other_person_id = self.request.GET.get("other", "")
+        if not other_person_id:
+            context["error"] = "Other person ID is missing"
+            return context
+
+        if not other_person_id.isnumeric():
+            context["error"] = f"Malformed person ID {other_person_id}"
+            return context
+
+        if other_person_id == str(self.object.pk):
+            context[
+                "error"
+            ] = f"You can't merge a person ({self.object.pk}) with themself ({other_person_id})"
+            return context
+
+        try:
+            context["other_person"] = Person.objects.get(pk=other_person_id)
+        except Person.DoesNotExist:
+            context["error"] = f"Person not found with ID {other_person_id}"
+
+        return context
 
 
 class MergePeopleView(GroupRequiredMixin, TemplateView, MergePeopleMixin):
