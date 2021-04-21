@@ -54,22 +54,34 @@ class BaseReport:
             "UKK",
         ]
 
+        self.ballot_qs = Ballot.objects.filter(
+            election__election_date=self.date
+        )
+        if self.election_type != "all":
+            self.ballot_qs = self.ballot_qs.filter(
+                ballot_paper_id__startswith=self.election_type
+            )
+        # as discussed with Peter, dont exclude all by elections this year
+        # only those in Wales/Scotland
+        # .exclude(ballot_paper_id__contains=".by.")
         self.ballot_qs = (
-            Ballot.objects.filter(election__election_date=self.date)
-            .filter(ballot_paper_id__startswith=self.election_type)
-            # as discussed with Peter, dont exclude all by elections this year
-            # only those in Wales/Scotland
-            # .exclude(ballot_paper_id__contains=".by.")
-            .exclude(ballot_paper_id__in=EXCLUSION_IDS)
+            self.ballot_qs.exclude(ballot_paper_id__in=EXCLUSION_IDS)
             .filter(post__party_set__slug=register.lower())
             .exclude(cancelled=True)
             .exclude(membership=None)
         )
 
+        self.membership_qs = Membership.objects.filter(
+            ballot__election__election_date=self.date
+        )
+        if self.election_type != "all":
+            self.membership_qs = self.membership_qs.filter(
+                ballot__ballot_paper_id__startswith=self.election_type
+            )
         self.membership_qs = (
-            Membership.objects.filter(ballot__election__election_date=self.date)
-            .filter(ballot__ballot_paper_id__startswith=self.election_type)
-            .filter(ballot__post__party_set__slug=register.lower())
+            self.membership_qs.filter(
+                ballot__post__party_set__slug=register.lower()
+            )
             # as discussed with Peter, dont exclude all by elections this year
             # only those in Wales/Scotland
             # .exclude(ballot__ballot_paper_id__contains=".by.")
