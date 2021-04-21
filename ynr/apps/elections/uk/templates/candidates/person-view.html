@@ -107,6 +107,8 @@
   <dl>
     <dt>Name</dt>
     <dd>{{ person.name_with_honorifics }}</dd>
+    <dt>ID</dt>
+    <dd>{{ person.pk }}</dd>
     {% if person.other_names.exists %}
       <dt>Also known as</dt>
     {% endif %}
