@@ -111,7 +111,9 @@ class BaseReport:
         print()
         print()
         print()
-        title = "{}: {}".format(self.date, self.name)
+        title = f"{self.date}: {self.name}"
+        if self.england_only:
+            title = f"{title} (England only)"
         print(title)
         print("=" * len(title))
         print()
