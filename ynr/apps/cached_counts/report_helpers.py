@@ -5,7 +5,7 @@ Maybe strongest region groups (e.g. are Bath independents standing everywhere in
 Gender
 New parties
 """
-
+import collections
 import sys
 from collections import Counter
 
@@ -420,8 +420,30 @@ class NewParties(BaseReport):
         return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
 
 
-class GenderSplit(BaseReport):
-    name = "Gender Split"
+class GenderSplitByDate(BaseReport):
+    name = "GenderSplit By Date"
+
+    def get_qs(self):
+        return (
+            self.membership_qs.values("person__gender_guess__gender")
+            .order_by("person__gender_guess__gender")
+            .annotate(gender_count=Count("person__gender_guess__gender"))
+        )
+
+    def report(self):
+        qs = self.get_qs()
+        report_list = []
+        headers = ["Gender", "Gender Count"]
+        report_list.append(headers)
+        for gender in qs:
+            report_list.append(
+                [gender["person__gender_guess__gender"], gender["gender_count"]]
+            )
+        return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
+
+
+class GenderSplitByParty(BaseReport):
+    name = "Gender Split By Party"
 
     def get_qs(self):
         return (
@@ -444,6 +466,138 @@ class GenderSplit(BaseReport):
                     gender["party__name"],
                 ]
             )
+        return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
+
+
+class GenderSplitByRegion(BaseReport):
+    name = "Gender Split By Region"
+
+    def get_qs(self):
+        return (
+            self.membership_qs.values(
+                "person__gender_guess__gender", "ballot__tags__NUTS1__value"
+            )
+            .annotate(gender_count=Count("person__gender_guess__gender"))
+            .order_by("ballot__tags__NUTS1__value")
+        )
+
+    def report(self):
+        qs = self.get_qs()
+        report_list = []
+        headers = ["Gender", "Gender Count", "Region"]
+        for gender in qs:
+            report_list.append(
+                [
+                    gender["person__gender_guess__gender"],
+                    gender["gender_count"],
+                    gender["ballot__tags__NUTS1__value"],
+                ]
+            )
+        return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
+
+
+class GenderSplitByElectionType(BaseReport):
+    name = "Gender Split By Election Type"
+
+    def get_qs(self):
+        return (
+            self.membership_qs.values(
+                "person__gender_guess__gender",
+                "ballot__election__for_post_role",
+            )
+            .annotate(gender_count=Count("person__gender_guess__gender"))
+            .order_by("ballot__election__for_post_role")
+        )
+
+    def report(self):
+        qs = self.get_qs()
+        report_list = []
+        headers = ["Gender", "Gender Count", "Party Name"]
+        for gender in qs:
+            report_list.append(
+                [
+                    gender["person__gender_guess__gender"],
+                    gender["gender_count"],
+                    gender["ballot__election__for_post_role"],
+                ]
+            )
+        return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
+
+
+class GenderSplitBySeatsContested(BaseReport):
+    name = "Gender Split By Seats Contested"
+
+    def get_qs(self):
+        return (
+            self.membership_qs.values(
+                "person__gender_guess__gender", "ballot__winner_count"
+            )
+            .annotate(gender_count=Count("person__gender_guess__gender"))
+            .order_by("ballot__winner_count")
+        )
+
+    def report(self):
+        qs = self.get_qs()
+        report_list = []
+        headers = ["Seats Contested", "F", "M", "Ratio"]
+        report_list.append(headers)
+        grouped_rows = {}
+        for gender in qs:
+            if not grouped_rows.get(gender["ballot__winner_count"]):
+                grouped_rows[gender["ballot__winner_count"]] = {}
+            grouped_rows[gender["ballot__winner_count"]][
+                gender["person__gender_guess__gender"]
+            ] = gender["gender_count"]
+        for seats_contested, data in grouped_rows.items():
+            ratio = (
+                f'{round(data["M"] / data["F"],2)}'
+                f':{round(data["F"] / data["F"],2)}'
+            )
+            report_list.append([seats_contested, data["F"], data["M"], ratio])
+
+        return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
+
+
+class SingleGenderedBallots(BaseReport):
+    name = "Single Gender Wards"
+
+    def get_qs(self):
+        return (
+            self.membership_qs.values("ballot__ballot_paper_id")
+            .order_by("ballot__ballot_paper_id")
+            .annotate(
+                genders=Count("person__gender_guess__gender", distinct=True)
+            )
+            .filter(genders=1)
+            .values_list("ballot__ballot_paper_id", flat=True)
+        )
+
+    def report(self):
+        report_list = []
+        headers = ["Label", "Count", "Sample"]
+        report_list.append(headers)
+        report_list.append(
+            [
+                "All Single gender ballots",
+                self.get_qs().count(),
+                "\t".join(self.get_qs()[:10]),
+            ]
+        )
+        for gender in ["F", "M"]:
+            ballots = self.get_qs()
+            qs = (
+                Membership.objects.order_by("ballot__ballot_paper_id")
+                .distinct("ballot__ballot_paper_id")
+                .filter(
+                    person__gender_guess__gender=gender,
+                    ballot__ballot_paper_id__in=ballots,
+                )
+                .values_list("ballot__ballot_paper_id", flat=True)
+            )
+            report_list.append(
+                [f"All {gender} gender ballots", qs.count(), "\t".join(qs[:10])]
+            )
+
         return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
 
 
@@ -608,6 +762,62 @@ class NumCandidatesStandingInMultipleSeats(BaseReport):
             if count == 0:
                 break
             report_list.append([num, count])
+
+        return "\n".join(
+            ["\t".join([str(cell) for cell in row]) for row in report_list]
+        )
+
+
+class CommonFirstNames(BaseReport):
+
+    name = "Common first names"
+
+    def get_qs(self):
+        """
+        Get all distinct people standing
+        """
+        return self.membership_qs
+
+    def collect_names(self, label, qs):
+        all_names = qs.values_list("person__name", flat=True)
+        all_first_names = [name.split(" ")[0].title() for name in all_names]
+        collector = collections.Counter(all_first_names)
+        for name, count in collector.most_common(30):
+            yield [label, name, count]
+
+    def report(self):
+        report_list = []
+        headers = ["Type", "Name", "Count"]
+        report_list.append(headers)
+        qs = self.get_qs()
+        if self.england_only:
+            label = "Across England"
+        else:
+            label = f"On {self.date}"
+            print(qs)
+        for row in self.collect_names(label, qs):
+            report_list.append(row)
+
+        # For all parties standing:
+        parties = (
+            self.membership_qs.values_list("party__ec_id", "party_name")
+            .distinct("party_name")
+            .order_by("party_name")
+        )
+
+        for party in parties:
+            label = f"{party[1]}"
+            if self.england_only:
+                label = f"{label} (England only)"
+            qs = self.get_qs().filter(party__ec_id=party[0])
+            for row in self.collect_names(label, qs):
+                report_list.append(row)
+
+        for region in region_choices():
+            label = f"{region[1]}"
+            qs = self.get_qs().filter(ballot__tags__NUTS1__key=region[0])
+            for row in self.collect_names(label, qs):
+                report_list.append(row)
 
         return "\n".join(
             ["\t".join([str(cell) for cell in row]) for row in report_list]
