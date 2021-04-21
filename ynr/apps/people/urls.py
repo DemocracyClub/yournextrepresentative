@@ -19,6 +19,11 @@ urlpatterns = [
         name="person-merge",
     ),
     url(
+        r"^person/(?P<person_id>\d+)/duplicate$",
+        views.DuplicatePersonView.as_view(),
+        name="duplicate-suggestion",
+    ),
+    url(
         r"^person/(?P<person_id>\d+)/other-names$",
         views.PersonOtherNamesView.as_view(),
         name="person-other-names",
