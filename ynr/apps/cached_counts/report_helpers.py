@@ -19,24 +19,6 @@ from people.models import Person
 from popolo.models import Membership
 
 
-ALL_REPORT_CLASSES = [
-    "NumberOfCandidates",
-    "NumberOfSeats",
-    "CandidatesPerParty",
-    "UncontestedBallots",
-    "NcandidatesPerSeat",
-    "TwoWayRace",
-    "TwoWayRaceForNewParties",
-    "TwoWayRaceForNcandidates",
-    "MostPerSeat",
-    "NewParties",
-    "GenderSplit",
-    "PartyMovers",
-    "RegionalNumCandidatesPerSeat",
-    "SmallPartiesCandidatesCouncilAreas",
-]
-
-
 EXCLUSION_IDS = [
     "local.flintshire.gwernymynydd.by.2021-05-06",
     "local.newport.victoria.by.2021-05-06",
@@ -616,3 +598,11 @@ class NumCandidatesStandingInMultipleSeats(BaseReport):
         return "\n".join(
             ["\t".join([str(cell) for cell in row]) for row in report_list]
         )
+
+
+ALL_REPORT_CLASSES = []
+for x in list(locals().values()):
+    if type(x) == type and issubclass(x, BaseReport):
+        if x.__name__ == "BaseReport":
+            continue
+        ALL_REPORT_CLASSES.append(x.__name__)

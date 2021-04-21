@@ -22,7 +22,7 @@ class Command(BaseCommand):
             dest="reports",
             help=f"The name of the report(s) to run, comma separated. Defaults to all. Choices: {self.report_choices_str}",
             required=False,
-            default="all",
+            default=None,
         )
 
         parser.add_argument(
@@ -48,6 +48,10 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        if options["reports"] is None:
+            print("Pick one report or pass 'all'")
+            print("\n".join([f"\t{name}" for name in ALL_REPORT_CLASSES]))
+            return
         if options["reports"] == "all":
             reports = ALL_REPORT_CLASSES
         else:
