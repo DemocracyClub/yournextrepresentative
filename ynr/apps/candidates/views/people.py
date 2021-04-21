@@ -210,6 +210,12 @@ class DuplicatePersonView(LoginRequiredMixin, MergePeopleMixin, DetailView):
     model = Person
     context_object_name = "person"
     pk_url_kwarg = "person_id"
+    SUGGESTION_FORM_ID = "suggestion"
+    MERGE_FORM_ID = "merge"
+    extra_context = {
+        "SUGGESTION_FORM_ID": SUGGESTION_FORM_ID,
+        "MERGE_FORM_ID": MERGE_FORM_ID,
+    }
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -224,9 +230,8 @@ class DuplicatePersonView(LoginRequiredMixin, MergePeopleMixin, DetailView):
             return context
 
         if other_person_id == str(self.object.pk):
-            context[
-                "error"
-            ] = f"You can't merge a person ({self.object.pk}) with themself ({other_person_id})"
+            msg = f"You can't merge a person ({self.object.pk}) with themself ({other_person_id})"
+            context["error"] = msg
             return context
 
         try:
