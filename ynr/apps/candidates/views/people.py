@@ -199,14 +199,13 @@ class MergePeopleMixin:
         return merger.merge(delete=True)
 
 
-class DuplicatePersonView(GroupRequiredMixin, MergePeopleMixin, DetailView):
+class DuplicatePersonView(LoginRequiredMixin, MergePeopleMixin, DetailView):
     """
     A view that allows a user to suggest a duplicate person. Users with merge
     permissions can merge directly rather than creating a DuplicateSuggestion
     """
 
     http_method_names = ["get", "post"]
-    required_group_name = TRUSTED_TO_MERGE_GROUP_NAME
     template_name = "candidates/duplicate_suggestion.html"
     model = Person
     context_object_name = "person"
@@ -235,7 +234,36 @@ class DuplicatePersonView(GroupRequiredMixin, MergePeopleMixin, DetailView):
         except Person.DoesNotExist:
             context["error"] = f"Person not found with ID {other_person_id}"
 
+        # this determines if we show button to directly merge
+        context["user_can_merge"] = user_in_group(
+            self.request.user, TRUSTED_TO_MERGE_GROUP_NAME
+        )
+
         return context
+
+    def post(self, request, *args, **kwargs):
+        person = self.get_object()
+        other_person = Person.objects.get(pk=request.POST["other_person_id"])
+
+        obj, created = DuplicateSuggestion.objects.get_or_create(
+            person=person,
+            other_person=other_person,
+            defaults={"user": self.request.user},
+        )
+
+        # TODO improve messages
+        message_mapping = {
+            True: f"Thanks, your duplicate suggestion for {obj.person.pk} and {obj.other_person.pk} was created.",
+            False: f"Thanks, but a duplicate suggestion for {obj.person.pk} and {obj.other_person.pk} already existed.",
+        }
+        messages.add_message(
+            request=self.request,
+            level=messages.SUCCESS,
+            message=message_mapping[created],
+            extra_tags="safe do-something-else",
+        )
+        # TODO redirect to person that would be merged?
+        return HttpResponseRedirect(person.get_absolute_url())
 
 
 class MergePeopleView(GroupRequiredMixin, TemplateView, MergePeopleMixin):

@@ -21,7 +21,7 @@ urlpatterns = [
     url(
         r"^person/(?P<person_id>\d+)/duplicate$",
         views.DuplicatePersonView.as_view(),
-        name="duplicate-suggestion",
+        name="duplicate-person",
     ),
     url(
         r"^person/(?P<person_id>\d+)/other-names$",
