@@ -58,9 +58,9 @@ class DuplicateSuggestion(StatusModel, TimeStampedModel):
       they are not (for example, because they've been suggested before)
     """
 
-    STATUS = Choices(
-        ("suggested", "Suggested"), ("not_duplicate", "Not duplicate")
-    )
+    SUGGESTED = "suggested"
+    NOT_DUPLICATE = "not_duplicate"
+    STATUS = Choices((SUGGESTED, "Suggested"), (NOT_DUPLICATE, "Not duplicate"))
 
     person = models.ForeignKey(
         "people.Person",
@@ -91,3 +91,11 @@ class DuplicateSuggestion(StatusModel, TimeStampedModel):
         assert self.person.pk < self.other_person.pk
 
         return super().save(**kwargs)
+
+    @property
+    def open(self):
+        return self.status == self.SUGGESTED
+
+    @property
+    def rejected(self):
+        return self.status == self.NOT_DUPLICATE

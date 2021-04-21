@@ -18,9 +18,10 @@ from django.utils.http import urlquote
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, TemplateView, View, UpdateView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView
 
 from auth_helpers.views import GroupRequiredMixin, user_in_group
-from duplicates.models import DuplicateSuggestion
+from duplicates.forms import DuplicateSuggestionForm
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from elections.uk.forms import SelectBallotForm
@@ -199,7 +200,9 @@ class MergePeopleMixin:
         return merger.merge(delete=True)
 
 
-class DuplicatePersonView(LoginRequiredMixin, MergePeopleMixin, DetailView):
+class DuplicatePersonView(
+    LoginRequiredMixin, MergePeopleMixin, FormView, DetailView
+):
     """
     A view that allows a user to suggest a duplicate person. Users with merge
     permissions can merge directly rather than creating a DuplicateSuggestion
@@ -216,59 +219,53 @@ class DuplicatePersonView(LoginRequiredMixin, MergePeopleMixin, DetailView):
         "SUGGESTION_FORM_ID": SUGGESTION_FORM_ID,
         "MERGE_FORM_ID": MERGE_FORM_ID,
     }
+    form_class = DuplicateSuggestionForm
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["person"] = self.object
+        kwargs["user"] = self.request.user
+        if self.request.method == "GET":
+            kwargs["data"] = self.request.GET
+        return kwargs
 
-        other_person_id = self.request.GET.get("other", "")
-        if not other_person_id:
-            context["error"] = "Other person ID is missing"
-            return context
-
-        if not other_person_id.isnumeric():
-            context["error"] = f"Malformed person ID {other_person_id}"
-            return context
-
-        if other_person_id == str(self.object.pk):
-            msg = f"You can't merge a person ({self.object.pk}) with themself ({other_person_id})"
-            context["error"] = msg
-            return context
-
-        try:
-            context["other_person"] = Person.objects.get(pk=other_person_id)
-        except Person.DoesNotExist:
-            context["error"] = f"Person not found with ID {other_person_id}"
-
-        # this determines if we show button to directly merge
-        context["user_can_merge"] = user_in_group(
-            self.request.user, TRUSTED_TO_MERGE_GROUP_NAME
-        )
-
-        return context
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data()
+        form = context["form"]
+        if not form.is_valid():
+            context["errors"] = True
+        return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        person = self.get_object()
-        other_person = Person.objects.get(pk=request.POST["other_person_id"])
+        self.object = self.get_object()
+        return super().post(request, *args, **kwargs)
 
-        obj, created = DuplicateSuggestion.objects.get_or_create(
-            person=person,
-            other_person=other_person,
-            defaults={"user": self.request.user},
-        )
-
-        # TODO improve messages
-        message_mapping = {
-            True: f"Thanks, your duplicate suggestion for {obj.person.pk} and {obj.other_person.pk} was created.",
-            False: f"Thanks, but a duplicate suggestion for {obj.person.pk} and {obj.other_person.pk} already existed.",
-        }
+    def form_valid(self, form):
+        """
+        Create the suggestestion, add a message, and redirect to
+        person profile they came from
+        """
+        suggestion = form.save()
+        msg = f"Thanks, your duplicate suggestion for ID:{suggestion.person.pk} and ID:{suggestion.other_person.pk} was created."
         messages.add_message(
             request=self.request,
             level=messages.SUCCESS,
-            message=message_mapping[created],
+            message=msg,
             extra_tags="safe do-something-else",
         )
-        # TODO redirect to person that would be merged?
-        return HttpResponseRedirect(person.get_absolute_url())
+        return HttpResponseRedirect(self.object.get_absolute_url())
+
+    def get_context_data(self, **kwargs):
+        """
+        Check whether user can merge directly, which is used in the
+        template to determine whether merge button is displayed
+        """
+        context = super().get_context_data(**kwargs)
+        context["user_can_merge"] = user_in_group(
+            self.request.user, TRUSTED_TO_MERGE_GROUP_NAME
+        )
+        return context
 
 
 class MergePeopleView(GroupRequiredMixin, TemplateView, MergePeopleMixin):
