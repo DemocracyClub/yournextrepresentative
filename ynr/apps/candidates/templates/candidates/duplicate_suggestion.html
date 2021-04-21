@@ -12,16 +12,26 @@
     <h1>Merge Suggestion</h1>
     <h2>You are suggesting:</h2>
 
-    <h3>{{ other_person.name }}</h3>
-    <p>should be merged in to</p>
-    <h3>{{ person.name }}</h3>
+    <p>You are suggesting <strong>{{ other_person.name }}</strong> is a duplicate of <strong>{{ person.name }}</strong>.</p>
+    <!-- TODO add some details to help comparison -->
     <p>Would you like to proceed?</p>
 
-    <form method="post">
+    <form method="post" id="suggestion">
       {% csrf_token %}
-      <button type="submit" name="action" value="merge">Merge</button>
-      <button type="submit" name="action" value="suggest">Suggest</button>
+      <input id="other_person_id" name="other_person_id" type="hidden" value="{{ other_person.pk }}">
+      <button class="button primary" type="submit">Suggest</button>
     </form>
+
+      {% if user_can_merge %}
+        <h3>You have permission to merge these people directly</h2>
+        <p>Click the merge button below to merge instantly rather than create a duplicate suggestion</p>
+        <form method="post" action="{% url 'person-merge' person_id=person.id %}" id="merge">
+          {% csrf_token %}
+          <input id="other_id" name="other" type="hidden" value="{{ other_person.pk }}">
+          <button class="button alert" type="submit">Merge</button>
+        </form>
+      {% endif %}
+
     {% endif %}
 
 
