@@ -5,7 +5,11 @@ from django_webtest import WebTest
 from mock import patch, MagicMock
 
 from candidates.tests.auth import TestUserMixin
-from candidates.views.people import DuplicatePersonView
+from candidates.views.people import (
+    DuplicatePersonView,
+    MERGE_FORM_ID,
+    SUGGESTION_FORM_ID,
+)
 from duplicates.models import DuplicateSuggestion
 from people.models import Person
 from people.tests.factories import PersonFactory
@@ -89,17 +93,17 @@ class TestDuplicatePersonViewIntegrationTests(TestUserMixin, WebTest, TestCase):
         assert DuplicateSuggestion.objects.count() == 0
 
         url = reverse(
-            viewname="duplicate-person", kwargs={"person_id": self.person.pk}
+            viewname="person-duplicate", kwargs={"person_id": self.person.pk}
         )
         url = f"{url}?other_person={self.other_person.pk}"
         response = self.app.get(url, user=self.user)
 
         # standard user so merge form should not be displayed
-        assert DuplicatePersonView.MERGE_FORM_ID not in response.forms
-        assert DuplicatePersonView.SUGGESTION_FORM_ID in response.forms
+        assert MERGE_FORM_ID not in response.forms
+        assert SUGGESTION_FORM_ID in response.forms
 
         # submit the suggestion form and expect object to be created
-        suggestion_form = response.forms[DuplicatePersonView.SUGGESTION_FORM_ID]
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
         response = suggestion_form.submit()
 
         suggestion = DuplicateSuggestion.objects.filter(
@@ -110,7 +114,7 @@ class TestDuplicatePersonViewIntegrationTests(TestUserMixin, WebTest, TestCase):
 
     def test_duplicate_suggestion_already_open(self):
         # created an open suggestion from another user
-        created_suggestion = DuplicateSuggestion.objects.create(
+        DuplicateSuggestion.objects.create(
             person=self.person,
             other_person=self.other_person,
             user=self.user_who_can_merge,
@@ -119,7 +123,7 @@ class TestDuplicatePersonViewIntegrationTests(TestUserMixin, WebTest, TestCase):
         assert DuplicateSuggestion.objects.count() == 1
 
         url = reverse(
-            viewname="duplicate-person", kwargs={"person_id": self.person.pk}
+            viewname="person-duplicate", kwargs={"person_id": self.person.pk}
         )
         url = f"{url}?other_person={self.other_person.pk}"
         response = self.app.get(url, user=self.user)
@@ -130,7 +134,7 @@ class TestDuplicatePersonViewIntegrationTests(TestUserMixin, WebTest, TestCase):
 
     def test_duplicate_suggestion_already_rejected(self):
         # create a suggestion that was marked not duplicate
-        created_suggestion = DuplicateSuggestion.objects.create(
+        DuplicateSuggestion.objects.create(
             person=self.person,
             other_person=self.other_person,
             user=self.user_who_can_merge,
@@ -139,7 +143,7 @@ class TestDuplicatePersonViewIntegrationTests(TestUserMixin, WebTest, TestCase):
         assert DuplicateSuggestion.objects.count() == 1
 
         url = reverse(
-            viewname="duplicate-person", kwargs={"person_id": self.person.pk}
+            viewname="person-duplicate", kwargs={"person_id": self.person.pk}
         )
         url = f"{url}?other_person={self.other_person.pk}"
         response = self.app.get(url, user=self.user)

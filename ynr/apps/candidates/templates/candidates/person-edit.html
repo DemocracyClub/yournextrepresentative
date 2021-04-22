@@ -56,17 +56,15 @@
       </p>
     </div>
 
-    {% if user_can_merge %}
-      <form class="person__actions__action person__actions__merge" id="person-merge" action="{% url 'person-merge' person_id=person.id %}" method="post">
-        {% csrf_token %}
-        <h2>Is this a duplicate person?</h2>
-        <p>
-          <label for="other">Merge another person into this one:</label>
-          <input id="other" name="other" placeholder="Other person ID" type="text"></input>
-        </p>
-        <input type="submit" class="button alert" value="Merge people">
-      </form>
-    {% endif %}
+
+    <form class="person__actions__action person__actions__merge" id="{{ SUGGESTION_FORM_ID }}" action="{% url 'person-duplicate' person_id=person.id %}" method="get">
+      <h2>Is this a duplicate person?</h2>
+      <p>
+        <label for="other">Suggest another person should be merged into this one:</label>
+        <input id="other_person_id" name="other_person" placeholder="Other person ID" type="text" required></input>
+      </p>
+      <input type="submit" class="button alert" value="Suggest duplicate">
+    </form>
 
   </div>
 

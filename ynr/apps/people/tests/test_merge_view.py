@@ -4,10 +4,12 @@ from shutil import rmtree
 from django.test.utils import override_settings
 from django_webtest import WebTest
 from mock import patch
+from duplicates.models import DuplicateSuggestion
 
 import people.tests.factories
 from candidates.models import LoggedAction, PersonRedirect
 from candidates.models.versions import revert_person_from_version_data
+from candidates.views.people import MERGE_FORM_ID, SUGGESTION_FORM_ID
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
@@ -203,10 +205,6 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Delete the images we created in the test media root:
         rmtree(TEST_MEDIA_ROOT)
 
-    def test_merge_disallowed_no_form(self):
-        response = self.app.get("/person/2009/update", user=self.user)
-        self.assertNotIn("person-merge", response.forms)
-
     def test_merge_two_people_disallowed(self):
         # Get the update page for the person just to get the CSRF token:
         response = self.app.get("/person/2009/update", user=self.user)
@@ -232,8 +230,14 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(
             "/person/2009/update", user=self.user_who_can_merge
         )
-        merge_form = response.forms["person-merge"]
-        merge_form["other"] = "2007"
+
+        # first submit suggestion form
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["other_person"] = "2007"
+        response = suggestion_form.submit()
+
+        # then submit merge directly
+        merge_form = response.forms[MERGE_FORM_ID]
         response = merge_form.submit()
 
         self.assertEqual(response.status_code, 302)
@@ -392,8 +396,14 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(
             "/person/2111/update", user=self.user_who_can_merge
         )
-        merge_form = response.forms["person-merge"]
-        merge_form["other"] = "12207"
+
+        # first submit suggestion form
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["other_person"] = "12207"
+        response = suggestion_form.submit()
+
+        # then directly merge
+        merge_form = response.forms[MERGE_FORM_ID]
         response = merge_form.submit()
 
         self.assertEqual(response.status_code, 302)
@@ -472,8 +482,14 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/person/{}/update".format(primary_person.pk),
             user=self.user_who_can_merge,
         )
-        merge_form = response.forms["person-merge"]
-        merge_form["other"] = non_primary_person.pk
+
+        # first submit the suggestion form
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["other_person"] = non_primary_person.pk
+        response = suggestion_form.submit()
+
+        # as user has permission to merge directly, submit merge form
+        merge_form = response.forms[MERGE_FORM_ID]
         response = merge_form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -555,9 +571,16 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/person/{}/update".format(person_a.pk),
             user=self.user_who_can_merge,
         )
-        merge_form = response.forms["person-merge"]
-        merge_form["other"] = person_b.pk
+
+        # first submit suggestion form
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["other_person"] = person_b.pk
+        response = suggestion_form.submit()
+
+        # then directly merge
+        merge_form = response.forms[MERGE_FORM_ID]
         response = merge_form.submit()
+
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.location, "/person/1/merge_conflict/2009/not_standing/"
@@ -572,23 +595,30 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(
             "/person/{}/update".format(2009), user=self.user_who_can_merge
         )
-        merge_form = response.forms["person-merge"]
-        merge_form["other"] = 2009
-        response = merge_form.submit()
+
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["other_person"] = 2009
+        response = suggestion_form.submit()
+
         self.assertEqual(response.status_code, 200)
         self.assertContains(
-            response, "You can&#39;t merge a person (2009) with themself (2009)"
+            response,
+            "You can&#39;t suggest a duplicate person (2009) with themself (2009)",
         )
 
     def test_merge_malformed_other(self):
         response = self.app.get(
             "/person/{}/update".format(2009), user=self.user_who_can_merge
         )
-        merge_form = response.forms["person-merge"]
-        merge_form["other"] = "foobar"
-        response = merge_form.submit()
+
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["other_person"] = "foobar"
+        response = suggestion_form.submit()
+
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Malformed person ID &#39;foobar&#39;")
+        self.assertContains(
+            response, "The other person ID provided was invalid"
+        )
 
 
 class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -645,11 +675,54 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(
             "/person/{}/update".format(dest), user=self.user_who_can_merge
         )
-        merge_form = response.forms["person-merge"]
-        merge_form["other"] = source
-        response = merge_form.submit()
+        # first submit suggestion form
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["other_person"] = source
+        response = suggestion_form.submit()
+
+        # then submit merge
+        merge_form = response.forms[MERGE_FORM_ID]
+        merge_form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
+
+    def test_suggest_duplicate_people(self):
+        """
+        Similar to above, but user does not have merge permissions so
+        cannot submit the merge but instead creates a
+        DuplicateSuggestion object
+        """
+
+        source, dest = Person.objects.all().values_list("pk", flat=True)
+
+        response = self.app.get(
+            "/person/{}/update".format(source), user=self.user
+        )
+
+        form = response.forms[1]
+        form["birth_date"] = "1962"
+        form["death_date"] = "2000"
+        form["source"] = "BBC News"
+        form.submit().follow()
+
+        response = self.app.get(
+            "/person/{}/update".format(dest), user=self.user
+        )
+        # first submit suggestion form
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["other_person"] = source
+        response = suggestion_form.submit()
+
+        #  merge form not in the response as user doesnt have merge permission
+        assert MERGE_FORM_ID not in response.forms
+        # instead confirm the suggestion
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form.submit()
+
+        # still 2 people
+        self.assertEqual(Person.objects.count(), 2)
+        # but 1 merge suggestion
+        self.assertEqual(DuplicateSuggestion.objects.count(), 1)
 
     def test_merge_three_people(self):
         # Merge the first two people
@@ -657,8 +730,14 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(
             "/person/{}/update".format(dest), user=self.user_who_can_merge
         )
-        merge_form = response.forms["person-merge"]
-        merge_form["other"] = source
+
+        # first submit suggestion form
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["other_person"] = source
+        response = suggestion_form.submit()
+
+        # then submit merge directly
+        merge_form = response.forms[MERGE_FORM_ID]
         response = merge_form.submit()
 
         # Make another person
@@ -684,8 +763,14 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(
             "/person/{}/update".format(dest), user=self.user_who_can_merge
         )
-        merge_form = response.forms["person-merge"]
-        merge_form["other"] = source
+
+        # again submit suggestion form
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["other_person"] = source
+        response = suggestion_form.submit()
+
+        # then submit merge directly
+        merge_form = response.forms[MERGE_FORM_ID]
         response = merge_form.submit()
 
         self.assertTrue(Person.objects.count(), 1)
