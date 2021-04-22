@@ -35,24 +35,33 @@ EXCLUSION_IDS = [
 
 
 class BaseReport:
-    def __init__(
-        self, date, election_type=None, register=None, england_only=False
-    ):
+    def __init__(self, date, election_type=None, register=None, nation=None):
         self.date = date
-        self.england_only = england_only
+        self.nation = nation
         self.election_type = election_type or "local"
         register = register or "GB"
-        self.england_nuts_1 = [
-            "UKC",
-            "UKD",
-            "UKE",
-            "UKF",
-            "UKG",
-            "UKH",
-            "UKI",
-            "UKJ",
-            "UKK",
-        ]
+        self.nuts_to_nation = {
+            "E": [
+                "UKC",
+                "UKD",
+                "UKE",
+                "UKF",
+                "UKG",
+                "UKH",
+                "UKI",
+                "UKJ",
+                "UKK",
+            ],
+            "W": ["UKL"],
+            "S": ["UKM"],
+            "N": ["UKN"],
+        }
+        self.nation_label = {
+            "E": "England",
+            "W": "Wales",
+            "S": "Scotland",
+            "N": "Northern Ireland",
+        }
 
         self.ballot_qs = Ballot.objects.filter(
             election__election_date=self.date
@@ -88,12 +97,12 @@ class BaseReport:
             .exclude(ballot__ballot_paper_id__in=EXCLUSION_IDS)
         )
 
-        if self.england_only:
+        if self.nation:
             self.ballot_qs = self.ballot_qs.filter(
-                tags__NUTS1__key__in=self.england_nuts_1
+                tags__NUTS1__key__in=self.nuts_to_nation[self.nation]
             )
             self.membership_qs = self.membership_qs.filter(
-                ballot__tags__NUTS1__key__in=self.england_nuts_1
+                ballot__tags__NUTS1__key__in=self.nuts_to_nation[self.nation]
             )
 
         template = "%(function)s(%(expressions)s AS FLOAT)"
@@ -112,8 +121,8 @@ class BaseReport:
         print()
         print()
         title = f"{self.date}: {self.name}"
-        if self.england_only:
-            title = f"{title} (England only)"
+        if self.nation:
+            title = f"{title} ({self.nation_label[self.nation]})"
         print(title)
         print("=" * len(title))
         print()
@@ -197,8 +206,10 @@ class CandidatesPerParty(BaseReport):
         report = ["Party Name\tParty Register\tCandidates\tPercent of seats"]
 
         ballots = Ballot.objects.filter(election__election_date=self.date)
-        if self.england_only:
-            ballots = ballots.filter(tags__NUTS1__key__in=self.england_nuts_1)
+        if self.nation:
+            ballots = ballots.filter(
+                tags__NUTS1__key__in=self.nuts_to_nation[self.nation]
+            )
 
         total_seats = ballots.aggregate(seats=Sum("winner_count"))["seats"]
 
@@ -627,7 +638,7 @@ class PartyMovers(BaseReport):
                 "ballot__election__election_date"
             )
             id_set = set([m.party.ec_id for m in memberships])
-            if id_set == set(["PP53", "joint-party:53-119"]):
+            if id_set == {"PP53", "joint-party:53-119"}:
                 continue
             report_list.append(
                 [
@@ -790,8 +801,8 @@ class CommonFirstNames(BaseReport):
         headers = ["Type", "Name", "Count"]
         report_list.append(headers)
         qs = self.get_qs()
-        if self.england_only:
-            label = "Across England"
+        if self.nation:
+            label = f"Across {self.nation_label[self.nation]}"
         else:
             label = f"On {self.date}"
             print(qs)
@@ -807,8 +818,8 @@ class CommonFirstNames(BaseReport):
 
         for party in parties:
             label = f"{party[1]}"
-            if self.england_only:
-                label = f"{label} (England only)"
+            if self.nation:
+                label = f"{label} ({self.nuts_to_nation[self.nation]} only)"
             qs = self.get_qs().filter(party__ec_id=party[0])
             for row in self.collect_names(label, qs):
                 report_list.append(row)

@@ -40,11 +40,11 @@ class Command(BaseCommand):
         )
 
         parser.add_argument(
-            "--england-only",
-            action="store_true",
-            help="Run reports for England only",
+            "--nation",
+            action="store",
+            help="Run reports for a single nation",
             required=False,
-            default=False,
+            choices=["E", "S", "W"],
         )
 
     def handle(self, *args, **options):
@@ -56,12 +56,11 @@ class Command(BaseCommand):
             reports = ALL_REPORT_CLASSES
         else:
             reports = options["reports"].split(",")
-
         for report in reports:
             report_runner(
                 name=report,
                 date=options["date"],
                 election_type=options["election_type"],
                 register=options["register"],
-                england_only=options["england_only"],
+                nation=options["nation"],
             )
