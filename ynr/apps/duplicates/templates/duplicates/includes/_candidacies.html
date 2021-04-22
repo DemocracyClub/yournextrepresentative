@@ -1,0 +1,21 @@
+{% load standing %}
+
+<dl>
+  {% for election in person.current_elections_standing_down %}
+  <dt>{{ election.name }} ({{ election.election_date }})</dt>
+    <dd>Standing down</dd>
+  {% endfor %}
+
+  {% for membership in person.memberships.all %}
+    {% with election=membership.ballot.election %}
+        <dt>{% if DATE_TODAY > election.election_date %}
+            Contested the {{ election.name }} ({{ election.election_date }})
+        {% else %}
+            Contesting the {{ election.name }} ({{ election.election_date }})
+        {% endif %}</dt>
+        <dd>{{ person|post_in_election:election }}</dd>
+    {% endwith %}
+  {% empty %}
+    <p>No candidacies known at the moment.</p>
+  {% endfor %}
+</dl>

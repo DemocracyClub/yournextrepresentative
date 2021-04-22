@@ -18,7 +18,6 @@ from django.utils.http import urlquote
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, TemplateView, View, UpdateView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView
 
 from auth_helpers.views import GroupRequiredMixin, user_in_group
 from duplicates.forms import DuplicateSuggestionForm

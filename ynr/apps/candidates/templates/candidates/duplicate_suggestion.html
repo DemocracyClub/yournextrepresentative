@@ -21,8 +21,17 @@
     <h1>Merge Suggestion</h1>
     <h2>You are suggesting:</h2>
 
-    <p>You are suggesting <strong>{{ form.instance.other_person.name }}</strong> is a duplicate of <strong>{{ person.name }}</strong>.</p>
-    <!-- TODO add some details to help comparison -->
+    {% with other_person=form.instance.other_person %}
+      <p>You are suggesting <strong><a href="{{ other_person.get_absolute_url }}">{{ other_person.name }}</a></strong> is a duplicate of <strong><a href="{{ person.get_absolute_url }}">{{ person.name }}</a></strong>.</p>
+      <!-- TODO improve how comparison is displayed -->
+      {% include "duplicates/includes/_person_details.html" with person=person other_person=other_person %}
+      <h4>Other Person ({{ other_person.name }}) Candidacies:</h4>
+      {% include "duplicates/includes/_candidacies.html" with person=other_person %}
+      <h4>Person ({{ person.name }}) Candidacies:</h4>
+      {% include "duplicates/includes/_candidacies.html" with person=person %}
+
+    {% endwith %}
+
     <p>Would you like to proceed?</p>
 
     <form method="post" id="{{ SUGGESTION_FORM_ID }}">
