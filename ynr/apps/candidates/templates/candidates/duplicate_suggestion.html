@@ -36,7 +36,8 @@
         <p>Click the merge button below to merge instantly rather than create a duplicate suggestion</p>
         <form method="post" action="{% url 'person-merge' person_id=person.id %}" id="{{ MERGE_FORM_ID }}">
           {% csrf_token %}
-          <input id="other_id" name="other" type="hidden" value="{{ other_person.pk }}">
+
+          {{ form.other_person }}
           <button class="button alert" type="submit">Merge</button>
         </form>
       {% endif %}

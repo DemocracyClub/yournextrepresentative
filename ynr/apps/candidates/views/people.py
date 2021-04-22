@@ -83,6 +83,10 @@ def get_call_to_action_flash_message(person, new_person=False):
     )
 
 
+SUGGESTION_FORM_ID = "suggestion"
+MERGE_FORM_ID = "merge"
+
+
 class PersonView(TemplateView):
     template_name = "candidates/person-view.html"
 
@@ -200,9 +204,7 @@ class MergePeopleMixin:
         return merger.merge(delete=True)
 
 
-class DuplicatePersonView(
-    LoginRequiredMixin, MergePeopleMixin, FormView, DetailView
-):
+class DuplicatePersonView(LoginRequiredMixin, FormView, DetailView):
     """
     A view that allows a user to suggest a duplicate person. Users with merge
     permissions can merge directly rather than creating a DuplicateSuggestion
@@ -213,8 +215,6 @@ class DuplicatePersonView(
     model = Person
     context_object_name = "person"
     pk_url_kwarg = "person_id"
-    SUGGESTION_FORM_ID = "suggestion"
-    MERGE_FORM_ID = "merge"
     extra_context = {
         "SUGGESTION_FORM_ID": SUGGESTION_FORM_ID,
         "MERGE_FORM_ID": MERGE_FORM_ID,
@@ -235,6 +235,7 @@ class DuplicatePersonView(
         form = context["form"]
         if not form.is_valid():
             context["errors"] = True
+
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
@@ -289,11 +290,12 @@ class MergePeopleView(GroupRequiredMixin, TemplateView, MergePeopleMixin):
         context["person"] = get_object_or_404(
             Person, id=self.kwargs["person_id"]
         )
-        context["other_person_id"] = self.request.POST.get("other", "")
+        context["other_person_id"] = self.request.POST.get("other_person", "")
         return context
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data()
+
         # Check that the person IDs are well-formed:
         try:
             self.validate(context)
@@ -423,10 +425,6 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
         person = self.object
         context["person"] = person
 
-        context["user_can_merge"] = user_in_group(
-            self.request.user, TRUSTED_TO_MERGE_GROUP_NAME
-        )
-
         context["person_edits_allowed"] = person.user_can_edit(
             self.request.user
         )
@@ -434,6 +432,7 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
             ballot__election__current=True, ballot__candidates_locked=True
         )
         context["versions"] = get_version_diffs(person.versions)
+        context["SUGGESTION_FORM_ID"] = SUGGESTION_FORM_ID
 
         return context
 

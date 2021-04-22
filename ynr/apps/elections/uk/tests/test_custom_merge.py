@@ -1,4 +1,5 @@
 from django_webtest import WebTest
+from candidates.views.people import MERGE_FORM_ID, SUGGESTION_FORM_ID
 
 import people.tests.factories
 from candidates.tests import factories
@@ -19,6 +20,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_uk_results_for_secondary_preserved(self):
+        self.assertTrue(Person.objects.filter(pk=10000).exists())
         factories.MembershipFactory.create(
             person=self.primary_person,
             post=self.camberwell_post,
@@ -56,8 +58,14 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(
             "/person/3885/update", user=self.user_who_can_merge
         )
-        merge_form = response.forms["person-merge"]
-        merge_form["other"] = "10000"
+
+        # first submit the suggestion form
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["other_person"] = "10000"
+        response = suggestion_form.submit()
+
+        # as user has permission to merge directly, submit merge form
+        merge_form = response.forms[MERGE_FORM_ID]
         response = merge_form.submit()
 
         self.assertEqual(CandidateResult.objects.count(), 1)
@@ -70,8 +78,10 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         candidate_result = membership.result
         self.assertEqual(candidate_result.num_ballots, 32614)
+        self.assertFalse(Person.objects.filter(pk=10000).exists())
 
     def test_uk_results_for_primary_preserved(self):
+        self.assertTrue(Person.objects.filter(pk=10000).exists())
         primary_membership = factories.MembershipFactory.create(
             person=self.primary_person,
             post=self.camberwell_post,
@@ -108,8 +118,13 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(
             "/person/3885/update", user=self.user_who_can_merge
         )
-        merge_form = response.forms["person-merge"]
-        merge_form["other"] = "10000"
+        # first submit the suggestion form
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["other_person"] = "10000"
+        response = suggestion_form.submit()
+
+        # as user has permission to merge directly, submit merge form
+        merge_form = response.forms[MERGE_FORM_ID]
         response = merge_form.submit()
 
         self.assertEqual(CandidateResult.objects.count(), 1)
@@ -122,3 +137,4 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         candidate_result = membership.result
         self.assertEqual(candidate_result.num_ballots, 27619)
+        self.assertFalse(Person.objects.filter(pk=10000).exists())

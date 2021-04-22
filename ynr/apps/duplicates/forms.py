@@ -31,7 +31,7 @@ class DuplicateSuggestionForm(forms.ModelForm):
             return cleaned_data
 
         if self.instance.person.pk == other_person.pk:
-            msg = f"You can't suggested a duplicate person ({self.instance.person.pk}) with themself ({other_person.pk})"
+            msg = f"You can't suggest a duplicate person ({self.instance.person.pk}) with themself ({other_person.pk})"
             self.add_error(field="other_person", error=msg)
 
         existing_suggestion = DuplicateSuggestion.objects.for_both_people(
