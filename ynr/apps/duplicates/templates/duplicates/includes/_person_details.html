@@ -1,0 +1,27 @@
+<dl>
+
+  <dt>Other Person ({{ other_person.name }}) also known as</dt>
+    {% for other_name in other_person.other_names.all %}
+      <dd>{{ other_name.name }}{% if other_name.note %} ({{ other_name.note }}){% endif %}</dd>
+    {% empty %}
+      <dd>No other names known</dd>
+    {% endfor %}
+
+  <dt>Person ({{ person.name }}) also known as</dt>
+    {% for other_name in person.other_names.all %}
+      <dd>{{ other_name.name }}{% if other_name.note %} ({{ other_name.note }}){% endif %}</dd>
+    {% empty %}
+      <dd>No other names known</dd>
+    {% endfor %}
+
+  {% if other_person.last_candidacy %}
+    <dt>Other Person ({{ other_person.name }}) Last Candidacy Party</dt>
+    <dd>{{ other_person.last_candidacy.party.name }}</dd>
+  {% endif %}
+
+  {% if person.last_candidacy %}
+    <dt>Person ({{ person.name }}) Last Candidacy Party</dt>
+    <dd>{{ person.last_candidacy.party.name }}</dd>
+  {% endif %}
+
+</dl>
