@@ -55,6 +55,13 @@
                 </a>
               </li>
             {% endif %}
+            {% if user_can_merge and duplicate_suggestions %}
+              <li class="nav-links__item">
+                <a href="{% url 'duplicate-list' %}">
+                  <span class="notification">{{ duplicate_suggestions }}</span> Duplicate Suggestions
+                </a>
+              </li>
+            {% endif %}
             {% if user_can_review_photos and photos_for_review > 0 %}
               <li class="nav-links__item"><a href="{% url 'photo-review-list' %}"><span class="notification">{{ photos_for_review }}</span> Photos for review</a></li>
             {% endif %}
