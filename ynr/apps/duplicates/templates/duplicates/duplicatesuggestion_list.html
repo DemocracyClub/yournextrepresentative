@@ -11,8 +11,8 @@
         <th>Primary Person (will remain)</th>
         <th>Person To Be Merged (will be removed)</th>
         <th>Suggested by</th>
-        <th></th>
-        <th></th>
+        <th>Approve</th>
+        <th>Reject</th>
       </tr>
     </thead>
     <tbody>
@@ -27,7 +27,10 @@
           <a href="{{ object.user.get_absolute_url }}">{{ object.user }}</a>
         </td>
         <td>
-          <form method="post">
+          <form method="post" action="{{ object.get_absolute_merge_url }}">
+            {% csrf_token %}
+            <p>This will merge these two people</p>
+            <input id="other_person_id" type="hidden" name="other_person" value="{{ object.other_person.pk }}">
             <button class="button primary">Confirm</button>
           </form>
         </td>

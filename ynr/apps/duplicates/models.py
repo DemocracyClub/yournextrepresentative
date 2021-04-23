@@ -115,6 +115,11 @@ class DuplicateSuggestion(StatusModel, TimeStampedModel):
     def get_absolute_reject_url(self):
         return reverse(viewname="duplicate-reject", kwargs={"pk": self.pk})
 
+    def get_absolute_merge_url(self):
+        return reverse(
+            viewname="person-merge", kwargs={"person_id": self.person.pk}
+        )
+
     @property
     def rejection_form(self):
         from duplicates.forms import RejectionForm
