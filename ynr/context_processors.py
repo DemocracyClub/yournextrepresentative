@@ -9,6 +9,7 @@ from candidates.models import (
     TRUSTED_TO_LOCK_GROUP_NAME,
     TRUSTED_TO_MERGE_GROUP_NAME,
 )
+from duplicates.models import DuplicateSuggestion
 from moderation_queue.models import (
     PHOTO_REVIEWERS_GROUP_NAME,
     QueuedImage,
@@ -62,6 +63,10 @@ def add_notification_data(request):
                 .distinct("ballot")
                 .count()
             )
+        if TRUSTED_TO_MERGE_GROUP_NAME in groups:
+            result[
+                "duplicate_suggestions"
+            ] = DuplicateSuggestion.objects.open().count()
     return result
 
 
