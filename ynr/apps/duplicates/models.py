@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.db.models import Q
+from django.urls.base import reverse
 
 from django_extensions.db.models import TimeStampedModel
 from model_utils.models import StatusModel
@@ -44,6 +45,12 @@ class DuplicateSuggestionQuerySet(models.QuerySet):
         )
         return super().update_or_create(defaults, **kwargs)
 
+    def open(self):
+        return self.filter(status=self.model.SUGGESTED)
+
+    def rejected(self):
+        return self.filter(status=self.model.NOT_DUPLICATE)
+
 
 class DuplicateSuggestion(StatusModel, TimeStampedModel):
     """
@@ -73,6 +80,11 @@ class DuplicateSuggestion(StatusModel, TimeStampedModel):
         on_delete=models.CASCADE,
     )
     user = models.ForeignKey("auth.User", on_delete=models.CASCADE)
+    rejection_reasoning = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Reason for rejecting duplicate suggestion",
+    )
 
     objects = DuplicateSuggestionQuerySet.as_manager()
 
@@ -99,3 +111,12 @@ class DuplicateSuggestion(StatusModel, TimeStampedModel):
     @property
     def rejected(self):
         return self.status == self.NOT_DUPLICATE
+
+    def get_absolute_reject_url(self):
+        return reverse(viewname="duplicate-reject", kwargs={"pk": self.pk})
+
+    @property
+    def rejection_form(self):
+        from duplicates.forms import RejectionForm
+
+        return RejectionForm(instance=self)

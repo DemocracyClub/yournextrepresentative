@@ -3,8 +3,45 @@
 {% block title %}Duplicates{% endblock title %}
 
 {% block content %}
-<h1>Duplicates</h1>
+<h1>Review duplicate suggestions</h1>
 {% for object in object_list %}
-  {{ object }}
+  <table style="width:100%">
+    <thead>
+      <tr>
+        <th>Primary Person (will remain)</th>
+        <th>Person To Be Merged (will be removed)</th>
+        <th>Suggested by</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="{{ object.person.get_absolute_url }}">{{ object.person.name }}</a>
+        </td>
+        <td>
+          <a href="{{ object.other_person.get_absolute_url }}">{{ object.other_person.name }}</a>
+        </td>
+        <td>
+          <a href="{{ object.user.get_absolute_url }}">{{ object.user }}</a>
+        </td>
+        <td>
+          <form method="post">
+            <button class="button primary">Confirm</button>
+          </form>
+        </td>
+        <td>
+          <form method="post" action="{{ object.get_absolute_reject_url }}">
+            {% csrf_token %}
+            {{ object.rejection_form.rejection_reasoning.label_tag }}
+            {{ object.rejection_form.rejection_reasoning }}
+            <button class="button alert">Reject</button>
+          </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 {% endfor %}
+
 {% endblock content %}
