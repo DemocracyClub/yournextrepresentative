@@ -186,6 +186,7 @@ class PersonMerger:
                         name=source_value
                     )
             for other_name in self.source_person.other_names.all():
+
                 self.dest_person.other_names.update_or_create(
                     name=other_name.name
                 )
