@@ -34,7 +34,7 @@
   <h1>Open candidate information for UK elections</h1>
   <p class="lead">
     Used by <a href="https://whocanivotefor.co.uk?utm_source=ynr&utm_campaign=ynr_cta">
-      ‘Who Can I Vote For?’</a>, The Electoral Commission, Google, Facebook,
+    ‘Who Can I Vote For?’</a>, The Electoral Commission, Google, Facebook,
     national newspapers and others.
   </p>
   <p class="lead">Join thousands of volunteers contributing information on candidates</p>
@@ -53,42 +53,43 @@
     </div>
   {% endif %}
 
-<div class="finder__forms cta-{{ front_page_cta }}">
-  <div class="finder__forms__container">
-    <h3>🎤 Help us find out about hustings events 🎤</h3>
-    <p>‘Hustings’ are debates between election candidates. They are a great opportunity for voters to hear from their candidates.</p>
+  <div class="finder__forms cta-{{ front_page_cta }}">
+    <div class="finder__forms__container">
+      <h3>🎤 Help us find out about hustings events 🎤</h3>
+      <p>‘Hustings’ are debates between election candidates. They are a great opportunity for voters to hear from their candidates.</p>
 
-    <p>We’d like to help more people learn about relevant hustings events for the 6 May elections. We’ll be displaying these on
-      <a href="https://whocanivotefor.co.uk">WhoCanIVoteFor.co.uk</a></p>
-    <a href="https://docs.google.com/spreadsheets/d/1Krf0icsp-bExEKBpnQi_WZ6pcsT10MJ3p1NDBquf_ik/edit#gid=1412900278" class="button">
-      Go to the hustings spreadsheet!</a>
+      <p>We’d like to help more people learn about relevant hustings events for the 6 May elections. We’ll be displaying these on
+        <a href="https://whocanivotefor.co.uk">WhoCanIVoteFor.co.uk</a></p>
+      <a href="https://docs.google.com/spreadsheets/d/1Krf0icsp-bExEKBpnQi_WZ6pcsT10MJ3p1NDBquf_ik/edit#gid=1412900278" class="button">
+        Go to the hustings spreadsheet!</a><br> or browse to the elections and ballot pages for a link to the
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvUNUTxY7lPpNVrbgagp4C5-eXG6hGSTuKpuyQAHuus8WTKw/viewform">Google Form</a>
+    </div>
   </div>
-</div>
-<div class="finder__forms cta-{{ front_page_cta }}">
-  <div class="finder__forms__container">
-    <h3>📋 Find contact details local parties 📋</h3>
+  <div class="finder__forms cta-{{ front_page_cta }}">
+    <div class="finder__forms__container">
+      <h3>📋 Find contact details local parties 📋</h3>
 
-    <p>Typically, there is more information available about local branches of political parties, which nominate most of the candidates.</p>
+      <p>Typically, there is more information available about local branches of political parties, which nominate most of the candidates.</p>
 
-    <p>So please help us complete this spreadsheet with information on those branches!</p>
+      <p>So please help us complete this spreadsheet with information on those branches!</p>
 
-    <p>We’ll add this information to <a href="https://whocanivotefor.co.uk">WhoCanIVoteFor.co.uk</a>, so as to help people learn more before they vote.</p>
-    <a href="https://docs.google.com/spreadsheets/d/1DkmKrC9pMC-3db8Ka-eoG2abSU8wr637yvBVup8467E/edit#gid=425047470" class="button">
-      Go to the local party spreadsheet!</a>
+      <p>We’ll add this information to <a href="https://whocanivotefor.co.uk">WhoCanIVoteFor.co.uk</a>, so as to help people learn more before they vote.</p>
+      <a href="https://docs.google.com/spreadsheets/d/1DkmKrC9pMC-3db8Ka-eoG2abSU8wr637yvBVup8467E/edit#gid=425047470" class="button">
+        Go to the local party spreadsheet!</a>
+    </div>
   </div>
-</div>
 
 
 
   <div class="finder__forms cta-{{ front_page_cta }}">
     <div class="finder__forms__container" style="top:-1em">
-{#      <h3>Can you find contact info for your local&nbsp;parties?</h3>#}
-{#      <p>In order to get the most information on candidates in the May 2019 local#}
-{#      elections we want to contact the political parties’ local branches. Can you help us find contact info for them all?</p>#}
-{#      <a href="https://docs.google.com/spreadsheets/d/17x7lxujgkB570VY8eohZj4qQrBbeBmGFHjSVnGWifHk/edit#gid=0" class="button">#}
-{#        Enter details#}
-{#      </a>#}
-{#      <h4>or</h4>#}
+      {#      <h3>Can you find contact info for your local&nbsp;parties?</h3>#}
+      {#      <p>In order to get the most information on candidates in the May 2019 local#}
+      {#      elections we want to contact the political parties’ local branches. Can you help us find contact info for them all?</p>#}
+      {#      <a href="https://docs.google.com/spreadsheets/d/17x7lxujgkB570VY8eohZj4qQrBbeBmGFHjSVnGWifHk/edit#gid=0" class="button">#}
+      {#        Enter details#}
+      {#      </a>#}
+      {#      <h4>or</h4>#}
 
       <form id="form-postcode" action="{% url 'person-search' %}" method="get"
             {% if show_name_form %}style="display: none"{% endif %}>
@@ -96,8 +97,8 @@
         <input type="submit" class="button" value="Help add information!"/>
       </form>
       <h4>or</h4>
-    <h3>Get the data</h3>
-    <p><a href="/help/api" class="button secondary">Via our API or CSV download</a></p>
+      <h3>Get the data</h3>
+      <p><a href="/help/api" class="button secondary">Via our API or CSV download</a></p>
     </div>
     {% if front_page_cta == "BY_ELECTIONS" %}
       <div class="finder__forms__container" style="margin-top:3em">
@@ -168,7 +169,7 @@
             {% elif action.action_type == 'person-other-name-update' %}
               changed an alternate name for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
             {% elif action.action_type == 'suspended-twitter-account' %}
-              updated twitter account status for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>  
+              updated twitter account status for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
             {% else %}
               {% if action.person %}
                 updated <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
@@ -188,7 +189,7 @@
       <ol>
         {% for row in top_users %}
           <li><strong>{{ row.username }}</strong> <span
-              class="edits">{{ row.edit_count }} edit{{ row.edit_count|pluralize }}</span></li>
+          class="edits">{{ row.edit_count }} edit{{ row.edit_count|pluralize }}</span></li>
         {% endfor %}
       </ol>
       <p class="more"><a href="{% url 'leaderboard' %}">Show full leaderboard…</a></p>
