@@ -1,0 +1,19 @@
+<tr>
+  <td><strong>{{ header}}</strong></td>
+  <td>{{ person.pk }}</td>
+  <td>{{ person.name }}</td>
+  <td>
+    {% for other_name in person.other_names.all %}
+    {{ other_name }}<br>
+    {% empty %}
+    No other names known
+    {% endfor %}
+  </td>
+  <td>
+    {% if person.last_candidacy %}
+      {{ person.last_candidacy.party.name }}
+    {% else %}
+      Unknown
+    {% endif %}
+  </td>
+</tr>
