@@ -1,6 +1,5 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django.forms import models
 
 from duplicates.models import DuplicateSuggestion
 
