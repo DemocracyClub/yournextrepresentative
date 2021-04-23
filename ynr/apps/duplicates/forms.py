@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.forms import models
 
 from duplicates.models import DuplicateSuggestion
 
@@ -49,3 +50,18 @@ class DuplicateSuggestionForm(forms.ModelForm):
             raise ValidationError(
                 "A suggestion between these two people has already been checked and rejected as not duplicate"
             )
+
+
+class RejectionForm(forms.ModelForm):
+    class Meta:
+        model = DuplicateSuggestion
+        fields = ["rejection_reasoning"]
+        labels = {"rejection_reasoning": "Reason"}
+
+    def save(self, commit=True):
+        """
+        This is a rejection form so alwasy set status to NOT_DUPLICATE before
+        saving
+        """
+        self.instance.status = DuplicateSuggestion.NOT_DUPLICATE
+        return super().save(commit=commit)
