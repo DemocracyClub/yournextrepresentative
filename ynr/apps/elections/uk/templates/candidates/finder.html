@@ -143,6 +143,8 @@
               <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
             {% elif action.action_type == 'constituency-lock' %}
               locked <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.ballot_paper_id }}</a>
+            {% elif action.action_type == 'duplicate-suggest' %}
+              Suggested a duplicate of <a href="{{ action.person.get_absolute_url }}">{{ action.person.name }}</a>
             {% elif action.action_type == 'constituency-unlock' %}
               unlocked <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.ballot_paper_id }}</a>
             {% elif action.action_type == 'record-council-control' %}
