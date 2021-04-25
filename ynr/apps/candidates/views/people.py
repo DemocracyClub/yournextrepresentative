@@ -246,15 +246,23 @@ class DuplicatePersonView(LoginRequiredMixin, FormView, DetailView):
         Create the suggestestion, add a message, and redirect to
         person profile they came from
         """
-        suggestion = form.save()
-        msg = f"Thanks, your duplicate suggestion for ID:{suggestion.person.pk} and ID:{suggestion.other_person.pk} was created."
-        messages.add_message(
-            request=self.request,
-            level=messages.SUCCESS,
-            message=msg,
-            extra_tags="safe do-something-else",
-        )
-        return HttpResponseRedirect(self.object.get_absolute_url())
+        with transaction.atomic():
+            suggestion = form.save()
+            LoggedAction.objects.create(
+                user=self.request.user,
+                person=self.object,
+                action_type="duplicate-suggest",
+                ip_address=get_client_ip(self.request),
+                source="duplicate person suggested",
+            )
+            msg = f"Thanks, your duplicate suggestion for ID:{suggestion.person.pk} and ID:{suggestion.other_person.pk} was created."
+            messages.add_message(
+                request=self.request,
+                level=messages.SUCCESS,
+                message=msg,
+                extra_tags="safe do-something-else",
+            )
+            return HttpResponseRedirect(self.object.get_absolute_url())
 
     def get_context_data(self, **kwargs):
         """
