@@ -55,9 +55,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             is_winner=True,
         )
         # Now try the merge:
-        response = self.app.get(
-            "/person/3885/update", user=self.user_who_can_merge
-        )
+        response = self.app.get("/person/3885/", user=self.user_who_can_merge)
 
         # first submit the suggestion form
         suggestion_form = response.forms[SUGGESTION_FORM_ID]
@@ -115,9 +113,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             is_winner=True,
         )
         # Now try the merge:
-        response = self.app.get(
-            "/person/3885/update", user=self.user_who_can_merge
-        )
+        response = self.app.get("/person/3885/", user=self.user_who_can_merge)
         # first submit the suggestion form
         suggestion_form = response.forms[SUGGESTION_FORM_ID]
         suggestion_form["other_person"] = "10000"
