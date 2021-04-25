@@ -1,0 +1,18 @@
+{% if person.memberships.exists %}<table>
+  <thead>
+    <tr>
+      <td>Ballot</td>
+      <td>Party</td>
+    </tr>
+  </thead>
+
+  {% for membership in person.memberships.all %}
+    <tr>
+      <td><a href="{{ membership.ballot.get_absolute_url }}">{{ membership.ballot.ballot_paper_id }}</a></td>
+      <td>{{ membership.party.name }}</td>
+    </tr>
+  {% endfor %}
+</table>
+{% else %}
+  None
+{% endif %}

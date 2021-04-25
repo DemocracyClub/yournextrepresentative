@@ -1,0 +1,51 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Value</th>
+      <th>Other Value</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>ID</td>
+      <td>{{ person.pk }}</td>
+      <td>{{ other_person.pk }}</td>
+    </tr>
+    <tr>
+      <td>Name</td>
+      <td>{{ person.name }}</td>
+      <td>{{ other_person.name }}</td>
+    </tr>
+    <tr>
+      <td>Other Names</td>
+      <td>
+        {% for other_name in person.other_names.all %}
+          {{ other_name }}<br>
+        {% empty %}
+          No other names known
+        {% endfor %}
+      </td>
+      <td>
+        {% for other_name in other_person.other_names.all %}
+          {{ other_name }}<br>
+        {% empty %}
+          No other names known
+        {% endfor %}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Past candidacies
+      </td>
+      <td>
+        {% include "duplicates/includes/_past_candidacies_cell.html" with person=person %}
+      </td>
+      <td>
+        {% include "duplicates/includes/_past_candidacies_cell.html" with person=other_person %}
+      </td>
+    </tr>
+
+  </tbody>
+</table>

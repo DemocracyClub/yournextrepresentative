@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  {% if errors %}
+    <h1>Error Suggesting Duplicate</h1>
+    <p>Sorry, something went wrong. The error message was:</p>
+    {% for error in form.non_field_errors %}
+      <p><code>{{ error }}</code></p>
+    {% endfor %}
+
+    {% for field in form %}
+      {% for error in field.errors %}
+        <p><code>{{ error }}</code></p>
+      {% endfor %}
+    {% endfor %}
+
+    <p>Go back to <a href="{{ person.get_absolute_url }}">{{ person.name }} profile page</a>.</p>
+
+  {% else %}
+    <h1>Merge Suggestion</h1>
+    <h2>You are suggesting:</h2>
+
+    {% with other_person=form.instance.other_person %}
+      <p>You are suggesting
+        <strong><a href="{{ person.get_absolute_url }}">{{ person.name }}</a></strong>
+        is a duplicate of
+        <strong><a href="{{ other_person.get_absolute_url }}">{{ other_person.name }}</a></strong>.
+      </p>
+      {% include "duplicates/includes/_person_details.html" with person=person other_person=other_person %}
+    {% endwith %}
+
+    <p>Would you like to proceed?</p>
+
+    <form method="post" id="{{ SUGGESTION_FORM_ID }}">
+      {% csrf_token %}
+      {{ form.other_person }}
+      <button class="button primary" type="submit">Suggest</button>
+    </form>
+
+      {% if user_can_merge %}
+        <h3>You have permission to merge these people directly</h2>
+        <p>Click the merge button below to merge instantly rather than create a duplicate suggestion</p>
+        <form method="post" action="{% url 'person-merge' person_id=person.id %}" id="{{ MERGE_FORM_ID }}">
+          {% csrf_token %}
+
+          {{ form.other_person }}
+          <button class="button alert" type="submit">Merge</button>
+        </form>
+      {% endif %}
+
+    {% endif %}
+
+
+{% endblock %}

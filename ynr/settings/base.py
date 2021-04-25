@@ -136,6 +136,7 @@ INSTALLED_APPS = (
     "django_celery_results",
     "facebook_data",
     "search",
+    "duplicates",
 )
 
 CELERY_RESULT_BACKEND = "django-db"
@@ -380,7 +381,6 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
 }
-
 
 # CORS config
 CORS_ORIGIN_ALLOW_ALL = True
