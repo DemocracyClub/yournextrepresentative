@@ -18,7 +18,7 @@ django-celery-results==1.1.2
 django-cors-headers==3.5.0
 django-date-extensions==3.1
 django-debug-toolbar-template-timings
-django-debug-toolbar==3.2
+django-debug-toolbar==3.2.1
 django-extensions==2.1.6
 django-filter==2.2.0
 django-markdown-deux==1.0.5
@@ -33,7 +33,7 @@ docutils==0.14
 drf-yasg==1.20.0
 elasticsearch==2.4.1
 factory-boy==2.12.0
-Faker==2.0.1
+Faker==8.1.1
 freezegun==0.3.12
 futures==3.1.1
 gender-detector==0.1.0
