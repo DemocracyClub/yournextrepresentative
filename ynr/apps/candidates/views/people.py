@@ -210,7 +210,7 @@ class DuplicatePersonView(LoginRequiredMixin, FormView, DetailView):
     """
 
     http_method_names = ["get", "post"]
-    template_name = "candidates/duplicate_suggestion.html"
+    template_name = "duplicates/duplicate_suggestion.html"
     model = Person
     context_object_name = "person"
     pk_url_kwarg = "person_id"
