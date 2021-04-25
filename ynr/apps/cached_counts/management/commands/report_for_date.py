@@ -22,7 +22,7 @@ class Command(BaseCommand):
             dest="reports",
             help=f"The name of the report(s) to run, comma separated. Defaults to all. Choices: {self.report_choices_str}",
             required=False,
-            default="all",
+            default=None,
         )
 
         parser.add_argument(
@@ -40,24 +40,27 @@ class Command(BaseCommand):
         )
 
         parser.add_argument(
-            "--england-only",
-            action="store_true",
-            help="Run reports for England only",
+            "--nation",
+            action="store",
+            help="Run reports for a single nation",
             required=False,
-            default=False,
+            choices=["E", "S", "W"],
         )
 
     def handle(self, *args, **options):
+        if options["reports"] is None:
+            print("Pick one report or pass 'all'")
+            print("\n".join([f"\t{name}" for name in ALL_REPORT_CLASSES]))
+            return
         if options["reports"] == "all":
             reports = ALL_REPORT_CLASSES
         else:
             reports = options["reports"].split(",")
-
         for report in reports:
             report_runner(
                 name=report,
                 date=options["date"],
                 election_type=options["election_type"],
                 register=options["register"],
-                england_only=options["england_only"],
+                nation=options["nation"],
             )
