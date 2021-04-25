@@ -22,8 +22,11 @@
     <h2>You are suggesting:</h2>
 
     {% with other_person=form.instance.other_person %}
-      <p>You are suggesting <strong><a href="{{ other_person.get_absolute_url }}">{{ other_person.name }}</a></strong> is a duplicate of <strong><a href="{{ person.get_absolute_url }}">{{ person.name }}</a></strong>.</p>
-      <!-- TODO improve how comparison is displayed -->
+      <p>You are suggesting
+        <strong><a href="{{ person.get_absolute_url }}">{{ person.name }}</a></strong>
+        is a duplicate of
+        <strong><a href="{{ other_person.get_absolute_url }}">{{ other_person.name }}</a></strong>.
+      </p>
       {% include "duplicates/includes/_person_details.html" with person=person other_person=other_person %}
       <h4>Other Person ({{ other_person.name }}) Candidacies:</h4>
       {% include "duplicates/includes/_candidacies.html" with person=other_person %}
