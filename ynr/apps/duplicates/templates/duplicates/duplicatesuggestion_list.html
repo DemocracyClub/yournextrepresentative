@@ -3,9 +3,8 @@
 {% block title %}Duplicates{% endblock title %}
 
 {% block content %}
-<h1>Review duplicate suggestions</h1>
-{% for object in object_list %}
-  <table style="width:100%">
+  <h1>Review duplicate suggestions</h1>
+  <table class="table">
     <thead>
       <tr>
         <th>Primary Person (will remain)</th>
@@ -16,35 +15,37 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>
-          <a href="{{ object.person.get_absolute_url }}">{{ object.person.name }}</a>
-        </td>
-        <td>
-          <a href="{{ object.other_person.get_absolute_url }}">{{ object.other_person.name }}</a>
-        </td>
-        <td>
-          <a href="{{ object.user.get_absolute_url }}">{{ object.user }}</a>
-        </td>
-        <td>
-          <form method="post" action="{{ object.get_absolute_merge_url }}">
-            {% csrf_token %}
-            <p>This will merge these two people</p>
-            <input id="other_person_id" type="hidden" name="other_person" value="{{ object.other_person.pk }}">
-            <button class="button primary">Confirm</button>
-          </form>
-        </td>
-        <td>
-          <form method="post" action="{{ object.get_absolute_reject_url }}">
-            {% csrf_token %}
-            {{ object.rejection_form.rejection_reasoning.label_tag }}
-            {{ object.rejection_form.rejection_reasoning }}
-            <button class="button alert">Reject</button>
-          </form>
-        </td>
-      </tr>
+      {% for object in object_list %}
+
+        <tr>
+          <td>
+            <a href="{{ object.person.get_absolute_url }}">{{ object.person.name }}</a>
+          </td>
+          <td>
+            <a href="{{ object.other_person.get_absolute_url }}">{{ object.other_person.name }}</a>
+          </td>
+          <td>
+            <a href="{{ object.user.get_absolute_url }}">{{ object.user }}</a>
+          </td>
+          <td>
+            <form method="post" action="{{ object.get_absolute_merge_url }}">
+              {% csrf_token %}
+              <p>This will merge these two people</p>
+              <input id="other_person_id" type="hidden" name="other_person" value="{{ object.other_person.pk }}">
+              <button class="button primary">Confirm</button>
+            </form>
+          </td>
+          <td>
+            <form method="post" action="{{ object.get_absolute_reject_url }}">
+              {% csrf_token %}
+              {{ object.rejection_form.rejection_reasoning.label_tag }}
+              {{ object.rejection_form.rejection_reasoning }}
+              <button class="button alert">Reject</button>
+            </form>
+          </td>
+        </tr>
+
+      {% endfor %}
     </tbody>
   </table>
-{% endfor %}
-
 {% endblock content %}
