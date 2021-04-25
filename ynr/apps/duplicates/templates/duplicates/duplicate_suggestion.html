@@ -28,11 +28,6 @@
         <strong><a href="{{ other_person.get_absolute_url }}">{{ other_person.name }}</a></strong>.
       </p>
       {% include "duplicates/includes/_person_details.html" with person=person other_person=other_person %}
-      <h4>Other Person ({{ other_person.name }}) Candidacies:</h4>
-      {% include "duplicates/includes/_candidacies.html" with person=other_person %}
-      <h4>Person ({{ person.name }}) Candidacies:</h4>
-      {% include "duplicates/includes/_candidacies.html" with person=person %}
-
     {% endwith %}
 
     <p>Would you like to proceed?</p>
