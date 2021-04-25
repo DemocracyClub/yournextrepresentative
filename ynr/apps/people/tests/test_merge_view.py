@@ -227,9 +227,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         primary_person = Person.objects.get(pk=2009)
         non_primary_person = Person.objects.get(pk=2007)
         self.assertEqual(Membership.objects.count(), 4)
-        response = self.app.get(
-            "/person/2009/update", user=self.user_who_can_merge
-        )
+        response = self.app.get("/person/2009/", user=self.user_who_can_merge)
 
         # first submit suggestion form
         suggestion_form = response.forms[SUGGESTION_FORM_ID]
@@ -393,9 +391,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             },
         )
 
-        response = self.app.get(
-            "/person/2111/update", user=self.user_who_can_merge
-        )
+        response = self.app.get("/person/2111/", user=self.user_who_can_merge)
 
         # first submit suggestion form
         suggestion_form = response.forms[SUGGESTION_FORM_ID]
@@ -479,7 +475,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(len(response.context["actions"].object_list), 4)
 
         response = self.app.get(
-            "/person/{}/update".format(primary_person.pk),
+            "/person/{}/".format(primary_person.pk),
             user=self.user_who_can_merge,
         )
 
@@ -568,8 +564,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            "/person/{}/update".format(person_a.pk),
-            user=self.user_who_can_merge,
+            "/person/{}/".format(person_a.pk), user=self.user_who_can_merge
         )
 
         # first submit suggestion form
@@ -593,7 +588,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_merge_same_person_shows_error(self):
         response = self.app.get(
-            "/person/{}/update".format(2009), user=self.user_who_can_merge
+            "/person/{}/".format(2009), user=self.user_who_can_merge
         )
 
         suggestion_form = response.forms[SUGGESTION_FORM_ID]
@@ -608,7 +603,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_merge_malformed_other(self):
         response = self.app.get(
-            "/person/{}/update".format(2009), user=self.user_who_can_merge
+            "/person/{}/".format(2009), user=self.user_who_can_merge
         )
 
         suggestion_form = response.forms[SUGGESTION_FORM_ID]
@@ -673,7 +668,7 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form.submit().follow()
 
         response = self.app.get(
-            "/person/{}/update".format(dest), user=self.user_who_can_merge
+            "/person/{}/".format(dest), user=self.user_who_can_merge
         )
         # first submit suggestion form
         suggestion_form = response.forms[SUGGESTION_FORM_ID]
@@ -705,9 +700,7 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["source"] = "BBC News"
         form.submit().follow()
 
-        response = self.app.get(
-            "/person/{}/update".format(dest), user=self.user
-        )
+        response = self.app.get("/person/{}/".format(dest), user=self.user)
         # first submit suggestion form
         suggestion_form = response.forms[SUGGESTION_FORM_ID]
         suggestion_form["other_person"] = source
@@ -728,7 +721,7 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Merge the first two people
         source, dest = Person.objects.all().values_list("pk", flat=True)
         response = self.app.get(
-            "/person/{}/update".format(dest), user=self.user_who_can_merge
+            "/person/{}/".format(dest), user=self.user_who_can_merge
         )
 
         # first submit suggestion form
@@ -761,7 +754,7 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Merge again
         source, dest = Person.objects.all().values_list("pk", flat=True)
         response = self.app.get(
-            "/person/{}/update".format(dest), user=self.user_who_can_merge
+            "/person/{}/".format(dest), user=self.user_who_can_merge
         )
 
         # again submit suggestion form

@@ -113,6 +113,7 @@ class PersonView(TemplateView):
         context["person_edits_allowed"] = self.person.user_can_edit(
             self.request.user
         )
+        context["SUGGESTION_FORM_ID"] = SUGGESTION_FORM_ID
 
         return context
 
@@ -439,7 +440,6 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
             ballot__election__current=True, ballot__candidates_locked=True
         )
         context["versions"] = get_version_diffs(person.versions)
-        context["SUGGESTION_FORM_ID"] = SUGGESTION_FORM_ID
 
         return context
 
