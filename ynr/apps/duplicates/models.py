@@ -80,10 +80,8 @@ class DuplicateSuggestion(StatusModel, TimeStampedModel):
         on_delete=models.CASCADE,
     )
     user = models.ForeignKey("auth.User", on_delete=models.CASCADE)
-    rejection_reasoning = models.CharField(
-        max_length=255,
-        blank=True,
-        help_text="Reason for rejecting duplicate suggestion",
+    rejection_reasoning = models.TextField(
+        blank=True, help_text="Reason for rejecting duplicate suggestion"
     )
 
     objects = DuplicateSuggestionQuerySet.as_manager()

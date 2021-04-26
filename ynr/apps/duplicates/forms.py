@@ -59,6 +59,13 @@ class RejectionForm(forms.ModelForm):
         model = DuplicateSuggestion
         fields = ["rejection_reasoning"]
         labels = {"rejection_reasoning": "Reason"}
+        widgets = {
+            "rejection_reasoning": forms.Textarea(
+                attrs={
+                    "placeholder": "Please explain your reasons for rejecting this suggestion"
+                }
+            )
+        }
 
     def save(self, commit=True):
         """

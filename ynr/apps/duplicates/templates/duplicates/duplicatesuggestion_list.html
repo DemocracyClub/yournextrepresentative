@@ -22,17 +22,18 @@
         <td>
           <form method="post" action="{{ object.get_absolute_merge_url }}">
             {% csrf_token %}
-            <p>This will merge these two people</p>
+            <p>This will merge these two people.</p>
             <input id="other_person_id" type="hidden" name="other_person" value="{{ object.other_person.pk }}">
             <button class="button primary">Confirm</button>
           </form>
         </td>
         <td>
-          <form method="post" action="{{ object.get_absolute_reject_url }}">
+          <a class="button alert reject-suggestion-button" title="Reject">Reject</a>
+          <form method="post" class="reject-suggestion-form" style="display: none;" action="{{ object.get_absolute_reject_url }}">
             {% csrf_token %}
             {{ object.rejection_form.rejection_reasoning.label_tag }}
             {{ object.rejection_form.rejection_reasoning }}
-            <button class="button alert">Reject</button>
+            <button class="button alert">Confirm as not duplicate</button>
           </form>
         </td>
       </tr>
@@ -40,4 +41,12 @@
   {% empty %}
     <p>There are no duplicate suggestions to review at this time.</p>
   {% endfor %}
+
+  <script>
+    rejectButton = $('.reject-suggestion-button');
+    rejectButton.on('click', function(e){
+      $(this).hide()
+      $(this).siblings('.reject-suggestion-form').first().show()
+    });
+  </script>
 {% endblock content %}
