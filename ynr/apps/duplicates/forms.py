@@ -46,9 +46,12 @@ class DuplicateSuggestionForm(forms.ModelForm):
             )
 
         if existing_suggestion.rejected:
-            raise ValidationError(
-                "A suggestion between these two people has already been checked and rejected as not duplicate"
+            msg = (
+                "A suggestion between these two people has already been "
+                "checked and rejected as not duplicate because: "
+                f"{existing_suggestion.rejection_reasoning}"
             )
+            raise ValidationError(msg)
 
 
 class RejectionForm(forms.ModelForm):
