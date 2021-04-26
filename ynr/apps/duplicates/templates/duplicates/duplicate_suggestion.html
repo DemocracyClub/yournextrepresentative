@@ -27,7 +27,7 @@
         is a duplicate of
         <strong><a href="{{ other_person.get_absolute_url }}">{{ other_person.name }}</a></strong>.
       </p>
-      {% include "duplicates/includes/_person_details.html" with person=person other_person=other_person %}
+      {% include "duplicates/includes/_compare_people_table.html" with person=person other_person=other_person %}
     {% endwith %}
 
     <p>Would you like to proceed?</p>

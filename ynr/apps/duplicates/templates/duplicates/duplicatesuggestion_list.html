@@ -10,34 +10,7 @@
       <a href="{{ object.get_absolute_url }}">{{ object.person }}</a> is a duplicate of
       <a href="{{ object.other_person }}">{{ object.other_person }}</a>.
     </p>
-    {% include "duplicates/includes/_person_details.html" with person=object.person other_person=object.other_person %}
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Approve</th>
-          <th>Reject</th>
-        </tr>
-      </thead>
-      <tr>
-        <td>
-          <form method="post" action="{{ object.get_absolute_merge_url }}">
-            {% csrf_token %}
-            <p>This will merge these two people.</p>
-            <input id="other_person_id" type="hidden" name="other_person" value="{{ object.other_person.pk }}">
-            <button class="button primary">Confirm</button>
-          </form>
-        </td>
-        <td>
-          <a class="button alert reject-suggestion-button" title="Reject">Reject</a>
-          <form method="post" class="reject-suggestion-form" style="display: none;" action="{{ object.get_absolute_reject_url }}">
-            {% csrf_token %}
-            {{ object.rejection_form.rejection_reasoning.label_tag }}
-            {{ object.rejection_form.rejection_reasoning }}
-            <button class="button alert">Confirm as not duplicate</button>
-          </form>
-        </td>
-      </tr>
-    </table>
+    {% include "duplicates/includes/_compare_people_table.html" with person=object.person other_person=object.other_person  show_review_actions=True %}
   {% empty %}
     <p>There are no duplicate suggestions to review at this time.</p>
   {% endfor %}

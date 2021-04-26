@@ -47,5 +47,9 @@
       </td>
     </tr>
 
+    {% if user_can_merge and show_review_actions %}
+        {% include "duplicates/includes/_approve_deny.html" %}
+    {% endif %}
+
   </tbody>
 </table>
