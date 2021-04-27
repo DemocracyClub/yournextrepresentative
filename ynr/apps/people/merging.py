@@ -44,8 +44,10 @@ class PersonMerger:
 
     In the case where a property exists on both, there are a few cases:
 
-    1. Name: In this case, we keep the "dest name" and create an "other" name
-       for dest person. We also move all "other names" from source to dest.
+    1. Name: In this case, we keep the shorter name as the "name" and set the
+       longer name as an "other_name". We also move all "other names" from
+       source to dest. The reasoning here is that the shorter name is more
+       likely to be the common name a candidate is known by.
 
     2. Images: The source person's primary image is moved to the dest person's
        primary image, all other images are moved from source to dest
@@ -60,13 +62,13 @@ class PersonMerger:
         (
             # Person attrs
             ("honorific_prefix", "merge_person_attrs"),
-            ("name", "merge_person_attrs"),
+            ("name", "merge_name_and_other_names"),
             ("honorific_suffix", "merge_person_attrs"),
             ("gender", "merge_person_attrs"),
             ("birth_date", "merge_person_attrs"),
             ("death_date", "merge_person_attrs"),
             ("biography", "merge_person_attrs"),
-            ("other_names", "merge_person_attrs"),
+            ("other_names", "merge_name_and_other_names"),
             ("family_name", "merge_person_attrs"),
             ("national_identity", "merge_person_attrs"),
             ("sort_name", "merge_person_attrs"),
@@ -157,12 +159,11 @@ class PersonMerger:
         dest_person_versions += self.source_person.versions
         self.dest_person.versions = dest_person_versions
 
-    def merge_person_attrs(self):
+    @property
+    def person_attrs_to_merge(self):
         """
-        Merge attributes on Person from source in to dest.
-
-        Because source is a higher ID, and therefore newer, we assume that it's
-        attributes should be kept, replacing dest's.
+        Build a list of person attrs to be merged. Name is excluded from this
+        list as it is handled by the merge_name_and_other_names method
         """
         attrs_to_merge = [f.name for f in settings.SIMPLE_POPOLO_FIELDS]
         attrs_to_merge += [
@@ -175,26 +176,45 @@ class PersonMerger:
             "patronymic_name",
             "summary",
         ]
-        for field_name in attrs_to_merge:
+        # name is handled seperately because it does not
+        attrs_to_merge.remove("name")
+        return attrs_to_merge
+
+    def merge_person_attrs(self):
+        """
+        Merge attributes on Person from source in to dest.
+
+        Because source is a higher ID, and therefore newer, we assume that it's
+        attributes should be kept, replacing dest's.
+        """
+        for field_name in self.person_attrs_to_merge:
+
             source_value = getattr(self.source_person, field_name, None)
-            dest_value = getattr(self.dest_person, field_name, None)
-
-            # Special case "name"
-            if field_name == "name":
-                if source_value != dest_value:
-                    self.dest_person.other_names.update_or_create(
-                        name=source_value
-                    )
-            for other_name in self.source_person.other_names.all():
-
-                self.dest_person.other_names.update_or_create(
-                    name=other_name.name
-                )
-                other_name.delete()
 
             # Assume we want to keep the value from source
             if source_value:
                 setattr(self.dest_person, field_name, source_value)
+
+    def merge_name_and_other_names(self):
+        """
+        If names are different, set the shorter name as the main 'name' as this
+        is more likely to be their common name, and store the longer name as an
+        'other_name'. Also make sure we store any more 'other_name' values from
+        the source person.
+        """
+        dest_name = self.dest_person.name
+        source_name = self.source_person.name
+
+        if dest_name != source_name:
+            shorter_name, longer_name = sorted(
+                [source_name, dest_name], key=len
+            )
+            self.dest_person.name = shorter_name
+            self.dest_person.other_names.update_or_create(name=longer_name)
+
+        for other_name in self.source_person.other_names.all():
+            self.dest_person.other_names.update_or_create(name=other_name.name)
+            other_name.delete()
 
     def merge_images(self):
         # Change the secondary person's images to point at the primary
