@@ -1,0 +1,19 @@
+<tr>
+  <td>Approve/Reject</th>
+  <td>
+    <form method="post" action="{{ object.get_absolute_merge_url }}">
+      {% csrf_token %}
+      <input id="other_person_id" type="hidden" name="other_person" value="{{ object.other_person.pk }}">
+      <button class="button primary">Confirm duplicate</button>
+    </form>
+  </td>
+  <td>
+    <a class="button alert reject-suggestion-button" title="Reject">Reject suggestion</a>
+    <form method="post" class="reject-suggestion-form" style="display: none;" action="{{ object.get_absolute_reject_url }}">
+      {% csrf_token %}
+      {{ object.rejection_form.rejection_reasoning.label_tag }}
+      {{ object.rejection_form.rejection_reasoning }}
+      <button class="button alert">Confirm as not duplicate</button>
+    </form>
+  </td>
+</tr>
