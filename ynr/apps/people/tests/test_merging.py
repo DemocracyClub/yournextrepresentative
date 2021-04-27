@@ -152,10 +152,10 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_other_names_created(self):
-        self.source_person.name = "Ema Nymnot"
+        self.source_person.name = "Joe Bloggs"
         self.source_person.save()
 
-        self.dest_person.name = "Not My Name"
+        self.dest_person.name = "Joe Foo Bloggs"
         self.dest_person.save()
         self.assertEqual(self.dest_person.other_names.count(), 0)
 
@@ -163,15 +163,15 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         merger.merge()
         self.assertEqual(self.dest_person.other_names.count(), 1)
         self.assertEqual(
-            self.dest_person.other_names.first().name, "Ema Nymnot"
+            self.dest_person.other_names.first().name, "Joe Foo Bloggs"
         )
 
     def test_other_names_not_duplicated(self):
-        self.source_person.name = "Ema Nymnot"
+        self.source_person.name = "Joe Bloggs"
         self.source_person.save()
         self.source_person.other_names.create(name="nom de plume")
 
-        self.dest_person.name = "Not My Name"
+        self.dest_person.name = "Joe Foo Bloggs"
         self.dest_person.other_names.create(name="nom de plume")
         self.dest_person.save()
         self.assertEqual(self.dest_person.other_names.count(), 1)
@@ -185,12 +185,14 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     "name", flat=True
                 )
             ),
-            ["Ema Nymnot", "nom de plume"],
+            ["Joe Foo Bloggs", "nom de plume"],
         )
 
     def test_recorded_merge_data(self):
         self.maxDiff = None
         source_pk = self.source_person.pk
+        self.dest_person.name = "Joe Bloggs"
+        self.source_person.name = "Joe Foo Bloggs"
         merger = PersonMerger(self.dest_person, self.source_person)
         merger.merge()
         expected_versions = [
@@ -216,11 +218,11 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     "id": str(self.dest_person.pk),
                     "instagram_url": "",
                     "linkedin_url": "",
-                    "name": self.dest_person.name,
+                    "name": "Joe Bloggs",
                     "other_names": [
                         {
                             "end_date": None,
-                            "name": self.dest_person.name,
+                            "name": "Joe Foo Bloggs",
                             "note": "",
                             "start_date": None,
                         }
@@ -623,3 +625,26 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         merge_methods = set(PersonMerger.SUPPORTED_FIELDS.values())
         for method in merge_methods:
             assert hasattr(PersonMerger, method)
+
+    def test_merge_name_and_other_names_uses_shorter_name(self):
+        # create original person where full name used
+        dest_person = PersonFactory(name="Joe Full Name Bloggs", pk=1357)
+        # create newer person with shorter name
+        source_person = PersonFactory(name="Joe Bloggs", pk=2357)
+
+        merger = PersonMerger(dest_person, source_person)
+
+        merger.merge_name_and_other_names()
+
+        self.assertEqual(dest_person.name, "Joe Bloggs")
+        other_names = dest_person.other_names.values_list("name", flat=True)
+
+        self.assertIn("Joe Full Name Bloggs", other_names)
+
+    def test_person_attrs_to_merge(self):
+        """
+        Regression test to ensure that 'name' is not included in standard attrs
+        to be merged, as it is handled seperately
+        """
+        merger = PersonMerger(self.dest_person, self.source_person)
+        assert "name" not in merger.person_attrs_to_merge

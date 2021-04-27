@@ -280,10 +280,11 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             3, Membership.objects.filter(person=merged_person).count()
         )
-
+        merged_person.refresh_from_db()
         other_names = list(merged_person.other_names.all())
         self.assertEqual(len(other_names), 1)
-        self.assertEqual(other_names[0].name, "Tessa Jowell")
+        self.assertEqual(other_names[0].name, "Shane Collins")
+        self.assertEqual(merged_person.name, "Tessa Jowell")
 
         # Check that the remaining person now has two images, i.e. the
         # one from the person to delete is added to the existing images:
@@ -403,9 +404,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = merge_form.submit()
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location, "/person/2111/stuart-robert-jeffery"
-        )
+        self.assertEqual(response.location, "/person/2111/stuart-jeffery")
 
         merged_person = Person.objects.get(pk="2111")
 
@@ -521,7 +520,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         """
         person_a = Person.objects.create(
             pk=1,
-            name="Person A",
+            name="Tess Foo Jowell",
             versions=[
                 {
                     "data": {
