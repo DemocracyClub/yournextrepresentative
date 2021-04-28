@@ -181,8 +181,7 @@ class ModGovElectionMatcher(object):
     """
 
     def __init__(self, base_domain, election_id):
-        if base_domain.startswith("http"):
-            raise ValueError("Expected base domain without protocol")
+        base_domain = base_domain.split("//", 1)[-1]
         if not base_domain.endswith("/"):
             base_domain = base_domain + "/"
         self.base_domain = base_domain
