@@ -69,7 +69,12 @@ class MembershipQuerySet(DateframeableQuerySet):
 
         return (
             self.select_related(
-                "ballot", "ballot__election", "ballot__post", "person", "party"
+                "ballot",
+                "ballot__election",
+                "ballot__post",
+                "person",
+                "party",
+                "ballot__post__organization",
             )
             .prefetch_related(
                 "person__tmp_person_identifiers",

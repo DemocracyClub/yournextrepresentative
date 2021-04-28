@@ -382,20 +382,26 @@ class Membership(Dateframeable, Timestampable, models.Model):
         if self.ballot.post.identifier.startswith("gss:"):
             gss = self.ballot.post.identifier[4:]
 
+        nuts1 = self.ballot.tags.get("NUTS1", {}).get("value", None)
+
         membership_dict = {
+            "ballot_paper_id": self.ballot.ballot_paper_id,
             "election": self.ballot.election.slug,
             "election_date": self.ballot.election.election_date,
             "election_current": self.ballot.election.current,
-            "party_name": self.party.name,
+            "party_name": self.party_name,
+            "party_description_text": self.party_description_text,
             "party_id": self.party.legacy_slug,
             "party_ec_id": self.party.ec_id,
             "party_list_position": self.party_list_position,
             "party_lists_in_use": self.ballot.election.party_lists_in_use,
-            "mapit_url": "",
             "gss_code": gss,
             "post_id": self.ballot.post.identifier,
             "post_label": self.ballot.post.short_label,
             "cancelled_poll": self.ballot.cancelled,
+            "NUTS1": nuts1,
+            "seats_contested": self.ballot.winner_count,
+            "organisation_name": self.ballot.post.organization.name,
         }
 
         if redirects and redirects.get(self.person_id):
