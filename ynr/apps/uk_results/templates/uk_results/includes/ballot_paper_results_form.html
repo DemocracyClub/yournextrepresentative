@@ -1,4 +1,46 @@
-<form method=post class="ballot_paper_results_form">
+<script type='text/javascript'>
+  $(document).ready(function() {    
+    $('#ballot_paper_results_form').on('change', function() {
+      // select all the number inputs on the form
+      var inputs = document.querySelectorAll('input[type=number]');
+      // and store their values into an array
+      let list = Object.values(inputs)
+      let inputArray = list.map( input => input.value )
+      // don't want to evaluate after the first input (might want to 
+      // count the inputs and compare how many values are filled)
+      function NoneEmpty(inputArray) {
+        for (var i = 0; i < inputArray.length; i++) {
+        if(inputArray[i] === "") return false;
+      }
+        return true;
+      }
+      var noEmptyValues = NoneEmpty(inputArray)
+
+      if (inputArray.length > 1 && noEmptyValues ) {
+        for (var i = 0; i < inputArray.length; ++i) {
+          // find and store the highest value and the index of that value  
+          var max = 0;
+          max = Math.max(...inputArray);
+          var maxIndex = list.indexOf(max)
+          // check if the max value matches others - aka a tie
+          // BUT I don't want it to compare it against itself
+          // so make sure the index of max isn't the same as the comparison index
+          if (maxIndex != inputs[i] && max == inputs[i].value) {
+            alert("We have a tie!") 
+            // add tied input indexes to an array 
+            // show coin toss field
+            // return false if no two values are the same
+          } else {
+            return
+            console.log(false)
+          }
+        }
+      } 
+    })
+  }) 
+</script>    
+
+<form method=post id="ballot_paper_results_form" class="ballot_paper_results_form">
   {{ form.errors }}
   {% csrf_token %}
   <table>
