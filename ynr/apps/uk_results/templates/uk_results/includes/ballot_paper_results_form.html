@@ -1,13 +1,12 @@
 <script type='text/javascript'>
   $(document).ready(function() {    
     $('#ballot_paper_results_form').on('change', function() {
-      // select all the number inputs on the form
-      var inputs = document.querySelectorAll('input[type=number]');
-      // and store their values into an array
-      let list = Object.values(inputs)
-      let inputArray = list.map( input => input.value )
-      // don't want to evaluate after the first input (might want to 
-      // count the inputs and compare how many values are filled)
+      console.log("I'm working!")
+
+      var inputs = document.querySelectorAll('*[id*=membership]')
+      var list = Object.values(inputs)
+      var inputArray = list.map(input => input.value)
+
       function NoneEmpty(inputArray) {
         for (var i = 0; i < inputArray.length; i++) {
         if(inputArray[i] === "") return false;
@@ -22,17 +21,18 @@
           var max = 0;
           max = Math.max(...inputArray);
           var maxIndex = list.indexOf(max)
-          // check if the max value matches others - aka a tie
+          // check for duplicate max values - a tie
           // BUT I don't want it to compare it against itself
           // so make sure the index of max isn't the same as the comparison index
-          if (maxIndex != inputs[i] && max == inputs[i].value) {
-            alert("We have a tie!") 
-            // add tied input indexes to an array 
-            // show coin toss field
-            // return false if no two values are the same
+          if (maxIndex != inputs[i] && max == inputs[i].value) { 
+            if (inputs[i].value == max) {
+              // this needs to be toggled to change with input changes
+              inputs[i].nextElementSibling.style.display = "inline"
+            } else {
+              inputs[i].nextElementSibling.style.display = "none" 
+            } 
           } else {
             return
-            console.log(false)
           }
         }
       } 
@@ -51,6 +51,11 @@
         <td>
           {{ membership_field.errors }}
           {{ membership_field }}
+            <div id="coin-toss" style="display: none">
+              {{ tied_vote_field.label_tag }}
+              {{ tied_vote_field }}
+              Test
+            </div>
         </td>
       </tr>
       {% endfor %}
