@@ -126,3 +126,18 @@ form.signup {
     font-size:0.875rem;
 
 }
+
+.flip {
+  -webkit-animation: anim 1s infinite;
+  animation: anim 1s infinite;
+}
+
+@-webkit-keyframes anim {
+  from {-webkit-transform: rotateX(0deg);}
+  to {-webkit-transform: rotateX(360deg);}
+}
+
+@keyframes anim {
+  from {transform: rotateX(0deg);}
+  to {transform: rotateX(360deg);}
+}
