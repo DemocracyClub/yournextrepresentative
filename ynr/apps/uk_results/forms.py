@@ -37,7 +37,7 @@ class ResultSetForm(forms.ModelForm):
         )
 
         for membership in memberships:
-            name = "memberships_%d" % membership.person.pk
+            name = f"memberships_{membership.person.pk}"
             try:
                 initial = {
                     "num_ballots": membership.result.num_ballots,
@@ -63,7 +63,9 @@ class ResultSetForm(forms.ModelForm):
 
     def membership_fields(self):
         """
-        Returns tuple of membership field, and associated tied vote field
+        Returns tuple of membership field, and associated tied vote field. This
+        allows us to loop through and render the fields next to each other in
+        the template
         """
         for field in self.fields:
             if not field.startswith("memberships_"):
@@ -71,6 +73,19 @@ class ResultSetForm(forms.ModelForm):
 
             tied_vote_field_name = f"tied_vote_{field}"
             yield (self[field], self[tied_vote_field_name])
+
+    def clean(self):
+        """
+        Validates that there not more coin toss winners than seats up
+        """
+        cleaned_data = super().clean()
+
+        if len(self._tied_vote_winners) > self.ballot.winner_count:
+            raise forms.ValidationError(
+                "Cant have more coin toss winners than seats up!"
+            )
+
+        return cleaned_data
 
     def save(self, request):
         with transaction.atomic():
@@ -82,37 +97,20 @@ class ResultSetForm(forms.ModelForm):
             instance.ip_address = get_client_ip(request)
             instance.save()
 
-            winner_count = self.ballot.winner_count
-            winners = dict(
-                sorted(
-                    [
-                        (
-                            "{}-{}".format(
-                                self[field_name].value(), obj.person.id
-                            ),
-                            obj,
-                        )
-                        for obj, field_name in self.memberships
-                    ],
-                    reverse=True,
-                    key=lambda votes: int(votes[0].split("-")[0]),
-                )[:winner_count]
-            )
-
+            winners = self.get_winners(num_winners=self.ballot.winner_count)
             self.ballot.membership_set.update(elected=None)
+
             recorder = RecordBallotResultsHelper(self.ballot, instance.user)
             for membership, field_name in self.memberships:
-                if not self[field_name].value():
-                    continue
-                winner = bool(membership in winners.values())
+                tied_vote_winner = self.cleaned_data[f"tied_vote_{field_name}"]
+                num_votes = self.cleaned_data[field_name]
+                winner = field_name in winners
                 instance.candidate_results.update_or_create(
                     membership=membership,
                     defaults={
                         "is_winner": winner,
-                        "num_ballots": self[field_name].value(),
-                        "tied_vote_winner": self[
-                            f"tied_vote_{field_name}"
-                        ].value(),
+                        "num_ballots": num_votes,
+                        "tied_vote_winner": tied_vote_winner,
                     },
                 )
                 if winner:
@@ -130,3 +128,58 @@ class ResultSetForm(forms.ModelForm):
             )
 
         return instance
+
+    @property
+    def _tied_vote_winners(self):
+        """
+        Return a list of the tied vote fieldnames that won coin toss
+        """
+        return [
+            field_name
+            for field_name, value in self.cleaned_data.items()
+            if field_name.startswith("tied_vote_") and value is True
+        ]
+
+    def get_winners(self, num_winners=1):
+        """
+        Return a dictionary of fieldname, num votes for each of candidates with
+        the most votes.
+        """
+        results = {
+            field: votes
+            for field, votes in self.cleaned_data.items()
+            if field.startswith("memberships_")
+        }
+        # builds a list of tuples made up of (fieldname, num votes)
+        sorted_results = sorted(
+            results.items(), reverse=True, key=lambda result: result[1]
+        )
+        winners = sorted_results[:num_winners]
+
+        # can return sorted winners if there are no tied vote winners
+        if not any(self._tied_vote_winners):
+            return dict(sorted_results[:num_winners])
+
+        # or we have ties so remove the winner with least votes
+        lowest_winner = winners.pop()
+        lowest_winner_votes = lowest_winner[1]
+
+        winners = []
+        tied_results = []
+        # go back over the results and split to winners and tied results
+        for result in sorted_results:
+            if result[1] > lowest_winner_votes:
+                winners.append(result)
+                continue
+
+            if result[1] == lowest_winner_votes:
+                tied_results.append(result)
+
+        # loop through tied results, and if they won a coin toss,
+        # add them to the winners
+        for result in tied_results:
+            tied_field_name = f"tied_vote_{result[0]}"
+            if tied_field_name in self._tied_vote_winners:
+                winners.append(result)
+
+        return dict(winners)
