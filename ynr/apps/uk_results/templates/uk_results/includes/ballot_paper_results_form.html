@@ -45,7 +45,7 @@
   {% csrf_token %}
   <table>
     <tbody>
-      {% for membership_field in form.membership_fields %}
+      {% for membership_field, tied_vote_field in form.membership_fields %}
       <tr>
         <td>{{ membership_field.label }}</td>
         <td>
