@@ -3,12 +3,16 @@
   {% csrf_token %}
   <table>
     <tbody>
-      {% for membership_field in form.membership_fields %}
+      {% for membership_field, tied_vote_field in form.membership_fields %}
       <tr>
         <td>{{ membership_field.label }}</td>
         <td>
           {{ membership_field.errors }}
           {{ membership_field }}
+          <div style="display: none">
+            {{ tied_vote_field.label_tag }}
+            {{ tied_vote_field }}
+          </div>
         </td>
       </tr>
       {% endfor %}
