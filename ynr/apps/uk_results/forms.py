@@ -49,7 +49,7 @@ class ResultSetForm(forms.ModelForm):
             fields[name] = forms.IntegerField(
                 label=membership.name_and_party,
                 initial=initial.get("num_ballots"),
-                required=False,
+                required=True,
             )
             fields[f"tied_vote_{name}"] = forms.BooleanField(
                 required=False,
@@ -82,35 +82,24 @@ class ResultSetForm(forms.ModelForm):
             instance.ip_address = get_client_ip(request)
             instance.save()
 
-            fields_with_values = [
-                membership_field.value()
-                for membership_field, _ in self.membership_fields()
-                if membership_field.value()
-            ]
-            winners = {}
-            if len(fields_with_values) == len(list(self.membership_fields())):
-                winner_count = self.ballot.winner_count
-                if winner_count:
-                    winners = dict(
-                        sorted(
-                            [
-                                (
-                                    "{}-{}".format(
-                                        self[field_name].value(), obj.person.id
-                                    ),
-                                    obj,
-                                )
-                                for obj, field_name in self.memberships
-                            ],
-                            reverse=True,
-                            key=lambda votes: int(votes[0].split("-")[0]),
-                        )[:winner_count]
-                    )
-                else:
-                    winners = {}
+            winner_count = self.ballot.winner_count
+            winners = dict(
+                sorted(
+                    [
+                        (
+                            "{}-{}".format(
+                                self[field_name].value(), obj.person.id
+                            ),
+                            obj,
+                        )
+                        for obj, field_name in self.memberships
+                    ],
+                    reverse=True,
+                    key=lambda votes: int(votes[0].split("-")[0]),
+                )[:winner_count]
+            )
 
-            if winners:
-                self.ballot.membership_set.update(elected=None)
+            self.ballot.membership_set.update(elected=None)
             recorder = RecordBallotResultsHelper(self.ballot, instance.user)
             for membership, field_name in self.memberships:
                 if not self[field_name].value():

@@ -110,24 +110,3 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
             url, user=self.user_who_can_record_results, expect_errors=True
         )
         self.assertEqual(resp.status_code, 404)
-
-    def test_partial_results_doesnt_set_winners(self):
-        [c.delete() for c in self.candidate_results]
-        self.assertFalse(
-            self.ballot.membership_set.all().filter(elected=True).exists()
-        )
-        url = reverse(
-            "ballot_paper_results_form",
-            kwargs={
-                "ballot_paper_id": "local.maidstone.DIW:E05005004.2016-05-05"
-            },
-        )
-        resp = self.app.get(url, user=self.user_who_can_record_results)
-        form = resp.forms[1]
-        form["memberships_13"] = 345
-        resp = form.submit()
-
-        self.assertEqual(resp.status_code, 302)
-        self.assertFalse(
-            self.ballot.membership_set.all().filter(elected=True).exists()
-        )
