@@ -17,16 +17,12 @@
 
       if (inputArray.length > 1 && noEmptyValues ) {
         for (var i = 0; i < inputArray.length; ++i) {
-          // find and store the highest value and the index of that value  
           var max = 0;
           max = Math.max(...inputArray);
           var maxIndex = list.indexOf(max)
-          // check for duplicate max values - a tie
-          // BUT I don't want it to compare it against itself
-          // so make sure the index of max isn't the same as the comparison index
+          
           if (maxIndex != inputs[i] && max == inputs[i].value) { 
             if (inputs[i].value == max) {
-              // this needs to be toggled to change with input changes
               inputs[i].nextElementSibling.style.display = "inline"
             } else {
               inputs[i].nextElementSibling.style.display = "none" 
