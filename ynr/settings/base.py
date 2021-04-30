@@ -296,6 +296,7 @@ PIPELINE = {
                 "js/person_form.js",
                 "js/home_geolocation_form.js",
                 "js/versions.js",
+                "js/results.js",
             ),
             "output_filename": "js/all.js",
         },
