@@ -1,9 +1,7 @@
-from http.client import REQUESTED_RANGE_NOT_SATISFIABLE
 from django import forms
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django_webtest import WebTest
-from webob import request
 
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
