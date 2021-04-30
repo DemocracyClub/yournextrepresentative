@@ -765,7 +765,6 @@ class NumCandidatesStandingInMultipleSeats(BaseReport):
         ]
         report_list.append(headers)
         qs = self.get_qs()
-
         # very arbritary safeguard but im assuming you would never have someone
         # stand on this many ballots for the same election type and date
         for num in range(1, 10):
@@ -773,6 +772,42 @@ class NumCandidatesStandingInMultipleSeats(BaseReport):
             if count == 0:
                 break
             report_list.append([num, count])
+
+        return "\n".join(
+            ["\t".join([str(cell) for cell in row]) for row in report_list]
+        )
+
+
+class NumCandidatesStandingInMultipleSeatsPerGender(
+    NumCandidatesStandingInMultipleSeats
+):
+
+    name = "Num candidates standing in multiple per seats, per gender"
+
+    def report(self):
+
+        genders = (
+            self.membership_qs.values_list(
+                "person__gender_guess__gender", flat=True
+            )
+            .order_by("person__gender_guess__gender")
+            .distinct()
+        )
+
+        report_list = []
+        headers = ["Gender", "Num Candidacies", "Num people standing"]
+        report_list.append(headers)
+        qs = self.get_qs()
+        # very arbritary safeguard but im assuming you would never have someone
+        # stand on this many ballots for the same election type and date
+        for num in range(1, 10):
+            for gender in genders:
+                count = (
+                    qs.filter(gender_guess__gender=gender)
+                    .filter(num_candidacies=num)
+                    .count()
+                )
+                report_list.append([gender, num, count])
 
         return "\n".join(
             ["\t".join([str(cell) for cell in row]) for row in report_list]
