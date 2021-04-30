@@ -14,7 +14,12 @@ from .models import CandidateResult, ResultSet
 class ResultSetForm(forms.ModelForm):
     class Meta:
         model = ResultSet
-        fields = ("num_turnout_reported", "num_spoilt_ballots", "source")
+        fields = (
+            "num_turnout_reported",
+            "num_spoilt_ballots",
+            "total_electorate",
+            "source",
+        )
         widgets = {"source": forms.Textarea(attrs={"rows": 1, "columns": 72})}
 
     def __init__(self, ballot, *args, **kwargs):
@@ -27,6 +32,7 @@ class ResultSetForm(forms.ModelForm):
         self.fields["num_spoilt_ballots"].label += " (Not required)"
         self.fields["num_turnout_reported"].required = False
         self.fields["num_turnout_reported"].label += " (Percent, not required)"
+        self.fields["total_electorate"].label += " (Not required)"
 
         existing_fields = self.fields
         fields = OrderedDict()

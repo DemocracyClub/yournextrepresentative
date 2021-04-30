@@ -12,6 +12,7 @@ class ResultSet(TimeStampedModel):
     num_spoilt_ballots = models.PositiveIntegerField(
         null=True, verbose_name="Spoilt Ballots"
     )
+    total_electorate = models.PositiveIntegerField(null=True, blank=True)
     source = models.TextField(null=True)
 
     user = models.ForeignKey(
