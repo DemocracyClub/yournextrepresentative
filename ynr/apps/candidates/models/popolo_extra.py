@@ -121,7 +121,7 @@ class BallotQueryset(models.QuerySet):
         return self.filter(tags__NUTS1__key=code)
 
     def for_postcode(self, postcode):
-        kwargs = {"ids_only": True}
+        kwargs = {"ids_only": True, "current_only": False}
         if self._current:
             kwargs["current_only"] = True
         from elections.uk.geo_helpers import get_ballots_from_postcode
