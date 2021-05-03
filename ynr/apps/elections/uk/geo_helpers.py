@@ -36,7 +36,7 @@ EE_BASE_URL = getattr(
 )
 
 
-def get_ballots(url, cache_key, exception):
+def ballot_paper_ids_from_ee(url, cache_key, exception):
     r = requests.get(url)
     if r.status_code == 200:
         ee_result = r.json()
@@ -45,52 +45,58 @@ def get_ballots(url, cache_key, exception):
             for e in ee_result["results"]
             if not e["group_type"]
         ]
-        ballot_qs = Ballot.objects.current_or_future().filter(
-            ballot_paper_id__in=ballot_paper_ids
-        )
-        cache.set(cache_key, ballot_qs, settings.EE_CACHE_SECONDS)
-        return ballot_qs
+        cache.set(cache_key, ballot_paper_ids, settings.EE_CACHE_SECONDS)
+        return ballot_paper_ids
     elif r.status_code == 400:
         ee_result = r.json()
         raise exception(ee_result["detail"])
     elif r.status_code == 404:
-        raise exception('The url "{}" couldn’t be found'.format(url))
+        raise exception(f'The url "{url}" couldn’t be found')
     else:
-        raise UnknownGeoException('Unknown error for "{0}"'.format(url))
+        raise UnknownGeoException(f'Unknown error for "{url}"')
 
 
-def get_ballots_from_postcode(original_postcode):
+def get_ballots(url, cache_key, exception):
+    return Ballot.objects.filter(
+        ballot_paper_id__in=ballot_paper_ids_from_ee(url, cache_key, exception)
+    )
+
+
+def get_ballots_from_postcode(
+    original_postcode, current_only=True, ids_only=False
+):
     postcode = re.sub(r"(?ms)\s*", "", original_postcode.lower())
     if re.search(r"[^a-z0-9]", postcode):
         raise BadPostcodeException(
-            'There were disallowed characters in "{0}"'.format(
-                original_postcode
-            )
+            f'There were disallowed characters in "{original_postcode}"'
         )
-    cache_key = "geolookup-postcodes:" + postcode
+    cache_key = f"geolookup-postcodes:{current_only}:{postcode}"
     cached_result = cache.get(cache_key)
     if cached_result:
         return cached_result
 
-    url = urljoin(
-        EE_BASE_URL, "/api/elections/?postcode={}".format(urlquote(postcode))
-    )
+    url = urljoin(EE_BASE_URL, f"/api/elections/?postcode={urlquote(postcode)}")
+    if current_only:
+        url = f"{url}&current=1"
     try:
-        areas = get_ballots(url, cache_key, BadPostcodeException)
+        if ids_only:
+            return ballot_paper_ids_from_ee(
+                url, cache_key, BadPostcodeException
+            )
+        else:
+            return get_ballots(url, cache_key, BadPostcodeException)
     except BadPostcodeException:
         # Give a nicer error message, as this is used on the frontend
         raise BadPostcodeException(
-            "The postcode “{}” couldn’t be found".format(original_postcode)
+            f"The postcode “{original_postcode}” couldn’t be found"
         )
-    return areas
 
 
-def get_ballots_from_coords(coords):
-    url = urljoin(
-        EE_BASE_URL, "/api/elections/?coords={}".format(urlquote(coords))
-    )
-
-    cache_key = "geolookup-coords:" + coords
+def get_ballots_from_coords(coords, current_only=True):
+    url = urljoin(EE_BASE_URL, f"/api/elections/?coords={urlquote(coords)}")
+    if current_only:
+        url = f"{url}&current=1"
+    cache_key = f"geolookup-coords:{current_only}:{coords}"
     cached_result = cache.get(cache_key)
     if cached_result:
         return cached_result

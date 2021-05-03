@@ -166,6 +166,12 @@ class BaseBallotFilter(django_filters.FilterSet):
         """
         return queryset.by_region(code=value)
 
+    def postcode_filter(self, queryset, name, value):
+        """
+        Filter queryset by region using the NUTS1 code
+        """
+        return queryset.for_postcode(postcode=value)
+
     review_required = django_filters.ChoiceFilter(
         field_name="review_required",
         method="lock_status",
@@ -221,6 +227,12 @@ class BaseBallotFilter(django_filters.FilterSet):
         label="Cancelled",
         help_text="""Boolean, `1` for cancelled `0` taking place""",
         choices=[(1, "Yes"), (0, "No")],
+    )
+
+    for_postcode = django_filters.CharFilter(
+        label="For postcode",
+        help_text="""Find ballots covering a postcode.""",
+        method="postcode_filter",
     )
 
     class Meta:
