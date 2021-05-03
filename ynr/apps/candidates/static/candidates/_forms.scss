@@ -123,21 +123,20 @@ form.signup {
 }
 
 .help_text {
-    font-size:0.875rem;
-
+  font-size:0.875rem;
 }
 
 .flip {
-  -webkit-animation: anim 1s infinite;
-  animation: anim 1s infinite;
-}
+  -webkit-animation: anim .2s infinite;
+  animation: anim .2s infinite;
 
-@-webkit-keyframes anim {
-  from {-webkit-transform: rotateX(0deg);}
-  to {-webkit-transform: rotateX(360deg);}
-}
+  @-webkit-keyframes anim {
+    from {-webkit-transform: rotateX(0deg);}
+    to {-webkit-transform: rotateX(360deg);}
+  }
 
-@keyframes anim {
-  from {transform: rotateX(0deg);}
-  to {transform: rotateX(360deg);}
+  @keyframes anim {
+    from {transform: rotateX(0deg);}
+    to {transform: rotateX(360deg);}
+  }
 }
