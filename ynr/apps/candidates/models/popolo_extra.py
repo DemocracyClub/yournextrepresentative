@@ -62,6 +62,8 @@ def model_has_related_objects(model):
 
 
 class BallotQueryset(models.QuerySet):
+    _current = False
+
     def get_previous_ballot_for_post(self, ballot):
         """
         Given a ballot object, get the previous (by election date) ballot for
@@ -99,12 +101,14 @@ class BallotQueryset(models.QuerySet):
         return None
 
     def current(self, current=True):
+        self._current = True
         return self.filter(election__current=current)
 
     def future(self):
         return self.filter(election__election_date__gt=timezone.now())
 
     def current_or_future(self):
+        self._current = True
         return self.filter(
             models.Q(election__current=True)
             | models.Q(election__election_date__gt=timezone.now())
@@ -115,6 +119,15 @@ class BallotQueryset(models.QuerySet):
         Filter by NUTS1 code stored in the objects tags.
         """
         return self.filter(tags__NUTS1__key=code)
+
+    def for_postcode(self, postcode):
+        kwargs = {"ids_only": True}
+        if self._current:
+            kwargs["current_only"] = True
+        from elections.uk.geo_helpers import get_ballots_from_postcode
+
+        ballots = get_ballots_from_postcode(postcode, **kwargs)
+        return self.filter(ballot_paper_id__in=ballots)
 
 
 class Ballot(models.Model):

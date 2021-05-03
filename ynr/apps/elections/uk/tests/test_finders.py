@@ -22,19 +22,29 @@ def fake_requests_for_every_election(url, *args, **kwargs):
         settings, "EE_BASE_URL", "https://elections.democracyclub.org.uk/"
     )
 
-    if url == urljoin(EE_BASE_URL, "/api/elections/?postcode=se240ag"):
+    if url == urljoin(
+        EE_BASE_URL, "/api/elections/?postcode=se240ag&current=1"
+    ):
         status_code = 200
         json_result = ee_se240ag_result
-    elif url == urljoin(EE_BASE_URL, "/api/elections/?postcode=se240xx"):
+    elif url == urljoin(
+        EE_BASE_URL, "/api/elections/?postcode=se240xx&current=1"
+    ):
         status_code = 400
         json_result = {"detail": "Unknown postcode"}
-    elif url == urljoin(EE_BASE_URL, "/api/elections/?coords=-0.143207%2C51.5"):
+    elif url == urljoin(
+        EE_BASE_URL, "/api/elections/?coords=-0.143207%2C51.5&current=1"
+    ):
         status_code = 200
         json_result = ee_se240ag_result
-    elif url == urljoin(EE_BASE_URL, "/api/elections/?postcode=sw1a1aa"):
+    elif url == urljoin(
+        EE_BASE_URL, "/api/elections/?postcode=sw1a1aa&current=1"
+    ):
         status_code = 200
         json_result = ee_sw1a1aa_result
-    elif url == urljoin(EE_BASE_URL, "/api/elections/?postcode=cb28rq"):
+    elif url == urljoin(
+        EE_BASE_URL, "/api/elections/?postcode=cb28rq&current=1"
+    ):
         status_code = 404
         json_result = {
             "code": 404,
