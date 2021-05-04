@@ -6,9 +6,9 @@
   <h1>Review duplicate suggestions</h1>
 
   {% for object in object_list %}
-    <p>User <a href="{{ object.user.get_absolute_url }}">{{ object.user }}</a> has suggested that
-      <a href="{{ object.get_absolute_url }}">{{ object.person }}</a> is a duplicate of
-      <a href="{{ object.other_person }}">{{ object.other_person }}</a>.
+    <p>User <a href="{% url 'recent-changes' %}?username={{ object.user.username }}">{{ object.user }}</a> has suggested that
+      <a href="{{ object.person.get_absolute_url }}">{{ object.person }}</a> is a duplicate of
+      <a href="{{ object.other_person.get_absolute_url }}">{{ object.other_person }}</a>.
     </p>
     {% include "duplicates/includes/_compare_people_table.html" with person=object.person other_person=object.other_person  show_review_actions=True %}
   {% empty %}
