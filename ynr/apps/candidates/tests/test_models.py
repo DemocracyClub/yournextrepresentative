@@ -24,3 +24,17 @@ class TestBallotUrlMethods(TestCase):
     def test_get_sopn_view(self):
         url = self.ballot.get_sopn_url()
         assert url == f"/elections/{self.ballot.ballot_paper_id}/sopn/"
+
+    def test_get_results_url(self):
+        fptp = Ballot(
+            ballot_paper_id="local.sheffield.ecclesall.2021-05-06",
+            voting_system=Ballot.VOTING_SYSTEM_FPTP,
+        )
+        other = Ballot(ballot_paper_id="gla.a.2021-05-06")
+        assert (
+            fptp.get_results_url()
+            == "/uk_results/local.sheffield.ecclesall.2021-05-06/"
+        )
+        assert fptp.results_button_text == "Add results"
+        assert other.get_results_url() == "/elections/gla.a.2021-05-06/"
+        assert other.results_button_text == "Mark elected candidates"

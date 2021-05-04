@@ -68,6 +68,7 @@ class ElectionListView(TemplateView):
             .prefetch_related("suggestedpostlock_set")
             .prefetch_related("officialdocument_set")
             .annotate(memberships_count=Count("membership"))
+            .annotate(elected_count=Count("membership__elected"))
             .order_by("election__election_date", "election__name")
         )
 

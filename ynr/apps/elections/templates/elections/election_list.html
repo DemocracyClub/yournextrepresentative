@@ -82,6 +82,7 @@
           <th>Ballot</th>
           <th>Candidates known</th>
           <th>Status</th>
+          <th>Has Results</th>
         </tr>
       </thead>
       <tbody>
@@ -115,6 +116,19 @@
                 Unlocked
               {% endif %}
 
+            {% endif %}
+          </td>
+          <td>
+            {% if ballot.polls_closed %}
+              {% if ballot.elected_count == ballot.winner_count %}
+                Completed
+              {% elif user_can_record_results %}
+                <a href="{{ ballot.get_results_url }}" class="button tiny">{{ ballot.results_button_text }}</a>
+              {% else %}
+                No results
+              {% endif %}
+            {% else %}
+              Polls not closed
             {% endif %}
           </td>
         </tr>
