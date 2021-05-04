@@ -129,6 +129,18 @@ class BallotQueryset(models.QuerySet):
         ballots = get_ballots_from_postcode(postcode, **kwargs)
         return self.filter(ballot_paper_id__in=ballots)
 
+    def has_results(self):
+        """
+        Return a QuerySet of ballots that have results
+        """
+        return self.filter(resultset__isnull=False)
+
+    def no_results(self):
+        """
+        Return a QuerySet of ballots that do not have results
+        """
+        return self.filter(resultset__isnull=True)
+
 
 class Ballot(models.Model):
     post = models.ForeignKey("popolo.Post", on_delete=models.CASCADE)
