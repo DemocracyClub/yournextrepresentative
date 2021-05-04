@@ -138,13 +138,16 @@ def results_progress(context):
         context["election_name"] = settings.SOPN_TRACKER_INFO["election_name"]
         ballot_qs = Ballot.objects.filter(election__election_date=election_date)
 
-        context["results_entered"] = ballot_qs.exclude(resultset=None).count()
+        context["results_entered"] = ballot_qs.has_results().count()
         context["areas_total"] = ballot_qs.count()
-        context["results_percent"] = round(
-            float(context["results_entered"])
-            / float(context["areas_total"])
-            * 100
-        )
+        try:
+            context["results_percent"] = round(
+                float(context["results_entered"])
+                / float(context["areas_total"])
+                * 100
+            )
+        except ZeroDivisionError:
+            context["results_percent"] = 0
 
     return context
 
