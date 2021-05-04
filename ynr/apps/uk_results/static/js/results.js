@@ -1,12 +1,9 @@
 $(function() {
-    console.log("I'm working")
-    // runs when the page loads
-    // debugger 
-    tiedWinners()    // runs when the form changes
+    tiedWinners() 
     $('#ballot_paper_results_form').on("change", tiedWinners)
    
     if($(".errorlist").length != 0){
-        alert("error!") // code that should be run if the validation error exists goes here 
+        tiedWinners() 
     }
 })
 
@@ -14,7 +11,7 @@ function tiedWinners() {
     var inputs = document.querySelectorAll('*[id*=id_memberships]')
     var list = Object.values(inputs)
     var inputArray = list.map(input => input.value)
-    console.log("I'm working, too") 
+    
     function NoneEmpty(inputArray) {
         if (inputArray.includes(""))
             return false
