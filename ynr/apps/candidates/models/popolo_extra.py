@@ -157,6 +157,7 @@ class Ballot(models.Model):
         related_name="replaced_by",
         on_delete=models.DO_NOTHING,
     )
+    voting_system = models.CharField(blank=True, max_length=255)
 
     tags = JSONField(default=dict, blank=True)
 
