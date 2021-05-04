@@ -127,8 +127,8 @@ form.signup {
 }
 
 .flip {
-  -webkit-animation: anim .2s infinite;
-  animation: anim .2s infinite;
+  -webkit-animation: anim 1s infinite;
+  animation: anim 1s infinite;
 
   @-webkit-keyframes anim {
     from {-webkit-transform: rotateX(0deg);}
