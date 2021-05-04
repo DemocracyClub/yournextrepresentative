@@ -240,6 +240,7 @@ class EEElection(dict):
             # Get the winner count
             winner_count = self["seats_contested"]
 
+            voting_system = parent["voting_system"] or {}
             (
                 self.ballot_object,
                 self.ballot_created,
@@ -252,6 +253,7 @@ class EEElection(dict):
                     "cancelled": self["cancelled"],
                     "replaces": self.get_replaced_ballot(),
                     "tags": self.get("tags", {}),
+                    "voting_system": voting_system.get("slug", ""),
                 },
             )
 
