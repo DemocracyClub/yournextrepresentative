@@ -251,19 +251,22 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
 
             lock = self.object.candidates_locked
             post_name = ballot.post.short_label
+            request = self.request
+            ip_address = get_client_ip(request)
             if lock:
                 action_type = ActionType.CONSTITUENCY_LOCK
                 pp = "Locked"
                 # If we're locking this, then the suggested posts
                 # can be deleted
                 ballot.suggestedpostlock_set.all().delete()
+                ballot.mark_uncontested_winners()
             else:
                 action_type = ActionType.CONSTITUENCY_UNLOCK
                 pp = "Unlocked"
+                ballot.unmark_uncontested_winners()
             message = pp + " ballot {} ({})".format(
                 post_name, ballot.ballot_paper_id
             )
-
             LoggedAction.objects.create(
                 user=self.request.user,
                 action_type=action_type,

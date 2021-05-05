@@ -1,4 +1,6 @@
 import faker
+from django.test import TestCase, RequestFactory
+from django.contrib.auth.models import User
 
 from django.test import TestCase
 from django.utils import timezone
@@ -15,7 +17,10 @@ from candidates.tests.factories import (
 from elections.tests.test_ballot_view import SingleBallotStatesMixin
 from uk_results.models import ResultSet
 
-from ..models import Ballot
+from candidates.models import Ballot
+from candidates.tests.factories import MembershipFactory
+from people.tests.factories import PersonFactory
+from candidates.models import LoggedAction
 
 fake = faker.Faker()
 
@@ -55,6 +60,66 @@ class TestBallotUrlMethods(TestCase):
         assert fptp.results_button_text == "Add results"
         assert other.get_results_url() == "/elections/gla.a.2021-05-06/"
         assert other.results_button_text == "Mark elected candidates"
+
+
+class TestBallotMethods(TestCase, SingleBallotStatesMixin):
+    def setUp(self):
+        election = self.create_election("Sheffield Local Election")
+        post = self.create_post(post_label="Ecclesall")
+        self.ballot = self.create_ballot(
+            ballot_paper_id="local.sheffield.ecclesall.2021-05-06",
+            election=election,
+            post=post,
+            winner_count=2,
+            candidates_locked=True,
+        )
+
+    def create_memberships(self, ballot, parties, candidates_per_party=1):
+        for i in range(candidates_per_party):
+            for party in parties:
+                person = PersonFactory()
+                MembershipFactory(
+                    ballot=self.ballot, person=person, party=party
+                )
+
+    def test_uncontested_when_winner_count_same_as_memberships(self):
+        parties = self.create_parties(2)
+        self.create_memberships(self.ballot, parties)
+        self.assertTrue(self.ballot.uncontested)
+
+    def test_uncontested_when_winner_count_is_less_than_memberships(self):
+        parties = self.create_parties(3)
+        self.create_memberships(self.ballot, parties)
+        self.assertFalse(self.ballot.uncontested)
+
+    def test_uncontested_when_winner_count_is_more_than_memberships(self):
+        parties = self.create_parties(1)
+        self.create_memberships(self.ballot, parties)
+        self.assertFalse(self.ballot.uncontested)
+
+    def test_mark_uncontested_winners(self, log=True):
+        parties = self.create_parties(2)
+        self.create_memberships(self.ballot, parties)
+        self.assertTrue(self.ballot.uncontested)
+        self.ballot.mark_uncontested_winners(
+            request=self.client.request, ip_address="111.11.1111", log=True
+        )
+        self.assertTrue(
+            self.ballot.membership_set.filter(elected=True).count(), 2
+        )
+        self.assertEqual(LoggedAction.objects.count(), 2)
+
+    def test_unmark_uncontested_winners(self, log=True):
+        parties = self.create_parties(2)
+        self.create_memberships(self.ballot, parties)
+        self.assertTrue(self.ballot.uncontested)
+        self.ballot.unmark_uncontested_winners(
+            request=self.client.request, ip_address="111.11.1111", log=True
+        )
+        self.assertTrue(
+            self.ballot.membership_set.filter(elected=False).count(), 2
+        )
+        self.assertEqual(LoggedAction.objects.count(), 2)
 
 
 class BallotsWithResultsMixin(SingleBallotStatesMixin):
@@ -100,7 +165,7 @@ class BallotsWithResultsMixin(SingleBallotStatesMixin):
         return results
 
 
-class TestBallotQuerysetMethods(BallotsWithResultsMixin, TestCase):
+class TestHasResultsOrNoResults(BallotsWithResultsMixin, TestCase):
     def test_has_results_and_no_results(self):
         """
         Test that the has_results QS method only returns Ballots which either
@@ -210,3 +275,84 @@ class TestBallotQuerysetMethods(BallotsWithResultsMixin, TestCase):
         qs = Ballot.objects.ordered_by_latest_ee_modified()
         # check that the new ballot is now the first returned
         assert qs.first() == new_ballot
+
+class TestBallotQuerySetMethods(TestCase, SingleBallotStatesMixin):
+    def create_memberships(self, ballot, parties, candidates_per_party=1):
+        for i in range(candidates_per_party):
+            for party in parties:
+                person = PersonFactory()
+                MembershipFactory(ballot=ballot, person=person, party=party)
+
+    def test_uncontested_no_candidates(self):
+        election = self.create_election("Strensall Local Election")
+        post = self.create_post(post_label="Strensall")
+        ballot = self.create_ballot(
+            ballot_paper_id="local.york.strensall.2019-05-02",
+            election=election,
+            post=post,
+            winner_count=1,
+            candidates_locked=True,
+        )
+        uncontested_ballots = Ballot.objects.uncontested()
+        self.assertIn(ballot, uncontested_ballots)
+
+    def test_uncontested_unlocked(self):
+        election = self.create_election("Strensall Local Election")
+        post = self.create_post(post_label="Strensall")
+        ballot = self.create_ballot(
+            ballot_paper_id="local.york.strensall.2020-05-06",
+            election=election,
+            post=post,
+            winner_count=1,
+            candidates_locked=False,
+        )
+        parties = self.create_parties(1)
+        self.create_memberships(ballot, parties)
+        uncontested_ballots = Ballot.objects.uncontested()
+        self.assertNotIn(ballot, uncontested_ballots)
+
+    def test_uncontested_more_than_winner_count(self):
+        election = self.create_election("Strensall Local Election")
+        post = self.create_post(post_label="St Mary's")
+        ballot = self.create_ballot(
+            ballot_paper_id="local.adur.st-marys.2021-05-06",
+            election=election,
+            post=post,
+            winner_count=1,
+            candidates_locked=True,
+        )
+        parties = self.create_parties(2)
+        self.create_memberships(ballot, parties)
+        uncontested_ballots = Ballot.objects.uncontested()
+        self.assertNotIn(ballot, uncontested_ballots)
+
+    def test_uncontested_less_than_winner_count(self):
+        election = self.create_election("Strensall Local Election")
+        post = self.create_post(post_label="St Mary's")
+        ballot = self.create_ballot(
+            ballot_paper_id="local.adur.st-marys.2021-05-06",
+            election=election,
+            post=post,
+            winner_count=2,
+            candidates_locked=True,
+        )
+        parties = self.create_parties(1)
+        self.create_memberships(ballot, parties)
+        uncontested_ballots = Ballot.objects.uncontested()
+        self.assertIn(ballot, uncontested_ballots)
+
+    def test_uncontested_match_winner_count(self):
+        election = self.create_election("Strensall Local Election")
+        election.slug = "local.adur.2021-05-06"
+        post = self.create_post(post_label="Strensall")
+        ballot = self.create_ballot(
+            ballot_paper_id="local.strensall.foo.2020-05-06",
+            election=election,
+            post=post,
+            winner_count=2,
+            candidates_locked=True,
+        )
+        parties = self.create_parties(2)
+        self.create_memberships(ballot, parties)
+        uncontested_ballots = Ballot.objects.uncontested()
+        self.assertIn(ballot, uncontested_ballots)
