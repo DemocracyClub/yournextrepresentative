@@ -200,7 +200,7 @@ class Ballot(models.Model):
         supports full results, otherwise we direct user to the ballot
         view where they can mark individual candidates as elected.
         """
-        if self.is_fptp:
+        if self.can_enter_votes_cast:
             return self.get_absolute_url(viewname="ballot_paper_results_form")
         return self.get_absolute_url()
 
@@ -213,11 +213,11 @@ class Ballot(models.Model):
         return mapping.get(self.voting_system, "Mark elected candidates")
 
     @property
-    def is_fptp(self):
+    def can_enter_votes_cast(self):
         """
         Return boolean for if this ballot uses First Past The Post
         """
-        return self.voting_system == self.VOTING_SYSTEM_FPTP
+        return self.voting_system in [self.VOTING_SYSTEM_FPTP]
 
     def safe_delete(self):
         collector = NestedObjects(using=connection.cursor().db.alias)
