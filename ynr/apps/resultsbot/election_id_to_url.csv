@@ -133,3 +133,15 @@ local.southampton.2021-05-06,https://www.southampton.gov.uk/modernGov/mgWebServi
 local.staffordshire.2021-05-06,http://moderngov.staffordshire.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=31
 local.warwickshire.2021-05-06,https://democracy.warwickshire.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=1
 local.wolverhampton.2021-05-06,https://wolverhampton.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=29
+local.gosport.2021-05-06,https://democracy.gosport.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=16
+local.gravesham.2021-05-06,https://democracy.gravesham.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=49
+local.lichfield.2021-05-06,https://democracy.lichfielddc.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=6
+local.maidstone.2021-05-06,https://meetings.maidstone.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=55
+local.merton.2021-05-06,https://democracy.merton.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=22
+local.newcastle-upon-tyne.2021-05-06,https://democracy.newcastle.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=12
+local.north-kesteven.2021-05-06,https://democracy.n-kesteven.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=44
+local.portsmouth.2021-05-06,https://democracy.portsmouth.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=14
+local.stockport.2021-05-06,http://democracy.stockport.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=53
+local.west-lancashire.2021-05-06,https://democracy.westlancs.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=3
+local.wirral.2021-05-06,https://democracy.wirral.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=10
+local.west-sussex.2021-05-06,https://westsussex.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=18
