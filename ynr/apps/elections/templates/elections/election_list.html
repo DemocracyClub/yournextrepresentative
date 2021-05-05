@@ -98,6 +98,9 @@
           </td>
           <td>
             <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
+            {% if ballot.election.modgov_url %}
+              <span class="round alert label">Results added by API</span>
+            {% endif %}
           </td>
           <td>{{ ballot.memberships_count }}</td>
           <td>
