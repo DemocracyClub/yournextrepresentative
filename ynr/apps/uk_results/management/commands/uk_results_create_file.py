@@ -23,6 +23,8 @@ class Command(BaseCommand):
         "is_winner",
         "spoilt_ballots",
         "turnout",
+        "turnout_percentage",
+        "total_electorate",
         "source",
     ]
 
@@ -62,7 +64,9 @@ class Command(BaseCommand):
                     "election_id": result.ballot.election.slug,
                     "ballot_paper_id": result.ballot.ballot_paper_id,
                     "turnout": result.num_turnout_reported,
+                    "turnout_percentage": result.turnout_percentage,
                     "spoilt_ballots": result.num_spoilt_ballots,
+                    "total_electorate": result.total_electorate,
                     "source": result.source,
                 }
                 party = membership.party
@@ -98,7 +102,11 @@ class Command(BaseCommand):
             for person in out_data:
                 election_dict = json_data[person["ballot_paper_id"]]
                 election_dict["turnout"] = person["turnout"]
+                election_dict["turnout_percentage"] = person[
+                    "turnout_percentage"
+                ]
                 election_dict["spoilt_ballots"] = person["spoilt_ballots"]
+                election_dict["total_electorate"] = person["total_electorate"]
                 election_dict["source"] = person["source"]
 
                 if "candidates" not in election_dict:

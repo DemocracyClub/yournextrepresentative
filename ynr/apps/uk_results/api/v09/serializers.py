@@ -29,10 +29,12 @@ class ResultSetSerializer(serializers.HyperlinkedModelSerializer):
             "url",
             "candidate_results",
             "num_turnout_reported",
+            "turnout_percentage",
             "num_spoilt_ballots",
             "user",
             "user_id",
             "ballot_paper_id",
+            "total_electorate",
         )
 
     # post_result = PostResultSerializer()
