@@ -300,11 +300,26 @@ class CurrentOrFutureBallotFilter(BaseBallotFilter):
     elections
     """
 
+    def has_results_filter(self, queryset, name, value):
+        """
+        Filter queryset by if they have results or not
+        """
+        mapping = {1: "has_results", 0: "no_results"}
+        has_results_or_not = getattr(queryset, mapping[int(value)])
+        return has_results_or_not()
+
     election_type = django_filters.ChoiceFilter(
         widget=DSLinkWidget(),
         method="election_type_filter",
         choices=current_election_types_choices,
         label="Election Type",
+    )
+
+    has_results = django_filters.ChoiceFilter(
+        label="Has Results",
+        method="has_results_filter",
+        widget=DSLinkWidget(),
+        choices=[(1, "Yes"), (0, "No")],
     )
 
 
@@ -318,7 +333,16 @@ def filter_shortcuts(request):
                 "has_sopn": ["1"],
                 "is_cancelled": ["0"],
             },
-        }
+        },
+        {
+            "name": "has_results",
+            "label": "Ready for results",
+            "query": {
+                "has_results": ["0"],
+                "review_required": ["locked"],
+                "is_cancelled": ["0"],
+            },
+        },
     ]
 
     query = dict(request.GET)

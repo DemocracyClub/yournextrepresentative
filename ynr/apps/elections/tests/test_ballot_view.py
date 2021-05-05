@@ -15,7 +15,11 @@ from candidates.tests.factories import (
     OrganizationFactory,
     PostFactory,
 )
-from elections.filters import BaseBallotFilter, region_choices
+from elections.filters import (
+    BaseBallotFilter,
+    CurrentOrFutureBallotFilter,
+    region_choices,
+)
 from utils.dict_io import BufferDictReader
 from elections.tests.data_timeline_helper import DataTimelineHTMLAssertions
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
@@ -459,3 +463,31 @@ class TestBallotFilter(SingleBallotStatesMixin, WebTest):
                 )
                 self.assertIn(expected, results)
                 self.assertEqual(results.count(), 1)
+
+    def test_has_results(self):
+        ballot_with_results = self.create_ballot(
+            ballot_paper_id="local.has-results.2021-05-06",
+            election=self.election,
+            post=self.post,
+        )
+        ResultSet.objects.create(
+            ballot=ballot_with_results,
+            num_turnout_reported=10000,
+            num_spoilt_ballots=30,
+            source="Example ResultSet for testing",
+        )
+        ballot_without_results = self.create_ballot(
+            ballot_paper_id="local.no-results.2021-05-06",
+            election=self.election,
+            post=self.post,
+        )
+
+        filter = CurrentOrFutureBallotFilter()
+        ballots = Ballot.objects.all()
+        for case in [True, False]:
+            with self.subTest(msg=case):
+                results = filter.has_results_filter(
+                    queryset=ballots, name=case, value=case
+                )
+                self.assertEqual(ballot_with_results in results, case)
+                self.assertEqual(ballot_without_results in results, not case)

@@ -3,6 +3,7 @@ from datetime import date
 
 from braces.views import LoginRequiredMixin
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.views.generic import FormView, TemplateView
 
 from candidates.models import Ballot
@@ -29,10 +30,12 @@ class BallotPaperResultsUpdateView(LoginRequiredMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        self.ballot = Ballot.objects.get(
-            ballot_paper_id=self.kwargs["ballot_paper_id"],
-            # if we try to add results to a cancelled election, throw a 404
+
+        self.ballot = get_object_or_404(
+            Ballot,
             cancelled=False,
+            voting_system=Ballot.VOTING_SYSTEM_FPTP,
+            ballot_paper_id=self.kwargs["ballot_paper_id"],
         )
         try:
             kwargs["instance"] = self.ballot.resultset
@@ -69,6 +72,7 @@ class CurrentElectionsWithNoResuts(TemplateView):
                 election__election_date__lte=date.today(),
                 resultset=None,
                 cancelled=False,
+                voting_system=Ballot.VOTING_SYSTEM_FPTP,
             )
             .select_related("post", "election")
             .order_by("election__slug", "post__label")

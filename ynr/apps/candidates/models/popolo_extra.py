@@ -129,8 +129,23 @@ class BallotQueryset(models.QuerySet):
         ballots = get_ballots_from_postcode(postcode, **kwargs)
         return self.filter(ballot_paper_id__in=ballots)
 
+    def has_results(self):
+        """
+        Return a QuerySet of ballots that have results
+        """
+        return self.filter(resultset__isnull=False)
+
+    def no_results(self):
+        """
+        Return a QuerySet of ballots that do not have results
+        """
+        return self.filter(resultset__isnull=True)
+
 
 class Ballot(models.Model):
+
+    VOTING_SYSTEM_FPTP = "FPTP"
+
     post = models.ForeignKey("popolo.Post", on_delete=models.CASCADE)
     election = models.ForeignKey(Election, on_delete=models.CASCADE)
     ballot_paper_id = models.CharField(blank=True, max_length=255, unique=True)
@@ -145,6 +160,7 @@ class Ballot(models.Model):
         related_name="replaced_by",
         on_delete=models.DO_NOTHING,
     )
+    voting_system = models.CharField(blank=True, max_length=255)
 
     tags = JSONField(default=dict, blank=True)
 
@@ -177,6 +193,31 @@ class Ballot(models.Model):
 
     def get_sopn_url(self):
         return self.get_absolute_url("ballot_paper_sopn")
+
+    def get_results_url(self):
+        """
+        Get url to direct user to enter results. Currently only FPTP
+        supports full results, otherwise we direct user to the ballot
+        view where they can mark individual candidates as elected.
+        """
+        if self.can_enter_votes_cast:
+            return self.get_absolute_url(viewname="ballot_paper_results_form")
+        return self.get_absolute_url()
+
+    @property
+    def results_button_text(self):
+        """
+        Allows different button text depending on the voting system
+        """
+        mapping = {self.VOTING_SYSTEM_FPTP: "Add results"}
+        return mapping.get(self.voting_system, "Mark elected candidates")
+
+    @property
+    def can_enter_votes_cast(self):
+        """
+        Return boolean for if this ballot uses First Past The Post
+        """
+        return self.voting_system in [self.VOTING_SYSTEM_FPTP]
 
     def safe_delete(self):
         collector = NestedObjects(using=connection.cursor().db.alias)

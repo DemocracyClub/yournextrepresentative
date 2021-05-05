@@ -1,7 +1,7 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 from django.urls import reverse
 from django_webtest import WebTest
+from candidates.models.popolo_extra import Ballot
 
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
@@ -14,6 +14,8 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
     def setUp(self):
         super().setUp()
         self.ballot = self.local_post.ballot_set.get()
+        self.ballot.voting_system = Ballot.VOTING_SYSTEM_FPTP
+        self.ballot.save()
         self.result_set = ResultSet.objects.create(
             ballot=self.ballot,
             num_turnout_reported=10000,
@@ -104,8 +106,10 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         )
         self.ballot.cancelled = True
         self.ballot.save()
-        with self.assertRaises(ObjectDoesNotExist):
-            resp = self.app.get(url, user=self.user_who_can_record_results)
+        resp = self.app.get(
+            url, user=self.user_who_can_record_results, expect_errors=True
+        )
+        self.assertEqual(resp.status_code, 404)
 
     def test_partial_results_doesnt_set_winners(self):
         [c.delete() for c in self.candidate_results]
