@@ -66,6 +66,12 @@ class Election(models.Model):
 
     description = models.CharField(max_length=500, blank=True)
 
+    modgov_url = models.URLField(
+        blank=True,
+        null=True,
+        help_text="Used to store a possible ModGov url that can be used to scrape information for this election",
+    )
+
     objects = ElectionManager.from_queryset(ElectionQuerySet)()
     UnsafeToDelete = Exception
 
