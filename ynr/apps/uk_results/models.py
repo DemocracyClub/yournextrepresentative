@@ -12,7 +12,9 @@ class ResultSet(TimeStampedModel):
     num_spoilt_ballots = models.PositiveIntegerField(
         null=True, verbose_name="Spoilt Ballots"
     )
-    total_electorate = models.PositiveIntegerField(null=True, blank=True)
+    total_electorate = models.PositiveIntegerField(
+        verbose_name="Total Electorate", null=True, blank=True
+    )
     source = models.TextField(null=True)
 
     user = models.ForeignKey(
@@ -28,6 +30,17 @@ class ResultSet(TimeStampedModel):
     def __str__(self):
         return "Result for {}".format(self.ballot.ballot_paper_id)
 
+    @property
+    def turnout_percentage(self):
+        """
+        Return turnout as a percentage, rounded to two decimal places
+        """
+        if not all([self.num_turnout_reported, self.total_electorate]):
+            return None
+
+        percentage = (self.num_turnout_reported / self.total_electorate) * 100
+        return round(percentage, 2)
+
     def as_dict(self):
         """
         A representation of the model and related CandidateResult models
@@ -42,6 +55,7 @@ class ResultSet(TimeStampedModel):
             "ballot_paper_id": self.ballot.ballot_paper_id,
             "turnout": self.num_turnout_reported,
             "spoilt_ballots": self.num_spoilt_ballots,
+            "total_electorate": self.total_electorate,
             "source": self.source,
             "user": getattr(self.user, "username", None),
             "candidate_results": [],

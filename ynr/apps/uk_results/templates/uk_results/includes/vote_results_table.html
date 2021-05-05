@@ -56,6 +56,22 @@
     </tr>
     <tr>
       <th colspan=3>
+        <strong>Reported turnout percentage</strong>
+      </th>
+      <td>
+        {{ ballot.resultset.turnout_percentage|default_if_none:"Unknown" }}
+      </td>
+    </tr>
+    <tr>
+      <th colspan=3>
+        <strong>Total electorate</strong>
+      </th>
+      <td>
+        {{ ballot.resultset.total_electorate|default_if_none:"Unknown" }}
+      </td>
+    </tr>
+    <tr>
+      <th colspan=3>
         <strong>Spoilt ballots</strong>
       </th>
       <td>

@@ -18,6 +18,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
             user=self.user,
             ip_address="127.0.0.1",
             source="Example ResultSet for testing",
+            total_electorate=50000,
         )
         # Create three people:
         self.persons = [
@@ -73,6 +74,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
             "source": "Example ResultSet for testing",
             "spoilt_ballots": 30,
             "turnout": 10000,
+            "total_electorate": 50000,
             "user": "john",
         }
 
@@ -103,3 +105,20 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         self.result_set.num_turnout_reported = 300
         self.result_set.save()
         self.result_set.record_version()
+
+    def test_turnout_percentage(self):
+        self.assertEqual(self.result_set.turnout_percentage, 20.0)
+        self.result_set.num_turnout_reported = 3333
+        self.result_set.total_electorate = 10000
+        # check rounded to 2 places max
+        self.assertEqual(self.result_set.turnout_percentage, 33.33)
+
+    def test_turnout_percentage_is_none(self):
+        results = [
+            ResultSet(num_turnout_reported=None, total_electorate=None),
+            ResultSet(num_turnout_reported=5000, total_electorate=None),
+            ResultSet(num_turnout_reported=None, total_electorate=5000),
+        ]
+        for result in results:
+            with self.subTest(msg=result):
+                self.assertIsNone(result.turnout_percentage)
