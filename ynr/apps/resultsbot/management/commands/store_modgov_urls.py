@@ -12,6 +12,10 @@ class Command(BaseCommand):
         """
         Stores possible modgov urls stored in CSV file against the related election objects
         """
+
+        # remove existing values first as this allows us to remove bad urls from the csv file
+        Election.objects.update(modgov_url=None)
+
         path = os.path.join(
             os.path.dirname(resultsbot.__file__), "election_id_to_url.csv"
         )
