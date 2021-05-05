@@ -333,7 +333,16 @@ def filter_shortcuts(request):
                 "has_sopn": ["1"],
                 "is_cancelled": ["0"],
             },
-        }
+        },
+        {
+            "name": "has_results",
+            "label": "Ready for results",
+            "query": {
+                "has_results": ["0"],
+                "review_required": ["locked"],
+                "is_cancelled": ["0"],
+            },
+        },
     ]
 
     query = dict(request.GET)
