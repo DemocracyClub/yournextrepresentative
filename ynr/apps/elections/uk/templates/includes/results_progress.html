@@ -15,7 +15,7 @@
     {% for nuts1_id, stats in results_progress_by_region.items %}
       <section style="flex: 1 0 45%;margin: 0.5em;">
         <hr>
-        <h3 style="font-size: 1.2em"><a
+        <h3 style="font-size: 1.2em; min-width: 275.5px; min-height: 52px"><a
         href="{% url "election_list_view" %}?filter_by_region={{ nuts1_id }}&{{ has_results_shortcut.querystring }}">{{ stats.label }}: {{ stats.posts_total }}
           ballots</a></h3>
         <div class="row">
@@ -40,7 +40,7 @@
     {% for election_type, stats in results_progress_by_election_type.items %}
       <section style="flex: 1 0 45%;margin: 0.5em;">
         <hr>
-        <h3 style="font-size: 1.2em"><a
+        <h3 style="font-size: 1.2em; min-width: 275.5px; min-height: 52px"><a
         href="{% url "election_list_view" %}?election_type={{ election_type }}&{{ has_results_shortcut.querystring }}">{{ stats.label }}: {{ stats.posts_total }}
           ballots</a></h3>
         <div class="row">
