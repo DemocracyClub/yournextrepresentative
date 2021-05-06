@@ -1,4 +1,5 @@
 from django.contrib.postgres.fields import JSONField
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
 
@@ -8,6 +9,11 @@ class ResultSet(TimeStampedModel):
 
     num_turnout_reported = models.PositiveIntegerField(
         null=True, verbose_name="Reported Turnout"
+    )
+    turnout_percentage = models.FloatField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        blank=True,
+        null=True,
     )
     num_spoilt_ballots = models.PositiveIntegerField(
         null=True, verbose_name="Spoilt Ballots"
@@ -30,8 +36,7 @@ class ResultSet(TimeStampedModel):
     def __str__(self):
         return "Result for {}".format(self.ballot.ballot_paper_id)
 
-    @property
-    def turnout_percentage(self):
+    def calculate_turnout_percentage(self):
         """
         Return turnout as a percentage, rounded to two decimal places
         """
@@ -39,7 +44,7 @@ class ResultSet(TimeStampedModel):
             return None
 
         percentage = (self.num_turnout_reported / self.total_electorate) * 100
-        return round(percentage, 2)
+        self.turnout_percentage = round(percentage, 2)
 
     def as_dict(self):
         """
@@ -98,6 +103,10 @@ class ResultSet(TimeStampedModel):
         if save:
             self.save()
         return (existing, changed)
+
+    def save(self, **kwargs):
+        self.calculate_turnout_percentage()
+        return super().save(**kwargs)
 
 
 class CandidateResult(TimeStampedModel):
