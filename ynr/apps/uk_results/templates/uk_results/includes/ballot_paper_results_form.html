@@ -1,14 +1,20 @@
-<form method=post class="ballot_paper_results_form">
+
+<form method=post id="ballot_paper_results_form" class="ballot_paper_results_form">
   {{ form.errors }}
   {% csrf_token %}
   <table>
     <tbody>
-      {% for membership_field in form.membership_fields %}
+      {% for membership_field, tied_vote_field in form.membership_fields %}
       <tr>
         <td>{{ membership_field.label }}</td>
         <td>
           {{ membership_field.errors }}
           {{ membership_field }}
+            <div id="coin-toss" style="display: none">
+              {{ tied_vote_field }} 
+              {{ tied_vote_field.label_tag }}
+              <h3 id="coin-emoji" class="flip">🪙</h3> 
+            </div>
         </td>
       </tr>
       {% endfor %}
@@ -21,6 +27,10 @@
       <tr>
         <td>{{ results_form.num_turnout_reported.label }}</td>
         <td>{{ results_form.num_turnout_reported }}</td>
+      </tr>
+      <tr>
+        <td>{{ results_form.total_electorate.label }}</td>
+        <td>{{ results_form.total_electorate }}</td>
       </tr>
     </tbody>
     <tbody>

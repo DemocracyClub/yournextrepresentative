@@ -48,10 +48,12 @@ class ResultSerializer(serializers.ModelSerializer):
         fields = (
             "url",
             "num_turnout_reported",
+            "turnout_percentage",
             "num_spoilt_ballots",
             "source",
             "ballot",
             "candidate_results",
+            "total_electorate",
         )
 
     url = serializers.SerializerMethodField()

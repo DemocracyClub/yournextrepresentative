@@ -366,6 +366,13 @@ class Membership(Dateframeable, Timestampable, models.Model):
     def __str__(self):
         return self.label
 
+    @property
+    def name_and_party(self):
+        """
+        Build a sting of candidate name and party name
+        """
+        return f"{self.person.name} ({self.party.name})"
+
     class Meta:
         unique_together = ("person", "ballot")
         ordering = ("party__name", "party_list_position", "person__name")
@@ -479,7 +486,7 @@ class ContactDetail(
     objects = ContactDetailQuerySet.as_manager()
 
     def __str__(self):
-        return u"{} - {}".format(self.value, self.contact_type)
+        return "{} - {}".format(self.value, self.contact_type)
 
 
 class OtherName(Dateframeable, GenericRelatable, models.Model):
@@ -563,7 +570,7 @@ class Language(models.Model):
     )
 
     def __str__(self):
-        return u"{} ({})".format(self.name, self.iso639_1_code)
+        return "{} ({})".format(self.name, self.iso639_1_code)
 
 
 ##
