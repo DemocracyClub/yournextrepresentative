@@ -1,9 +1,19 @@
 from django import template
 from django.conf import settings
-from django.db.models import Sum, IntegerField, Count, Func, F, Value, TextField
+from django.db.models import (
+    Sum,
+    IntegerField,
+    Count,
+    Func,
+    F,
+    Value,
+    TextField,
+    Q,
+)
 from django.db.models.functions import Cast
 
 from candidates.models import Ballot
+from elections.filters import filter_shortcuts
 from elections.models import Election
 from popolo.models import Membership
 
@@ -13,6 +23,40 @@ register = template.Library()
 def sopn_progress_by_election_slug_prefix(self, election_slug_prefix):
     election_qs = Election.objects.filter(slug__startswith=election_slug_prefix)
     return self.sopn_progress_by_election(election_qs)
+
+
+def results_progress_by_value(base_qs, lookup_value, label_field=None):
+    values = [lookup_value]
+
+    if label_field:
+        values.append(label_field)
+
+    ballot_qs = base_qs.values(*values).distinct()
+    ballot_qs = ballot_qs.annotate(
+        count=Count("ballot_paper_id", distinct=True)
+    )
+    results_filter = Q(resultset__isnull=False) | Q(membership__elected__gte=1)
+    ballot_qs = ballot_qs.annotate(
+        results_count=Count(
+            "ballot_paper_id", distinct=True, filter=results_filter
+        )
+    ).order_by(lookup_value)
+    values_dict = {}
+
+    for row in ballot_qs:
+
+        if label_field:
+            row["label"] = row.get(label_field)
+            if not row["label"]:
+                continue
+        row["posts_total"] = row["count"] or 0
+        row["has_results"] = row["results_count"] or 0
+        row["has_results_percent"] = round(
+            float(row["has_results"]) / float(row["count"]) * 100
+        )
+        values_dict[str(row[lookup_value])] = row
+
+    return values_dict
 
 
 def sopn_progress_by_value(base_qs, lookup_value, label_field=None):
@@ -136,7 +180,9 @@ def results_progress(context):
         election_date = settings.SOPN_TRACKER_INFO["election_date"]
 
         context["election_name"] = settings.SOPN_TRACKER_INFO["election_name"]
-        ballot_qs = Ballot.objects.filter(election__election_date=election_date)
+        ballot_qs = Ballot.objects.filter(
+            election__election_date=election_date, cancelled=False
+        )
 
         context["results_entered"] = ballot_qs.has_results().count()
         context["areas_total"] = ballot_qs.count()
@@ -148,6 +194,33 @@ def results_progress(context):
             )
         except ZeroDivisionError:
             context["results_percent"] = 0
+
+        context["results_progress_by_region"] = results_progress_by_value(
+            ballot_qs,
+            lookup_value="tags__NUTS1__key",
+            label_field="tags__NUTS1__value",
+        )
+
+        election_type = Func(
+            F("election__slug"),
+            Value("."),
+            Value(1),
+            function="split_part",
+            output=TextField(),
+        )
+
+        context[
+            "results_progress_by_election_type"
+        ] = results_progress_by_value(
+            ballot_qs.annotate(election_type=election_type),
+            lookup_value="election_type",
+            label_field="election__for_post_role",
+        )
+
+    shortcuts = filter_shortcuts(context["request"])["list"]
+    context["has_results_shortcut"] = [
+        shortcut for shortcut in shortcuts if shortcut["name"] == "has_results"
+    ][0]
 
     return context
 
