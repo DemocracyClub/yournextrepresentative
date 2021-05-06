@@ -131,15 +131,21 @@ class BallotQueryset(models.QuerySet):
 
     def has_results(self):
         """
-        Return a QuerySet of ballots that have results
+        Return a QuerySet of ballots that either have a ResultSet or have a candidate marked elected
         """
-        return self.filter(resultset__isnull=False)
+        return self.filter(
+            models.Q(resultset__isnull=False)
+            | models.Q(membership__elected=True)
+        ).distinct()
 
     def no_results(self):
         """
-        Return a QuerySet of ballots that do not have results
+        Return a QuerySet of ballots that excluding those with a ResultSet or have a candidate marked elected
         """
-        return self.filter(resultset__isnull=True)
+        return self.exclude(
+            models.Q(resultset__isnull=False)
+            | models.Q(membership__elected=True)
+        ).distinct()
 
 
 class Ballot(models.Model):

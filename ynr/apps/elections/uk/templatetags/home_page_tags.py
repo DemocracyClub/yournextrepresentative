@@ -1,6 +1,15 @@
 from django import template
 from django.conf import settings
-from django.db.models import Sum, IntegerField, Count, Func, F, Value, TextField
+from django.db.models import (
+    Sum,
+    IntegerField,
+    Count,
+    Func,
+    F,
+    Value,
+    TextField,
+    Q,
+)
 from django.db.models.functions import Cast
 
 from candidates.models import Ballot
@@ -24,8 +33,14 @@ def results_progress_by_value(base_qs, lookup_value, label_field=None):
 
     ballot_qs = base_qs.values(*values).distinct()
     ballot_qs = ballot_qs.annotate(
-        has_results=Count("resultset"), count=Count("ballot_paper_id")
-    ).order_by(lookup_value)
+        count=Count("ballot_paper_id", distinct=True)
+    )
+    results_filter = Q(resultset__isnull=False) | Q(membership__elected__gte=1)
+    ballot_qs = ballot_qs.annotate(
+        results_count=Count(
+            "ballot_paper_id", distinct=True, filter=results_filter
+        )
+    )
     values_dict = {}
 
     for row in ballot_qs:
@@ -35,7 +50,7 @@ def results_progress_by_value(base_qs, lookup_value, label_field=None):
             if not row["label"]:
                 continue
         row["posts_total"] = row["count"] or 0
-        row["has_results"] = row["has_results"] or 0
+        row["has_results"] = row["results_count"] or 0
         row["has_results_percent"] = round(
             float(row["has_results"]) / float(row["count"]) * 100
         )
