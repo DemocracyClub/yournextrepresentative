@@ -93,6 +93,15 @@ class BallotPaperFactory(factory.DjangoModelFactory):
     class Meta:
         model = "candidates.Ballot"
 
+    @factory.lazy_attribute_sequence
+    def ballot_paper_id(self, n):
+        """
+        Builds a unique string to use as a ballot paper ID.
+        TODO make this more realistic like actual ballot paper ID's.
+        """
+        slug = faker_factory.slug()
+        return f"{slug}-{n}"
+
 
 class OrganizationFactory(factory.DjangoModelFactory):
     class Meta:

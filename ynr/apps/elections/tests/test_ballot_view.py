@@ -47,14 +47,13 @@ class SingleBallotStatesMixin:
         return PostFactory(label=post_label, organization=org, party_set=ps)
 
     def create_ballot(
-        self, ballot_paper_id, election, post, winner_count=1, **kwargs
+        self, election, post, ballot_paper_id=None, winner_count=1, **kwargs
     ):
+        if ballot_paper_id:
+            kwargs.update({"ballot_paper_id": ballot_paper_id})
+
         return BallotPaperFactory(
-            ballot_paper_id=ballot_paper_id,
-            election=election,
-            post=post,
-            winner_count=winner_count,
-            **kwargs,
+            election=election, post=post, winner_count=winner_count, **kwargs
         )
 
     def create_party(self):
@@ -78,16 +77,21 @@ class TestBallotView(
         self.election = self.create_election("Foo Local Election")
         self.post = self.create_post("Bar Ward")
         self.ballot = self.create_ballot(
-            "local.foo.bar.2019-08-03", self.election, self.post, winner_count=2
+            election=self.election,
+            post=self.post,
+            ballot_paper_id="local.foo.bar.2019-08-03",
+            winner_count=2,
         )
 
         self.past_election = self.create_election(
             "Foo Local election", date=date_in_near_past
         )
         self.past_ballot = self.create_ballot(
-            "local.foo.bar.{}".format(date_in_near_past.isoformat()),
-            self.past_election,
-            self.post,
+            election=self.past_election,
+            post=self.post,
+            ballot_paper_id="local.foo.bar.{}".format(
+                date_in_near_past.isoformat()
+            ),
             winner_count=2,
         )
 
@@ -446,9 +450,9 @@ class TestBallotFilter(SingleBallotStatesMixin, WebTest):
         """
         for region in region_choices():
             self.create_ballot(
-                f"local.{region[0]}.2021-05-06",
-                self.election,
-                self.post,
+                election=self.election,
+                post=self.post,
+                ballot_paper_id=f"local.{region[0]}.2021-05-06",
                 tags={"NUTS1": {"key": region[0], "value": region[1]}},
             )
         queryset = Ballot.objects.all()
@@ -467,9 +471,9 @@ class TestBallotFilter(SingleBallotStatesMixin, WebTest):
 
     def test_has_results(self):
         ballot_with_results = self.create_ballot(
-            ballot_paper_id="local.has-results.2021-05-06",
             election=self.election,
             post=self.post,
+            ballot_paper_id="local.has-results.2021-05-06",
         )
         ResultSet.objects.create(
             ballot=ballot_with_results,
@@ -478,16 +482,16 @@ class TestBallotFilter(SingleBallotStatesMixin, WebTest):
             source="Example ResultSet for testing",
         )
         ballot_without_results = self.create_ballot(
-            ballot_paper_id="local.no-results.2021-05-06",
             election=self.election,
             post=self.post,
+            ballot_paper_id="local.no-results.2021-05-06",
         )
 
         # create a ballot where we set winners without having any results e.g. a non-FPTP election
         ballot_with_candidate_marked_elected = self.create_ballot(
-            ballot_paper_id="local.non-ftpt.2021-05-06",
             election=self.election,
             post=self.post,
+            ballot_paper_id="local.non-ftpt.2021-05-06",
             winner_count=3,
         )
         self.create_memberships(

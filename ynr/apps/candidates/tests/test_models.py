@@ -1,12 +1,9 @@
-import faker
 from django.test import TestCase
 
 from elections.tests.test_ballot_view import SingleBallotStatesMixin
 from uk_results.models import ResultSet
 
 from ..models import Ballot
-
-fake = faker.Faker()
 
 
 class TestBallotUrlMethods(TestCase):
@@ -63,10 +60,7 @@ class BallotsWithResultsMixin(SingleBallotStatesMixin):
         results = []
         for i in range(num):
             ballot = self.create_ballot(
-                ballot_paper_id=f"{fake.slug()}-{i}",
-                post=self.post,
-                election=self.election,
-                **kwargs,
+                post=self.post, election=self.election, **kwargs
             )
             self.create_memberships(ballot=ballot, parties=self.parties)
 
