@@ -82,7 +82,10 @@
           <th>Ballot</th>
           <th>Candidates known</th>
           <th>Status</th>
-          <th>Has Results</th>
+          {% if group.list.0.polls_closed %}
+            <th>Has Results</th>
+          {% endif %}
+
         </tr>
       </thead>
       <tbody>
@@ -121,8 +124,8 @@
 
             {% endif %}
           </td>
+          {% if ballot.polls_closed %}
           <td>
-            {% if ballot.polls_closed %}
               {% if ballot.elected_count == ballot.winner_count %}
                 Completed
               {% elif user_can_record_results %}
@@ -130,10 +133,8 @@
               {% else %}
                 No results
               {% endif %}
-            {% else %}
-              Polls not closed
-            {% endif %}
           </td>
+          {% endif %}
         </tr>
       {% endfor %}
       </tbody>
