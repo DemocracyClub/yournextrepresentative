@@ -15,6 +15,34 @@ def sopn_progress_by_election_slug_prefix(self, election_slug_prefix):
     return self.sopn_progress_by_election(election_qs)
 
 
+def results_progress_by_value(base_qs, lookup_value, label_field=None):
+    values = [lookup_value]
+
+    if label_field:
+        values.append(label_field)
+
+    ballot_qs = base_qs.values(*values).distinct()
+    ballot_qs = ballot_qs.annotate(
+        has_results=Count("resultset"), count=Count("ballot_paper_id")
+    ).order_by(lookup_value)
+    values_dict = {}
+
+    for row in ballot_qs:
+
+        if label_field:
+            row["label"] = row.get(label_field)
+            if not row["label"]:
+                continue
+        row["posts_total"] = row["count"] or 0
+        row["has_results"] = row["has_results"] or 0
+        row["has_results_percent"] = round(
+            float(row["has_results"]) / float(row["count"]) * 100
+        )
+        values_dict[str(row[lookup_value])] = row
+
+    return values_dict
+
+
 def sopn_progress_by_value(base_qs, lookup_value, label_field=None):
     values = [lookup_value]
 
@@ -136,7 +164,9 @@ def results_progress(context):
         election_date = settings.SOPN_TRACKER_INFO["election_date"]
 
         context["election_name"] = settings.SOPN_TRACKER_INFO["election_name"]
-        ballot_qs = Ballot.objects.filter(election__election_date=election_date)
+        ballot_qs = Ballot.objects.filter(
+            election__election_date=election_date, cancelled=False
+        )
 
         context["results_entered"] = ballot_qs.has_results().count()
         context["areas_total"] = ballot_qs.count()
@@ -148,6 +178,28 @@ def results_progress(context):
             )
         except ZeroDivisionError:
             context["results_percent"] = 0
+
+        context["results_progress_by_region"] = results_progress_by_value(
+            ballot_qs,
+            lookup_value="tags__NUTS1__key",
+            label_field="tags__NUTS1__value",
+        )
+
+        election_type = Func(
+            F("election__slug"),
+            Value("."),
+            Value(1),
+            function="split_part",
+            output=TextField(),
+        )
+
+        context[
+            "results_progress_by_election_type"
+        ] = results_progress_by_value(
+            ballot_qs.annotate(election_type=election_type),
+            lookup_value="election_type",
+            label_field="election__for_post_role",
+        )
 
     return context
 
