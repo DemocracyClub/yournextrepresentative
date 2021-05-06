@@ -4,6 +4,7 @@ from django.db.models import Sum, IntegerField, Count, Func, F, Value, TextField
 from django.db.models.functions import Cast
 
 from candidates.models import Ballot
+from elections.filters import filter_shortcuts
 from elections.models import Election
 from popolo.models import Membership
 
@@ -200,6 +201,11 @@ def results_progress(context):
             lookup_value="election_type",
             label_field="election__for_post_role",
         )
+
+    shortcuts = filter_shortcuts(context["request"])["list"]
+    context["has_results_shortcut"] = [
+        shortcut for shortcut in shortcuts if shortcut["name"] == "has_results"
+    ][0]
 
     return context
 

@@ -16,7 +16,7 @@
       <section style="flex: 1 0 45%;margin: 0.5em;">
         <hr>
         <h3 style="font-size: 1.2em"><a
-        href="{% url "election_list_view" %}?filter_by_region={{ nuts1_id }}">{{ stats.label }}: {{ stats.posts_total }}
+        href="{% url "election_list_view" %}?filter_by_region={{ nuts1_id }}&{{ has_results_shortcut.querystring }}">{{ stats.label }}: {{ stats.posts_total }}
           ballots</a></h3>
         <div class="row">
           <div class="columns large-12">
@@ -41,7 +41,7 @@
       <section style="flex: 1 0 45%;margin: 0.5em;">
         <hr>
         <h3 style="font-size: 1.2em"><a
-        href="{% url "election_list_view" %}?election_type={{ election_type }}">{{ stats.label }}: {{ stats.posts_total }}
+        href="{% url "election_list_view" %}?election_type={{ election_type }}&{{ has_results_shortcut.querystring }}">{{ stats.label }}: {{ stats.posts_total }}
           ballots</a></h3>
         <div class="row">
           <div class="columns large-12">
