@@ -266,7 +266,6 @@ PIPELINE = {
                 "scss/select2.css",
                 "moderation_queue/css/photo-upload.scss",
                 "frontend/css/frontend.scss",
-                "scss/results.scss",
             ),
             "output_filename": "css/all.css",
         },
