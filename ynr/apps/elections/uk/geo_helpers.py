@@ -73,6 +73,9 @@ def get_ballots_from_postcode(
     cache_key = f"geolookup-postcodes:{current_only}:{postcode}"
     cached_result = cache.get(cache_key)
     if cached_result:
+        if ids_only:
+            # return list of IDS from cache
+            return cached_result
         return Ballot.objects.filter(ballot_paper_id__in=cached_result)
 
     url = urljoin(EE_BASE_URL, f"/api/elections/?postcode={urlquote(postcode)}")
