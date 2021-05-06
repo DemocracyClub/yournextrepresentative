@@ -1,14 +1,13 @@
 {% load humanize %}
 {% if SHOW_RESULTS_PROGRESS %}
   <h3>Enter results as they come in</h3>
-  <p><a href="{% url "results-home"%}" class="button">Get started</a></p>
+  <p><a href="{% url "election_list_view"%}?{{ has_results_shortcut.querystring }}" class="button">Get started</a></p>
+  <p><a href="{% url "results-home"%}" class="button">Get the data</a></p>
 
   <h3>{{ results_percent }}% of votes for {{ areas_total|intcomma }} areas in total have been entered</h3>
   <div class="radius progress success large-12" role="progressbar" aria-valuenow="{{ results_entered }}" aria-valuemin="0" aria-valuemax="{{ areas_total }}">
     <span class="meter" style="width: {{ results_percent }}%"></span>
-
   </div>
-
 
   <h2>By region</h2>
   <div class="region-grid" style="display: flex;flex-wrap: wrap;margin: -0.5em;">
