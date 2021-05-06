@@ -40,7 +40,7 @@ def results_progress_by_value(base_qs, lookup_value, label_field=None):
         results_count=Count(
             "ballot_paper_id", distinct=True, filter=results_filter
         )
-    )
+    ).order_by(lookup_value)
     values_dict = {}
 
     for row in ballot_qs:

@@ -46,12 +46,50 @@ class TestBallotUrlMethods(TestCase):
         assert other.results_button_text == "Mark elected candidates"
 
 
-class TestBallotQuerysetMethods(SingleBallotStatesMixin, TestCase):
+class BallotsWithResultsMixin(SingleBallotStatesMixin):
+    """
+    Test helper mixin to set up some ballots with results or candidates elected.
+    TODO move this to a more sensible location, dont hardcode setup
+    """
+
     def setUp(self):
         self.election = self.create_election("local.sheffield.2021-05-06")
-        self.post = self.create_post("Bar")
+        self.post = self.create_post("Foo")
         self.parties = self.create_parties(3)
 
+    def create_ballots_with_results(
+        self, num, resultset=False, elected=False, **kwargs
+    ):
+        results = []
+        for i in range(num):
+            ballot = self.create_ballot(
+                ballot_paper_id=f"{fake.slug()}-{i}",
+                post=self.post,
+                election=self.election,
+                **kwargs,
+            )
+            self.create_memberships(ballot=ballot, parties=self.parties)
+
+            if resultset:
+                ResultSet.objects.create(
+                    ballot=ballot,
+                    num_turnout_reported=10000,
+                    num_spoilt_ballots=30,
+                    source="Example ResultSet for testing",
+                )
+                elected = True
+
+            if elected:
+                winner = ballot.membership_set.first()
+                winner.elected = True
+                winner.save()
+
+            results.append(ballot)
+
+        return results
+
+
+class TestBallotQuerysetMethods(BallotsWithResultsMixin, TestCase):
     def test_has_results_and_no_results(self):
         """
         Test that the has_results QS method only returns Ballots which either
@@ -59,44 +97,11 @@ class TestBallotQuerysetMethods(SingleBallotStatesMixin, TestCase):
         no_results doesnt include Ballots that have a ResultSet or a candidate
         marked elected
         """
-        no_results = []
-        for i in range(5):
-            ballot = self.create_ballot(
-                ballot_paper_id=f"{fake.slug()}-{i}",
-                post=self.post,
-                election=self.election,
-            )
-            self.create_memberships(ballot=ballot, parties=self.parties)
-            no_results.append(ballot)
-
-        has_results = []
-        for i in range(5):
-            ballot = self.create_ballot(
-                ballot_paper_id=f"{fake.slug()}-{i}",
-                post=self.post,
-                election=self.election,
-            )
-            self.create_memberships(ballot=ballot, parties=self.parties)
-            ResultSet.objects.create(
-                ballot=ballot,
-                num_turnout_reported=10000,
-                num_spoilt_ballots=30,
-                source="Example ResultSet for testing",
-            )
-            has_results.append(ballot)
-
-        has_winner_no_result = []
-        for i in range(5):
-            ballot = self.create_ballot(
-                ballot_paper_id=f"{fake.slug()}-{i}",
-                post=self.post,
-                election=self.election,
-            )
-            self.create_memberships(ballot=ballot, parties=self.parties)
-            winner = ballot.membership_set.first()
-            winner.elected = True
-            winner.save()
-            has_winner_no_result.append(ballot)
+        no_results = self.create_ballots_with_results(num=5, resultset=False)
+        has_results = self.create_ballots_with_results(num=5, resultset=True)
+        has_winner_no_result = self.create_ballots_with_results(
+            num=5, resultset=False, elected=True
+        )
 
         self.assertEqual(Ballot.objects.count(), 15)
         self.assertEqual(Ballot.objects.has_results().count(), 10)
