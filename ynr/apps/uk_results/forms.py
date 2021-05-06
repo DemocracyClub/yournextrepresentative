@@ -16,6 +16,7 @@ class ResultSetForm(forms.ModelForm):
         model = ResultSet
         fields = (
             "num_turnout_reported",
+            "turnout_percentage",
             "num_spoilt_ballots",
             "total_electorate",
             "source",
@@ -33,7 +34,9 @@ class ResultSetForm(forms.ModelForm):
         self.fields["num_turnout_reported"].required = False
         self.fields["num_turnout_reported"].label += " (Number, not required)"
         self.fields["total_electorate"].label += " (Not required)"
-
+        self.fields[
+            "turnout_percentage"
+        ].label += " (Not required)<br>Calculated on save if turnout and electorate are added"
         existing_fields = self.fields
         fields = OrderedDict()
         memberships = (
