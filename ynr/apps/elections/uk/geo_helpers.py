@@ -73,7 +73,7 @@ def get_ballots_from_postcode(
     cache_key = f"geolookup-postcodes:{current_only}:{postcode}"
     cached_result = cache.get(cache_key)
     if cached_result:
-        return cached_result
+        return Ballot.objects.filter(ballot_paper_id__in=cached_result)
 
     url = urljoin(EE_BASE_URL, f"/api/elections/?postcode={urlquote(postcode)}")
     if current_only:
@@ -99,6 +99,6 @@ def get_ballots_from_coords(coords, current_only=True):
     cache_key = f"geolookup-coords:{current_only}:{coords}"
     cached_result = cache.get(cache_key)
     if cached_result:
-        return cached_result
+        return Ballot.objects.filter(ballot_paper_id__in=cached_result)
 
     return get_ballots(url, cache_key, BadCoordinatesException)
