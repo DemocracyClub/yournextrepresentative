@@ -421,6 +421,7 @@ class TestBallotFilter(SingleBallotStatesMixin, WebTest):
     def setUp(self):
         self.election = self.create_election("Foo Election")
         self.post = self.create_post("Bar")
+        self.parties = self.create_parties(3)
 
     def test_region_choices(self):
         assert region_choices() == [
@@ -482,6 +483,21 @@ class TestBallotFilter(SingleBallotStatesMixin, WebTest):
             post=self.post,
         )
 
+        # create a ballot where we set winners without having any results e.g. a non-FPTP election
+        ballot_with_candidate_marked_elected = self.create_ballot(
+            ballot_paper_id="local.non-ftpt.2021-05-06",
+            election=self.election,
+            post=self.post,
+            winner_count=3,
+        )
+        self.create_memberships(
+            ballot=ballot_with_candidate_marked_elected, parties=self.parties
+        )
+        ballot_with_candidate_marked_elected.membership_set.update(elected=True)
+
+        with self.assertRaises(ResultSet.DoesNotExist):
+            ballot_with_candidate_marked_elected.resultset
+
         filter = CurrentOrFutureBallotFilter()
         ballots = Ballot.objects.all()
         for case in [True, False]:
@@ -490,4 +506,7 @@ class TestBallotFilter(SingleBallotStatesMixin, WebTest):
                     queryset=ballots, name=case, value=case
                 )
                 self.assertEqual(ballot_with_results in results, case)
+                self.assertEqual(
+                    ballot_with_candidate_marked_elected in results, case
+                )
                 self.assertEqual(ballot_without_results in results, not case)
