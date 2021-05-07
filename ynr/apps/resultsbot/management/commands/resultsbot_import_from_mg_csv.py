@@ -19,6 +19,8 @@ class Command(BaseCommand):
         with open(path) as f:
             csv_file = csv.reader(f)
             for line in csv_file:
+                if not line:
+                    continue
                 id_to_url[line[0]] = line[1]
 
         all_candidates = []
