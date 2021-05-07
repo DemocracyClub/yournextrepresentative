@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.db import transaction
-from django.db.models import Count, Prefetch
+from django.db.models import Count, Prefetch, Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -61,14 +61,19 @@ class ElectionListView(TemplateView):
         from .filters import CurrentOrFutureBallotFilter, filter_shortcuts
 
         context = super().get_context_data(**kwargs)
-
         qs = (
             Ballot.objects.current_or_future()
             .select_related("election", "post")
             .prefetch_related("suggestedpostlock_set")
             .prefetch_related("officialdocument_set")
             .annotate(memberships_count=Count("membership", distinct=True))
-            .annotate(elected_count=Count("membership__elected", distinct=True))
+            .annotate(
+                elected_count=Count(
+                    "membership",
+                    distinct=True,
+                    filter=Q(membership__elected=True),
+                )
+            )
             .order_by("election__election_date", "election__name")
         )
         f = CurrentOrFutureBallotFilter(self.request.GET, qs)
