@@ -33,7 +33,7 @@ class ModGovCandidate(BaseCandidate):
 
     @property
     def party(self):
-        return PartyMatacher(self.party_name).match()
+        return PartyMatacher(self.party_name, division=self.division).match()
 
     @property
     def ynr_membership(self):

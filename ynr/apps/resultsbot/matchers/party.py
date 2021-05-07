@@ -7,9 +7,10 @@ class PartyMatacher(object):
     Takes a string and tries to return an Organisation that matches the party
     """
 
-    def __init__(self, party_name):
+    def __init__(self, party_name, division=None):
         self.party_name = party_name
         self.known_names_to_ids = SavedMapping("party_names.json")
+        self.division = division
 
     def clean_party_names(self):
         name_options = []
@@ -46,6 +47,16 @@ class PartyMatacher(object):
         except Exception as e:
             return None
 
+    def divison_options(self):
+        if not self.division:
+            return set()
+        return set(
+            [
+                (mem.party.name, mem.party.ec_id)
+                for mem in self.division.local_area.membership_set.all()
+            ]
+        )
+
     def match(self, picker=True):
         matchers = [
             self.match_party_id,
@@ -60,6 +71,8 @@ class PartyMatacher(object):
                 if match:
                     return match
         if picker:
+            for option in self.divison_options():
+                print(f"{option[0]}\t{option[1]}")
             self.known_names_to_ids.picker(self.party_name)
             return self.match(picker=False)
         raise ValueError(
