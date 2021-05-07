@@ -67,11 +67,10 @@ class ElectionListView(TemplateView):
             .select_related("election", "post")
             .prefetch_related("suggestedpostlock_set")
             .prefetch_related("officialdocument_set")
-            .annotate(memberships_count=Count("membership"))
-            .annotate(elected_count=Count("membership__elected"))
+            .annotate(memberships_count=Count("membership", distinct=True))
+            .annotate(elected_count=Count("membership__elected", distinct=True))
             .order_by("election__election_date", "election__name")
         )
-
         f = CurrentOrFutureBallotFilter(self.request.GET, qs)
 
         context["filter"] = f
