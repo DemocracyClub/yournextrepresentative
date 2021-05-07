@@ -44,7 +44,7 @@ class ResultSet(TimeStampedModel):
             return None
 
         percentage = (self.num_turnout_reported / self.total_electorate) * 100
-        self.turnout_percentage = round(percentage, 2)
+        self.turnout_percentage = min(round(percentage, 2), 100)
 
     def as_dict(self):
         """
