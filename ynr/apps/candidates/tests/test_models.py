@@ -55,7 +55,7 @@ class BallotsWithResultsMixin(SingleBallotStatesMixin):
         self.parties = self.create_parties(3)
 
     def create_ballots_with_results(
-        self, num, resultset=False, elected=False, **kwargs
+        self, num, resultset=False, elected=False, num_winners=1, **kwargs
     ):
         results = []
         for i in range(num):
@@ -74,9 +74,10 @@ class BallotsWithResultsMixin(SingleBallotStatesMixin):
                 elected = True
 
             if elected:
-                winner = ballot.membership_set.first()
-                winner.elected = True
-                winner.save()
+                winners = ballot.membership_set.all()[:num_winners]
+                for winner in winners:
+                    winner.elected = True
+                    winner.save()
 
             results.append(ballot)
 
