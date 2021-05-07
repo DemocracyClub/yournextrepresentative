@@ -24,6 +24,16 @@ class BaseDivision(object):
             self.remote_name
         )
 
+    def make_guess_list(self, name):
+        name = name.strip()
+        return [
+            name,
+            name.replace(" & ", " and "),
+            name.replace(" and ", " & "),
+            name.replace(" ward", "").strip(),
+            name.replace(" & ", " and ").replace(" ward", "").strip(),
+        ]
+
     def match_name(self):
         # TODO use OtherName here
         self.remote_name = self.remote_name.lower()
@@ -38,15 +48,10 @@ class BaseDivision(object):
             )
             return self.local_area
 
-        guesses = [
-            self.remote_name,
-            self.remote_name.replace(" & ", " and "),
-            self.remote_name.replace(" and ", " & "),
-            self.remote_name.replace(" ward", "").strip(),
-            self.remote_name.replace(" & ", " and ")
-            .replace(" ward", "")
-            .strip(),
-        ]
+        guesses = self.make_guess_list(self.remote_name)
+        guesses += self.make_guess_list(self.remote_name.split(":")[-1])
+        guesses += self.make_guess_list(self.remote_name.split("(")[0])
+
         if self.remote_name.endswith("s"):
             guesses.append("{}'s".format(self.remote_name[:-1]))
         if self.election_specific_guess():
@@ -54,7 +59,9 @@ class BaseDivision(object):
 
         for name in guesses:
             try:
-                area = self.election.ballot_set.get(post__label__iexact=name)
+                area = self.election.ballot_set.exclude(
+                    ballot_paper_id__in=self.matched
+                ).get(post__label__iexact=name)
                 self.local_area = area
                 return
             except:
@@ -65,7 +72,9 @@ class BaseDivision(object):
                 name = name.replace(" ", ".")
                 name = name.replace("-", ".")
                 name = name + "$"
-                area = self.election.ballot_set.get(post__label__iregex=name)
+                area = self.election.ballot_set.exclude(
+                    ballot_paper_id__in=self.matched
+                ).get(post__label__iregex=name)
                 self.local_area = area
                 return
             except:
@@ -80,6 +89,7 @@ class BaseDivision(object):
         possible = [
             ballot
             for ballot in self.election.ballot_set.all()
+            .exclude(ballot_paper_id__in=self.matched)
             .order_by("post__label")
             .select_related("post")
         ]
