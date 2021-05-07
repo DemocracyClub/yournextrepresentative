@@ -51,6 +51,7 @@ class BaseDivision(object):
         guesses = self.make_guess_list(self.remote_name)
         guesses += self.make_guess_list(self.remote_name.split(":")[-1])
         guesses += self.make_guess_list(self.remote_name.split("(")[0])
+        guesses += self.make_guess_list(self.remote_name.split(" - ")[-1])
 
         if self.remote_name.endswith("s"):
             guesses.append("{}'s".format(self.remote_name[:-1]))
