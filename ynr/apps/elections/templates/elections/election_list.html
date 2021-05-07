@@ -126,7 +126,7 @@
           </td>
           {% if ballot.polls_closed %}
           <td>
-              {% if ballot.elected_count == ballot.winner_count %}
+              {% if ballot.elected_count >= ballot.get_winner_count %}
                 Completed
               {% elif user_can_record_results %}
                 <a href="{{ ballot.get_results_url }}" class="button tiny">{{ ballot.results_button_text }}</a>
