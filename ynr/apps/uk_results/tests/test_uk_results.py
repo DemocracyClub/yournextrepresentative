@@ -125,3 +125,8 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
             with self.subTest(msg=result):
                 result.calculate_turnout_percentage()
                 self.assertIsNone(result.turnout_percentage)
+
+    def test_turnout_percentage_max_100(self):
+        result = ResultSet(num_turnout_reported=100, total_electorate=50)
+        result.calculate_turnout_percentage()
+        self.assertEqual(result.turnout_percentage, 100)
