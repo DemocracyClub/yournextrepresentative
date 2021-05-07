@@ -4,6 +4,7 @@ import os
 from django.core.management.base import BaseCommand
 
 import resultsbot
+from elections.models import Election
 from resultsbot.helpers import ResultsBot
 from resultsbot.importers.modgov import ModGovImporter
 
@@ -23,7 +24,10 @@ class Command(BaseCommand):
         all_candidates = []
 
         for election_id, url in id_to_url.items():
-
+            election = Election.objects.get(slug=election_id)
+            if not election.current:
+                continue
+            print(election_id, url)
             importer = ModGovImporter(election_id, url=url)
             ballot_with_result = [
                 hasattr(ballot, "resultset")
