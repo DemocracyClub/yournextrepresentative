@@ -45,12 +45,15 @@ class ModGovCandidate(BaseCandidate):
 
 
 class ModGovDivision(BaseDivision):
-    def __init__(self, election, soup):
+    def __init__(self, election, soup, matched=None):
         """
         Take the whole `electionarea` XML
         """
         self.soup = soup
         title = soup.title.get_text(strip=True)
+        if not matched:
+            matched = set()
+        self.matched = matched
         super().__init__(election, title)
         ATTRS = [
             "electionareaid",
@@ -102,13 +105,16 @@ class ModGovImporter(BaseImporter):
         if not self.soup or not self.soup.election:
             return []
         areas = self.soup.election.find_all("electionarea")
+        matched = set()
         for area in areas:
-            division = ModGovDivision(self.election, area)
+            division = ModGovDivision(self.election, area, matched=matched)
             area = division.match_name()
             if area == "--deleted--":
                 continue
             if not division.local_area:
                 raise ValueError
+
+            matched.add(division.local_area.ballot_paper_id)
             if int(division.numseats) != division.local_area.winner_count:
                 if int(division.numseats) == 0:
                     # chances are this is a mistake
