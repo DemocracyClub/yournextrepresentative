@@ -304,7 +304,7 @@ PIPELINE = {
     "COMPILERS": ("pipeline.compilers.sass.SASSCompiler",),
     "SASS_BINARY": "pysassc",
     "CSS_COMPRESSOR": "pipeline.compressors.NoopCompressor",
-    "JS_COMPRESSOR": "pipeline.compressors.yui.YUICompressor",
+    "JS_COMPRESSOR": "pipeline.compressors.NoopCompressor",
     # On some platforms this might be called "yuicompressor", so it may be
     # necessary to symlink it into your PATH as "yui-compressor".
     "YUI_BINARY": "/usr/bin/env yui-compressor",
