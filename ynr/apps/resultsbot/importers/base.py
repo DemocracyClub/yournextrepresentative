@@ -83,9 +83,10 @@ class BaseDivision(object):
 
         # If all else fails, just ask the user
         print(
-            "No match for {} found. Can you manually match it?".format(
-                self.remote_name
-            )
+            f"""No match for found. Can you manually match it?
+
+            "{self.remote_name}"
+            """
         )
         possible = [
             ballot
