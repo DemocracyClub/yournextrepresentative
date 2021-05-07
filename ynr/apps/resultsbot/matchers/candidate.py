@@ -49,7 +49,7 @@ class CandidateMatcher(object):
         try:
             key = "{}--{}".format(
                 self.ballot_paper.local_area.ballot_paper_id,
-                self.candidate.name.encode("utf8"),
+                self.candidate.name.encode("utf8").decode(),
             )
         except:
             raise
@@ -69,6 +69,7 @@ class CandidateMatcher(object):
             for membership in candidates_for_party:
 
                 def _clean_name(name):
+                    name = name
                     name = name.lower()
                     name = name.replace("  ", " ")
                     name = name.replace(",", "")
@@ -83,7 +84,9 @@ class CandidateMatcher(object):
 
                 def _name_to_parts(name):
                     name = name.split(" ")
-                    name = [n.strip().encode("utf8") for n in name if name]
+                    name = [
+                        n.strip().encode("utf8").decode() for n in name if name
+                    ]
                     return name
 
                 split_person_name = _name_to_parts(person_name)
@@ -98,6 +101,12 @@ class CandidateMatcher(object):
                 if split_person_name[-1] == split_candidate_name[0]:
                     if split_person_name[0] == split_candidate_name[-1]:
                         return membership
+
+                # Sorted lists
+                sorted_person_name = sorted(split_person_name)
+                sorted_candidate_name = sorted(split_candidate_name)
+                if sorted_candidate_name == sorted_person_name:
+                    return membership
 
                 print(
                     "person name {} didn't match to candidate {}".format(
@@ -119,7 +128,7 @@ class CandidateMatcher(object):
         match = int(match)
         key = "{}--{}".format(
             self.ballot_paper.local_area.ballot_paper_id,
-            self.candidate.name.encode("utf8"),
+            self.candidate.name.encode("utf8").decode(),
         )
         picked_membership = qs[match - 1]
         self.membership_map[key] = picked_membership.pk
