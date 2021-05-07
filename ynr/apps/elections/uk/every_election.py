@@ -240,7 +240,7 @@ class EEElection(dict):
             # Get the winner count
             winner_count = self["seats_contested"]
 
-            voting_system = parent["voting_system"] or {}
+            voting_system = self.get("voting_system", {}) or {}
             (
                 self.ballot_object,
                 self.ballot_created,
