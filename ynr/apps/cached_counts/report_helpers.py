@@ -35,7 +35,14 @@ EXCLUSION_IDS = [
 
 
 class BaseReport:
-    def __init__(self, date, election_type=None, register=None, nation=None):
+    def __init__(
+        self,
+        date,
+        election_type=None,
+        register=None,
+        nation=None,
+        elected=False,
+    ):
         self.date = date
         self.nation = nation
         self.election_type = election_type or "local"
@@ -62,6 +69,7 @@ class BaseReport:
             "S": "Scotland",
             "N": "Northern Ireland",
         }
+        self.elected = elected
 
         self.ballot_qs = Ballot.objects.filter(
             election__election_date=self.date
@@ -104,6 +112,9 @@ class BaseReport:
             self.membership_qs = self.membership_qs.filter(
                 ballot__tags__NUTS1__key__in=self.nuts_to_nation[self.nation]
             )
+
+        if self.elected:
+            self.membership_qs = self.membership_qs.filter(elected=True)
 
         template = "%(function)s(%(expressions)s AS FLOAT)"
         self.f_candidates = Func(
