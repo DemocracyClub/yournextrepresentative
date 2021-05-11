@@ -9,7 +9,15 @@ import collections
 import sys
 from collections import Counter
 
-from django.db.models import Count, ExpressionWrapper, F, FloatField, Func, Sum
+from django.db.models import (
+    Count,
+    ExpressionWrapper,
+    F,
+    FloatField,
+    Func,
+    Sum,
+    Prefetch,
+)
 from django.db.models.query_utils import Q
 
 from candidates.models import Ballot
@@ -131,9 +139,16 @@ class BaseReport:
         print()
         print()
         print()
-        title = f"{self.date}: {self.name}"
+        title = f"{self.date}: {self.name}, {self.election_type} elections"
+        suffix = ""
         if self.nation:
-            title = f"{title} ({self.nation_label[self.nation]})"
+            suffix = f" ({self.nation_label[self.nation]})"
+
+        if self.elected:
+            suffix = f", elected only{suffix}"
+
+        title = f"{title}{suffix}"
+
         print(title)
         print("=" * len(title))
         print()
@@ -791,6 +806,47 @@ class NumCandidatesStandingInMultipleSeats(BaseReport):
             if count == 0:
                 break
             report_list.append([num, count])
+
+        return "\n".join(
+            ["\t".join([str(cell) for cell in row]) for row in report_list]
+        )
+
+
+class PeopleWithMultipleCandidaciesDetailed(
+    NumCandidatesStandingInMultipleSeats
+):
+    """
+    Builds report with full details of people standing on more than one ballot
+    """
+
+    name = "People with multiple candidacies"
+
+    def get_qs(self):
+        qs = super().get_qs()
+        qs = qs.filter(num_candidacies__gt=1)
+
+        filters = {"ballot__election__election_date": self.date}
+        if self.elected:
+            filters["elected"] = True
+
+        return qs.prefetch_related(
+            Prefetch(
+                "memberships", queryset=Membership.objects.filter(**filters)
+            )
+        )
+
+    def report(self):
+        report_list = []
+        headers = ["ID", "Name", "Num candidacies", "Ballot ID's"]
+        report_list.append(headers)
+        for person in self.get_qs():
+            ballot_ids = ", ".join(
+                person.memberships.values_list(
+                    "ballot__ballot_paper_id", flat=True
+                )
+            )
+            row = [person.pk, person.name, person.num_candidacies, ballot_ids]
+            report_list.append(row)
 
         return "\n".join(
             ["\t".join([str(cell) for cell in row]) for row in report_list]
