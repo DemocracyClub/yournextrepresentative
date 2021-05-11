@@ -856,7 +856,6 @@ class CommonFirstNames(BaseReport):
             label = f"Across {self.nation_label[self.nation]}"
         else:
             label = f"On {self.date}"
-            print(qs)
         for row in self.collect_names(label, qs):
             report_list.append(row)
 
@@ -884,6 +883,18 @@ class CommonFirstNames(BaseReport):
         return "\n".join(
             ["\t".join([str(cell) for cell in row]) for row in report_list]
         )
+
+
+class CommonLastNames(CommonFirstNames):
+
+    name = "Common last names"
+
+    def collect_names(self, label, qs):
+        all_names = qs.values_list("person__name", flat=True)
+        all_first_names = [name.split(" ")[-1].title() for name in all_names]
+        collector = collections.Counter(all_first_names)
+        for name, count in collector.most_common(30):
+            yield [label, name, count]
 
 
 ALL_REPORT_CLASSES = []
