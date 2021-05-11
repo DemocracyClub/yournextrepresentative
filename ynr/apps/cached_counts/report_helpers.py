@@ -768,6 +768,9 @@ class NumCandidatesStandingInMultipleSeats(BaseReport):
                 memberships__ballot__election__slug__startswith=self.election_type
             )
 
+        if self.elected:
+            membership_filter = membership_filter & Q(memberships__elected=True)
+
         current_candidacies = Count(
             "memberships", filter=membership_filter, distinct=True
         )
