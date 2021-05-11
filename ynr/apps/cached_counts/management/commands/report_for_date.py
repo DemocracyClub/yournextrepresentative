@@ -47,6 +47,12 @@ class Command(BaseCommand):
             choices=["E", "S", "W"],
         )
 
+        parser.add_argument(
+            "--elected",
+            action="store_true",
+            help="Run reports for elected candidates only",
+        )
+
     def handle(self, *args, **options):
         if options["reports"] is None:
             print("Pick one report or pass 'all'")
@@ -63,4 +69,5 @@ class Command(BaseCommand):
                 election_type=options["election_type"],
                 register=options["register"],
                 nation=options["nation"],
+                elected=options["elected"],
             )
