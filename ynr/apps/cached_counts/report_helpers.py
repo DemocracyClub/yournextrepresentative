@@ -768,7 +768,9 @@ class NumCandidatesStandingInMultipleSeats(BaseReport):
                 memberships__ballot__election__slug__startswith=self.election_type
             )
 
-        current_candidacies = Count("memberships", filter=membership_filter)
+        current_candidacies = Count(
+            "memberships", filter=membership_filter, distinct=True
+        )
         return people.annotate(num_candidacies=current_candidacies)
 
     def report(self):
