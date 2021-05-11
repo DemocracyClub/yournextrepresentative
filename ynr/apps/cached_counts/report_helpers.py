@@ -759,13 +759,16 @@ class NumCandidatesStandingInMultipleSeats(BaseReport):
             "person", flat=True
         ).distinct()
         people = Person.objects.filter(pk__in=people_ids)
-        current_candidacies = Count(
-            "memberships",
-            filter=Q(memberships__ballot__election__election_date=self.date)
-            & Q(
-                memberships__ballot__election__slug__startswith=self.election_type
-            ),
+
+        membership_filter = Q(
+            memberships__ballot__election__election_date=self.date
         )
+        if self.election_type != "all":
+            membership_filter = membership_filter & Q(
+                memberships__ballot__election__slug__startswith=self.election_type
+            )
+
+        current_candidacies = Count("memberships", filter=membership_filter)
         return people.annotate(num_candidacies=current_candidacies)
 
     def report(self):
