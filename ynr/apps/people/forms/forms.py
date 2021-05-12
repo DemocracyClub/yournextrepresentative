@@ -93,6 +93,10 @@ class PersonIdentifierForm(forms.ModelForm):
     def clean_twitter_username(self, username):
         if self.instance.value != username:
             self.instance.internal_identifier = None
+
+        if self.instance.internal_identifier:
+            return username
+
         try:
             return clean_twitter_username(username)
         except ValueError as e:
