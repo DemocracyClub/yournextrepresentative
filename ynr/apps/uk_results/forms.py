@@ -110,8 +110,14 @@ class ResultSetForm(forms.ModelForm):
             instance.ip_address = get_client_ip(request)
             instance.save()
 
-            winners = self.get_winners(num_winners=self.ballot.winner_count)
-            self.ballot.membership_set.update(elected=None)
+            winners = self.get_winners()
+            if winners:
+                # we have winners so initially mark all candidates not elected
+                # before we record result and mark the winners as elected below
+                self.ballot.membership_set.update(elected=False)
+            else:
+                #  otherwise we cant be sure who was elected
+                self.ballot.membership_set.update(elected=None)
 
             recorder = RecordBallotResultsHelper(self.ballot, instance.user)
             for membership, field_name in self.memberships:
@@ -131,6 +137,12 @@ class ResultSetForm(forms.ModelForm):
                     )
 
             instance.record_version()
+
+            # save the ballot if we were not able to record any winners due to a
+            # missing winner_count to make the ballot appear updated, allowing
+            # the vote counts to update in WCIVF
+            if not instance.ballot.winner_count:
+                instance.ballot.save()
 
             LoggedAction.objects.create(
                 user=instance.user,
@@ -152,11 +164,15 @@ class ResultSetForm(forms.ModelForm):
             if field_name.startswith("tied_vote_") and value is True
         ]
 
-    def get_winners(self, num_winners=1):
+    def get_winners(self):
         """
         Return a dictionary of fieldname, num votes for each of candidates with
         the most votes.
         """
+        # if we dont know how many winners there should be in total return early
+        if not self.ballot.winner_count:
+            return {}
+
         results = {
             field: votes
             for field, votes in self.cleaned_data.items()
@@ -166,11 +182,11 @@ class ResultSetForm(forms.ModelForm):
         sorted_results = sorted(
             results.items(), reverse=True, key=lambda result: result[1]
         )
-        winners = sorted_results[:num_winners]
+        winners = sorted_results[: self.ballot.winner_count]
 
         # can return sorted winners if there are no tied vote winners
         if not any(self._tied_vote_winners):
-            return dict(sorted_results[:num_winners])
+            return dict(sorted_results[: self.ballot.winner_count])
 
         # or we have ties so remove the winner with least votes
         lowest_winner = winners.pop()

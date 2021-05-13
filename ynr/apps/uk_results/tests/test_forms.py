@@ -137,7 +137,7 @@ class TestResultSetForm(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         self.assertTrue(form.is_valid())
 
         # expect person with PK 14 and 15 to be the winners
-        result = form.get_winners(num_winners=self.ballot.winner_count)
+        result = form.get_winners()
         expected = {"memberships_14": 20, "memberships_15": 30}
         self.assertEqual(len(result), 2)
         self.assertEqual(result, expected)
@@ -201,7 +201,7 @@ class TestResultSetForm(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         form = ResultSetForm(data=cleaned_data, ballot=self.ballot)
         self.assertTrue(form.is_valid())
 
-        result = form.get_winners(num_winners=self.ballot.winner_count)
+        result = form.get_winners()
         expected = {
             f"memberships_{winner_1.person.pk}": 10,
             f"memberships_{winner_2.person.pk}": 10,
