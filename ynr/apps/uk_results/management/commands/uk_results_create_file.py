@@ -20,7 +20,7 @@ class Command(BaseCommand):
         "party_name",
         "person_name",
         "ballots_cast",
-        "is_winner",
+        "elected",
         "spoilt_ballots",
         "turnout",
         "turnout_percentage",
@@ -88,7 +88,7 @@ class Command(BaseCommand):
                 row["person_id"] = membership.person.pk
                 row["person_name"] = membership.person.name
                 row["ballots_cast"] = membership.result.num_ballots
-                row["is_winner"] = membership.result.is_winner
+                row["elected"] = membership.elected
                 out_data.append(row)
 
         if format == "csv":
@@ -118,7 +118,7 @@ class Command(BaseCommand):
                         "party_name": person["party_name"],
                         "party_id": person["party_id"],
                         "ballots_cast": person["ballots_cast"],
-                        "is_winner": person["is_winner"],
+                        "elected": person["elected"],
                     }
                 )
                 election_dict["candidates"] = sorted(
