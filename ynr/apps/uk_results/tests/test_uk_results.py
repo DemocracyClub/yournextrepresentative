@@ -37,35 +37,35 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         ]
         # Create their CandidateResult objects:
         votes = [2000, 5000, 3000]
-        winner = [False, True, False]
-        self.candidate_results = [
-            CandidateResult.objects.create(
-                result_set=self.result_set,
-                membership=c,
-                num_ballots=v,
-                is_winner=w,
+        elected = [False, True, False]
+
+        self.candidate_results = []
+        for c, v, e in zip(candidacies, votes, elected):
+            c.elected = e
+            c.save()
+            result = CandidateResult.objects.create(
+                result_set=self.result_set, membership=c, num_ballots=v
             )
-            for c, v, w in zip(candidacies, votes, winner)
-        ]
+            self.candidate_results.append(result)
 
         self.expected = {
             "ballot_paper_id": "local.maidstone.DIW:E05005004.2016-05-05",
             "created": self.result_set.modified.isoformat(),
             "candidate_results": [
                 {
-                    "is_winner": True,
+                    "elected": True,
                     "num_ballots": 5000,
                     "person_id": 14,
                     "person_name": "Bob",
                 },
                 {
-                    "is_winner": False,
+                    "elected": False,
                     "num_ballots": 3000,
                     "person_id": 15,
                     "person_name": "Carol",
                 },
                 {
-                    "is_winner": False,
+                    "elected": False,
                     "num_ballots": 2000,
                     "person_id": 13,
                     "person_name": "Alice",

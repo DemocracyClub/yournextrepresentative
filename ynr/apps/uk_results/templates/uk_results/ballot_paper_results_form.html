@@ -38,8 +38,8 @@
           </th>
           <td>
             {{ candidate_result.num_ballots }}
-            {% if candidate_result.is_winner %}
-            (winner)
+            {% if candidate_result.elected %}
+            (elected)
             {% endif %}
           </td>
         </tr>

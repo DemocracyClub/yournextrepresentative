@@ -70,7 +70,7 @@ class ResultSet(TimeStampedModel):
             data["candidate_results"].append(
                 {
                     "num_ballots": result.num_ballots,
-                    "is_winner": result.is_winner,
+                    "elected": result.membership.elected,
                     "person_id": result.membership.person_id,
                     "person_name": result.membership.person.name,
                 }
