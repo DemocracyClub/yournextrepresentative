@@ -119,7 +119,6 @@ class CandidateResult(TimeStampedModel):
     )
 
     num_ballots = models.PositiveIntegerField()
-    is_winner = models.BooleanField(default=False)
     tied_vote_winner = models.BooleanField(
         default=False,
         help_text="Did this person win after receiving same votes as another candidate, via coin toss, lots etc",

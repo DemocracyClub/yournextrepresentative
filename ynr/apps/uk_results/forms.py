@@ -121,7 +121,6 @@ class ResultSetForm(forms.ModelForm):
                 instance.candidate_results.update_or_create(
                     membership=membership,
                     defaults={
-                        "is_winner": winner,
                         "num_ballots": num_votes,
                         "tied_vote_winner": tied_vote_winner,
                     },

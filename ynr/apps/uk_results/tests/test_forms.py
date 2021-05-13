@@ -111,10 +111,12 @@ class TestResultSetForm(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
 
         # save and do more checks
         form.save(request=self.request)
-        self.assertFalse(self.candidacies[0].result.is_winner)
-        self.assertFalse(self.candidacies[1].result.is_winner)
+        for candidacy in self.candidacies:
+            candidacy.refresh_from_db()
+        self.assertFalse(self.candidacies[0].elected)
+        self.assertFalse(self.candidacies[1].elected)
         self.assertFalse(self.candidacies[1].result.tied_vote_winner)
-        self.assertTrue(self.candidacies[2].result.is_winner)
+        self.assertTrue(self.candidacies[2].elected)
         self.assertFalse(self.candidacies[2].result.tied_vote_winner)
 
     def test_get_winners_different_votes_two_winners(self):
@@ -142,10 +144,12 @@ class TestResultSetForm(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
 
         # save and do more checks
         form.save(request=self.request)
-        self.assertFalse(self.candidacies[0].result.is_winner)
-        self.assertTrue(self.candidacies[1].result.is_winner)
+        for candidacy in self.candidacies:
+            candidacy.refresh_from_db()
+        self.assertFalse(self.candidacies[0].elected)
+        self.assertTrue(self.candidacies[1].elected)
         self.assertFalse(self.candidacies[1].result.tied_vote_winner)
-        self.assertTrue(self.candidacies[2].result.is_winner)
+        self.assertTrue(self.candidacies[2].elected)
         self.assertFalse(self.candidacies[2].result.tied_vote_winner)
 
     def test_get_winners_by_tied_result(self):
@@ -171,9 +175,11 @@ class TestResultSetForm(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
 
         # save and do more checks
         form.save(request=self.request)
-        self.assertFalse(loser_1.result.is_winner)
-        self.assertFalse(loser_2.result.is_winner)
-        self.assertTrue(winner.result.is_winner)
+        for candidacy in self.candidacies:
+            candidacy.refresh_from_db()
+        self.assertFalse(loser_1.elected)
+        self.assertFalse(loser_2.elected)
+        self.assertTrue(winner.elected)
         self.assertTrue(winner.result.tied_vote_winner)
 
     def test_get_winners_by_tied_result_multiple_winners(self):
@@ -205,8 +211,10 @@ class TestResultSetForm(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
 
         # save and do more checks
         form.save(request=self.request)
-        self.assertFalse(loser.result.is_winner)
-        self.assertTrue(winner_1.result.is_winner)
+        for candidacy in self.candidacies:
+            candidacy.refresh_from_db()
+        self.assertFalse(loser.elected)
+        self.assertTrue(winner_1.elected)
         self.assertTrue(winner_1.result.tied_vote_winner)
-        self.assertTrue(winner_2.result.is_winner)
+        self.assertTrue(winner_2.elected)
         self.assertTrue(winner_2.result.tied_vote_winner)

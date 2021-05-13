@@ -32,6 +32,6 @@ def backwards(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [("uk_results", "0052_add_turnout_percentage")]
+    dependencies = [("uk_results", "0053_auto_20210928_1007")]
 
     operations = [migrations.RunPython(code=forwards, reverse_code=backwards)]
