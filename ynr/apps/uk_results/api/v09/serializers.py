@@ -18,7 +18,7 @@ class CandidateResultSerializer(serializers.HyperlinkedModelSerializer):
         )
 
     membership = MembershipSerializer(read_only=True)
-    # result_set = ResultSetSerializer(read_only=True)
+    is_winner = serializers.ReadOnlyField(source="membership.elected")
 
 
 class ResultSetSerializer(serializers.HyperlinkedModelSerializer):

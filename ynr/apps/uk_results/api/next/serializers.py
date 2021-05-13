@@ -24,7 +24,7 @@ class CandidateResultSerializer(serializers.ModelSerializer):
         )
         ref_name = None  # Tells swagger that this is always embedded
 
-    elected = serializers.ReadOnlyField(source="is_winner")
+    elected = serializers.ReadOnlyField(source="membership.elected")
     person = serializers.SerializerMethodField()
     party_list_position = serializers.ReadOnlyField(
         source="membership__party_list_position"

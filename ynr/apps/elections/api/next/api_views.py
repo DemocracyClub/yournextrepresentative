@@ -48,7 +48,6 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
                 .annotate(last_name=LastWord("person__name"))
                 .order_by(
                     "-elected",
-                    "-result__is_winner",
                     "-result__num_ballots",
                     "party_list_position",
                     "person__sort_name",
