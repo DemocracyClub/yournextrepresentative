@@ -92,11 +92,7 @@ class MembershipQuerySet(DateframeableQuerySet):
         self, ballot, exclude_memberships_qs=None, exclude_people_qs=None
     ):
         elected_ordering = models.F("elected").desc(nulls_last=True)
-        order_by = [
-            elected_ordering,
-            "-result__is_winner",
-            "-result__num_ballots",
-        ]
+        order_by = [elected_ordering, "-result__num_ballots"]
         if ballot.election.party_lists_in_use:
             order_by += ["party__name", "party_list_position"]
         else:

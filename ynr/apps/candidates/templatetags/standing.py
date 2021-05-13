@@ -32,7 +32,7 @@ def get_known_candidacy_prefix_and_suffix(candidacy):
     if candidate_result:
         # Then we're OK to display this result:
         suffix += "<br>"
-        if candidate_result.is_winner:
+        if candidacy.elected:
             suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-elected">Elected!</span>'
         else:
             suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-not-elected">Not elected</span>'
