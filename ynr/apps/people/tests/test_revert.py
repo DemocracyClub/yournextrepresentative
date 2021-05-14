@@ -223,7 +223,6 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             result_set=result_set,
             membership=Person.objects.get(pk=2009).memberships.first(),
             num_ballots=32614,
-            is_winner=True,
         )
 
         response = self.app.get("/person/2009/update", user=self.user)
