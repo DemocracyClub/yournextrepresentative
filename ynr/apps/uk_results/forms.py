@@ -89,6 +89,9 @@ class ResultSetForm(forms.ModelForm):
         """
         cleaned_data = super().clean()
 
+        if self.ballot.winner_count is None:
+            return cleaned_data
+
         if len(self._tied_vote_winners) > self.ballot.winner_count:
             raise forms.ValidationError(
                 "Cant have more coin toss winners than seats up!"
