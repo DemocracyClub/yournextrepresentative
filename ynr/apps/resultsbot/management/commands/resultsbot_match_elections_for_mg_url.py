@@ -1,11 +1,12 @@
 import csv
 import os
-import requests
 
 from django.core.management.base import BaseCommand
 
 import resultsbot
 from resultsbot.importers.modgov import ModGovElectionMatcher
+
+from uk_results.helpers import read_csv_from_url
 
 
 class Command(BaseCommand):
@@ -35,11 +36,8 @@ class Command(BaseCommand):
                     continue
 
         url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTI29qljbILmtJ9QD0WUAjufnwWo-vb3Yn0kfmv0BbS7rNm-WPZ_sdWZyLY_L4vHmbw41gKkzIl94__/pub?output=csv"
-        response = requests.get(url, stream=True)
-        response.encoding = "utf-8"
-
         data = []
-        for row in csv.DictReader(response.iter_lines(decode_unicode=True)):
+        for row in read_csv_from_url(url):
             uses_mg = row.get("Uses MG?") or ""
             if uses_mg.strip().upper() != "Y":
                 continue

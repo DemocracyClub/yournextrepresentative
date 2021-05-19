@@ -1,3 +1,6 @@
+import csv
+import requests
+
 from candidates.models import LoggedAction
 from candidates.views import get_change_metadata
 from results.models import ResultEvent
@@ -151,3 +154,13 @@ class RecordBallotResultsHelper:
                 change_metadata = get_change_metadata(None, source, self.user)
                 candidate.record_version(change_metadata)
                 candidate.save()
+
+
+def read_csv_from_url(url):
+    """
+    Takes a URL to a CSV file and iterates through the rows
+    """
+    response = requests.get(url, stream=True)
+    response.encoding = "utf-8"
+    for row in csv.DictReader(response.iter_lines(decode_unicode=True)):
+        yield row
