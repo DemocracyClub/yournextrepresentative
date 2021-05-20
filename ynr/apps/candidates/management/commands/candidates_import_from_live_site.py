@@ -218,15 +218,15 @@ class Command(BaseCommand):
                             candidacy["party"]["ec_id"]
                         )
 
-                    serializer = CandidacyOnPersonSerializer(data=candidacy)
-                    if serializer.is_valid():
-                        if ballot:
-                            person.not_standing.remove(ballot.election)
-                            serializer.save(
-                                person=person, ballot=ballot, party=party
-                            )
-                    else:
-                        raise ValueError(serializer.errors)
+                        serializer = CandidacyOnPersonSerializer(data=candidacy)
+                        if serializer.is_valid():
+                            if ballot:
+                                person.not_standing.remove(ballot.election)
+                                serializer.save(
+                                    person=person, ballot=ballot, party=party
+                                )
+                        else:
+                            raise ValueError(serializer.errors)
 
     def import_single_party(self, party_id):
         """
