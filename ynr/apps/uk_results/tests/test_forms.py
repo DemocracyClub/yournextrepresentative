@@ -58,6 +58,19 @@ class TestResultSetForm(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
                 str(e), "Cant have more coin toss winners than seats up!"
             )
 
+    def test_clean_winner_count_none(self):
+        """
+        If we dont know the winner count, dont validate it against the tied vote winners
+        """
+        self.ballot.winner_count = None
+        form = ResultSetForm(ballot=self.ballot)
+        cleaned_data = {}
+        for candidacy in self.candidacies:
+            cleaned_data[f"tied_vote_memberships_{candidacy.pk}"] = True
+
+        form.cleaned_data = cleaned_data
+        self.assertEqual(form.clean(), cleaned_data)
+
     def test_tied_vote_winners(self):
         form = ResultSetForm(ballot=self.ballot)
         cleaned_data = {}
