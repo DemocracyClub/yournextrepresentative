@@ -479,6 +479,36 @@ class GenderSplitByDate(BaseReport):
         return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
 
 
+class NamesAndGenderGuessOnly(BaseReport):
+    """
+    Filters the membership QS to only include candidates where a gender value
+    was not entered by a volunteer/user, then return the name of each candidate
+    and the gender that was guessed using the "people_guess_gender" management
+    command.
+    Originally requested by Fawcett Society.
+    """
+
+    name = "Names and guessed gender, based only on name entered"
+
+    def get_qs(self):
+        return (
+            self.membership_qs.filter(person__gender="")
+            .exclude(person__gender_guess__isnull=True)
+            .order_by("person__gender_guess__gender")
+        )
+
+    def report(self):
+        qs = self.get_qs()
+        report_list = []
+        headers = ["Name", "Guessed Gender"]
+        report_list.append(headers)
+        for membership in qs:
+            report_list.append(
+                [membership.person.name, membership.person.gender_guess.gender]
+            )
+        return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
+
+
 class GenderSplitByParty(BaseReport):
     name = "Gender Split By Party"
 
