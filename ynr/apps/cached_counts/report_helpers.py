@@ -1002,7 +1002,7 @@ class CandidatesWithWithoutStatement(BaseReport):
 
     def report(self):
         report_list = []
-        headers = ["\t", "Number", "%"]
+        headers = ["", "Number", "%"]
         report_list.append(headers)
         qs = self.get_qs()
         all_candidates = qs.count()
