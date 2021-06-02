@@ -495,16 +495,23 @@ class NamesAndGenderGuessOnly(BaseReport):
             self.membership_qs.filter(person__gender="")
             .exclude(person__gender_guess__isnull=True)
             .order_by("person__gender_guess__gender")
+            .select_related("ballot", "person", "person__gender_guess")
         )
 
     def report(self):
         qs = self.get_qs()
         report_list = []
-        headers = ["Name", "Guessed Gender"]
+        headers = ["Name", "Guessed Gender", "Person ID", "Ballot URL", "Party"]
         report_list.append(headers)
         for membership in qs:
             report_list.append(
-                [membership.person.name, membership.person.gender_guess.gender]
+                [
+                    membership.person.name,
+                    membership.person.gender_guess.gender,
+                    membership.person.pk,
+                    membership.ballot.ballot_paper_id,
+                    membership.party.name,
+                ]
             )
         return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
 
