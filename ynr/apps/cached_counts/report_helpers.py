@@ -993,6 +993,40 @@ class CommonLastNames(CommonFirstNames):
             yield [label, name, count]
 
 
+class CandidatesWithWithoutStatement(BaseReport):
+
+    name = "Candidates with or without statement"
+
+    def get_qs(self):
+        return self.membership_qs.select_related("person")
+
+    def report(self):
+        report_list = []
+        headers = ["\t", "Number", "%"]
+        report_list.append(headers)
+        qs = self.get_qs()
+        all_candidates = qs.count()
+        num_with_statement = qs.exclude(person__biography="").count()
+        num_without_statement = qs.filter(person__biography="").count()
+        report_list.append(
+            [
+                "With statement",
+                num_with_statement,
+                round((num_with_statement / all_candidates) * 100),
+            ]
+        )
+        report_list.append(
+            [
+                "Without statement",
+                num_without_statement,
+                round((num_without_statement / all_candidates) * 100),
+            ]
+        )
+        return "\n".join(
+            ["\t".join([str(cell) for cell in row]) for row in report_list]
+        )
+
+
 ALL_REPORT_CLASSES = []
 for x in list(locals().values()):
     if type(x) == type and issubclass(x, BaseReport):
