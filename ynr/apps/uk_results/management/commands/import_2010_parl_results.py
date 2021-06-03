@@ -49,7 +49,7 @@ class Command(BaseCommand):
         # get less specific - split the name and try and find a single match where at
         # least one of the names match
         query = " | ".join(name.split(" "))
-        sq = SearchQuery(query, search_type="raw")
+        sq = SearchQuery(query, search_type="raw", config="english")
         try:
             return ballot.membership_set.get(person__name_search_vector=sq)
         except (Membership.DoesNotExist, Membership.MultipleObjectsReturned):
