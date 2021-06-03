@@ -41,8 +41,9 @@ class Command(BaseCommand):
             pass
 
         # fallback to a searcing on search vector field
+        sq = SearchQuery(name, config="english")
         try:
-            return ballot.membership_set.get(person__name_search_vector=name)
+            return ballot.membership_set.get(person__name_search_vector=sq)
         except (Membership.DoesNotExist, Membership.MultipleObjectsReturned):
             pass
 
