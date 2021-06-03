@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.core.management.base import BaseCommand
 from django.contrib.postgres.search import SearchQuery
 from candidates.models.db import EditType, LoggedAction
@@ -60,18 +61,24 @@ class Command(BaseCommand):
             self.cant_find += 1
             return None
 
-    def create_results(self, ballot, row):
+    def create_results(self, ballot, candidates):
+
+        if ballot.membership_set.count() != len(candidates):
+            return self.stdout.write(
+                "Incorrect number of candidates for ballot, skipping"
+            )
+
         resultset, created = models.ResultSet.objects.update_or_create(
             ballot=ballot,
             defaults={
-                "turnout_percentage": row["% Turnout"],
+                "turnout_percentage": self.turnouts[ballot.ballot_paper_id],
                 "source": self.url,
             },
         )
-        for candidate_data in self.current_candidates:
+        for candidate_dict in candidates:
             resultset.candidate_results.update_or_create(
-                membership=candidate_data.pop("membership"),
-                defaults={**candidate_data},
+                membership=candidate_dict.pop("membership"),
+                defaults={**candidate_dict},
             )
 
         _, changed = resultset.record_version()
@@ -101,9 +108,11 @@ class Command(BaseCommand):
 
         self.cant_find = 0
         self.not_found = []
-        self.current_ballot = Ballot(pk=None)
-        self.current_candidates = []
         self.results_added = 0
+
+        ballot_data = defaultdict(list)
+        self.turnouts = {}
+        self.stdout.write("Getting the data...")
         for row in read_csv_from_url(url=self.url):
             seat = row["Seat"].lower().strip()
 
@@ -121,25 +130,17 @@ class Command(BaseCommand):
                 continue
 
             num_ballots = int(row["Vote"].replace(",", ""))
-            candidate_data = {
+            candidate_dict = {
                 "membership": candidate,
                 "num_ballots": num_ballots,
                 "is_winner": row["Elected"] == "*",
             }
-            # are we still on same ballot?
-            if self.current_ballot.pk == ballot.pk:
-                # yes - so add the candidate to our list
-                self.current_candidates.append(candidate_data)
-            else:
-                # no - so create a new candidate list
-                self.current_candidates = [candidate_data]
+            ballot_data[ballot].append(candidate_dict)
+            self.turnouts[ballot.ballot_paper_id] = row["% Turnout"]
 
-            # if matched candidates is equal to memberships on the ballot we can
-            # create the results
-            if len(self.current_candidates) == ballot.membership_set.count():
-                self.create_results(ballot=ballot, row=row)
-
-            self.current_ballot = ballot
+        self.stdout.write("Creating results...")
+        for ballot, candidates in ballot_data.items():
+            self.create_results(ballot, candidates)
 
         self.stdout.write(f"Created {self.results_added} new results")
         self.stdout.write(f"{self.cant_find} candidates couldnt be found:")
