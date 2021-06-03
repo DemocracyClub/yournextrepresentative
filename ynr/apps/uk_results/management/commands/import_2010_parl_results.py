@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
-from django.contrib.postgres.search import SearchQuery, SearchVector
-from slugify import slugify
+from django.contrib.postgres.search import SearchQuery
 from candidates.models.db import EditType, LoggedAction
 from candidates.models.popolo_extra import Ballot
 from django.db.models.functions import Length
@@ -40,11 +39,9 @@ class Command(BaseCommand):
         except Membership.DoesNotExist:
             pass
 
-        # fallback to a smarter searching
-        vector = SearchVector("person__name", "person__other_names__name")
-        candidates = ballot.membership_set.annotate(names=vector)
+        # fallback to a searcing on search vector field
         try:
-            return candidates.get(names=name)
+            return ballot.membership_set.get(person__name_search_vector=name)
         except (Membership.DoesNotExist, Membership.MultipleObjectsReturned):
             pass
 
@@ -53,7 +50,7 @@ class Command(BaseCommand):
         query = " | ".join(name.split(" "))
         sq = SearchQuery(query, search_type="raw")
         try:
-            return candidates.get(names=sq)
+            return ballot.membership_set.get(person__name_search_vector=sq)
         except (Membership.DoesNotExist, Membership.MultipleObjectsReturned):
             # cant find this candidate
             url = f"http://candidates.democracyclub.org.uk{ballot.get_absolute_url()}"
