@@ -26,7 +26,7 @@ django-model-utils==4.0.0
 django-pipeline==1.6.14
 django-storages==1.6.6
 django-webtest==1.9.7
-Django==2.2.20
+Django==2.2.24
 djangorestframework-jsonp==1.0.2
 djangorestframework==3.12.2
 docutils==0.14
