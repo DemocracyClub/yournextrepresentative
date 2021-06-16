@@ -93,8 +93,8 @@ class PersonMerger:
             ("duplicate_suggestion_other_person", "merge_duplicate_suggestion"),
             # Discarded
             ("id", "discard_data"),
-            ("created_at", "discard_data"),
-            ("updated_at", "discard_data"),
+            ("created", "discard_data"),
+            ("modified", "discard_data"),
             ("edit_limitations", "discard_data"),
             ("sources", "discard_data"),
         )

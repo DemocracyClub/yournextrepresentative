@@ -32,7 +32,6 @@ from people.managers import (
     PersonImageManager,
     PersonQuerySet,
 )
-from popolo.behaviors.models import Timestampable
 from popolo.models import Membership, VersionNotFound
 
 
@@ -181,7 +180,7 @@ class PersonIdentifier(TimeStampedModel):
         return format_html(text, self.value)
 
 
-class Person(Timestampable, models.Model):
+class Person(TimeStampedModel, models.Model):
     """
     A real person, alive or dead
     see schema at http://popoloproject.com/schemas/person.json#

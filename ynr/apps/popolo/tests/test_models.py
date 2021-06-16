@@ -8,16 +8,13 @@ from faker import Factory
 from slugify import slugify
 
 from people.models import Person
-from popolo.behaviors.tests.test_behaviors import (
-    DateframeableTests,
-    TimestampableTests,
-)
+from popolo.behaviors.tests.test_behaviors import DateframeableTests
 from popolo.models import Organization
 
 faker = Factory.create("it_IT")  # a factory to create fake names for tests
 
 
-class PersonTestCase(TimestampableTests, TestCase):
+class PersonTestCase(TestCase):
     model = Person
     object_name = "person"
 
@@ -27,7 +24,7 @@ class PersonTestCase(TimestampableTests, TestCase):
         return Person.objects.create(**kwargs)
 
 
-class OrganizationTestCase(DateframeableTests, TimestampableTests, TestCase):
+class OrganizationTestCase(DateframeableTests, TestCase):
     model = Organization
     object_name = "organization"
 

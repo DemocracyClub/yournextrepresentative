@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from time import sleep
 
 
 class BehaviorTestCaseMixin(object):
@@ -106,41 +105,4 @@ class DateframeableTests(BehaviorTestCaseMixin):
             self.get_model().objects.future().count(),
             1,
             "One future object should have been fetched",
-        )
-
-
-class TimestampableTests(BehaviorTestCaseMixin):
-    """
-    Timestampable tests.
-
-    Tests whether objects are assigned timestamps at creation time, and
-    whether a successive modification changes the update timestamp only.
-    """
-
-    def test_new_instance_has_equal_timestamps(self):
-        """Object is assigned timestamps when created"""
-        obj = self.create_instance()
-        self.assertIsNotNone(obj.created_at)
-        self.assertIsNotNone(obj.updated_at)
-
-        # created_at and updated_at are actually different, but still within 2 millisec
-        # that's because of the pre-save signal validation
-        self.assertTrue(
-            (obj.updated_at - obj.created_at) < timedelta(microseconds=10000)
-        )
-
-    def test_updated_instance_has_different_timestamps(self):
-        """Modified object has different created_at and updated_at timestamps """
-        obj = self.create_instance()
-        creation_ts = obj.created_at
-        update_ts = obj.updated_at
-        # save object after 30K microsecs and check again
-        sleep(0.03)
-        obj.save()
-        self.assertEqual(obj.created_at, creation_ts)
-        self.assertNotEqual(obj.updated_at, update_ts)
-
-        # created_at and updated_at are actually different, well outside 10 millisecs
-        self.assertFalse(
-            (obj.updated_at - obj.created_at) < timedelta(microseconds=10000)
         )
