@@ -222,7 +222,7 @@ class PersonViewSet(viewsets.ModelViewSet):
         if date_qs:
             date = parser.parse(date_qs)
             queryset = queryset.filter(
-                Q(updated_at__gte=date) | Q(memberships__updated_at__gte=date)
+                Q(modified__gte=date) | Q(memberships__modified__gte=date)
             )
         return queryset
 

@@ -107,7 +107,7 @@ class PersonSerializer(MinimalPersonSerializer):
     history_url = serializers.HyperlinkedIdentityField(
         view_name="person-history"
     )
-    last_updated = serializers.DateTimeField(source="updated_at")
+    last_updated = serializers.DateTimeField(source="modified")
     identifiers = PersonIdentifierSerializer(
         many=True, read_only=True, source="tmp_person_identifiers"
     )

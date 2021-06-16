@@ -12,7 +12,7 @@ from slugify import slugify
 
 from ynr_refactoring.settings import PersonIdentifierFields
 
-from .behaviors.models import Dateframeable, GenericRelatable, Timestampable
+from .behaviors.models import Dateframeable, GenericRelatable
 from .querysets import (
     ContactDetailQuerySet,
     MembershipQuerySet,
@@ -30,7 +30,7 @@ class NotStandingValidationError(ValueError):
     pass
 
 
-class Organization(Dateframeable, Timestampable, models.Model):
+class Organization(Dateframeable, TimeStampedModel, models.Model):
     """
     A group with a common purpose or reason for existence that goes beyond the
     set of people belonging to it see schema at
@@ -161,7 +161,7 @@ class Organization(Dateframeable, Timestampable, models.Model):
         return self.name
 
 
-class Post(Dateframeable, Timestampable, models.Model):
+class Post(Dateframeable, TimeStampedModel, models.Model):
     """
     A position that exists independent of the person holding it
     see schema at http://popoloproject.com/schemas/json#
@@ -265,7 +265,7 @@ class PostIdentifier(TimeStampedModel):
     label = models.CharField(max_length=255, blank=True)
 
 
-class Membership(Dateframeable, Timestampable, models.Model):
+class Membership(Dateframeable, TimeStampedModel, models.Model):
     """
     A relationship between a person and an organization
     see schema at http://popoloproject.com/schemas/membership.json#
@@ -429,7 +429,7 @@ class Membership(Dateframeable, Timestampable, models.Model):
 
 
 class ContactDetail(
-    Timestampable, Dateframeable, GenericRelatable, models.Model
+    TimeStampedModel, Dateframeable, GenericRelatable, models.Model
 ):
     """
     A means of contacting an entity
