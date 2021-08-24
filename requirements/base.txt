@@ -81,7 +81,6 @@ raven==6.10.0
 requests-oauthlib==1.3.0
 requests==2.25.0
 simplegeneric==0.8.1
-six==1.14.0
 git+https://github.com/symroe/slacker.git
 sorl-thumbnail==12.5.0
 sqlparse==0.3.0
