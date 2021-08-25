@@ -81,7 +81,7 @@ class AllPartiesJSONView(View):
                 # This is a party with descriptions
                 item["text"] = party[0]
                 item["children"] = []
-                for child in party[1]:
+                for child in sorted(party[1]):
                     item["children"].append(
                         {
                             "id": child[0],
