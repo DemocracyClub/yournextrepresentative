@@ -33,7 +33,13 @@ class TestCaching(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 values = set(value.split(", "))
                 self.assertEqual(
                     values,
-                    {"no-cache", "no-store", "must-revalidate", "max-age=0"},
+                    {
+                        "no-cache",
+                        "no-store",
+                        "must-revalidate",
+                        "max-age=0",
+                        "private",
+                    },
                 )
 
         self.assertTrue(seen_cache)
