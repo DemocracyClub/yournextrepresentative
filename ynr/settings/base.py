@@ -212,7 +212,7 @@ DEBUG_TOOLBAR_PANELS = [
 INTERNAL_IPS = ["127.0.0.1"]
 
 # Language settings (calculated above):
-LANGUAGES = [("en", "English")]
+LANGUAGES = [("en-gb", "British English")]
 LANGUAGE_CODE = "en-gb"
 TIME_ZONE = "Europe/London"
 USE_I18N = False
