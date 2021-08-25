@@ -248,16 +248,19 @@ PIPELINE = {
                 "moderation_queue/css/crop.scss",
             ),
             "output_filename": "css/image-review.css",
+            "extra_context": {"media": "screen"},
         },
         "official_documents": {
             "source_filenames": (
                 "official_documents/css/official_documents.scss",
             ),
             "output_filename": "css/official_documents.css",
+            "extra_context": {"media": "screen"},
         },
         "bulk_adding": {
             "source_filenames": ("bulk_adding/css/bulk.scss",),
             "output_filename": "css/bulk_adding.css",
+            "extra_context": {"media": "screen"},
         },
         "all": {
             "source_filenames": (
@@ -268,6 +271,7 @@ PIPELINE = {
                 "frontend/css/frontend.scss",
             ),
             "output_filename": "css/all.css",
+            "extra_context": {"media": "screen"},
         },
     },
     "JAVASCRIPT": {
