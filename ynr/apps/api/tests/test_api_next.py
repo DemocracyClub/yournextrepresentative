@@ -155,14 +155,14 @@ class TestAPI(
                                 "text": "Independent",
                             },
                             {
-                                "id": "ynmp-party:2__1001",
-                                "register": "all",
-                                "text": "[No party listed]",
-                            },
-                            {
                                 "id": "ynmp-party:2__1000",
                                 "register": "all",
                                 "text": "[blank]",
+                            },
+                            {
+                                "id": "ynmp-party:2__1001",
+                                "register": "all",
+                                "text": "[No party listed]",
                             },
                         ],
                         "text": "Independent",
@@ -213,14 +213,14 @@ class TestAPI(
                                 "text": "Independent",
                             },
                             {
-                                "id": "ynmp-party:2__1001",
-                                "register": "all",
-                                "text": "[No party listed]",
-                            },
-                            {
                                 "id": "ynmp-party:2__1000",
                                 "register": "all",
                                 "text": "[blank]",
+                            },
+                            {
+                                "id": "ynmp-party:2__1001",
+                                "register": "all",
+                                "text": "[No party listed]",
                             },
                         ],
                         "text": "Independent",
