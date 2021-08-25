@@ -56,7 +56,7 @@ class TestPersonIdentifiers(TestCase):
 
         self.assertEqual(
             pi.get_value_html,
-            """&lt;script&gt;alert(&#39;foo&#39;);&lt;/script&gt;""",
+            """&lt;script&gt;alert(&#x27;foo&#x27;);&lt;/script&gt;""",
         )
 
     def test_get_value_html_bad_strings(self):
