@@ -36,11 +36,11 @@ class TestPartyChoices(
                         ),
                         (
                             "ynmp-party:2",
-                            {"label": "[No party listed]", "register": "all"},
+                            {"label": "[blank]", "register": "all"},
                         ),
                         (
                             "ynmp-party:2",
-                            {"label": "[blank]", "register": "all"},
+                            {"label": "[No party listed]", "register": "all"},
                         ),
                     ],
                 ),
@@ -93,11 +93,11 @@ class TestPartyChoices(
                         ),
                         (
                             "ynmp-party:2",
-                            {"label": "[No party listed]", "register": "all"},
+                            {"label": "[blank]", "register": "all"},
                         ),
                         (
                             "ynmp-party:2",
-                            {"label": "[blank]", "register": "all"},
+                            {"label": "[No party listed]", "register": "all"},
                         ),
                     ],
                 ),
@@ -139,11 +139,11 @@ class TestPartyChoices(
                         ),
                         (
                             "ynmp-party:2",
-                            {"label": "[No party listed]", "register": "all"},
+                            {"label": "[blank]", "register": "all"},
                         ),
                         (
                             "ynmp-party:2",
-                            {"label": "[blank]", "register": "all"},
+                            {"label": "[No party listed]", "register": "all"},
                         ),
                     ],
                 ),
@@ -203,11 +203,11 @@ class TestPartyChoices(
                         ),
                         (
                             "ynmp-party:2",
-                            {"label": "[No party listed]", "register": "all"},
+                            {"label": "[blank]", "register": "all"},
                         ),
                         (
                             "ynmp-party:2",
-                            {"label": "[blank]", "register": "all"},
+                            {"label": "[No party listed]", "register": "all"},
                         ),
                     ],
                 ),
@@ -260,11 +260,11 @@ class TestPartyChoices(
                         ),
                         (
                             "ynmp-party:2",
-                            {"label": "[No party listed]", "register": "all"},
+                            {"label": "[blank]", "register": "all"},
                         ),
                         (
                             "ynmp-party:2",
-                            {"label": "[blank]", "register": "all"},
+                            {"label": "[No party listed]", "register": "all"},
                         ),
                     ],
                 ),
