@@ -23,10 +23,11 @@ from popolo import models as popolo_models
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = popolo_models.Organization
-        fields = ("url", "name", "slug")
+        fields = ("url", "name", "slug", "last_updated", "created")
 
     url = serializers.HyperlinkedIdentityField(
         view_name="organization-detail",
         lookup_field="slug",
         lookup_url_kwarg="slug",
     )
+    last_updated = serializers.DateTimeField(source="modified")

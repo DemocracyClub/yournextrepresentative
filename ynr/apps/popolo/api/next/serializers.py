@@ -23,11 +23,12 @@ class MinimalPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = popolo_models.Post
         ref_name = None  # Tells swagger that this is always embedded
-        fields = ("id", "label", "slug")
+        fields = ("id", "label", "slug", "created", "last_updated")
 
     id = serializers.ReadOnlyField(source="identifier")
     slug = serializers.ReadOnlyField()
     label = serializers.ReadOnlyField()
+    last_updated = serializers.DateTimeField(source="modified")
 
 
 class BallotOnCandidacySerializer(serializers.HyperlinkedModelSerializer):
@@ -58,6 +59,7 @@ BASE_CANDIDACY_FIELDS = [
     "party",
     "party_name",
     "party_description_text",
+    "created",
 ]
 
 CANDIDACY_ON_BALLOT_FIELDS = BASE_CANDIDACY_FIELDS + ["person", "result"]

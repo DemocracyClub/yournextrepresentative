@@ -51,6 +51,7 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
             "emblems",
             "descriptions",
             "legacy_slug",
+            "created",
         )
         swagger_schema_fields = {"description": model.__doc__}
 

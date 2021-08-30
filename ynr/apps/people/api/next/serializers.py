@@ -52,7 +52,9 @@ class OtherNameSerializer(serializers.ModelSerializer):
 class ContactDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = popolo_models.ContactDetail
-        fields = ("contact_type", "label", "note", "value")
+        fields = ("contact_type", "label", "note", "value", "created")
+
+        last_updated = serializers.DateTimeField(source="modified")
 
 
 class SourceSerializer(serializers.ModelSerializer):
@@ -83,6 +85,7 @@ class PersonSerializer(MinimalPersonSerializer):
             "url",
             "versions_url",
             "history_url",
+            "created",
             "last_updated",
             "honorific_prefix",
             "name",
