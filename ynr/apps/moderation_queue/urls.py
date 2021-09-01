@@ -1,4 +1,5 @@
-from django.conf.urls import url
+from django.urls import re_path
+
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .views import (
@@ -16,51 +17,53 @@ from .views import (
 )
 
 urlpatterns = [
-    url(
+    re_path(
         r"^photo/upload/(?P<person_id>\d+)$", upload_photo, name="photo-upload"
     ),
-    url(
+    re_path(
         r"^photo/upload/image/(?P<person_id>\d+)$",
         upload_photo_image,
         name="photo-upload-image",
     ),
-    url(
+    re_path(
         r"^photo/upload/url/(?P<person_id>\d+)$",
         upload_photo_url,
         name="photo-upload-url",
     ),
-    url(r"^photo/review$", PhotoReviewList.as_view(), name="photo-review-list"),
-    url(
+    re_path(
+        r"^photo/review$", PhotoReviewList.as_view(), name="photo-review-list"
+    ),
+    re_path(
         r"^photo/review/(?P<queued_image_id>\d+)$",
         PhotoReview.as_view(),
         name="photo-review",
     ),
-    url(
+    re_path(
         r"^photo/upload/(?P<person_id>\d+)/success$",
         PhotoUploadSuccess.as_view(),
         name="photo-upload-success",
     ),
-    url(
+    re_path(
         r"^suggest-lock/(?P<election_id>.*)/$",
         SuggestLockView.as_view(),
         name="constituency-suggest-lock",
     ),
-    url(
+    re_path(
         r"^suggest-lock/$",
         ensure_csrf_cookie(SuggestLockReviewListView.as_view()),
         name="suggestions-to-lock-review-list",
     ),
-    url(
+    re_path(
         r"^sopn-review-required/$",
         SOPNReviewRequiredView.as_view(),
         name="sopn-review-required",
     ),
-    url(
+    re_path(
         r"^person_name_cleanup/$",
         PersonNameCleanupView.as_view(),
         name="person_name_cleanup",
     ),
-    url(
+    re_path(
         r"^sopn-review-required/remove-ajax/$",
         RemoveSuggestedLocksView.as_view(),
         name="remove-lock-suggestion-ajax",

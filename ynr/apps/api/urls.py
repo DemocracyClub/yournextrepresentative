@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.urls import include, re_path
 from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView, RedirectView
 from rest_framework import routers
@@ -79,38 +79,40 @@ next_api_router.register(r"facebook_adverts", FacebookAdvertViewSet)
 
 urlpatterns = [
     # Router views
-    url(r"^api/(?P<version>v0.9)/", include(v09_api_router.urls)),
-    url(r"^api/(?P<version>next)/", include(next_api_router.urls)),
-    url(
+    re_path(r"^api/(?P<version>v0.9)/", include(v09_api_router.urls)),
+    re_path(r"^api/(?P<version>next)/", include(next_api_router.urls)),
+    re_path(
         r"^api/docs/$",
         TemplateView.as_view(template_name="api/api-home.html"),
         name="api-home",
     ),
-    url(
+    re_path(
         r"^api/$",
         RedirectView.as_view(url="/api/docs/"),
         name="api-docs-redirect",
     ),
-    url(
+    re_path(
         r"^api/docs/terms/$",
         TemplateView.as_view(template_name="api/terms.html"),
         name="api-terms",
     ),
-    url(r"^api/docs/csv/$", CSVListView.as_view(), name="api_docs_csv"),
-    url(r"^api/docs/results/$", ResultsDocs.as_view(), name="api_docs_results"),
-    url(
+    re_path(r"^api/docs/csv/$", CSVListView.as_view(), name="api_docs_csv"),
+    re_path(
+        r"^api/docs/results/$", ResultsDocs.as_view(), name="api_docs_results"
+    ),
+    re_path(
         r"^api/docs/next/$",
         NextAPIDocsView.as_view(patterns=next_api_router.urls, version="next"),
         name="api_docs_next_home",
     ),
-    url(
+    re_path(
         r"^api/docs/next/endpoints/$",
         APIDocsEndpointsView.as_view(
             patterns=next_api_router.urls, version="next"
         ),
         name="api_docs_next_endpoints",
     ),
-    url(
+    re_path(
         r"^api/docs/next/definitions/$",
         APIDocsDefinitionsView.as_view(
             patterns=next_api_router.urls, version="next"
@@ -118,23 +120,23 @@ urlpatterns = [
         name="api_docs_next_definitions",
     ),
     # Standard Django views
-    url(
+    re_path(
         r"^api/current-elections",
         v09views.CurrentElectionsView.as_view(),
         name="current-elections",
     ),
-    url(
+    re_path(
         r"^all-parties.json$",
         cache_page(60 * 60)(
             parties.api.next.api_views.AllPartiesJSONView.as_view()
         ),
         name="all-parties-json-view",
     ),
-    url(r"^version.json", v09views.VersionView.as_view(), name="version"),
-    url(
+    re_path(r"^version.json", v09views.VersionView.as_view(), name="version"),
+    re_path(
         r"^upcoming-elections",
         v09views.UpcomingElectionsView.as_view(),
         name="upcoming-elections",
     ),
-    url("api/slack-hooks", slack_hooks.SlackHookRouter.as_view()),
+    re_path("api/slack-hooks", slack_hooks.SlackHookRouter.as_view()),
 ]
