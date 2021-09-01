@@ -1,12 +1,11 @@
-from braces.views import LoginRequiredMixin
-from django.db import transaction
-from django.http import JsonResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.views.generic import FormView
-
 from auth_helpers.views import user_in_group
+from braces.views import LoginRequiredMixin
 from candidates.models import raise_if_unsafe_to_delete
 from candidates.models.constraints import check_no_candidancy_for_election
+from django.db import transaction
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views.generic import FormView
 from elections.mixins import ElectionMixin
 from people.forms.forms import CandidacyCreateForm, CandidacyDeleteForm
 from people.models import Person
@@ -107,7 +106,7 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
 
             person.record_version(change_metadata)
             person.save()
-        if self.request.is_ajax():
+        if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse(
                 {"success": True, "ballot_hash": self.ballot.hashed_memberships}
             )
@@ -115,7 +114,7 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
 
     def form_invalid(self, form):
         result = super(CandidacyDeleteView, self).form_invalid(form)
-        if self.request.is_ajax():
+        if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
             data = {"success": False, "errors": form.errors}
             return JsonResponse(data)
 
