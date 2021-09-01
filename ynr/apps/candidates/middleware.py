@@ -4,7 +4,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.cache import add_never_cache_headers
-from django.utils.http import urlquote
+from urllib.parse import quote
 
 
 class CopyrightAssignmentMiddleware:
@@ -51,7 +51,7 @@ class CopyrightAssignmentMiddleware:
             # Then redirect to a view that asks you to assign
             # copyright:
             assign_copyright_url = reverse("ask-for-copyright-assignment")
-            assign_copyright_url += "?next={}".format(urlquote(request.path))
+            assign_copyright_url += "?next={}".format(quote(request.path))
             return HttpResponseRedirect(assign_copyright_url)
 
 

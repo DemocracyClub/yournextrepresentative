@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.utils.http import urlquote
+from urllib.parse import quote
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, TemplateView, View, UpdateView
 from django.views.generic.detail import DetailView
@@ -96,7 +96,7 @@ class PersonView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         path = self.person.get_absolute_url()
-        context["redirect_after_login"] = urlquote(path)
+        context["redirect_after_login"] = quote(path)
         context["canonical_url"] = self.person.wcivf_url()
         context["person"] = self.person
 

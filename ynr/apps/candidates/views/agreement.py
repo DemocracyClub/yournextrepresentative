@@ -1,7 +1,7 @@
 from urllib.parse import urlparse
 
 from django.http import HttpResponseRedirect
-from django.utils.http import urlquote
+from urllib.parse import quote
 from django.views.generic import FormView
 
 from candidates.forms import UserTermsAgreementForm
@@ -27,5 +27,5 @@ class AskForCopyrightAssigment(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["next_path_escaped"] = urlquote(self.request.GET["next"])
+        context["next_path_escaped"] = quote(self.request.GET["next"])
         return context

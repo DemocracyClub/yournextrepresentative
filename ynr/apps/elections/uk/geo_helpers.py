@@ -8,7 +8,7 @@ from urllib.parse import urljoin
 import requests
 from django.conf import settings
 from django.core.cache import cache
-from django.utils.http import urlquote
+from urllib.parse import quote
 
 from candidates.models import Ballot
 
@@ -78,7 +78,7 @@ def get_ballots_from_postcode(
             return cached_result
         return Ballot.objects.filter(ballot_paper_id__in=cached_result)
 
-    url = urljoin(EE_BASE_URL, f"/api/elections/?postcode={urlquote(postcode)}")
+    url = urljoin(EE_BASE_URL, f"/api/elections/?postcode={quote(postcode)}")
     if current_only:
         url = f"{url}&current=1"
     try:
@@ -96,7 +96,7 @@ def get_ballots_from_postcode(
 
 
 def get_ballots_from_coords(coords, current_only=True):
-    url = urljoin(EE_BASE_URL, f"/api/elections/?coords={urlquote(coords)}")
+    url = urljoin(EE_BASE_URL, f"/api/elections/?coords={quote(coords)}")
     if current_only:
         url = f"{url}&current=1"
     cache_key = f"geolookup-coords:{current_only}:{coords}"
