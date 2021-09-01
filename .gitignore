@@ -23,3 +23,4 @@ test-results
 env/
 node_modules/
 .vscode/
+/test-env
