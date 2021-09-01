@@ -229,7 +229,7 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
     form_class = ToggleLockForm
 
     def form_invalid(self, form):
-        if self.request.is_ajax():
+        if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse(data={"ballot_updated": True})
 
         messages.error(
@@ -270,7 +270,7 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
                 ballot=ballot,
                 source=message,
             )
-        if self.request.is_ajax():
+        if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"locked": ballot.candidates_locked})
         else:
             return HttpResponseRedirect(ballot.get_absolute_url())
