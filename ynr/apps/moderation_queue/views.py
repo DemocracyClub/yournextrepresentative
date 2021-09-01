@@ -23,7 +23,7 @@ from django.http import (
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils.http import urlquote
+from urllib.parse import quote
 from django.views.generic import CreateView, ListView, TemplateView, View
 from PIL import Image as PillowImage
 from sorl.thumbnail import delete as sorl_delete
@@ -216,13 +216,13 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             if post is not None:
                 image_search_query += ' "{}"'.format(post.label)
         return "https://www.google.co.uk/search?tbm=isch&q={}".format(
-            urlquote(image_search_query)
+            quote(image_search_query)
         )
 
     def get_google_reverse_image_search_url(self, image_url):
         url = "https://www.google.com/searchbyimage?&image_url="
         absolute_image_url = self.request.build_absolute_uri(image_url)
-        return url + urlquote(absolute_image_url)
+        return url + quote(absolute_image_url)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
