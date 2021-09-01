@@ -1,15 +1,15 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 from . import views
 
 urlpatterns = [
-    url(r"^$", views.ResultsHomeView.as_view(), name="results-home"),
-    url(
+    re_path(r"^$", views.ResultsHomeView.as_view(), name="results-home"),
+    re_path(
         r"^no-results/$",
         views.CurrentElectionsWithNoResuts.as_view(),
         name="current-elections-with-no-resuts",
     ),
-    url(
+    re_path(
         r"^(?P<ballot_paper_id>[^/]+)/",
         views.BallotPaperResultsUpdateView.as_view(),
         name="ballot_paper_results_form",
