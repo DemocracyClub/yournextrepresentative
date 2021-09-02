@@ -1,3 +1,4 @@
+# v0.9 is legacy code
 import json
 import subprocess
 import sys
