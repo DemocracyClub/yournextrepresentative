@@ -1,3 +1,4 @@
+# v0.9 is legacy code
 from rest_framework import serializers
 from rest_framework.fields import JSONField
 from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
