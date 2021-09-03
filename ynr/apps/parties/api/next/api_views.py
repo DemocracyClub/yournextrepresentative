@@ -5,6 +5,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views import View
 from rest_framework import viewsets
+from parties.api.next.filters import PartyFilter
 
 from api.helpers import DefaultPageNumberPagination
 
@@ -25,6 +26,7 @@ class PartyViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = PartySerializer
     lookup_field = "ec_id"
     pagination_class = DefaultPageNumberPagination
+    filterset_class = PartyFilter
 
     def retrieve(self, request, *args, **kwargs):
         """

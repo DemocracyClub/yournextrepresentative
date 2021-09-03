@@ -10,6 +10,7 @@ from rest_framework.response import Response
 
 import people.api.next.serializers
 from api.next.views import ResultsSetPagination
+from people.api.next.filters import PersonFilter
 from candidates import models as extra_models
 from candidates.api.next.serializers import LoggedActionSerializer
 from people.models import Person, PersonImage
@@ -88,6 +89,7 @@ class PersonViewSet(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = people.api.next.serializers.PersonSerializer
     pagination_class = ResultsSetPagination
+    filterset_class = PersonFilter
 
 
 class PersonRedirectViewSet(viewsets.ReadOnlyModelViewSet):

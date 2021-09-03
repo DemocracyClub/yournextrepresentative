@@ -52,6 +52,7 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
             "descriptions",
             "legacy_slug",
             "created",
+            "last_updated",
         )
         swagger_schema_fields = {"description": model.__doc__}
 
@@ -61,6 +62,7 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
     default_emblem = DefaultPartyEmblemSerializer(read_only=True)
     emblems = PartyEmblemSerializer(many=True, read_only=True)
     descriptions = PartyDescriptionSerializer(many=True, read_only=True)
+    last_updated = serializers.DateTimeField(source="modified")
 
 
 class PartyRegisterSerializer(serializers.Serializer):

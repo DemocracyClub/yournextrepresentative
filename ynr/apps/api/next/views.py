@@ -3,10 +3,11 @@ from datetime import date, datetime
 from rest_framework import pagination, viewsets
 
 import candidates.api.next.serializers
-from api.next import serializers
+import api.next.serializers
 from candidates import models as extra_models
-from candidates.filters import LoggedActionAPIFilter
 from popolo.models import Organization
+from candidates.filters import LoggedActionAPIFilter
+from popolo.api.next.filters import OrganizationFilter
 
 
 def parse_date(date_text):
@@ -33,8 +34,9 @@ class OrganizationViewSet(viewsets.ReadOnlyModelViewSet):
         .exclude(classification="Party")
     )
     lookup_field = "slug"
-    serializer_class = serializers.OrganizationSerializer
+    serializer_class = api.next.serializers.OrganizationSerializer
     pagination_class = ResultsSetPagination
+    filterset_class = OrganizationFilter
 
 
 class LoggedActionViewSet(viewsets.ReadOnlyModelViewSet):
