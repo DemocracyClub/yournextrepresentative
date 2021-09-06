@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 from .views import (
     AttentionNeededView,
@@ -8,18 +8,18 @@ from .views import (
 )
 
 urlpatterns = [
-    url(r"^$", ReportsHomeView.as_view(), name="reports_home"),
-    url(
+    re_path(r"^$", ReportsHomeView.as_view(), name="reports_home"),
+    re_path(
         r"^attention-needed$",
         AttentionNeededView.as_view(),
         name="attention_needed",
     ),
-    url(
+    re_path(
         r"^election/(?P<election>[-\w\.0-9]+)/parties$",
         PartyCountsView.as_view(),
         name="parties_counts",
     ),
-    url(
+    re_path(
         r"^election/(?P<election>[-\w\.0-9]+)/posts$",
         ConstituencyCountsView.as_view(),
         name="posts_counts",

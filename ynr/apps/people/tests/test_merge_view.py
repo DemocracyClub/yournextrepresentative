@@ -597,7 +597,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            "You can&#39;t suggest a duplicate person (2009) with themself (2009)",
+            "You can&#x27;t suggest a duplicate person (2009) with themself (2009)",
         )
 
     def test_merge_malformed_other(self):

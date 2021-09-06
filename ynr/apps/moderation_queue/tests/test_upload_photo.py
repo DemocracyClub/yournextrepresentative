@@ -223,7 +223,7 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
             f.write(upload_response.content)
         self.assertEqual(upload_response.status_code, 200)
         self.assertIn(
-            "This URL isn&#39;t for an image - it had Content-Type: text/html",
+            "This URL isn&#x27;t for an image - it had Content-Type: text/html",
             upload_response.content.decode("utf-8"),
         )
 

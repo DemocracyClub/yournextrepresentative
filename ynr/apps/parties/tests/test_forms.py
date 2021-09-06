@@ -50,12 +50,7 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
         form.full_clean()
         self.assertDictEqual(
             form.errors,
-            {
-                "party": [
-                    "'not a party' is not a current party identifier",
-                    "'not a party' is not a current party identifier",
-                ]
-            },
+            {"party": ["'not a party' is not a current party identifier"]},
         )
         self.assertFalse(form.is_valid())
 

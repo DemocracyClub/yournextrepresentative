@@ -1,59 +1,59 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 import candidates.views as views
 
 urlpatterns = [
-    url(
+    re_path(
         r"^person/(?P<person_id>\d+)/revert$",
         views.RevertPersonView.as_view(),
         name="person-revert",
     ),
-    url(
+    re_path(
         r"^person/(?P<person_id>\d+)/merge_conflict/(?P<other_person_id>\d+)/not_standing/$",
         views.CorrectNotStandingMergeView.as_view(),
         name="person-merge-correct-not-standing",
     ),
-    url(
+    re_path(
         r"^person/(?P<person_id>\d+)/merge$",
         views.MergePeopleView.as_view(),
         name="person-merge",
     ),
-    url(
+    re_path(
         r"^person/(?P<person_id>\d+)/duplicate$",
         views.DuplicatePersonView.as_view(),
         name="person-duplicate",
     ),
-    url(
+    re_path(
         r"^person/(?P<person_id>\d+)/other-names$",
         views.PersonOtherNamesView.as_view(),
         name="person-other-names",
     ),
-    url(
+    re_path(
         r"^person/(?P<person_id>\d+)/other-names/create$",
         views.PersonOtherNameCreateView.as_view(),
         name="person-other-name-create",
     ),
-    url(
+    re_path(
         r"^person/(?P<person_id>\d+)/other-name/(?P<pk>\d+)/delete$",
         views.PersonOtherNameDeleteView.as_view(),
         name="person-other-name-delete",
     ),
-    url(
+    re_path(
         r"^person/(?P<person_id>\d+)/other-name/(?P<pk>\d+)/update/?$",
         views.PersonOtherNameUpdateView.as_view(),
         name="person-other-name-update",
     ),
-    url(
+    re_path(
         r"^person/(?P<person_id>\d+)/update/?$",
         views.UpdatePersonView.as_view(),
         name="person-update",
     ),
-    url(
+    re_path(
         r"^person/create/select_election$",
         views.NewPersonSelectElectionView.as_view(),
         name="person-create-select-election",
     ),
-    url(
+    re_path(
         r"^person/(?P<person_id>\d+)(?:/(?P<ignored_slug>.*))?$",
         views.PersonView.as_view(),
         name="person-view",

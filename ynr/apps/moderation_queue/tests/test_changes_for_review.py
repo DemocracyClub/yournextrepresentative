@@ -588,8 +588,7 @@ class TestDiffHTML(TestCase):
         )
         self.assertEqual(
             la.diff_html,
-            "<p>Couldn&#39;t find version 1376abcd9234 for person with ID "
-            "1234567</p>",
+            "<p>Couldn&#x27;t find version 1376abcd9234 for person with ID 1234567</p>",
         )
 
     def test_found_version(self):

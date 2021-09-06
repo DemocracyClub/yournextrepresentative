@@ -133,7 +133,7 @@ def sopn_import_progress(context):
             Value("."),
             Value(1),
             function="split_part",
-            output=TextField(),
+            output_field=TextField(),
         )
         context["sopn_progress_by_election_type"] = sopn_progress_by_value(
             base_ballot_qs.annotate(election_type=election_type),
@@ -206,7 +206,7 @@ def results_progress(context):
             Value("."),
             Value(1),
             function="split_part",
-            output=TextField(),
+            output_field=TextField(),
         )
 
         context[

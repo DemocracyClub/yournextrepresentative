@@ -84,7 +84,7 @@ class PersonOtherNameCreateView(LoginRequiredMixin, PersonMixin, CreateView):
             also the new list of names so we can show the new list of
             alternative names as a confirmation it's all worked
             """
-            if self.request.is_ajax():
+            if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
                 qs = super().get_queryset()
                 ct = ContentType.objects.get_for_model(Person)
                 qs = qs.filter(
@@ -99,7 +99,7 @@ class PersonOtherNameCreateView(LoginRequiredMixin, PersonMixin, CreateView):
 
     def form_invalid(self, form):
         result = super(PersonOtherNameCreateView, self).form_invalid(form)
-        if self.request.is_ajax():
+        if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
             data = {"success": False, "errors": form.errors}
             return JsonResponse(data)
 
