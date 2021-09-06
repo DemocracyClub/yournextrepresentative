@@ -26,12 +26,12 @@ django-model-utils==4.1.1
 django-pipeline==2.0.6
 django-storages==1.11.1
 django-webtest==1.9.7
-Django==3.2.0
+Django==3.2.4
 djangorestframework-jsonp==1.0.2
-djangorestframework==3.12.2
+djangorestframework==3.12.4
 docutils==0.14
 drf-yasg==1.20.0
-elasticsearch==2.4.1
+elasticsearch==7.14.1
 factory-boy==2.12.0
 Faker==2.0.1
 freezegun==0.3.12
@@ -57,7 +57,7 @@ oauthlib==3.1.0
 path.py==11.5.0
 pexpect==4.8.0
 pickleshare==0.7.5
-Pillow==8.1.1
+Pillow==8.2.0
 psycopg2-binary==2.8.5
 pyasn1==0.4.8
 pycparser==2.19
