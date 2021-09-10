@@ -1,8 +1,8 @@
 from popolo.models import Organization
-from api.next.filters import LastUpdatedFilter
+from api.next.filters import LastUpdatedMixin
 
 
-class OrganizationFilter(LastUpdatedFilter):
+class OrganizationFilter(LastUpdatedMixin):
     class Meta:
         model = Organization
         fields = ["last_updated"]
