@@ -1,8 +1,8 @@
 from people.models import Person
-from api.next.filters import LastUpdatedFilter
+from api.next.filters import LastUpdatedMixin
 
 
-class PersonFilter(LastUpdatedFilter):
+class PersonFilter(LastUpdatedMixin):
     class Meta:
         model = Person
         fields = ["last_updated"]

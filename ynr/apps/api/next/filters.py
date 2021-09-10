@@ -1,7 +1,7 @@
 from django_filters import filterset, filters
 
 
-class LastUpdatedFilter(filterset.FilterSet):
+class LastUpdatedMixin(filterset.FilterSet):
     last_updated = filters.IsoDateTimeFilter(
         field_name="modified",
         lookup_expr="gt",
