@@ -33,3 +33,9 @@ This codebase was originally forked from
 [mysociety/yournextrepresentative](http://github.com/mysociety/yournextrepresentative)
 We no longer track the upstream but we thank [mySociety](http://mysociety.org/)
 for their work on the project which we have been able to build on.
+
+# API Versions
+
+v0.9 is legacy code and is now frozen. v1.0 is currently in alpha. We plan on publishing a v1 API once we have some more feedback from users and we think it’s stable enough.
+
+ 

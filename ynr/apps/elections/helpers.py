@@ -1,4 +1,5 @@
 from functools import update_wrapper
+from django.utils import timezone
 
 from candidates.models import Ballot
 
@@ -33,3 +34,19 @@ class ElectionIDSwitcher:
 
         self.__name__ = self.__qualname__ = view.__name__
         return view(request, *args, **kwargs)
+
+
+def four_weeks_before_election_date(election):
+    """
+    Takes an election object and a datetime object four weeks prior to the
+    election date.
+    Used in data migrations where we want to set a realistic created timestamp
+    on old objects.
+    """
+    election_date = election.election_date - timezone.timedelta(weeks=4)
+    return timezone.datetime(
+        election_date.year,
+        election_date.month,
+        election_date.day,
+        tzinfo=timezone.utc,
+    )

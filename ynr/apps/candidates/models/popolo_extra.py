@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.functional import cached_property
+from django_extensions.db.models import TimeStampedModel
 
 from candidates.models.auth import TRUSTED_TO_LOCK_GROUP_NAME
 from elections.models import Election
@@ -148,7 +149,7 @@ class BallotQueryset(models.QuerySet):
         ).distinct()
 
 
-class Ballot(models.Model):
+class Ballot(TimeStampedModel, models.Model):
 
     VOTING_SYSTEM_FPTP = "FPTP"
 

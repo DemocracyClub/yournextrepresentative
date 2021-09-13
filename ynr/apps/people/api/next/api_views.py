@@ -10,6 +10,7 @@ from rest_framework.response import Response
 
 import people.api.next.serializers
 from api.next.views import ResultsSetPagination
+from people.api.next.filters import PersonFilter
 from candidates import models as extra_models
 from candidates.api.next.serializers import LoggedActionSerializer
 from people.models import Person, PersonImage
@@ -39,7 +40,7 @@ class PersonViewSet(viewsets.ReadOnlyModelViewSet):
         if date_qs:
             date = parser.parse(date_qs)
             queryset = queryset.filter(
-                Q(updated_at__gte=date) | Q(memberships__updated_at__gte=date)
+                Q(modified__gte=date) | Q(memberships__modified__gte=date)
             )
         return queryset
 
@@ -88,6 +89,7 @@ class PersonViewSet(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = people.api.next.serializers.PersonSerializer
     pagination_class = ResultsSetPagination
+    filterset_class = PersonFilter
 
 
 class PersonRedirectViewSet(viewsets.ReadOnlyModelViewSet):

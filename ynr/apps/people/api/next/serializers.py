@@ -54,6 +54,8 @@ class ContactDetailSerializer(serializers.ModelSerializer):
         model = popolo_models.ContactDetail
         fields = ("contact_type", "label", "note", "value")
 
+        last_updated = serializers.DateTimeField(source="modified")
+
 
 class SourceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -83,6 +85,7 @@ class PersonSerializer(MinimalPersonSerializer):
             "url",
             "versions_url",
             "history_url",
+            "created",
             "last_updated",
             "honorific_prefix",
             "name",
@@ -107,7 +110,7 @@ class PersonSerializer(MinimalPersonSerializer):
     history_url = serializers.HyperlinkedIdentityField(
         view_name="person-history"
     )
-    last_updated = serializers.DateTimeField(source="updated_at")
+    last_updated = serializers.DateTimeField(source="modified")
     identifiers = PersonIdentifierSerializer(
         many=True, read_only=True, source="tmp_person_identifiers"
     )

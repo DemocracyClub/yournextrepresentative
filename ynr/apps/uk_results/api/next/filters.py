@@ -36,7 +36,7 @@ class ElectedSetFilter(ResultsFilterMixin):
         fields = ["election_date", "election_id", "last_updated"]
 
     last_updated = filters.DateTimeFilter(
-        field_name="updated_at",
+        field_name="modified",
         lookup_expr="gt",
         label="Last updated",
         help_text="An ISO datetime",

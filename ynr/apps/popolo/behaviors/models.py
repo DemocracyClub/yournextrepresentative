@@ -5,7 +5,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
-from model_utils.fields import AutoCreatedField, AutoLastModifiedField
 
 __author__ = "guglielmo"
 
@@ -71,19 +70,6 @@ class Dateframeable(models.Model):
         validators=[partial_date_validator, validate_partial_date],
         help_text="The date when the validity of the item ends",
     )
-
-    class Meta:
-        abstract = True
-
-
-class Timestampable(models.Model):
-    """
-    An abstract base class model that provides self-updating
-    ``created`` and ``modified`` fields.
-    """
-
-    created_at = AutoCreatedField("creation time")
-    updated_at = AutoLastModifiedField("last modification time")
 
     class Meta:
         abstract = True
