@@ -46,7 +46,7 @@ TWITTER_USERNAME = "democlub"
 SUPPORT_EMAIL = "candidates@democracyclub.org.uk"
 
 # Email addresses that error emails are sent to when DEBUG = False
-ADMINS = ()
+ADMINS = [()]
 
 # The From: address for all emails except error emails
 DEFAULT_FROM_EMAIL = "candidates@democracyclub.org.uk"

@@ -16,7 +16,7 @@ DATABASES = {
 }
 
 # A tuple of tuples containing (Full name, email address)
-ADMINS = ()
+ADMINS = [()]
 
 # **** Other settings that might be useful to change locally
 
