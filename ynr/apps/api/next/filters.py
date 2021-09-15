@@ -7,4 +7,12 @@ class LastUpdatedMixin(filterset.FilterSet):
         lookup_expr="gt",
         label="Last updated",
         help_text="An ISO datetime",
+        method="filter_last_updated",
     )
+
+    def filter_last_updated(self, queryset, name, value):
+        """
+        Default method that can be overided to check additional fields in subclass
+        """
+        name = f"{name}__gt"
+        return queryset.filter(**{name: value})

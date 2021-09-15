@@ -1,4 +1,7 @@
 from django.test import TestCase
+from django.utils import timezone
+from django.db.models import Q
+from mock import patch
 
 from elections.tests.test_ballot_view import SingleBallotStatesMixin
 from uk_results.models import ResultSet
@@ -104,3 +107,22 @@ class TestBallotQuerysetMethods(BallotsWithResultsMixin, TestCase):
         all_winners = set(has_results + has_winner_no_result)
         self.assertEqual(set(Ballot.objects.has_results()), all_winners)
         self.assertEqual(set(Ballot.objects.no_results()), set(no_results))
+
+    @patch("candidates.models.popolo_extra.BallotQueryset.filter")
+    def test_last_updated(self, mock_filter):
+        """
+        Unit test to ensure that when last_updated is called on the
+        Ballot queryset the correct modified fields are filtered
+        against.
+        """
+        datetime_obj = timezone.now()
+        Ballot.objects.last_updated(datetime=datetime_obj)
+        mock_filter.assert_called_once_with(
+            Q(modified__gt=datetime_obj)
+            | Q(election__modified__gt=datetime_obj)
+            | Q(post__modified__gt=datetime_obj)
+            | Q(membership__modified__gt=datetime_obj)
+            | Q(membership__person__modified__gt=datetime_obj)
+            | Q(membership__party__modified__gt=datetime_obj)
+        )
+        mock_filter.return_value.distinct.assert_called_once()

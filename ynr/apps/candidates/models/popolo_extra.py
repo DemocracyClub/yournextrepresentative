@@ -4,6 +4,7 @@ import datetime
 from django.contrib.admin.utils import NestedObjects
 from django.contrib.postgres.fields import JSONField
 from django.db import connection, models
+from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import mark_safe
@@ -146,6 +147,25 @@ class BallotQueryset(models.QuerySet):
         return self.exclude(
             models.Q(resultset__isnull=False)
             | models.Q(membership__elected=True)
+        ).distinct()
+
+    def last_updated(self, datetime):
+        """
+        Filters on a ballots modified date and related objects modified dates.
+        The related objects filtered are:
+        Election
+        Post
+        Membership
+        Memberhip.Person
+        Memberhip.Party
+        """
+        return self.filter(
+            Q(modified__gt=datetime)
+            | Q(election__modified__gt=datetime)
+            | Q(post__modified__gt=datetime)
+            | Q(membership__modified__gt=datetime)
+            | Q(membership__person__modified__gt=datetime)
+            | Q(membership__party__modified__gt=datetime)
         ).distinct()
 
 
