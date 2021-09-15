@@ -9,6 +9,7 @@ from django.dispatch import receiver
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from slugify import slugify
+from utils.mixins import EEModifiedMixin
 
 from ynr_refactoring.settings import PersonIdentifierFields
 
@@ -161,7 +162,7 @@ class Organization(Dateframeable, TimeStampedModel, models.Model):
         return self.name
 
 
-class Post(Dateframeable, TimeStampedModel, models.Model):
+class Post(EEModifiedMixin, Dateframeable, models.Model):
     """
     A position that exists independent of the person holding it
     see schema at http://popoloproject.com/schemas/json#
