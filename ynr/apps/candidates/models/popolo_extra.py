@@ -8,10 +8,10 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.functional import cached_property
-from django_extensions.db.models import TimeStampedModel
 
 from candidates.models.auth import TRUSTED_TO_LOCK_GROUP_NAME
 from elections.models import Election
+from utils.mixins import EEModifiedMixin
 
 
 """Extensions to the base django-popolo classes for YourNextRepresentative
@@ -149,7 +149,7 @@ class BallotQueryset(models.QuerySet):
         ).distinct()
 
 
-class Ballot(TimeStampedModel, models.Model):
+class Ballot(EEModifiedMixin, models.Model):
 
     VOTING_SYSTEM_FPTP = "FPTP"
 

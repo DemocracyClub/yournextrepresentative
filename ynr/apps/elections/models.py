@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 
+from utils.mixins import EEModifiedMixin
+
 
 class ElectionQuerySet(models.QuerySet):
     def current(self, current=True):
@@ -36,7 +38,7 @@ class ElectionManager(models.Manager):
         return self.current().filter(election_date__gte=today).exists()
 
 
-class Election(models.Model):
+class Election(EEModifiedMixin, models.Model):
     slug = models.CharField(max_length=128, unique=True)
     for_post_role = models.CharField(max_length=128)
     winner_membership_role = models.CharField(

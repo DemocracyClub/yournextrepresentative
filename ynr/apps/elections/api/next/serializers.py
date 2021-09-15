@@ -24,6 +24,8 @@ class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
             "election_date",
             "current",
             "party_lists_in_use",
+            "created",
+            "last_updated",
         )
 
     election_id = serializers.ReadOnlyField(
@@ -35,6 +37,8 @@ class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
         lookup_field="slug",
         lookup_url_kwarg="slug",
     )
+
+    last_updated = serializers.DateTimeField(source="modified")
 
 
 class MinimalBallotSerializer(serializers.HyperlinkedModelSerializer):
@@ -94,6 +98,8 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
             "sopn",
             "candidates_locked",
             "candidacies",
+            "created",
+            "last_updated",
         )
 
     url = serializers.HyperlinkedIdentityField(
@@ -118,6 +124,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         lookup_field="ballot_paper_id",
         lookup_url_kwarg="ballot_paper_id",
     )
+    last_updated = serializers.DateTimeField(source="modified")
 
     @swagger_serializer_method(serializer_or_field=OfficialDocumentSerializer)
     def get_sopn(self, instance):
