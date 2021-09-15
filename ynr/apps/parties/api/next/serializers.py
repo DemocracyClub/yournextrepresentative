@@ -76,5 +76,5 @@ class MinimalPartySerializer(PartySerializer):
     class Meta:
         model = Party
         ref_name = None  # Tells swagger that this is always embedded
-        fields = ("url", "ec_id", "name", "legacy_slug")
+        fields = ("url", "ec_id", "name", "legacy_slug", "created", "modified")
         swagger_schema_fields = {"description": Party.__doc__}
