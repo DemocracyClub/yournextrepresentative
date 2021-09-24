@@ -1,4 +1,4 @@
-from urllib.parse import urljoin
+from urllib.parse import urlencode, urljoin
 
 from django.conf import settings
 from django.core.management import call_command
@@ -47,18 +47,21 @@ def create_mock_with_fixtures(fixtures):
     return mock
 
 
+exclude_ref_regex_param = urlencode({"exclude_election_id_regex": r"^ref\..*"})
+
 fake_requests_current_elections = create_mock_with_fixtures(
     {
         urljoin(
-            EE_BASE_URL, "/api/elections/?poll_open_date__gte=2018-01-03"
+            EE_BASE_URL,
+            f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
         ): current_elections,
         urljoin(
             EE_BASE_URL,
-            "/api/elections/?poll_open_date__gte=fakedate&limit=100&offset=100",
+            f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=fakedate&limit=100&offset=100",
         ): current_elections_page_2,
         urljoin(
             EE_BASE_URL,
-            "/api/elections/?current=True&poll_open_date=2019-01-17",
+            f"/api/elections/?current=True&{exclude_ref_regex_param}&poll_open_date=2019-01-17",
         ): each_type_of_election_on_one_day,
     }
 )
@@ -66,11 +69,12 @@ fake_requests_current_elections = create_mock_with_fixtures(
 fake_requests_each_type_of_election_on_one_day = create_mock_with_fixtures(
     {
         urljoin(
-            EE_BASE_URL, "/api/elections/?poll_open_date__gte=2018-01-03"
+            EE_BASE_URL,
+            f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
         ): each_type_of_election_on_one_day,
         urljoin(
             EE_BASE_URL,
-            "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
+            f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
         ): no_results,
     }
 )
@@ -269,11 +273,11 @@ class EE_ImporterTest(WebTest):
             {
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): no_results,
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): local_highland,
             }
         )
@@ -292,11 +296,11 @@ class EE_ImporterTest(WebTest):
             {
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): local_highland,
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): no_results,
             }
         )
@@ -310,11 +314,11 @@ class EE_ImporterTest(WebTest):
             {
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): no_results,
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): local_highland,
             }
         )
@@ -346,11 +350,11 @@ class EE_ImporterTest(WebTest):
             {
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): local_highland,
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): local_highland,
             }
         )
@@ -374,11 +378,11 @@ class EE_ImporterTest(WebTest):
             {
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): local_highland,
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): no_results,
             }
         )
@@ -406,11 +410,11 @@ class EE_ImporterTest(WebTest):
             {
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): current_elections,
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): deleted_elections,
             }
         )
@@ -432,11 +436,11 @@ class EE_ImporterTest(WebTest):
             {
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): local_highland,
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): no_results,
             }
         )
@@ -456,11 +460,11 @@ class EE_ImporterTest(WebTest):
             {
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): no_results,
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): local_highland,
             }
         )
@@ -485,11 +489,11 @@ class EE_ImporterTest(WebTest):
             {
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): duplicate_post_names,
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?deleted=1&poll_open_date__gte=2018-01-03",
+                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
                 ): local_highland,
             }
         )
@@ -522,11 +526,11 @@ class EE_ImporterTest(WebTest):
             {
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?poll_open_date__gte=2019-04-02",
+                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
                 ): pre_gss_result,
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?deleted=1&poll_open_date__gte=2019-04-02",
+                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
                 ): local_highland,
             }
         )
@@ -539,11 +543,11 @@ class EE_ImporterTest(WebTest):
             {
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?poll_open_date__gte=2019-04-02",
+                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
                 ): post_gss_result,
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?deleted=1&poll_open_date__gte=2019-04-02",
+                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
                 ): local_highland,
             }
         )
@@ -576,11 +580,11 @@ class EE_ImporterTest(WebTest):
             {
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?poll_open_date__gte=2019-04-02",
+                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
                 ): replaced_election,
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?deleted=1&poll_open_date__gte=2019-04-02",
+                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
                 ): no_results,
             }
         )
@@ -599,11 +603,11 @@ class EE_ImporterTest(WebTest):
             {
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?poll_open_date__gte=2019-04-02",
+                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
                 ): duplicate_post_and_election,
                 urljoin(
                     EE_BASE_URL,
-                    "/api/elections/?deleted=1&poll_open_date__gte=2019-04-02",
+                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
                 ): no_results,
             }
         )
