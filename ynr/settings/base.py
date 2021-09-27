@@ -139,6 +139,8 @@ INSTALLED_APPS = (
     "duplicates",
 )
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 CELERY_RESULT_BACKEND = "django-db"
 # Set ALWAYS_EAGER so that by default tasks blocking when running and
 # always return the value. This essentially disabled Celery unless it's enabled.
