@@ -5,7 +5,7 @@ from urllib.parse import urljoin, quote_plus
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
 from django.contrib.postgres.indexes import GistIndex
 from django.contrib.postgres.search import (
     SearchVectorField,
