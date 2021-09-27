@@ -1,4 +1,4 @@
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
