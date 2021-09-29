@@ -341,7 +341,7 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
     )
 
     # Moved from MembeshipExtra
-    elected = models.NullBooleanField()
+    elected = models.BooleanField(null=True)
     party_list_position = models.PositiveSmallIntegerField(null=True)
     ballot = models.ForeignKey("candidates.Ballot", on_delete=models.CASCADE)
 
