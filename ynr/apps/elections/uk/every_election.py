@@ -89,6 +89,7 @@ class EEElection(dict):
                     "name": self["election_title"],
                     "party_lists_in_use": party_lists_in_use,
                     "organization": self.get_or_create_organisation()[0],
+                    "ee_modified": self.get("modified"),
                 },
             )
             self.election_object = election_obj
@@ -161,6 +162,7 @@ class EEElection(dict):
             start_date = self["division"]["divisionset"]["start_date"]
             end_date = self["division"]["divisionset"]["end_date"]
             territory_code = self["division"]["territory_code"]
+            ee_modified = self["division"].get("modified")
         else:
             # Case 2, this organisation isn't split in to divisions for
             # this election, take the info from the organisation directly
@@ -171,6 +173,7 @@ class EEElection(dict):
             start_date = self["organisation"]["start_date"]
             end_date = self["organisation"]["end_date"]
             territory_code = self["organisation"]["territory_code"]
+            ee_modified = self["organisation"].get("modified")
 
         cache_key = "--".join([slug, self.organization_object.slug, start_date])
         if cache_key in POST_CACHE:
@@ -203,6 +206,7 @@ class EEElection(dict):
             self.post_object.identifier = identifier
             self.post_object.territory_code = territory_code
             self.post_object.end_date = end_date
+            self.post_object.ee_modified = ee_modified
             self.post_object.save()
 
             if old_identifier != identifier:
@@ -254,6 +258,7 @@ class EEElection(dict):
                     "replaces": self.get_replaced_ballot(),
                     "tags": self.get("tags", {}),
                     "voting_system": voting_system.get("slug", ""),
+                    "ee_modified": self.get("modified"),
                 },
             )
 

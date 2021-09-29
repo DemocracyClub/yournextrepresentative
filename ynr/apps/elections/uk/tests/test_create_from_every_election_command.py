@@ -1,13 +1,16 @@
+import pytest
 from urllib.parse import urlencode, urljoin
 
 from django.conf import settings
 from django.core.management import call_command
+from django.utils import timezone
 from django_webtest import WebTest
 from freezegun import freeze_time
 from mock import Mock, patch
 
 from candidates.models import Ballot
 from candidates.tests.factories import (
+    BallotPaperFactory,
     MembershipFactory,
     PostFactory,
     ElectionFactory,
@@ -614,3 +617,66 @@ class EE_ImporterTest(WebTest):
 
         call_command("uk_create_elections_from_every_election")
         self.assertEqual(Ballot.objects.all().count(), 2)
+
+
+class TestRecenlyUpdated:
+    @pytest.fixture
+    def command_obj(self):
+        from elections.uk.management.commands.uk_create_elections_from_every_election import (
+            Command,
+        )
+
+        return Command()
+
+    @pytest.mark.django_db
+    def test_get_latest_ee_modified_datetime(self, command_obj):
+        """
+        Test that the latest ee_modified timestamp is returned from
+        either the Ballot or Election
+        """
+        earlier = timezone.datetime(2021, 9, 20, 0, 0, 0, tzinfo=timezone.utc)
+        later = timezone.datetime(2021, 10, 1, 0, 0, 0, tzinfo=timezone.utc)
+        ballot = BallotPaperFactory(
+            ee_modified=later, election__ee_modified=earlier
+        )
+        result = command_obj.get_latest_ee_modified_datetime()
+
+        assert result == ballot.ee_modified
+        assert result != ballot.election.ee_modified
+
+        # change so that the election was updated more recently
+        ballot.ee_modified = earlier
+        ballot.election.ee_modified = later
+        ballot.save()
+
+        assert result == ballot.election.ee_modified
+        assert result != ballot.ee_modified
+
+    def test_default_timestamp(self, command_obj):
+        assert command_obj.default_timestamp() == timezone.datetime(
+            2021, 9, 1, tzinfo=timezone.utc
+        )
+
+    @pytest.mark.django_db()
+    @patch(
+        "elections.uk.management.commands.uk_create_elections_from_every_election.EveryElectionImporter"
+    )
+    def test_import_approved_elections_uses_default_timestamp(
+        self, ee_importer, command_obj
+    ):
+        """
+        Check the default timestamp is used if there are no ee_modified
+        values to use from the database
+        """
+        with patch.object(
+            command_obj, "get_latest_ee_modified_datetime", return_value=None
+        ) as latest_timestamp_mock:
+            expected_query_args = {
+                "modified": timezone.datetime(
+                    2021, 9, 1, tzinfo=timezone.utc
+                ).isoformat()
+            }
+            command_obj.import_approved_elections(recently_updated=True)
+
+            latest_timestamp_mock.assert_called_once()
+            ee_importer.assert_called_once_with(expected_query_args)
