@@ -308,6 +308,10 @@ class EveryElectionImporter(object):
             query_args = {
                 "poll_open_date__gte": str(date.today() - timedelta(days=30))
             }
+        # never import referendums
+        # NB if this requirement changes, should add election types as an
+        # option to uk_create_elections_fromn_every_election management command
+        query_args["exclude_election_id_regex"] = r"^ref\..*"
         self.query_args = query_args
 
     def build_election_tree(self):
@@ -316,9 +320,9 @@ class EveryElectionImporter(object):
         a tree of IDs
         """
 
-        url = "{}api/elections/".format(self.EE_BASE_URL)
-        prams = urlencode(OrderedDict(sorted(self.query_args.items())))
-        url = "{}?{}".format(url, prams)
+        url = f"{self.EE_BASE_URL}api/elections/"
+        params = urlencode(OrderedDict(sorted(self.query_args.items())))
+        url = f"{url}?{params}"
         while url:
             req = requests.get(url)
             req.raise_for_status()
