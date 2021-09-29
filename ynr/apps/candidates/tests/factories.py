@@ -67,6 +67,10 @@ class PostFactory(factory.django.DjangoModelFactory):
     role = "Member of Parliament"
     slug = factory.LazyAttribute(lambda o: slugify(o.label))
     identifier = factory.LazyAttribute(lambda o: slugify(o.label))
+    label = "Sheffield, Hallam"
+    organization = factory.SubFactory(
+        "candidates.tests.factories.OrganizationFactory"
+    )
 
     @factory.post_generation
     def elections(self, create, extracted, **kwargs):
@@ -90,6 +94,9 @@ class PostFactory(factory.django.DjangoModelFactory):
 
 
 class BallotPaperFactory(factory.django.DjangoModelFactory):
+    election = factory.SubFactory(ElectionFactory)
+    post = factory.SubFactory(PostFactory)
+
     class Meta:
         model = "candidates.Ballot"
 
@@ -104,6 +111,8 @@ class BallotPaperFactory(factory.django.DjangoModelFactory):
 
 
 class OrganizationFactory(factory.django.DjangoModelFactory):
+    name = "House of Commons of the United Kingdom"
+
     class Meta:
         model = "popolo.Organization"
 
