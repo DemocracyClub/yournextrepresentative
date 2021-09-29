@@ -2,7 +2,7 @@ import hashlib
 import datetime
 
 from django.contrib.admin.utils import NestedObjects
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
 from django.db import connection, models
 from django.db.models import Q
 from django.urls import reverse

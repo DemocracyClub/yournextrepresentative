@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from enum import Enum, unique
 
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
 from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.urls import reverse
