@@ -36,6 +36,7 @@ from candidates.management.images import (
 )
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.views.version_data import get_change_metadata, get_client_ip
+from candidates.models.db import ActionType
 from elections.models import Election
 from people.models import Person, PersonImage
 from popolo.models import Membership
@@ -80,7 +81,7 @@ def upload_photo_image(request, person_id):
         # Record that action:
         LoggedAction.objects.create(
             user=request.user,
-            action_type="photo-upload",
+            action_type=ActionType.PHOTO_UPLOAD,
             ip_address=get_client_ip(request),
             popit_person_new_version="",
             person=person,
@@ -131,7 +132,7 @@ def upload_photo_url(request, person_id):
             queued_image.save()
             LoggedAction.objects.create(
                 user=request.user,
-                action_type="photo-upload",
+                action_type=ActionType.PHOTO_UPLOAD,
                 ip_address=get_client_ip(request),
                 popit_person_new_version="",
                 person=person,
@@ -403,7 +404,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             person.save()
             LoggedAction.objects.create(
                 user=self.request.user,
-                action_type="photo-approve",
+                action_type=ActionType.PHOTO_APPROVE,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version=change_metadata["version_id"],
                 person=person,
@@ -444,7 +445,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             update_message = sentence.format(uploading_user=uploaded_by)
             LoggedAction.objects.create(
                 user=self.request.user,
-                action_type="photo-reject",
+                action_type=ActionType.PHOTO_REJECT,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version="",
                 person=person,
@@ -509,7 +510,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             update_message = sentence.format(uploading_user=uploaded_by)
             LoggedAction.objects.create(
                 user=self.request.user,
-                action_type="photo-ignore",
+                action_type=ActionType.PHOTO_IGNORE,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version="",
                 person=person,
@@ -555,7 +556,7 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
 
         LoggedAction.objects.create(
             user=self.request.user,
-            action_type="suggest-ballot-lock",
+            action_type=ActionType.SUGGEST_BALLOT_LOCK,
             ballot=form.cleaned_data["ballot"],
             ip_address=get_client_ip(self.request),
             source=form.cleaned_data["justification"],

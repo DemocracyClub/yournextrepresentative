@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django_webtest import WebTest
 
 from candidates.models import LoggedAction
+from candidates.models.db import ActionType
+
 from people.tests.factories import PersonFactory
 
 from .auth import TestUserMixin
@@ -21,7 +23,7 @@ class TestLeaderboardView(TestUserMixin, WebTest):
 
         self.action1 = LoggedAction.objects.create(
             user=self.user,
-            action_type="person-create",
+            action_type=ActionType.PERSON_CREATE,
             ip_address="127.0.0.1",
             person=test_person_9876,
             popit_person_new_version="1234567890abcdef",
@@ -29,7 +31,7 @@ class TestLeaderboardView(TestUserMixin, WebTest):
         )
         self.action2 = LoggedAction.objects.create(
             user=self.user2,
-            action_type="candidacy-delete",
+            action_type=ActionType.CANDIDACY_DELETE,
             ip_address="127.0.0.1",
             person=test_person_1234,
             popit_person_new_version="987654321",
@@ -37,7 +39,7 @@ class TestLeaderboardView(TestUserMixin, WebTest):
         )
         self.action2 = LoggedAction.objects.create(
             user=self.user2,
-            action_type="candidacy-delete",
+            action_type=ActionType.CANDIDACY_DELETE,
             ip_address="127.0.0.1",
             person=test_person_1234,
             popit_person_new_version="987654321",

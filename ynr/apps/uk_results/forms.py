@@ -4,6 +4,7 @@ from django import forms
 from django.db import transaction
 
 from candidates.models import LoggedAction
+from candidates.models.db import ActionType
 from candidates.views.version_data import get_client_ip
 from uk_results.helpers import RecordBallotResultsHelper
 from utils.db import LastWord
@@ -134,7 +135,7 @@ class ResultSetForm(forms.ModelForm):
 
             LoggedAction.objects.create(
                 user=instance.user,
-                action_type="entered-results-data",
+                action_type=ActionType.ENTERED_RESULTS_DATA,
                 source=instance.source,
                 ballot=instance.ballot,
             )

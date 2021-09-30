@@ -1,6 +1,7 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
 from enum import Enum, unique
+from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
@@ -58,7 +59,7 @@ class ActionType(models.TextChoices):
     CONSTITUENCY_UNLOCK = "constituency-unlock", "Constituency unlocked"
     CANDIDACY_CREATE = "candidacy-create", "Candidacy created"
     CANDIDACY_DELETE = "candidacy-delete", "Candidacy deleted"
-    PHOTO_APPROVED = "photo-approve", "Photo approved"
+    PHOTO_APPROVE = "photo-approve", "Photo approved"
     PHOTO_UPLOAD = "photo-upload", "Photo uploaded"
     PHOTO_REJECT = "photo-reject", "Photo rejected"
     PHOTO_IGNORE = "photo-ignore", "Photo ignored"

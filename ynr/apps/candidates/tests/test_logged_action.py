@@ -2,6 +2,8 @@ from django.test import TestCase
 
 import people.tests.factories
 from candidates.models import LoggedAction
+from candidates.models.db import ActionType
+
 
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin
@@ -14,7 +16,7 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
         action = LoggedAction.objects.create(
             user=self.user,
-            action_type="person-create",
+            action_type=ActionType.PERSON_CREATE,
             ip_address="127.0.0.1",
             person=person,
             popit_person_new_version="1234567890abcdef",
@@ -31,7 +33,7 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
         action = LoggedAction.objects.create(
             user=self.user,
-            action_type="person-create",
+            action_type=ActionType.PERSON_CREATE,
             ip_address="127.0.0.1",
             person=person,
             popit_person_new_version="1234567890abcdef",
@@ -45,7 +47,7 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
     def test_subject_ballot(self):
         action = LoggedAction.objects.create(
             user=self.user,
-            action_type="constituency-lock",
+            action_type=ActionType.CONSTITUENCY_LOCK,
             ip_address="127.0.0.1",
             post=self.camberwell_post,
             ballot=self.camberwell_post_ballot,

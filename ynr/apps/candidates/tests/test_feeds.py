@@ -2,6 +2,8 @@ from django_webtest import WebTest
 
 from candidates.models import LoggedAction
 from people.models import Person
+from candidates.models.db import ActionType
+
 
 from .auth import TestUserMixin
 
@@ -12,7 +14,7 @@ class TestFeeds(TestUserMixin, WebTest):
         self.person2 = Person.objects.create(name="Test Person2")
         self.action1 = LoggedAction.objects.create(
             user=self.user,
-            action_type="person-create",
+            action_type=ActionType.PERSON_CREATE,
             ip_address="127.0.0.1",
             person=self.person1,
             popit_person_new_version="1234567890abcdef",
@@ -20,7 +22,7 @@ class TestFeeds(TestUserMixin, WebTest):
         )
         self.action2 = LoggedAction.objects.create(
             user=self.user,
-            action_type="candidacy-delete",
+            action_type=ActionType.CANDIDACY_CREATE,
             ip_address="127.0.0.1",
             person=self.person2,
             popit_person_new_version="987654321",
