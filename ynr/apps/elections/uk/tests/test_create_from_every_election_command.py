@@ -1,3 +1,4 @@
+from unittest import mock
 import pytest
 from urllib.parse import urlencode, urljoin
 
@@ -16,6 +17,7 @@ from candidates.tests.factories import (
     ElectionFactory,
     OrganizationFactory,
 )
+from elections.models import Election
 from elections.uk import every_election
 from people.tests.factories import PersonFactory
 from popolo.models import Post
@@ -680,3 +682,99 @@ class TestRecenlyUpdated:
 
             latest_timestamp_mock.assert_called_once()
             ee_importer.assert_called_once_with(expected_query_args)
+
+
+class TestEEElection:
+    @patch("elections.uk.every_election.EEElection.get_or_create_election")
+    @patch("elections.uk.every_election.EEElection.get_or_create_post")
+    def test_get_or_create_ballot(
+        self, mock_get_or_create_post, mock_get_or_create_election
+    ):
+        """
+        The purpose of this test is to ensure that we have a check for
+        the data that is stored from EE response when we create a
+        ballot. If we begin to capture a new field, or remove one,
+        then this test will fail. This is mainly to act as a safety
+        net so that a field that we rely on elsewhere is not removed
+        that might otherwise go unnoticed e.g. the 'ee_modifoed' field
+        """
+        modified = timezone.datetime(2021, 10, 1, 0, 0, 0, tzinfo=timezone.utc)
+        data = {
+            "group": "local.2021-10-21",
+            "seats_contested": 1,
+            "election_id": "local.birmingham.yardley-east.by.2021-10-21",
+            "cancelled": False,
+            "replaces": None,
+            "modified": modified,
+        }
+        ee_election = every_election.EEElection(data)
+        ee_election.post_object = mock.MagicMock()
+        parent = every_election.EEElection({"election_id": "local.2021-10-21"})
+        parent.election_object = mock.MagicMock()
+
+        result = ("ballot_obj", "created")
+        with patch.object(
+            Ballot.objects, "update_or_create", return_value=result
+        ) as mock_update_or_create:
+            ee_election.get_or_create_ballot(parent=parent)
+            mock_update_or_create.assert_called_once_with(
+                ballot_paper_id="local.birmingham.yardley-east.by.2021-10-21",
+                defaults={
+                    "post": ee_election.post_object,
+                    "election": parent.election_object,
+                    "winner_count": 1,
+                    "cancelled": False,
+                    "replaces": None,
+                    "tags": {},
+                    "voting_system": "",
+                    "ee_modified": modified,
+                },
+            )
+            mock_get_or_create_post.assert_called_once()
+            mock_get_or_create_election.assert_called_once()
+
+    @patch("elections.uk.every_election.EEElection.get_or_create_organisation")
+    def test_get_or_create_election(self, mock_get_or_create_org):
+        """
+        The purpose of this test is to ensure that we have a check for
+        the data that is stored from EE response when we create a
+        ballot. If we begin to capture a new field, or remove one,
+        then this test will fail. This is mainly to act as a safety
+        net so that a field that we rely on elsewhere is not removed
+        that might otherwise go unnoticed e.g. the 'ee_modifoed' field
+        """
+        modified = timezone.datetime(2021, 10, 1, 0, 0, 0, tzinfo=timezone.utc)
+        poll_open_date = timezone.datetime(2021, 10, 6).date()
+        data = {
+            "election_id": "local.2021-10-21",
+            "poll_open_date": poll_open_date,
+            "current": True,
+            "election_type": {"name": "Local elections"},
+            "election_title": "Local elections",
+            "modified": modified,
+            "voting_system": {"uses_party_lists": False},
+        }
+        mock_org = mock.MagicMock()
+        mock_get_or_create_org.return_value = [mock_org]
+        ee_election = every_election.EEElection(data)
+
+        with patch.object(
+            Election.objects, "update_or_create"
+        ) as mock_update_or_create:
+            mock_update_or_create.return_value = ("election_obj", "created")
+            ee_election.get_or_create_election()
+            mock_update_or_create.assert_called_once_with(
+                slug="local.2021-10-21",
+                election_date=poll_open_date,
+                defaults={
+                    "current": True,
+                    "candidate_membership_role": "Candidate",
+                    "for_post_role": "Local elections",
+                    "show_official_documents": True,
+                    "name": "Local elections",
+                    "party_lists_in_use": False,
+                    "organization": mock_org,
+                    "ee_modified": modified,
+                },
+            )
+            mock_get_or_create_org.assert_called_once()
