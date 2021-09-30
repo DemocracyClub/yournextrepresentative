@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 
 from candidates.models import LoggedAction
-from candidates.models.db import EditType
+from candidates.models.db import EditType, ActionType
 from candidates.views.version_data import get_change_metadata
 from results.models import ResultEvent
 from uk_results.models import ResultSet
@@ -51,7 +51,7 @@ class ResultsBot(object):
 
                 LoggedAction.objects.create(
                     user=self.user,
-                    action_type="set-candidate-elected",
+                    action_type=ActionType.SET_CANDIDATE_ELECTED,
                     popit_person_new_version=change_metadata["version_id"],
                     person=membership.person,
                     source=source,
@@ -119,7 +119,7 @@ class ResultsBot(object):
                 self._mark_candidates_as_winner(instance)
                 LoggedAction.objects.create(
                     user=instance.user,
-                    action_type="entered-results-data",
+                    action_type=ActionType.ENTERED_RESULTS_DATA,
                     source=instance.source,
                     ballot=instance.ballot,
                     edit_type=EditType.BOT.name,

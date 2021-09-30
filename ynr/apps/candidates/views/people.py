@@ -32,6 +32,7 @@ from people.forms.formsets import (
 from people.models import Person
 from popolo.models import NotStandingValidationError
 from ynr.apps.people.merging import PersonMerger, InvalidMergeError
+from candidates.models.db import ActionType
 
 from ..diffs import get_version_diffs
 from ..models import (
@@ -184,7 +185,7 @@ class RevertPersonView(LoginRequiredMixin, View):
             LoggedAction.objects.create(
                 user=self.request.user,
                 person=person,
-                action_type="person-revert",
+                action_type=ActionType.PERSON_REVERT,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version=change_metadata["version_id"],
                 source=change_metadata["information_source"],
@@ -252,7 +253,7 @@ class DuplicatePersonView(LoginRequiredMixin, FormView, DetailView):
             LoggedAction.objects.create(
                 user=self.request.user,
                 person=self.object,
-                action_type="duplicate-suggest",
+                action_type=ActionType.DUPLICATE_SUGGEST,
                 ip_address=get_client_ip(self.request),
                 source="duplicate person suggested",
             )
@@ -473,7 +474,7 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
             LoggedAction.objects.create(
                 user=self.request.user,
                 person=person,
-                action_type="person-update",
+                action_type=ActionType.PERSON_UPDATE,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version=change_metadata["version_id"],
                 source=change_metadata["information_source"],
@@ -561,7 +562,7 @@ class NewPersonView(
             LoggedAction.objects.create(
                 user=self.request.user,
                 person=person,
-                action_type="person-create",
+                action_type=ActionType.PERSON_CREATE,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version=change_metadata["version_id"],
                 source=change_metadata["information_source"],

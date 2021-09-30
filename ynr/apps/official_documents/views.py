@@ -5,6 +5,7 @@ from django.views.generic import CreateView, DetailView, TemplateView
 
 from auth_helpers.views import GroupRequiredMixin
 from candidates.models import Ballot, LoggedAction
+from candidates.models.db import ActionType
 from candidates.views.version_data import get_client_ip
 from moderation_queue.models import SuggestedPostLock
 from sopn_parsing.helpers.extract_pages import extract_pages_for_ballot
@@ -60,7 +61,7 @@ class CreateDocumentView(GroupRequiredMixin, CreateView):
         LoggedAction.objects.create(
             user=self.request.user,
             ballot=self.object.ballot,
-            action_type="sopn-upload",
+            action_type=ActionType.SOPN_UPLOAD,
             ip_address=get_client_ip(self.request),
             source=self.object.source_url,
         )

@@ -6,7 +6,7 @@ from candidates.models.popolo_extra import Ballot
 from django.db.models.functions import Length
 from popolo.models import Membership
 from resultsbot.helpers import ResultsBot
-
+from candidates.models import ActionType
 from uk_results.helpers import read_csv_from_url
 from uk_results import models
 
@@ -92,7 +92,7 @@ class Command(BaseCommand):
 
             LoggedAction.objects.create(
                 user=resultset.user,
-                action_type="entered-results-data",
+                action_type=ActionType.ENTERED_RESULTS_DATA,
                 source=resultset.source,
                 ballot=resultset.ballot,
                 edit_type=EditType.BOT.name,

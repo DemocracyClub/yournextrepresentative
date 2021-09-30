@@ -5,6 +5,7 @@ from django.db.models import Count
 from django.utils import timezone
 
 from wombles.models import WombleProfile, WombleTags
+from candidates.models.db import ActionType
 
 
 class Command(BaseCommand):
@@ -46,9 +47,9 @@ class Command(BaseCommand):
         threshold = 20
 
         actions = [
-            "set-candidate-elected",
-            "set-candidate-not-elected",
-            "entered-results-data",
+            ActionType.SET_CANDIDATE_ELECTED,
+            ActionType.SET_CANDIDATE_NOT_ELECTED,
+            ActionType.ENTERED_RESULTS_DATA,
         ]
 
         qs = WombleProfile.objects.annotate(
