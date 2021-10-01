@@ -75,7 +75,18 @@ class Command(BaseCommand):
         ee_importer.build_election_tree()
 
         for ballot_id, election_dict in ee_importer.ballot_ids.items():
-            parent = ee_importer.get_parent(ballot_id)
+
+            try:
+                parent = ee_importer.get_parent(ballot_id)
+            except KeyError as e:
+                # raise the exception if this is not a recent update
+                if not recently_updated:
+                    raise e
+                # otherwise set parent to None as the KeyError
+                # indicates there is nothing to update on the parent
+                # election which is why it is not in the election tree
+                parent = None
+
             election_dict.get_or_create_ballot(parent=parent)
 
     def delete_deleted_elections(self):

@@ -706,6 +706,7 @@ class TestEEElection:
             "cancelled": False,
             "replaces": None,
             "modified": modified,
+            "voting_system": {"slug": "FPTP"},
         }
         ee_election = every_election.EEElection(data)
         ee_election.post_object = mock.MagicMock()
@@ -726,7 +727,7 @@ class TestEEElection:
                     "cancelled": False,
                     "replaces": None,
                     "tags": {},
-                    "voting_system": "",
+                    "voting_system": "FPTP",
                     "ee_modified": modified,
                 },
             )

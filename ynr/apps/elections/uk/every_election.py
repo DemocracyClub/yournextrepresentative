@@ -227,40 +227,43 @@ class EEElection(dict):
             return None
 
     def get_or_create_ballot(self, parent):
+        """
+        Parent may be None if this is a recently-updated import. In
+        this case it indicates that the parent has not been modified
+        in EE so we can skip the get_or_creat_election step
+        """
         if hasattr(self, "ballot_object"):
-            self.ballot_created = False
-        else:
-            # First, set up the Post and Election with related objects
-            self.get_or_create_post()
+            return self.ballot_object, False
+        # First, set up the Post and Election with related objects
+        self.get_or_create_post()
 
-            # Make sure we're creating an ID for the right parent
+        voting_system = self["voting_system"] or {}
+        ballot_data = {
+            "post": self.post_object,
+            "winner_count": self["seats_contested"],
+            "cancelled": self["cancelled"],
+            "replaces": self.get_replaced_ballot(),
+            "tags": self.get("tags", {}),
+            "voting_system": voting_system.get("slug", ""),
+            "ee_modified": self.get("modified"),
+        }
+
+        # if we have a parent Election update it then add it to
+        # the dict to be used to update the Ballot
+        if parent:
             assert self.parent == parent["election_id"], "{} != {}".format(
                 self.parent, parent["election_id"]
             )
-
             # Note that we create the election of the parent
             parent.get_or_create_election()
+            ballot_data["election"] = parent.election_object
 
-            # Get the winner count
-            winner_count = self["seats_contested"]
-
-            voting_system = self.get("voting_system", {}) or {}
-            (
-                self.ballot_object,
-                self.ballot_created,
-            ) = Ballot.objects.update_or_create(
-                ballot_paper_id=self["election_id"],
-                defaults={
-                    "post": self.post_object,
-                    "election": parent.election_object,
-                    "winner_count": winner_count,
-                    "cancelled": self["cancelled"],
-                    "replaces": self.get_replaced_ballot(),
-                    "tags": self.get("tags", {}),
-                    "voting_system": voting_system.get("slug", ""),
-                    "ee_modified": self.get("modified"),
-                },
-            )
+        (
+            self.ballot_object,
+            self.ballot_created,
+        ) = Ballot.objects.update_or_create(
+            ballot_paper_id=self["election_id"], defaults=ballot_data
+        )
 
         return (self.ballot_object, self.ballot_created)
 
