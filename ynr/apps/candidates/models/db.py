@@ -1,7 +1,6 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
 from enum import Enum, unique
-from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
@@ -89,6 +88,9 @@ class ActionType(models.TextChoices):
         "suspended-twitter-account",
         "Suspended Twitter account",
     )
+
+    def get_action_type_display():
+        return ActionType.choices
 
 
 class LoggedAction(models.Model):
