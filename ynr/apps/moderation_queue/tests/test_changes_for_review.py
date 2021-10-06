@@ -585,7 +585,9 @@ class TestDiffHTML(TestCase):
             name="John Smith", id="1234567"
         )
         la = LoggedAction.objects.create(
-            person=person, popit_person_new_version="1376abcd9234"
+            person=person,
+            action_type=ActionType.PERSON_CREATE,
+            popit_person_new_version="1376abcd9234",
         )
         self.assertEqual(
             la.diff_html,
@@ -639,7 +641,9 @@ class TestDiffHTML(TestCase):
             ],
         )
         la = LoggedAction.objects.create(
-            person=person, popit_person_new_version="3fc494d54f61a157"
+            person=person,
+            action_type=ActionType.PERSON_CREATE,
+            popit_person_new_version="3fc494d54f61a157",
         )
         self.assertEqual(
             tidy_html_whitespace(la.diff_html),
