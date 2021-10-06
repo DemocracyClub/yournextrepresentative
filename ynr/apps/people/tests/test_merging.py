@@ -6,6 +6,7 @@ from django_webtest import WebTest
 from django.conf import settings
 
 from candidates.models import LoggedAction
+from candidates.models.db import ActionType
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import PostFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
@@ -29,8 +30,16 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         Swap source and dest in the args to ensure dest is always kept
         """
 
-        LoggedAction.objects.create(person=self.source_person, user=self.user)
-        LoggedAction.objects.create(person=self.dest_person, user=self.user)
+        LoggedAction.objects.create(
+            person=self.source_person,
+            action_type=ActionType.PERSON_MERGE,
+            user=self.user,
+        )
+        LoggedAction.objects.create(
+            person=self.dest_person,
+            action_type=ActionType.PERSON_MERGE,
+            user=self.user,
+        )
 
         self.assertEqual(Person.objects.count(), 2)
         self.assertEqual(LoggedAction.objects.count(), 2)
