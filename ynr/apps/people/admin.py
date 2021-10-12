@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 from sorl.thumbnail.admin.current import AdminImageWidget
 
 from candidates.models import LoggedAction
+from candidates.models.db import ActionType
 from candidates.views.version_data import get_client_ip
 from people.data_removal_helpers import DataRemover
 from people.models import (
@@ -121,7 +122,7 @@ class PersonAdmin(admin.ModelAdmin):
 
             LoggedAction.objects.create(
                 user=request.user,
-                action_type="change-edit-limitations",
+                action_type=ActionType.CHANGE_EDIT_LIMITATIONS,
                 ip_address=get_client_ip(request),
                 person=obj,
                 source=message,

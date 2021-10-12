@@ -12,6 +12,7 @@ from mock import patch
 
 import people.tests.factories
 from candidates.models import LoggedAction
+from candidates.models.db import ActionType
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.review_required_helper import PREVIOUSLY_APPROVED_COUNT
 from parties.models import Party
@@ -61,7 +62,7 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
             LoggedAction.objects.create(
                 id=(1000 + i),
                 user=self.user,
-                action_type="person-update",
+                action_type=ActionType.PERSON_UPDATE,
                 person=example_person,
                 popit_person_new_version=random_person_id(),
                 source="Just for tests...",
@@ -83,7 +84,7 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
         LoggedAction.objects.create(
             id=(1000),
             user=self.user,
-            action_type="person-update",
+            action_type=ActionType.PERSON_UPDATE,
             person=example_person,
             popit_person_new_version=random_person_id(),
             source="Just for tests...",
@@ -112,7 +113,7 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
         LoggedAction.objects.create(
             id=(1000),
             user=self.user,
-            action_type="person-update",
+            action_type=ActionType.PERSON_UPDATE,
             person=example_person,
             popit_person_new_version=random_person_id(),
             source="Just for tests...",
@@ -137,7 +138,7 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
             LoggedAction.objects.create(
                 id=(1000 + i),
                 user=self.user,
-                action_type="person-update",
+                action_type=ActionType.PERSON_UPDATE,
                 person=example_person,
                 popit_person_new_version=random_person_id(),
                 source="Just for tests...",
@@ -230,7 +231,7 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
             LoggedAction.objects.create(
                 id=(1000 + i),
                 user=self.user,
-                action_type="person-update",
+                action_type=ActionType.PERSON_UPDATE,
                 person=example_person,
                 popit_person_new_version=random_person_id(),
                 source="Just for tests...",
@@ -288,7 +289,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
             la = LoggedAction.objects.create(
                 id=(1000 + i),
                 user=self.lapsed_experienced,
-                action_type="person-update",
+                action_type=ActionType.PERSON_UPDATE,
                 person=example_person,
                 popit_person_new_version=random_person_id(),
                 source="Just for tests...",
@@ -300,7 +301,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
             la = LoggedAction.objects.create(
                 id=(1500 + i),
                 user=self.lapsed_experienced,
-                action_type="person-update",
+                action_type=ActionType.PERSON_UPDATE,
                 person=example_person,
                 popit_person_new_version=random_person_id(),
                 source="Just for tests...",
@@ -313,7 +314,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
             la = LoggedAction.objects.create(
                 id=(2000 + i),
                 user=self.new_suddenly_lots,
-                action_type="person-update",
+                action_type=ActionType.PERSON_UPDATE,
                 person=example_person,
                 popit_person_new_version=random_person_id(),
                 source="Just for tests",
@@ -325,7 +326,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         la = LoggedAction.objects.create(
             id=(2500 + i),
             user=self.new_only_one,
-            action_type="person-update",
+            action_type=ActionType.PERSON_UPDATE,
             person=example_person,
             popit_person_new_version=random_person_id(),
             source="Just for tests",
@@ -337,7 +338,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         LoggedAction.objects.create(
             id=(3500 + i),
             user=self.new_only_one,
-            action_type="photo-upload",
+            action_type=ActionType.PHOTO_UPLOAD,
             person=example_person,
             popit_person_new_version=random_person_id(),
             source="Just for tests",
@@ -354,7 +355,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         la = LoggedAction.objects.create(
             id=3000,
             user=self.morbid_vandal,
-            action_type="person-update",
+            action_type=ActionType.PERSON_UPDATE,
             person=dead_person,
             popit_person_new_version=random_person_id(),
             source="Just for tests",
@@ -371,7 +372,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         la = LoggedAction.objects.create(
             id=4000,
             user=self.lapsed_experienced,
-            action_type="person-update",
+            action_type=ActionType.PERSON_UPDATE,
             person=prime_minister,
             popit_person_new_version=random_person_id(),
             source="Just for tests...",
@@ -383,7 +384,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         la = LoggedAction.objects.create(
             id=4500,
             user=self.lapsed_experienced,
-            action_type="photo-upload",
+            action_type=ActionType.PHOTO_UPLOAD,
             person=example_person,
             popit_person_new_version=random_person_id(),
             source="Just for tests...",
@@ -397,7 +398,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         la = LoggedAction.objects.create(
             id=5000,
             user=self.morbid_vandal,
-            action_type="constituency-lock",
+            action_type=ActionType.CONSTITUENCY_LOCK,
             person=None,
             post=None,
             popit_person_new_version="",
@@ -584,7 +585,9 @@ class TestDiffHTML(TestCase):
             name="John Smith", id="1234567"
         )
         la = LoggedAction.objects.create(
-            person=person, popit_person_new_version="1376abcd9234"
+            person=person,
+            action_type=ActionType.PERSON_CREATE,
+            popit_person_new_version="1376abcd9234",
         )
         self.assertEqual(
             la.diff_html,
@@ -638,7 +641,9 @@ class TestDiffHTML(TestCase):
             ],
         )
         la = LoggedAction.objects.create(
-            person=person, popit_person_new_version="3fc494d54f61a157"
+            person=person,
+            action_type=ActionType.PERSON_CREATE,
+            popit_person_new_version="3fc494d54f61a157",
         )
         self.assertEqual(
             tidy_html_whitespace(la.diff_html),

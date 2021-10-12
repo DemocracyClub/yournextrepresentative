@@ -2,6 +2,8 @@ from django_webtest import WebTest
 
 import people.tests.factories
 from candidates.models import LoggedAction
+from candidates.models.db import ActionType
+
 
 from .auth import TestUserMixin
 
@@ -16,7 +18,7 @@ class TestRecentChangesView(TestUserMixin, WebTest):
         )
         self.action1 = LoggedAction.objects.create(
             user=self.user,
-            action_type="person-create",
+            action_type=ActionType.PERSON_CREATE,
             ip_address="127.0.0.1",
             person=test_person_1,
             popit_person_new_version="1234567890abcdef",
@@ -24,7 +26,7 @@ class TestRecentChangesView(TestUserMixin, WebTest):
         )
         self.action2 = LoggedAction.objects.create(
             user=self.user,
-            action_type="candidacy-delete",
+            action_type=ActionType.CANDIDACY_DELETE,
             ip_address="127.0.0.1",
             person=test_person_2,
             popit_person_new_version="987654321",

@@ -69,7 +69,7 @@
         </a>
       </td>
       <td>{{ action.created|naturaltime }}</td>
-      <td>{{ action.action_type }}</td>
+      <td>{{ action.get_action_type_display }}</td>
       {% if action.person %}
         <td><a href="{% url 'person-view' person_id=action.person.id %}">{{ action.person.name }}</a></td>
       {% else %}

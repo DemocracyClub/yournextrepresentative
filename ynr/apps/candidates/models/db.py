@@ -31,6 +31,68 @@ class EditType(Enum):
     BULK_ADD = "Bulk Add"
 
 
+class ActionType(models.TextChoices):
+    ENTERED_RESULTS_DATA = "entered-results-data", "Entered results"
+    SET_CANDIDATE_ELECTED = "set-candidate-elected", "Set Candidate elected"
+    SET_CANDIDATE_NOT_ELECTED = (
+        "set-candidate-not-elected",
+        "Set Candidate not elected",
+    )
+    PERSON_LOCK = "person-lock", "Person locked"
+    PERSON_UPDATE = "person-update", "Person updated"
+    PERSON_CREATE = "person-create", "Person created"
+    PERSON_OTHER_NAME_CREATE = (
+        "person-other-name-create",
+        "Person Other name created",
+    )
+    PERSON_OTHER_NAME_DELETE = (
+        "person-other-name-delete",
+        "Person Other name deleted",
+    )
+    PERSON_OTHER_NAME_UPDATE = (
+        "person-other-name-update",
+        "Person Other name updated",
+    )
+    PERSON_REVERT = "person-revert", "Person reverted"
+    CONSTITUENCY_LOCK = "constituency-lock", "Constituency locked"
+    CONSTITUENCY_UNLOCK = "constituency-unlock", "Constituency unlocked"
+    CANDIDACY_CREATE = "candidacy-create", "Candidacy created"
+    CANDIDACY_DELETE = "candidacy-delete", "Candidacy deleted"
+    PHOTO_APPROVE = "photo-approve", "Photo approved"
+    PHOTO_UPLOAD = "photo-upload", "Photo uploaded"
+    PHOTO_REJECT = "photo-reject", "Photo rejected"
+    PHOTO_IGNORE = "photo-ignore", "Photo ignored"
+    SUGGEST_BALLOT_LOCK = "suggest-ballot-lock", "Suggested ballot lock"
+    PERSON_MERGE = "person-merge", "Person merged"
+    RECORD_COUNCIL_RESULT = "record-council-result", "Recorded council result"
+    CONFIRM_COUNCIL_RESULT = (
+        "confirm-council-result",
+        "Confirmed council result ",
+    )
+    SOPN_UPLOAD = "sopn-upload", "SOPN uploaded"
+    RECORD_COUNCIL_CONTROL = (
+        "record-council-control",
+        "Recorded council control",
+    )
+    CONFIRM_COUNCIL_CONTROL = (
+        "confirm-council-control",
+        "Confirmed council control",
+    )
+    RETRACT_WINNER = "retract-winner", "Retracted winner"
+    DUPLICATE_SUGGEST = "duplicate-suggest", "Duplicate suggested"
+    CHANGE_EDIT_LIMITATIONS = (
+        "change-edit-limitations",
+        "Changed edit limitations",
+    )
+    SUSPENDED_TWITTER_ACCOUNT = (
+        "suspended-twitter-account",
+        "Suspended Twitter account",
+    )
+
+    def get_action_type_display():
+        return ActionType.choices
+
+
 class LoggedAction(models.Model):
     """A model for logging the actions of users on the site
 
@@ -47,7 +109,7 @@ class LoggedAction(models.Model):
     person = models.ForeignKey(
         "people.Person", blank=True, null=True, on_delete=models.CASCADE
     )
-    action_type = models.CharField(max_length=64)
+    action_type = models.CharField(max_length=64, choices=ActionType.choices)
     popit_person_new_version = models.CharField(max_length=32)
     created = models.DateTimeField(auto_now_add=True, db_index=True)
     updated = models.DateTimeField(auto_now=True)

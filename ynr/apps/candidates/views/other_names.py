@@ -7,6 +7,7 @@ from django.utils.functional import cached_property
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from candidates.models import LoggedAction
+from candidates.models.db import ActionType
 from people.forms.forms import OtherNameForm
 from people.models import Person
 from popolo.models import OtherName
@@ -73,7 +74,7 @@ class PersonOtherNameCreateView(LoginRequiredMixin, PersonMixin, CreateView):
             LoggedAction.objects.create(
                 user=self.request.user,
                 person=self.person,
-                action_type="person-other-name-create",
+                action_type=ActionType.PERSON_OTHER_NAME_CREATE,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version=change_metadata["version_id"],
                 source=change_metadata["information_source"],
@@ -122,7 +123,7 @@ class PersonOtherNameDeleteView(LoginRequiredMixin, PersonMixin, DeleteView):
             LoggedAction.objects.create(
                 user=self.request.user,
                 person=self.person,
-                action_type="person-other-name-delete",
+                action_type=ActionType.PERSON_OTHER_NAME_DELETE,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version=change_metadata["version_id"],
                 source=change_metadata["information_source"],
@@ -148,7 +149,7 @@ class PersonOtherNameUpdateView(LoginRequiredMixin, PersonMixin, UpdateView):
             LoggedAction.objects.create(
                 user=self.request.user,
                 person=self.person,
-                action_type="person-other-name-update",
+                action_type=ActionType.PERSON_OTHER_NAME_UPDATE,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version=change_metadata["version_id"],
                 source=change_metadata["information_source"],

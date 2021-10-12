@@ -17,6 +17,7 @@ from candidates.models import (
     LoggedAction,
     PartySet,
 )
+from candidates.models.db import ActionType
 
 from candidates.views.version_data import get_client_ip
 from elections.mixins import ElectionMixin
@@ -251,13 +252,13 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
             lock = self.object.candidates_locked
             post_name = ballot.post.short_label
             if lock:
-                suffix = "-lock"
+                action_type = ActionType.CONSTITUENCY_LOCK
                 pp = "Locked"
                 # If we're locking this, then the suggested posts
                 # can be deleted
                 ballot.suggestedpostlock_set.all().delete()
             else:
-                suffix = "-unlock"
+                action_type = ActionType.CONSTITUENCY_UNLOCK
                 pp = "Unlocked"
             message = pp + " ballot {} ({})".format(
                 post_name, ballot.ballot_paper_id
@@ -265,7 +266,7 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
 
             LoggedAction.objects.create(
                 user=self.request.user,
-                action_type="constituency-{}".format(suffix),
+                action_type=action_type,
                 ip_address=get_client_ip(self.request),
                 ballot=ballot,
                 source=message,

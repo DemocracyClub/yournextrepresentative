@@ -10,6 +10,7 @@ from django_webtest import WebTest
 from mock import patch
 
 from candidates.models import LoggedAction, PersonRedirect
+from candidates.models.db import ActionType
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.helpers import TmpMediaRootMixin
@@ -292,9 +293,11 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(info["users_who_have_edited"], 0)
         self.assertEqual(info["interesting_user_actions"], 0)
 
-        LoggedAction.objects.create(action_type="set-candidate-not-elected")
+        LoggedAction.objects.create(
+            action_type=ActionType.SET_CANDIDATE_NOT_ELECTED
+        )
 
-        LoggedAction.objects.create(action_type="edit-candidate")
+        LoggedAction.objects.create(action_type=ActionType.PERSON_UPDATE)
 
         version_resp = self.app.get("/version.json")
         info = version_resp.json

@@ -2,6 +2,7 @@ from auth_helpers.views import user_in_group
 from braces.views import LoginRequiredMixin
 from candidates.models import raise_if_unsafe_to_delete
 from candidates.models.constraints import check_no_candidancy_for_election
+from candidates.models.db import ActionType
 from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -43,7 +44,7 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
             )
             LoggedAction.objects.create(
                 user=self.request.user,
-                action_type="candidacy-create",
+                action_type=ActionType.CANDIDACY_DELETE,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version=change_metadata["version_id"],
                 person=person,
@@ -87,7 +88,7 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
             )
             LoggedAction.objects.create(
                 user=self.request.user,
-                action_type="candidacy-delete",
+                action_type=ActionType.CANDIDACY_DELETE,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version=change_metadata["version_id"],
                 person=person,

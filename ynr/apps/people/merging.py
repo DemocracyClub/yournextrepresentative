@@ -10,6 +10,7 @@ from candidates.models import (
     UnsafeToDelete,
     merge_popit_people,
 )
+from candidates.models.db import ActionType
 from candidates.models.versions import get_person_as_version_data
 from candidates.views.version_data import get_change_metadata, get_client_ip
 from duplicates.merge_helpers import alter_duplicate_suggestion_post_merge
@@ -397,7 +398,7 @@ class PersonMerger:
             if self.request:
                 LoggedAction.objects.create(
                     user=self.request.user,
-                    action_type="person-merge",
+                    action_type=ActionType.PERSON_MERGE,
                     ip_address=get_client_ip(self.request),
                     popit_person_new_version=change_metadata["version_id"],
                     person=self.dest_person,

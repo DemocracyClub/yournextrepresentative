@@ -11,7 +11,7 @@ from django.views.generic import RedirectView, TemplateView
 from bulk_adding import forms, helpers
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot, LoggedAction
-from candidates.models.db import EditType
+from candidates.models.db import EditType, ActionType
 from candidates.views.version_data import get_client_ip
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
@@ -237,7 +237,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
 
                 LoggedAction.objects.create(
                     user=self.request.user,
-                    action_type="suggest-ballot-lock",
+                    action_type=ActionType.SUGGEST_BALLOT_LOCK,
                     ip_address=get_client_ip(self.request),
                     ballot=ballot,
                     source="Suggested after bulk adding",

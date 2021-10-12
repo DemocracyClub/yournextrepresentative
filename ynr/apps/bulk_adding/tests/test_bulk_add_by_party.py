@@ -95,7 +95,6 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         ballot = self.election.ballot_set.first()
         ballot.winner_count = 3
         ballot.save()
-
         # Make sure we have no people or logged actions
         self.assertEqual(ballot.post.memberships.count(), 0)
         self.assertEqual(LoggedAction.objects.count(), 0)
@@ -116,11 +115,11 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         form = response.forms[1]
-
         # Now submit the valid form
         with self.assertNumQueries(FuzzyInt(49, 52)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
             response = form.submit().follow()
+        # import pdb; pdb.set_trace()
 
         # We should have a new person and membership
         self.assertTrue(
