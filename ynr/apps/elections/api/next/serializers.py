@@ -100,8 +100,16 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
             "candidacies",
             "created",
             "last_updated",
+            "replaces",
+            "replaced_by",
         )
 
+    replaces = serializers.SlugRelatedField(
+        read_only=True, slug_field="ballot_paper_id"
+    )
+    replaced_by = serializers.SlugRelatedField(
+        read_only=True, slug_field="ballot_paper_id"
+    )
     url = serializers.HyperlinkedIdentityField(
         view_name="ballot-detail",
         lookup_field="ballot_paper_id",
