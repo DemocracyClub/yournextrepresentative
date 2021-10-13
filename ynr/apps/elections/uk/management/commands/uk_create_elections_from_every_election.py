@@ -2,7 +2,6 @@ from datetime import date, timedelta
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.db.models.functions import Greatest
 from django.utils import timezone
 from dateutil.parser import parse
 
@@ -42,10 +41,8 @@ class Command(BaseCommand):
         EveryElection that has been stored against a Ballot or
         Election in our database.
         """
-        ballots = Ballot.objects.annotate(
-            latest_ee_modified=Greatest("ee_modified", "election__ee_modified")
-        )
-        return ballots.latest("latest_ee_modified").latest_ee_modified
+        ballots = Ballot.objects.ordered_by_latest_ee_modified()
+        return ballots.first().latest_ee_modified
 
     def default_timestamp(self):
         """

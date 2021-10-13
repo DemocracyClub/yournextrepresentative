@@ -1,12 +1,22 @@
+import faker
+
 from django.test import TestCase
 from django.utils import timezone
 from django.db.models import Q
 from mock import patch
 
+from candidates.tests.factories import (
+    BallotPaperFactory,
+    ElectionFactory,
+    OrganizationFactory,
+    PostFactory,
+)
 from elections.tests.test_ballot_view import SingleBallotStatesMixin
 from uk_results.models import ResultSet
 
 from ..models import Ballot
+
+fake = faker.Faker()
 
 
 class TestBallotUrlMethods(TestCase):
@@ -53,7 +63,9 @@ class BallotsWithResultsMixin(SingleBallotStatesMixin):
     """
 
     def setUp(self):
-        self.election = self.create_election("local.sheffield.2021-05-06")
+        self.election = self.create_election(
+            "local.sheffield.2021-05-06", date="2021-05-06"
+        )
         self.post = self.create_post("Foo")
         self.parties = self.create_parties(3)
 
@@ -126,3 +138,62 @@ class TestBallotQuerysetMethods(BallotsWithResultsMixin, TestCase):
             | Q(membership__party__modified__gt=datetime_obj)
         )
         mock_filter.return_value.distinct.assert_called_once()
+
+    def test_ordered_by_latest_ee_modified(self):
+        """
+        Create a batch of Ballots where the ee_modified date is a
+        random date earlier than 'now'
+        Then create a Ballot where the related Election has just been
+        updated in EE.
+        Call the method to order the ballots by latest_ee_modified and
+        check that they were ordered with the one updated 'now' first
+        """
+        now = timezone.datetime.now()
+        BallotPaperFactory.create_batch(
+            size=100,
+            ee_modified=fake.date_time_between(
+                start_date="-30d", end_date=now, tzinfo=timezone.utc
+            ),
+            election=ElectionFactory(
+                slug=fake.slug(),
+                ee_modified=fake.date_time_between(
+                    start_date="-30d", end_date=now, tzinfo=timezone.utc
+                ),
+            ),
+            post=PostFactory(
+                organization=OrganizationFactory(slug=fake.slug())
+            ),
+        )
+        election_with_latest_ee_modified = ElectionFactory(
+            slug=fake.slug(), ee_modified=now
+        )
+        expected = BallotPaperFactory(
+            ee_modified=fake.date_time_between(
+                start_date="-30d", end_date=now, tzinfo=timezone.utc
+            ),
+            election=election_with_latest_ee_modified,
+            post=PostFactory(
+                organization=OrganizationFactory(slug=fake.slug())
+            ),
+        )
+        qs = Ballot.objects.ordered_by_latest_ee_modified()
+        assert qs.first() == expected
+
+        # now create a new Ballot where the ee_modified is 5 mins later
+        # and the election ee_modified is older
+        latest = now + timezone.timedelta(minutes=5)
+        new_ballot = BallotPaperFactory(
+            ee_modified=latest,
+            election=ElectionFactory(
+                ee_modified=fake.date_time_between(
+                    start_date="-30d", end_date=now, tzinfo=timezone.utc
+                )
+            ),
+            post=PostFactory(
+                organization=OrganizationFactory(slug=fake.slug())
+            ),
+        )
+        # get the queryset again
+        qs = Ballot.objects.ordered_by_latest_ee_modified()
+        # check that the new ballot is now the first returned
+        assert qs.first() == new_ballot

@@ -5,6 +5,7 @@ from django.contrib.admin.utils import NestedObjects
 from django.db.models import JSONField
 from django.db import connection, models
 from django.db.models import Q
+from django.db.models.functions import Greatest
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import mark_safe
@@ -167,6 +168,20 @@ class BallotQueryset(models.QuerySet):
             | Q(membership__person__modified__gt=datetime)
             | Q(membership__party__modified__gt=datetime)
         ).distinct()
+
+    def ordered_by_latest_ee_modified(self):
+        """
+        Takes the most recent ee_modified value between the Ballot and the
+        Election and orders the queryset by it, most recent first.
+        The 'Greatest' function is used to determine which value is more recent
+        between the datetime on the Ballot or the Election.
+        This is because in EveryElection a Ballot and Election are both Election
+        objects. So when we order elections by their ee_modified date, we have
+        to look across both models in YNR to get the most recent timestamp.
+        """
+        return self.annotate(
+            latest_ee_modified=Greatest("ee_modified", "election__ee_modified")
+        ).order_by("-latest_ee_modified")
 
 
 class Ballot(EEModifiedMixin, models.Model):
