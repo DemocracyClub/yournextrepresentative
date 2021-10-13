@@ -72,7 +72,7 @@
   {% endif %}
 
   {% if not ballot.cancelled %}
-    <a class="show-new-candidate-form button tiny" href="{{ ballot.get_absolute_url }}">Add candidates</a>
+    <a class="button tiny" href="{{ ballot.get_absolute_url }}">Add candidates</a>
     {% if ballot.election.in_past %}
       {% if ballot.resultset %}
       <a class="button tiny" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">Edit Results</a>
