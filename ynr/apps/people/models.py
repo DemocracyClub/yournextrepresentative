@@ -358,10 +358,11 @@ class Person(TimeStampedModel, models.Model):
             return self.name
 
     def get_absolute_url(self, request=None):
-        path = reverse(
-            "person-view",
-            kwargs={"person_id": self.pk, "ignored_slug": self.get_slug()},
-        )
+        if self.pk:
+            path = reverse(
+                "person-view",
+                kwargs={"person_id": self.pk, "ignored_slug": self.get_slug()},
+            )
         if request is None:
             return path
         return request.build_absolute_uri(path)
