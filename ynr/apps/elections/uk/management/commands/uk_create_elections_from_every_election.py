@@ -2,7 +2,6 @@ from datetime import date, timedelta
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.utils import timezone
 from dateutil.parser import parse
 
 from candidates.models import Ballot
@@ -44,13 +43,6 @@ class Command(BaseCommand):
         ballots = Ballot.objects.ordered_by_latest_ee_modified()
         return ballots.first().latest_ee_modified
 
-    def default_timestamp(self):
-        """
-        Returns a timestamp set to before the 'modified' timestamp was
-        added to the Election model in EveryElection.
-        """
-        return timezone.datetime(2021, 9, 1, tzinfo=timezone.utc)
-
     def import_approved_elections(
         self, full=False, poll_open_date=None, recently_updated=False
     ):
@@ -62,11 +54,9 @@ class Command(BaseCommand):
             query_args = {"poll_open_date": poll_open_date}
 
         if recently_updated:
-            timestamp = (
-                self.get_latest_ee_modified_datetime()
-                or self.default_timestamp()
-            )
-            query_args = {"modified": timestamp.isoformat()}
+            query_args = {
+                "modified": self.get_latest_ee_modified_datetime().isoformat()
+            }
 
         ee_importer = EveryElectionImporter(query_args)
         ee_importer.build_election_tree()
