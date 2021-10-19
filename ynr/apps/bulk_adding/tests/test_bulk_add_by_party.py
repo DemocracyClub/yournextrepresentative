@@ -119,7 +119,6 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         with self.assertNumQueries(FuzzyInt(49, 52)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
             response = form.submit().follow()
-        # import pdb; pdb.set_trace()
 
         # We should have a new person and membership
         self.assertTrue(
