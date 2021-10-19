@@ -9,6 +9,7 @@
       <thead>
         <tr>
           <th>Name</th>
+          <th>Existing other names</th>
           <th>Actions</th>
           <th>Party</th>
         </tr>
@@ -22,24 +23,21 @@
             <a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>
           </td>
           <td>
+            <ul>
+            {% if membership.person.other_names.exists %}
+              {% for name in membership.person.other_names.all %}
+                <li>{{ name.name }}</li>
+              {% endfor %}
+            {% endif %}
+            </ul>
+          </td>
+          <td>
           <a href="{% url 'person-update' membership.person.pk %}" class="radius secondary label" title="Edit person" target="_blank">
               ✏️
             </a>
             <a href="{% url 'person-other-name-create' membership.person.pk %}" class="radius secondary label known-person-alternate-name" title="Add alternative names">
               🏷️
             </a>
-
-            <script type="text/html" class="other_names">
-            {% if membership.person.other_names.exists %}
-              <h4>Existing other names</h4>
-              <ul>
-                {% for name in membership.person.other_names.all %}
-                <li>{{ name.name }}</li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-
-            </script>
 
             <a data-person-id="{{ membership.person.pk }}" data-post-id="{{ membership.ballot.post.slug }}" href="{% url 'candidacy-delete' ballot_paper_id=membership.ballot.ballot_paper_id %}" class="radius secondary label known-person-not-standing" title="Mark as not standing">
               ❌
