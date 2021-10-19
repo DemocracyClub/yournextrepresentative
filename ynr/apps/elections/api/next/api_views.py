@@ -66,6 +66,23 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
 
     filterset_class = BallotFilter
 
+    def get_queryset(self):
+        """
+        Checks if this is a request using the last_updated filter, and if so
+        returns the queryset ordered by the ballots with oldest change first.
+        This is to help the importer from WCIVF deal with situations where a
+        large number have ballots have been updated at the same time e.g.
+        through a data migration which saves many or all objects.
+        """
+        queryset = super().get_queryset()
+        if self.request.query_params.get("last_updated"):
+            queryset = queryset.order_by("modified")
+
+        max_items = int(self.request.query_params.get("max_items", 0))
+        if max_items:
+            queryset = queryset[:max_items]
+        return queryset
+
     def retrieve(self, request, *args, **kwargs):
         """
         A single `Ballot` object
