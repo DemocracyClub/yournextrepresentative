@@ -6,12 +6,14 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from slugify import slugify
-from utils.mixins import EEModifiedMixin
+from django_extensions.db.models import ModificationDateTimeField
 
 from ynr_refactoring.settings import PersonIdentifierFields
+from utils.mixins import EEModifiedMixin
 
 from .behaviors.models import Dateframeable, GenericRelatable
 from .querysets import (
@@ -271,6 +273,8 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
     A relationship between a person and an organization
     see schema at http://popoloproject.com/schemas/membership.json#
     """
+
+    modified = ModificationDateTimeField(_("modified"), db_index=True)
 
     label = models.CharField(
         "label",
