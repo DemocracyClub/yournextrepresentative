@@ -1,5 +1,7 @@
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
+from django_extensions.db.fields import ModificationDateTimeField
+from django.utils.translation import gettext_lazy as _
 
 
 class EEModifiedMixin(TimeStampedModel):
@@ -17,6 +19,7 @@ class EEModifiedMixin(TimeStampedModel):
     it would return False, so we would miss out on those changes.
     """
 
+    modified = ModificationDateTimeField(_("modified"), db_index=True)
     ee_modified = models.DateTimeField(
         null=True, blank=True, help_text="Stores the modified timestamp from EE"
     )

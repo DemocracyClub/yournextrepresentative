@@ -157,16 +157,12 @@ class BallotQueryset(models.QuerySet):
         Election
         Post
         Membership
-        Memberhip.Person
-        Memberhip.Party
         """
         return self.filter(
             Q(modified__gt=datetime)
             | Q(election__modified__gt=datetime)
             | Q(post__modified__gt=datetime)
             | Q(membership__modified__gt=datetime)
-            | Q(membership__person__modified__gt=datetime)
-            | Q(membership__party__modified__gt=datetime)
         ).distinct()
 
     def ordered_by_latest_ee_modified(self):

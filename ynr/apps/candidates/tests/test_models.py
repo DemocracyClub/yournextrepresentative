@@ -134,8 +134,6 @@ class TestBallotQuerysetMethods(BallotsWithResultsMixin, TestCase):
             | Q(election__modified__gt=datetime_obj)
             | Q(post__modified__gt=datetime_obj)
             | Q(membership__modified__gt=datetime_obj)
-            | Q(membership__person__modified__gt=datetime_obj)
-            | Q(membership__party__modified__gt=datetime_obj)
         )
         mock_filter.return_value.distinct.assert_called_once()
 
