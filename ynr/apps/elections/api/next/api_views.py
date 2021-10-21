@@ -1,3 +1,4 @@
+from typing import OrderedDict
 from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -36,7 +37,9 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "ballot_paper_id"
     lookup_value_regex = r"(?!\.json$)[^/]+"
     queryset = (
-        extra_models.Ballot.objects.select_related("election", "post")
+        extra_models.Ballot.objects.select_related(
+            "election", "post", "replaces", "replaced_by"
+        )
         .prefetch_related(
             Prefetch(
                 "membership_set",
@@ -66,21 +69,41 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
 
     filterset_class = BallotFilter
 
+    def list(self, request, *args, **kwargs):
+        """
+        If this is a last updated query, dont paginate objects but return them
+        in chunks
+        """
+        is_last_updated_query = self.request.query_params.get("last_updated")
+        queryset = self.filter_queryset(self.get_queryset())
+        if not is_last_updated_query:
+            return super().list(request, *args, **kwargs)
+
+        queryset = queryset[:200]
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(
+            OrderedDict(
+                [
+                    ("count", len(serializer.data)),
+                    ("next", None),
+                    ("previous", None),
+                    ("results", serializer.data),
+                ]
+            )
+        )
+
     def get_queryset(self):
         """
-        Checks if this is a request using the last_updated filter, and if so
-        returns the queryset ordered by the ballots with oldest change first.
+        Checks if this is a last_updated request and if so annotates and orders
+        the queryset by the last_updated field so that the ballots with oldest
+        changes appear first.
         This is to help the importer from WCIVF deal with situations where a
-        large number have ballots have been updated at the same time e.g.
-        through a data migration which saves many or all objects.
+        large number of ballots have been updated at the same time e.g. through
+        a data migration which saves many or all objects.
         """
         queryset = super().get_queryset()
         if self.request.query_params.get("last_updated"):
-            queryset = queryset.order_by("modified")
-
-        max_items = int(self.request.query_params.get("max_items", 0))
-        if max_items:
-            queryset = queryset[:max_items]
+            queryset = queryset.with_last_updated()
         return queryset
 
     def retrieve(self, request, *args, **kwargs):

@@ -2,7 +2,8 @@ import faker
 
 from django.test import TestCase
 from django.utils import timezone
-from django.db.models import Q
+from django.db.models import Max
+from django.db.models.functions import Greatest
 from mock import patch
 
 from candidates.tests.factories import (
@@ -120,8 +121,8 @@ class TestBallotQuerysetMethods(BallotsWithResultsMixin, TestCase):
         self.assertEqual(set(Ballot.objects.has_results()), all_winners)
         self.assertEqual(set(Ballot.objects.no_results()), set(no_results))
 
-    @patch("candidates.models.popolo_extra.BallotQueryset.filter")
-    def test_last_updated(self, mock_filter):
+    @patch("candidates.models.popolo_extra.BallotQueryset.with_last_updated")
+    def test_last_updated(self, mock_with_last_updated):
         """
         Unit test to ensure that when last_updated is called on the
         Ballot queryset the correct modified fields are filtered
@@ -129,13 +130,27 @@ class TestBallotQuerysetMethods(BallotsWithResultsMixin, TestCase):
         """
         datetime_obj = timezone.now()
         Ballot.objects.last_updated(datetime=datetime_obj)
-        mock_filter.assert_called_once_with(
-            Q(modified__gt=datetime_obj)
-            | Q(election__modified__gt=datetime_obj)
-            | Q(post__modified__gt=datetime_obj)
-            | Q(membership__modified__gt=datetime_obj)
+        mock_with_last_updated.assert_called_once()
+        mock_with_last_updated.return_value.filter.assert_called_once_with(
+            last_updated__gt=datetime_obj
         )
-        mock_filter.return_value.distinct.assert_called_once()
+
+    @patch("candidates.models.popolo_extra.BallotQueryset.annotate")
+    def test_with_last_updated(self, mock_annotate):
+        Ballot.objects.with_last_updated()
+        mock_annotate.assert_called_once_with(
+            membership_modified_max=Max("membership__modified"),
+            last_updated=Greatest(
+                "modified",
+                "election__modified",
+                "post__modified",
+                "membership_modified_max",
+            ),
+        )
+        mock_annotate.return_value.distinct.assert_called_once()
+        mock_annotate.return_value.distinct.return_value.order_by.assert_called_once_with(
+            "last_updated"
+        )
 
     def test_ordered_by_latest_ee_modified(self):
         """
