@@ -4,7 +4,7 @@ import datetime
 from django.contrib.admin.utils import NestedObjects
 from django.db.models import JSONField
 from django.db import connection, models
-from django.db.models import Q
+from django.db.models import Max
 from django.db.models.functions import Greatest
 from django.urls import reverse
 from django.utils import timezone
@@ -150,20 +150,31 @@ class BallotQueryset(models.QuerySet):
             | models.Q(membership__elected=True)
         ).distinct()
 
+    def with_last_updated(self):
+        """
+        Annotates the last_updated field to objects, which represents the most
+        recent modified timstamp out of the ballot, related election, post or
+        the most recently updated related candidate
+        """
+        return (
+            self.annotate(
+                membership_modified_max=Max("membership__modified"),
+                last_updated=Greatest(
+                    "modified",
+                    "election__modified",
+                    "post__modified",
+                    "membership_modified_max",
+                ),
+            )
+            .distinct()
+            .order_by("last_updated")
+        )
+
     def last_updated(self, datetime):
         """
-        Filters on a ballots modified date and related objects modified dates.
-        The related objects filtered are:
-        Election
-        Post
-        Membership
+        Filter on the last_updated timestamp
         """
-        return self.filter(
-            Q(modified__gt=datetime)
-            | Q(election__modified__gt=datetime)
-            | Q(post__modified__gt=datetime)
-            | Q(membership__modified__gt=datetime)
-        ).distinct()
+        return self.with_last_updated().filter(last_updated__gt=datetime)
 
     def ordered_by_latest_ee_modified(self):
         """

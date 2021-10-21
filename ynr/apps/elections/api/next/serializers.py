@@ -132,7 +132,14 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         lookup_field="ballot_paper_id",
         lookup_url_kwarg="ballot_paper_id",
     )
-    last_updated = serializers.DateTimeField(source="modified")
+    last_updated = serializers.SerializerMethodField()
+
+    def get_last_updated(self, instance):
+        """
+        If the last_updated value has been annoated, return that, otherwise use
+        the modified date on the ballot instance
+        """
+        return getattr(instance, "last_updated", instance.modified)
 
     @swagger_serializer_method(serializer_or_field=OfficialDocumentSerializer)
     def get_sopn(self, instance):
