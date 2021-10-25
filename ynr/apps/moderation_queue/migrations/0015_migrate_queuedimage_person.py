@@ -2,7 +2,7 @@ from django.db import migrations
 
 
 def popit_to_db(apps, schema_editor):
-    Person = apps.get_model("popolo", "person")
+    Person = apps.get_model("people", "Person")
     QueuedImage = apps.get_model("moderation_queue", "queuedimage")
     for qi in QueuedImage.objects.all():
         try:

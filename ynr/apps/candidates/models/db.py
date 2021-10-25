@@ -107,7 +107,12 @@ class LoggedAction(models.Model):
         User, blank=True, null=True, on_delete=models.CASCADE
     )
     person = models.ForeignKey(
-        "people.Person", blank=True, null=True, on_delete=models.CASCADE
+        "people.Person", blank=True, null=True, on_delete=models.SET_NULL
+    )
+    person_pk = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="This is stored to help us identify the related person an action was for after the Person has been deleted",
     )
     action_type = models.CharField(max_length=64, choices=ActionType.choices)
     popit_person_new_version = models.CharField(max_length=32)
@@ -213,6 +218,10 @@ class LoggedAction(models.Model):
         has_initial_pk = self.pk
         if not kwargs.get("review_not_required", False):
             self.set_review_required()
+
+        if self.person:
+            self.person_pk = self.person.pk
+
         super().save(**kwargs)
 
         if not has_initial_pk and self.flagged_type and self.person:
