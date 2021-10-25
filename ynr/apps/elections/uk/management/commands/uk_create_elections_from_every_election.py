@@ -60,16 +60,17 @@ class Command(BaseCommand):
         ee_importer.build_election_tree()
 
         for ballot_id, election_dict in ee_importer.ballot_ids.items():
-
             try:
                 parent = ee_importer.get_parent(ballot_id)
             except KeyError as e:
                 # raise the exception if this is not a recent update
                 if not recently_updated_timestamp:
                     raise e
-                # otherwise set parent to None as the KeyError
-                # indicates there is nothing to update on the parent
-                # election which is why it is not in the election tree
+                # check the parent election already exists in the DB and if it
+                # doesn't allow an exception to be raised
+                Election.objects.get(election_id=ballot_id)
+                # otherwise set parent to None as the KeyError indicates it is
+                # not in the election tree because there is nothing to update
                 parent = None
 
             election_dict.get_or_create_ballot(parent=parent)
