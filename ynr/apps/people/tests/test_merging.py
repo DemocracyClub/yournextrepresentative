@@ -1,9 +1,11 @@
 from datetime import date, timedelta
 from unittest import skip
+from django.test import RequestFactory
 
 from django_webtest import WebTest
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType
@@ -49,7 +51,9 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertEqual(Person.objects.count(), 1)
         self.assertEqual(Person.objects.get().pk, self.dest_person.pk)
-        self.assertEqual(LoggedAction.objects.count(), 2)
+        # 3 actions, 2 for create, 1 created when the person is deleted
+        # No action for the merge as there was no request used
+        self.assertEqual(LoggedAction.objects.count(), 3)
 
     def test_invalid_merge(self):
         other_local_post = PostFactory.create(
@@ -657,3 +661,18 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         """
         merger = PersonMerger(self.dest_person, self.source_person)
         assert "name" not in merger.person_attrs_to_merge
+
+    def test_safe_delete_with_logged_action(self):
+        request = RequestFactory()
+        request.user = get_user_model().objects.create()
+        person_pk = self.source_person.pk
+        merger = PersonMerger(self.dest_person, self.source_person, request)
+        merger.safe_delete(self.source_person, with_logged_action=True)
+
+        logged_actions = LoggedAction.objects.filter(
+            person_pk=person_pk, action_type=ActionType.PERSON_DELETE
+        )
+
+        self.assertEqual(logged_actions.count(), 1)
+        self.assertEqual(logged_actions.first().user, request.user)
+        self.assertFalse(Person.objects.filter(pk=person_pk).exists())

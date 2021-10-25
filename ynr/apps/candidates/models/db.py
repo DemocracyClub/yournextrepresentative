@@ -41,6 +41,7 @@ class ActionType(models.TextChoices):
     PERSON_LOCK = "person-lock", "Person locked"
     PERSON_UPDATE = "person-update", "Person updated"
     PERSON_CREATE = "person-create", "Person created"
+    PERSON_DELETE = "person-delete", "Person deleted"
     PERSON_OTHER_NAME_CREATE = (
         "person-other-name-create",
         "Person Other name created",
@@ -152,9 +153,10 @@ class LoggedAction(models.Model):
     objects = LoggedActionQuerySet.as_manager()
 
     def __str__(self):
-        return "username='{username}' action_type='{action_type}'".format(
-            username=self.user.username, action_type=self.action_type
-        )
+        username = None
+        if self.user:
+            username = self.user.username
+        return f"username='{username}' action_type='{self.action_type}'"
 
     @property
     def subject_url(self):
