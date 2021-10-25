@@ -245,7 +245,7 @@ class Person(TimeStampedModel, models.Model):
         "gender", max_length=128, blank=True, help_text="A gender"
     )
     birth_date = models.CharField(
-        "birth date", max_length=20, blank=True, help_text="A date of birth"
+        "birth date", max_length=4, blank=True, help_text="A year of birth"
     )
     death_date = models.CharField(
         "death date", max_length=20, blank=True, help_text="A date of death"

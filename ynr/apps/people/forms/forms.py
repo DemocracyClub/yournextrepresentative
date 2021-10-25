@@ -201,8 +201,10 @@ class BasePersonForm(forms.ModelForm):
         label="Gender (e.g. “male”, “female”)", required=False
     )
 
-    birth_date = BlankApproximateDateFormField(
-        label="Date of birth (a four digit year or a full date)", required=False
+    birth_date = forms.CharField(
+        label="Year of birth (a four digit year)",
+        required=False,
+        widget=forms.NumberInput,
     )
     death_date = BlankApproximateDateFormField(
         label="Date of death (a four digit year or a full date)", required=False

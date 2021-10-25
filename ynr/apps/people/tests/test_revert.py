@@ -68,7 +68,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                         "parl.65808.2010-05-06": {"party": party_slug}
                     },
                     "homepage_url": "http://example.org/tessajowell",
-                    "birth_date": "1947-09-17",
+                    "birth_date": "1947",
                     "biography": "",
                     "wikipedia_url": "",
                     "identifiers": [
@@ -165,7 +165,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "wikipedia_url": "",
                 "youtube_profile": "",
                 "wikidata_id": "",
-                "birth_date": "1947-09-17",
+                "birth_date": "1947",
                 "death_date": "",
                 "biography": "",
                 "identifiers": [
@@ -187,7 +187,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             deep_sort(new_versions[0]), deep_sort(expected_new_version)
         )
 
-        self.assertEqual(person.birth_date, "1947-09-17")
+        self.assertEqual(person.birth_date, "1947")
         self.assertEqual(
             person.get_single_identifier_value("homepage_url"),
             "http://example.org/tessajowell",
