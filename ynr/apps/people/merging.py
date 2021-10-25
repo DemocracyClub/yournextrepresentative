@@ -119,7 +119,7 @@ class PersonMerger:
 
         self.request = request
 
-    def safe_delete(self, model):
+    def safe_delete(self, model, with_logged_action=False):
         collector = NestedObjects(using=connection.cursor().db.alias)
         collector.collect([model])
         if len(collector.nested()) > 1:
@@ -132,6 +132,11 @@ class PersonMerger:
                 )
             )
 
+        if with_logged_action:
+            return model.delete_with_logged_action(
+                user=self.request.user,
+                source=f"Person merged with {self.dest_person.pk}",
+            )
         return model.delete()
 
     def _invalidate_pi_cache(self):
@@ -408,6 +413,7 @@ class PersonMerger:
             self.setup_redirect()
 
             if delete:
-                # Delete the old person
-                self.safe_delete(self.source_person)
+                self.safe_delete(
+                    self.source_person, with_logged_action=bool(self.request)
+                )
         return self.dest_person

@@ -54,6 +54,7 @@ class ContributorsMixin(object):
             LoggedAction.objects.exclude(
                 action_type="set-candidate-not-elected"
             )
+            .filter(user__isnull=False)
             .select_related("user", "person", "post")
             .order_by("-created")
         )

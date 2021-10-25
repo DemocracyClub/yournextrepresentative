@@ -5,6 +5,7 @@ from urllib.parse import urljoin, quote_plus
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db import transaction
 from django.db.models import JSONField
 from django.contrib.postgres.indexes import GistIndex
 from django.contrib.postgres.search import (
@@ -27,6 +28,7 @@ from sorl.thumbnail import get_thumbnail
 
 from candidates.diffs import get_version_diffs
 from candidates.models import Ballot
+from candidates.models.db import ActionType, LoggedAction
 from people.managers import (
     PersonIdentifierQuerySet,
     PersonImageManager,
@@ -781,6 +783,19 @@ class Person(TimeStampedModel, models.Model):
                 if self.not_standing.filter(slug=next_ballot.election.slug):
                     standing_down_elections.append(next_ballot.election)
         return standing_down_elections
+
+    @transaction.atomic
+    def delete_with_logged_action(self, user, source):
+        """
+        Creates a logged action with a user and source to record the deletion
+        """
+        LoggedAction.objects.create(
+            person_pk=self.pk,
+            action_type=ActionType.PERSON_DELETE,
+            user=user,
+            source=source,
+        )
+        self.delete()
 
 
 class PersonNameSynonym(models.Model):

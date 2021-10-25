@@ -19,6 +19,7 @@ class Migration(migrations.Migration):
                     ("person-lock", "Person locked"),
                     ("person-update", "Person updated"),
                     ("person-create", "Person created"),
+                    ("person-delete", "Person deleted"),
                     ("person-other-name-create", "Person Other name created"),
                     ("person-other-name-delete", "Person Other name deleted"),
                     ("person-other-name-update", "Person Other name updated"),
