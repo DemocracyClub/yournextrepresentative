@@ -164,3 +164,33 @@ $(document).ready(function() {
   populate_ballot_selects();
   populate_party_selects()
 });
+
+
+/* This title-casing function should uppercase any letter after a word
+   boundary, and lowercases any letters up to the next word boundary:
+     toTitleCase("john travolta") => "John Travolta"
+     toTitleCase("olivia newton-john") => "Olivia Newton-John"
+     toTitleCase("miles o'brien") => "Miles O'Brien"
+     toTitleCase("miles o’brien") => "Miles O’Brien"
+     toTitleCase("BENJAMIN SISKO") => "Benjamin Sisko"
+*/
+function toTitleCase(str) {
+  debugger
+  return str.replace(/\b(\w)(.*?)\b/g, function (_, first, rest) { return first.toUpperCase() + rest.toLowerCase() })
+}
+
+function compressWhitespace(str) {
+  debugger
+  return str.replace(/\s\s+/g, ' ');
+}
+
+function makeTitleCase() {
+  var buttons = $('.titleCaseNameField');
+  debugger
+  buttons.each(function() {
+    var this_name_field = $(this).parent().find('#id_name');
+    var name_val = this_name_field.val();
+    var title_case = this_name_field.val(compressWhitespace(toTitleCase(name_val)));
+    return title_case
+  })
+}

@@ -1,5 +1,4 @@
 $(function() {
-    console.log("I'm working")
     tiedWinners() 
     $('*[id*=id_memberships]').on("change", tiedWinners)
    
