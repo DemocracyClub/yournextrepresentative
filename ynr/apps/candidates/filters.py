@@ -9,9 +9,12 @@ from moderation_queue.review_required_helper import REVIEW_TYPES
 
 
 class LoggedActionAPIFilter(django_filters.FilterSet):
+
+    created = django_filters.DateFilter(lookup_expr="gte")
+
     class Meta:
         model = LoggedAction
-        fields = ["action_type"]
+        fields = ["action_type", "created"]
 
     action_type = django_filters.AllValuesMultipleFilter(
         field_name="action_type"
