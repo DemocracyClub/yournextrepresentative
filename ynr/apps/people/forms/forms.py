@@ -1,8 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.validators import URLValidator
-from django.core.validators import validate_email
+from django.core.validators import URLValidator, validate_email
 from django.utils.functional import cached_property
 from candidates.models import PartySet
 from facebook_data.tasks import extract_fb_page_id
@@ -42,6 +41,15 @@ class CandidacyDeleteForm(BaseCandidacyForm):
 
 
 class PersonIdentifierForm(forms.ModelForm):
+    HTTP_IDENTIFIERS = [
+        "homepage_url",
+        "facebook_personal_url",
+        "party_ppc_page_url",
+        "linkedin_url",
+        "facebook_page_url",
+        "wikipedia_url",
+    ]
+
     class Meta:
         model = PersonIdentifier
         exclude = ("internal_identifier", "extra_data")
@@ -77,19 +85,9 @@ class PersonIdentifierForm(forms.ModelForm):
                 self.cleaned_data["id"].delete()
             self.cleaned_data["DELETE"] = True
             return self.cleaned_data
-        HTTP_IDENTIFIERS = [
-            "homepage_url",
-            "facebook_personal_url",
-            "party_ppc_page_url",
-            "linkedin_url",
-            "facebook_page_url",
-            "wikipedia_url",
-        ]
-        if (
-            "value_type" in self.cleaned_data
-            and self.cleaned_data["value_type"] in HTTP_IDENTIFIERS
-        ):
+        if self.cleaned_data.get("value_type") in self.HTTP_IDENTIFIERS:
             URLValidator()(value=self.cleaned_data["value"])
+
             attr = "clean_{}".format(self.cleaned_data["value_type"])
             if hasattr(self, attr):
                 try:
