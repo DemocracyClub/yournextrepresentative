@@ -13,6 +13,7 @@ class LoggedActionSerializer(serializers.HyperlinkedModelSerializer):
             "url",
             "user",
             "person",
+            "person_pk",
             "ballot",
             "action_type",
             "person_new_version",
