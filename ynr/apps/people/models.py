@@ -372,9 +372,6 @@ class Person(TimeStampedModel, models.Model):
             return path
         return request.build_absolute_uri(path)
 
-    def formatted_biography(self):
-        return self.biography.replace("\r\n", " ")
-
     @cached_property
     def get_all_idenfitiers(self):
         return list(self.tmp_person_identifiers.all())

@@ -245,6 +245,15 @@ class BasePersonForm(forms.ModelForm):
         ("not-standing", "No"),
     )
 
+    def clean_biography(self):
+        clean_biography = "\n\n".join(
+            [
+                line.replace("\n", " ")
+                for line in self.cleaned_data["biography"].split("\n\n")
+            ]
+        )
+        return clean_biography
+
     def save(self, commit=True):
         if "name" in self.changed_data and self.initial["name"]:
             old_name = self.initial["name"]
@@ -254,6 +263,7 @@ class BasePersonForm(forms.ModelForm):
                     "note": "Added when main name changed on person edit form"
                 },
             )
+        self.instance.biography = self.clean_biography()
         return super().save(commit)
 
 
