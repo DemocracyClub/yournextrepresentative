@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("people", "0033_auto_20210928_1007"),
-        ("candidates", "0077_populate_person_pk_on_loggedaction"),
+        ("candidates", "0078_populate_person_pk_on_loggedaction"),
     ]
 
     operations = [
