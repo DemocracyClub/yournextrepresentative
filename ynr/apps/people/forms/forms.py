@@ -85,9 +85,13 @@ class PersonIdentifierForm(forms.ModelForm):
                 self.cleaned_data["id"].delete()
             self.cleaned_data["DELETE"] = True
             return self.cleaned_data
+
         if self.cleaned_data.get("value_type") in self.HTTP_IDENTIFIERS:
             URLValidator()(value=self.cleaned_data["value"])
-
+        if (
+            "value_type" in self.cleaned_data
+            and self.cleaned_data["value_type"]
+        ):
             attr = "clean_{}".format(self.cleaned_data["value_type"])
             if hasattr(self, attr):
                 try:
