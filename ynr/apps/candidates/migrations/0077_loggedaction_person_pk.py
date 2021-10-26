@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [("candidates", "0075_alter_ballot_modified")]
+    dependencies = [("candidates", "0076_ballot_ee_modified")]
 
     operations = [
         migrations.AddField(
