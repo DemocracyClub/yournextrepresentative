@@ -53,7 +53,7 @@ nameparser==1.0.6
 ndg-httpsclient==0.5.1
 numpy==1.21.2
 oauthlib==3.1.0
-path.py==11.5.0
+path.py==12.5.0
 pexpect==4.8.0
 pickleshare==0.7.5
 Pillow==8.2.0
