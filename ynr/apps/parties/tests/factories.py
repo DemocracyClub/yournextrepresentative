@@ -1,7 +1,7 @@
 import factory
 
 
-class PartyFactory(factory.DjangoModelFactory):
+class PartyFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "parties.Party"
 
@@ -13,12 +13,12 @@ class PartyFactory(factory.DjangoModelFactory):
     current_candidates = 1
 
 
-class PartyDescriptionFactory(factory.DjangoModelFactory):
+class PartyDescriptionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "parties.PartyDescription"
 
 
-class PartyEmblemFactory(factory.DjangoModelFactory):
+class PartyEmblemFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "parties.PartyEmblem"
 
