@@ -39,7 +39,7 @@ gender-detector==0.1.0
 git+https://github.com/dessibelle/sorl-thumbnail-serializer-field.git#egg=sorl-thumbnail-serializer-field
 html5lib==1.1
 idna>=2.5,<2.9
-ipaddress==1.0.22
+ipaddress==1.0.23
 ipdb==0.13.9
 ipython-genutils==0.2.0
 ipython==7.28.0
