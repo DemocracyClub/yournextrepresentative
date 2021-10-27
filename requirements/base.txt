@@ -43,7 +43,7 @@ ipaddress==1.0.22
 ipdb==0.13.9
 ipython-genutils==0.2.0
 ipython==7.28.0
-jsonfield==2.0.2
+jsonfield==3.1.0
 jsonpatch==1.23
 jsonpointer==2.0
 libsass==0.20.1
