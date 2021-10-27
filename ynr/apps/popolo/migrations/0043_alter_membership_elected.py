@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [("popolo", "0042_auto_20210929_1710")]
+    dependencies = [("popolo", "0042_add_timestamps_to_post")]
 
     operations = [
         migrations.AlterField(
