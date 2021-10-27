@@ -59,7 +59,7 @@ pickleshare==0.7.5
 Pillow==8.4.0
 psycopg2-binary==2.8.5
 pyasn1==0.4.8
-pycparser==2.19
+pycparser==2.20
 pygeocoder==1.2.5
 pyopenssl==20.0.1
 pytest==6.0.1
