@@ -348,7 +348,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             split_location = urlsplit(response.location)
             self.assertEqual("/moderation/photo/review", split_location.path)
 
-            mock_send_mail.assertFalse(mock_send_mail.called)
+            mock_send_mail.assert_not_called()
 
             person = Person.objects.get(id=2009)
             image = person.images.last()

@@ -60,6 +60,10 @@ class TestDuplicatePersonViewUnitTests(TestUserMixin, TestCase):
                 form.is_valid.assert_called_once()
                 should_have_errors = not boolean
                 assert should_have_errors is bool(fake_context.get("errors"))
+                # need to reset the mock between subtests
+                object_mock.reset_mock()
+                context_mock.reset_mock()
+                form.is_valid.reset_mock()
 
     def test_get_form_kwargs(self):
         """
