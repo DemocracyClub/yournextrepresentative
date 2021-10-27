@@ -186,14 +186,11 @@ function compressWhitespace(str) {
 }
 
 function makeTitleCase() {
-  var buttons = $('.titleCaseNameField');
-  debugger
-  buttons.each(function() {
-    var this_name_field = $(this).parent().find('#id_name');
-    var name_val = this_name_field.val();
-    var title_case = this_name_field.val(compressWhitespace(toTitleCase(name_val)));
-    return title_case
-  })
+  var button = $('.titleCaseNameField');
+  var this_name_field = button.parent().find('#id_name');
+  var name_val = this_name_field.val();
+  var title_case = this_name_field.val(compressWhitespace(toTitleCase(name_val)));
+  return title_case
 }
 
 function addTitleCaseButton() {
@@ -206,5 +203,3 @@ function addTitleCaseButton() {
     makeTitleCase()
   });
 }
-
-document.body.insertAdjacentHTML( 'afterbegin', '<div id="myID">...</div>' );
