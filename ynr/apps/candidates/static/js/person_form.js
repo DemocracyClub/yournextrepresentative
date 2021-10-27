@@ -163,6 +163,7 @@ var populate_party_selects = function() {
 $(document).ready(function() {
   populate_ballot_selects();
   populate_party_selects()
+  addTitleCaseButton()
 });
 
 
@@ -194,3 +195,16 @@ function makeTitleCase() {
     return title_case
   })
 }
+
+function addTitleCaseButton() {
+  let btn = document.createElement("button");
+  btn.innerHTML = "Title Case";
+  btn.type = "submit";
+  btn.className = "titleCaseNameField button tiny secondary"
+  document.querySelector(".person_name").insertAdjacentElement('afterend', btn);
+  btn.addEventListener("click", function () {
+    makeTitleCase()
+  });
+}
+
+document.body.insertAdjacentHTML( 'afterbegin', '<div id="myID">...</div>' );
