@@ -10,12 +10,12 @@ from .dates import FOUR_YEARS_IN_DAYS, date_in_near_future
 faker_factory = faker.Factory.create()
 
 
-class PartySetFactory(factory.DjangoModelFactory):
+class PartySetFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "candidates.PartySet"
 
 
-class ParliamentaryChamberFactory(factory.DjangoModelFactory):
+class ParliamentaryChamberFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "popolo.Organization"
 
@@ -23,7 +23,7 @@ class ParliamentaryChamberFactory(factory.DjangoModelFactory):
     slug = "commons"
 
 
-class BaseElectionFactory(factory.DjangoModelFactory):
+class BaseElectionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "elections.Election"
         abstract = True
@@ -60,7 +60,7 @@ class EarlierElectionFactory(BaseElectionFactory):
     use_for_candidate_suggestions = True
 
 
-class PostFactory(factory.DjangoModelFactory):
+class PostFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "popolo.Post"
 
@@ -89,7 +89,7 @@ class PostFactory(factory.DjangoModelFactory):
                 )
 
 
-class BallotPaperFactory(factory.DjangoModelFactory):
+class BallotPaperFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "candidates.Ballot"
 
@@ -103,12 +103,12 @@ class BallotPaperFactory(factory.DjangoModelFactory):
         return f"{slug}-{n}"
 
 
-class OrganizationFactory(factory.DjangoModelFactory):
+class OrganizationFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "popolo.Organization"
 
 
-class MembershipFactory(factory.DjangoModelFactory):
+class MembershipFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "popolo.Membership"
 

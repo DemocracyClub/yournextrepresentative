@@ -29,9 +29,8 @@ django-webtest==1.9.7
 Django<3.3
 djangorestframework-jsonp==1.0.2
 djangorestframework==3.12.4
-docutils==0.18
 drf-yasg==1.20.0
-factory-boy==2.12.0
+factory-boy==3.2.1
 Faker==9.6.0
 freezegun==0.3.12
 futures==3.1.1
@@ -85,7 +84,6 @@ sqlparse==0.3.0
 tox
 traitlets==5.1.0
 Unidecode==1.2.0
-urllib3>=1.21.1,<1.26
 WebOb==1.8.7
 WebTest==3.0.0
 Whoosh==2.7.4

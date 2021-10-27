@@ -1,7 +1,7 @@
 import factory
 
 
-class PersonFactory(factory.DjangoModelFactory):
+class PersonFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "people.Person"
 
@@ -9,7 +9,7 @@ class PersonFactory(factory.DjangoModelFactory):
     versions = []
 
 
-class PersonIdentifierFactory(factory.DjangoModelFactory):
+class PersonIdentifierFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "people.PersonIdentifier"
 
