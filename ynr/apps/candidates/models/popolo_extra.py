@@ -186,9 +186,15 @@ class BallotQueryset(models.QuerySet):
         objects. So when we order elections by their ee_modified date, we have
         to look across both models in YNR to get the most recent timestamp.
         """
-        return self.annotate(
-            latest_ee_modified=Greatest("ee_modified", "election__ee_modified")
-        ).order_by("-latest_ee_modified")
+        return (
+            self.annotate(
+                latest_ee_modified=Greatest(
+                    "ee_modified", "election__ee_modified"
+                )
+            )
+            .filter(latest_ee_modified__isnull=False)
+            .order_by("-latest_ee_modified")
+        )
 
 
 class Ballot(EEModifiedMixin, models.Model):
