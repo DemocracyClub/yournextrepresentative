@@ -246,6 +246,11 @@ class BasePersonForm(forms.ModelForm):
     )
 
     def clean_biography(self):
+
+        if self.cleaned_data["biography"].find("\r"):
+            self.cleaned_data["biography"] = self.cleaned_data[
+                "biography"
+            ].replace("\r", "")
         clean_biography = "\n\n".join(
             [
                 line.replace("\n", " ")
