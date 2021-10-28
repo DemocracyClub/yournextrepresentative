@@ -259,11 +259,11 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
                 # If we're locking this, then the suggested posts
                 # can be deleted
                 ballot.suggestedpostlock_set.all().delete()
-                ballot.mark_uncontested_winners()
+                ballot.mark_uncontested_winners(request, ip_address)
             else:
                 action_type = ActionType.CONSTITUENCY_UNLOCK
                 pp = "Unlocked"
-                ballot.unmark_uncontested_winners()
+                ballot.unmark_uncontested_winners(request, ip_address)
             message = pp + " ballot {} ({})".format(
                 post_name, ballot.ballot_paper_id
             )

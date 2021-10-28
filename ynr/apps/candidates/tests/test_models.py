@@ -64,6 +64,11 @@ class TestBallotUrlMethods(TestCase):
 
 class TestBallotMethods(TestCase, SingleBallotStatesMixin):
     def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username="jacob", email="jacob@…", password="top_secret"
+        )
+
         election = self.create_election("Sheffield Local Election")
         post = self.create_post(post_label="Ecclesall")
         self.ballot = self.create_ballot(
@@ -98,11 +103,12 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
         self.assertFalse(self.ballot.uncontested)
 
     def test_mark_uncontested_winners(self, log=True):
+        request = self.factory.get("/customer/details")
         parties = self.create_parties(2)
         self.create_memberships(self.ballot, parties)
         self.assertTrue(self.ballot.uncontested)
         self.ballot.mark_uncontested_winners(
-            request=self.client.request, ip_address="111.11.1111", log=True
+            request=request, ip_address="111.11.1111", log=True
         )
         self.assertTrue(
             self.ballot.membership_set.filter(elected=True).count(), 2
@@ -110,16 +116,18 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
         self.assertEqual(LoggedAction.objects.count(), 2)
 
     def test_unmark_uncontested_winners(self, log=True):
-        parties = self.create_parties(2)
+        request = self.factory.get("/customer/details")
+
+        parties = self.create_parties(3)
         self.create_memberships(self.ballot, parties)
-        self.assertTrue(self.ballot.uncontested)
+        self.assertFalse(self.ballot.uncontested)
         self.ballot.unmark_uncontested_winners(
-            request=self.client.request, ip_address="111.11.1111", log=True
+            request=request, ip_address="111.11.1111", log=True
         )
         self.assertTrue(
             self.ballot.membership_set.filter(elected=False).count(), 2
         )
-        self.assertEqual(LoggedAction.objects.count(), 2)
+        self.assertEqual(LoggedAction.objects.count(), 3)
 
 
 class BallotsWithResultsMixin(SingleBallotStatesMixin):

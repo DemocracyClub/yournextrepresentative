@@ -13,6 +13,8 @@ from django.utils.functional import cached_property
 from django_extensions.db.models import TimeStampedModel
 from django.db.models import Count, F
 
+from candidates.models.db import ActionType
+
 from candidates.models.auth import TRUSTED_TO_LOCK_GROUP_NAME
 from elections.models import Election
 from candidates.models import LoggedAction
@@ -358,18 +360,30 @@ class Ballot(EEModifiedMixin, models.Model):
             return True
         return False
 
-    def mark_uncontested_winners(self):
+    def mark_uncontested_winners(self, request, ip_address, log=True):
         """
         If the election is uncontested mark all candidates as elected
         """
         if not self.uncontested:
             return
         self.membership_set.update(elected=True)
+        winners = self.membership_set.filter(elected=True)
+        for winner in winners:
+            LoggedAction.objects.create(
+                action_type=ActionType.SET_CANDIDATE_ELECTED,
+                ip_address=ip_address,
+            )
 
-    def unmark_uncontested_winners(self):
+    def unmark_uncontested_winners(self, request, ip_address, log=True):
         if self.uncontested:
             return
-        self.membership_set.update(elected=None)
+        self.membership_set.update(elected=False)
+        candidates_not_elected = self.membership_set.filter(elected=False)
+        for candidate in candidates_not_elected:
+            LoggedAction.objects.create(
+                action_type=ActionType.SET_CANDIDATE_NOT_ELECTED,
+                ip_address=ip_address,
+            )
 
     @property
     def polls_closed(self):
