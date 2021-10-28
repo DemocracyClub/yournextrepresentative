@@ -268,7 +268,6 @@ class BasePersonForm(forms.ModelForm):
                     "note": "Added when main name changed on person edit form"
                 },
             )
-        self.instance.biography = self.clean_biography()
         return super().save(commit)
 
 
