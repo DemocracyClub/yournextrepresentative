@@ -71,14 +71,14 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, *args, **kwargs):
         """
-        If this is a last updated query, dont paginate objects but return them
-        in chunks
+        If the last_updated filter param is used objects are ordered oldest
+        changes first, and in maximum chunks of 200
         """
         is_last_updated_query = self.request.query_params.get("last_updated")
-        queryset = self.filter_queryset(self.get_queryset())
         if not is_last_updated_query:
             return super().list(request, *args, **kwargs)
 
+        queryset = self.filter_queryset(self.get_queryset())
         queryset = queryset[:200]
         serializer = self.get_serializer(queryset, many=True)
         return Response(
