@@ -32,7 +32,7 @@ djangorestframework==3.12.4
 drf-yasg==1.20.0
 factory-boy==3.2.1
 Faker==9.6.0
-freezegun==0.3.12
+freezegun==1.1.0
 futures==3.1.1
 gender-detector==0.1.0
 git+https://github.com/dessibelle/sorl-thumbnail-serializer-field.git#egg=sorl-thumbnail-serializer-field
