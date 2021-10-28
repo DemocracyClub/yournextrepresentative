@@ -24,6 +24,8 @@ class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
             "election_date",
             "current",
             "party_lists_in_use",
+            "created",
+            "last_updated",
         )
 
     election_id = serializers.ReadOnlyField(
@@ -35,6 +37,8 @@ class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
         lookup_field="slug",
         lookup_url_kwarg="slug",
     )
+
+    last_updated = serializers.DateTimeField(source="modified")
 
 
 class MinimalBallotSerializer(serializers.HyperlinkedModelSerializer):
@@ -94,8 +98,18 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
             "sopn",
             "candidates_locked",
             "candidacies",
+            "created",
+            "last_updated",
+            "replaces",
+            "replaced_by",
         )
 
+    replaces = serializers.SlugRelatedField(
+        read_only=True, slug_field="ballot_paper_id"
+    )
+    replaced_by = serializers.SlugRelatedField(
+        read_only=True, slug_field="ballot_paper_id"
+    )
     url = serializers.HyperlinkedIdentityField(
         view_name="ballot-detail",
         lookup_field="ballot_paper_id",
@@ -118,6 +132,14 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         lookup_field="ballot_paper_id",
         lookup_url_kwarg="ballot_paper_id",
     )
+    last_updated = serializers.SerializerMethodField()
+
+    def get_last_updated(self, instance):
+        """
+        If the last_updated value has been annoated, return that, otherwise use
+        the modified date on the ballot instance
+        """
+        return getattr(instance, "last_updated", instance.modified)
 
     @swagger_serializer_method(serializer_or_field=OfficialDocumentSerializer)
     def get_sopn(self, instance):

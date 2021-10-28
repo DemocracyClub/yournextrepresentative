@@ -2,16 +2,18 @@ import hashlib
 import datetime
 
 from django.contrib.admin.utils import NestedObjects
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
 from django.db import connection, models
+from django.db.models import Max
+from django.db.models.functions import Greatest
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.functional import cached_property
-from django_extensions.db.models import TimeStampedModel
 
 from candidates.models.auth import TRUSTED_TO_LOCK_GROUP_NAME
 from elections.models import Election
+from utils.mixins import EEModifiedMixin
 
 
 """Extensions to the base django-popolo classes for YourNextRepresentative
@@ -148,8 +150,48 @@ class BallotQueryset(models.QuerySet):
             | models.Q(membership__elected=True)
         ).distinct()
 
+    def with_last_updated(self):
+        """
+        Annotates the last_updated field to objects, which represents the most
+        recent modified timstamp out of the ballot, related election, post or
+        the most recently updated related candidate
+        """
+        return (
+            self.annotate(
+                membership_modified_max=Max("membership__modified"),
+                last_updated=Greatest(
+                    "modified",
+                    "election__modified",
+                    "post__modified",
+                    "membership_modified_max",
+                ),
+            )
+            .distinct()
+            .order_by("last_updated")
+        )
 
-class Ballot(TimeStampedModel, models.Model):
+    def last_updated(self, datetime):
+        """
+        Filter on the last_updated timestamp
+        """
+        return self.with_last_updated().filter(last_updated__gt=datetime)
+
+    def ordered_by_latest_ee_modified(self):
+        """
+        Takes the most recent ee_modified value between the Ballot and the
+        Election and orders the queryset by it, most recent first.
+        The 'Greatest' function is used to determine which value is more recent
+        between the datetime on the Ballot or the Election.
+        This is because in EveryElection a Ballot and Election are both Election
+        objects. So when we order elections by their ee_modified date, we have
+        to look across both models in YNR to get the most recent timestamp.
+        """
+        return self.annotate(
+            latest_ee_modified=Greatest("ee_modified", "election__ee_modified")
+        ).order_by("-latest_ee_modified")
+
+
+class Ballot(EEModifiedMixin, models.Model):
 
     VOTING_SYSTEM_FPTP = "FPTP"
 

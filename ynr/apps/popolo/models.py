@@ -6,11 +6,14 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from slugify import slugify
+from django_extensions.db.models import ModificationDateTimeField
 
 from ynr_refactoring.settings import PersonIdentifierFields
+from utils.mixins import EEModifiedMixin
 
 from .behaviors.models import Dateframeable, GenericRelatable
 from .querysets import (
@@ -161,7 +164,7 @@ class Organization(Dateframeable, TimeStampedModel, models.Model):
         return self.name
 
 
-class Post(Dateframeable, TimeStampedModel, models.Model):
+class Post(EEModifiedMixin, Dateframeable, models.Model):
     """
     A position that exists independent of the person holding it
     see schema at http://popoloproject.com/schemas/json#
@@ -271,6 +274,8 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
     see schema at http://popoloproject.com/schemas/membership.json#
     """
 
+    modified = ModificationDateTimeField(_("modified"), db_index=True)
+
     label = models.CharField(
         "label",
         max_length=512,
@@ -340,7 +345,7 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
     )
 
     # Moved from MembeshipExtra
-    elected = models.NullBooleanField()
+    elected = models.BooleanField(null=True)
     party_list_position = models.PositiveSmallIntegerField(null=True)
     ballot = models.ForeignKey("candidates.Ballot", on_delete=models.CASCADE)
 

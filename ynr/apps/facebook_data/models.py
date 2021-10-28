@@ -1,5 +1,5 @@
 from dateutil.parser import parse
-from django.contrib.postgres.fields.jsonb import JSONField
+from django.db.models import JSONField
 from django.db import models
 
 

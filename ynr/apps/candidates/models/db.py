@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from enum import Enum, unique
 
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
 from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.urls import reverse
@@ -41,6 +41,7 @@ class ActionType(models.TextChoices):
     PERSON_LOCK = "person-lock", "Person locked"
     PERSON_UPDATE = "person-update", "Person updated"
     PERSON_CREATE = "person-create", "Person created"
+    PERSON_DELETE = "person-delete", "Person deleted"
     PERSON_OTHER_NAME_CREATE = (
         "person-other-name-create",
         "Person Other name created",
@@ -107,7 +108,12 @@ class LoggedAction(models.Model):
         User, blank=True, null=True, on_delete=models.CASCADE
     )
     person = models.ForeignKey(
-        "people.Person", blank=True, null=True, on_delete=models.CASCADE
+        "people.Person", blank=True, null=True, on_delete=models.SET_NULL
+    )
+    person_pk = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="This is stored to help us identify the related person an action was for after the Person has been deleted",
     )
     action_type = models.CharField(max_length=64, choices=ActionType.choices)
     popit_person_new_version = models.CharField(max_length=32)
@@ -147,9 +153,10 @@ class LoggedAction(models.Model):
     objects = LoggedActionQuerySet.as_manager()
 
     def __str__(self):
-        return "username='{username}' action_type='{action_type}'".format(
-            username=self.user.username, action_type=self.action_type
-        )
+        username = None
+        if self.user:
+            username = self.user.username
+        return f"username='{username}' action_type='{self.action_type}'"
 
     @property
     def subject_url(self):
@@ -213,6 +220,10 @@ class LoggedAction(models.Model):
         has_initial_pk = self.pk
         if not kwargs.get("review_not_required", False):
             self.set_review_required()
+
+        if self.person:
+            self.person_pk = self.person.pk
+
         super().save(**kwargs)
 
         if not has_initial_pk and self.flagged_type and self.person:

@@ -488,10 +488,11 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = merge_form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
-        # 5 actions, because we create a "merge" logged action
-        self.assertEqual(LoggedAction.objects.count(), 5)
+        # 6 actions, because we create a "merge" logged action
+        # and a deleted person action
+        self.assertEqual(LoggedAction.objects.count(), 6)
         response = self.app.get("/recent-changes")
-        self.assertEqual(len(response.context["actions"].object_list), 5)
+        self.assertEqual(len(response.context["actions"].object_list), 6)
 
     def test_merge_not_standing_conflict(self):
         """

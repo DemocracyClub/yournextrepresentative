@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 
 import requests
 from django.conf import settings
+from django.utils.dateparse import parse_datetime
 
 from candidates.models import Ballot, PartySet
 from elections.models import Election as YNRElection
@@ -89,6 +90,7 @@ class EEElection(dict):
                     "name": self["election_title"],
                     "party_lists_in_use": party_lists_in_use,
                     "organization": self.get_or_create_organisation()[0],
+                    "ee_modified": self.get("modified"),
                 },
             )
             self.election_object = election_obj
@@ -143,6 +145,16 @@ class EEElection(dict):
         2. Some divisions have IDs that change over time, mainly because they
            don't have GSS codes when we first see them. We need to detect this
            case and update the IDs accordingly.
+
+        3. When we are able to retrieve an existing Post object with the slug,
+           org and start date provided, we check if it has been updated since
+           the last import by comparing the ee_modified timestamp we have
+           stored. If nothing has changed, it gets added to the cache and the
+           updated is skipped - this is to stop the Post.modified field from
+           updating when no values have changed. This is necessary because when
+           WCIVF importer checks for Ballot updates in YNR, the related post
+           modified timestamp is checked (see last_updated method on the
+           BallotQueryset).
         """
 
         if not self.parent or self.children:
@@ -150,7 +162,6 @@ class EEElection(dict):
 
         # Make an organisation
         org, created = self.get_or_create_organisation()
-
         if self["division"]:
             # Case 1, there is an organisational division related to this
             # post
@@ -161,6 +172,7 @@ class EEElection(dict):
             start_date = self["division"]["divisionset"]["start_date"]
             end_date = self["division"]["divisionset"]["end_date"]
             territory_code = self["division"]["territory_code"]
+            ee_modified = self["division"].get("modified", "")
         else:
             # Case 2, this organisation isn't split in to divisions for
             # this election, take the info from the organisation directly
@@ -171,46 +183,64 @@ class EEElection(dict):
             start_date = self["organisation"]["start_date"]
             end_date = self["organisation"]["end_date"]
             territory_code = self["organisation"]["territory_code"]
+            ee_modified = self["organisation"].get("modified", "")
 
+        # check the cache first, return early if possible
         cache_key = "--".join([slug, self.organization_object.slug, start_date])
         if cache_key in POST_CACHE:
             self.post_created = False
             self.post_object = POST_CACHE[cache_key]
-        else:
-            try:
-                self.post_object = Post.objects.get(
-                    slug=slug,
-                    organization=self.organization_object,
-                    start_date=start_date,
-                )
-                self.post_created = False
-            except Post.DoesNotExist:
-                self.post_object = Post(
-                    organization=self.organization_object,
-                    slug=slug,
-                    start_date=start_date,
-                    identifier=identifier,
-                )
-                self.post_created = True
+            return (self.post_object, self.post_created)
 
-            self.post_object.role = role
-            self.post_object.label = label
-            self.post_object.party_set = self.get_or_create_partyset()[0]
-            self.post_object.organization = self.organization_object
+        # try to find an existing object
+        try:
+            self.post_object = Post.objects.get(
+                slug=slug,
+                organization=self.organization_object,
+                start_date=start_date,
+            )
+            self.post_created = False
+        except Post.DoesNotExist:
+            self.post_object = Post(
+                organization=self.organization_object,
+                slug=slug,
+                start_date=start_date,
+                identifier=identifier,
+            )
+            self.post_created = True
 
-            old_identifier = self.post_object.identifier
-
-            self.post_object.identifier = identifier
-            self.post_object.territory_code = territory_code
-            self.post_object.end_date = end_date
-            self.post_object.save()
-
-            if old_identifier != identifier:
-                self.post_object.postidentifier_set.create(
-                    label="dc_slug", identifier=old_identifier
-                )
-
+        # if it wasnt created and nothing has changed we can return
+        # early and skip updating the object in our DB
+        ee_modified = parse_datetime(ee_modified)
+        if (
+            ee_modified
+            and not self.post_created
+            and self.post_object.ee_modified
+            and self.post_object.ee_modified >= ee_modified
+        ):
+            # add to the cache
             POST_CACHE[cache_key] = self.post_object
+            return self.post_object, self.post_created
+
+        self.post_object.role = role
+        self.post_object.label = label
+        self.post_object.party_set = self.get_or_create_partyset()[0]
+        self.post_object.organization = self.organization_object
+
+        old_identifier = self.post_object.identifier
+
+        self.post_object.identifier = identifier
+        self.post_object.territory_code = territory_code
+        self.post_object.end_date = end_date
+        self.post_object.ee_modified = ee_modified
+        self.post_object.save()
+
+        if old_identifier != identifier:
+            self.post_object.postidentifier_set.create(
+                label="dc_slug", identifier=old_identifier
+            )
+
+        POST_CACHE[cache_key] = self.post_object
         return (self.post_object, self.post_created)
 
     def get_replaced_ballot(self):
@@ -223,39 +253,43 @@ class EEElection(dict):
             return None
 
     def get_or_create_ballot(self, parent):
+        """
+        Parent may be None if this is a recently-updated import. In
+        this case it indicates that the parent has not been modified
+        in EE so we can skip the get_or_creat_election step
+        """
         if hasattr(self, "ballot_object"):
-            self.ballot_created = False
-        else:
-            # First, set up the Post and Election with related objects
-            self.get_or_create_post()
+            return self.ballot_object, False
+        # First, set up the Post and Election with related objects
+        self.get_or_create_post()
 
-            # Make sure we're creating an ID for the right parent
+        voting_system = self["voting_system"] or {}
+        ballot_data = {
+            "post": self.post_object,
+            "winner_count": self["seats_contested"],
+            "cancelled": self["cancelled"],
+            "replaces": self.get_replaced_ballot(),
+            "tags": self.get("tags", {}),
+            "voting_system": voting_system.get("slug", ""),
+            "ee_modified": self.get("modified"),
+        }
+
+        # if we have a parent Election update it then add it to
+        # the dict to be used to update the Ballot
+        if parent:
             assert self.parent == parent["election_id"], "{} != {}".format(
                 self.parent, parent["election_id"]
             )
-
             # Note that we create the election of the parent
             parent.get_or_create_election()
+            ballot_data["election"] = parent.election_object
 
-            # Get the winner count
-            winner_count = self["seats_contested"]
-
-            voting_system = self.get("voting_system", {}) or {}
-            (
-                self.ballot_object,
-                self.ballot_created,
-            ) = Ballot.objects.update_or_create(
-                ballot_paper_id=self["election_id"],
-                defaults={
-                    "post": self.post_object,
-                    "election": parent.election_object,
-                    "winner_count": winner_count,
-                    "cancelled": self["cancelled"],
-                    "replaces": self.get_replaced_ballot(),
-                    "tags": self.get("tags", {}),
-                    "voting_system": voting_system.get("slug", ""),
-                },
-            )
+        (
+            self.ballot_object,
+            self.ballot_created,
+        ) = Ballot.objects.update_or_create(
+            ballot_paper_id=self["election_id"], defaults=ballot_data
+        )
 
         return (self.ballot_object, self.ballot_created)
 

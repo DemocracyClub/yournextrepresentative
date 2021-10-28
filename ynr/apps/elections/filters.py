@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 from django_filters.widgets import LinkWidget
 
 from django import forms
+from api.next.filters import LastUpdatedMixin
 
 from candidates.models import Ballot
 from elections.models import Election
@@ -240,7 +241,7 @@ class BaseBallotFilter(django_filters.FilterSet):
         fields = ["review_required", "has_sopn"]
 
 
-class BallotFilter(BaseBallotFilter):
+class BallotFilter(BaseBallotFilter, LastUpdatedMixin):
     """
     Used on the API
 
@@ -292,6 +293,13 @@ This may change depending on the elections. Used to determine if
         help_text="""Boolean. If results have been entered for this ballot.
         Only First Past The Post ballots have results at the moment.""",
     )
+
+    def filter_last_updated(self, queryset, name, value):
+        """
+        Method for the last_updated filter. Uses the last_updated QuerysetMethod
+        to return updated after the given datetime
+        """
+        return queryset.last_updated(datetime=value)
 
 
 class CurrentOrFutureBallotFilter(BaseBallotFilter):
