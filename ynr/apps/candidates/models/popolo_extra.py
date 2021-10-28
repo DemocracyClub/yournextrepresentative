@@ -10,7 +10,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.functional import cached_property
-from django_extensions.db.models import TimeStampedModel
+from utils.mixins import EEModifiedMixin
+
 from django.db.models import Count, F
 
 from candidates.models.db import ActionType
@@ -199,7 +200,7 @@ class BallotQueryset(models.QuerySet):
             .filter(latest_ee_modified__isnull=False)
             .order_by("-latest_ee_modified")
         )
-        
+
     def uncontested(self):
         """
         Return a QuerySet of ballots that are uncontested

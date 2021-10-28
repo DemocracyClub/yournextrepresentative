@@ -2,7 +2,6 @@ import faker
 from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
 
-from django.test import TestCase
 from django.utils import timezone
 from django.db.models import Max
 from django.db.models.functions import Greatest
@@ -283,6 +282,7 @@ class TestHasResultsOrNoResults(BallotsWithResultsMixin, TestCase):
         qs = Ballot.objects.ordered_by_latest_ee_modified()
         # check that the new ballot is now the first returned
         assert qs.first() == new_ballot
+
 
 class TestBallotQuerySetMethods(TestCase, SingleBallotStatesMixin):
     def create_memberships(self, ballot, parties, candidates_per_party=1):
