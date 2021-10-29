@@ -36,7 +36,17 @@
               </th>
             {% else %}
               <th>{{ prop.0|title }}</th>
-              <td>{{ prop.1|format_docstring|markdown }}</td>
+              <td>
+              {% if prop.0 == "enum" %}
+                <ul>
+                {% for enum in prop.1 %}
+                  <li><code>{{ enum }}</code></li>
+                {% endfor %}
+                </ul>
+              {% else %}
+                {{ prop.1|format_docstring|markdown }}
+                {% endif %}
+              </td>
 
             {% endif %}
             </tr>
