@@ -3,9 +3,13 @@ from urllib.parse import urlencode
 import django_filters
 
 from candidates.models import LoggedAction
-from candidates.models.db import EditType
+from candidates.models.db import ActionType, EditType
 from elections.filters import DSLinkWidget
 from moderation_queue.review_required_helper import REVIEW_TYPES
+
+
+def get_action_types():
+    return ActionType.choices
 
 
 class LoggedActionAPIFilter(django_filters.FilterSet):
@@ -16,18 +20,7 @@ class LoggedActionAPIFilter(django_filters.FilterSet):
         model = LoggedAction
         fields = ["action_type", "created"]
 
-    action_type = django_filters.AllValuesMultipleFilter(
-        field_name="action_type"
-    )
-
-
-def get_action_types():
-    return [
-        (x, x)
-        for x in LoggedAction.objects.all()
-        .values_list("action_type", flat=True)
-        .distinct()
-    ]
+    action_type = django_filters.MultipleChoiceFilter(choices=get_action_types)
 
 
 class LoggedActionRecentChangesFilter(django_filters.FilterSet):
@@ -53,9 +46,7 @@ class LoggedActionRecentChangesFilter(django_filters.FilterSet):
         widget=DSLinkWidget(),
     )
 
-    action_type = django_filters.AllValuesMultipleFilter(
-        choices=get_action_types
-    )
+    action_type = django_filters.MultipleChoiceFilter(choices=get_action_types)
 
     username = django_filters.CharFilter(
         label="User name", method="filter_username"
