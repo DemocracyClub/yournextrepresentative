@@ -121,6 +121,8 @@
               {% else %}
                 is creating a new candidate
               {% endif %}
+            {% elif action.action_type == 'person-delete' %}
+              deleted person with ID {{ action.person_pk }}
             {% elif action.action_type == 'person-merge' %}
               merged another candidate into
               <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
@@ -153,7 +155,7 @@
               recorded overall control for a council
             {% elif action.action_type == 'confirm-council-control' %}
               reviewed overall control for a council
-            {% elif action.action_type == 'set-candidate-elected' %}
+            {% elif action.action_type == 'set-candidate-elected' and action.person %}
               marked <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
               as the winner
             {% elif action.action_type == 'entered-results-data' %}
