@@ -361,7 +361,7 @@ class Ballot(EEModifiedMixin, models.Model):
             return True
         return False
 
-    def mark_uncontested_winners(self, request, ip_address, log=True):
+    def mark_uncontested_winners(self, request, ip_address, user, log=True):
         """
         If the election is uncontested mark all candidates as elected
         """
@@ -373,9 +373,12 @@ class Ballot(EEModifiedMixin, models.Model):
             LoggedAction.objects.create(
                 action_type=ActionType.SET_CANDIDATE_ELECTED,
                 ip_address=ip_address,
+                user=user,
+                ballot=self,
+                source="Ballot was uncontested",
             )
 
-    def unmark_uncontested_winners(self, request, ip_address, log=True):
+    def unmark_uncontested_winners(self, request, ip_address, user, log=True):
         if self.uncontested:
             return
         self.membership_set.update(elected=False)
@@ -384,6 +387,9 @@ class Ballot(EEModifiedMixin, models.Model):
             LoggedAction.objects.create(
                 action_type=ActionType.SET_CANDIDATE_NOT_ELECTED,
                 ip_address=ip_address,
+                user=user,
+                ballot=self,
+                source="Ballot was previously marked uncontested, but may now have been unlocked. Check the ballot for more details.",
             )
 
     @property

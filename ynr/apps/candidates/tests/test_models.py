@@ -102,12 +102,14 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
         self.assertFalse(self.ballot.uncontested)
 
     def test_mark_uncontested_winners(self, log=True):
-        request = self.factory.get("/customer/details")
+        request = self.factory.get("/test")
+        request.user = self.user
         parties = self.create_parties(2)
+
         self.create_memberships(self.ballot, parties)
         self.assertTrue(self.ballot.uncontested)
         self.ballot.mark_uncontested_winners(
-            request=request, ip_address="111.11.1111", log=True
+            request, ip_address="111.11.1111", user=request.user, log=True
         )
         self.assertTrue(
             self.ballot.membership_set.filter(elected=True).count(), 2
@@ -115,13 +117,16 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
         self.assertEqual(LoggedAction.objects.count(), 2)
 
     def test_unmark_uncontested_winners(self, log=True):
-        request = self.factory.get("/customer/details")
-
+        request = self.factory.get("/test")
+        request.user = self.user
         parties = self.create_parties(3)
         self.create_memberships(self.ballot, parties)
         self.assertFalse(self.ballot.uncontested)
         self.ballot.unmark_uncontested_winners(
-            request=request, ip_address="111.11.1111", log=True
+            request=request,
+            ip_address="111.11.1111",
+            user=request.user,
+            log=True,
         )
         self.assertTrue(
             self.ballot.membership_set.filter(elected=False).count(), 2
