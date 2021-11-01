@@ -68,7 +68,7 @@ class Command(BaseCommand):
                     raise e
                 # check the parent election already exists in the DB and if it
                 # doesn't allow an exception to be raised
-                Election.objects.get(election_id=ballot_id)
+                Election.objects.get(slug=election_dict.parent)
                 # otherwise set parent to None as the KeyError indicates it is
                 # not in the election tree because there is nothing to update
                 parent = None
