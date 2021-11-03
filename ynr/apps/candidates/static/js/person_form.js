@@ -176,30 +176,24 @@ $(document).ready(function() {
      toTitleCase("BENJAMIN SISKO") => "Benjamin Sisko"
 */
 function toTitleCase(str) {
-  debugger
   return str.replace(/\b(\w)(.*?)\b/g, function (_, first, rest) { return first.toUpperCase() + rest.toLowerCase() })
 }
 
 function compressWhitespace(str) {
-  debugger
   return str.replace(/\s\s+/g, ' ');
 }
 
-function makeTitleCase() {
-  var button = $('.titleCaseNameField');
-  var this_name_field = button.parent().find('#id_name');
-  var name_val = this_name_field.val();
-  var title_case = this_name_field.val(compressWhitespace(toTitleCase(name_val)));
-  return title_case
-}
-
 function addTitleCaseButton() {
-  let btn = document.createElement("button");
-  btn.innerHTML = "Title Case";
-  btn.type = "submit";
-  btn.className = "titleCaseNameField button tiny secondary"
-  document.querySelector(".person_name").insertAdjacentElement('afterend', btn);
-  btn.addEventListener("click", function () {
-    makeTitleCase()
-  });
+  var name_fields = document.querySelectorAll('.person_name');
+  for (let i = 0; i < name_fields.length; i++) {
+    let btn = document.createElement("button");
+    btn.innerHTML = "Title Case";
+    btn.type = "button";
+    btn.className = "titleCaseNameField button tiny secondary"
+    name_fields[i].insertAdjacentElement('afterend', btn);
+    btn.addEventListener('click', function() {
+      let name = name_fields[i].value;
+      name_fields[i].value = compressWhitespace(toTitleCase(name));
+    })
+  } 
 }
