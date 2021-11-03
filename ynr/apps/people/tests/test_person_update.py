@@ -86,10 +86,10 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         )
 
         form = response.forms[1]
-        form["birth_date"] = "1962-09-00"
+        form["birth_date"] = "1962"
         form["source"] = "BBC News"
         response = form.submit().follow()
-        self.assertContains(response, "September 1962")
+        self.assertContains(response, "1962")
 
     def test_set_birth_date_year_only(self):
         """

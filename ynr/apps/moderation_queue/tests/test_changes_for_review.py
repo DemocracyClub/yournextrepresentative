@@ -349,7 +349,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         dead_person = people.tests.factories.PersonFactory.create(
             id="7448",
             name="The Eurovisionary Ronnie Carroll",
-            birth_date="1934-08-18",
+            birth_date="1934",
             death_date="2015-04-13",
         )
         la = LoggedAction.objects.create(

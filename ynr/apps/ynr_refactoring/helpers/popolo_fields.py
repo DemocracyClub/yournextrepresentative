@@ -56,7 +56,7 @@ gender = SimplePopoloField(
 
 birth_date = SimplePopoloField(
     name="birth_date",
-    label="Date of birth (a four digit year or a full date)",
+    label="Year of birth (a four digit year)",
     info_type_key="text",
     order=6,
     required=False,

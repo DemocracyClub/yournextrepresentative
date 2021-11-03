@@ -108,13 +108,13 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual("/person/2009", split_location.path)
         self.assertEqual(memberships_before, membership_id_set(person))
 
-    def test_update_dd_mm_yyyy_birth_date(self):
+    def test_update_birth_date(self):
         memberships_before = membership_id_set(Person.objects.get(pk=2009))
         response = self.app.get(
             "/person/2009/update", user=self.user_who_can_lock
         )
         form = response.forms["person-details"]
-        form["birth_date"] = "1/4/1875"
+        form["birth_date"] = "1875"
         form["source"] = "An update for testing purposes"
         response = form.submit()
 
@@ -123,7 +123,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual("/person/2009", split_location.path)
 
         person = Person.objects.get(id="2009")
-        self.assertEqual(person.birth_date, "1875-04-01")
+        self.assertEqual(person.birth_date, "1875")
         self.assertEqual(memberships_before, membership_id_set(person))
 
     def test_update_person_extra_fields(self):
@@ -133,7 +133,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/person/2009/update", user=self.user_who_can_lock
         )
         form = response.forms["person-details"]
-        form["birth_date"] = "1/4/1875"
+        form["birth_date"] = "1875"
         form["source"] = "An update for testing purposes"
         response = form.submit()
 
@@ -142,7 +142,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual("/person/2009", split_location.path)
 
         person = Person.objects.get(id="2009")
-        self.assertEqual(person.birth_date, "1875-04-01")
+        self.assertEqual(person.birth_date, "1875")
         versions_data = person.versions
         self.assertEqual(
             versions_data[0]["data"]["extra_fields"], {"favourite_biscuits": ""}

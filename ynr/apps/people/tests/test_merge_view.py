@@ -59,7 +59,7 @@ EXAMPLE_VERSIONS = [
             "twitter_username": "",
             "candidacies": {"parl.65808.2010-05-06": {"party": "PP53"}},
             "homepage_url": "http://example.org/tessajowell",
-            "birth_date": "1947-09-17",
+            "birth_date": "1947",
             "wikipedia_url": "",
             "email": "tessa.jowell@example.com",
         },
@@ -335,7 +335,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         revert_person_from_version_data(
             stuart_primary,
             {
-                "birth_date": "1967-12-22",
+                "birth_date": "1967",
                 "email": "sjeffery@fmail.co.uk",
                 "facebook_page_url": "",
                 "facebook_personal_url": "",
@@ -464,9 +464,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "I've lived here for ages",
             "Bel Air",
         )
-        _do_edit_for_user(
-            non_primary_person, "birth_date", "1968-09-25", "Wikipedia"
-        )
+        _do_edit_for_user(non_primary_person, "birth_date", "1968", "Wikipedia")
 
         self.assertEqual(LoggedAction.objects.count(), 4)
         self.assertEqual(Person.objects.count(), 2)

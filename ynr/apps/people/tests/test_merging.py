@@ -258,20 +258,20 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(len(actual), len(expected_versions))
 
     def test_dest_person_gets_source_properties(self):
-        self.dest_person.birth_date = "1956-01-02"
-        self.source_person.birth_date = "1945-01-04"
+        self.dest_person.birth_date = "1956"
+        self.source_person.birth_date = "1945"
 
         merger = PersonMerger(self.dest_person, self.source_person)
         merger.merge()
-        self.assertEqual(self.dest_person.birth_date, "1945-01-04")
+        self.assertEqual(self.dest_person.birth_date, "1945")
 
     def test_dest_person_gets_empty_values_from_source(self):
         self.dest_person.birth_date = None
-        self.source_person.birth_date = "1945-01-04"
+        self.source_person.birth_date = "1945"
 
         merger = PersonMerger(self.dest_person, self.source_person)
         merger.merge()
-        self.assertEqual(self.dest_person.birth_date, "1945-01-04")
+        self.assertEqual(self.dest_person.birth_date, "1945")
 
     def test_merge_maintain_primary_image(self):
         PersonImage.objects.update_or_create_from_file(
