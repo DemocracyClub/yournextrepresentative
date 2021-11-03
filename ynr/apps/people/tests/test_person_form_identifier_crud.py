@@ -128,7 +128,7 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
 
         form = resp.forms[1]
         form["source"] = "Just picking something from the dropdown"
-        form["tmp_person_identifiers-0-value_type"] = "homepage_url"
+        form["tmp_person_identifiers-0-value_type"] = "youtube_profile"
         resp = form.submit()
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
@@ -137,7 +137,7 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         )
 
         self.assertEqual(
-            PersonIdentifier.objects.get().value_type, "homepage_url"
+            PersonIdentifier.objects.get().value_type, "youtube_profile"
         )
 
     def _submit_values(self, value, value_type="twitter_username"):
