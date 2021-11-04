@@ -127,9 +127,12 @@ class SOPNPageText:
             self.is_top_page = True
             return self.is_top_page
         similar_len = document_heading.intersection(self.get_page_heading_set())
+
+        headings_are_identical = similar_len == document_heading
+
         if (
             len(similar_len) / len(document_heading) < CONTINUATION_THRESHOLD
-            or not len(similar_len) / len(document_heading) == 1
+            or headings_are_identical
         ):
             self.is_top_page = False
         return self.is_top_page
