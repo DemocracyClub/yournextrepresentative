@@ -86,10 +86,12 @@ class TestSOPNHelpers(TestCase):
             join(dirname(__file__), "data/NI-Assembly-Election-2016.pdf")
         )
         doc = SOPNDocument(open(example_doc_path, "rb"))
-
         self.assertEqual(len(doc.pages), 9)
-
         na_wards = doc.get_pages_by_ward_name("north antrim")
-
         self.assertEqual(len(na_wards), 5)
         self.assertEqual(na_wards[0].page_number, 5)
+
+        doc = SOPNDocument(open(example_doc_path, "rb"))
+        ulster_wards = doc.get_pages_by_ward_name("ulster")
+        self.assertEqual(len(ulster_wards), 4)
+        self.assertEqual(ulster_wards[0].page_number, 1)
