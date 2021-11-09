@@ -202,7 +202,9 @@ class BasePersonForm(forms.ModelForm):
         required=False,
     )
     name = StrippedCharField(
-        label="Name (style: Ali Smith not SMITH Ali)", required=True
+        label="Name (style: Ali Smith not SMITH Ali)",
+        required=True,
+        widget=forms.TextInput(attrs={"class": "person_name"}),
     )
     honorific_suffix = StrippedCharField(
         label="Post-nominal letters (e.g. CBE, DSO, etc.)", required=False

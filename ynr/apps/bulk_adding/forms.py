@@ -165,7 +165,9 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
 
 class NameOnlyPersonForm(forms.Form):
     name = forms.CharField(
-        label="Name (style: Ali Smith, not SMITH Ali)", required=True
+        label="Name (style: Ali Smith, not SMITH Ali)",
+        required=True,
+        widget=forms.TextInput(attrs={"class": "person_name"}),
     )
     ballot = ValidBallotField(
         widget=BallotInputWidget(attrs={"type": "hidden"})
