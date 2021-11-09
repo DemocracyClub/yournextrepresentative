@@ -10,10 +10,15 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.functional import cached_property
+from utils.mixins import EEModifiedMixin
+
+from django.db.models import Count, F
+
+from candidates.models.db import ActionType
 
 from candidates.models.auth import TRUSTED_TO_LOCK_GROUP_NAME
 from elections.models import Election
-from utils.mixins import EEModifiedMixin
+from candidates.models import LoggedAction
 
 
 """Extensions to the base django-popolo classes for YourNextRepresentative
@@ -196,6 +201,16 @@ class BallotQueryset(models.QuerySet):
             .order_by("-latest_ee_modified")
         )
 
+    def uncontested(self):
+        """
+        Return a QuerySet of ballots that are uncontested
+        """
+        return (
+            self.annotate(memberships_count=Count("membership"))
+            .filter(winner_count__gte=F("memberships_count"))
+            .filter(candidates_locked=True)
+        )
+
 
 class Ballot(EEModifiedMixin, models.Model):
 
@@ -337,6 +352,45 @@ class Ballot(EEModifiedMixin, models.Model):
         if self.membership_set.filter(elected=True).exists():
             return True
         return False
+
+    @property
+    def uncontested(self):
+        if not self.candidates_locked:
+            return False
+        if self.get_winner_count == self.membership_set.count():
+            return True
+        return False
+
+    def mark_uncontested_winners(self, request, ip_address, user, log=True):
+        """
+        If the election is uncontested mark all candidates as elected
+        """
+        if not self.uncontested:
+            return
+        self.membership_set.update(elected=True)
+        winners = self.membership_set.filter(elected=True)
+        for winner in winners:
+            LoggedAction.objects.create(
+                action_type=ActionType.SET_CANDIDATE_ELECTED,
+                ip_address=ip_address,
+                user=user,
+                ballot=self,
+                source="Ballot was uncontested",
+            )
+
+    def unmark_uncontested_winners(self, request, ip_address, user, log=True):
+        if self.uncontested:
+            return
+        self.membership_set.update(elected=False)
+        candidates_not_elected = self.membership_set.filter(elected=False)
+        for candidate in candidates_not_elected:
+            LoggedAction.objects.create(
+                action_type=ActionType.SET_CANDIDATE_NOT_ELECTED,
+                ip_address=ip_address,
+                user=user,
+                ballot=self,
+                source="Ballot was previously marked uncontested, but may now have been unlocked. Check the ballot for more details.",
+            )
 
     @property
     def polls_closed(self):

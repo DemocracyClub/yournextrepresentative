@@ -93,6 +93,11 @@
                 </p>
               {% endif %}
           </div>
+          {% elif ballot.uncontested %}
+          <div class="status_done">
+              <strong>Winner(s) recorded</strong>
+              <i>Uncontested Ballot</i>
+          </div> 
           {% else %}
           <div class="status_in_progress">
               <strong>Winner(s) unknown</strong>:
