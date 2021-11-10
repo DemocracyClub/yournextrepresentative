@@ -136,9 +136,6 @@ class SOPNPageText:
             or headings_are_identical
         )
 
-        if is_continuation_page or not headings_are_identical:
-            self.is_top_page = False
-
         if is_continuation_page:
             self.is_top_page = False
         return self.is_top_page
