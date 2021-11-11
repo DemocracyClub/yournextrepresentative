@@ -20,6 +20,7 @@ CONTINUATION_THRESHOLD = 0.5
 
 class SOPNDocument:
     def __init__(self, file):
+        # print("1. First, we initialise the SOPNDocument")
         self.file = file
         self.pages = []
         self.parse_pages()
@@ -34,6 +35,7 @@ class SOPNDocument:
                 top_page = page
 
     def parse_pages(self):
+        # print("2. While initialising, we parse pages and initialise SOPNPageText")
         rsrcmgr = PDFResourceManager()
 
         laparams = LAParams(line_margin=0.1)
@@ -82,6 +84,7 @@ class SOPNPageText:
     """
 
     def __init__(self, page_number, text):
+        # print("3. We initialise SOPNPageText")
         self.page_number = page_number
         self.raw_text = text
         self.text = clean_page_text(text)
@@ -95,6 +98,7 @@ class SOPNPageText:
 
         This is used to compare to other sets with set.intersection.
         """
+        # print("4. Then we grab the page_heading_set")
         return set(self.get_page_heading().split(" "))
 
     def get_page_heading(self):
@@ -103,13 +107,14 @@ class SOPNPageText:
 
         Do some basic cleaning of the heading.
         """
+        # print("5. ...from the get_page_heading")
         words = self.text.split(" ")
         threshold = int(len(words) * HEADING_SIZE)
         search_text = " ".join(words[0:threshold])
         search_text = search_text.replace("\n", " ")
         return search_text.lower()
 
-    def detect_top_page(self, document_heading):
+    def detect_top_page(self, document_heading, top_page):
         """
         Take a set containing the document heading (returned from
         `get_page_heading_set`) and compare it to another heading set.
@@ -124,19 +129,36 @@ class SOPNPageText:
 
         """
         # We know the first page is never a continuation page.
+        # print("6. Then we try to detect the top page")
+
         if self.page_number == 1:
             self.is_top_page = True
             return self.is_top_page
 
         similar_len = document_heading.intersection(self.get_page_heading_set())
-
-        headings_are_identical = similar_len == document_heading
-
-        is_continuation_page = (
+        is_very_different_to_doc_heading = (
             len(similar_len) / len(document_heading) < CONTINUATION_THRESHOLD
-            or headings_are_identical
+        )
+        if is_very_different_to_doc_heading:
+            self.is_top_page = False
+            return self.is_top_page
+
+        # if the new page we are looking at is radically different, we know it's a continuation page
+        top_page_heading = top_page.get_page_heading()
+        top_page_heading_up_to_ward_name = " ".join(
+            top_page_heading.partition("strensall")[0:2]
         )
 
-        if is_continuation_page:
-            self.is_top_page = False
+        current_page_heading = self.get_page_heading()
+        current_page_heading_up_to_ward_name = " ".join(
+            current_page_heading.partition("strensall")[0:2]
+        )
+
+        headings_are_identical = (
+            current_page_heading_up_to_ward_name
+            == top_page_heading_up_to_ward_name
+        )
+
+        if headings_are_identical:
+            self.is_top_page = True
         return self.is_top_page
