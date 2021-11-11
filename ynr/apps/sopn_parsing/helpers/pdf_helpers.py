@@ -26,11 +26,12 @@ class SOPNDocument:
         self.document_heading = self.pages[0].get_page_heading_set()
         if len(self.document_heading) < 10:
             raise NoTextInDocumentError()
-        self.top_pages = [
-            p.page_number
-            for p in self.pages
-            if p.detect_top_page(self.document_heading)
-        ]
+        top_page = self.pages[0]
+        self.top_pages = []
+        for page in self.pages:
+            if page.detect_top_page(self.document_heading, top_page):
+                self.top_pages.append(page)
+                top_page = page
 
     def parse_pages(self):
         rsrcmgr = PDFResourceManager()
