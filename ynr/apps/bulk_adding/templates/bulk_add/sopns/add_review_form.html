@@ -98,15 +98,11 @@
 
   <script>
   $('.sopn_adding_suggestions_table tr').click(function() {
-      var row = $(this);
-    $("tr").removeClass("selected_action", function() {
-        row.addClass("selected_action");
-        row.find('td input[type=radio]').prop('checked', true);
-    });
-
-
+    var row = $(this);
+    $("tr").removeClass("selected_action");
+    row.addClass("selected_action");
+    row.find('td input[type=radio]').prop('checked', true);
   });
-
   </script>
 
 {% endblock content %}
