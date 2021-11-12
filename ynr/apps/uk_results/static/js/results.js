@@ -1,7 +1,12 @@
+var form = null
 $(function() {
+    // avoids running this on every page
+    form = document.querySelector("#ballot_paper_results_form")
+    if (!form) { return; }
+
     tiedWinners() 
     $('*[id*=id_memberships]').on("change", tiedWinners)
-   
+
     if($(".errorlist").length != 0){
         tiedWinners() 
     }
