@@ -1,5 +1,5 @@
 
-<form method=post id="ballot_paper_results_form" class="ballot_paper_results_form">
+<form method=post id="ballot_paper_results_form" class="ballot_paper_results_form" data-winner-count="{{ form.ballot.winner_count }}">
   {{ form.errors }}
   {% csrf_token %}
   <table>
