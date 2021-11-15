@@ -70,9 +70,6 @@
 .sopn_adding_suggestions_table {
     td {
         vertical-align: top;
-        &:first-child {
-            width: 50%;
-        }
     }
     tr.selected_action {
         background-color: #fdf2d5;
