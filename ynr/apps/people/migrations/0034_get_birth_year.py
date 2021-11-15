@@ -5,7 +5,7 @@ from django.db import migrations
 
 def get_birth_year(apps, schema_editor):
     Person = apps.get_model("people", "Person")
-    for person in Person.objects.all():
+    for person in Person.objects.exclude(birth_date="").iterator():
         birth_year = person.birth_date.split("-")[0]
         person.birth_date = birth_year
         person.save()
