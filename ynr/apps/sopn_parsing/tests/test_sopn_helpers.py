@@ -4,6 +4,7 @@ from django.test import TestCase
 from unittest import skipIf
 
 from sopn_parsing.helpers.text_helpers import clean_text
+from sopn_parsing.helpers.extract_pages import get_all_documents_with_source
 from sopn_parsing.tests import should_skip_pdf_tests
 
 try:
@@ -22,9 +23,12 @@ class TestSOPNHelpers(TestCase):
         example_doc_path = abspath(
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
         )
-
-        # TODO: pass in a list of documents from get_all_documents_with_source()
-        doc = SOPNDocument(open(example_doc_path, "rb"))
+        all_documents_with_source = get_all_documents_with_source(
+            example_doc_path
+        )
+        doc = SOPNDocument(
+            open(example_doc_path, "rb"), all_documents_with_source
+        )
         self.assertSetEqual(
             doc.document_heading,
             {
@@ -78,24 +82,24 @@ class TestSOPNHelpers(TestCase):
         )
 
         self.assertEqual(len(doc.pages), 1)
-        self.assertEqual(
-            doc.get_pages_by_ward_name("berkeley")[0].page_number, 1
-        )
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_multipage_doc(self):
-
         example_doc_path = abspath(
             join(dirname(__file__), "data/NI-Assembly-Election-2016.pdf")
         )
-        # TODO: pass in a list of documents from get_all_documents_with_source()
-        doc = SOPNDocument(open(example_doc_path, "rb"))
-        self.assertEqual(len(doc.pages), 9)
-        na_wards = doc.get_pages_by_ward_name("north antrim")
-        self.assertEqual(len(na_wards), 5)
-        self.assertEqual(na_wards[0].page_number, 5)
 
-        doc = SOPNDocument(open(example_doc_path, "rb"))
-        ulster_wards = doc.get_pages_by_ward_name("ulster")
-        self.assertEqual(len(ulster_wards), 4)
-        self.assertEqual(ulster_wards[0].page_number, 1)
+        all_documents_with_source = get_all_documents_with_source(
+            example_doc_path
+        )
+        doc = SOPNDocument(
+            open(example_doc_path, "rb"), all_documents_with_source
+        )
+        import pdb
+
+        pdb.set_trace()
+        self.assertEqual(len(doc.pages), 9)
+
+        for doc_info in doc.match_all_pages():
+            self.assertEqual(doc_info[0], doc.pages[0])
+            self.assertEqual(doc_info[1], "1,2")
