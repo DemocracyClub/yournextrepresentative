@@ -95,9 +95,6 @@ class TestSOPNHelpers(TestCase):
         doc = SOPNDocument(
             open(example_doc_path, "rb"), all_documents_with_source
         )
-        import pdb
-
-        pdb.set_trace()
         self.assertEqual(len(doc.pages), 9)
 
         for doc_info in doc.match_all_pages():

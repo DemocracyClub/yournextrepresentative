@@ -24,6 +24,9 @@ CONTINUATION_THRESHOLD = 0.5
 
 class SOPNDocument:
     def __init__(self, file, all_documents_with_source):
+        """
+        Represents a ....
+        """
         self.file = file
         self.unmatched_documents = set(doc for doc in all_documents_with_source)
         self.matched_documents = set()
@@ -40,6 +43,15 @@ class SOPNDocument:
     @property
     def unmatched_pages(self):
         return [p for p in self.pages if not p.matched]
+
+    def validate_page_numbers(self, page_numbers):
+        if len(page_numbers) == 1:
+            return True
+        page_numbers = [page for page in page_numbers]
+        lower = min(page_numbers)
+        upper = max(page_numbers) + 1
+
+        assert page_numbers == list(range(lower, upper))
 
     def match_ballot_to_pages(self, ballot: Ballot) -> str:
         """
@@ -69,7 +81,10 @@ class SOPNDocument:
                     page_numbers.append(page.page_number)
                     page.matched = True
                     previous_page = page
-        return ",".join([str(page_num) for page_num in page_numbers])
+        if self.validate_page_numbers(page_numbers):
+            return ",".join(str(p) for p in page_numbers)
+        else:
+            raise ValueError("Page numbers are not consecutive")
 
     def match_all_pages(self) -> List[Tuple[OfficialDocument, str]]:
         """
