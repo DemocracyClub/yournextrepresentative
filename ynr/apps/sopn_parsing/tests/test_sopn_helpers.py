@@ -22,6 +22,8 @@ class TestSOPNHelpers(TestCase):
         example_doc_path = abspath(
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
         )
+
+        # TODO: pass in a list of documents from get_all_documents_with_source()
         doc = SOPNDocument(open(example_doc_path, "rb"))
         self.assertSetEqual(
             doc.document_heading,
@@ -82,9 +84,11 @@ class TestSOPNHelpers(TestCase):
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_multipage_doc(self):
+
         example_doc_path = abspath(
             join(dirname(__file__), "data/NI-Assembly-Election-2016.pdf")
         )
+        # TODO: pass in a list of documents from get_all_documents_with_source()
         doc = SOPNDocument(open(example_doc_path, "rb"))
         self.assertEqual(len(doc.pages), 9)
         na_wards = doc.get_pages_by_ward_name("north antrim")

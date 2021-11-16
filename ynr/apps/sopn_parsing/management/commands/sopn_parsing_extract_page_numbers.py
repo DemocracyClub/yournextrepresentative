@@ -21,9 +21,9 @@ class Command(BaseSOPNParsingCommand):
             if not options["reparse"]:
                 filter_kwargs["officialdocument__relevant_pages"] = None
             qs = qs.filter(**filter_kwargs)
-
         for ballot in qs:
             try:
                 extract_pages_for_ballot(ballot)
             except (ValueError, NoTextInDocumentError) as e:
                 self.stderr.write(e.args[0])
+                raise

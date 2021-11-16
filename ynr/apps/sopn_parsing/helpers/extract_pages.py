@@ -26,11 +26,17 @@ def extract_pages_for_ballot(ballot, manual_upload=False):
         other_doc.save()
 
 
-def extract_pages_for_single_document(document, manual_upload):
-    all_documents_with_source = (
-        OfficialDocument.objects.filter(source_url=document.source_url)
+def get_all_documents_with_source(source):
+    return (
+        OfficialDocument.objects.filter(source_url=source)
         .select_related("ballot", "ballot__post")
         .order_by(-Length("ballot__post__label"))
+    )
+
+
+def extract_pages_for_single_document(document, manual_upload):
+    all_documents_with_source = get_all_documents_with_source(
+        document.source_url
     )
     doc_file = document.uploaded_file
     if not doc_file:
@@ -45,7 +51,7 @@ def extract_pages_for_single_document(document, manual_upload):
             yield document, "all"
             return
 
-        #  check if the ballot is for a by-election - if so it is very likely to
+        # check if the ballot is for a by-election - if so it is very likely to
         # be for a single ballot
         ballot = all_documents_with_source.get().ballot
         if ".by." in ballot.ballot_paper_id:
@@ -62,13 +68,5 @@ def extract_pages_for_single_document(document, manual_upload):
             "No text in {}, skipping".format(document.uploaded_file.path)
         )
 
-    for doc, page_numbers in sopn.match_all_page():
-        yield doc, page_numbers
-
-    # for doc in all_documents_with_source:
-    #     ward = doc.ballot.post.label
-    #     pages = sopn.get_pages_by_ward_name(ward)
-    #     if not pages:
-    #         continue
-    #     page_numbers = ",".join(str(p.page_number) for p in pages)
-    #     yield doc, page_numbers
+    for doc_info in sopn.match_all_pages():
+        yield doc_info[0], doc_info[1]
