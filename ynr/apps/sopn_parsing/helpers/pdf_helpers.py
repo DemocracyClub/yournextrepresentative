@@ -56,21 +56,31 @@ class SOPNDocument:
         page_numbers = []
         previous_page = None
         for page in self.unmatched_pages:
-            poist_label = ballot.post.label
+            post_label = ballot.post.label
             if previous_page:
                 if page.is_continuation_page(
-                    self.document_heading, previous_page, poist_label
+                    self.document_heading, previous_page, post_label
                 ):
                     page_numbers.append(page.page_number)
                 else:
                     break
-            if page.matches_ward_name(poist_label):
-                page_numbers.append(page.page_number)
-                page.matched = True
-                previous_page = page
+            else:
+                if page.matches_ward_name(post_label):
+                    page_numbers.append(page.page_number)
+                    page.matched = True
+                    previous_page = page
         return ",".join([str(page_num) for page_num in page_numbers])
 
     def match_all_pages(self) -> List[Tuple[OfficialDocument, str]]:
+        """
+
+        [
+            (doc, "123"),
+            (doc, "456"),
+        ]
+
+        :return:
+        """
         if len(self.pages) == 1 and len(self.unmatched_documents) == 1:
             return [(self.unmatched_documents.pop(), "all")]
 
@@ -84,7 +94,6 @@ class SOPNDocument:
             matched_pages = self.match_ballot_to_pages(doc.ballot)
             if matched_pages:
                 matched_documents.append((doc, matched_pages))
-                print(matched_pages)
                 # Mark this document as matched
                 self.unmatched_documents.remove(doc)
                 self.matched_documents.add(doc)
@@ -186,18 +195,18 @@ class SOPNPageText:
         assume this is a top page and return True.
 
         """
+        post_label = clean_text(post_label)
 
         # CASE 1: We know the first page is never a continuation page.
         if self.page_number == 1:
             return self.set_continuation_page(False)
 
+        # CASE 2: If the document heading is very different to the document
+        # heading then we assume this is a continuation page
         similar_len = document_heading.intersection(self.get_page_heading_set())
         is_very_different_to_doc_heading = (
             len(similar_len) / len(document_heading) < CONTINUATION_THRESHOLD
         )
-
-        # CASE 2: If the document heading is very different to the document
-        # heading then we assume this is a continuation page
         if is_very_different_to_doc_heading:
             return self.set_continuation_page(True, previous_page)
 
