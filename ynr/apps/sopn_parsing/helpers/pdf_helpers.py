@@ -1,7 +1,5 @@
 from io import StringIO
-from typing import List, Dict, Tuple
-
-from django.db.models.functions import Length
+from typing import List, Tuple
 
 from candidates.models import Ballot
 from official_documents.models import OfficialDocument
@@ -25,7 +23,7 @@ CONTINUATION_THRESHOLD = 0.5
 class SOPNDocument:
     def __init__(self, file, all_documents_with_source):
         """
-        Represents a ....
+        Represents a collection of pages from a single PDF file.
         """
         self.file = file
         self.unmatched_documents = set(doc for doc in all_documents_with_source)
@@ -118,7 +116,7 @@ class SOPNDocument:
                 # Consider passing this in as an option, so we can raise in
                 # "strict mode" but not in production?
         if self.unmatched_documents:
-            raise Exception("Exception: unmatched documents")
+            raise Exception("Unmatched documents")
         return matched_documents
 
     def parse_pages(self):
@@ -197,18 +195,16 @@ class SOPNPageText:
 
     def is_continuation_page(self, document_heading, previous_page, post_label):
         """
-        TODO: review this doc string
         Take a set containing the document heading (returned from
         `get_page_heading_set`) and compare it to another heading set.
-
         This is done by taking the intersection of the two sets. If the length
         of the intersection set divided by the length of the provided
         document_heading set is less than CONTINUATION_THRESHOLD then we assume
-        this is a "continuation" page and return False.
-
+        this is a "continuation" page and return True.
         If the divided number is greater than the CONTINUATION_THRESHOLD then we
-        assume this is a top page and return True.
-
+        assume this is a top page and return False.
+        If the headings up to the post label are identical, we assume the page
+        is a continuation.
         """
         post_label = clean_text(post_label)
 
@@ -241,6 +237,15 @@ class SOPNPageText:
             page_heading_up_to_ward_name
             == previous_page_heading_up_to_ward_name
         )
+
+        # TO DO: multipage sopns with multiple wards where headings
+        # are close but not identical
+        # for example (`/local.luton.high-town.by.2021-05-06/`)
+        # can we assume if the page_heading_up_to_ward_name is
+        # greater or less than the previous_page_heading_up_to_ward_name?
+        # if so, we can use this to determine if the page is a continuation
+        # Q: Should we only ever you use headings up to ward names
+        # as the basis for determining if the page is a continuation?
 
         if headings_are_identical:
             return self.set_continuation_page(True, previous_page)

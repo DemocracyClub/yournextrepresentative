@@ -3,7 +3,7 @@ from os.path import abspath, dirname, join
 from django.test import TestCase
 from unittest import skipIf
 
-from sopn_parsing.helpers.text_helpers import clean_text
+from sopn_parsing.helpers.text_helpers import clean_text, NoTextInDocumentError
 from sopn_parsing.helpers.extract_pages import get_all_documents_with_source
 from sopn_parsing.tests import should_skip_pdf_tests
 
@@ -17,6 +17,19 @@ class TestSOPNHelpers(TestCase):
     def test_clean_text(self):
         text = "\n C andidates (Namés)"
         self.assertEqual(clean_text(text), "candidates")
+
+    def test_empty_documents(self):
+        example_doc_path = abspath(
+            join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
+        )
+        all_documents_with_source = get_all_documents_with_source(
+            example_doc_path
+        )
+        doc = SOPNDocument(
+            open(example_doc_path, "rb"), all_documents_with_source
+        )
+        doc.heading = {"reason", "2019", "a", "election", "the", "labour"}
+        self.assertRaises(NoTextInDocumentError)
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_sopn_document(self):
