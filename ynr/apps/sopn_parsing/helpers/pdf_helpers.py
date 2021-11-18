@@ -79,6 +79,8 @@ class SOPNDocument:
                     page_numbers.append(page.page_number)
                     page.matched = True
                     previous_page = page
+        if not page_numbers:
+            return ""
         if self.validate_page_numbers(page_numbers):
             return ",".join(str(p) for p in page_numbers)
         else:
@@ -96,7 +98,6 @@ class SOPNDocument:
         """
         if len(self.pages) == 1 and len(self.unmatched_documents) == 1:
             return [(self.unmatched_documents.pop(), "all")]
-
         docs_by_sorted_ballot_label = sorted(
             self.unmatched_documents,
             key=lambda doc: len(doc.ballot.post.label),
