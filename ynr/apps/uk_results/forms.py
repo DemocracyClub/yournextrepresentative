@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db import transaction
 
 from candidates.models import LoggedAction
@@ -22,7 +23,16 @@ class ResultSetForm(forms.ModelForm):
             "total_electorate",
             "source",
         )
-        widgets = {"source": forms.Textarea(attrs={"rows": 1, "columns": 72})}
+        widgets = {
+            "source": forms.Textarea(
+                attrs={
+                    "required": True,
+                    "maxlength": 2000,
+                    "rows": 1,
+                    "columns": 72,
+                }
+            )
+        }
 
     def __init__(self, ballot, *args, **kwargs):
         self.ballot = ballot
@@ -83,6 +93,12 @@ class ResultSetForm(forms.ModelForm):
 
             tied_vote_field_name = f"tied_vote_{field}"
             yield (self[field], self[tied_vote_field_name])
+
+    def clean_source(self):
+        source_field = self.cleaned_data["source"]
+        if len(source_field) > 2000:
+            raise ValidationError("Source must be less than 2,000 characters")
+        return source_field
 
     def clean(self):
         """

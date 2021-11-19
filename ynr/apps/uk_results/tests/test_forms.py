@@ -218,3 +218,33 @@ class TestResultSetForm(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         self.assertTrue(winner_1.result.tied_vote_winner)
         self.assertTrue(winner_2.elected)
         self.assertTrue(winner_2.result.tied_vote_winner)
+
+    def test_results_with_very_long_source(self):
+        # Try with an acceptable source
+        votes = 10
+        source = "x" * 1998
+        cleaned_data = {"source": source}
+        for candidate in self.candidacies:
+            cleaned_data[f"memberships_{candidate.person.pk}"] = votes
+            cleaned_data[f"tied_vote_memberships_{candidate.person.pk}"] = False
+            votes += 10
+
+        form = ResultSetForm(data=cleaned_data, ballot=self.ballot)
+        self.assertTrue(form.is_valid())
+        assert form.save(request=self.request)
+
+        # Try again with a source that's too long
+        votes = 10
+        source = "x" * 3000
+        cleaned_data = {"source": source}
+        for candidate in self.candidacies:
+            cleaned_data[f"memberships_{candidate.person.pk}"] = votes
+            cleaned_data[f"tied_vote_memberships_{candidate.person.pk}"] = False
+            votes += 10
+
+        form = ResultSetForm(data=cleaned_data, ballot=self.ballot)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {"source": ["Source must be less than 2,000 characters"]},
+        )
