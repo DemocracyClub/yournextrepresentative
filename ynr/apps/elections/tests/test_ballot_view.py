@@ -248,16 +248,11 @@ class TestBallotView(
         self.assertDataTimelineNoResults(response)
 
         rs = ResultSet.objects.create(ballot=self.past_ballot)
-        for i, membership in enumerate(self.past_ballot.membership_set.all()):
-            if i in range(0, self.past_ballot.winner_count):
-                winner = True
-            else:
-                winner = False
+        for membership in self.past_ballot.membership_set.all():
             CandidateResult.objects.create(
                 result_set=rs,
                 membership=membership,
                 num_ballots=randrange(1, 1000),
-                is_winner=winner,
             )
 
         response = self.app.get(self.past_ballot.get_absolute_url())

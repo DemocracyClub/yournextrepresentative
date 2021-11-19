@@ -63,7 +63,7 @@
         <td>{{ membership.party.name }}</td>
         {% if ballot.resultset %}
         <td>{{ membership.result.num_ballots }}</td>
-        <td>{{ membership.result.is_winner|yesno|title }}</td>
+        <td>{{ membership.elected|yesno|title }}</td>
         {% endif %}
       </tr>
       {% endfor %}

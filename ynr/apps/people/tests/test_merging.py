@@ -93,7 +93,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_merge_with_results(self):
         self.source_person.memberships.create(
-            ballot=self.local_ballot, party=self.green_party
+            ballot=self.local_ballot, party=self.green_party, elected=True
         )
         self.dest_person.memberships.create(
             ballot=self.local_ballot, party=self.green_party
@@ -112,22 +112,21 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
             result_set=result_set,
             membership=self.source_person.memberships.get(),
             num_ballots=3,
-            is_winner=True,
         )
 
         merger = PersonMerger(self.dest_person, self.source_person)
         merger.merge()
 
-        self.assertEqual(
-            self.dest_person.memberships.get().result.num_ballots, 3
-        )
+        membership = self.dest_person.memberships.get()
+        self.assertEqual(membership.result.num_ballots, 3)
+        self.assertTrue(membership.elected)
 
     def test_merge_with_results_on_both_memberships(self):
         self.source_person.memberships.create(
-            ballot=self.local_ballot, party=self.green_party
+            ballot=self.local_ballot, party=self.green_party, elected=True
         )
         self.dest_person.memberships.create(
-            ballot=self.local_ballot, party=self.green_party
+            ballot=self.local_ballot, party=self.green_party, elected=True
         )
 
         result_set = ResultSet.objects.create(
@@ -143,13 +142,11 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
             result_set=result_set,
             membership=self.source_person.memberships.get(),
             num_ballots=3,
-            is_winner=True,
         )
         CandidateResult.objects.create(
             result_set=result_set,
             membership=self.dest_person.memberships.get(),
             num_ballots=3,
-            is_winner=True,
         )
 
         merger = PersonMerger(self.dest_person, self.source_person)

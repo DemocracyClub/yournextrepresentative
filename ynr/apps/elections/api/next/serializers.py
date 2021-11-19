@@ -163,7 +163,6 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         if instance.election.party_lists_in_use:
             order_by = [
                 "-elected",
-                "-result__is_winner",
                 "-result__num_ballots",
                 "party__name",
                 "party_list_position",

@@ -303,6 +303,9 @@ class PersonMerger:
             else:
                 msource.result.membership = mdest
                 mdest.result.save()
+                # if we have a result we also update if they were elected
+                mdest.elected = msource.elected
+                mdest.save()
 
         self.safe_delete(msource)
 

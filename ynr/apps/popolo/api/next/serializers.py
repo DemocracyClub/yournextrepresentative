@@ -50,7 +50,7 @@ class CandidacyResultsSerializer(serializers.HyperlinkedModelSerializer):
         fields = ("elected", "num_ballots")
         ref_name = None  # Tells swagger that this is always embedded
 
-    elected = serializers.ReadOnlyField(source="is_winner")
+    elected = serializers.ReadOnlyField(source="membership.elected")
 
 
 BASE_CANDIDACY_FIELDS = [

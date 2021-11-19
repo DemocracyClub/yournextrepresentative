@@ -70,7 +70,7 @@ class ResultSet(TimeStampedModel):
             data["candidate_results"].append(
                 {
                     "num_ballots": result.num_ballots,
-                    "is_winner": result.is_winner,
+                    "elected": result.membership.elected,
                     "person_id": result.membership.person_id,
                     "person_name": result.membership.person.name,
                 }
@@ -119,7 +119,6 @@ class CandidateResult(TimeStampedModel):
     )
 
     num_ballots = models.PositiveIntegerField()
-    is_winner = models.BooleanField(default=False)
     tied_vote_winner = models.BooleanField(
         default=False,
         help_text="Did this person win after receiving same votes as another candidate, via coin toss, lots etc",

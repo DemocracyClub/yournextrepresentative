@@ -38,6 +38,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.camberwell_post,
             party=self.labour_party,
             ballot=self.camberwell_post_ballot,
+            elected=True,
         )
 
         # Now attach a vote count to the secondary person's candidacy:
@@ -52,7 +53,6 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             result_set=result_set,
             membership=secondary_membership,
             num_ballots=32614,
-            is_winner=True,
         )
         # Now try the merge:
         response = self.app.get("/person/3885/", user=self.user_who_can_merge)
@@ -77,6 +77,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         candidate_result = membership.result
         self.assertEqual(candidate_result.num_ballots, 32614)
         self.assertFalse(Person.objects.filter(pk=10000).exists())
+        self.assertTrue(membership.elected)
 
     def test_uk_results_for_primary_preserved(self):
         self.assertTrue(Person.objects.filter(pk=10000).exists())
@@ -85,6 +86,7 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             post=self.camberwell_post,
             party=self.labour_party,
             ballot=self.camberwell_post_ballot_earlier,
+            elected=True,
         )
         factories.MembershipFactory.create(
             person=self.secondary_person,
@@ -110,7 +112,6 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
             result_set=result_set,
             membership=primary_membership,
             num_ballots=27619,
-            is_winner=True,
         )
         # Now try the merge:
         response = self.app.get("/person/3885/", user=self.user_who_can_merge)
@@ -134,3 +135,4 @@ class TestUKResultsPreserved(TestUserMixin, UK2015ExamplesMixin, WebTest):
         candidate_result = membership.result
         self.assertEqual(candidate_result.num_ballots, 27619)
         self.assertFalse(Person.objects.filter(pk=10000).exists())
+        self.assertTrue(membership.elected)
