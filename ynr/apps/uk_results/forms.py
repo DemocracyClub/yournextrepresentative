@@ -22,7 +22,16 @@ class ResultSetForm(forms.ModelForm):
             "total_electorate",
             "source",
         )
-        widgets = {"source": forms.Textarea(attrs={"rows": 1, "columns": 72})}
+        widgets = {
+            "source": forms.Textarea(
+                attrs={
+                    "required": True,
+                    "maxlength": 2000,
+                    "rows": 1,
+                    "columns": 72,
+                }
+            )
+        }
 
     def __init__(self, ballot, *args, **kwargs):
         self.ballot = ballot
