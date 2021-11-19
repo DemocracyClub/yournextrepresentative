@@ -56,6 +56,9 @@ class CurrentUnlockedBallotsField(ValidBallotField):
     def clean(self, value):
         ballot = super().clean(value)
 
+        if not ballot:
+            raise ValidationError("Ballot not selected")
+
         if ballot.candidates_locked:
             raise ValidationError("Cannot add candidates to a locked " "ballot")
         if not ballot.election.current:
