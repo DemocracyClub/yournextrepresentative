@@ -31,7 +31,6 @@ class SOPNDocument:
         self.unmatched_documents = list(
             self.all_official_documents_with_source()
         )
-        self.matched_documents = []
         self.pages = self.parse_pages()
         self.document_heading = self.pages[0].get_page_heading_set()
 
@@ -106,35 +105,45 @@ class SOPNDocument:
         else:
             raise ValueError("Page numbers are not consecutive")
 
+    @property
+    def has_single_page_and_single_document(self) -> bool:
+        """
+        Return if there is only one page and one related OfficialDocument
+        """
+        return len(self.pages) == 1 and len(self.unmatched_documents) == 1
+
     def match_all_pages(self) -> List[Tuple[OfficialDocument, str]]:
         """
-
+        Loops through all associated OfficialDocument objects, and attempts to
+        match its associated Ballot with pages in the PDF file. Returns a list
+        of tuples made up of and OfficialDocument instance and its page numbers
         [
-            (doc, "123"),
-            (doc, "456"),
+            (OfficialDocument, "1,2,3"),
+            (OfficialDocument, "4,5,6"),
+            (OfficialDocument, "6,7"),
         ]
-
-        :return:
         """
-        if len(self.pages) == 1 and len(self.unmatched_documents) == 1:
+        if self.has_single_page_and_single_document:
             return [(self.unmatched_documents.pop(), "all")]
 
         official_documents = self.unmatched_documents.copy()
         matched_documents = []
-        for doc in official_documents:
-            matched_pages = self.match_ballot_to_pages(doc.ballot)
-            if matched_pages:
-                matched_documents.append((doc, matched_pages))
-                # Mark this document as matched
-                self.unmatched_documents.remove(doc)
-                self.matched_documents.append(doc)
-            else:
-                continue
+        for document in official_documents:
+            matched_pages = self.match_ballot_to_pages(ballot=document.ballot)
+            if not matched_pages:
                 # TODO: do we want to raise here so we know when we've not matched?
                 # Consider passing this in as an option, so we can raise in
                 # "strict mode" but not in production?
+                continue
+
+            # Mark this document as matched
+            self.unmatched_documents.remove(document)
+            matched_documents.append((document, matched_pages))
+
         if self.unmatched_documents:
+            # only do this in "strict" mode?
             raise Exception("Unmatched documents")
+
         return matched_documents
 
     def parse_pages(self):
