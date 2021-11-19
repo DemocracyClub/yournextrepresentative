@@ -1,5 +1,4 @@
 from io import StringIO
-from typing import List, Tuple
 
 from django.db.models.functions import Length
 from candidates.models import Ballot
@@ -68,7 +67,7 @@ class SOPNDocument:
         lower = min(page_numbers)
         upper = max(page_numbers) + 1
 
-        assert page_numbers == list(range(lower, upper))
+        return page_numbers == list(range(lower, upper))
 
     def match_ballot_to_pages(self, ballot: Ballot) -> str:
         """
@@ -91,6 +90,7 @@ class SOPNDocument:
                     self.document_heading, previous_page, post_label
                 ):
                     page_numbers.append(page.page_number)
+                    page.matched = True
                 else:
                     break
             else:
@@ -98,8 +98,10 @@ class SOPNDocument:
                     page_numbers.append(page.page_number)
                     page.matched = True
                     previous_page = page
+
         if not page_numbers:
             return ""
+
         if self.validate_page_numbers(page_numbers):
             return ",".join(str(p) for p in page_numbers)
         else:
@@ -112,22 +114,18 @@ class SOPNDocument:
         """
         return len(self.pages) == 1 and len(self.unmatched_documents) == 1
 
-    def match_all_pages(self) -> List[Tuple[OfficialDocument, str]]:
+    def match_all_pages(self) -> None:
         """
         Loops through all associated OfficialDocument objects, and attempts to
-        match its associated Ballot with pages in the PDF file. Returns a list
-        of tuples made up of and OfficialDocument instance and its page numbers
-        [
-            (OfficialDocument, "1,2,3"),
-            (OfficialDocument, "4,5,6"),
-            (OfficialDocument, "6,7"),
-        ]
+        match its associated Ballot with pages in the PDF file. If matches are
+        found, the OfficialDocument's relevant_pages field is updated.
         """
         if self.has_single_page_and_single_document:
-            return [(self.unmatched_documents.pop(), "all")]
+            document = self.unmatched_documents.pop()
+            document.relevant_pages = "all"
+            return document.save()
 
         official_documents = self.unmatched_documents.copy()
-        matched_documents = []
         for document in official_documents:
             matched_pages = self.match_ballot_to_pages(ballot=document.ballot)
             if not matched_pages:
@@ -138,13 +136,12 @@ class SOPNDocument:
 
             # Mark this document as matched
             self.unmatched_documents.remove(document)
-            matched_documents.append((document, matched_pages))
+            document.relevant_pages = matched_pages
+            document.save()
 
         if self.unmatched_documents:
             # only do this in "strict" mode?
             raise Exception("Unmatched documents")
-
-        return matched_documents
 
     def parse_pages(self):
         pages = []
