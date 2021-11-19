@@ -1,4 +1,3 @@
-from django.db.models.functions import Length
 from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.pdf_helpers import SOPNDocument
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
@@ -26,47 +25,32 @@ def extract_pages_for_ballot(ballot, manual_upload=False):
         other_doc.save()
 
 
-def get_all_documents_with_source(source):
-    return (
-        OfficialDocument.objects.filter(source_url=source)
-        .select_related("ballot", "ballot__post")
-        .order_by(-Length("ballot__post__label"))
-    )
-
-
 def extract_pages_for_single_document(document, manual_upload):
-    all_documents_with_source = get_all_documents_with_source(
-        document.source_url
-    )
-    doc_file = document.uploaded_file
-    if not doc_file:
-        return
 
-    # if there are multiple documents with the same source it suggests multi
-    # page SOPN covering multiple ballots
-    if all_documents_with_source.count() == 1:
-
-        # if not a manual upload assume all pages relate to the ballot
-        if not manual_upload:
-            yield document, "all"
-            return
-
-        # check if the ballot is for a by-election - if so it is very likely to
-        # be for a single ballot
-        ballot = all_documents_with_source.get().ballot
-        if ".by." in ballot.ballot_paper_id:
-            yield document, "all"
-            return
-
-    # ... otherwise parse is as if we had multiple sources as the document
-    # may contain multiple ballots, but this is the first time parsing it
-
+    # check if this is the only document with this source url and if so attempt
+    # some optimisations before we try and parse the page numbers
     try:
-        sopn = SOPNDocument(doc_file, all_documents_with_source)
+        OfficialDocument.objects.get(source_url=document.source_url)
+    except OfficialDocument.MultipleObjectsReturned:
+        pass
+    else:
+        # if this isn't a manual upload we assume all pages relate to the ballot
+        if not manual_upload:
+            return [(document, "all")]
+
+        # if the document is for a by-election, make the same assumption
+        # NB there are edge cases where this is not always the case
+        if ".by." in document.ballot.ballot_paper_id:
+            return [(document, "all")]
+
+    # otherwise parse as if we had multiple sources as the SOPN may cover
+    # multiple ballots, but this is the first time parsing it
+    try:
+        sopn = SOPNDocument(
+            file=document.uploaded_file, source_url=document.source_url
+        )
+        return sopn.match_all_pages()
     except (NoTextInDocumentError):
         raise NoTextInDocumentError(
             "No text in {}, skipping".format(document.uploaded_file.path)
         )
-
-    for doc_info in sopn.match_all_pages():
-        yield doc_info[0], doc_info[1]

@@ -1,6 +1,7 @@
 from io import StringIO
 from typing import List, Tuple
 
+from django.db.models.functions import Length
 from candidates.models import Ballot
 from official_documents.models import OfficialDocument
 from pdfminer.converter import TextConverter
@@ -21,18 +22,37 @@ CONTINUATION_THRESHOLD = 0.5
 
 
 class SOPNDocument:
-    def __init__(self, file, all_documents_with_source):
+    def __init__(self, file, source_url):
         """
         Represents a collection of pages from a single PDF file.
         """
         self.file = file
-        self.unmatched_documents = set(doc for doc in all_documents_with_source)
-        self.matched_documents = set()
+        self.source_url = source_url
+        self.unmatched_documents = list(
+            self.all_official_documents_with_source()
+        )
+        self.matched_documents = []
         self.pages = self.parse_pages()
         self.document_heading = self.pages[0].get_page_heading_set()
 
         if len(self.document_heading) < 10:
             raise NoTextInDocumentError()
+
+    def all_official_documents_with_source(self):
+        """
+        Return a QuerySet of OfficialDocument objects that have the same
+        source_url. These are ordered with the longest post label first as if
+        the SOPN pdf contains wards with similar ward names, we want to try to
+        match as specifically as possible first e.g. searching for "Foo North
+        Ward" but there is also "Foo Ward" earlier in the QS then our matching
+        logic would incorrectly match with "Foo Ward" because it contains the
+        ward name "Foo"
+        """
+        return (
+            OfficialDocument.objects.filter(source_url=self.source_url)
+            .select_related("ballot", "ballot__post")
+            .order_by(-Length("ballot__post__label"))
+        )
 
     @property
     def matched_pages(self):
@@ -98,19 +118,16 @@ class SOPNDocument:
         """
         if len(self.pages) == 1 and len(self.unmatched_documents) == 1:
             return [(self.unmatched_documents.pop(), "all")]
-        docs_by_sorted_ballot_label = sorted(
-            self.unmatched_documents,
-            key=lambda doc: len(doc.ballot.post.label),
-            reverse=True,
-        )
+
+        official_documents = self.unmatched_documents.copy()
         matched_documents = []
-        for doc in docs_by_sorted_ballot_label:
+        for doc in official_documents:
             matched_pages = self.match_ballot_to_pages(doc.ballot)
             if matched_pages:
                 matched_documents.append((doc, matched_pages))
                 # Mark this document as matched
                 self.unmatched_documents.remove(doc)
-                self.matched_documents.add(doc)
+                self.matched_documents.append(doc)
             else:
                 continue
                 # TODO: do we want to raise here so we know when we've not matched?

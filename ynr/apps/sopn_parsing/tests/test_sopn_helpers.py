@@ -4,7 +4,6 @@ from django.test import TestCase
 from unittest import skipIf
 
 from sopn_parsing.helpers.text_helpers import clean_text, NoTextInDocumentError
-from sopn_parsing.helpers.extract_pages import get_all_documents_with_source
 from sopn_parsing.tests import should_skip_pdf_tests
 
 try:
@@ -22,11 +21,8 @@ class TestSOPNHelpers(TestCase):
         example_doc_path = abspath(
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
         )
-        all_documents_with_source = get_all_documents_with_source(
-            example_doc_path
-        )
         doc = SOPNDocument(
-            open(example_doc_path, "rb"), all_documents_with_source
+            file=open(example_doc_path, "rb"), source_url="http://example.com"
         )
         doc.heading = {"reason", "2019", "a", "election", "the", "labour"}
         self.assertRaises(NoTextInDocumentError)
@@ -36,11 +32,8 @@ class TestSOPNHelpers(TestCase):
         example_doc_path = abspath(
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
         )
-        all_documents_with_source = get_all_documents_with_source(
-            example_doc_path
-        )
         doc = SOPNDocument(
-            open(example_doc_path, "rb"), all_documents_with_source
+            open(example_doc_path, "rb"), source_url="http://example.com"
         )
         self.assertSetEqual(
             doc.document_heading,
@@ -102,11 +95,8 @@ class TestSOPNHelpers(TestCase):
             join(dirname(__file__), "data/NI-Assembly-Election-2016.pdf")
         )
 
-        all_documents_with_source = get_all_documents_with_source(
-            example_doc_path
-        )
         doc = SOPNDocument(
-            open(example_doc_path, "rb"), all_documents_with_source
+            file=open(example_doc_path, "rb"), source_url="http://example.com"
         )
         self.assertEqual(len(doc.pages), 9)
 
