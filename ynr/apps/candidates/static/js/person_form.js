@@ -119,6 +119,7 @@ var setup_single_party_select = function(i, partySelect) {
   };
   partySelect.on('select2:select', function (e) {
     var data = e.params.data;
+    var party_input = $(ballot_group.find(PARTY_WIDGET_INPUT_CLASS));
     if (data.id === "0") {
       var initial_val = partySelect.val();
       data.text = "Loading…";
@@ -146,10 +147,15 @@ var setup_single_party_select = function(i, partySelect) {
         partySelect.select2("open");
       });
     } else {
-      var party_input = $(ballot_group.find(PARTY_WIDGET_INPUT_CLASS));
       party_input.val(e.params.data.id);
     }
+    // when "cross" icon clicked to unselect a party clear the party input field
+    partySelect.on('select2:clear', function(e) {
+      party_input.val("")
+    });
   });
+
+
   partySelect.select2(select_options);
 };
 
