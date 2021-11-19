@@ -20,7 +20,7 @@ class ResultEvent(models.Model):
         Post, blank=True, null=True, on_delete=models.CASCADE
     )
     winner_party = models.ForeignKey("parties.Party", on_delete=models.CASCADE)
-    source = models.CharField(max_length=512)
+    source = models.CharField(max_length=2000)
     user = models.ForeignKey(
         User, blank=True, null=True, on_delete=models.CASCADE
     )
