@@ -14,7 +14,7 @@ def update_versions(versions, current_key, new_key):
 
 def forwards(apps, schema_editor):
     ResultSet = apps.get_model("uk_results", "ResultSet")
-    for result in ResultSet.objects.all():
+    for result in ResultSet.objects.all().iterator():
         update_versions(
             versions=result.versions, current_key="is_winner", new_key="elected"
         )
@@ -23,7 +23,7 @@ def forwards(apps, schema_editor):
 
 def backwards(apps, schema_editor):
     ResultSet = apps.get_model("uk_results", "ResultSet")
-    for result in ResultSet.objects.all():
+    for result in ResultSet.objects.iterator():
         update_versions(
             versions=result.versions, current_key="elected", new_key="is_winner"
         )
