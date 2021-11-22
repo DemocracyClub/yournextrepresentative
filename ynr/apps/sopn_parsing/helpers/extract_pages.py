@@ -18,23 +18,19 @@ def extract_pages_for_ballot(ballot, manual_upload=False):
     :type ballot: candidates.models.Ballot
 
     """
-    # extract_pages_for_single_document(
-    #     document=ballot.sopn, manual_upload=manual_upload
-    # )
-
     # check if this is the only document with this source url and if so attempt
     # some optimisations before we try and parse the page numbers
     try:
         document = OfficialDocument.objects.get(
             source_url=ballot.sopn.source_url
         )
-    except OfficialDocument.MultipleObjectsReturned:
-        document = ballot.sopn
-    else:
         # if this isn't a manual upload we assume all pages relate to the ballot
+        # and can return early
         if not manual_upload:
             document.relevant_pages = "all"
             return document.save()
+    except OfficialDocument.MultipleObjectsReturned:
+        document = ballot.sopn
 
     # otherwise parse as if we had multiple sources as the SOPN may cover
     # multiple ballots, but this is the first time parsing it
