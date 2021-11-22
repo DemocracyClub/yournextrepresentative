@@ -1,7 +1,6 @@
 from io import StringIO
 
 from django.db.models.functions import Length
-from candidates.models import Ballot
 from official_documents.models import OfficialDocument
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -9,6 +8,7 @@ from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
 from pdfminer.pdfpage import PDFPage
 from sopn_parsing.helpers.text_helpers import (
     NoTextInDocumentError,
+    MatchedPagesError,
     clean_page_text,
     clean_text,
 )
@@ -21,17 +21,20 @@ CONTINUATION_THRESHOLD = 0.5
 
 
 class SOPNDocument:
-    def __init__(self, file, source_url):
+    def __init__(self, file, source_url, strict=False):
         """
         Represents a collection of pages from a single PDF file.
         """
         self.file = file
         self.source_url = source_url
+        self.strict = strict
         self.unmatched_documents = list(
             self.all_official_documents_with_source()
         )
         self.pages = self.parse_pages()
         self.document_heading = self.pages[0].get_page_heading_set()
+        self.matched_pages = []
+        self.previous_page = None
 
         if len(self.document_heading) < 10:
             raise NoTextInDocumentError()
@@ -53,59 +56,77 @@ class SOPNDocument:
         )
 
     @property
-    def matched_pages(self):
-        return [p for p in self.pages if p.matched]
+    def matched_page_numbers(self):
+        return [page.page_number for page in self.matched_pages]
 
     @property
     def unmatched_pages(self):
-        return [p for p in self.pages if not p.matched]
+        return [page for page in self.pages if not page.matched]
 
-    def validate_page_numbers(self, page_numbers):
-        if len(page_numbers) == 1:
-            return True
-        page_numbers = [page for page in page_numbers]
-        lower = min(page_numbers)
-        upper = max(page_numbers) + 1
-
-        return page_numbers == list(range(lower, upper))
-
-    def match_ballot_to_pages(self, ballot: Ballot) -> str:
+    def is_matched_page_numbers_valid(self):
         """
-        Given a ballot object, loop over all the unmatched pages looking for the
+        Validates that the matched page numbers are correct by checking they
+        are sequential
+        """
+        # if we couldnt match any pages we still return True so that the
+        # document is saved and can be checked in full manually
+        if not self.matched_page_numbers:
+            return True
+
+        if len(self.matched_page_numbers) == 1:
+            return True
+
+        lower = min(self.matched_page_numbers)
+        upper = max(self.matched_page_numbers) + 1
+        return self.matched_page_numbers == list(range(lower, upper))
+
+    def add_to_matched_pages(self, page):
+        """
+        Mark the page as matched, add it to the list of matched pages, and set
+        this page as the previous page
+        """
+        page.matched = True
+        self.matched_pages.append(page)
+        self.previous_page = page
+
+    def clear_old_matched_pages(self):
+        """
+        Remove any previously set matched pages and previous page
+        """
+        self.matched_pages = []
+        self.previous_page = None
+
+    def match_ballot_to_pages(self, post_label: str) -> str:
+        """
+        Given a ward name, loop over all the unmatched pages looking for the
         first match.
 
         Return a string in the format of:
            "1,2,3,4"
-        OR
-            "all"
 
         For more on this format, see https://camelot-py.readthedocs.io/en/master/user/quickstart.html?highlight=pages#specify-page-numbers
         """
-        page_numbers = []
-        previous_page = None
+        self.clear_old_matched_pages()
         for page in self.unmatched_pages:
-            post_label = ballot.post.label
-            if previous_page:
-                if page.is_continuation_page(
-                    self.document_heading, previous_page, post_label
-                ):
-                    page_numbers.append(page.page_number)
-                    page.matched = True
-                else:
-                    break
-            else:
-                if page.matches_ward_name(post_label):
-                    page_numbers.append(page.page_number)
-                    page.matched = True
-                    previous_page = page
 
-        if not page_numbers:
-            return ""
+            page.previous_page = self.previous_page
+            page_is_continuation_page = page.is_continuation_page(
+                document_heading=self.document_heading, post_label=post_label
+            )
+            if self.previous_page and not page_is_continuation_page:
+                break
 
-        if self.validate_page_numbers(page_numbers):
-            return ",".join(str(p) for p in page_numbers)
-        else:
-            raise ValueError("Page numbers are not consecutive")
+            if self.previous_page and page_is_continuation_page:
+                self.add_to_matched_pages(page)
+                continue
+
+            if page.matches_ward_name(post_label):
+                self.add_to_matched_pages(page)
+
+        if not self.is_matched_page_numbers_valid():
+            raise MatchedPagesError("Page numbers are not consecutive")
+
+        return ",".join(str(number) for number in self.matched_page_numbers)
 
     @property
     def has_single_page_and_single_document(self) -> bool:
@@ -127,21 +148,24 @@ class SOPNDocument:
 
         official_documents = self.unmatched_documents.copy()
         for document in official_documents:
-            matched_pages = self.match_ballot_to_pages(ballot=document.ballot)
+            matched_pages = self.match_ballot_to_pages(
+                post_label=document.ballot.post.label
+            )
             if not matched_pages:
-                # TODO: do we want to raise here so we know when we've not matched?
-                # Consider passing this in as an option, so we can raise in
-                # "strict mode" but not in production?
+
+                if self.strict:
+                    raise MatchedPagesError("We couldnt match any pages")
+
                 continue
 
-            # Mark this document as matched
             self.unmatched_documents.remove(document)
             document.relevant_pages = matched_pages
             document.save()
 
-        if self.unmatched_documents:
-            # only do this in "strict" mode?
-            raise Exception("Unmatched documents")
+        if self.unmatched_documents and self.strict:
+            raise MatchedPagesError(
+                "Some OfficialDocument objects were unmatched"
+            )
 
     def parse_pages(self):
         pages = []
@@ -178,6 +202,7 @@ class SOPNPageText:
         self.matched = None
         self.document = None
         self.matched_post_label = None
+        self.previous_page = None
 
     def get_page_heading_set(self):
         """
@@ -209,15 +234,18 @@ class SOPNPageText:
                 return True
         return False
 
-    def set_continuation_page(self, value, previous_page=None):
-        self.continuation_page = value
-        if value:
-            if not self.matched_post_label:
-                self.matched_post_label = previous_page.matched_post_label
+    def set_continuation_page(self, is_continuation_page: bool):
+        """
+        Marks whether this is a continuation page and conditionally stores the
+        matched label from the previous page
+        """
+        if is_continuation_page and not self.matched_post_label:
+            self.matched_post_label = self.previous_page.matched_post_label
 
+        self.continuation_page = is_continuation_page
         return self.continuation_page
 
-    def is_continuation_page(self, document_heading, previous_page, post_label):
+    def is_continuation_page(self, document_heading, post_label):
         """
         Take a set containing the document heading (returned from
         `get_page_heading_set`) and compare it to another heading set.
@@ -230,46 +258,42 @@ class SOPNPageText:
         If the headings up to the post label are identical, we assume the page
         is a continuation.
         """
+        # CASE 1: Cannot be a continuation page if there is no previous page to
+        # compare with
+        if not self.previous_page:
+            return self.set_continuation_page(is_continuation_page=False)
+
         post_label = clean_text(post_label)
 
-        # CASE 1: We know the first page is never a continuation page.
+        # CASE 2: We know the first page is never a continuation page.
         if self.page_number == 1:
-            return self.set_continuation_page(False)
+            return self.set_continuation_page(is_continuation_page=False)
 
-        # CASE 2: If the document heading is very different to the document
+        # CASE 3: If the document heading is very different to the document
         # heading then we assume this is a continuation page
         similar_len = document_heading.intersection(self.get_page_heading_set())
         is_very_different_to_doc_heading = (
             len(similar_len) / len(document_heading) < CONTINUATION_THRESHOLD
         )
         if is_very_different_to_doc_heading:
-            return self.set_continuation_page(True, previous_page)
+            return self.set_continuation_page(is_continuation_page=True)
 
-        # CASE 3: If the headings are more or less the same, split on the ward
+        # CASE 4: If the headings are more or less the same, split on the ward
         # name and see if they're identical
-        previous_page_heading = previous_page.get_page_heading()
+        previous_page_heading = self.previous_page.get_page_heading()
         previous_page_heading_up_to_ward_name = " ".join(
             previous_page_heading.partition(post_label)[0:2]
         )
 
         page_heading = self.get_page_heading()
         page_heading_up_to_ward_name = " ".join(
-            page_heading.partition(previous_page.matched_post_label)[0:2]
+            page_heading.partition(self.previous_page.matched_post_label)[0:2]
         )
 
         headings_are_identical = (
             page_heading_up_to_ward_name
             == previous_page_heading_up_to_ward_name
         )
-
-        # TO DO: multipage sopns with multiple wards where headings
-        # are close but not identical
-        # for example (`/local.luton.high-town.by.2021-05-06/`)
-        # can we assume if the page_heading_up_to_ward_name is
-        # greater or less than the previous_page_heading_up_to_ward_name?
-        # if so, we can use this to determine if the page is a continuation
-        # Q: Should we only ever you use headings up to ward names
-        # as the basis for determining if the page is a continuation?
-
-        if headings_are_identical:
-            return self.set_continuation_page(True, previous_page)
+        return self.set_continuation_page(
+            is_continuation_page=headings_are_identical
+        )

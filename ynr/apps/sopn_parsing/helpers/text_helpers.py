@@ -43,3 +43,7 @@ def _clean_text(text, recheck=True, split_braces=True):
 
 class NoTextInDocumentError(ValueError):
     pass
+
+
+class MatchedPagesError(Exception):
+    pass
