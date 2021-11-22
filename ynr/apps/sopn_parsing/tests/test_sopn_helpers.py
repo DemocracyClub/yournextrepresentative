@@ -145,3 +145,35 @@ class TestSOPNHelpers(TestCase):
 
         self.assertEqual(mid_ulster.sopn.relevant_pages, "1,2,3,4")
         self.assertEqual(north_antrim.sopn.relevant_pages, "5,6,7,8,9")
+
+    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
+    def test_document_with_identical_headers(self):
+        """
+        Uses an example PDF where the two headers are identical to check that
+        the second page is recognised as a continuation of the previous page
+        """
+        sopn_pdf = abspath(
+            join(dirname(__file__), "data/local.york.strensall.2019-05-02.pdf")
+        )
+        strensall = BallotPaperFactory(
+            ballot_paper_id="local.york.strensall.2019-05-02",
+            post__label="Strensall",
+        )
+        sopn_file = open(sopn_pdf, "rb")
+        sopn_file = File(sopn_file)
+        official_document = OfficialDocument(
+            ballot=strensall,
+            source_url="http://example.com/strensall",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+        )
+        official_document.uploaded_file.save(name="sopn.pdf", content=sopn_file)
+        official_document.save()
+        self.assertIsNone(official_document.relevant_pages)
+
+        document_obj = SOPNDocument(
+            file=sopn_file, source_url="http://example.com/strensall"
+        )
+        self.assertEqual(len(document_obj.pages), 2)
+
+        document_obj.match_all_pages()
+        self.assertEqual(strensall.sopn.relevant_pages, "1,2")
