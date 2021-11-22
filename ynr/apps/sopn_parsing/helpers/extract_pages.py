@@ -36,12 +36,6 @@ def extract_pages_for_ballot(ballot, manual_upload=False):
             document.relevant_pages = "all"
             return document.save()
 
-        # if the document is for a by-election, make the same assumption
-        # NB there are edge cases where this is not always the case
-        if ".by." in document.ballot.ballot_paper_id:
-            document.relevant_pages = "all"
-            return document.save()
-
     # otherwise parse as if we had multiple sources as the SOPN may cover
     # multiple ballots, but this is the first time parsing it
     try:
