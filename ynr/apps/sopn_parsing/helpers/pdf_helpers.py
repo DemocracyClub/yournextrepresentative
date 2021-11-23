@@ -135,6 +135,23 @@ class SOPNDocument:
         """
         return len(self.pages) == 1 and len(self.unmatched_documents) == 1
 
+    def save_matched_pages(self, document: OfficialDocument):
+        """
+        Attemps to find matched pages and save them against the OfficialDocument
+        If none are found, do nothing, unless we are in "strict" mode where we
+        raise an exception for debugging purposes.
+        """
+        matched_pages = self.match_ballot_to_pages(
+            post_label=document.ballot.post.label
+        )
+        if matched_pages:
+            self.unmatched_documents.remove(document)
+            document.relevant_pages = matched_pages
+            return document.save()
+
+        if self.strict:
+            raise MatchedPagesError("We couldnt match any pages")
+
     def match_all_pages(self) -> None:
         """
         Loops through all associated OfficialDocument objects, and attempts to
@@ -148,21 +165,9 @@ class SOPNDocument:
 
         official_documents = self.unmatched_documents.copy()
         for document in official_documents:
-            matched_pages = self.match_ballot_to_pages(
-                post_label=document.ballot.post.label
-            )
-            if not matched_pages:
+            self.save_matched_pages(document=document)
 
-                if self.strict:
-                    raise MatchedPagesError("We couldnt match any pages")
-
-                continue
-
-            self.unmatched_documents.remove(document)
-            document.relevant_pages = matched_pages
-            document.save()
-
-        if self.unmatched_documents and self.strict:
+        if self.strict and self.unmatched_documents:
             raise MatchedPagesError(
                 "Some OfficialDocument objects were unmatched"
             )
