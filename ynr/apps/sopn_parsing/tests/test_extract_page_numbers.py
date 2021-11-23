@@ -59,7 +59,27 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
         )
 
         # Create ballots
-        posts = {"Heath": "13", "Broadheath": "4"}
+        posts = {
+            "Appleton": "1",
+            "Beechwood": "2",
+            "Birchfield": "3",
+            "Broadheath": "4",
+            "Halton": "5",
+            "Ditton": "6",
+            "Farnworth": "7",
+            "Grange": "8",
+            "Halton Brook": "9",
+            "Halton Castle": "10",
+            "Halton Lea": "11",
+            "Halton View": "12",
+            "Heath": "13",
+            "Hough Green": "14",
+            "Kingsway": "15",
+            "Mersey": "16",
+            "Norton North": "17",
+            "Norton South": "18",
+            "Riverside": "19",
+        }
         for post_name in posts:
             post = Post.objects.create(
                 label=post_name,
@@ -83,5 +103,6 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
 
         call_command("sopn_parsing_extract_page_numbers")
         for post_name, expected_page in posts.items():
-            ballot = Ballot.objects.get(post__label=post_name)
-            self.assertEqual(ballot.sopn.relevant_pages, expected_page)
+            with self.subTest(msg=post_name):
+                ballot = Ballot.objects.get(post__label=post_name)
+                self.assertEqual(ballot.sopn.relevant_pages, expected_page)

@@ -43,7 +43,7 @@ class TestSOPNHelpers(TestCase):
             open(example_doc_path, "rb"), source_url="http://example.com"
         )
         self.assertSetEqual(
-            doc.document_heading,
+            doc.document_heading_set,
             {
                 # Header
                 "the",
@@ -95,6 +95,33 @@ class TestSOPNHelpers(TestCase):
         )
 
         self.assertEqual(len(doc.pages), 1)
+
+    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
+    def test_single_page_sopn(self):
+        example_doc_path = abspath(
+            join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
+        )
+        ballot = BallotPaperFactory(
+            ballot_paper_id="local.stroud.berkeley-vale.by.2019-02-28"
+        )
+        sopn_file = open(example_doc_path, "rb")
+        sopn_file = File(sopn_file)
+        official_document = OfficialDocument(
+            ballot=ballot,
+            source_url="http://example.com/strensall",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+        )
+        official_document.uploaded_file.save(name="sopn.pdf", content=sopn_file)
+        official_document.save()
+        self.assertIsNone(official_document.relevant_pages)
+
+        document_obj = SOPNDocument(
+            file=sopn_file, source_url="http://example.com/strensall"
+        )
+        self.assertEqual(len(document_obj.pages), 1)
+
+        document_obj.match_all_pages()
+        self.assertEqual(ballot.sopn.relevant_pages, "all")
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_multipage_doc(self):
