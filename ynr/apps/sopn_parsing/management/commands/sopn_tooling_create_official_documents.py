@@ -1,57 +1,22 @@
 import requests
-import os
-from django.core.management import call_command
-from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
+
+from django.core.management.base import BaseCommand
 from django.core.files.base import ContentFile
 
 from candidates.models import Ballot
 from official_documents.models import OfficialDocument
 
 
-class Command(BaseSOPNParsingCommand):
+class Command(BaseCommand):
     """This command uses the ballots endpoint to loop over each
     ballot and store each sopn pdf (uploaded_file) locally"""
 
     def handle(self, *args, **options):
         response = requests.get(
-            "https://candidates.democracyclub.org.uk/api/next/ballots?has_sopn=1"
+            "https://candidates.democracyclub.org.uk/api/next/ballots?has_sopn=1&page_size=20"
         )
         data = response.json()
-
         self.create_official_documents(ballots=data["results"])
-        # pdf_files = self.get_pdfs(data)
-
-        # self.save_pdfs(pdf_files)
-        # # TO DO pass the saved pdfs to the management commands below
-        # call_command("sopn_parsing_extract_page_numbers")
-        # call_command("sopn_parsing_extract_tables")
-        # call_command("sopn_parsing_parse_tables")
-
-    # loop over ballots and extract uploaded_file
-    def get_pdfs(self, data):
-        pdf_files = []
-        for ballot in data["results"]:
-            if ballot["sopn"]["uploaded_file"]:
-                # TO DO if ballot["sopn"]["uploaded_file"] ends in .docx (or any non .pdf format),
-                # convert it to a .pdf
-                pdf_files.append(ballot["sopn"]["uploaded_file"])
-        return pdf_files
-
-    # store list of pdf files and save them individually/locally
-    def save_pdfs(self, pdf_files):
-        # loop over each pdf in pdf_files
-        for pdf in pdf_files:
-            # request the url of the pdf
-            response = requests.get(pdf)
-            # set the file directory to save the pdfs
-            file_dir = os.path.join(
-                os.getcwd(), "ynr/apps/sopn_parsing/tests/data"
-            )
-            # format the file to be saved
-            with open(os.path.join(file_dir, pdf.split("/")[-1]), "wb") as file:
-                file.write(response.content)
-            # sanity check!
-            # print(f"Saved {pdf.split('/')[-1]}")
 
     def create_official_documents(self, ballots):
         for ballot_data in ballots:
