@@ -1,14 +1,22 @@
 import json
 import os
 
+from django.db.models import Q
+
 from candidates.models import Ballot
 from bulk_adding.models import RawPeople
 from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    """This command uses the ballots endpoint to loop over each
-    ballot and store each sopn pdf (uploaded_file) locally"""
+    """
+    Creates a JSON file to represent ballots that have an Officialdocument.
+    Only include ballots where:
+    - The source of the RawPeople is from parsing a PDF
+    - No RawPeople were created from the OfficialDocument. This is so that we
+    will know if we make make improvements that mean more RawPeople are parsed
+    from an OfficialDocument
+    """
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -19,8 +27,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         json_data = options["data"] or {}
+
         if not json_data:
-            for ballot in Ballot.objects.exclude(officialdocument__isnull=True):
+            qs = Ballot.objects.exclude(officialdocument__isnull=True).filter(
+                Q(rawpeople__source_type=RawPeople.SOURCE_PARSED_PDF)
+                | Q(rawpeople__isnull=True)
+            )
+            for ballot in qs:
                 raw_people = getattr(ballot, "rawpeople", [])
                 try:
                     raw_people = ballot.rawpeople.data
