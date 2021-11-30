@@ -18,6 +18,11 @@ class BaseSOPNParsingCommand(BaseCommand):
             action="store_true",
             help="Reparse documents that have already been parsed",
         )
+        parser.add_argument(
+            "--testing",
+            action="store_true",
+            help="Force all ballots with official documents to be parsed",
+        )
 
     def get_queryset(self, options):
         filter_kwargs = {}

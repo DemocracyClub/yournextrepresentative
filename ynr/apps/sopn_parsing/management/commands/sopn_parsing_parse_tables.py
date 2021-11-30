@@ -11,8 +11,8 @@ class Command(BaseSOPNParsingCommand):
     """
 
     def handle(self, *args, **options):
-        filter_kwargs = {}
-        if not options.get("ballot"):
+        filter_kwargs = {"officialdocument__parsedsopn__isnull": False}
+        if not options.get("ballot") and not options.get("testing"):
 
             if options["reparse"]:
                 # If reparsing, only reparse RawPeople created by parsing
