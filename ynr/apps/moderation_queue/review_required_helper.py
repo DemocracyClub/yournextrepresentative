@@ -1,6 +1,8 @@
 import abc
-from collections import namedtuple
 from enum import Enum, unique
+from collections import namedtuple
+from datetime import datetime, timedelta
+
 
 from django.conf import settings
 
@@ -216,6 +218,28 @@ class CandidateCurrentNameDecider(BaseReviewRequiredDecider):
             return self.Status.UNDECIDED
 
 
+class RevertedEdits(BaseReviewRequiredDecider):
+    def review_description_text(self):
+        return "Too many reverted edits in 24 hours"
+
+    def needs_review(self):
+        from candidates.models import LoggedAction
+
+        if (
+            self.logged_action.action_type
+            == self.logged_action.action_type.PERSON_REVERT
+        ):
+            recent_revert_qs = LoggedAction.objects.filter(
+                person=self.logged_action.person,
+                action_type=self.logged_action.action_type.PERSON_REVERT,
+                # updated in the last 24 hours
+                updated__gt=datetime.now() - timedelta(settings.LAST_24_HOURS),
+            ).order_by("updated")
+            if recent_revert_qs.count() >= settings.NEEDS_REVIEW_MAX_REVERTS:
+                return self.Status.NEEDS_REVIEW
+            return self.Status.UNDECIDED
+
+
 class EditTypesThatNeverNeedReview(BaseReviewRequiredDecider):
     def review_description_text(self):
         return "Type of edit that never needs a review"
@@ -269,6 +293,11 @@ REVIEW_TYPES = (
         type="needs_review_due_to_current_candidate_name_change",
         label="Edit of name of current candidate",
         cls=CandidateCurrentNameDecider,
+    ),
+    ReviewType(
+        type="needs_review_due_to_too_many_reverts",
+        label="Too many reverts in 24 hours",
+        cls=RevertedEdits,
     ),
 )
 

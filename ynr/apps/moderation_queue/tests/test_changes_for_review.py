@@ -3,23 +3,21 @@ import os
 from datetime import datetime, timedelta
 from io import BytesIO
 
+import people.tests.factories
+from candidates.models import LoggedAction
+from candidates.models.db import ActionType
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.conf import settings
 from django.test import TestCase
 from django.utils.timezone import make_aware
 from django_webtest import WebTest
 from lxml import etree
 from mock import patch
-
-import people.tests.factories
-from candidates.models import LoggedAction
-from candidates.models.db import ActionType
-from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.review_required_helper import PREVIOUSLY_APPROVED_COUNT
 from parties.models import Party
 from people.models import Person
 from people.tests.test_version_diffs import tidy_html_whitespace
-
-from candidates.tests.auth import TestUserMixin
 
 
 def random_person_id():
@@ -144,6 +142,7 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
                 source="Just for tests...",
             )
         self.assertEqual(LoggedAction.objects.all().count(), 20)
+
         response = self.app.get(
             "/person/{person_id}/update".format(person_id=example_person.id),
             user=self.user,
@@ -256,6 +255,58 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
             ).count(),
             PREVIOUSLY_APPROVED_COUNT + 1,
         )
+
+    def update_person(self, example_person):
+        for i in range(3):
+            la = LoggedAction.objects.create(
+                id=(1500 + i),
+                user=self.user,
+                action_type=ActionType.PERSON_UPDATE,
+                person=example_person,
+                popit_person_new_version=random_person_id(),
+                source="Just for tests...",
+            )
+
+        self.assertEqual(
+            LoggedAction.objects.filter(action_type="person-update").count(), 3
+        )
+
+    def revert_edit_to_person(self, example_person):
+        for i in range(3):
+            la = LoggedAction.objects.create(
+                id=(1600 + i),
+                user=self.user,
+                action_type=ActionType.PERSON_REVERT,
+                person=example_person,
+                popit_person_new_version=random_person_id(),
+                source="Just for tests...",
+            )
+
+        self.assertEqual(
+            LoggedAction.objects.filter(action_type="person-revert").count(), 3
+        )
+
+    def test_reverts_needs_review(self, change_metadata=True):
+        """Test that 2+ reverted edits in 24 hrs are flagged for review"""
+        self.assertFalse(LoggedAction.objects.needs_review().exists())
+
+        example_person = people.tests.factories.PersonFactory.create(
+            id=4758, name="Phil Hutty", favourite_biscuit="Gingerbread"
+        )
+        user = self.user
+
+        # update person 3x to create a user history
+        self.update_person(example_person)
+
+        self.revert_edit_to_person(example_person)
+
+        las = LoggedAction.objects.all()
+        las_ordered = LoggedAction.objects.all().order_by("updated")
+        last_revert = las_ordered.last()
+        self.assertEqual(LoggedAction.objects.count(), 6)
+
+        self.assertEqual(last_revert.action_type, "person-revert")
+        self.assertIn(last_revert, las.needs_review())
 
 
 @patch.object(Person, "diff_for_version", fake_diff_html)
