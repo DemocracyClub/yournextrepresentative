@@ -353,9 +353,14 @@ class TestBallotView(
 
         membership = Membership.objects.filter(
             person=person_to_mark, ballot=self.ballot
-        )
+        ).first()
 
-        self.assertTrue(membership.exists())
+        self.assertIsNotNone(membership)
+        self.assertEqual(membership.person, person_to_mark)
+        self.assertEqual(membership.post, self.ballot.post)
+        self.assertEqual(membership.ballot, self.ballot)
+        self.assertEqual(membership.party, person_to_mark.last_party())
+        self.assertEqual(membership.party.name, membership.party_name)
 
     def test_mark_may_stand_not_standing_again(self):
         self.create_memberships(self.past_ballot, self.parties)
@@ -402,8 +407,14 @@ class TestBallotView(
 
         membership = Membership.objects.filter(
             person=person_to_mark, ballot=self.ballot
-        )
-        self.assertTrue(membership.exists())
+        ).first()
+
+        self.assertIsNotNone(membership)
+        self.assertEqual(membership.person, person_to_mark)
+        self.assertEqual(membership.post, self.ballot.post)
+        self.assertEqual(membership.ballot, self.ballot)
+        self.assertEqual(membership.party, person_to_mark.last_party())
+        self.assertEqual(membership.party.name, membership.party_name)
 
         not_standing = person_to_mark.not_standing.all()
         self.assertFalse(self.election in not_standing)

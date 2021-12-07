@@ -58,10 +58,12 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
             person.not_standing.remove(self.ballot.election)
 
             if not membership_exists:
+                party = person.last_party()
                 Membership.objects.create(
                     person=person,
                     post=self.ballot.post,
-                    party=person.last_party(),
+                    party=party,
+                    party_name=party.name,
                     ballot=self.ballot,
                 )
 
