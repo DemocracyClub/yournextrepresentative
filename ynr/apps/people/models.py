@@ -619,20 +619,6 @@ class Person(TimeStampedModel, models.Model):
                 initial_data[constituency_key] = ""
         return initial_data
 
-    def update_from_form(self, form):
-        from people.helpers import update_person_from_form
-
-        update_person_from_form(self, form)
-
-    @classmethod
-    def create_from_form(cls, form):
-        from people.helpers import update_person_from_form
-
-        person = Person.objects.create(name=form.cleaned_data["name"])
-
-        update_person_from_form(person, form)
-        return person
-
     def dict_for_csv(self, base_url=None):
         image_copyright = ""
         image_uploading_user = ""
