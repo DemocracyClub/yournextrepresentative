@@ -147,7 +147,7 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["source"] = "Testing adding a new person to a post"
         submission_response = form.submit()
         self.assertEqual(submission_response.status_code, 302)
-        person = Person.objects.get(name="Elizabeth Bennet")
+        self.assertTrue(Person.objects.get(name="Elizabeth Bennet"))
 
     def test_party_identifier_has_choices(self):
         url = reverse(

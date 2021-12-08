@@ -22,7 +22,7 @@ class ElectionMixin(object):
             self.election_data = self.ballot.election
             self.election = self.ballot.election.slug
         else:
-            self.election = election = self.kwargs["election"]
+            self.election = self.kwargs["election"]
             self.election_data = self.get_election()
         return super().dispatch(request, *args, **kwargs)
 

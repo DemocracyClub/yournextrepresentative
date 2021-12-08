@@ -96,7 +96,7 @@ class DSLinkWidget(LinkWidget):
             self.data = {}
         if value is None:
             value = ""
-        final_attrs = self.build_attrs(self.attrs, extra_attrs=attrs)
+        self.build_attrs(self.attrs, extra_attrs=attrs)
         output = []
         options = self.render_options(choices, [value], name)
         if options:

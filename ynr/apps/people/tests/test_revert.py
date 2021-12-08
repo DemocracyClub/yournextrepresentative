@@ -237,9 +237,13 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Now get the person from the database and check if the
         # details are the same as the earlier version:
         person = Person.objects.get(id=2009)
-        self.assertTrue(Membership.objects.filter(person_id=2009).count(), 2)
         self.assertTrue(
-            CandidateResult.objects.filter(membership__person_id=2009).exists()
+            Membership.objects.filter(person_id=person.pk).count(), 2
+        )
+        self.assertTrue(
+            CandidateResult.objects.filter(
+                membership__person_id=person.pk
+            ).exists()
         )
 
     def test_revert_with_memberships(self):
@@ -249,12 +253,12 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.dulwich_post_ballot_earlier.candidates_locked = True
         self.dulwich_post_ballot_earlier.save()
 
-        response = self.app.get("/person/2009/update", user=self.user)
+        response = self.app.get(f"/person/{person.pk}/update", user=self.user)
         form = response.forms[1]
         form["source"] = "made up"
         form.submit()
 
-        response = self.app.get("/person/2009/update", user=self.user)
+        response = self.app.get(f"/person/{person.pk}/update", user=self.user)
         revert_form = response.forms["revert-form-5469de7db0cbd155"]
         revert_form[
             "source"

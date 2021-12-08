@@ -85,8 +85,6 @@ class Command(BaseCommand):
                     print("Removing existing documents")
                     existing_documents.delete()
                 else:
-                    msg = "Skipping {0} since it already had documents for {1}"
-                    # print(msg.format(name, election))
                     continue
             try:
                 downloaded_filename = download_file_cached(document_url)

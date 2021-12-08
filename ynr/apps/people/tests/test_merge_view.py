@@ -227,7 +227,9 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         primary_person = Person.objects.get(pk=2009)
         non_primary_person = Person.objects.get(pk=2007)
         self.assertEqual(Membership.objects.count(), 4)
-        response = self.app.get("/person/2009/", user=self.user_who_can_merge)
+        response = self.app.get(
+            f"/person/{primary_person.pk}/", user=self.user_who_can_merge
+        )
 
         # first submit suggestion form
         suggestion_form = response.forms[SUGGESTION_FORM_ID]
@@ -239,7 +241,9 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = merge_form.submit()
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.location, "/person/2007/tessa-jowell")
+        self.assertEqual(
+            response.location, f"/person/{non_primary_person.pk}/tessa-jowell"
+        )
 
         # Check that the redirect object has been made:
         self.assertEqual(
@@ -641,7 +645,6 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         form = response.forms["new-candidate-form"]
         form["name"] = "Foo Bar"
-        election_slug = self.local_ballot.election.slug
         form["party_identifier_1"] = self.labour_party.ec_id
         form["ballot_paper_id"] = self.local_ballot.ballot_paper_id
         form["source"] = "foo bar"
@@ -740,7 +743,6 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         form = response.forms["new-candidate-form"]
         form["name"] = "Foo Bar"
-        election_slug = self.earlier_election.slug
         form["party_identifier_1"] = self.labour_party.ec_id
         form[
             "ballot_paper_id"

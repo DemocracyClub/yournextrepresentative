@@ -8,7 +8,6 @@ from elections.uk.templatetags.home_page_tags import results_progress_by_value
 
 class TestResultsProgress(BallotsWithResultsMixin, TestCase):
     def test_for_regions(self):
-        values = ["tags__NUTS1__key", "tags__NUTS1__value"]
         # create 10 ballots for each region without any results
         for code, label in region_choices():
             tags = {"NUTS1": {"key": code, "value": label}}

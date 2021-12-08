@@ -33,7 +33,7 @@ class TestPersonUpdate(TestCase):
         )
         person.save()
 
-        cmd = call_command("moderation_queue_set_ministers_liable_to_vandalism")
+        call_command("moderation_queue_set_ministers_liable_to_vandalism")
         person.refresh_from_db()
         self.assertEqual(
             person.edit_limitations, EditLimitationStatuses.NEEDS_REVIEW.name

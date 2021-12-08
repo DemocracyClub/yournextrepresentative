@@ -634,7 +634,6 @@ class Person(TimeStampedModel, models.Model):
         return person
 
     def dict_for_csv(self, base_url=None):
-        elected_for_csv = ""
         image_copyright = ""
         image_uploading_user = ""
         image_uploading_user_notes = ""

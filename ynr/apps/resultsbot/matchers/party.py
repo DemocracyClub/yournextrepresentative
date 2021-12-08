@@ -44,7 +44,7 @@ class PartyMatacher(object):
     def match_party_description(self, cleaned_name):
         try:
             PartyDescription.objects.get(name__iexact=cleaned_name)
-        except Exception as e:
+        except Exception:
             return None
 
     def divison_options(self):
