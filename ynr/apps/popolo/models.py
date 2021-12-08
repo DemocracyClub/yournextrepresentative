@@ -1,11 +1,11 @@
 import re
 
-
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
@@ -30,6 +30,10 @@ class VersionNotFound(Exception):
 
 
 class NotStandingValidationError(ValueError):
+    pass
+
+
+class MissingPartyNameError(ValidationError):
     pass
 
 
@@ -314,7 +318,6 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
     )
     party_name = models.CharField(
         max_length=255,
-        blank=True,
         help_text="The name of the associated party at the time of this membership. This is useful if the associated party subsequently changed name",
     )
     party_description_text = models.CharField(
@@ -366,6 +369,11 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
                         person_id=self.person.id,
                     )
                 )
+        if not self.party_name:
+            raise MissingPartyNameError(
+                "The party_name field must not be blank"
+            )
+
         super().save(*args, **kwargs)
 
     def __str__(self):
