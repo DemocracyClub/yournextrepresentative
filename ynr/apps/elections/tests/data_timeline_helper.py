@@ -49,7 +49,7 @@ class DataTimelineHTMLAssertions(WebTest):
             <div class="timeline_item">
                 <h4>Candidates verified and lock suggested</h4>
                 <div class="status_not_started">
-                    <strong>No lock suggestions</strong> 
+                    <strong>No lock suggestions</strong>
                     Upload a document before suggesting locking
                 </div>
             </div>

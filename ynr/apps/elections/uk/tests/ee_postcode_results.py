@@ -21,7 +21,6 @@ ee_sw1a1aa_result = {
                     "notes": "This is just for testing.",
                     "end_date": "2025-05-03",
                 },
-                "official_identifier": "test:9",
                 "seats_total": None,
                 "slug": "9",
             },

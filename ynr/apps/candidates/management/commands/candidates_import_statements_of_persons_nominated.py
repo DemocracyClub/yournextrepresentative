@@ -60,7 +60,7 @@ class Command(BaseCommand):
         parser.add_argument("--delete-existing", action="store_true")
         parser.add_argument("url")
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa
 
         csv_url = options["url"]
 

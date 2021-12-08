@@ -28,7 +28,7 @@ def mapit_ids_to_gss(apps, schema_editor):
         old_id = area.identifier
         try:
             mapit_area = mapit_data[area.identifier]
-            new_id = mapit.format_code_from_area(mapit_area)
+            new_id = mapit.format_code_from_area(mapit_area)  # noqa
 
             if old_id != new_id:
                 area.identifier = new_id
