@@ -34,6 +34,7 @@ class PreventCreatingBadMemberships(UK2015ExamplesMixin, TestCase):
             person=new_candidate,
             post=post,
             ballot=self.election.ballot_set.get(post=post),
+            party=self.labour_party,
         )
         with self.assertRaisesRegex(
             Exception,

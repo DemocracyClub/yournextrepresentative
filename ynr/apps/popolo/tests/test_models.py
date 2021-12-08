@@ -6,12 +6,10 @@ Run with "manage.py test popolo, or with python".
 from django.test import TestCase
 from faker import Factory
 from slugify import slugify
-from candidates.tests.factories import BallotPaperFactory
 
 from people.models import Person
-from people.tests.factories import PersonFactory
 from popolo.behaviors.tests.test_behaviors import DateframeableTests
-from popolo.models import Membership, MissingPartyNameError, Organization
+from popolo.models import Organization
 
 faker = Factory.create("it_IT")  # a factory to create fake names for tests
 
@@ -64,16 +62,3 @@ class OrganizationTestCase(DateframeableTests, TestCase):
         self.assertIsNone(o.end_date)
         o.save()
         self.assertEqual(o.end_date, o.dissolution_date)
-
-
-class TestMembershipModel(TestCase):
-    def test_missing_party_name_raises_exception(self):
-        ballot = BallotPaperFactory()
-        person = PersonFactory()
-        membership = Membership(party_name="", ballot=ballot, person=person)
-        with self.assertRaises(MissingPartyNameError):
-            membership.save()
-
-        membership.party_name = "Labour"
-        membership.save()
-        self.assertTrue(membership.pk)

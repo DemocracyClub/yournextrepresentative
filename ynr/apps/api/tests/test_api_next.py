@@ -7,6 +7,7 @@ from candidates.tests.helpers import TmpMediaRootMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from official_documents.models import OfficialDocument
+from parties.models import Party
 from parties.tests.factories import PartyDescriptionFactory, PartyEmblemFactory
 from parties.tests.fixtures import DefaultPartyFixtures
 from people.models import PersonImage
@@ -55,8 +56,11 @@ class TestAPI(
             party=self.labour_party,
             ballot=self.dulwich_post_ballot,
         )
+        self.independent_party_object = Party.objects.get(ec_id="ynmp-party:2")
         MembershipFactory.create(
-            person=self.person, ballot=self.edinburgh_east_post_ballot
+            person=self.person,
+            ballot=self.edinburgh_east_post_ballot,
+            party=self.independent_party_object,
         )
 
         MembershipFactory.create(
