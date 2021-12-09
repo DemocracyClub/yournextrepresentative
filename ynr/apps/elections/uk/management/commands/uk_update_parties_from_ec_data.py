@@ -19,13 +19,6 @@ base_emblem_url = (
 )
 
 
-def find_index(list, predicate):
-    for i, e in enumerate(list):
-        if predicate(e):
-            return i
-    return -1
-
-
 def get_descriptions(party):
     return [
         {"description": d["Description"], "translation": d["Translation"]}
