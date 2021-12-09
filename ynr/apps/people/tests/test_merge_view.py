@@ -228,9 +228,8 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         non_primary_person = Person.objects.get(pk=2007)
         self.assertEqual(Membership.objects.count(), 4)
         response = self.app.get(
-            f"/person/{primary_person.pk}/", user=self.user_who_can_merge
+            primary_person.get_absolute_url(), user=self.user_who_can_merge
         )
-
         # first submit suggestion form
         suggestion_form = response.forms[SUGGESTION_FORM_ID]
         suggestion_form["other_person"] = "2007"
@@ -240,9 +239,10 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         merge_form = response.forms[MERGE_FORM_ID]
         response = merge_form.submit()
 
+        non_primary_person.refresh_from_db()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.location, f"/person/{non_primary_person.pk}/tessa-jowell"
+            response.location, non_primary_person.get_absolute_url()
         )
 
         # Check that the redirect object has been made:

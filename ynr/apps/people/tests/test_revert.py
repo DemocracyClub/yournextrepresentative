@@ -253,12 +253,12 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.dulwich_post_ballot_earlier.candidates_locked = True
         self.dulwich_post_ballot_earlier.save()
 
-        response = self.app.get(f"/person/{person.pk}/update", user=self.user)
+        response = self.app.get(person.get_edit_url(), user=self.user)
         form = response.forms[1]
         form["source"] = "made up"
         form.submit()
 
-        response = self.app.get(f"/person/{person.pk}/update", user=self.user)
+        response = self.app.get(person.get_edit_url(), user=self.user)
         revert_form = response.forms["revert-form-5469de7db0cbd155"]
         revert_form[
             "source"
