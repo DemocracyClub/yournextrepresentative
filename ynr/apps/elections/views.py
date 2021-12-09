@@ -28,7 +28,6 @@ from parties.models import Party
 from people.forms.forms import NewPersonForm
 from people.forms.formsets import PersonIdentifierFormsetFactory
 from popolo.models import Membership
-from django.db import models
 
 
 class ElectionView(DetailView):
