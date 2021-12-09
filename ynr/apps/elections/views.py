@@ -28,6 +28,7 @@ from parties.models import Party
 from people.forms.forms import NewPersonForm
 from people.forms.formsets import PersonIdentifierFormsetFactory
 from popolo.models import Membership
+from django.db import models
 
 
 class ElectionView(DetailView):
@@ -47,7 +48,9 @@ class ElectionView(DetailView):
             .prefetch_related(
                 Prefetch(
                     "membership_set",
-                    Membership.objects.select_related("party", "person"),
+                    Membership.objects.select_related(
+                        "party", "person"
+                    ).order_by("-elected", "-result__num_ballots"),
                 )
             )
         )
