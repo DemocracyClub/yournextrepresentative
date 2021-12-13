@@ -44,7 +44,7 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
             )
             LoggedAction.objects.create(
                 user=self.request.user,
-                action_type=ActionType.CANDIDACY_DELETE,
+                action_type=ActionType.CANDIDACY_CREATE,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version=change_metadata["version_id"],
                 person=person,
