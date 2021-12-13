@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 blank=True,
                 null=True,
-                to="people.Person",
+                to="popolo.Person",
                 on_delete=models.CASCADE,
             ),
             preserve_default=False,

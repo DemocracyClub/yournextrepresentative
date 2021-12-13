@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
         ("people", "0014_remove_person_email"),
         ("candidates", "0058_pee_to_ballot"),
         ("popolo", "0027_slug_org_unique_together"),
+        ("parties", "0011_add_initial_candidates_counts"),
     ]
 
     operations = [
