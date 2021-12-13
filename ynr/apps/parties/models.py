@@ -107,6 +107,7 @@ class Party(TimeStampedModel):
 
         attachment = {
             "title": self.name,
+            "fallback": self.name,
             "title_link": "http://search.electoralcommission.org.uk/English/Registrations/{}".format(
                 self.ec_id
             ),
