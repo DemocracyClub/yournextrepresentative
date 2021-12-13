@@ -47,7 +47,9 @@ class ElectionView(DetailView):
             .prefetch_related(
                 Prefetch(
                     "membership_set",
-                    Membership.objects.select_related("party", "person"),
+                    Membership.objects.select_related(
+                        "party", "person"
+                    ).order_by("-elected", "-result__num_ballots"),
                 )
             )
         )
