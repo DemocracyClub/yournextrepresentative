@@ -173,9 +173,7 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         from candidates.tests.uk_examples import EXAMPLE_PARTIES
 
         for party in EXAMPLE_PARTIES:
-            p = OrganizationFactory(
-                slug=party["legacy_slug"], name=party["name"]
-            )
+            OrganizationFactory(slug=party["legacy_slug"], name=party["name"])
 
     def test_api_legacy_organizations_with_parties(self):
         self._make_legacy_parties()
@@ -326,7 +324,6 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
         # timestamped
         # timestamped
         mock_datetime.now.return_value = datetime(2017, 5, 14, 12, 33, 5, 0)
-        target_directory = settings.MEDIA_ROOT
         call_command(
             "candidates_cache_api_to_directory",
             page_size="3",

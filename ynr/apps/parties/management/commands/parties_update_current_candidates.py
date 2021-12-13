@@ -6,7 +6,6 @@ from parties.models import Party
 class Command(BaseCommand):
     help = """
     Update the current and total candidates field on the `Party` model
-    
     Designed to be run on a cron daily.
     """
 

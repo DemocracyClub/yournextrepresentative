@@ -46,7 +46,7 @@ def populate_person_identifier_from_popolo_models(apps, schema_editor):
     links_to_move = []
     for link in qs:
         person_id = link.object_id
-        if not person_id in links_by_person:
+        if person_id not in links_by_person:
             links_by_person[person_id] = set()
 
         if link.url in links_by_person[person_id]:

@@ -19,13 +19,6 @@ base_emblem_url = (
 )
 
 
-def find_index(l, predicate):
-    for i, e in enumerate(l):
-        if predicate(e):
-            return i
-    return -1
-
-
 def get_descriptions(party):
     return [
         {"description": d["Description"], "translation": d["Translation"]}
@@ -154,7 +147,7 @@ class Command(BaseCommand):
 
     def clean_name(self, name):
         name = name.strip()
-        if not "de-registered" in name.lower():
+        if "de-registered" not in name.lower():
             return name, "9999-12-31"
 
         match = re.match(r"(.+)\[De-registered ([0-9]+/[0-9]+/[0-9]+)\]", name)

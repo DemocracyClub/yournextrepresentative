@@ -1,12 +1,9 @@
-from datetime import datetime
-
 from django.db.models import Count
 
 from candidates.models import Ballot
 
 
 def get_attention_needed_posts():
-    now = datetime.now()
     qs = Ballot.objects.current_or_future()
     qs = qs.select_related("election", "post")
     qs = qs.annotate(count=Count("membership"))

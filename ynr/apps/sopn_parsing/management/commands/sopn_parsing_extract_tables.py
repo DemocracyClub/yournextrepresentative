@@ -6,7 +6,6 @@ from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 class Command(BaseSOPNParsingCommand):
     help = """
     Parse tables out of PDFs in to ParsedSOPN models for later parsing.
-    
     """
 
     def handle(self, *args, **options):

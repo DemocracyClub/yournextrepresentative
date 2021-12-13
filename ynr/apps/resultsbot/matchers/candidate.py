@@ -45,7 +45,6 @@ class CandidateMatcher(object):
         return self._memberships
 
     def pick_from_map(self):
-        candidates_for_party = self.get_memberships()
         try:
             key = "{}--{}".format(
                 self.ballot_paper.local_area.ballot_paper_id,

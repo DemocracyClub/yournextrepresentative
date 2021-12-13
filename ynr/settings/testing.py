@@ -6,8 +6,8 @@ from .base import *  # noqa
 DATABASES["default"]["CONN_MAX_AGE"] = 0  # noqa
 SITE_NAME = "example.com"
 if os.environ.get("CIRCLECI"):
-    DATABASES["default"]["NAME"] = "ynr"
-    DATABASES["default"]["USER"] = "ynr"
+    DATABASES["default"]["NAME"] = "ynr"  # noqa
+    DATABASES["default"]["USER"] = "ynr"  # noqa
 
 
 class DisableMigrations(object):

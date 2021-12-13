@@ -19,7 +19,6 @@ ROLES_BY_TYPE = {
 def update_for_post_role(apps, schema_editor):
     Election = apps.get_model("elections", "Election")
     for election_type, text in ROLES_BY_TYPE.items():
-        match_str = "{}.".format(election_type)
         Election.objects.filter(slug__startswith=election_type).update(
             for_post_role=text
         )

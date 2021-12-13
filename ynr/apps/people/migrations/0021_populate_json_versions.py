@@ -9,7 +9,7 @@ def populate_json_versions(apps, schema):
     for person in Person.objects.all():
         try:
             person.json_versions = json.loads(person.versions)
-        except json.decoder.JSONDecodeError as e:
+        except json.decoder.JSONDecodeError:
             person.json_versions = {}
         person.save()
 

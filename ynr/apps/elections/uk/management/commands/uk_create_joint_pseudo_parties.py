@@ -15,7 +15,7 @@ def fix_joint_party_name(joint_party_name):
 
 
 def extract_number_from_id(party_id):
-    m = re.search("\d+", party_id)
+    m = re.search(r"\d+", party_id)
     if m:
         return int(m.group(0), 10)
     return -1

@@ -61,7 +61,8 @@ class DateframeableTests(BehaviorTestCaseMixin):
 
     def test_querysets_filters(self):
         """Test current, past and future querysets"""
-        past_obj = self.create_instance(
+        # past_obj
+        self.create_instance(
             start_date=datetime.strftime(
                 datetime.now() - timedelta(days=10), "%Y-%m-%d"
             ),
@@ -69,7 +70,8 @@ class DateframeableTests(BehaviorTestCaseMixin):
                 datetime.now() - timedelta(days=5), "%Y-%m-%d"
             ),
         )
-        current_obj = self.create_instance(
+        # current_obj
+        self.create_instance(
             start_date=datetime.strftime(
                 datetime.now() - timedelta(days=5), "%Y-%m-%d"
             ),
@@ -77,7 +79,8 @@ class DateframeableTests(BehaviorTestCaseMixin):
                 datetime.now() + timedelta(days=5), "%Y-%m-%d"
             ),
         )
-        future_obj = self.create_instance(
+        # future_obj
+        self.create_instance(
             start_date=datetime.strftime(
                 datetime.now() + timedelta(days=5), "%Y-%m-%d"
             ),

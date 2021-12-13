@@ -9,14 +9,11 @@ from utils.slack import SlackHelper
 
 class Command(BaseCommand):
     help = """
-    Import policital parties that can stand candidates from The Electoral 
+    Import policital parties that can stand candidates from The Electoral
     Commission's API in to the Parties app.
-    
-    
     This command creates 3 types of object: parties, descriptions and emblems.
-    
-    It also creates joint parties. That is, a psudo-party that allows us to 
-    mark candidates as standing for 2 parties.  
+    It also creates joint parties. That is, a psudo-party that allows us to
+    mark candidates as standing for 2 parties.
     """
 
     def add_arguments(self, parser):

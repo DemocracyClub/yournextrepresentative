@@ -53,7 +53,6 @@ def copy_org_to_party(apps, schema_editor):
 
     #  Set up the maps we'll need
     ORG_PK_TO_EC_IDS = {}
-    ORG_PK_TO_OTHER_IDS = {}
     ORG_OBJ_TO_PARTY_OBJ = {}
 
     # Get all the IDs used for Organizations

@@ -7,7 +7,6 @@ from django.db import migrations
 
 def add_extra_fields_to_base(apps, schema_editor):
     Post = apps.get_model("popolo", "Post")
-    PostExtra = apps.get_model("candidates", "PostExtra")
 
     # First, delete any Post objects with no extra
     Post.objects.filter(extra=None).delete()

@@ -27,8 +27,6 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertNotContains(response, "Review")
 
     def testFormIfSopn(self):
-        post = self.dulwich_post
-
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
@@ -120,8 +118,6 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 200)
 
     def test_submitting_form(self):
-        post = self.dulwich_post
-
         OfficialDocument.objects.create(
             source_url="http://example.com",
             document_type=OfficialDocument.NOMINATION_PAPER,
@@ -423,7 +419,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         existing_person = PersonFactory.create(
             id="1234567", name="Bart Simpson"
         )
-        existing_membership = MembershipFactory.create(
+        MembershipFactory.create(
             person=existing_person,
             # !!! This is the line that differs from the previous test:
             post=self.dulwich_post,
@@ -453,7 +449,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             id="1234567", name="Bart Simpson"
         )
 
-        existing_membership = MembershipFactory.create(
+        MembershipFactory.create(
             person=existing_person,
             # !!! This is the line that differs from the previous test:
             post=self.dulwich_post,

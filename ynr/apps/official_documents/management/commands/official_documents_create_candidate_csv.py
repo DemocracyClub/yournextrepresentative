@@ -9,9 +9,6 @@ class Command(BaseCommand):
     help = "Create a CSV with candidate info form the SOPNs"
 
     def handle(self, *args, **options):
-        import time
-
-        start_time = time.time()
         fieldnames = (
             "election_id",
             "division_id",

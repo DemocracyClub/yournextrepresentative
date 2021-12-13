@@ -97,7 +97,6 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
         coords = request.GET.get("coords", None)
 
         # TODO: postcode may not make sense everywhere
-        errors = None
         if not postcode and not coords:
             return self._error("Postcode or Co-ordinates required")
 

@@ -532,6 +532,7 @@ class GenderSplitByParty(BaseReport):
         qs = self.get_qs()
         report_list = []
         headers = ["Gender", "Gender Count", "Party Name"]
+        report_list.append(headers)
         for gender in qs:
             report_list.append(
                 [
@@ -559,6 +560,7 @@ class GenderSplitByRegion(BaseReport):
         qs = self.get_qs()
         report_list = []
         headers = ["Gender", "Gender Count", "Region"]
+        report_list.append(headers)
         for gender in qs:
             report_list.append(
                 [
@@ -587,6 +589,7 @@ class GenderSplitByElectionType(BaseReport):
         qs = self.get_qs()
         report_list = []
         headers = ["Gender", "Gender Count", "Party Name"]
+        report_list.append(headers)
         for gender in qs:
             report_list.append(
                 [

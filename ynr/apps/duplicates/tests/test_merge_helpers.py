@@ -15,12 +15,12 @@ class TestMergeHelper(TestUserMixin, TestCase):
         p1, p2, p3 = PersonFactory.create_batch(3)
 
         # suggest they're the same
-        ds = DuplicateSuggestion.objects.create(
+        DuplicateSuggestion.objects.create(
             person=p2, other_person=p1, user=self.user
         )
 
         # suggest someone else is the same
-        ds = DuplicateSuggestion.objects.create(
+        DuplicateSuggestion.objects.create(
             person=p1, other_person=p3, user=self.user
         )
 

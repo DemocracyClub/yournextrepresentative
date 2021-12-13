@@ -33,7 +33,7 @@ def make_slug(party_id):
 
 
 def extract_number_from_id(party_id):
-    m = re.search("\d+", party_id)
+    m = re.search(r"\d+", party_id)
     if m:
         return int(m.group(0), 10)
 
@@ -199,7 +199,7 @@ class ECParty(dict):
         self.created = False
         required_fields = ("RegulatedEntityName", "ECRef", "RegisterName")
         for field in required_fields:
-            if not field in self:
+            if field not in self:
                 raise ValueError("{} missing".format(field))
 
     def save(self):
@@ -252,11 +252,11 @@ class ECParty(dict):
 
         # Remove [De-registered] tag in name
         # (the date is parsed in `date_deregistered`)
-        matcher = re.compile("[\[\(]de(-?)registered .*", flags=re.I)
+        matcher = re.compile(r"[\[\(]de(-?)registered .*", flags=re.I)
         name = matcher.split(name)[0].strip()
 
         # Do some general cleaning
-        name = re.sub("\s+", " ", name)
+        name = re.sub(r"\s+", " ", name)
         return name
 
     @property

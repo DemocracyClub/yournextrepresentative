@@ -9,9 +9,11 @@ date_in_near_past = date.today() - timedelta(days=14)
 
 FOUR_YEARS_IN_DAYS = 1462
 
-election_date_before = lambda r: {"DATE_TODAY": date.today()}
-election_date_on_election_day = lambda r: {"DATE_TODAY": date_in_near_future}
-election_date_after = lambda r: {
+election_date_before = lambda r: {"DATE_TODAY": date.today()}  # noqa
+election_date_on_election_day = lambda r: {  # noqa
+    "DATE_TODAY": date_in_near_future
+}
+election_date_after = lambda r: {  # noqa
     "DATE_TODAY": date.today() + timedelta(days=28)
 }
 
