@@ -85,7 +85,9 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         in the merging code. However, we can test that `safe_delete` doesn't
         delete objects with related models.
         """
-        self.dest_person.memberships.create(ballot=self.local_ballot)
+        self.dest_person.memberships.create(
+            ballot=self.local_ballot, party=self.green_party
+        )
         merger = PersonMerger(self.dest_person, self.source_person)
         with self.assertRaises(UnsafeToDelete):
             merger.safe_delete(self.dest_person)

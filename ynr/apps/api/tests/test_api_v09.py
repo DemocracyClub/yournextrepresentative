@@ -16,11 +16,19 @@ from candidates.tests.factories import MembershipFactory
 from candidates.tests.helpers import TmpMediaRootMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from parties.models import Party
+from parties.tests.fixtures import DefaultPartyFixtures
 from people.models import PersonIdentifier, PersonImage
 from people.tests.factories import PersonFactory
 
 
-class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
+class TestAPI(
+    DefaultPartyFixtures,
+    TestUserMixin,
+    TmpMediaRootMixin,
+    UK2015ExamplesMixin,
+    WebTest,
+):
     def setUp(self):
         super().setUp()
 
@@ -54,8 +62,11 @@ class TestAPI(TestUserMixin, TmpMediaRootMixin, UK2015ExamplesMixin, WebTest):
             party=self.labour_party,
             ballot=self.dulwich_post_ballot,
         )
+        self.independent_party_object = Party.objects.get(ec_id="ynmp-party:2")
         MembershipFactory.create(
-            person=person, ballot=self.edinburgh_east_post_ballot
+            person=person,
+            ballot=self.edinburgh_east_post_ballot,
+            party=self.independent_party_object,
         )
 
         MembershipFactory.create(

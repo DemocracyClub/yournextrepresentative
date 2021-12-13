@@ -19,6 +19,7 @@ from candidates.tests.factories import (
 )
 from elections.models import Election
 from elections.uk import every_election
+from parties.tests.factories import PartyFactory
 from people.tests.factories import PersonFactory
 from popolo.models import Post
 
@@ -457,6 +458,7 @@ class EE_ImporterTest(WebTest):
         MembershipFactory(
             person=PersonFactory.create(id=2009, name="Tessa Jowell"),
             ballot=every_election.Ballot.objects.all()[0],
+            party=PartyFactory(),
         )
 
         # now we've switched the fixtures round

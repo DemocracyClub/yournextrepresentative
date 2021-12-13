@@ -44,7 +44,7 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
             )
             LoggedAction.objects.create(
                 user=self.request.user,
-                action_type=ActionType.CANDIDACY_DELETE,
+                action_type=ActionType.CANDIDACY_CREATE,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version=change_metadata["version_id"],
                 person=person,
@@ -58,10 +58,12 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
             person.not_standing.remove(self.ballot.election)
 
             if not membership_exists:
+                party = person.last_party()
                 Membership.objects.create(
                     person=person,
                     post=self.ballot.post,
-                    party=person.last_party(),
+                    party=party,
+                    party_name=party.name,
                     ballot=self.ballot,
                 )
 

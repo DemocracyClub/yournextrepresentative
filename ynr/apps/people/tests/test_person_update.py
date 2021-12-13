@@ -304,6 +304,29 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         form["tmp_person_identifiers-1-value_type"] = ""
         form.submit()
 
+    def test_change_candidacy_party_updates_party_name(self):
+        """
+        Regression test to check that when the party on a candidacy is changed
+        this also updates the party_name field on the Membership object
+        """
+        candidacy = self.person.memberships.first()
+        self.assertEqual(candidacy.party, self.labour_party)
+        self.assertEqual(candidacy.party_name, self.labour_party.name)
+
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        form = response.forms[1]
+        form["memberships-0-party_identifier_0"].select(self.green_party.ec_id)
+        form["memberships-0-party_identifier_1"].value = self.green_party.ec_id
+        form["source"] = "http://example.com"
+        response = form.submit()
+
+        candidacy = self.person.memberships.first()
+        self.assertEqual(candidacy.party, self.green_party)
+        self.assertEqual(candidacy.party_name, self.green_party.name)
+
     def test_person_create_select_election(self):
         resp = self.app.get(
             reverse("person-create-select-election") + "?name=foo",
