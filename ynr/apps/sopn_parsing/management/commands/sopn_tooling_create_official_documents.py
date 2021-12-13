@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from django.core.files.base import ContentFile
 
 from candidates.models import Ballot
+from elections.models import Election
 from official_documents.models import OfficialDocument
 
 
@@ -11,12 +12,53 @@ class Command(BaseCommand):
     """This command uses the ballots endpoint to loop over each
     ballot and store each sopn pdf (uploaded_file) locally"""
 
-    def handle(self, *args, **options):
-        response = requests.get(
-            "https://candidates.democracyclub.org.uk/api/next/ballots?has_sopn=1&page_size=20"
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--date",
+            "-d",
+            action="store",
+            help="Election date in ISO format, defaults to 2021-05-06",
+            default="2021-05-06",
+            type=str,
         )
-        data = response.json()
-        self.create_official_documents(ballots=data["results"])
+        parser.add_argument(
+            "--site_url",
+            "-u",
+            action="store",
+            help="URL of site to download from",
+            default="https://candidates.democracyclub.org.uk/",
+            type=str,
+        )
+        parser.add_argument(
+            "--election-count",
+            "-c",
+            action="store",
+            help="URL of site to download from",
+            default=50,
+            type=int,
+        )
+
+    def handle(self, *args, **options):
+        site_url = options.get("site_url")
+        election_date = options.get("date")
+        election_count = options.get("election_count")
+
+        election_slugs = Election.objects.filter(
+            election_date=election_date
+        ).values_list("slug", flat=True)[:election_count]
+
+        for slug in election_slugs:
+            url = f"{site_url}api/next/ballots/?has_sopn=1&page_size=200&election_id={slug}"
+            data = self.get_ballot_data(url=url)
+            self.create_official_documents(ballots=data["results"])
+            next = data["next"]
+            while next:
+                data = self.get_ballot_data(url=url)
+                next = data["next"]
+                self.create_official_documents(ballots=data["results"])
+
+    def get_ballot_data(self, url):
+        return requests.get(url=url).json()
 
     def create_official_documents(self, ballots):
         for ballot_data in ballots:
