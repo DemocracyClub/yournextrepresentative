@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="SiteBanner",
+            name="RawPeople",
             fields=[
                 (
                     "id",
@@ -40,15 +40,21 @@ class Migration(migrations.Migration):
                         verbose_name="modified",
                     ),
                 ),
+                ("data", models.JSONField()),
+                ("source", models.CharField(max_length=512)),
                 (
-                    "message",
-                    models.TextField(
-                        help_text="Markdown formatted text to show on every page"
+                    "source_type",
+                    models.CharField(
+                        choices=[
+                            ("bulk_add_form", "Bulk Add form"),
+                            ("council_csv", "Council CSV"),
+                            ("parsed_pdf", "Parsed from a PDF"),
+                        ],
+                        default="bulk_add_form",
+                        max_length=255,
                     ),
                 ),
-                ("published", models.BooleanField(default=False)),
-                ("show_until", models.DateTimeField()),
             ],
-            options={"get_latest_by": "modified"},
+            options={"abstract": False},
         )
     ]
