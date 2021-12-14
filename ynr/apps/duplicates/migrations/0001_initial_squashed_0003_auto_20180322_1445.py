@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("popolo", "0002_update_models_from_upstream"),
+        ("people", "0003_add_person_model"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
