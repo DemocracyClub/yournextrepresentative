@@ -15,12 +15,3 @@ for APPNAME in bulk_adding cached_counts candidates duplicates elections faceboo
 do
     python manage.py migrate --fake $APPNAME zero
 done
-
-# delete all existing migrations
-find ./ynr -path "*/migrations/*.py" -not -name "__init__.py" -delete
-
-# recreate them
-python manage.py makemigrations
-
-# fake the new initial migrations
-python manage.py migrate --fake
