@@ -3,7 +3,6 @@ from datetime import date
 from django.conf import settings
 from django.contrib.sites.models import Site
 
-from bulk_adding.models import TRUSTED_TO_BULK_ADD_GROUP_NAME
 from candidates.models import (
     RESULT_RECORDERS_GROUP_NAME,
     TRUSTED_TO_LOCK_GROUP_NAME,
@@ -82,7 +81,6 @@ def add_group_permissions(request):
             ("user_can_review_photos", PHOTO_REVIEWERS_GROUP_NAME),
             ("user_can_lock", TRUSTED_TO_LOCK_GROUP_NAME),
             ("user_can_record_results", RESULT_RECORDERS_GROUP_NAME),
-            ("user_can_bulk_add", TRUSTED_TO_BULK_ADD_GROUP_NAME),
         )
     }
     result["user_can_edit"] = settings.EDITS_ALLOWED or request.user.is_staff

@@ -2,8 +2,6 @@ from django.db import models
 from django.db.models import JSONField
 from model_utils.models import TimeStampedModel
 
-TRUSTED_TO_BULK_ADD_GROUP_NAME = "Trusted to bulk add"
-
 
 class RawPeople(TimeStampedModel):
     """
