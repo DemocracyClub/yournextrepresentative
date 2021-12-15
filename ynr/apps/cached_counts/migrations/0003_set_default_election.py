@@ -19,7 +19,5 @@ class Migration(migrations.Migration):
     dependencies = [("cached_counts", "0002_cachedcount_election")]
 
     operations = [
-        migrations.RunPython(
-            set_uk_2015_election, lambda apps, schema_editor: None
-        )
+        migrations.RunPython(set_uk_2015_election, migrations.RunPython.noop)
     ]
