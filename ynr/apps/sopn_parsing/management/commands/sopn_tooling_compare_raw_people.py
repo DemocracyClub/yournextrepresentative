@@ -21,7 +21,6 @@ class Command(BaseCommand):
         raw_people_file = "ynr/apps/sopn_parsing/tests/data/sopn_baseline.json"
         assert os.path.isfile(raw_people_file)
 
-        call_command("sopn_tooling_create_official_documents")
         call_command("sopn_parsing_extract_page_numbers", testing=True)
         call_command("sopn_parsing_extract_tables", testing=True)
         call_command("sopn_parsing_parse_tables", testing=True)
