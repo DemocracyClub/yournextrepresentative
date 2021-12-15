@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(
-            code=add_created_date, reverse_code=migrations.RunPython.noop
+            code=migrations.RunPython.noop,
+            reverse_code=migrations.RunPython.noop,
         )
     ]

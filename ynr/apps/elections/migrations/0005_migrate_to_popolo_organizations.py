@@ -34,6 +34,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(
-            migrate_to_popolo_organizations, lambda apps, schema_editor: None
+            migrate_to_popolo_organizations, migrations.RunPython.noop
         )
     ]
