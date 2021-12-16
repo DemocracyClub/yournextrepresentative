@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
         ("popolo", "0025_move_person_fk_to_people_app"),
         ("uk_results", "0047_auto_20180501_1359"),
         ("results", "0026_move_person_fk_to_people_app"),
+        ("moderation_queue", "0024_move_person_fk_to_people_app"),
     ]
 
     operations = [
