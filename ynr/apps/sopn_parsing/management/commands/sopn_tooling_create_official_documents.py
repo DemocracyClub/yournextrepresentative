@@ -49,19 +49,12 @@ class Command(BaseCommand):
 
         for slug in election_slugs:
             url = f"{site_url}api/next/ballots/?has_sopn=1&page_size=200&election_id={slug}"
-            data = self.get_ballot_data(url=url)
-            self.create_official_documents(ballots=data["results"])
-            next = data["next"]
-            while next:
-                data = self.get_ballot_data(url=url)
-                next = data["next"]
-                self.create_official_documents(ballots=data["results"])
+            self.create_official_documents(url=url)
 
-    def get_ballot_data(self, url):
-        return requests.get(url=url).json()
-
-    def create_official_documents(self, ballots):
-        for ballot_data in ballots:
+    def create_official_documents(self, url):
+        data = requests.get(url=url).json()
+        next_page = data["next"]
+        for ballot_data in data["results"]:
             ballot = Ballot.objects.get(
                 ballot_paper_id=ballot_data["ballot_paper_id"]
             )
@@ -112,3 +105,8 @@ class Command(BaseCommand):
             official_document.uploaded_file.save(
                 name=filename, content=file_object
             )
+
+        # this should only be the case where the election object has > 200
+        # ballots e.g. parliamentary elections
+        if next_page:
+            return self.create_official_documents(url=next_page)
