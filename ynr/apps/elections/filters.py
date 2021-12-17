@@ -294,6 +294,10 @@ This may change depending on the elections. Used to determine if
         Only First Past The Post ballots have results at the moment.""",
     )
 
+    uncontested = django_filters.BooleanFilter(
+        label="Uncontested", widget=AnyBooleanWidget, help_text="""Boolean. ."""
+    )
+
     def filter_last_updated(self, queryset, name, value):
         """
         Method for the last_updated filter. Uses the last_updated QuerysetMethod
@@ -340,6 +344,7 @@ def filter_shortcuts(request):
                 "review_required": ["unlocked"],
                 "has_sopn": ["1"],
                 "is_cancelled": ["0"],
+                "uncontested": ["0"],
             },
         },
         {
@@ -349,6 +354,7 @@ def filter_shortcuts(request):
                 "has_results": ["0"],
                 "review_required": ["locked"],
                 "is_cancelled": ["0"],
+                "uncontested": ["0"],
             },
         },
     ]
