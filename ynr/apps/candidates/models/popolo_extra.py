@@ -211,6 +211,16 @@ class BallotQueryset(models.QuerySet):
             .filter(candidates_locked=True)
         )
 
+    def contested(self):
+        """
+        Return a QuerySet of ballots that are contested
+        """
+        return (
+            self.annotate(memberships_count=Count("membership"))
+            .filter(winner_count__gte=F("memberships_count"))
+            .filter(candidates_locked=True)
+        )
+
 
 class Ballot(EEModifiedMixin, models.Model):
 
@@ -358,6 +368,14 @@ class Ballot(EEModifiedMixin, models.Model):
         if not self.candidates_locked:
             return False
         if self.get_winner_count == self.membership_set.count():
+            return True
+        return False
+
+    @property
+    def contested(self):
+        if not self.candidates_locked:
+            return False
+        if self.get_winner_count != self.membership_set.count():
             return True
         return False
 

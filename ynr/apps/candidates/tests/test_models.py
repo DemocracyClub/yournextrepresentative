@@ -68,12 +68,12 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
             username="jacob", email="jacob@…", password="top_secret"
         )
 
-        election = self.create_election("Sheffield Local Election")
-        post = self.create_post(post_label="Ecclesall")
+        self.election = self.create_election("Sheffield Local Election")
+        self.post = self.create_post(post_label="Ecclesall")
         self.ballot = self.create_ballot(
             ballot_paper_id="local.sheffield.ecclesall.2021-05-06",
-            election=election,
-            post=post,
+            election=self.election,
+            post=self.post,
             winner_count=2,
             candidates_locked=True,
         )
@@ -132,6 +132,13 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
             self.ballot.membership_set.filter(elected=False).count(), 2
         )
         self.assertEqual(LoggedAction.objects.count(), 3)
+
+    def test_contested(self):
+        ballot = self.ballot
+        parties = self.create_parties(3)
+        self.create_memberships(ballot, parties)
+        contested_ballots = Ballot.objects.contested()
+        self.assertNotIn(ballot, contested_ballots)
 
 
 class BallotsWithResultsMixin(SingleBallotStatesMixin):
