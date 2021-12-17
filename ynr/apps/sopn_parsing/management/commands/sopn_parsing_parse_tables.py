@@ -10,30 +10,46 @@ class Command(BaseSOPNParsingCommand):
 
     """
 
-    def handle(self, *args, **options):
+    def build_filter_kwargs(self, options):
+        """
+        Build kwargs used to filter the BallotQuerySet that is parsed
+        - Always skip any ballots where we do not have a ParsedSOPN to try to
+        extract candidates from
+        - When test flag is used, dont make any changes
+        - When parsing a single ballot, dont make any changes
+        - When reparsing, only use ballots where we have previously created a
+          RawPeople object from a ParsedSOPN
+        - Otherwise filter by unparsed ParsedSOPN objects
+        """
+        # Always skip any ballots where we do not have a ParsedSOPN to try to
+        # extract candidates from
         filter_kwargs = {"officialdocument__parsedsopn__isnull": False}
-        if not options.get("ballot") and not options.get("testing"):
+        if options.get("testing"):
+            return filter_kwargs
 
-            if options["reparse"]:
-                # If reparsing, only reparse RawPeople created by parsing
-                # from a PDF
-                filter_kwargs[
-                    "rawpeople__source_type"
-                ] = RawPeople.SOURCE_PARSED_PDF
-            else:
-                # Where no parsed data already exists
-                filter_kwargs[
-                    "officialdocument__parsedsopn__parsed_data"
-                ] = None
+        if options.get("ballot"):
+            return filter_kwargs
 
-                # Where the status is unparsed
-                filter_kwargs[
-                    "officialdocument__parsedsopn__status"
-                ] = "unparsed"
+        if options.get("reparse"):
+            filter_kwargs[
+                "rawpeople__source_type"
+            ] = RawPeople.SOURCE_PARSED_PDF
+            return filter_kwargs
+
+        filter_kwargs["officialdocument__parsedsopn__parsed_data"] = None
+
+        # Where the status is unparsed
+        filter_kwargs["officialdocument__parsedsopn__status"] = "unparsed"
+
+        return filter_kwargs
+
+    def handle(self, *args, **options):
 
         # filters that we never change with args. These two would raise
         # ValueErrors in the parse_raw_data_for_ballot function
         base_qs = self.get_queryset(options)
+
+        filter_kwargs = self.build_filter_kwargs(options)
 
         qs = base_qs.filter(**filter_kwargs)
         qs = qs.filter(
