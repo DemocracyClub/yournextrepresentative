@@ -133,6 +133,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         lookup_url_kwarg="ballot_paper_id",
     )
     last_updated = serializers.SerializerMethodField()
+    cancelled = serializers.SerializerMethodField()
 
     def get_last_updated(self, instance):
         """
@@ -171,3 +172,13 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         return CandidacyOnBallotSerializer(
             qs, many=True, context=self.context
         ).data
+
+    def get_cancelled(self, instance):
+        """
+        If the ballot is marked as cancelled, return True. Otherwise check if
+        it was uncontested, as we may know this before it has been marked as
+        cancelled in EE.
+        """
+        if instance.cancelled:
+            return True
+        return instance.uncontested
