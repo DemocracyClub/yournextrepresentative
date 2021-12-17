@@ -16,3 +16,20 @@ class LastUpdatedMixin(filterset.FilterSet):
         """
         name = f"{name}__gt"
         return queryset.filter(**{name: value})
+
+
+class UncontestedMixin(filterset.FilterSet):
+    uncontested = filters.BooleanFilter(
+        field_name="uncontested",
+        lookup_expr="gt",
+        label="Uncontested",
+        help_text="Uncontested ballots",
+        method="filter_uncontested",
+    )
+
+    def filter_uncontested(self, queryset, name, value):
+        """
+        Default method that can be overided to check additional fields in subclass
+        """
+        name = f"{name}__gt"
+        return queryset.filter(**{name: value})
