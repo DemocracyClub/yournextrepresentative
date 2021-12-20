@@ -17,10 +17,11 @@ class Command(BaseSOPNParsingCommand):
         qs = self.get_queryset(options)
         qs = qs.distinct("officialdocument__source_url")
         filter_kwargs = {}
-        if not options["ballot"]:
+        if not options["ballot"] and not options["testing"]:
             if not options["reparse"]:
                 filter_kwargs["officialdocument__relevant_pages"] = None
             qs = qs.filter(**filter_kwargs)
+
         for ballot in qs:
             try:
                 extract_pages_for_ballot(ballot)

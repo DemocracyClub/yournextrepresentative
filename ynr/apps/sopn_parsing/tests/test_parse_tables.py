@@ -10,6 +10,9 @@ from parties.tests.factories import PartyFactory
 from parties.tests.fixtures import DefaultPartyFixtures
 from sopn_parsing.models import ParsedSOPN
 from sopn_parsing.helpers import parse_tables
+from ynr.apps.sopn_parsing.management.commands.sopn_parsing_parse_tables import (
+    Command as ParseTablesCommand,
+)
 from unittest import skipIf
 from pandas import Index, Series
 
@@ -298,3 +301,36 @@ class TestParseTablesUnitTests(TestCase):
         assert "`" not in cleaned_description
         assert "'" in cleaned_description
         assert cleaned_description == "All People's Party"
+
+
+class TestParseTablesFilterKwargs(TestCase):
+    def setUp(self):
+        self.command = ParseTablesCommand()
+        self.default_filter_kwargs = {
+            "officialdocument__parsedsopn__isnull": False
+        }
+
+    def test_when_testing(self):
+        options = {"testing": True}
+        result = self.command.build_filter_kwargs(options)
+        self.assertEqual(result, self.default_filter_kwargs)
+
+    def test_when_using_ballot(self):
+        options = {"ballot": "local.foo.bar.2021-05-06"}
+        result = self.command.build_filter_kwargs(options)
+        self.assertEqual(result, self.default_filter_kwargs)
+
+    def test_when_using_reparse(self):
+        options = {"reparse": True}
+        result = self.command.build_filter_kwargs(options)
+        expected = self.default_filter_kwargs.copy()
+        expected["rawpeople__source_type"] = RawPeople.SOURCE_PARSED_PDF
+        self.assertEqual(result, expected)
+
+    def test_when_no_options(self):
+        options = {}
+        result = self.command.build_filter_kwargs(options)
+        expected = self.default_filter_kwargs.copy()
+        expected["officialdocument__parsedsopn__parsed_data"] = None
+        expected["officialdocument__parsedsopn__status"] = "unparsed"
+        self.assertEqual(result, expected)

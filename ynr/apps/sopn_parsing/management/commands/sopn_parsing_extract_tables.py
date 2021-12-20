@@ -11,7 +11,7 @@ class Command(BaseSOPNParsingCommand):
     def handle(self, *args, **options):
         qs = self.get_queryset(options)
         filter_kwargs = {}
-        if not options["ballot"]:
+        if not options["ballot"] and not options["testing"]:
             if not options["reparse"]:
                 filter_kwargs["officialdocument__parsedsopn"] = None
 
