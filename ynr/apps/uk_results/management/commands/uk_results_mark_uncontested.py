@@ -11,4 +11,4 @@ class Command(BaseCommand):
     def handle(self, *args):
         qs = Ballot.objects.uncontested()
         for ballot in qs:
-            ballot.mark_uncontested_winners(log=False)
+            ballot.mark_uncontested_winners()
