@@ -54,14 +54,6 @@ def contains_header_like_strings(row):
     return False
 
 
-def values_contain_header_like_strings(row):
-    values = row.values
-    value_string = clean_text(str(values))
-    if any(s in value_string for s in NAME_FIELDS):
-        return True
-    return False
-
-
 def looks_like_header(row, avg_row):
     avg_row = avg_row - 3
     if len(merge_row_cells(row)) >= avg_row:
@@ -272,12 +264,6 @@ def parse_raw_data_for_ballot(ballot):
                     data = data.drop(data.index[i])
                 except IndexError:
                     break
-        else:
-            if values_contain_header_like_strings(row):
-                data = data.drop(data.index[i - 1])
-                data = data.reset_index()
-            else:
-                continue
     if not header_found:
         # Don't try to parse if we don't think we know the header
         return None

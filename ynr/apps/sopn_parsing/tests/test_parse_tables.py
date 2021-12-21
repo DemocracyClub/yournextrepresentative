@@ -1,5 +1,4 @@
 import json
-import pandas as pd
 
 from django.core.management import call_command
 from django.test import TestCase
@@ -41,7 +40,6 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
                     "2": "COLLINS \nDave",
                     "3": "HARVEY \nPeter John",
                     "4": "JENNER \nMelanie",
-                    "5": "Name of \nCandidate",
                 },
                 "1": {
                     "0": "Home Address",
@@ -49,7 +47,6 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
                     "2": "51 Old Fort Road, \nShoreham by Sea, \nBN43 5RL",
                     "3": "76 Harbour Way, \nShoreham by Sea, \nSussex, \nBN43 5HH",
                     "4": "9 Flag Square, \nShoreham by Sea, \nWest Sussex, \nBN43 5RZ",
-                    "5": "Home Address",
                 },
                 "2": {
                     "0": "Description (if \nany)",
@@ -57,7 +54,6 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
                     "2": "Independent",
                     "3": "UK Independence \nParty (UKIP)",
                     "4": "Labour Party",
-                    "5": "Description (if \nany)",
                 },
                 "3": {
                     "0": "Name of \nProposer",
@@ -65,7 +61,6 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
                     "2": "Loader Jocelyn C",
                     "3": "Hearne James H",
                     "4": "O`Connor Lavinia",
-                    "5": "Name of \nProposer",
                 },
                 "4": {
                     "0": "Reason \nwhy no \nlonger \nnominated\n*",
@@ -73,7 +68,6 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
                     "2": "",
                     "3": "",
                     "4": "",
-                    "5": "Reason \nwhy no \nlonger \nnominated\n*",
                 },
             }
         )
@@ -92,20 +86,6 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
                 {"name": "Melanie Jenner", "party_id": "PP53"},
             ],
         )
-
-    def test_values_contain_header_like_strings(self):
-        df = pd.DataFrame(
-            {
-                "Name of \nCandidate": [
-                    "BRADBURY \nAndrew John",
-                    "COLLINS \nDave",
-                    "Name of \nCandidate",
-                ]
-            }
-        )
-
-        result = parse_tables.values_contain_header_like_strings(df)
-        self.assertTrue(result)
 
 
 class TestParseTablesUnitTests(TestCase):
