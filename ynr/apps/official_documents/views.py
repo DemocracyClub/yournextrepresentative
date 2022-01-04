@@ -48,6 +48,8 @@ class CreateDocumentView(GroupRequiredMixin, CreateView):
         """
         self.object = form.save()
         try:
+            if hasattr(self.object.ballot, "rawpeople"):
+                self.object.ballot.rawpeople.delete()
             extract_pages_for_ballot(
                 ballot=self.object.ballot, manual_upload=True
             )

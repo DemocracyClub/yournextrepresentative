@@ -51,13 +51,30 @@ class Command(BaseCommand):
             old_raw_people_for_ballot = old_raw_people[ballot.ballot_paper_id]
             old_count = len(old_raw_people_for_ballot)
             new_count = len(raw_people)
-            assert new_count >= old_count
+            if new_count == old_count:
+                self.stdout.write(f"No change for {ballot.ballot_paper_id}")
+            elif new_count > old_count:
+                self.stdout.write(
+                    f"Number of people parsed for {ballot.ballot_paper_id} increased from {old_count} to {new_count}"
+                )
+            else:
+                self.stdout.write(
+                    f"Uh oh, parsed people for {ballot.ballot_paper_id} decreased from {old_count} to {new_count}. Stopping."
+                )
+                raise Exception("Raw people went down")
 
             for candidacy in old_raw_people_for_ballot:
-                assert candidacy in raw_people
+                if candidacy in raw_people:
+                    continue
+                else:
+                    self.stdout.write(f"{candidacy} missing")
 
             new_raw_people[ballot.ballot_paper_id] = raw_people
 
-        self.stdout.write(f"New raw people count: {RawPeople.objects.count()}")
+        new_total = RawPeople.objects.count()
+        self.stdout.write(f"New raw people count: {new_total}")
+
+        # raise exception here if this went down
+        assert new_total >= old_raw_people_count
 
         call_command("sopn_tooling_write_baseline", data=new_raw_people)
