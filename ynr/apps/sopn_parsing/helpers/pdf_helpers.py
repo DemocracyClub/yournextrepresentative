@@ -81,7 +81,7 @@ class SOPNDocument:
         return (
             OfficialDocument.objects.filter(source_url=self.source_url)
             .select_related("ballot", "ballot__post")
-            .order_by(-Length("ballot__post__label"))
+            .order_by(-Length("ballot__post__label"), "ballot__post__label")
         )
 
     def is_matched_page_numbers_valid(self):
