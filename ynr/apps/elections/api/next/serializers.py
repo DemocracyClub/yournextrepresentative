@@ -6,6 +6,7 @@ from api.next.serializers import OrganizationSerializer
 from candidates import models as candidates_models
 from elections import models as election_models
 from official_documents.api.next.serializers import OfficialDocumentSerializer
+from official_documents.models import OfficialDocument
 from popolo.api.next.serializers import (
     CandidacyOnBallotSerializer,
     MinimalPostSerializer,
@@ -146,11 +147,11 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
     @swagger_serializer_method(serializer_or_field=OfficialDocumentSerializer)
     def get_sopn(self, instance):
         try:
-            sopn = instance.officialdocument_set.all()[0]
-        except IndexError:
+            return OfficialDocumentSerializer(
+                instance=instance.sopn, read_only=True
+            ).data
+        except OfficialDocument.DoesNotExist:
             return None
-
-        return OfficialDocumentSerializer(instance=sopn, read_only=True).data
 
     @swagger_serializer_method(serializer_or_field=CandidacyOnBallotSerializer)
     def get_candidacies(self, instance):
