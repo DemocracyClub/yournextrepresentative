@@ -106,3 +106,42 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             with self.subTest(msg=post_name):
                 ballot = Ballot.objects.get(post__label=post_name)
                 self.assertEqual(ballot.sopn.relevant_pages, expected_page)
+
+    def test_post_names_same_length(self):
+        """
+        Test an edge case where SOPN covers wards with similar post names and
+        have the same length
+        """
+        example_doc_path = abspath(
+            join(
+                dirname(__file__),
+                "data/local.buckinghamshire.amersham-and-chesham-bois.2021-05-06.pdf",
+            )
+        )
+        posts = {"Chalfont St Peter": "7,8", "Chalfont St Giles": "5,6"}
+        for post_name in posts:
+            post = Post.objects.create(
+                label=post_name,
+                organization=self.local_council,
+                identifier=post_name,
+            )
+            ballot = Ballot.objects.create(
+                ballot_paper_id="local.{}.2019-05-02".format(post_name.lower()),
+                post=post,
+                election=self.local_election,
+            )
+            OfficialDocument.objects.create(
+                ballot=ballot,
+                document_type=OfficialDocument.NOMINATION_PAPER,
+                uploaded_file=SimpleUploadedFile(
+                    "sopn.pdf", open(example_doc_path, "rb").read()
+                ),
+                source_url="example.com",
+                relevant_pages=None,
+            )
+
+        call_command("sopn_parsing_extract_page_numbers")
+        for post_name, expected_page in posts.items():
+            with self.subTest(msg=post_name):
+                ballot = Ballot.objects.get(post__label=post_name)
+                self.assertEqual(ballot.sopn.relevant_pages, expected_page)
