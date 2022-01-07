@@ -227,7 +227,6 @@ class SOPNPageText:
         self.page_number = page_number
         self.raw_text = text
         self.text = clean_page_text(text)
-        self.continuation_page = None
         self.matched = None
         self.post_label_to_match = None
         self.previous_page = None
@@ -251,13 +250,6 @@ class SOPNPageText:
         threshold = int(len(words) * HEADING_SIZE)
         search_text = " ".join(words[0:threshold])
         return search_text
-
-    def set_continuation_page(self, value: bool):
-        """
-        Store if this is a continuation page and return
-        """
-        self.continuation_page = value
-        return self.continuation_page
 
     def contains_post_label(self, post_label=None):
         ward_name = post_label or self.post_label_to_match
@@ -317,15 +309,12 @@ class SOPNPageText:
         If the headings up to the post label are identical, we assume the page
         is a continuation.
         """
-        if self.continuation_page is not None:
-            return self.continuation_page
-
         if self.previous_page is None:
-            return self.set_continuation_page(False)
+            return False
 
         if self.is_page_heading_very_different_to_document_heading:
-            return self.set_continuation_page(True)
+            return True
 
-        return self.set_continuation_page(
-            self.is_heading_indentical_to_previous_page_heading
-        )
+        # if the page heading is identical to last page assume it is a
+        # continuation page
+        return self.is_heading_indentical_to_previous_page_heading

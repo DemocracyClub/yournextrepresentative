@@ -64,7 +64,7 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             "Beechwood": "2",
             "Birchfield": "3",
             "Broadheath": "4",
-            "Halton": "5",
+            "Daresbury": "5",
             "Ditton": "6",
             "Farnworth": "7",
             "Grange": "8",
