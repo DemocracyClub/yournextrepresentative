@@ -34,7 +34,6 @@ class SOPNDocument:
         )
         self.pages = self.parse_pages()
         self.matched_pages = []
-        self.previous_matched_page = None
 
         if len(self.document_heading_set) < 10:
             raise NoTextInDocumentError()
@@ -108,14 +107,12 @@ class SOPNDocument:
         """
         page.matched = True
         self.matched_pages.append(page)
-        self.previous_matched_page = page
 
     def clear_old_matched_pages(self):
         """
         Remove any previously set matched pages and previous page attributes
         """
         self.matched_pages = []
-        self.previous_matched_page = None
 
     def match_ballot_to_pages(self, post_label: str) -> str:
         """
@@ -130,14 +127,13 @@ class SOPNDocument:
         self.clear_old_matched_pages()
         for page in self.unmatched_pages:
             page.previous_page = self.pages.get(page.page_number - 1)
-            page.previous_matched_page = self.previous_matched_page
             page.document_heading_set = self.document_heading_set
             page.post_label_to_match = clean_text(post_label)
 
-            if page.previous_matched_page and not page.is_continuation_page:
+            if self.matched_pages and not page.is_continuation_page:
                 break
 
-            if page.previous_matched_page and page.is_continuation_page:
+            if self.matched_pages and page.is_continuation_page:
                 self.add_to_matched_pages(page)
                 continue
 
