@@ -34,7 +34,7 @@ class SOPNDocument:
         )
         self.pages = self.parse_pages()
         self.matched_pages = []
-        self.previous_page = None
+        self.previous_matched_page = None
 
         if len(self.document_heading_set) < 10:
             raise NoTextInDocumentError()
@@ -45,7 +45,7 @@ class SOPNDocument:
         Takes the heading from the first page in the document and returns it as
         a set
         """
-        return self.pages[0].get_page_heading_set()
+        return self.pages[1].get_page_heading_set()
 
     @property
     def matched_page_numbers(self) -> List[str]:
@@ -59,7 +59,7 @@ class SOPNDocument:
         """
         Returns a list of pages not marked as matched
         """
-        return [page for page in self.pages if not page.matched]
+        return [page for page in self.pages.values() if not page.matched]
 
     @property
     def has_single_page_and_single_document(self) -> bool:
@@ -108,14 +108,14 @@ class SOPNDocument:
         """
         page.matched = True
         self.matched_pages.append(page)
-        self.previous_page = page
+        self.previous_matched_page = page
 
     def clear_old_matched_pages(self):
         """
         Remove any previously set matched pages and previous page attributes
         """
         self.matched_pages = []
-        self.previous_page = None
+        self.previous_matched_page = None
 
     def match_ballot_to_pages(self, post_label: str) -> str:
         """
@@ -129,16 +129,22 @@ class SOPNDocument:
         """
         self.clear_old_matched_pages()
         for page in self.unmatched_pages:
-            # store some details used in our matching methods
-            page.previous_page = self.previous_page
+            page.previous_page = self.pages.get(page.page_number - 1)
+            page.previous_matched_page = self.previous_matched_page
             page.document_heading_set = self.document_heading_set
             page.post_label_to_match = clean_text(post_label)
 
-            if self.previous_page and not page.is_continuation_page:
+            if page.previous_matched_page and not page.is_continuation_page:
                 break
 
-            if self.previous_page and page.is_continuation_page:
+            if page.previous_matched_page and page.is_continuation_page:
                 self.add_to_matched_pages(page)
+                continue
+
+            # no matched pages but we know this is a continuation page so dont
+            # search for the post label in case of edge case such as the ward
+            # name appears in a candidates address
+            if page.is_continuation_page:
                 continue
 
             if page.contains_post_label():
@@ -187,7 +193,11 @@ class SOPNDocument:
             )
 
     def parse_pages(self):
-        pages = []
+        """
+        Returns a dictionary where the key is the page number, and the value is
+        a SOPNPageText object
+        """
+        pages = {}
         rsrcmgr = PDFResourceManager()
 
         laparams = LAParams(line_margin=0.1)
@@ -201,7 +211,7 @@ class SOPNDocument:
             device = TextConverter(rsrcmgr, retstr, laparams=laparams)
             interpreter = PDFPageInterpreter(rsrcmgr, device)
             interpreter.process_page(page)
-            pages.append(SOPNPageText(page_no, retstr.getvalue()))
+            pages[page_no] = SOPNPageText(page_no, retstr.getvalue())
             device.close()
             retstr.close()
         fp.close()
@@ -259,21 +269,6 @@ class SOPNPageText:
         return False
 
     @property
-    def is_first_page(self) -> bool:
-        """
-        Check if this is the first page of the uploaded file
-        """
-        return self.page_number == 1 or self.previous_page is None
-
-    @property
-    def is_first_unmatched_page(self):
-        """
-        E.g. if this is page 2 of a multi ballot SOPN file but the last page was
-        matched to a different ballot
-        """
-        return self.previous_page is None
-
-    @property
     def is_page_heading_very_different_to_document_heading(self):
         """
         Compares this page's heading with the heading for the document to check
@@ -325,10 +320,7 @@ class SOPNPageText:
         if self.continuation_page is not None:
             return self.continuation_page
 
-        if self.is_first_page:
-            return self.set_continuation_page(False)
-
-        if self.is_first_unmatched_page:
+        if self.previous_page is None:
             return self.set_continuation_page(False)
 
         if self.is_page_heading_very_different_to_document_heading:
