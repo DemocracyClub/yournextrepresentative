@@ -253,15 +253,15 @@ def parse_raw_data_for_ballot(ballot):
 
     header_found = False
     avg_row = sum(cell_counts) / float(len(cell_counts))
-    for i, row in enumerate(iter_rows(data)):
+    for row in iter_rows(data):
         if not header_found:
             if looks_like_header(row, avg_row):
                 data.columns = row
-                data = data.drop(data.index[i])
+                data = data.drop(row.name)
                 header_found = True
             else:
                 try:
-                    data = data.drop(data.index[i])
+                    data = data.drop(row.name)
                 except IndexError:
                     break
     if not header_found:
