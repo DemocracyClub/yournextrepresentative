@@ -15,7 +15,7 @@ download-sopns:
 	python manage.py sopn_tooling_create_official_documents
 
 .PHONY: populate-sopn-testing-database
-populate-sopn-testing-database: migrate_db
+populate-sopn-testing-database: migrate-db
 	python manage.py candidates_import_from_live_site
 
 .PHONY: delete-test-sopns
