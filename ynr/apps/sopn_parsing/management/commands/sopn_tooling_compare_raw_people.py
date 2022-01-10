@@ -52,7 +52,9 @@ class Command(BaseCommand):
             old_count = len(old_raw_people_for_ballot)
             new_count = len(raw_people)
             if new_count == old_count:
-                self.stdout.write(f"No change for {ballot.ballot_paper_id}")
+                self.stdout.write(
+                    f"No change for {ballot.ballot_paper_id} RawPeople remained at {old_count}"
+                )
             elif new_count > old_count:
                 self.stdout.write(
                     f"Number of people parsed for {ballot.ballot_paper_id} increased from {old_count} to {new_count}"

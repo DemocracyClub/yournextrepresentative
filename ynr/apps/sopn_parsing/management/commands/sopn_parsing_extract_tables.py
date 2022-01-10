@@ -22,7 +22,11 @@ class Command(BaseSOPNParsingCommand):
         for ballot in qs:
             try:
                 extract_ballot_table(ballot)
-            except (ValueError, NoTextInDocumentError):
+            except NoTextInDocumentError:
                 self.stdout.write(
-                    "Skipping {} due to parse error".format(ballot)
+                    f"{ballot} raised a NoTextInDocumentError trying to extract tables"
+                )
+            except ValueError:
+                self.stdout.write(
+                    f"{ballot} raised a ValueError trying extract tables"
                 )
