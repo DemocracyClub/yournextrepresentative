@@ -37,7 +37,7 @@ class OfficialDocument(TimeStampedModel):
     relevant_pages = models.CharField(
         "The pages containing information about this ballot",
         max_length=50,
-        null=True,
+        default="",
     )
 
     class Meta:

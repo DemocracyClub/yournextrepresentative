@@ -19,7 +19,7 @@ class Command(BaseSOPNParsingCommand):
         filter_kwargs = {}
         if not options["ballot"] and not options["testing"]:
             if not options["reparse"]:
-                filter_kwargs["officialdocument__relevant_pages"] = None
+                filter_kwargs["officialdocument__relevant_pages"] = ""
             qs = qs.filter(**filter_kwargs)
 
         for ballot in qs:
