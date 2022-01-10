@@ -35,8 +35,8 @@ class SOPNDocument:
         self.pages = self.parse_pages()
         self.matched_pages = []
 
-        if len(self.document_heading_set) < 10:
-            raise NoTextInDocumentError()
+        if self.blank_doc:
+            raise NoTextInDocumentError
 
     @property
     def document_heading_set(self):
@@ -45,6 +45,19 @@ class SOPNDocument:
         a set
         """
         return self.pages[1].get_page_heading_set()
+
+    @property
+    def blank_doc(self):
+        """
+        Takes the heading from the first or second page (if any) in the document and checks if empty
+        """
+        if len(self.document_heading_set) >= 10:
+            return False
+
+        return (
+            len(self.pages) > 1
+            and len(self.pages[2].get_page_heading_set()) < 10
+        )
 
     @property
     def matched_page_numbers(self) -> List[str]:
