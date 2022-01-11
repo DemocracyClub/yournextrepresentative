@@ -6,7 +6,6 @@ migrate-db:
 
 .PHONY: test-sopns
 test-sopns: migrate-db
-	python manage.py sopn_tooling_write_baseline
 	python manage.py sopn_tooling_compare_raw_people
 
 .PHONY: download-sopns

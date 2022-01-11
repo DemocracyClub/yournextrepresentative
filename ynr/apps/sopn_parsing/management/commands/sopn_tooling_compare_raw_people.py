@@ -19,7 +19,11 @@ class Command(BaseCommand):
         - If no asserts failed, use the data to write a new baseline file
         """
         raw_people_file = "ynr/apps/sopn_parsing/tests/data/sopn_baseline.json"
-        assert os.path.isfile(raw_people_file)
+        if not os.path.isfile(raw_people_file):
+            # only write a file if we dont already have one otherwise a failing
+            # run (e.g. people went down) would overwrite our last baseline file
+            call_command("sopn_tooling_write_baseline")
+            self.stdout.write("Baseline file didn't exist so one was created")
 
         call_command("sopn_parsing_extract_page_numbers", testing=True)
         call_command("sopn_parsing_extract_tables", testing=True)
