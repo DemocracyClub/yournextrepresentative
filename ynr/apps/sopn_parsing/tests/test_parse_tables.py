@@ -302,6 +302,14 @@ class TestParseTablesUnitTests(TestCase):
         assert "'" in cleaned_description
         assert cleaned_description == "All People's Party"
 
+    def test_clean_description_replaces_ampersand(self):
+        cleaned_description = parse_tables.clean_description(
+            "Labour & Co-operative Party"
+        )
+        assert "&" not in cleaned_description
+        assert "and" in cleaned_description
+        assert cleaned_description == "Labour and Co-operative Party"
+
 
 class TestParseTablesFilterKwargs(TestCase):
     def setUp(self):
