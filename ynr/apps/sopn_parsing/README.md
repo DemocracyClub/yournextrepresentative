@@ -68,3 +68,13 @@ are currently parsing successfully
 - Re-run the `make test-sopns` command to check that the changes have improved
 the parsing process across the same set of objects. An `AssertionError` will be
 returned if the number we have been able to parse has gone down.
+
+To download SOPN's for a specific election, open the Makefile and add the
+election slugs to the `--election-slugs=` argument as a comma seperated list
+e.g. `--election-slugs=local.sheffield.2021-05-06,local.derbyshire.2021-05-06`
+
+This will create ballots and OfficialDocuments for all ballots in these elections,
+so that when you next run `make test-sopns` they will be tested.
+
+To clear all downloaded SOPN's and related objects, use `make delete-test-sopns`.
+This is useful if you want to rerun the testing from scratch.

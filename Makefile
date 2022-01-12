@@ -11,7 +11,7 @@ test-sopns: migrate-db
 .PHONY: download-sopns
 download-sopns:
 	python manage.py migrate --no-input
-	python manage.py sopn_tooling_create_official_documents
+	python manage.py sopn_tooling_create_official_documents --election-slugs=
 
 .PHONY: populate-sopn-testing-database
 populate-sopn-testing-database: migrate-db
