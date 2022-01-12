@@ -125,6 +125,7 @@ def clean_last_names(names):
 
 def clean_description(description):
     description = str(description)
+    description = description.replace(" & ", " and ")
     description = description.replace("\\n", "")
     description = description.replace("\n", "")
     description = description.replace("`", "'")
@@ -201,7 +202,6 @@ def get_name(row, name_fields):
 
 
 def parse_table(sopn, data):
-
     data.columns = clean_row(data.columns)
     try:
         name_fields = get_name_fields(data.columns)
