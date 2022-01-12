@@ -98,7 +98,6 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
                     "sopn.pdf", open(example_doc_path, "rb").read()
                 ),
                 source_url="example.com",
-                relevant_pages=None,
             )
 
         call_command("sopn_parsing_extract_page_numbers")
@@ -137,7 +136,6 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
                     "sopn.pdf", open(example_doc_path, "rb").read()
                 ),
                 source_url="example.com",
-                relevant_pages=None,
             )
 
         call_command("sopn_parsing_extract_page_numbers")

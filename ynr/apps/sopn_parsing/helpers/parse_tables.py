@@ -253,19 +253,20 @@ def parse_raw_data_for_ballot(ballot):
 
     header_found = False
     avg_row = sum(cell_counts) / float(len(cell_counts))
-    for i, row in enumerate(iter_rows(data)):
+    for row in iter_rows(data):
         if not header_found:
             if looks_like_header(row, avg_row):
                 data.columns = row
-                data = data.drop(data.index[i])
+                data = data.drop(row.name)
                 header_found = True
             else:
                 try:
-                    data = data.drop(data.index[i])
+                    data = data.drop(row.name)
                 except IndexError:
                     break
     if not header_found:
         # Don't try to parse if we don't think we know the header
+        print(f"We couldnt find a header for {ballot.ballot_paper_id}")
         return None
     # We're now in a position where we think we have the table we want
     # with the columns set and other header rows removed.
@@ -274,6 +275,7 @@ def parse_raw_data_for_ballot(ballot):
         ballot_data = parse_table(parsed_sopn_model, data)
     except ValueError:
         # Something went wrong. This will happen a lot. let's move on
+        print(f"Error attempting to parse a table for {ballot.ballot_paper_id}")
         return None
 
     if ballot_data:

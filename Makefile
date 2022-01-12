@@ -6,7 +6,6 @@ migrate-db:
 
 .PHONY: test-sopns
 test-sopns: migrate-db
-	python manage.py sopn_tooling_write_baseline
 	python manage.py sopn_tooling_compare_raw_people
 
 .PHONY: download-sopns
@@ -22,3 +21,7 @@ populate-sopn-testing-database: migrate-db
 delete-test-sopns:
 	python manage.py sopn_tooling_clear_existing_objects
 	rm -rf ./ynr/media/sopn_testing/
+
+.PHONY: create-baseline-file
+create-baseline-file:
+	python manage.py sopn_tooling_write_baseline

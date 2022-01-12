@@ -113,7 +113,7 @@ class TestSOPNHelpers(TestCase):
         )
         official_document.uploaded_file.save(name="sopn.pdf", content=sopn_file)
         official_document.save()
-        self.assertIsNone(official_document.relevant_pages)
+        self.assertEqual(official_document.relevant_pages, "")
 
         document_obj = SOPNDocument(
             file=sopn_file, source_url="http://example.com/strensall"
@@ -162,7 +162,7 @@ class TestSOPNHelpers(TestCase):
                 name="sopn.pdf", content=sopn_file
             )
             official_document.save()
-            self.assertIsNone(official_document.relevant_pages)
+            self.assertEqual(official_document.relevant_pages, "")
 
         document_obj = SOPNDocument(
             file=sopn_file, source_url="http://example.com"
@@ -195,7 +195,7 @@ class TestSOPNHelpers(TestCase):
         )
         official_document.uploaded_file.save(name="sopn.pdf", content=sopn_file)
         official_document.save()
-        self.assertIsNone(official_document.relevant_pages)
+        self.assertEqual(official_document.relevant_pages, "")
 
         document_obj = SOPNDocument(
             file=sopn_file, source_url="http://example.com/strensall"

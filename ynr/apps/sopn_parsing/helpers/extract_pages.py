@@ -41,5 +41,5 @@ def extract_pages_for_ballot(ballot, manual_upload=False):
         return sopn.match_all_pages()
     except (NoTextInDocumentError):
         raise NoTextInDocumentError(
-            "No text in {}, skipping".format(document.uploaded_file.path)
+            f"Failed to extract pages for {document.uploaded_file.path} as a NoTextInDocumentError was raised"
         )
