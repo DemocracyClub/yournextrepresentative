@@ -45,7 +45,9 @@ class Command(BaseCommand):
             except RawPeople.DoesNotExist:
                 raw_people = []
 
-            old_raw_people_for_ballot = old_raw_people[ballot.ballot_paper_id]
+            old_raw_people_for_ballot = old_raw_people.get(
+                ballot.ballot_paper_id, []
+            )
             old_count = len(old_raw_people_for_ballot)
             new_count = len(raw_people)
             if new_count < old_count:
