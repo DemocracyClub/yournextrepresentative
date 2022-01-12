@@ -2,13 +2,13 @@ import json
 import os
 
 from django.core.management import call_command
-from django.core.management.base import BaseCommand
 
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot
+from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 
 
-class Command(BaseCommand):
+class Command(BaseSOPNParsingCommand):
     def handle(self, *args, **options):
         """
         - Check we have a baseline file to compare with
@@ -25,17 +25,14 @@ class Command(BaseCommand):
             call_command("sopn_tooling_write_baseline")
             self.stdout.write("Baseline file didn't exist so one was created")
 
-        call_command("sopn_parsing_extract_page_numbers", testing=True)
-        call_command("sopn_parsing_extract_tables", testing=True)
-        call_command("sopn_parsing_parse_tables", testing=True)
+        options.update({"testing": True})
+
+        call_command("sopn_parsing_extract_page_numbers", *args, **options)
+        call_command("sopn_parsing_extract_tables", *args, **options)
+        call_command("sopn_parsing_parse_tables", *args, **options)
 
         with open(raw_people_file) as file:
             old_raw_people = json.loads(file.read())
-
-        old_raw_people_count = len(
-            {k: v for k, v in old_raw_people.items() if v}
-        )
-        self.stdout.write(f"Old RawPeople count: {old_raw_people_count}")
 
         new_raw_people = {}
         for ballot in Ballot.objects.exclude(officialdocument__isnull=True):
@@ -86,13 +83,19 @@ class Command(BaseCommand):
             new_raw_people[ballot.ballot_paper_id] = raw_people
 
         # exit if this went down
+        old_raw_people_count = len(
+            {k: v for k, v in old_raw_people.items() if v}
+        )
         new_total = RawPeople.objects.count()
         assert (
             new_total >= old_raw_people_count
         ), "Total number of RawPeople objects created went down"
 
         self.stdout.write(
-            self.style.SUCCESS(f"New total RawPeople count: {new_total}")
+            self.style.SUCCESS(
+                f"Old RawPeople count: {old_raw_people_count}\n"
+                f"New total RawPeople count: {new_total}"
+            )
         )
         # Write a new baseline
         call_command("sopn_tooling_write_baseline", data=new_raw_people)

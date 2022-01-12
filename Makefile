@@ -6,7 +6,7 @@ migrate-db:
 
 .PHONY: test-sopns
 test-sopns: migrate-db
-	python manage.py sopn_tooling_compare_raw_people
+	python manage.py sopn_tooling_compare_raw_people --election-slugs= --ballot=
 
 .PHONY: download-sopns
 download-sopns:

@@ -69,12 +69,24 @@ are currently parsing successfully
 the parsing process across the same set of objects. An `AssertionError` will be
 returned if the number we have been able to parse has gone down.
 
-To download SOPN's for a specific election, open the Makefile and add the
-election slugs to the `--election-slugs=` argument as a comma seperated list
-e.g. `--election-slugs=local.sheffield.2021-05-06,local.derbyshire.2021-05-06`
+To download SOPN's for a specific election, open the Makefile and in the
+`download-sopns` command add the election slugs to the `--election-slugs=`
+argument as a comma seperated list e.g.
+`--election-slugs=local.sheffield.2021-05-06,local.derbyshire.2021-05-06`.
+Remember not to commit these changes in the Makefile.
 
-This will create ballots and OfficialDocuments for all ballots in these elections,
-so that when you next run `make test-sopns` they will be tested.
+To run the `make test-sopns` command for a specific Election, open the Makefile
+and in the `test-sopns` command add the election slugs to the `--election-slugs=`
+argument as a comma seperated list e.g.
+`--election-slugs=local.sheffield.2021-05-06,local.derbyshire.2021-05-06`.
+Remember not to commit these changes in the Makefile.
+
+To run the `make test-sopns` command for a single Ballot, open the Makefile
+and in the `test-sopns` command add the ballot paper id to the `--ballot=`
+argument e.g. `--ballot=local.derbyshire.ilkeston-west.2021-05-06`.
+Remember not to commit these changes in the Makefile.
+
+NB you must have the relevant objects in your database and SOPN's downloaded.
 
 To clear all downloaded SOPN's and related objects, use `make delete-test-sopns`.
 This is useful if you want to rerun the testing from scratch.
