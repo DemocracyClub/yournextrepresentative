@@ -37,15 +37,21 @@ class Command(BaseCommand):
             default=50,
             type=int,
         )
+        parser.add_argument(
+            "--election-slugs", "-s", action="store", required=False
+        )
 
     def handle(self, *args, **options):
         site_url = options.get("site_url")
         election_date = options.get("date")
         election_count = options.get("election_count")
 
-        election_slugs = Election.objects.filter(
-            election_date=election_date
-        ).values_list("slug", flat=True)[:election_count]
+        if options["election_slugs"]:
+            election_slugs = options["election_slugs"].split(",")
+        else:
+            election_slugs = Election.objects.filter(
+                election_date=election_date
+            ).values_list("slug", flat=True)[:election_count]
 
         for slug in election_slugs:
             url = f"{site_url}api/next/ballots/?has_sopn=1&page_size=200&election_id={slug}"
