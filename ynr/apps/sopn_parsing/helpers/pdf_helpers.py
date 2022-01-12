@@ -147,13 +147,16 @@ class SOPNDocument:
                 self.add_to_matched_pages(page)
 
         if not self.is_matched_page_numbers_valid():
+            matched_page_str = ",".join(
+                str(number) for number in self.matched_page_numbers
+            )
             if self.strict:
                 raise MatchedPagesError(
-                    f"Page numbers are not consecutive for {self.source_url}. Pages: {self.matched_pages}"
+                    f"Page numbers are not consecutive for {self.source_url}. Pages: {matched_page_str}"
                 )
             else:
                 print(
-                    f"Page numbers are not consecutive for {self.source_url}. Pages: {self.matched_pages}. Skipping."
+                    f"Page numbers are not consecutive for {self.source_url}. Pages: {matched_page_str}. Skipping."
                 )
                 return ""
 
@@ -171,8 +174,15 @@ class SOPNDocument:
         if matched_pages:
             self.unmatched_documents.remove(document)
             document.relevant_pages = matched_pages
-
-            return document.save()
+            try:
+                return document.save()
+            except Exception as e:
+                print(document.ballot.ballot_paper_id, document.relevant_pages)
+                if self.strict:
+                    raise e
+                else:
+                    document.relevant_pages = ""
+                    return document.save()
 
         if self.strict:
             raise MatchedPagesError(
