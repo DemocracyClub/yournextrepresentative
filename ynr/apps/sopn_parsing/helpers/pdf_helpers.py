@@ -152,11 +152,11 @@ class SOPNDocument:
             )
             if self.strict:
                 raise MatchedPagesError(
-                    f"Page numbers are not consecutive for {self.source_url}. Pages: {matched_page_str}"
+                    f"Page numbers are not consecutive for {self.source_url}. Pages: {matched_page_str}. Post: {post_label}"
                 )
             else:
                 print(
-                    f"Page numbers are not consecutive for {self.source_url}. Pages: {matched_page_str}. Skipping."
+                    f"Page numbers are not consecutive for {self.source_url}. Pages: {matched_page_str}. Post: {post_label}. Skipping."
                 )
                 return ""
 
