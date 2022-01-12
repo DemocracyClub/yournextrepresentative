@@ -188,7 +188,7 @@ def get_party(description_model, description, sopn):
         party_obj = None
 
     if not party_obj:
-        raise ValueError("Unknown party")
+        raise ValueError(f"Couldn't find party for {party_name}")
     return party_obj
 
 
@@ -201,21 +201,15 @@ def get_name(row, name_fields):
 
 
 def parse_table(sopn, data):
-
     data.columns = clean_row(data.columns)
-    try:
-        name_fields = get_name_fields(data.columns)
-    except ValueError:
-        return None
+
+    name_fields = get_name_fields(data.columns)
 
     # if we have more than one name field try to order them
     if len(name_fields) > 1:
         name_fields = order_name_fields(name_fields)
 
-    try:
-        description_field = guess_description_field(data.columns)
-    except ValueError:
-        return None
+    description_field = guess_description_field(data.columns)
 
     ballot_data = []
     for row in iter_rows(data):
@@ -238,15 +232,19 @@ def parse_raw_data_for_ballot(ballot):
     :type ballot: candidates.models.Ballot
     """
     if ballot.candidates_locked:
-        raise ValueError("Can't parse a locked ballot")
+        raise ValueError(
+            f"Can't parse a locked ballot {ballot.ballot_paper_id}"
+        )
 
     if ballot.suggestedpostlock_set.exists():
-        raise ValueError("Can't parse a ballot with lock suggestions")
+        raise ValueError(
+            f"Can't parse a ballot with lock suggestions {ballot.ballot_paper_id}"
+        )
 
     try:
         parsed_sopn_model = ballot.sopn.parsedsopn
     except ParsedSOPN.DoesNotExist:
-        raise ValueError("No Parsed SOPN")
+        raise ValueError(f"No ParsedSOPN for {ballot.ballot_paper_id}")
 
     data = parsed_sopn_model.as_pandas
     cell_counts = [len(merge_row_cells(c)) for c in iter_rows(data)]
@@ -273,9 +271,10 @@ def parse_raw_data_for_ballot(ballot):
     # Time to parse it in to names and parties
     try:
         ballot_data = parse_table(parsed_sopn_model, data)
-    except ValueError:
+    except ValueError as e:
         # Something went wrong. This will happen a lot. let's move on
         print(f"Error attempting to parse a table for {ballot.ballot_paper_id}")
+        print(e.args[0])
         return None
 
     if ballot_data:
