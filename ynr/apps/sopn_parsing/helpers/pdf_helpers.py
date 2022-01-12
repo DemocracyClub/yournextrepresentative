@@ -147,7 +147,15 @@ class SOPNDocument:
                 self.add_to_matched_pages(page)
 
         if not self.is_matched_page_numbers_valid():
-            raise MatchedPagesError("Page numbers are not consecutive")
+            if self.strict:
+                raise MatchedPagesError(
+                    f"Page numbers are not consecutive for {self.source_url}. Pages: {self.matched_pages}"
+                )
+            else:
+                print(
+                    f"Page numbers are not consecutive for {self.source_url}. Pages: {self.matched_pages}. Skipping."
+                )
+                return ""
 
         return ",".join(str(number) for number in self.matched_page_numbers)
 
@@ -163,10 +171,13 @@ class SOPNDocument:
         if matched_pages:
             self.unmatched_documents.remove(document)
             document.relevant_pages = matched_pages
+
             return document.save()
 
         if self.strict:
-            raise MatchedPagesError("We couldnt match any pages")
+            raise MatchedPagesError(
+                f"We couldnt match any pages for {document.ballot.ballot_paper_id}"
+            )
 
     def match_all_pages(self) -> None:
         """
@@ -185,7 +196,7 @@ class SOPNDocument:
 
         if self.strict and self.unmatched_documents:
             raise MatchedPagesError(
-                "Some OfficialDocument objects were unmatched"
+                f"Some OfficialDocument objects were unmatched for {self.source_url}"
             )
 
     def parse_pages(self):
