@@ -177,6 +177,7 @@ class SOPNDocument:
             try:
                 return document.save()
             except Exception as e:
+                print("Error trying to save relevant_pages, see below:")
                 print(document.ballot.ballot_paper_id, document.relevant_pages)
                 if self.strict:
                     raise e
