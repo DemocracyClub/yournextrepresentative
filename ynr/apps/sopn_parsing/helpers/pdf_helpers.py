@@ -180,7 +180,8 @@ class SOPNDocument:
         # if we are re-parsing and matched pages changed log it
         if document.relevant_pages and matched_pages != document.relevant_pages:
             print(
-                "Matched pages changed from {previously_matched} to {new_matched}".format(
+                "{ballot} matched pages changed from {previously_matched} to {new_matched}".format(
+                    ballot=document.ballot.ballot_paper_id,
                     previously_matched=document.relevant_pages,
                     new_matched=matched_pages or "0",
                 )
