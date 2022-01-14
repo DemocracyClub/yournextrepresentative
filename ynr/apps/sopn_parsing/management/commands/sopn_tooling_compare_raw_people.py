@@ -20,8 +20,6 @@ class Command(BaseSOPNParsingCommand):
         """
         raw_people_file = "ynr/apps/sopn_parsing/tests/data/sopn_baseline.json"
         if not os.path.isfile(raw_people_file):
-            # only write a file if we dont already have one otherwise a failing
-            # run (e.g. people went down) would overwrite our last baseline file
             call_command("sopn_tooling_write_baseline")
             self.stdout.write("Baseline file didn't exist so one was created")
 
@@ -51,7 +49,6 @@ class Command(BaseSOPNParsingCommand):
                 self.stderr.write(
                     f"Uh oh, parsed people for {ballot.ballot_paper_id} decreased from {old_count} to {new_count}. Stopping."
                 )
-                raise Exception("Raw people went down")
 
             if new_count > old_count:
                 self.stdout.write(
@@ -82,20 +79,36 @@ class Command(BaseSOPNParsingCommand):
 
             new_raw_people[ballot.ballot_paper_id] = raw_people
 
-        # exit if this went down
-        old_raw_people_count = len(
+        # display some overall totals
+        self.stdout.write(
+            "Old total 'people' parsed WAS {old}\n"
+            "New total 'people' parsed IS {new}".format(
+                old=self.count_people_parsed(old_raw_people),
+                new=self.count_people_parsed(new_raw_people),
+            )
+        )
+
+        old_raw_people_obj_count = len(
             {k: v for k, v in old_raw_people.items() if v}
         )
-        new_total = RawPeople.objects.count()
-        assert (
-            new_total >= old_raw_people_count
-        ), "Total number of RawPeople objects created went down"
-
+        new_raw_people_obj_count = RawPeople.objects.count()
+        style = self.style.SUCCESS
+        if new_raw_people_obj_count < old_raw_people_obj_count:
+            style = self.style.ERROR
         self.stdout.write(
-            self.style.SUCCESS(
-                f"Old RawPeople count: {old_raw_people_count}\n"
-                f"New total RawPeople count: {new_total}"
+            style(
+                f"Old RawPeople count: {old_raw_people_obj_count}\n"
+                f"New total RawPeople count: {new_raw_people_obj_count}"
             )
         )
         # Write a new baseline
         call_command("sopn_tooling_write_baseline", data=new_raw_people)
+
+    def count_people_parsed(self, raw_people_data):
+        """
+        Returns the total number of "people" that were parsed.
+        NB that just because something was parsed, it doesnt mean that it was
+        accurately parsed. Therefore this total is best used to look for large
+        changes that should then be checked in detail.
+        """
+        return sum([len(people) for people in raw_people_data.values()])
