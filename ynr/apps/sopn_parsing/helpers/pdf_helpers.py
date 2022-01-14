@@ -171,24 +171,35 @@ class SOPNDocument:
         matched_pages = self.match_ballot_to_pages(
             post_label=document.ballot.post.label
         )
-        if matched_pages:
-            self.unmatched_documents.remove(document)
-            document.relevant_pages = matched_pages
-            try:
-                return document.save()
-            except Exception as e:
-                print("Error trying to save relevant_pages, see below:")
-                print(document.ballot.ballot_paper_id, document.relevant_pages)
-                if self.strict:
-                    raise e
-                else:
-                    document.relevant_pages = ""
-                    return document.save()
 
-        if self.strict:
+        if self.strict and not matched_pages:
             raise MatchedPagesError(
                 f"We couldnt match any pages for {document.ballot.ballot_paper_id}"
             )
+
+        # if we are re-parsing and matched pages changed log it
+        if document.relevant_pages and matched_pages != document.relevant_pages:
+            print(
+                "Matched pages changed from {previously_matched} to {new_matched}".format(
+                    previously_matched=document.relevant_pages,
+                    new_matched=matched_pages or "0",
+                )
+            )
+
+        if matched_pages:
+            self.unmatched_documents.remove(document)
+
+        document.relevant_pages = matched_pages
+        try:
+            return document.save()
+        except Exception as e:
+            print("Error trying to save relevant_pages, see below:")
+            print(document.ballot.ballot_paper_id, document.relevant_pages)
+            if self.strict:
+                raise e
+            else:
+                document.relevant_pages = ""
+                return document.save()
 
     def match_all_pages(self) -> None:
         """
