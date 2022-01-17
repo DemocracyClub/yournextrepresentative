@@ -32,6 +32,8 @@ class TestSOPNHelpers(TestCase):
             file=open(example_doc_path, "rb"), source_url="http://example.com"
         )
         doc.heading = {"reason", "2019", "a", "election", "the", "labour"}
+        self.assertEqual(len(doc.pages), 1)
+        self.assertEqual(doc.blank_doc, False)
         self.assertRaises(NoTextInDocumentError)
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
