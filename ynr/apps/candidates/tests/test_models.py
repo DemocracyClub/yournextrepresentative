@@ -99,7 +99,7 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
     def test_uncontested_when_winner_count_is_more_than_memberships(self):
         parties = self.create_parties(1)
         self.create_memberships(self.ballot, parties)
-        self.assertFalse(self.ballot.uncontested)
+        self.assertTrue(self.ballot.uncontested)
 
     def test_mark_uncontested_winners(self):
         parties = self.create_parties(2)

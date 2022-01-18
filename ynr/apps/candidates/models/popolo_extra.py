@@ -357,7 +357,7 @@ class Ballot(EEModifiedMixin, models.Model):
     def uncontested(self):
         if not self.candidates_locked:
             return False
-        if self.get_winner_count == self.membership_set.count():
+        if self.get_winner_count >= self.membership_set.count():
             return True
         return False
 
