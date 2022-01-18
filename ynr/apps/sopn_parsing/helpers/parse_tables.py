@@ -1,6 +1,7 @@
 import json
 import re
 from os.path import join
+from Levenshtein import distance as lev
 
 from bulk_adding.models import RawPeople
 from django.core.files.base import ContentFile
@@ -144,7 +145,7 @@ def get_description(description, sopn):
 
     # First try to get Party object with an exact match between parsed
     # description and the Party name
-    # If we find one, return None, so that the pain Party object
+    # If we find one, return None, so that the main Party object
     # is parsed in get_party below, and this will then be preselected
     # for the user on the form.
     party = Party.objects.register(register).current().filter(name=description)
@@ -164,6 +165,24 @@ def get_description(description, sopn):
     )
     if qs.exists():
         return qs.first()
+
+    if "&" in description:
+        description = description.replace("&", "and")
+        qs = PartyDescription.objects.filter(
+            description__istartswith=description, party__register=register
+        )
+        if qs.exists():
+            return qs.first()
+    else:
+        avg = find_lev(description, register)
+        if avg > 1.2:
+            description = re.findall("[A-Z][^A-Z]*", description)
+            description = (" ".join(description)).strip()
+            qs = PartyDescription.objects.filter(
+                description__istartswith=description, party__register=register
+            )
+            if qs.exists():
+                return qs.first()
 
     # final check - if this is a Welsh version of a description, it will be at
     # the end of the description
@@ -190,6 +209,17 @@ def get_party(description_model, description, sopn):
     if not party_obj:
         raise ValueError(f"Couldn't find party for {party_name}")
     return party_obj
+
+
+def find_lev(incorrect_desc, correct_desc):
+    """
+    Finds the average Levenshtein (aka number of required edits)
+    distance between two lists of strings.
+    """
+    lev_list = [lev(i, k) for i, k in zip(incorrect_desc, correct_desc)]
+    lev_num = len(lev_list)
+    avg_lev = sum(lev_list) / lev_num
+    return avg_lev
 
 
 def get_name(row, name_fields):
