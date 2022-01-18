@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
+from parties.importer import YNRPartyDescriptionImporter
 
 import people.models
 from candidates.models import Ballot
@@ -160,6 +161,10 @@ class Command(BaseCommand):
                 else:
                     raise ValueError(serializer.errors)
 
+    def import_party_descriptions(self):
+        importer = YNRPartyDescriptionImporter()
+        importer.do_import()
+
     def import_people(self):
         for person_data in self.get_api_results("people"):
             with show_data_on_error("person_data", person_data):
@@ -261,5 +266,7 @@ class Command(BaseCommand):
         self.import_organizations()
         self.stdout.write("Importing People")
         self.import_people()
+        self.stdout.write("Importing PartyDescriptions")
+        self.import_party_descriptions()
 
         return
