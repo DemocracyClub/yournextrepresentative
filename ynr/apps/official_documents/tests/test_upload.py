@@ -3,6 +3,7 @@ from os.path import dirname, join, realpath
 from django.urls import reverse
 from django_webtest import WebTest
 from webtest import Upload
+from unittest import skipIf
 
 from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
@@ -15,6 +16,7 @@ from candidates.tests.factories import (
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from official_documents.models import OfficialDocument
 from unittest.mock import patch
+from sopn_parsing.tests import should_skip_upload_tests
 
 
 TEST_MEDIA_ROOT = realpath(
@@ -29,6 +31,7 @@ TEST_MEDIA_ROOT = realpath(
 # the candidates application tests.
 
 
+@skipIf(should_skip_upload_tests(), "Required conversion libs not installed")
 class TestModels(TestUserMixin, WebTest):
 
     example_image_filename = EXAMPLE_IMAGE_FILENAME

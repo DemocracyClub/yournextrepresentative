@@ -77,3 +77,7 @@ Read up on how to install them, and then install the SOPN parsing requirements:
 ```
 pip install -r requirements/sopn_parsing.txt
 ```
+
+File conversion relies on `pandoc` to turn non-pdf SOPN files into pdf files.
+To install `pandoc`, visit https://pandoc.org/installing.html and follow instructions
+for Mac OS and Ubuntu. 
