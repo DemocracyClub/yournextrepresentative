@@ -1,14 +1,26 @@
 import json
 import os
 
+from collections import Counter
 from django.core.management import call_command
 
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot
+from popolo.models import Membership
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 
 
 class Command(BaseSOPNParsingCommand):
+
+    CORRECT_EXACTLY = "correct_exactly"
+    NUM_CORRECT_MISSING_PARTIES = "num_correct_some_parties_missing"
+    NUM_INCORRECT = "num_incorrect"
+    ZERO_CANDIDATES = "zero_candidates"
+
+    def add_arguments(self, parser):
+        super().add_arguments(parser)
+        parser.add_argument("--loud", action="store_true", default=False)
+
     def handle(self, *args, **options):
         """
         - Check we have a baseline file to compare with
@@ -18,6 +30,16 @@ class Command(BaseSOPNParsingCommand):
         to make sure that we are parsing at least as many people as before
         - If no asserts failed, use the data to write a new baseline file
         """
+
+        self.loud = options.pop("loud")
+
+        self.candidates_results = {
+            "correct_exactly": [],
+            "num_correct_some_parties_missing": [],
+            "num_incorrect": [],
+            "zero_candidates": [],
+        }
+
         raw_people_file = "ynr/apps/sopn_parsing/tests/data/sopn_baseline.json"
         if not os.path.isfile(raw_people_file):
             call_command("sopn_tooling_write_baseline")
@@ -79,6 +101,8 @@ class Command(BaseSOPNParsingCommand):
 
             new_raw_people[ballot.ballot_paper_id] = raw_people
 
+            self.parties_correct(ballot, raw_people)
+
         # display some overall totals
         self.stdout.write(
             "Old total 'people' parsed WAS {old}\n"
@@ -101,7 +125,11 @@ class Command(BaseSOPNParsingCommand):
                 f"New total RawPeople count: {new_raw_people_obj_count}"
             )
         )
-        # Write a new baseline
+
+        for result, ballots in self.candidates_results.items():
+            total = len(ballots)
+            self.stdout.write(f"{total} ballots parsed {result}")
+            # Write a new baseline
         call_command("sopn_tooling_write_baseline", data=new_raw_people)
 
     def count_people_parsed(self, raw_people_data):
@@ -112,3 +140,78 @@ class Command(BaseSOPNParsingCommand):
         changes that should then be checked in detail.
         """
         return sum([len(people) for people in raw_people_data.values()])
+
+    def parties_correct(self, ballot, raw_people_for_ballot):
+        candidates = Membership.objects.filter(ballot=ballot)
+        if not candidates:
+            self.stdout.write(
+                self.style.WARNING(
+                    f"We dont have candidates for {ballot.ballot_paper_id}. Try updating with the live site first?"
+                )
+            )
+
+        if not raw_people_for_ballot:
+            self.candidates_results[self.ZERO_CANDIDATES].append(
+                ballot.ballot_paper_id
+            )
+            return
+
+        num_candidates_correct = candidates.count() == len(
+            raw_people_for_ballot
+        )
+
+        if self.loud:
+            if num_candidates_correct:
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"Correct number of people parsed as expected for {ballot.ballot_paper_id}"
+                    )
+                )
+            else:
+                self.stdout.write(
+                    self.style.ERROR(
+                        f"Incorrect number of people parsed for {ballot.ballot_paper_id}"
+                    )
+                )
+
+        parsed = sorted(
+            [person["party_id"] for person in raw_people_for_ballot]
+        )
+        expected = list(
+            candidates.values_list("party__ec_id", flat=True).order_by(
+                "party__ec_id"
+            )
+        )
+
+        if parsed == expected:
+            return self.candidates_results[self.CORRECT_EXACTLY].append(
+                ballot.ballot_paper_id
+            )
+
+        # count number of each missing party ID as there could be more than one
+        # missing candidate for a party e.g. 1 missing Green, 2 missing independents
+        parsed = Counter(parsed)
+        expected = Counter(expected)
+        missing = expected - parsed
+        if missing:
+            total = sum(missing.values())
+            self.stderr.write(
+                f"{total} MISSING parties for {ballot.ballot_paper_id} (party_id:num_missing)\n{missing}"
+            )
+        else:
+            # sometimes we incorrectly parse extra people - often independents
+            # due to an empty row
+            extras = parsed - expected
+            total = sum(expected.values())
+            self.stderr.write(
+                f"{total} EXTRA parties for {ballot.ballot_paper_id}\n{extras}"
+            )
+
+        if num_candidates_correct:
+            return self.candidates_results[
+                self.NUM_CORRECT_MISSING_PARTIES
+            ].append(ballot.ballot_paper_id)
+
+        return self.candidates_results[self.NUM_INCORRECT].append(
+            ballot.ballot_paper_id
+        )
