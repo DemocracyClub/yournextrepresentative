@@ -273,6 +273,8 @@ class EEElection(dict):
             "voting_system": voting_system.get("slug", ""),
             "ee_modified": self.get("modified"),
         }
+        if ballot_data["cancelled"]:
+            ballot_data["candidates_locked"] = True
 
         # if we have a parent Election update it then add it to
         # the dict to be used to update the Ballot
