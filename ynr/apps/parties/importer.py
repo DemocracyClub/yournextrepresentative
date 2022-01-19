@@ -363,3 +363,45 @@ class ECEmblem:
             DEFAULT_EMBLEMS.get(self.party.ec_id, False)
             == self.emblem_dict["Id"]
         )
+
+
+class YNRPartyDescriptionImporter:
+    """
+    Import all PartyDescription objects from the YNR live site. This will create
+    older PartyDescription's that have been removed from the Electoral
+    Commission.
+    """
+
+    def do_import(self):
+        url = "https://candidates.democracyclub.org.uk/api/next/parties/?format=json&page_size=200"
+        while url:
+            print(f"Fetching {url}")
+            r = requests.get(url)
+            data = r.json()
+            for result in data["results"]:
+                self.create_party_description(party_data=result)
+            url = data.get("next")
+
+    def create_party_description(self, party_data):
+        try:
+            party = Party.objects.get(ec_id=party_data["ec_id"])
+        except Party.DoesNotExist:
+            return print(
+                f"Couldn't find party with {party_data['ec_id']}, skipping"
+            )
+
+        for description in party_data["descriptions"]:
+            (
+                party_description_obj,
+                created,
+            ) = PartyDescription.objects.get_or_create(
+                description=description["description"],
+                date_description_approved=description[
+                    "date_description_approved"
+                ],
+                party=party,
+            )
+            if created:
+                print(
+                    f"Created PartyDescription {party_description_obj.pk}: {party_description_obj.description}"
+                )

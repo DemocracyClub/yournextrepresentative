@@ -6,8 +6,10 @@ from django.core.management import call_command
 
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot
+from official_documents.models import OfficialDocument
 from popolo.models import Membership
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
+from sopn_parsing.models import ParsedSOPN
 
 
 class Command(BaseSOPNParsingCommand):
@@ -47,8 +49,11 @@ class Command(BaseSOPNParsingCommand):
 
         options.update({"testing": True})
 
+        OfficialDocument.objects.update(relevant_pages="")
         call_command("sopn_parsing_extract_page_numbers", *args, **options)
+        ParsedSOPN.objects.all().delete()
         call_command("sopn_parsing_extract_tables", *args, **options)
+        RawPeople.objects.all().delete()
         call_command("sopn_parsing_parse_tables", *args, **options)
 
         with open(raw_people_file) as file:
@@ -202,7 +207,7 @@ class Command(BaseSOPNParsingCommand):
             # sometimes we incorrectly parse extra people - often independents
             # due to an empty row
             extras = parsed - expected
-            total = sum(expected.values())
+            total = sum(extras.values())
             self.stderr.write(
                 f"{total} EXTRA parties for {ballot.ballot_paper_id}\n{extras}"
             )
