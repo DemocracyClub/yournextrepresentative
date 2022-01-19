@@ -3,6 +3,8 @@ import re
 from os.path import join
 
 from bulk_adding.models import RawPeople
+from django.db.models.functions import Replace
+from django.db.models import Value
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
 from parties.models import Party, PartyDescription
@@ -128,6 +130,7 @@ def clean_description(description):
     description = description.replace("\\n", "")
     description = description.replace("\n", "")
     description = description.replace("`", "'")
+    description = description.replace("&", "and")
     description = re.sub(r"\s+", " ", description)
     return description
 
@@ -147,28 +150,40 @@ def get_description(description, sopn):
     # If we find one, return None, so that the pain Party object
     # is parsed in get_party below, and this will then be preselected
     # for the user on the form.
-    party = Party.objects.register(register).current().filter(name=description)
+
+    # annotate search_text field to both QuerySets which normalizes name field
+    # by changing '&' to 'and' this is then used instead of the name field for
+    # string matching
+    party_qs = (
+        Party.objects.register(register)
+        .current()
+        .annotate(search_text=Replace("name", Value("&"), Value("and")))
+    )
+    party = party_qs.filter(search_text=description)
     if party.exists():
         return None
 
+    party_description_qs = PartyDescription.objects.annotate(
+        search_text=Replace("description", Value("&"), Value("and"))
+    )
     try:
-        return PartyDescription.objects.get(
-            description=description, party__register=register
+        return party_description_qs.get(
+            search_text=description, party__register=register
         )
     except PartyDescription.DoesNotExist:
         pass
 
     # try to find any that start with parsed description
-    qs = PartyDescription.objects.filter(
-        description__istartswith=description, party__register=register
+    qs = party_description_qs.filter(
+        search_text__istartswith=description, party__register=register
     )
     if qs.exists():
         return qs.first()
 
     # final check - if this is a Welsh version of a description, it will be at
     # the end of the description
-    return PartyDescription.objects.filter(
-        description__endswith=f"| {description}", party__register=register
+    return party_description_qs.filter(
+        search_text__endswith=f"| {description}", party__register=register
     ).first()
 
 
@@ -178,12 +193,19 @@ def get_party(description_model, description, sopn):
 
     party_name = clean_description(description)
     register = sopn.sopn.ballot.post.party_set.slug.upper()
-    qs = Party.objects.register(register).current()
+
+    # annotate search_text field which normalizes name field by changing '&' to 'and'
+    # this is then used instead of the name field for string matching
+    qs = (
+        Party.objects.register(register)
+        .current()
+        .annotate(search_text=Replace("name", Value("&"), Value("and")))
+    )
     if not party_name or party_name in INDEPENDENT_VALUES:
         return Party.objects.get(ec_id="ynmp-party:2")
 
     try:
-        party_obj = qs.get(name=party_name)
+        party_obj = qs.get(search_text=party_name)
     except Party.DoesNotExist:
         party_obj = None
 
