@@ -202,7 +202,7 @@ class Command(BaseSOPNParsingCommand):
             # sometimes we incorrectly parse extra people - often independents
             # due to an empty row
             extras = parsed - expected
-            total = sum(expected.values())
+            total = sum(extras.values())
             self.stderr.write(
                 f"{total} EXTRA parties for {ballot.ballot_paper_id}\n{extras}"
             )

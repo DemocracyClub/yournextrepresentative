@@ -188,7 +188,8 @@ def get_party(description_model, description, sopn):
         party_obj = None
 
     if not party_obj:
-        raise ValueError(f"Couldn't find party for {party_name}")
+        return print(f"Couldn't find party for {party_name}")
+
     return party_obj
 
 
@@ -219,6 +220,8 @@ def parse_table(sopn, data):
         name = clean_name(name)
         description = get_description(row[description_field], sopn)
         party = get_party(description, row[description_field], sopn)
+        if not party:
+            continue
         data = {"name": name, "party_id": party.ec_id}
         if description:
             data["description_id"] = description.pk
