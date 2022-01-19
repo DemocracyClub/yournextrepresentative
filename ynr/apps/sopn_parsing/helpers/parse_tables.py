@@ -131,6 +131,8 @@ def clean_description(description):
     description = description.replace("\n", "")
     description = description.replace("`", "'")
     description = description.replace("&", "and")
+    # change dash to hyphen to match how they are stored in our DB
+    description = description.replace("\u2013", "\u002d")
     description = re.sub(r"\s+", " ", description)
     return description
 
@@ -147,9 +149,6 @@ def get_description(description, sopn):
 
     # First try to get Party object with an exact match between parsed
     # description and the Party name
-    # If we find one, return None, so that the pain Party object
-    # is parsed in get_party below, and this will then be preselected
-    # for the user on the form.
 
     # annotate search_text field to both QuerySets which normalizes name field
     # by changing '&' to 'and' this is then used instead of the name field for
@@ -160,6 +159,9 @@ def get_description(description, sopn):
         .annotate(search_text=Replace("name", Value("&"), Value("and")))
     )
     party = party_qs.filter(search_text=description)
+    # If we find one, return None, so that the pain Party object
+    # is parsed in get_party below, and this will then be preselected
+    # for the user on the form.
     if party.exists():
         return None
 
