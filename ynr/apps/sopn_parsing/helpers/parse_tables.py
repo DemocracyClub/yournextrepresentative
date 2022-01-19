@@ -7,6 +7,7 @@ from django.db.models.functions import Replace
 from django.db.models import Value
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
+from django.contrib.postgres.search import TrigramSimilarity
 from parties.models import Party, PartyDescription
 from sopn_parsing.helpers.text_helpers import clean_text
 from nameparser import HumanName
@@ -207,9 +208,17 @@ def get_party(description_model, description, sopn):
         return Party.objects.get(ec_id="ynmp-party:2")
 
     try:
-        party_obj = qs.get(search_text=party_name)
+        return qs.get(search_text=party_name)
     except Party.DoesNotExist:
         party_obj = None
+
+    # Last resort attempt - look for the most similar party object to help when
+    # parsed name is missing a whitespace e.g. Barnsley IndependentGroup
+    party_obj = (
+        qs.annotate(similarity=TrigramSimilarity("name", party_name))
+        .order_by("-similarity")
+        .first()
+    )
 
     if not party_obj:
         return print(f"Couldn't find party for {party_name}")
