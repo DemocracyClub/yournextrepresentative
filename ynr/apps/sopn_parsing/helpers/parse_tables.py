@@ -195,6 +195,14 @@ def get_description(description, sopn):
     if qs.exists():
         return qs.first()
 
+    # Levenshtein
+    qs = party_description_qs.annotate(
+        lev_dist=Levenshtein(F("description"), description)
+    ).order_by("lev_dist")
+    description_obj = qs.filter(lev_dist__lte=5).first()
+    if description_obj:
+        return description_obj
+
     # final check - if this is a Welsh version of a description, it will be at
     # the end of the description
     return party_description_qs.filter(
