@@ -4,7 +4,7 @@ from os.path import join
 
 from bulk_adding.models import RawPeople
 from django.db.models.functions import Replace
-from django.db.models import Value
+from django.db.models import Value, Func, F
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
 from django.contrib.postgres.search import TrigramSimilarity
@@ -29,6 +29,18 @@ NAME_FIELDS = (
 
 
 INDEPENDENT_VALUES = ("Independent", "")
+
+
+class Levenshtein(Func):
+    """
+    Taken from http://andilabs.github.io/2018/04/06/searching-in-django-unaccent-levensthein-full-text-search-postgres-power.html
+    """
+
+    template = "%(function)s(%(expressions)s, '%(search_term)s')"
+    function = "levenshtein"
+
+    def __init__(self, expression, search_term, **extras):
+        super().__init__(expression, search_term=search_term, **extras)
 
 
 def iter_rows(data):
@@ -201,7 +213,7 @@ def get_party(description_model, description, sopn):
     # this is then used instead of the name field for string matching
     qs = (
         Party.objects.register(register)
-        .current()
+        .active_for_date(date=sopn.sopn.ballot.election.election_date)
         .annotate(search_text=Replace("name", Value("&"), Value("and")))
     )
     if not party_name or party_name in INDEPENDENT_VALUES:
@@ -212,16 +224,25 @@ def get_party(description_model, description, sopn):
     except Party.DoesNotExist:
         party_obj = None
 
+    # Levenshtein
+    qs = qs.annotate(lev_dist=Levenshtein(F("name"), party_name)).order_by(
+        "lev_dist"
+    )
+    party_obj = qs.filter(lev_dist__lte=5).first()
+    if party_obj:
+        return party_obj
+
     # Last resort attempt - look for the most similar party object to help when
     # parsed name is missing a whitespace e.g. Barnsley IndependentGroup
-    party_obj = (
-        qs.annotate(similarity=TrigramSimilarity("name", party_name))
-        .order_by("-similarity")
-        .first()
+    qs = qs.annotate(similarity=TrigramSimilarity("name", party_name)).order_by(
+        "-similarity"
     )
 
+    party_obj = qs.filter(similarity__gte=0.5).first()
     if not party_obj:
-        return print(f"Couldn't find party for {party_name}")
+        closest = qs.first()
+        print(f"Couldn't find party for {party_name}.")
+        print(f"Closest is {closest.name} with similarity {closest.similarity}")
 
     return party_obj
 
