@@ -1,4 +1,5 @@
 from django_webtest import WebTest
+from bulk_adding.forms import BulkAddFormSet
 
 from bulk_adding.models import RawPeople
 from candidates.tests.auth import TestUserMixin
@@ -492,4 +493,35 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertContains(
             response, "is marked as standing in another ballot for"
+        )
+
+    def test_initial_parties_included_in_party_choices(self):
+        # create a party that does not appear in default party list
+        PartyFactory(
+            ec_id="joint-party:53-119",
+            name="Labour and Co-operative Party",
+            legacy_slug="joint-party:53-119",
+            register="GB",
+            current_candidates=0,
+        )
+        raw_people = RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            data=[
+                {"name": "Bart", "party_id": "PP52"},
+                {"name": "List", "party_id": "joint-party:53-119"},
+            ],
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+        kwargs = {"ballot": self.dulwich_post_ballot}
+        kwargs.update(raw_people.as_form_kwargs())
+        formset = BulkAddFormSet(**kwargs)
+        self.assertIn(
+            (
+                "joint-party:53-119",
+                {"label": "Labour and Co-operative Party", "register": "GB"},
+            ),
+            formset.parties,
+        )
+        self.assertEqual(
+            formset.initial_party_ids, ["PP52", "joint-party:53-119"]
         )
