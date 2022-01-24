@@ -59,7 +59,7 @@ psycopg2-binary==2.8.5
 pyasn1==0.4.8
 pycparser==2.20
 pygeocoder==1.2.5
-pyopenssl==20.0.1
+pyopenssl==21.0.0
 pytest==6.2.5
 pytest-cov==3.0.0
 pytest-django==4.1.0
