@@ -7,7 +7,7 @@ def should_skip_pdf_tests():
         return True
 
 
-def should_skip_upload_tests():
+def should_skip_conversion_tests():
     try:
         import pandoc  # noqa
 
