@@ -54,12 +54,21 @@ class BulkAddFormSet(BaseBulkAddFormSet):
         super().__init__(*args, **kwargs)
         self.parties = Party.objects.register(
             self.ballot.post.party_set.slug.upper()
-        ).default_party_choices()
+        ).default_party_choices(extra_party_ids=self.initial_party_ids)
 
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)
         kwargs["party_choices"] = self.parties
         return kwargs
+
+    @property
+    def initial_party_ids(self):
+        """
+        Returns a list of any party ID's that are included in initial data
+        """
+        if self.initial is None:
+            return []
+        return [d.get("party")[0].split("__")[0] for d in self.initial]
 
 
 class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
