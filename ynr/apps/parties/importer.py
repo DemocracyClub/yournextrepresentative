@@ -226,6 +226,8 @@ class ECParty(dict):
                     if d
                 ]
             )
+            # replace dash with hyphen
+            text = text.replace("\u2013", "\u002d")
             PartyDescription.objects.update_or_create(
                 description=text,
                 party=self.model,
@@ -257,6 +259,8 @@ class ECParty(dict):
 
         # Do some general cleaning
         name = re.sub(r"\s+", " ", name)
+        # replace dash with hyphen
+        name = name.replace("\u2013", "\u002d")
         return name
 
     @property

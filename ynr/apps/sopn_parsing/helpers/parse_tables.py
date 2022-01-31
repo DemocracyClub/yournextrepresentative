@@ -4,9 +4,10 @@ from os.path import join
 
 from bulk_adding.models import RawPeople
 from django.db.models.functions import Replace
-from django.db.models import Value
+from django.db.models import Value, Func, F
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
+from django.contrib.postgres.search import TrigramSimilarity
 from parties.models import Party, PartyDescription
 from sopn_parsing.helpers.text_helpers import clean_text
 from nameparser import HumanName
@@ -28,6 +29,18 @@ NAME_FIELDS = (
 
 
 INDEPENDENT_VALUES = ("Independent", "")
+
+
+class Levenshtein(Func):
+    """
+    Taken from http://andilabs.github.io/2018/04/06/searching-in-django-unaccent-levensthein-full-text-search-postgres-power.html
+    """
+
+    template = "%(function)s(%(expressions)s, '%(search_term)s')"
+    function = "levenshtein"
+
+    def __init__(self, expression, search_term, **extras):
+        super().__init__(expression, search_term=search_term, **extras)
 
 
 def iter_rows(data):
@@ -131,6 +144,8 @@ def clean_description(description):
     description = description.replace("\n", "")
     description = description.replace("`", "'")
     description = description.replace("&", "and")
+    # change dash to hyphen to match how they are stored in our DB
+    description = description.replace("\u2013", "\u002d")
     description = re.sub(r"\s+", " ", description)
     return description
 
@@ -147,9 +162,6 @@ def get_description(description, sopn):
 
     # First try to get Party object with an exact match between parsed
     # description and the Party name
-    # If we find one, return None, so that the pain Party object
-    # is parsed in get_party below, and this will then be preselected
-    # for the user on the form.
 
     # annotate search_text field to both QuerySets which normalizes name field
     # by changing '&' to 'and' this is then used instead of the name field for
@@ -160,6 +172,9 @@ def get_description(description, sopn):
         .annotate(search_text=Replace("name", Value("&"), Value("and")))
     )
     party = party_qs.filter(search_text=description)
+    # If we find one, return None, so that the pain Party object
+    # is parsed in get_party below, and this will then be preselected
+    # for the user on the form.
     if party.exists():
         return None
 
@@ -174,11 +189,22 @@ def get_description(description, sopn):
         pass
 
     # try to find any that start with parsed description
-    qs = party_description_qs.filter(
+    description_obj = party_description_qs.filter(
         search_text__istartswith=description, party__register=register
-    )
-    if qs.exists():
-        return qs.first()
+    ).first()
+    if description_obj:
+        return description_obj
+
+    # Levenshtein
+    qs = party_description_qs.annotate(
+        lev_dist=Levenshtein(F("search_text"), description)
+    ).order_by("lev_dist")
+    description_obj = qs.filter(lev_dist__lte=5).first()
+    if description_obj:
+        print(
+            f"{description} matched with {description_obj.description} with a distance of {description_obj.lev_dist}"
+        )
+        return description_obj
 
     # final check - if this is a Welsh version of a description, it will be at
     # the end of the description
@@ -198,19 +224,39 @@ def get_party(description_model, description, sopn):
     # this is then used instead of the name field for string matching
     qs = (
         Party.objects.register(register)
-        .current()
+        .active_for_date(date=sopn.sopn.ballot.election.election_date)
         .annotate(search_text=Replace("name", Value("&"), Value("and")))
     )
     if not party_name or party_name in INDEPENDENT_VALUES:
         return Party.objects.get(ec_id="ynmp-party:2")
 
     try:
-        party_obj = qs.get(search_text=party_name)
+        return qs.get(search_text=party_name)
     except Party.DoesNotExist:
         party_obj = None
 
+    # Levenshtein
+    qs = qs.annotate(
+        lev_dist=Levenshtein(F("search_text"), party_name)
+    ).order_by("lev_dist")
+    party_obj = qs.filter(lev_dist__lte=5).first()
+    if party_obj:
+        print(
+            f"{party_name} matched with {party_obj.name} with a distance of {party_obj.lev_dist}"
+        )
+        return party_obj
+
+    # Last resort attempt - look for the most similar party object to help when
+    # parsed name is missing a whitespace e.g. Barnsley IndependentGroup
+    qs = qs.annotate(similarity=TrigramSimilarity("name", party_name)).order_by(
+        "-similarity"
+    )
+
+    party_obj = qs.filter(similarity__gte=0.5).first()
     if not party_obj:
-        return print(f"Couldn't find party for {party_name}")
+        closest = qs.first()
+        print(f"Couldn't find party for {party_name}.")
+        print(f"Closest is {closest.name} with similarity {closest.similarity}")
 
     return party_obj
 
