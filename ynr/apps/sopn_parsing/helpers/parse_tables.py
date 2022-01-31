@@ -283,6 +283,8 @@ def parse_table(sopn, data):
     ballot_data = []
     for row in iter_rows(data):
         name = get_name(row, name_fields)
+        name = clean_name(name)
+        # if we couldnt parse a candidate name skip this row
         if not name:
             continue
         name = clean_name(name)
@@ -290,6 +292,7 @@ def parse_table(sopn, data):
         party = get_party(description, row[description_field], sopn)
         if not party:
             continue
+
         data = {"name": name, "party_id": party.ec_id}
         if description:
             data["description_id"] = description.pk
