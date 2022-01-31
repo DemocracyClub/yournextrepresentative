@@ -189,18 +189,21 @@ def get_description(description, sopn):
         pass
 
     # try to find any that start with parsed description
-    qs = party_description_qs.filter(
+    description_obj = party_description_qs.filter(
         search_text__istartswith=description, party__register=register
-    )
-    if qs.exists():
-        return qs.first()
+    ).first()
+    if description_obj:
+        return description_obj
 
     # Levenshtein
     qs = party_description_qs.annotate(
-        lev_dist=Levenshtein(F("description"), description)
+        lev_dist=Levenshtein(F("search_text"), description)
     ).order_by("lev_dist")
     description_obj = qs.filter(lev_dist__lte=5).first()
     if description_obj:
+        print(
+            f"{description} matched with {description_obj.description} with a distance of {description_obj.lev_dist}"
+        )
         return description_obj
 
     # final check - if this is a Welsh version of a description, it will be at
@@ -233,11 +236,14 @@ def get_party(description_model, description, sopn):
         party_obj = None
 
     # Levenshtein
-    qs = qs.annotate(lev_dist=Levenshtein(F("name"), party_name)).order_by(
-        "lev_dist"
-    )
+    qs = qs.annotate(
+        lev_dist=Levenshtein(F("search_text"), party_name)
+    ).order_by("lev_dist")
     party_obj = qs.filter(lev_dist__lte=5).first()
     if party_obj:
+        print(
+            f"{party_name} matched with {party_obj.name} with a distance of {party_obj.lev_dist}"
+        )
         return party_obj
 
     # Last resort attempt - look for the most similar party object to help when
