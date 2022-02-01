@@ -203,11 +203,11 @@ def get_description(description, sopn):
     ).first()
 
 
-def get_party(description_model, description, sopn):
+def get_party(description_model, description_str, sopn):
     if description_model:
         return description_model.party
 
-    party_name = clean_description(description)
+    party_name = clean_description(description_str)
     register = sopn.sopn.ballot.post.party_set.slug.upper()
 
     # annotate search_text field which normalizes name field by changing '&' to 'and'
@@ -255,7 +255,9 @@ def get_name(row, name_fields):
     Takes a list of name fields and returns a string of the values of each of
     the name fields in the row
     """
-    return " ".join([row[field] for field in name_fields])
+    name = " ".join([row[field] for field in name_fields])
+    name = clean_name(name)
+    return name
 
 
 def parse_table(sopn, data):
@@ -272,19 +274,24 @@ def parse_table(sopn, data):
     ballot_data = []
     for row in iter_rows(data):
         name = get_name(row, name_fields)
-        name = clean_name(name)
         # if we couldnt parse a candidate name skip this row
         if not name:
             continue
-        name = clean_name(name)
-        description = get_description(row[description_field], sopn)
-        party = get_party(description, row[description_field], sopn)
-        if not party:
+
+        description_obj = get_description(
+            description=row[description_field], sopn=sopn
+        )
+        party_obj = get_party(
+            description_model=description_obj,
+            description_str=row[description_field],
+            sopn=sopn,
+        )
+        if not party_obj:
             continue
 
-        data = {"name": name, "party_id": party.ec_id}
-        if description:
-            data["description_id"] = description.pk
+        data = {"name": name, "party_id": party_obj.ec_id}
+        if description_obj:
+            data["description_id"] = description_obj.pk
         ballot_data.append(data)
     return ballot_data
 
