@@ -95,7 +95,7 @@ class Command(BaseSOPNParsingCommand):
             if changed_people:
                 self.stdout.write(
                     self.style.WARNING(
-                        f"Number of people parsed for {ballot.ballot_paper_id} has not gone down but people have changed or are missing.\n"
+                        f"Parsed data changed for {ballot.ballot_paper_id}\n"
                         f"New raw people data:\n"
                         f"{raw_people}\n"
                         "Missing people:"

@@ -282,6 +282,17 @@ class TestParseTablesUnitTests(TestCase):
             ),
             ("Michael James Collins", "Michael James Collins"),
             ("   Michael    James    Collins   ", "Michael James Collins"),
+            ("DAVE Nitesh Pravin", "Nitesh Pravin Dave"),
+            ("DAVE\nNitesh Pravin", "Nitesh Pravin Dave"),
+            ("COOKE Anne-Marie", "Anne-Marie Cooke"),
+            ("COOKE\nAnne-Marie", "Anne-Marie Cooke"),
+            ("BROOKES-\nDUNCAN\nKaty", "Katy Brookes-Duncan"),
+            ("HOUNSOME\nJohn", "John Hounsome"),
+            ("O`CONNELL \nStephen John", "Stephen John O'Connell"),
+            ("O`NEAL \nCarol Joy", "Carol Joy O'Neal"),
+            ("O`REILLY \nTracey Linda \nDiane", "Tracey Linda Diane O'Reilly"),
+            ("LIAM THOMAS O'ROURKE", "Liam Thomas O'Rourke"),
+            ("O'CALLAGHAN \nClaire Louise", "Claire Louise O'Callaghan"),
         ]
         for name in names:
             with self.subTest(name=names[0]):

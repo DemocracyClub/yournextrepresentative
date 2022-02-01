@@ -110,9 +110,14 @@ def clean_name(name):
     - Build a string to represent the other names by looking for all words not in all caps
     - Strip whitespace in case last_names is empty and return string titleized
     """
-
-    name = name.replace("\n", "")
+    name = name.replace("\n", " ")
     name = name.replace("`", "'")
+    name = name.replace("\u2013", "\u002d")
+    # remove multiple whitespaces
+    name = " ".join(name.split())
+    # this can leave extra whitespace after special chars so remove these
+    name = name.replace("- ", "-")
+    name = name.replace("' ", "'")
     names = list(filter(None, name.split(" ")))
     last_names = clean_last_names(names)
     first_names = " ".join([name for name in names if not name.isupper()])
