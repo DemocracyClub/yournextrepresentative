@@ -137,6 +137,7 @@ def clean_description(description):
     # change dash to hyphen to match how they are stored in our DB
     description = description.replace("\u2013", "\u002d")
     description = re.sub(r"\s+", " ", description)
+    description = description.replace("The Green Party", "Green Party")
     return description
 
 
