@@ -14,10 +14,7 @@ from official_documents.tests.paths import (
     EXAMPLE_HTML_FILENAME,
 )
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from sopn_parsing.tests import (
-    should_skip_pdf_tests,
-    should_skip_conversion_tests,
-)
+from sopn_parsing.tests import should_skip_pdf_tests
 
 
 @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
@@ -156,66 +153,3 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             with self.subTest(msg=post_name):
                 ballot = Ballot.objects.get(post__label=post_name)
                 self.assertEqual(ballot.sopn.relevant_pages, expected_page)
-
-    @skipIf(
-        should_skip_conversion_tests(), "Required conversion libs not installed"
-    )
-    def test_convert_docx_SOPN(self):
-        # test converting docx to pdf
-        doc = OfficialDocument.objects.create(
-            ballot=self.dulwich_post_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
-            uploaded_file=SimpleUploadedFile(
-                "example-file.docx",
-                open(self.example_docx_filename, "rb").read(),
-            ),
-            source_url="example.com",
-        )
-        self.assertEqual(doc.first_page_number, None)
-        call_command("sopn_parsing_extract_page_numbers")
-        doc.refresh_from_db()
-        self.assertEqual(doc.relevant_pages, "all")
-        self.assertTrue(doc.uploaded_file.path.endswith(".pdf"))
-        self.assertTrue(doc.uploaded_file.name.endswith(".pdf"))
-
-    @skipIf(
-        should_skip_conversion_tests(), "Required conversion libs not installed"
-    )
-    def test_convert_html_SOPN(self):
-        # test converting html to pdf
-        doc = OfficialDocument.objects.create(
-            ballot=self.dulwich_post_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
-            uploaded_file=SimpleUploadedFile(
-                "example-file.html",
-                open(self.example_html_filename, "rb").read(),
-            ),
-            source_url="example.com",
-        )
-        self.assertEqual(doc.first_page_number, None)
-        call_command("sopn_parsing_extract_page_numbers")
-        doc.refresh_from_db()
-        self.assertEqual(doc.relevant_pages, "all")
-        self.assertTrue(doc.uploaded_file.path.endswith(".pdf"))
-        self.assertTrue(doc.uploaded_file.name.endswith(".pdf"))
-
-    @skipIf(
-        should_skip_conversion_tests(), "Required conversion libs not installed"
-    )
-    def test_convert_jpg_SOPN(self):
-        # test converting image to pdf
-        doc = OfficialDocument.objects.create(
-            ballot=self.dulwich_post_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
-            uploaded_file=SimpleUploadedFile(
-                "example-image.jpg",
-                open(self.example_image_filename, "rb").read(),
-            ),
-            source_url="example.com",
-        )
-        self.assertEqual(doc.first_page_number, None)
-        call_command("sopn_parsing_extract_page_numbers")
-        doc.refresh_from_db()
-        self.assertFalse(doc.uploaded_file.path.endswith(".pdf"))
-        self.assertFalse(doc.uploaded_file.name.endswith(".pdf"))
-        self.assertRaises(ValueError)
