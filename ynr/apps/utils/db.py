@@ -1,4 +1,4 @@
-from django.db.models import Transform
+from django.db.models import Transform, Func
 
 
 class LastWord(Transform):
@@ -18,3 +18,14 @@ class LastWord(Transform):
 
     def as_postgresql(self, compiler, connection):
         return self.as_sql(compiler, connection)
+
+
+class Levenshtein(Func):
+    """
+    Uses postgres fuzzystrmatch to determine similarity between
+    strings. We use when we parse table data from SOPN's to help find
+    a matching Party or PartyDescription objects.
+    """
+
+    function = "levenshtein"
+    arity = 2

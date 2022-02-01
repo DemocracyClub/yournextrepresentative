@@ -2,17 +2,19 @@ import json
 import re
 from os.path import join
 
-from bulk_adding.models import RawPeople
 from django.db.models.functions import Replace
-from django.db.models import Value, Func, F
+from django.db.models import Value
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
 from django.contrib.postgres.search import TrigramSimilarity
-from parties.models import Party, PartyDescription
-from sopn_parsing.helpers.text_helpers import clean_text
 from nameparser import HumanName
 
+from bulk_adding.models import RawPeople
+from parties.models import Party, PartyDescription
+from sopn_parsing.helpers.text_helpers import clean_text
 from sopn_parsing.models import ParsedSOPN
+from utils.db import Levenshtein
+
 
 FIRST_NAME_FIELDS = ["other name", "other names", "candidate forename"]
 LAST_NAME_FIELDS = [
@@ -29,18 +31,6 @@ NAME_FIELDS = (
 
 
 INDEPENDENT_VALUES = ("Independent", "")
-
-
-class Levenshtein(Func):
-    """
-    Taken from http://andilabs.github.io/2018/04/06/searching-in-django-unaccent-levensthein-full-text-search-postgres-power.html
-    """
-
-    template = "%(function)s(%(expressions)s, '%(search_term)s')"
-    function = "levenshtein"
-
-    def __init__(self, expression, search_term, **extras):
-        super().__init__(expression, search_term=search_term, **extras)
 
 
 def iter_rows(data):
@@ -197,7 +187,7 @@ def get_description(description, sopn):
 
     # Levenshtein
     qs = party_description_qs.annotate(
-        lev_dist=Levenshtein(F("search_text"), description)
+        lev_dist=Levenshtein("search_text", Value(description))
     ).order_by("lev_dist")
     description_obj = qs.filter(lev_dist__lte=5).first()
     if description_obj:
@@ -235,9 +225,8 @@ def get_party(description_model, description, sopn):
     except Party.DoesNotExist:
         party_obj = None
 
-    # Levenshtein
     qs = qs.annotate(
-        lev_dist=Levenshtein(F("search_text"), party_name)
+        lev_dist=Levenshtein("search_text", Value(party_name))
     ).order_by("lev_dist")
     party_obj = qs.filter(lev_dist__lte=5).first()
     if party_obj:
