@@ -236,7 +236,8 @@ class BaseBulkAddByPartyFormset(forms.BaseFormSet):
     def __init__(self, *args, **kwargs):
         self.ballot = kwargs["ballot"]
         kwargs["prefix"] = self.ballot.pk
-        self.extra = self.ballot.winner_count
+        if self.ballot.winner_count:
+            self.extra = self.ballot.winner_count
         del kwargs["ballot"]
 
         super().__init__(*args, **kwargs)
@@ -260,7 +261,7 @@ class BaseBulkAddByPartyFormset(forms.BaseFormSet):
 
 BulkAddByPartyFormset = forms.formset_factory(
     NameOnlyPersonForm,
-    extra=15,
+    extra=6,
     formset=BaseBulkAddByPartyFormset,
     can_delete=False,
 )
