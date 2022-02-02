@@ -16,7 +16,12 @@ from sopn_parsing.models import ParsedSOPN
 from utils.db import Levenshtein
 
 
-FIRST_NAME_FIELDS = ["other name", "other names", "candidate forename"]
+FIRST_NAME_FIELDS = [
+    "other name",
+    "other names",
+    "candidate forename",
+    "candidates other names",
+]
 LAST_NAME_FIELDS = [
     "surname",
     "candidate surname",
