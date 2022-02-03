@@ -137,7 +137,6 @@ def clean_description(description):
     # change dash to hyphen to match how they are stored in our DB
     description = description.replace("\u2013", "\u002d")
     description = re.sub(r"\s+", " ", description)
-    description = description.replace("The Green Party", "Green Party")
     return description
 
 
@@ -169,6 +168,13 @@ def get_description(description, sopn):
     if party.exists():
         return None
 
+    if description.lower().startswith("the"):
+        party = party_qs.filter(
+            name__iexact=description.lower().replace("the", "").strip()
+        )
+        if party:
+            return None
+
     party_description_qs = PartyDescription.objects.annotate(
         search_text=Replace("description", Value("&"), Value("and"))
     )
@@ -185,6 +191,21 @@ def get_description(description, sopn):
     ).first()
     if description_obj:
         return description_obj
+
+    if description.lower().startswith("the"):
+        party_description_obj = party_description_qs.filter(
+            description__iexact=description.lower().replace("the", "").strip()
+        ).first()
+        if party_description_obj:
+            return party_description_obj
+
+        party_description_obj = party_description_qs.filter(
+            description__istartswith=description.lower()
+            .replace("the", "")
+            .strip()
+        ).first()
+        if party_description_obj:
+            return party_description_obj
 
     # Levenshtein
     qs = party_description_qs.annotate(
@@ -225,6 +246,13 @@ def get_party(description_model, description, sopn):
         return qs.get(search_text=party_name)
     except Party.DoesNotExist:
         party_obj = None
+
+    if party_name.lower().startswith("the"):
+        party = qs.filter(
+            name__iexact=party_name.lower().replace("the", "").strip()
+        ).first()
+        if party:
+            return party
 
     qs = qs.annotate(
         lev_dist=Levenshtein("search_text", Value(party_name))
