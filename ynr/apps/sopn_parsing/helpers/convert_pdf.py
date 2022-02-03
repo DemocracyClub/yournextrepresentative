@@ -1,7 +1,14 @@
 import tempfile
 import pypandoc
 
+from django.core.files.base import ContentFile
+from raven.contrib.django.raven_compat.models import client
+
 ACCEPTED_FILE_TYPES = ["docx", "html"]
+
+
+class PandocConversionError(Exception):
+    pass
 
 
 def convert_sopn_to_pdf(uploaded_file):
@@ -19,17 +26,19 @@ def convert_sopn_to_pdf(uploaded_file):
 
         with tempfile.NamedTemporaryFile(suffix=".pdf") as temp_file:
             # convert the html and save to a temp file
-            pypandoc.convert_text(
-                uploaded_file,
-                to="pdf",
-                format=filetype,
-                outputfile=temp_file.name,
-            )
+            try:
+                pypandoc.convert_text(
+                    uploaded_file.read(),
+                    to="pdf",
+                    format=filetype,
+                    outputfile=temp_file.name,
+                )
+            except RuntimeError:
+                client.captureException()
+                raise PandocConversionError()
 
-            # save the pdf file to the uploaded file
+            # return with converted file object and updated name
             pdf_file_name = uploaded_file.name.replace(f".{filetype}", ".pdf")
-
-            uploaded_file.save(name=pdf_file_name, content=temp_file, save=True)
-    else:
-        raise ValueError("File type is not supported")
-    return uploaded_file
+            uploaded_file.file = ContentFile(content=temp_file.file.read())
+            uploaded_file.name = pdf_file_name
+            return uploaded_file
