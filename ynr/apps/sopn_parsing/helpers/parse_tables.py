@@ -137,6 +137,10 @@ def clean_description(description):
     # change dash to hyphen to match how they are stored in our DB
     description = description.replace("\u2013", "\u002d")
     description = re.sub(r"\s+", " ", description)
+    # handle edgecases for the green party to stop incorrectly matching against
+    # Welsh descriptions
+    if description.lower() in ["the green party", "the green party candidate"]:
+        description = "Green Party"
     return description
 
 
