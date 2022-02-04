@@ -8,12 +8,21 @@ from uk_results.management.commands.import_2010_parl_results import (
 
 
 class Command(ResultsImporterCommand):
-    def handle(self, **options):
-        self.url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTh6_PoqDSn-s7N8Tnd6JrQ9JBcGeHv1ULlLngJ6Zmw3YFAKYVmp8Vesge7SXzPTGnt80rzyPId5u_Y/pub?gid=0&single=true&output=csv"
+    """
+    Imports results for the 2015 general election. The data was taken from the
+    House of Commons website, and then published in the Democracy Club google
+    drive to make it easier to import.
+    Many of the methods used to create objects are inherited from the management
+    command in import_2010_parl_results.
+    """
 
+    url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTh6_PoqDSn-s7N8Tnd6JrQ9JBcGeHv1ULlLngJ6Zmw3YFAKYVmp8Vesge7SXzPTGnt80rzyPId5u_Y/pub?gid=0&single=true&output=csv"
+    election_date = "2017-06-08"
+
+    def handle(self, **options):
         self.qs = Ballot.objects.exclude(
             ballot_paper_id__contains=".by."
-        ).filter(election__election_date="2017-06-08", cancelled=False)
+        ).filter(election__election_date=self.election_date, cancelled=False)
 
         self.cant_find = 0
         self.not_found = []
