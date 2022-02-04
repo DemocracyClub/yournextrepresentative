@@ -224,14 +224,12 @@ class RevertedEdits(BaseReviewRequiredDecider):
 
     def needs_review(self):
         from candidates.models import LoggedAction
+        from candidates.models.db import ActionType
 
-        if (
-            self.logged_action.action_type
-            == self.logged_action.action_type.PERSON_REVERT
-        ):
+        if self.logged_action.action_type == ActionType.PERSON_REVERT:
             recent_revert_qs = LoggedAction.objects.filter(
                 person=self.logged_action.person,
-                action_type=self.logged_action.action_type.PERSON_REVERT,
+                action_type=ActionType.PERSON_REVERT,
                 # updated in the last 24 hours
                 updated__gt=datetime.now() - timedelta(settings.LAST_24_HOURS),
             ).order_by("updated")
