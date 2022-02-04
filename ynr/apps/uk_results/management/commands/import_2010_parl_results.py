@@ -1,13 +1,11 @@
 from collections import defaultdict
 from django.core.management.base import BaseCommand
 from django.contrib.postgres.search import SearchQuery
-from candidates.models.db import EditType, LoggedAction
 from candidates.models.popolo_extra import Ballot
 from django.db.models.functions import Length
 from popolo.models import Membership
 from resultsbot.helpers import ResultsBot
-from candidates.models.db import ActionType
-from uk_results.helpers import read_csv_from_url
+from uk_results.helpers import RecordBallotResultsHelper, read_csv_from_url
 from uk_results import models
 
 
@@ -110,16 +108,18 @@ class Command(BaseCommand):
         if changed:
             self.stdout.write("Recorded new results!")
             self.results_added += 1
-            resultsbot = ResultsBot()
-            resultsbot._mark_candidates_as_winner(resultset)
-
-            LoggedAction.objects.create(
-                user=resultset.user,
-                action_type=ActionType.ENTERED_RESULTS_DATA,
-                source=resultset.source,
-                ballot=resultset.ballot,
-                edit_type=EditType.BOT.name,
+            winner = (
+                resultset.candidate_results.order_by("-num_ballots")
+                .first()
+                .membership.person
             )
+            resultsrecorder = RecordBallotResultsHelper(
+                ballot=ballot, user=ResultsBot().user
+            )
+            resultsrecorder.mark_person_as_elected(
+                person=winner, source=resultset.source
+            )
+
         created_or_updated = "Created" if created else "Updated"
         self.stdout.write(f"{created_or_updated} a result")
 
@@ -157,7 +157,6 @@ class Command(BaseCommand):
             candidate_dict = {
                 "membership": candidate,
                 "num_ballots": num_ballots,
-                "is_winner": row["Elected"] == "*",
             }
             ballot_data[ballot].append(candidate_dict)
             self.turnouts[ballot.ballot_paper_id] = row["% Turnout"]

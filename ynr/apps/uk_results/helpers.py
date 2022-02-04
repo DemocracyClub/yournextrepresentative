@@ -69,8 +69,10 @@ class RecordBallotResultsHelper:
         return True
 
     def mark_person_as_elected(self, person, source):
-        assert self.can_mark_elected
         candidacy = self.ballot.membership_set.get(person=person)
+        if candidacy.elected:
+            return None
+        assert self.can_mark_elected
         candidacy.elected = True
         candidacy.save()
         self.create_result_event(candidacy, source)
