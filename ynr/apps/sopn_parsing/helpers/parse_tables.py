@@ -30,7 +30,7 @@ NAME_FIELDS = (
 )
 
 
-INDEPENDENT_VALUES = ("Independent", "")
+INDEPENDENT_VALUES = ("Independent", "", "Annibynnol")
 
 
 def iter_rows(data):
