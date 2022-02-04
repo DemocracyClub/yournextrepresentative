@@ -6,7 +6,7 @@ from candidates.models.popolo_extra import Ballot
 from django.db.models.functions import Length
 from popolo.models import Membership
 from resultsbot.helpers import ResultsBot
-from candidates.models import ActionType
+from candidates.models.db import ActionType
 from uk_results.helpers import read_csv_from_url
 from uk_results import models
 
@@ -33,7 +33,7 @@ class Command(BaseCommand):
                 label_len=len(seat)
             )
 
-    def find_candidacy(self, ballot, name):
+    def find_candidacy(self, ballot, name, party=None):
         # exact search first
         try:
             return ballot.membership_set.get(person__name__iexact=name)
@@ -54,13 +54,34 @@ class Command(BaseCommand):
         try:
             return ballot.membership_set.get(person__name_search_vector=sq)
         except (Membership.DoesNotExist, Membership.MultipleObjectsReturned):
-            # cant find this candidate
-            url = f"http://candidates.democracyclub.org.uk{ballot.get_absolute_url()}"
-            self.not_found.append(
-                f"Cant find a membership for {name}. Check candidates at:\n{url}"
-            )
-            self.cant_find += 1
-            return None
+            pass
+
+        if party:
+            try:
+                candidate = ballot.membership_set.get(
+                    party__name__icontains=party
+                )
+                self.stdout.write(
+                    "Found candidate by their party. Double check?"
+                )
+                self.stdout.write(
+                    f"Name: {name}\nParty: {party}\nBallot: {ballot.get_absolute_url()}"
+                )
+                return candidate
+            except (
+                Membership.DoesNotExist,
+                Membership.MultipleObjectsReturned,
+            ):
+                pass
+        # cant find this candidate
+        url = (
+            f"http://candidates.democracyclub.org.uk{ballot.get_absolute_url()}"
+        )
+        self.not_found.append(
+            f"Cant find a membership for {name}. Check candidates at:\n{url}"
+        )
+        self.cant_find += 1
+        return None
 
     def create_results(self, ballot, candidates):
 
@@ -69,12 +90,14 @@ class Command(BaseCommand):
                 "Incorrect number of candidates for ballot, skipping"
             )
 
+        defaults = {"source": self.url}
+        if self.turnouts:
+            defaults["turnout_percentage"] = self.turnouts[
+                ballot.ballot_paper_id
+            ]
+
         resultset, created = models.ResultSet.objects.update_or_create(
-            ballot=ballot,
-            defaults={
-                "turnout_percentage": self.turnouts[ballot.ballot_paper_id],
-                "source": self.url,
-            },
+            ballot=ballot, defaults=defaults
         )
         for candidate_dict in candidates:
             resultset.candidate_results.update_or_create(
