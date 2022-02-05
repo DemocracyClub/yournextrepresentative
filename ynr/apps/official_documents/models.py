@@ -32,7 +32,7 @@ class OfficialDocument(TimeStampedModel):
         "candidates.Ballot", null=False, on_delete=models.CASCADE
     )
     source_url = models.URLField(
-        help_text="The page that links to this document", max_length=1000
+        help_text="The URL of this document", max_length=1000
     )
     relevant_pages = models.CharField(
         "The pages containing information about this ballot",
