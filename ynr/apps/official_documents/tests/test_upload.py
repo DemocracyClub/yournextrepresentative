@@ -20,6 +20,8 @@ from official_documents.tests.paths import (
 )
 from official_documents.models import OfficialDocument
 from unittest.mock import patch
+from unittest import skipIf
+from sopn_parsing.tests import should_skip_conversion_tests
 
 
 TEST_MEDIA_ROOT = realpath(
@@ -141,7 +143,18 @@ class TestModels(TestUserMixin, WebTest):
         )
         self.assertInHTML("Update SOPN", response.text)
 
-    def test_docx_form_validation(self):
+    @skipIf(
+        should_skip_conversion_tests(), "Required conversion libs not installed"
+    )
+    def test_docx_upload_form_validation(self):
+        self.assertFalse(LoggedAction.objects.exists())
+        response = self.app.get(
+            self.ballot.get_absolute_url(),
+            user=self.user_who_can_upload_documents,
+        )
+
+        self.assertInHTML("Upload SOPN", response.text)
+
         response = self.app.get(
             reverse(
                 "upload_document_view",
@@ -149,18 +162,28 @@ class TestModels(TestUserMixin, WebTest):
             ),
             user=self.user_who_can_upload_documents,
         )
+
         form = response.forms["document-upload-form"]
         form["source_url"] = "http://example.org/foo"
         with open(self.example_docx_filename, "rb") as f:
             form["uploaded_file"] = Upload("pilot.docx", f.read())
         response = form.submit()
-        self.assertEqual(response.status_code, 200)
-        self.assertInHTML(
-            "File extension “docx” is not allowed. Allowed extensions are: pdf.",
-            response.text,
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(OfficialDocument.objects.count(), 1)
+        self.assertEqual(response.location, self.ballot.get_sopn_url())
+
+    @skipIf(
+        should_skip_conversion_tests(), "Required conversion libs not installed"
+    )
+    def test_html_upload_form_validation(self):
+        self.assertFalse(LoggedAction.objects.exists())
+        response = self.app.get(
+            self.ballot.get_absolute_url(),
+            user=self.user_who_can_upload_documents,
         )
 
-    def test_html_form_validation(self):
+        self.assertInHTML("Upload SOPN", response.text)
+
         response = self.app.get(
             reverse(
                 "upload_document_view",
@@ -173,8 +196,37 @@ class TestModels(TestUserMixin, WebTest):
         with open(self.example_html_filename, "rb") as f:
             form["uploaded_file"] = Upload("pilot.html", f.read())
         response = form.submit()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(OfficialDocument.objects.count(), 1)
+        self.assertEqual(response.location, self.ballot.get_sopn_url())
+
+    @skipIf(
+        should_skip_conversion_tests(), "Required conversion libs not installed"
+    )
+    def test_jpg_form_validation(self):
+        self.assertFalse(LoggedAction.objects.exists())
+        response = self.app.get(
+            self.ballot.get_absolute_url(),
+            user=self.user_who_can_upload_documents,
+        )
+
+        self.assertInHTML("Upload SOPN", response.text)
+
+        response = self.app.get(
+            reverse(
+                "upload_document_view",
+                kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
+            ),
+            user=self.user_who_can_upload_documents,
+        )
+        form = response.forms["document-upload-form"]
+        form["source_url"] = "http://example.org/foo"
+        with open(self.example_image_filename, "rb") as f:
+            form["uploaded_file"] = Upload("pilot.jpg", f.read())
+        response = form.submit()
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(OfficialDocument.objects.count(), 0)
         self.assertInHTML(
-            "File extension “html” is not allowed. Allowed extensions are: pdf.",
+            "File extension “jpg” is not allowed. Allowed extensions are: pdf, docx, html.",
             response.text,
         )

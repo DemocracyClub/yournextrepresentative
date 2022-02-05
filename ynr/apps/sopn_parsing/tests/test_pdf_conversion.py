@@ -34,7 +34,7 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             ),
             source_url="example.com",
         )
-        convert_sopn_to_pdf(doc.ballot)
+        convert_sopn_to_pdf(doc.uploaded_file)
         doc.refresh_from_db()
         self.assertTrue(doc.uploaded_file.name.endswith(".pdf"))
 
@@ -49,21 +49,18 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             ),
             source_url="example.com",
         )
-        convert_sopn_to_pdf(doc.ballot)
-        doc.refresh_from_db()
+        convert_sopn_to_pdf(doc.uploaded_file)
         self.assertTrue(doc.uploaded_file.name.endswith(".pdf"))
 
-    def test_convert_jpg_SOPN(self):
-        # test converting image to pdf
-        doc = OfficialDocument.objects.create(
-            ballot=self.dulwich_post_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
-            uploaded_file=SimpleUploadedFile(
-                "example-image.jpg",
-                open(self.example_image_filename, "rb").read(),
-            ),
-            source_url="example.com",
-        )
-        convert_sopn_to_pdf(doc.ballot)
-        doc.refresh_from_db()
-        self.assertRaises(ValueError)
+    def test_convert_other_file_to_SOPN(self):
+        # when file types are not accepted, raise an error
+        with self.assertRaises(ValueError):
+            OfficialDocument.objects.create(
+                ballot=self.dulwich_post_ballot,
+                document_type=OfficialDocument.NOMINATION_PAPER,
+                uploaded_file=SimpleUploadedFile(
+                    "example-file.jpg",
+                    open(self.example_image_filename, "rb").read(),
+                ),
+                source_url="example.com",
+            )
