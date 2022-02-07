@@ -13,6 +13,7 @@ from django.core.management.base import BaseCommand
 
 from candidates.models import Ballot
 from official_documents.models import OfficialDocument
+from sopn_parsing.helpers.convert_pdf import PandocConversionError
 from sopn_parsing.tasks import extract_and_parse_tables_for_ballot
 
 allowed_mime_types = {
@@ -160,12 +161,19 @@ class Command(BaseCommand):
             with open(downloaded_filename, "rb") as f:
                 storage_filename = storage.save(filename, f)
 
-            OfficialDocument.objects.create(
-                document_type=OfficialDocument.NOMINATION_PAPER,
-                uploaded_file=storage_filename,
-                ballot=ballot,
-                source_url=document_url,
-            )
+            try:
+                OfficialDocument.objects.create(
+                    document_type=OfficialDocument.NOMINATION_PAPER,
+                    uploaded_file=storage_filename,
+                    ballot=ballot,
+                    source_url=document_url,
+                )
+            except PandocConversionError:
+                self.stderr.write(
+                    f"Error attempting to convert {document_url} to a PDF, skipping this row"
+                )
+                continue
+
             message = (
                 "Successfully added the Statement of Persons Nominated for {0}"
             )

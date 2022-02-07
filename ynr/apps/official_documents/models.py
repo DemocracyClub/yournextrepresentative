@@ -43,7 +43,8 @@ class OfficialDocument(TimeStampedModel):
     )
 
     def save(self, *args, **kwargs):
-        self.uploaded_file = convert_sopn_to_pdf(self.uploaded_file)
+        if self.uploaded_file:
+            self.uploaded_file = convert_sopn_to_pdf(self.uploaded_file)
         super().save(*args, **kwargs)
 
     class Meta:
