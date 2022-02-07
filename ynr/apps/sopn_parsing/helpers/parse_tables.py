@@ -123,6 +123,11 @@ def clean_name(name):
     # this can leave extra whitespace after special chars so remove these
     name = name.replace("- ", "-")
     name = name.replace("' ", "'")
+
+    if "commonly known as" in name:
+        name = name.replace(")", "")
+        name = name.split("commonly known as")[-1].replace(")", "").strip()
+
     names = list(filter(None, name.split(" ")))
     last_names = clean_last_names(names)
     first_names = " ".join([name for name in names if not name.isupper()])
