@@ -271,7 +271,8 @@ class PartyBulkAddReviewFormSet(BaseBulkAddReviewFormSet):
     def __init__(self, *args, **kwargs):
         self.ballot = kwargs["ballot"]
         kwargs["prefix"] = self.ballot.pk
-        self.extra = self.ballot.winner_count
+        if self.ballot.winner_count:
+            self.extra = self.ballot.winner_count
         del kwargs["ballot"]
 
         super().__init__(*args, **kwargs)
