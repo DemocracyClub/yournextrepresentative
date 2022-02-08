@@ -105,7 +105,7 @@ class TestParseTablesUnitTests(TestCase):
                     "candidate forename",
                     "candidate surname",
                 ],
-                "expected_name": "BAGSHAW Elaine Sheila",
+                "expected_name": "Elaine Sheila Bagshaw",
             },
             {
                 "name_fields": ["surname", "other names"],
@@ -117,7 +117,7 @@ class TestParseTablesUnitTests(TestCase):
                     "reason why no longer nominated": "",
                 },
                 "ordered_name_fields": ["other names", "surname"],
-                "expected_name": "BAGSHAW Elaine Sheila",
+                "expected_name": "Elaine Sheila Bagshaw",
             },
             {
                 "name_fields": ["last name", "other names"],
@@ -129,7 +129,7 @@ class TestParseTablesUnitTests(TestCase):
                     "reason why no longer nominated": "",
                 },
                 "ordered_name_fields": ["other names", "last name"],
-                "expected_name": "BAGSHAW Elaine Sheila",
+                "expected_name": "Elaine Sheila Bagshaw",
             },
             {
                 "name_fields": ["candidate forename", "candidate surname"],
@@ -144,7 +144,7 @@ class TestParseTablesUnitTests(TestCase):
                     "candidate forename",
                     "candidate surname",
                 ],
-                "expected_name": "Elaine Sheila BAGSHAW",
+                "expected_name": "Elaine Sheila Bagshaw",
             },
         ]
 
@@ -213,7 +213,7 @@ class TestParseTablesUnitTests(TestCase):
             with self.subTest(name_fields=name_fields):
                 assert len(case["name_fields"]) == 1
                 name = parse_tables.get_name(row=row, name_fields=name_fields)
-                assert name == "BAGSHAW Elaine Sheila"
+                assert name == "Elaine Sheila Bagshaw"
 
     def test_get_name_two_fields(self):
         for case in self.get_two_name_field_cases():
@@ -282,6 +282,17 @@ class TestParseTablesUnitTests(TestCase):
             ),
             ("Michael James Collins", "Michael James Collins"),
             ("   Michael    James    Collins   ", "Michael James Collins"),
+            ("DAVE Nitesh Pravin", "Nitesh Pravin Dave"),
+            ("DAVE\nNitesh Pravin", "Nitesh Pravin Dave"),
+            ("COOKE Anne-Marie", "Anne-Marie Cooke"),
+            ("COOKE\nAnne-Marie", "Anne-Marie Cooke"),
+            ("BROOKES-\nDUNCAN\nKaty", "Katy Brookes-Duncan"),
+            ("HOUNSOME\nJohn", "John Hounsome"),
+            ("O`CONNELL \nStephen John", "Stephen John O'Connell"),
+            ("O`NEAL \nCarol Joy", "Carol Joy O'Neal"),
+            ("O`REILLY \nTracey Linda \nDiane", "Tracey Linda Diane O'Reilly"),
+            ("LIAM THOMAS O'ROURKE", "Liam Thomas O'Rourke"),
+            ("O'CALLAGHAN \nClaire Louise", "Claire Louise O'Callaghan"),
         ]
         for name in names:
             with self.subTest(name=names[0]):
