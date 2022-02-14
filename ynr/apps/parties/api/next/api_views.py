@@ -118,8 +118,17 @@ class CurrentPartyNamesCSVView(viewsets.ReadOnlyModelViewSet):
     renderer_classes = (PartyNames,)
     serializer_class = CSVPartySerializer
     queryset = (
-        Party.objects.register("GB")
-        .exclude(ec_id__startswith="PPm")
+        Party.objects.exclude(ec_id__startswith="PPm")
         .current()
         .order_by("-current_candidates")
     )
+
+    def filter_queryset(self, queryset):
+        """
+        Expose the party register as a filter
+        """
+        queryset = super().filter_queryset(queryset)
+        register = self.request.query_params.get("register", "GB")
+        if register:
+            queryset = queryset.register(register)
+        return queryset

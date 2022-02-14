@@ -142,6 +142,19 @@ class TestAPI(
             ),
         )
 
+        parties_resp = self.app.get(
+            "/api/next/current_parties_csv/?register=NI"
+        )
+        self.assertEqual(
+            parties_resp.text,
+            (
+                "name,ec_id,current_candidates\r\n"
+                "Sinn Féin,Sinn Féin,1\r\n"
+                "Speaker seeking re-election,Speaker seeking re-election,0\r\n"
+                "Independent,Independent,0\r\n"
+            ),
+        )
+
     def test_person_endpoint_smoke_test(self):
         response = self.app.get("/api/next/people/")
         result_json = response.json
