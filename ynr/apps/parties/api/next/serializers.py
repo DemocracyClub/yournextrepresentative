@@ -78,3 +78,16 @@ class MinimalPartySerializer(PartySerializer):
         ref_name = None  # Tells swagger that this is always embedded
         fields = ("url", "ec_id", "name", "legacy_slug", "created", "modified")
         swagger_schema_fields = {"description": Party.__doc__}
+
+
+class CSVPartySerializer(PartySerializer):
+    class Meta:
+        model = Party
+        ref_name = None  # Tells swagger that this is always embedded
+        fields = ("ec_id", "name", "current_candidates")
+        swagger_schema_fields = {"description": Party.__doc__}
+
+    ec_id = serializers.SerializerMethodField()
+
+    def get_ec_id(self, party):
+        return party.name.replace("PP", "")

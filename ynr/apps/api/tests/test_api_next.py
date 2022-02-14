@@ -127,6 +127,21 @@ class TestAPI(
         parties_resp = self.app.get("/api/next/parties/")
         self.assertEqual(parties_resp.json["count"], 7)
 
+    def test_party_csv_endpoint(self):
+        parties_resp = self.app.get("/api/next/current_parties_csv/")
+        self.assertEqual(
+            parties_resp.text,
+            (
+                "name,ec_id,current_candidates\r\n"
+                "Labour Party,Labour Party,1\r\n"
+                "Liberal Democrats,Liberal Democrats,1\r\n"
+                "Green Party,Green Party,1\r\n"
+                "Conservative Party,Conservative Party,1\r\n"
+                "Speaker seeking re-election,Speaker seeking re-election,0\r\n"
+                "Independent,Independent,0\r\n"
+            ),
+        )
+
     def test_person_endpoint_smoke_test(self):
         response = self.app.get("/api/next/people/")
         result_json = response.json
