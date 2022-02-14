@@ -4,6 +4,8 @@ from django.db import models
 from django.urls import reverse
 from django_extensions.db.models import TimeStampedModel
 
+from ynr.apps.sopn_parsing.helpers.convert_pdf import convert_sopn_to_pdf
+
 DOCUMENT_UPLOADERS_GROUP_NAME = "Document Uploaders"
 
 
@@ -39,6 +41,11 @@ class OfficialDocument(TimeStampedModel):
         max_length=50,
         default="",
     )
+
+    def save(self, *args, **kwargs):
+        if self.uploaded_file:
+            self.uploaded_file = convert_sopn_to_pdf(self.uploaded_file)
+        super().save(*args, **kwargs)
 
     class Meta:
         get_latest_by = "modified"

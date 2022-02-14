@@ -38,4 +38,19 @@ for their work on the project which we have been able to build on.
 
 v0.9 is legacy code and is now frozen. v1.0 is currently in alpha. We plan on publishing a v1 API once we have some more feedback from users and we think it’s stable enough.
 
+# SOPN Parsing
+
+YNR uses `pypandoc` (which relies on `pandoc`) to convert SOPN documents to PDF, as needed, to be parsed.
+
+To install `pandoc`, visit this page and follow the instructions for you operating system:
+https://pandoc.org/installing.html
+
+Once `pandoc` is installed
+
+Install pypandoc (or via `requirements.txt`):
+
+`pip install pandoc`
+
+If `pypandoc` does not install via `pip`, visit https://pypi.org/project/pypandoc/ for further instructions. 
+
  
