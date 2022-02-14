@@ -133,12 +133,12 @@ class TestAPI(
             parties_resp.text,
             (
                 "name,ec_id,current_candidates\r\n"
-                "Labour Party,Labour Party,1\r\n"
-                "Liberal Democrats,Liberal Democrats,1\r\n"
-                "Green Party,Green Party,1\r\n"
-                "Conservative Party,Conservative Party,1\r\n"
-                "Speaker seeking re-election,Speaker seeking re-election,0\r\n"
-                "Independent,Independent,0\r\n"
+                "Labour Party,53,1\r\n"
+                "Liberal Democrats,90,1\r\n"
+                "Green Party,63,1\r\n"
+                "Conservative Party,52,1\r\n"
+                "Speaker seeking re-election,ynmp-party:12522,0\r\n"
+                "Independent,ynmp-party:2,0\r\n"
             ),
         )
 
@@ -149,9 +149,9 @@ class TestAPI(
             parties_resp.text,
             (
                 "name,ec_id,current_candidates\r\n"
-                "Sinn Féin,Sinn Féin,1\r\n"
-                "Speaker seeking re-election,Speaker seeking re-election,0\r\n"
-                "Independent,Independent,0\r\n"
+                "Sinn Féin,39,1\r\n"
+                "Speaker seeking re-election,ynmp-party:12522,0\r\n"
+                "Independent,ynmp-party:2,0\r\n"
             ),
         )
 
