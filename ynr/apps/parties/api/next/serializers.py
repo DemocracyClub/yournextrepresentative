@@ -84,10 +84,10 @@ class CSVPartySerializer(PartySerializer):
     class Meta:
         model = Party
         ref_name = None  # Tells swagger that this is always embedded
-        fields = ("ec_id", "name", "current_candidates")
+        fields = ("name", "ec_id", "current_candidates")
         swagger_schema_fields = {"description": Party.__doc__}
 
     ec_id = serializers.SerializerMethodField()
 
     def get_ec_id(self, party):
-        return party.name.replace("PP", "")
+        return party.ec_id.replace("PP", "")
