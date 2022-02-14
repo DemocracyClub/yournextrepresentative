@@ -5,6 +5,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views import View
 from rest_framework import viewsets
+from rest_framework_csv.renderers import PaginatedCSVRenderer
+
 from parties.api.next.filters import PartyFilter
 
 from api.helpers import DefaultPageNumberPagination
@@ -13,15 +15,11 @@ from parties.models import Party
 from parties.api.next.serializers import (
     PartySerializer,
     PartyRegisterSerializer,
+    CSVPartySerializer,
 )
 
 
 class PartyViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-
-
-    """
-
     queryset = Party.objects.all().prefetch_related("emblems", "descriptions")
     serializer_class = PartySerializer
     lookup_field = "ec_id"
@@ -104,3 +102,33 @@ class AllPartiesJSONView(View):
         return HttpResponse(
             json.dumps(ret), content_type="application/json", status=status_code
         )
+
+
+class PartyNames(PaginatedCSVRenderer):
+    header = ["name", "ec_id", "current_candidates"]
+
+
+class CurrentPartyNamesCSVView(viewsets.ReadOnlyModelViewSet):
+    """
+    A View used to export party names, IDs and candidate counts.
+
+    Used by Google Sheets that we use for crowdsourcing.
+    """
+
+    renderer_classes = (PartyNames,)
+    serializer_class = CSVPartySerializer
+    queryset = (
+        Party.objects.exclude(ec_id__startswith="PPm")
+        .current()
+        .order_by("-current_candidates")
+    )
+
+    def filter_queryset(self, queryset):
+        """
+        Expose the party register as a filter
+        """
+        queryset = super().filter_queryset(queryset)
+        register = self.request.query_params.get("register", "GB")
+        if register:
+            queryset = queryset.register(register)
+        return queryset

@@ -17,7 +17,11 @@ from api.views import (
     ResultsDocs,
 )
 from facebook_data.api.next.views import FacebookAdvertViewSet
-from parties.api.next.api_views import PartyViewSet, PartyRegisterList
+from parties.api.next.api_views import (
+    PartyViewSet,
+    PartyRegisterList,
+    CurrentPartyNamesCSVView,
+)
 from uk_results.api.v09.api_views import (
     CandidateResultViewSet,
     ResultSetViewSet,
@@ -69,6 +73,11 @@ next_api_router.register(
 )
 
 next_api_router.register(r"parties", PartyViewSet)
+next_api_router.register(
+    r"current_parties_csv",
+    CurrentPartyNamesCSVView,
+    basename="current_parties_csv",
+)
 next_api_router.register(
     r"party_registers", PartyRegisterList, basename="party_register"
 )
