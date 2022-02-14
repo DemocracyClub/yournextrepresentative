@@ -115,6 +115,7 @@ class CurrentPartyNamesCSVView(viewsets.ReadOnlyModelViewSet):
     Used by Google Sheets that we use for crowdsourcing.
     """
 
+    pagination_class = None
     renderer_classes = (PartyNames,)
     serializer_class = CSVPartySerializer
     queryset = (
