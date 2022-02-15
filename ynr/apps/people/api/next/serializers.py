@@ -98,7 +98,7 @@ class PersonSerializer(MinimalPersonSerializer):
             "gender",
             "birth_date",
             "death_date",
-            "images",
+            "image",
             "thumbnail",
             "statement_to_voters",
             "favourite_biscuit",
@@ -115,7 +115,7 @@ class PersonSerializer(MinimalPersonSerializer):
         many=True, read_only=True, source="tmp_person_identifiers"
     )
     other_names = OtherNameSerializer(many=True, read_only=True)
-    images = ImageSerializer(many=True, read_only=True, default=[])
+    image = ImageSerializer(read_only=True)
     email = serializers.SerializerMethodField()
     candidacies = serializers.SerializerMethodField()
     statement_to_voters = serializers.CharField(
@@ -126,8 +126,8 @@ class PersonSerializer(MinimalPersonSerializer):
 
     def get_thumbnail(self, instance):
         try:
-            image = instance.images.all()[0]
-        except IndexError:
+            image = instance.image
+        except PersonImage.DoesNotExist:
             return None
 
         return SizeLimitedHyperlinkedSorlImageField(

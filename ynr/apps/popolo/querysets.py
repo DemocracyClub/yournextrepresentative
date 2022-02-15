@@ -73,14 +73,12 @@ class MembershipQuerySet(DateframeableQuerySet):
                 "ballot__election",
                 "ballot__post",
                 "person",
+                "person__image",
+                "person__image__uploading_user",
                 "party",
                 "ballot__post__organization",
             )
-            .prefetch_related(
-                "person__tmp_person_identifiers",
-                "person__images",
-                "person__images__uploading_user",
-            )
+            .prefetch_related("person__tmp_person_identifiers")
             .order_by(
                 "ballot__election__election_date",
                 "-ballot__election__slug",
@@ -101,9 +99,7 @@ class MembershipQuerySet(DateframeableQuerySet):
         qs = self.filter(ballot=ballot)
         qs = qs.annotate(last_name=LastWord("person__name"))
         qs = qs.order_by(*order_by)
-        qs = qs.select_related("person", "party", "result").prefetch_related(
-            "person__images"
-        )
+        qs = qs.select_related("person", "person__image", "party", "result")
 
         if exclude_memberships_qs and exclude_memberships_qs.exists():
             qs = qs.exclude(

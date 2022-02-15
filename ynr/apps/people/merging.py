@@ -1,9 +1,5 @@
 from collections import OrderedDict
 
-from django.conf import settings
-from django.contrib.admin.utils import NestedObjects
-from django.db import connection, transaction
-
 from candidates.models import (
     LoggedAction,
     PersonRedirect,
@@ -13,7 +9,11 @@ from candidates.models import (
 from candidates.models.db import ActionType
 from candidates.models.versions import get_person_as_version_data
 from candidates.views.version_data import get_change_metadata, get_client_ip
+from django.conf import settings
+from django.contrib.admin.utils import NestedObjects
+from django.db import connection, transaction
 from duplicates.merge_helpers import alter_duplicate_suggestion_post_merge
+from people.models import PersonImage
 from results.models import ResultEvent
 
 
@@ -82,7 +82,7 @@ class PersonMerger:
             # Relations
             ("versions", "merge_versions_json"),
             ("tmp_person_identifiers", "merge_person_identifiers"),
-            ("images", "merge_images"),
+            ("image", "merge_images"),
             ("loggedaction", "merge_logged_actions"),
             ("memberships", "merge_memberships"),
             ("queuedimage", "merge_queued_images"),
@@ -223,17 +223,21 @@ class PersonMerger:
             other_name.delete()
 
     def merge_images(self):
-        # Change the secondary person's images to point at the primary
-        # person instead:
-        source_primary_image = self.source_person.images.filter(
-            is_primary=True
-        ).exists()
+        # Change the secondary person's image to point at the primary
+        # person's image instead:
+        try:
+            new_image = self.source_person.image
+        except PersonImage.DoesNotExist:
+            return
+        # There's an existing image on source, so replace the dest
+        # person's image (assume the source image is better)
+        try:
+            self.dest_person.image.delete()
+        except PersonImage.DoesNotExist:
+            pass
 
-        if source_primary_image:
-            # There's an existing primary image on source, so replace the dest
-            # person's primary image (assume the source image is better)
-            self.dest_person.images.update(is_primary=False)
-        self.source_person.images.update(person=self.dest_person)
+        new_image.person = self.dest_person
+        new_image.save()
 
     def _resolve_duplicate_identifiers(self, i1, i2):
         # Get the newer ID of the two

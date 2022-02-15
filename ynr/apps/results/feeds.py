@@ -24,7 +24,7 @@ class BasicResultEventsFeed(Feed):
             .select_related("post")
             .select_related("winner")
             .select_related("winner_party")
-            .prefetch_related("winner__images")
+            .select_related("winner__image")
         )
 
     def item_title(self, item):

@@ -178,7 +178,7 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
                         "honorific_suffix": "",
                         "id": 2009,
                         "identifiers": [],
-                        "images": [],
+                        "image": None,
                         "links": [],
                         "memberships": [
                             {

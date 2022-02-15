@@ -329,6 +329,11 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 is_primary=False
             )
 
+        try:
+            person.image.delete()
+        except PersonImage.DoesNotExist:
+            pass
+
         PersonImage.objects.create_from_file(
             ntf.name,
             join("images", filename),

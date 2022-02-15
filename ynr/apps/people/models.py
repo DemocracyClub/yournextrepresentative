@@ -59,8 +59,8 @@ class PersonImage(models.Model):
     notes they have.
     """
 
-    person = models.ForeignKey(
-        "people.Person", related_name="images", on_delete=models.CASCADE
+    person = models.OneToOneField(
+        "people.Person", related_name="image", on_delete=models.CASCADE
     )
     image = models.ImageField(upload_to=person_image_path, max_length=512)
     source = models.CharField(max_length=400)
@@ -625,15 +625,15 @@ class Person(TimeStampedModel, models.Model):
         image_uploading_user_notes = ""
         proxy_image_url_template = ""
 
-        primary_image = None
-        for image in self.images.all():
-            if image.is_primary:
-                primary_image = image
-        primary_image_url = None
-        if primary_image:
-            primary_image_url = urljoin(base_url, primary_image.image.url)
+        try:
+            person_image = self.image
+        except PersonImage.DoesNotExist:
+            person_image = None
+        person_image_url = None
+        if person_image:
+            person_image_url = urljoin(base_url, person_image.image.url)
             if settings.IMAGE_PROXY_URL and base_url:
-                encoded_url = quote_plus(primary_image_url)
+                encoded_url = quote_plus(person_image_url)
                 proxy_image_url_template = (
                     settings.IMAGE_PROXY_URL
                     + encoded_url
@@ -641,11 +641,11 @@ class Person(TimeStampedModel, models.Model):
                 )
 
             try:
-                image_copyright = primary_image.copyright
-                user = primary_image.uploading_user
+                image_copyright = person_image.copyright
+                user = person_image.uploading_user
                 if user is not None:
-                    image_uploading_user = primary_image.uploading_user.username
-                image_uploading_user_notes = primary_image.user_notes
+                    image_uploading_user = person_image.uploading_user.username
+                image_uploading_user_notes = person_image.user_notes
             except ObjectDoesNotExist:
                 pass
 
@@ -689,7 +689,7 @@ class Person(TimeStampedModel, models.Model):
             "wikidata_id": self.get_single_identifier_value("wikidata_id"),
             "theyworkforyou_url": theyworkforyou_url,
             "parlparse_id": parlparse_id,
-            "image_url": primary_image_url,
+            "image_url": person_image_url,
             "proxy_image_url_template": proxy_image_url_template,
             "image_copyright": image_copyright,
             "image_uploading_user": image_uploading_user,
@@ -704,15 +704,17 @@ class Person(TimeStampedModel, models.Model):
 
     @property
     def primary_image_model(self):
-        images = self.images.filter(is_primary=True)
-        if images.exists():
-            return images.first()
+        try:
+            return self.image
+        except PersonImage.DoesNotExist:
+            return None
 
     @property
     def primary_image(self):
-        image = self.primary_image_model
-        if image:
-            return image.image
+        try:
+            return self.image.image
+        except PersonImage.DoesNotExist:
+            return None
 
     def get_display_image_url(self):
         """

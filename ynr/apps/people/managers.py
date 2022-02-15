@@ -18,26 +18,6 @@ class PersonImageManager(models.Manager):
             storage_filename = storage.save(desired_storage_path, f)
         return self.create(image=storage_filename, **defaults)
 
-    def update_or_create_from_file(
-        self, image_filename, ideal_relative_name, person, defaults
-    ):
-        try:
-            image = self.get(person=person, md5sum=defaults["md5sum"])
-            for k, v in defaults.items():
-                setattr(image, k, v)
-            image.save()
-            return image, False
-
-        except self.model.DoesNotExist:
-            # Prepare args for the base object first:
-            defaults["person"] = person
-
-            # And now the extra object:
-            image = self.create_from_file(
-                image_filename, ideal_relative_name, defaults
-            )
-        return image
-
 
 class PersonIdentifierQuerySet(models.query.QuerySet):
     def select_choices(self):

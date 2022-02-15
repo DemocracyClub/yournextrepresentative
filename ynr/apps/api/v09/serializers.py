@@ -70,9 +70,17 @@ class ImageSerializer(serializers.ModelSerializer):
 
     image_url = serializers.SerializerMethodField()
     uploading_user = serializers.ReadOnlyField(source="uploading_user.username")
+    is_primary = serializers.SerializerMethodField()
 
     def get_image_url(self, i):
         return i.image.url
+
+    def get_is_primary(self, obj):
+        """
+        This is hardcoded to maintain backwards compatibility for v0.9 after
+        changing the PersonImage model to use a OneToOne with Person
+        """
+        return True
 
 
 class FakeMinimalOrganizationSerializer(serializers.HyperlinkedModelSerializer):
@@ -271,7 +279,7 @@ class PersonSerializer(MinimalPersonSerializer):
 
     links = serializers.SerializerMethodField()
     other_names = OtherNameSerializer(many=True, read_only=True)
-    images = ImageSerializer(many=True, read_only=True, default=[])
+    images = serializers.SerializerMethodField()
 
     email = serializers.SerializerMethodField()
 
@@ -355,6 +363,16 @@ class PersonSerializer(MinimalPersonSerializer):
             )
         return links
 
+    def get_images(self, obj):
+        """
+        To maintain backwards compatibility return image as a list even though
+        a person can only have a single image
+        """
+        try:
+            return [ImageSerializer(instance=obj.image, read_only=True).data]
+        except PersonImage.DoesNotExist:
+            return []
+
 
 class NoVersionPersonSerializer(PersonSerializer):
     class Meta:
@@ -375,7 +393,7 @@ class NoVersionPersonSerializer(PersonSerializer):
             "contact_details",
             "links",
             "memberships",
-            "images",
+            "image",
             "extra_fields",
             "thumbnail",
         )
