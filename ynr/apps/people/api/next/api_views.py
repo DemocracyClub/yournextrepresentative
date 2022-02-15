@@ -1,40 +1,37 @@
 import json
 
-from django.db.models import Prefetch
-from django.http import Http404, HttpResponsePermanentRedirect
-from rest_framework.decorators import action
-from rest_framework import viewsets
-from rest_framework.reverse import reverse
-from rest_framework.response import Response
-
 import people.api.next.serializers
 from api.next.views import ResultsSetPagination
-from people.api.next.filters import PersonFilter
 from candidates import models as extra_models
 from candidates.api.next.serializers import LoggedActionSerializer
-from people.models import Person, PersonImage
+from django.db.models import Prefetch
+from django.http import Http404, HttpResponsePermanentRedirect
+from people.api.next.filters import PersonFilter
+from people.models import Person
 from popolo.models import Membership
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 
 class PersonViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
-        queryset = Person.objects.prefetch_related(
-            Prefetch(
-                "memberships",
-                Membership.objects.select_related("party", "post").order_by(
-                    "ballot__election__election_date"
+        queryset = (
+            Person.objects.prefetch_related(
+                Prefetch(
+                    "memberships",
+                    Membership.objects.select_related("party", "post").order_by(
+                        "ballot__election__election_date"
+                    ),
                 ),
-            ),
-            Prefetch(
-                "images",
-                PersonImage.objects.filter(is_primary=True).select_related(
-                    "uploading_user"
-                ),
-            ),
-            "memberships__ballot__election",
-            "tmp_person_identifiers",
-            "other_names",
-        ).order_by("id")
+                "memberships__ballot__election",
+                "tmp_person_identifiers",
+                "other_names",
+            )
+            .select_related("image", "image__uploading_user")
+            .order_by("id")
+        )
         return queryset
 
     def filter_queryset(self, queryset):

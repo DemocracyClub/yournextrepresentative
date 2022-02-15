@@ -289,17 +289,8 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(len(other_names), 1)
         self.assertEqual(other_names[0].name, "Shane Collins")
         self.assertEqual(merged_person.name, "Tessa Jowell")
-
-        # Check that the remaining person now has two images, i.e. the
-        # one from the person to delete is added to the existing images:
-        self.assertEqual(2, merged_person.images.count())
-
-        primary_image = merged_person.images.get(is_primary=True)
-        non_primary_image = merged_person.images.get(is_primary=False)
-
-        self.assertEqual(primary_image.user_notes, "A photo of Tessa Jowell")
         self.assertEqual(
-            non_primary_image.user_notes, "A photo of Shane Collins"
+            merged_person.image.user_notes, "A photo of Tessa Jowell"
         )
 
     @patch("candidates.views.version_data.get_current_timestamp")

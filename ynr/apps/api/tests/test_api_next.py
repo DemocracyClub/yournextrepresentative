@@ -26,11 +26,11 @@ class TestAPI(
         self.storage = DefaultStorage()
 
         self.person = PersonFactory.create(id=2009, name="Tessa Jowell")
-        self.person_image = PersonImage.objects.update_or_create_from_file(
+        self.person_image = PersonImage.objects.create_from_file(
             EXAMPLE_IMAGE_FILENAME,
             "images/imported.jpg",
-            self.person,
             defaults={
+                "person": self.person,
                 "md5sum": "md5sum",
                 "copyright": "example-license",
                 "uploading_user": self.user,
@@ -162,7 +162,7 @@ class TestAPI(
 
         response = self.app.get("/api/next/people/2009/")
         result_json = response.json
-        self.assertTrue(result_json["images"][0]["is_primary"])
+        self.assertTrue(result_json["image"]["is_primary"])
 
     def test_all_parties_view(self):
         self.maxDiff = None

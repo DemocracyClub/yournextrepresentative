@@ -212,7 +212,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             )
 
             person = Person.objects.get(id=2009)
-            image = person.images.last()
+            image = person.image
 
             self.assertTrue(image.is_primary)
             self.assertEqual(
@@ -351,7 +351,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             mock_send_mail.assert_not_called()
 
             person = Person.objects.get(id=2009)
-            image = person.images.last()
+            image = person.image
 
             self.assertTrue(image.is_primary)
             self.assertEqual(

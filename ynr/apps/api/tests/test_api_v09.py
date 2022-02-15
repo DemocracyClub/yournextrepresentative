@@ -8,6 +8,7 @@ from django.core.files.storage import DefaultStorage
 from django.core.management import call_command
 from django_webtest import WebTest
 from mock import patch
+from api.v09.serializers import ImageSerializer
 
 from candidates.models import LoggedAction, PersonRedirect
 from candidates.models.db import ActionType
@@ -32,12 +33,12 @@ class TestAPI(
     def setUp(self):
         super().setUp()
 
-        person = PersonFactory.create(id=2009, name="Tessa Jowell")
-        PersonImage.objects.update_or_create_from_file(
+        self.person = PersonFactory.create(id=2009, name="Tessa Jowell")
+        PersonImage.objects.create_from_file(
             EXAMPLE_IMAGE_FILENAME,
             "images/imported.jpg",
-            person,
             defaults={
+                "person": self.person,
                 "md5sum": "md5sum",
                 "copyright": "example-license",
                 "uploading_user": self.user,
@@ -57,14 +58,14 @@ class TestAPI(
             id="5163", name="Peter McColl"
         )
         MembershipFactory.create(
-            person=person,
+            person=self.person,
             post=self.dulwich_post,
             party=self.labour_party,
             ballot=self.dulwich_post_ballot,
         )
         self.independent_party_object = Party.objects.get(ec_id="ynmp-party:2")
         MembershipFactory.create(
-            person=person,
+            person=self.person,
             ballot=self.edinburgh_east_post_ballot,
             party=self.independent_party_object,
         )
@@ -528,4 +529,16 @@ class TestAPI(
         )
         self.assertEqual(
             person_json["contact_details"][0]["value"], "Froglet4MP"
+        )
+
+    def test_image_is_a_list(self):
+        """
+        Check that a person image is returned as a list
+        """
+        response = self.app.get(f"/api/v0.9/persons/{self.person.pk}/")
+        person_json = response.json
+        self.assertIsInstance(person_json["images"], list)
+        self.assertEqual(
+            person_json["images"],
+            [ImageSerializer(instance=self.person.image).data],
         )

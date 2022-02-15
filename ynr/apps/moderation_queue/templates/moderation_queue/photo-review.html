@@ -179,20 +179,18 @@
 
 <div class="photo-review__secondary">
 
-  <h4>Existing candidate images</h4>
+  <h4>Existing candidate image</h4>
 
-  {% with images=person.images.all %}
+  {% with image=person.primary_image_model %}
 
-    {% if images %}
-      {% for image in images %}
-        {% thumbnail image.image "x200" as im %}
-          <img class="photo-review__existing-image" src="{{ im.url }}"
-            alt="{{ image.extra.notes }}" title="{{ image.extra.notes }}">
-          <p class="photo-credit">{% include 'candidates/_photo-credit.html' %}</p>
-        {% endthumbnail %}
-      {% endfor %}
+    {% if image %}
+      {% thumbnail image.image "x200" as im %}
+        <img class="photo-review__existing-image" src="{{ im.url }}"
+          alt="{{ image.extra.notes }}" title="{{ image.extra.notes }}">
+        <p class="photo-credit">{% include 'candidates/_photo-credit.html' %}</p>
+      {% endthumbnail %}
     {% else %}
-      <p>There were no existing images for this candidate.</p>
+      <p>There is no existing image for this candidate.</p>
     {% endif %}
 
   {% endwith %}
