@@ -150,11 +150,6 @@
           </div>
           {% endfor %}
 
-          <div class="make-primary multiple-choice">
-            {{ form.make_primary }}
-            <label for="{{ form.make_primary.id_for_label }}">Make this the primary image of the candidate?</label>
-          </div>
-
       </fieldset>
 
       {% if queued_image.user %}
@@ -181,7 +176,7 @@
 
   <h4>Existing candidate image</h4>
 
-  {% with image=person.primary_image_model %}
+  {% with image=person.person_image_model %}
 
     {% if image %}
       {% thumbnail image.image "x200" as im %}

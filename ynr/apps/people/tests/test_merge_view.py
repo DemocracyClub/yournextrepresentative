@@ -89,7 +89,6 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "images/jowell-pilot.jpg",
             defaults={
                 "person": person,
-                "is_primary": True,
                 "source": "Taken from Wikipedia",
                 "copyright": "example-license",
                 "uploading_user": self.user,
@@ -181,7 +180,6 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "images/collins-pilot.jpg",
             defaults={
                 "person": person,
-                "is_primary": True,
                 "source": "Taken from Twitter",
                 "copyright": "profile-photo",
                 "uploading_user": self.user,

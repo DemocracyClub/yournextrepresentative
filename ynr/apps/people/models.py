@@ -72,7 +72,6 @@ class PersonImage(models.Model):
     md5sum = models.CharField(max_length=32, blank=True)
     user_copyright = models.CharField(max_length=128, blank=True)
     notes = models.TextField(blank=True)
-    is_primary = models.BooleanField(default=False)
 
     objects = PersonImageManager()
 
@@ -703,26 +702,33 @@ class Person(TimeStampedModel, models.Model):
         return row
 
     @property
-    def primary_image_model(self):
+    def person_image_model(self):
+        """
+        Returns the PersonImage instance if one exists
+        """
         try:
             return self.image
         except PersonImage.DoesNotExist:
             return None
 
     @property
-    def primary_image(self):
-        try:
-            return self.image.image
-        except PersonImage.DoesNotExist:
+    def person_image(self):
+        """
+        Returns the image of the person from their PersonImage instance if one
+        exists
+        """
+        if not self.person_image_model:
             return None
+
+        return self.person_image_model.image
 
     def get_display_image_url(self):
         """
         Return either the person's primary image or blank outline of a person
         """
-        if self.primary_image:
+        if self.person_image:
             try:
-                return get_thumbnail(self.primary_image.file, "x64").url
+                return get_thumbnail(self.person_image.file, "x64").url
             except FileNotFoundError:
                 pass
 

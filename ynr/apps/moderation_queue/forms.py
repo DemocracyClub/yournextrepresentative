@@ -82,7 +82,6 @@ class PhotoReviewForm(forms.Form):
     decision = forms.ChoiceField(
         choices=QueuedImage.DECISION_CHOICES, widget=forms.widgets.RadioSelect
     )
-    make_primary = forms.BooleanField(required=False)
     rejection_reason = forms.CharField(widget=forms.Textarea(), required=False)
     justification_for_use = forms.CharField(
         widget=forms.Textarea(), required=False
