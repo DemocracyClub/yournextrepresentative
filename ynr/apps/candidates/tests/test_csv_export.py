@@ -41,7 +41,6 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             "images/jowell-pilot.jpg",
             defaults={
                 "person": self.gb_person,
-                "is_primary": True,
                 "source": "Taken from Wikipedia",
                 "copyright": "example-license",
                 "uploading_user": self.user,

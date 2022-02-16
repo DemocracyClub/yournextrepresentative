@@ -58,7 +58,6 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "source",
-            "is_primary",
             "md5sum",
             "copyright",
             "uploading_user",
@@ -294,7 +293,7 @@ class PersonSerializer(MinimalPersonSerializer):
     thumbnail = HyperlinkedSorlImageField(
         "300x300",
         options={"crop": "center"},
-        source="primary_image",
+        source="person_image",
         read_only=True,
     )
 

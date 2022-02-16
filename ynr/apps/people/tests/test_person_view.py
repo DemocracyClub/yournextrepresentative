@@ -85,7 +85,6 @@ class TestPersonView(PersonViewSharedTestsMixin):
             "images/jowell-pilot.jpg",
             defaults={
                 "person": self.person,
-                "is_primary": True,
                 "source": "Taken from Wikipedia",
                 "copyright": "example-license",
                 "uploading_user": self.user,

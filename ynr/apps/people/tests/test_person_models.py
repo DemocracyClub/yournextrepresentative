@@ -28,7 +28,6 @@ class TestPersonModels(UK2015ExamplesMixin, TmpMediaRootMixin, WebTest):
             "images/jowell-pilot.jpg",
             defaults={
                 "person": person,
-                "is_primary": True,
                 "source": "Taken from Wikipedia",
                 "copyright": "example-license",
                 "user_notes": "A photo of Tessa Jowell",

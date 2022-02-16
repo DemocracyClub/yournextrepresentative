@@ -35,7 +35,6 @@ class TestAPI(
                 "copyright": "example-license",
                 "uploading_user": self.user,
                 "user_notes": "Here's an image...",
-                "is_primary": True,
                 "source": "Found on the candidate's Flickr feed",
             },
         )
@@ -162,7 +161,7 @@ class TestAPI(
 
         response = self.app.get("/api/next/people/2009/")
         result_json = response.json
-        self.assertTrue(result_json["image"]["is_primary"])
+        self.assertTrue(result_json["image"])
 
     def test_all_parties_view(self):
         self.maxDiff = None
