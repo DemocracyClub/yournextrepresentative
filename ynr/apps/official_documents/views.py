@@ -50,9 +50,7 @@ class CreateDocumentView(GroupRequiredMixin, CreateView):
         try:
             if hasattr(self.object.ballot, "rawpeople"):
                 self.object.ballot.rawpeople.delete()
-            extract_pages_for_ballot(
-                ballot=self.object.ballot, manual_upload=True
-            )
+            extract_pages_for_ballot(ballot=self.object.ballot)
             extract_ballot_table(ballot=self.object.ballot)
             parse_raw_data_for_ballot(ballot=self.object.ballot)
         except (ValueError, NoTextInDocumentError):
