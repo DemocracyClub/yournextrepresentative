@@ -70,7 +70,6 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
             "images/person-accepted.jpg",
             defaults={
                 "person": self.p_accepted_image_in_queue,
-                "is_primary": True,
                 "source": "From Flickr, used as an example image",
                 "copyright": "example-license",
                 "uploading_user": self.user,
@@ -89,7 +88,6 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
             "images/person-existing-image.jpg",
             defaults={
                 "person": self.p_existing_image_but_none_in_queue,
-                "is_primary": True,
                 "source": "From Flickr, used as an example image",
                 "copyright": "example-license",
                 "uploading_user": self.user,

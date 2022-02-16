@@ -43,7 +43,6 @@ class TestAPI(
                 "copyright": "example-license",
                 "uploading_user": self.user,
                 "user_notes": "Here's an image...",
-                "is_primary": True,
                 "source": "Found on the candidate's Flickr feed",
             },
         )

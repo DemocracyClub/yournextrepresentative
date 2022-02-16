@@ -258,7 +258,6 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 "x_max": guessed_crop_bounds[2],
                 "y_max": guessed_crop_bounds[3],
                 "moderator_why_allowed": self.queued_image.why_allowed,
-                "make_primary": True,
             }
         )
         context["guessed_crop_bounds"] = guessed_crop_bounds
@@ -300,7 +299,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         )
 
     def crop_and_upload_image_to_popit(
-        self, image_file, crop_bounds, moderator_why_allowed, make_primary
+        self, image_file, crop_bounds, moderator_why_allowed
     ):
         original = PillowImage.open(image_file)
         # Some uploaded images are CYMK, which gives you an error when
@@ -323,12 +322,6 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             uploaded_by=uploaded_by
         )
 
-        if make_primary:
-            # Unset the is_primary flag on all other images
-            PersonImage.objects.filter(person_id=person_id).update(
-                is_primary=False
-            )
-
         try:
             person.image.delete()
         except PersonImage.DoesNotExist:
@@ -340,7 +333,6 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             defaults={
                 "person": person,
                 "source": source,
-                "is_primary": make_primary,
                 "md5sum": md5sum,
                 "uploading_user": self.queued_image.user,
                 "user_notes": self.queued_image.justification_for_use,
@@ -350,11 +342,10 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             },
         )
 
-        if make_primary:
-            sorl_delete(person.primary_image.file, delete_file=False)
-            # Update the last modified date, so this is picked up
-            # as a recent edit by API consumers
-            person.save()
+        sorl_delete(person.person_image.file, delete_file=False)
+        # Update the last modified date, so this is picked up
+        # as a recent edit by API consumers
+        person.save()
 
     def form_valid(self, form):
         decision = form.cleaned_data["decision"]
@@ -387,7 +378,6 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 self.queued_image.image.file,
                 [form.cleaned_data[e] for e in crop_fields],
                 form.cleaned_data["moderator_why_allowed"],
-                form.cleaned_data["make_primary"],
             )
             self.queued_image.decision = "approved"
             for i, field in enumerate(crop_fields):

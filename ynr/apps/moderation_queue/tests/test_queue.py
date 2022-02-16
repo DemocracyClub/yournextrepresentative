@@ -214,7 +214,6 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             person = Person.objects.get(id=2009)
             image = person.image
 
-            self.assertTrue(image.is_primary)
             self.assertEqual(
                 "Uploaded by john: Approved from photo moderation queue",
                 image.source,
@@ -353,7 +352,6 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             person = Person.objects.get(id=2009)
             image = person.image
 
-            self.assertTrue(image.is_primary)
             self.assertEqual(
                 "Uploaded by a script: Approved from photo moderation queue",
                 image.source,

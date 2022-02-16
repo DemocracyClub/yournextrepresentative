@@ -52,14 +52,14 @@ class PersonImageInlineForm(forms.ModelForm):
         model = PersonImage
         widgets = {"image": AdminImageWidget}
 
-        fields = ("image", "is_primary")
+        fields = ("image",)
 
 
 class PersonImageInline(admin.TabularInline):
     extra = 0
     model = PersonImage
     form = PersonImageInlineForm
-    fields = ("id", "image", "is_primary")
+    fields = ("id", "image")
 
 
 class PersonAdmin(admin.ModelAdmin):

@@ -79,8 +79,8 @@ with the source: \n> {source}
         )
 
         image_url = None
-        if self.logged_action.person.primary_image:
-            image_url = self.logged_action.person.primary_image.url
+        if self.logged_action.person.person_image:
+            image_url = self.logged_action.person.person_image.url
             if not image_url.startswith("http"):
                 image_url = None
 

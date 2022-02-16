@@ -24,7 +24,6 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "source",
-            "is_primary",
             "md5sum",
             "copyright",
             "uploading_user",
