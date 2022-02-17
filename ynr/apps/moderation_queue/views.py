@@ -1,10 +1,7 @@
 import os
 import random
 import re
-from os.path import join
-from tempfile import NamedTemporaryFile
 from typing import Any, Dict
-import uuid
 
 import bleach
 from braces.views import LoginRequiredMixin
@@ -26,21 +23,18 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from urllib.parse import quote
 from django.views.generic import CreateView, ListView, TemplateView, View
-from PIL import Image as PillowImage
-from sorl.thumbnail import delete as sorl_delete
 
 from auth_helpers.views import GroupRequiredMixin
 from candidates.management.images import (
     ImageDownloadException,
     download_image_from_url,
-    get_file_md5sum,
 )
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.views.version_data import get_change_metadata, get_client_ip
 from candidates.models.db import ActionType
 from elections.models import Election
 from moderation_queue.filters import QueuedImageFilter
-from people.models import Person, PersonImage
+from people.models import Person
 from popolo.models import Membership
 from moderation_queue.helpers import (
     upload_photo_response,
@@ -277,55 +271,6 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             fail_silently=False,
         )
 
-    def crop_and_upload_image_to_popit(
-        self, image_file, crop_bounds, moderator_why_allowed
-    ):
-        original = PillowImage.open(image_file)
-        # Some uploaded images are CYMK, which gives you an error when
-        # you try to write them as PNG, so convert to RGBA (this is
-        # RGBA rather than RGB so that any alpha channel (transparency)
-        # is preserved).
-        person_id = self.queued_image.person.id
-        person = Person.objects.get(pk=person_id)
-        original = original.convert("RGBA")
-        cropped = original.crop(crop_bounds)
-        ntf = NamedTemporaryFile(delete=False)
-        cropped.save(ntf.name, "PNG")
-        md5sum = get_file_md5sum(ntf.name)
-        filename = str(person_id) + "-" + str(uuid.uuid4()) + ".png"
-        if self.queued_image.user:
-            uploaded_by = self.queued_image.user.username
-        else:
-            uploaded_by = "a robot 🤖"
-        source = "Uploaded by {uploaded_by}: Approved from photo moderation queue".format(
-            uploaded_by=uploaded_by
-        )
-
-        try:
-            person.image.delete()
-        except PersonImage.DoesNotExist:
-            pass
-
-        PersonImage.objects.create_from_file(
-            ntf.name,
-            join("images", filename),
-            defaults={
-                "person": person,
-                "source": source,
-                "md5sum": md5sum,
-                "uploading_user": self.queued_image.user,
-                "user_notes": self.queued_image.justification_for_use,
-                "copyright": moderator_why_allowed,
-                "user_copyright": self.queued_image.why_allowed,
-                "notes": "Approved from photo moderation queue",
-            },
-        )
-
-        sorl_delete(person.person_image.file, delete_file=False)
-        # Update the last modified date, so this is picked up
-        # as a recent edit by API consumers
-        person.save()
-
     def form_valid(self, form):
         decision = form.cleaned_data["decision"]
         person = Person.objects.get(id=self.queued_image.person.id)
@@ -353,8 +298,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         if decision == "approved":
             # Crop the image...
             crop_fields = ("x_min", "y_min", "x_max", "y_max")
-            self.crop_and_upload_image_to_popit(
-                self.queued_image.image.file,
+            self.queued_image.crop_and_upload_image_to_popit(
                 [form.cleaned_data[e] for e in crop_fields],
                 form.cleaned_data["moderator_why_allowed"],
             )
