@@ -1,6 +1,7 @@
 import os
 from datetime import date
 from enum import Enum, unique
+from tempfile import NamedTemporaryFile
 import uuid
 from urllib.parse import urljoin, quote_plus
 
@@ -27,6 +28,8 @@ from django_extensions.db.models import TimeStampedModel
 from slugify import slugify
 from sorl.thumbnail import get_thumbnail
 from sorl.thumbnail import delete as sorl_delete
+from PIL import Image as PillowImage
+
 
 from candidates.diffs import get_version_diffs
 from candidates.management.images import get_file_md5sum
@@ -802,13 +805,23 @@ class Person(TimeStampedModel, models.Model):
         )
         self.delete()
 
-    def create_person_image(self, image_file, queued_image, copyright):
+    def create_person_image(self, queued_image, copyright):
+        original = PillowImage.open(queued_image.image.file)
+        # Some uploaded images are CYMK, which gives you an error when
+        # you try to write them as PNG, so convert to RGBA (this is
+        # RGBA rather than RGB so that any alpha channel (transparency)
+        # is preserved).
+        original = original.convert("RGBA")
+        cropped = original.crop(queued_image.crop_bounds)
+        ntf = NamedTemporaryFile(delete=False)
+        cropped.save(ntf.name, "PNG")
+
         try:
             self.image.delete()
         except PersonImage.DoesNotExist:
             pass
 
-        md5sum = get_file_md5sum(image_file.name)
+        md5sum = get_file_md5sum(ntf.name)
         filename = str(self.pk) + "-" + str(uuid.uuid4()) + ".png"
 
         if queued_image.user:
@@ -820,7 +833,7 @@ class Person(TimeStampedModel, models.Model):
         )
 
         PersonImage.objects.create_from_file(
-            image_file.name,
+            ntf.name,
             os.path.join("images", filename),
             defaults={
                 "person": self,

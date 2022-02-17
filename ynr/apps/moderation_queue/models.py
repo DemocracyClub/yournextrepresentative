@@ -1,13 +1,10 @@
 from datetime import date
 from os.path import join, splitext
-from tempfile import NamedTemporaryFile
 import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
-
-from PIL import Image as PillowImage
 
 
 PHOTO_REVIEWERS_GROUP_NAME = "Photo Reviewers"
@@ -108,25 +105,18 @@ class QueuedImage(models.Model):
         return reverse("photo-review", kwargs={"queued_image_id": self.id})
 
     @property
-    def has_crop_bounds(self):
-        crop_fields = ["crop_min_x", "crop_min_y", "crop_max_x", "crop_max_y"]
-        return not any(getattr(self, c) is None for c in crop_fields)
+    def crop_fields(self):
+        return ["crop_min_x", "crop_min_y", "crop_max_x", "crop_max_y"]
 
-    def crop_and_upload_image_to_popit(
-        self, crop_bounds, moderator_why_allowed
-    ):
-        original = PillowImage.open(self.image.file)
-        # Some uploaded images are CYMK, which gives you an error when
-        # you try to write them as PNG, so convert to RGBA (this is
-        # RGBA rather than RGB so that any alpha channel (transparency)
-        # is preserved).
-        original = original.convert("RGBA")
-        cropped = original.crop(crop_bounds)
-        ntf = NamedTemporaryFile(delete=False)
-        cropped.save(ntf.name, "PNG")
-        self.person.create_person_image(
-            image_file=ntf, queued_image=self, copyright=moderator_why_allowed
-        )
+    @property
+    def has_crop_bounds(self):
+        return not any(getattr(self, c) is None for c in self.crop_fields)
+
+    @property
+    def crop_bounds(self):
+        if not self.has_crop_bounds:
+            return []
+        return [getattr(self, field) for field in self.crop_fields]
 
 
 class SuggestedPostLock(models.Model):
