@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from enum import Enum, unique
 import uuid
@@ -25,8 +26,10 @@ from django.utils.html import format_html
 from django_extensions.db.models import TimeStampedModel
 from slugify import slugify
 from sorl.thumbnail import get_thumbnail
+from sorl.thumbnail import delete as sorl_delete
 
 from candidates.diffs import get_version_diffs
+from candidates.management.images import get_file_md5sum
 from candidates.models import Ballot
 from candidates.models.db import ActionType, LoggedAction
 from people.managers import (
@@ -798,6 +801,44 @@ class Person(TimeStampedModel, models.Model):
             source=source,
         )
         self.delete()
+
+    def create_person_image(self, image_file, queued_image, copyright):
+        try:
+            self.image.delete()
+        except PersonImage.DoesNotExist:
+            pass
+
+        md5sum = get_file_md5sum(image_file.name)
+        filename = str(self.pk) + "-" + str(uuid.uuid4()) + ".png"
+
+        if queued_image.user:
+            uploaded_by = queued_image.user.username
+        else:
+            uploaded_by = "a script"
+        source = "Uploaded by {uploaded_by}: Approved from photo moderation queue".format(
+            uploaded_by=uploaded_by
+        )
+
+        PersonImage.objects.create_from_file(
+            image_file.name,
+            os.path.join("images", filename),
+            defaults={
+                "person": self,
+                "source": source,
+                "md5sum": md5sum,
+                "uploading_user": queued_image.user,
+                "user_notes": queued_image.justification_for_use,
+                "copyright": copyright,
+                "user_copyright": queued_image.why_allowed,
+                "notes": "Approved from photo moderation queue",
+            },
+        )
+
+        sorl_delete(self.person_image.file, delete_file=False)
+        # Update the last modified date, so this is picked up
+        # as a recent edit by API consumers
+        # TODO check if this is needed
+        self.save()
 
 
 class PersonNameSynonym(models.Model):
