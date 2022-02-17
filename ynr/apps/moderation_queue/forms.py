@@ -91,6 +91,18 @@ class PhotoReviewForm(forms.Form):
         widget=forms.widgets.RadioSelect,
     )
 
+    def approved(self, queued_image):
+        queued_image.decision = QueuedImage.APPROVED
+        queued_image.crop_min_x = self.cleaned_data["x_min"]
+        queued_image.crop_min_y = self.cleaned_data["y_min"]
+        queued_image.crop_max_x = self.cleaned_data["x_max"]
+        queued_image.crop_max_y = self.cleaned_data["y_max"]
+        queued_image.save()
+        queued_image.person.create_person_image(
+            queued_image=queued_image,
+            copyright=self.cleaned_data["moderator_why_allowed"],
+        )
+
 
 class SuggestedPostLockForm(forms.ModelForm):
     class Meta:

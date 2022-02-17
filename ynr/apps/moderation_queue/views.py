@@ -296,19 +296,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             uploaded_by = "a robot 🤖"
 
         if decision == "approved":
-            # Crop the image...
-            crop_fields = ("x_min", "y_min", "x_max", "y_max")
-            self.queued_image.crop_and_upload_image_to_popit(
-                [form.cleaned_data[e] for e in crop_fields],
-                form.cleaned_data["moderator_why_allowed"],
-            )
-            self.queued_image.decision = "approved"
-            for i, field in enumerate(crop_fields):
-                setattr(
-                    self.queued_image, "crop_" + field, form.cleaned_data[field]
-                )
-            self.queued_image.save()
-
+            form.approved(queued_image=self.queued_image)
             sentence = "Approved a photo upload from {uploading_user}"
             ' who provided the message: "{message}"'
 
