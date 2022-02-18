@@ -121,6 +121,12 @@ class QueuedImage(models.Model):
             return []
         return [getattr(self, field) for field in self.crop_fields]
 
+    @property
+    def uploaded_by(self):
+        if self.user:
+            return self.user.username
+        return "a script"
+
     def crop_image(self):
         """
         Returns a temporary file containing the cropped image

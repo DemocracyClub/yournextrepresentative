@@ -186,7 +186,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         response = self.app.get(review_url, user=self.test_reviewer)
         self.assertContains(response, "Photo policy")
 
-    @patch("moderation_queue.views.send_mail")
+    @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     def test_photo_review_upload_approved_privileged(self, mock_send_mail):
         with self.settings(SITE_ID=1):
