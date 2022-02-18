@@ -1,4 +1,5 @@
 import cgi
+from django.urls import reverse
 
 import requests
 from django import forms
@@ -156,6 +157,48 @@ class PhotoReviewForm(forms.Form):
                 ),
                 "signoff": f"Many thanks from the {site_name} volunteers",
             },
+        )
+
+    def rejected(self):
+        self.queued_image.decision = "rejected"
+        self.queued_image.save()
+        update_message = (
+            f"Rejected a photo upload from {self.queued_image.uploaded_by}"
+        )
+        self.create_logged_action(
+            action_type=ActionType.PHOTO_REJECT, update_message=update_message
+        )
+        retry_upload_link = self.request.build_absolute_uri(
+            reverse(
+                "photo-upload",
+                kwargs={"person_id": self.queued_image.person.id},
+            )
+        )
+        site_name = Site.objects.get_current().name
+        photo_review_url = self.request.build_absolute_uri(
+            self.queued_image.get_absolute_url()
+        )
+        self.send_mail(
+            subject=f"{site_name} image moderation results",
+            template_name="moderation_queue/photo_rejected_email.txt",
+            context={
+                "reason": self.cleaned_data["rejection_reason"],
+                "retry_upload_link": retry_upload_link,
+                "photo_review_url": photo_review_url,
+                "intro": (
+                    "Thank-you for uploading a photo of "
+                    f"{self.queued_image.person.name} to {site_name}, "
+                    "but unfortunately we can't use that image because:"
+                ),
+                "possible_actions": (
+                    "You can just reply to this email if you want to "
+                    "discuss that further, or you can try uploading a "
+                    "photo with a different reason or justification "
+                    "for its use using this link:"
+                ),
+                "signoff": (f"Many thanks from the {site_name} volunteers"),
+            },
+            email_support_too=True,
         )
 
     def send_mail(
