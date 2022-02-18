@@ -2,7 +2,13 @@ import cgi
 
 import requests
 from django import forms
+from django.conf import settings
+from django.core.mail import send_mail
 from django.core.exceptions import ValidationError
+from django.contrib.sites.models import Site
+from django.template.loader import render_to_string
+from candidates.models.db import ActionType, LoggedAction
+from candidates.views.version_data import get_change_metadata, get_client_ip
 
 from people.forms.forms import StrippedCharField
 
@@ -71,6 +77,10 @@ class UploadPersonPhotoURLForm(forms.Form):
 
 
 class PhotoReviewForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.queued_image = kwargs.pop("queued_image")
+        self.request = kwargs.pop("request")
+        super().__init__(*args, **kwargs)
 
     queued_image_id = forms.IntegerField(
         required=True, widget=forms.HiddenInput()
@@ -91,16 +101,80 @@ class PhotoReviewForm(forms.Form):
         widget=forms.widgets.RadioSelect,
     )
 
-    def approved(self, queued_image):
-        queued_image.decision = QueuedImage.APPROVED
-        queued_image.crop_min_x = self.cleaned_data["x_min"]
-        queued_image.crop_min_y = self.cleaned_data["y_min"]
-        queued_image.crop_max_x = self.cleaned_data["x_max"]
-        queued_image.crop_max_y = self.cleaned_data["y_max"]
-        queued_image.save()
-        queued_image.person.create_person_image(
-            queued_image=queued_image,
+    def create_logged_action(self, action_type, update_message, version_id=""):
+        LoggedAction.objects.create(
+            user=self.request.user,
+            action_type=action_type,
+            ip_address=get_client_ip(self.request),
+            popit_person_new_version=version_id,
+            person=self.queued_image.person,
+            source=update_message,
+        )
+
+    def approved(self):
+        self.queued_image.decision = QueuedImage.APPROVED
+        self.queued_image.crop_min_x = self.cleaned_data["x_min"]
+        self.queued_image.crop_min_y = self.cleaned_data["y_min"]
+        self.queued_image.crop_max_x = self.cleaned_data["x_max"]
+        self.queued_image.crop_max_y = self.cleaned_data["y_max"]
+        self.queued_image.save()
+        self.queued_image.person.create_person_image(
+            queued_image=self.queued_image,
             copyright=self.cleaned_data["moderator_why_allowed"],
+        )
+        sentence = "Approved a photo upload from {uploading_user}"
+        ' who provided the message: "{message}"'
+
+        update_message = sentence.format(
+            uploading_user=self.queued_image.uploaded_by,
+            message=self.queued_image.justification_for_use,
+        )
+        change_metadata = get_change_metadata(self.request, update_message)
+        self.queued_image.person.record_version(change_metadata)
+        self.queued_image.person.save()
+        self.create_logged_action(
+            action_type=ActionType.PHOTO_APPROVE,
+            update_message=update_message,
+            version_id=change_metadata["version_id"],
+        )
+
+        candidate_full_url = self.request.build_absolute_uri(
+            self.queued_image.person.get_absolute_url(self.request)
+        )
+        site_name = Site.objects.get_current().name
+        subject = f"{site_name} image upload approved"
+        self.send_mail(
+            subject=subject,
+            template_name="moderation_queue/photo_approved_email.txt",
+            context={
+                "site_name": site_name,
+                "candidate_page_url": candidate_full_url,
+                "intro": (
+                    "Thank you for submitting a photo to "
+                    f"{site_name}. It has been uploaded to "
+                    "the candidate page here:"
+                ),
+                "signoff": f"Many thanks from the {site_name} volunteers",
+            },
+        )
+
+    def send_mail(
+        self, subject, template_name, context, email_support_too=False
+    ):
+        if not self.queued_image.user:
+            # We can't send emails to bots…yet.
+            return
+
+        message = render_to_string(template_name=template_name, context=context)
+        recipients = [self.queued_image.user.email]
+        if email_support_too:
+            recipients.append(settings.SUPPORT_EMAIL)
+        return send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            recipients,
+            fail_silently=False,
         )
 
 

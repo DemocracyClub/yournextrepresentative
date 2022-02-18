@@ -1,6 +1,7 @@
 import os
 import random
 import re
+
 from typing import Any, Dict
 
 import bleach
@@ -30,7 +31,7 @@ from candidates.management.images import (
     download_image_from_url,
 )
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
-from candidates.views.version_data import get_change_metadata, get_client_ip
+from candidates.views.version_data import get_client_ip
 from candidates.models.db import ActionType
 from elections.models import Election
 from moderation_queue.filters import QueuedImageFilter
@@ -223,6 +224,8 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             value_if_none(self.queued_image.crop_max_y, max_y),
         ]
         context["form"] = PhotoReviewForm(
+            queued_image=self.queued_image,
+            request=self.request,
             initial={
                 "queued_image_id": self.queued_image.id,
                 "decision": self.queued_image.decision,
@@ -231,7 +234,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 "x_max": guessed_crop_bounds[2],
                 "y_max": guessed_crop_bounds[3],
                 "moderator_why_allowed": self.queued_image.why_allowed,
-            }
+            },
         )
         context["guessed_crop_bounds"] = guessed_crop_bounds
         context["why_allowed"] = self.queued_image.why_allowed
@@ -296,48 +299,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             uploaded_by = "a robot 🤖"
 
         if decision == "approved":
-            form.approved(queued_image=self.queued_image)
-            sentence = "Approved a photo upload from {uploading_user}"
-            ' who provided the message: "{message}"'
-
-            update_message = sentence.format(
-                uploading_user=uploaded_by,
-                message=self.queued_image.justification_for_use,
-            )
-            change_metadata = get_change_metadata(self.request, update_message)
-            person.record_version(change_metadata)
-            person.save()
-            person.save()
-            LoggedAction.objects.create(
-                user=self.request.user,
-                action_type=ActionType.PHOTO_APPROVE,
-                ip_address=get_client_ip(self.request),
-                popit_person_new_version=change_metadata["version_id"],
-                person=person,
-                source=update_message,
-            )
-            candidate_full_url = self.request.build_absolute_uri(
-                person.get_absolute_url(self.request)
-            )
-
-            self.send_mail(
-                "{site_name} image upload approved".format(site_name=site_name),
-                render_to_string(
-                    "moderation_queue/photo_approved_email.txt",
-                    {
-                        "site_name": site_name,
-                        "candidate_page_url": candidate_full_url,
-                        "intro": (
-                            "Thank you for submitting a photo to "
-                            "{site_name}. It has been uploaded to "
-                            "the candidate page here:"
-                        ).format(site_name=site_name),
-                        "signoff": (
-                            "Many thanks from the {site_name} volunteers"
-                        ).format(site_name=site_name),
-                    },
-                ),
-            )
+            form.approved()
             flash(
                 messages.SUCCESS,
                 "You approved a photo upload for %s" % candidate_link,
@@ -443,7 +405,11 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         self.queued_image = QueuedImage.objects.get(
             pk=kwargs["queued_image_id"]
         )
-        form = PhotoReviewForm(data=self.request.POST)
+        form = PhotoReviewForm(
+            data=self.request.POST,
+            request=request,
+            queued_image=self.queued_image,
+        )
         if form.is_valid():
             return self.form_valid(form)
         else:
