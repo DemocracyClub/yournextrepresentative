@@ -1,10 +1,13 @@
 from datetime import date
 from os.path import join, splitext
+from tempfile import NamedTemporaryFile
 import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+
+from PIL import Image as PillowImage
 
 
 PHOTO_REVIEWERS_GROUP_NAME = "Photo Reviewers"
@@ -117,6 +120,21 @@ class QueuedImage(models.Model):
         if not self.has_crop_bounds:
             return []
         return [getattr(self, field) for field in self.crop_fields]
+
+    def crop_image(self):
+        """
+        Returns a temporary file containing the cropped image
+        """
+        original = PillowImage.open(self.image.file)
+        # Some uploaded images are CYMK, which gives you an error when
+        # you try to write them as PNG, so convert to RGBA (this is
+        # RGBA rather than RGB so that any alpha channel (transparency)
+        # is preserved).
+        original = original.convert("RGBA")
+        cropped = original.crop(self.crop_bounds)
+        ntf = NamedTemporaryFile(delete=False)
+        cropped.save(ntf.name, "PNG")
+        return ntf
 
 
 class SuggestedPostLock(models.Model):

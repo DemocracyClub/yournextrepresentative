@@ -35,8 +35,8 @@ class TestAPI(
 
         self.person = PersonFactory.create(id=2009, name="Tessa Jowell")
         PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/imported.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/imported.jpg",
             defaults={
                 "person": self.person,
                 "md5sum": "md5sum",

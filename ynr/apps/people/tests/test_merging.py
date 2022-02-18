@@ -271,8 +271,8 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_merge_adds_new_image(self):
         PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/image1.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/image1.jpg",
             defaults={
                 "person": self.dest_person,
                 "md5sum": "md5sum",
@@ -284,8 +284,8 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         new_image = PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/image2.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/image2.jpg",
             defaults={
                 "person": self.source_person,
                 "md5sum": "md5sum",
@@ -306,8 +306,8 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
             self.source_person.image
 
         old_image = PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/image1.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/image1.jpg",
             defaults={
                 "person": self.dest_person,
                 "md5sum": "md5sum",
@@ -328,8 +328,8 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
             self.dest_person.image
 
         source_image = PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/image1.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/image1.jpg",
             defaults={
                 "person": self.source_person,
                 "md5sum": "md5sum",

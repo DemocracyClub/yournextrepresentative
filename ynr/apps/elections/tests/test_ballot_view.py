@@ -165,8 +165,8 @@ class TestBallotView(
         self.create_memberships(self.ballot, self.parties)
         person = self.ballot.membership_set.first().person
         im = PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/imported.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/imported.jpg",
             defaults={
                 "person": person,
                 "md5sum": "md5sum",

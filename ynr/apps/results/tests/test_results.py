@@ -48,8 +48,8 @@ class TestResultsFeed(
         )
         example_image_filename = EXAMPLE_IMAGE_FILENAME
         self.example_image = PersonImage.objects.create_from_file(
-            example_image_filename,
-            "images/jowell-pilot.jpg",
+            filename=example_image_filename,
+            new_filename="images/jowell-pilot.jpg",
             defaults={
                 "person": person,
                 "source": "Taken from Wikipedia",
