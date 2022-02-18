@@ -9,7 +9,6 @@ from braces.views import LoginRequiredMixin
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.sites.models import Site
 from django.core.files import File
 from django.core.mail import send_mail
 from django.db import models
@@ -19,8 +18,8 @@ from django.http import (
     HttpResponseRedirect,
     JsonResponse,
 )
+
 from django.shortcuts import get_object_or_404
-from django.template.loader import render_to_string
 from django.urls import reverse
 from urllib.parse import quote
 from django.views.generic import CreateView, ListView, TemplateView, View
@@ -283,10 +282,6 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         candidate_link = '<a href="{url}">{name}</a>'.format(
             url=candidate_path, name=candidate_name
         )
-        photo_review_url = self.request.build_absolute_uri(
-            self.queued_image.get_absolute_url()
-        )
-        site_name = Site.objects.get_current().name
 
         def flash(level, message):
             messages.add_message(
@@ -305,56 +300,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 "You approved a photo upload for %s" % candidate_link,
             )
         elif decision == "rejected":
-            self.queued_image.decision = "rejected"
-            self.queued_image.save()
-
-            sentence = "Rejected a photo upload from {uploading_user}"
-
-            update_message = sentence.format(uploading_user=uploaded_by)
-            LoggedAction.objects.create(
-                user=self.request.user,
-                action_type=ActionType.PHOTO_REJECT,
-                ip_address=get_client_ip(self.request),
-                popit_person_new_version="",
-                person=person,
-                source=update_message,
-            )
-            retry_upload_link = self.request.build_absolute_uri(
-                reverse(
-                    "photo-upload",
-                    kwargs={"person_id": self.queued_image.person.id},
-                )
-            )
-            self.send_mail(
-                "{site_name} image moderation results".format(
-                    site_name=Site.objects.get_current().name
-                ),
-                render_to_string(
-                    "moderation_queue/photo_rejected_email.txt",
-                    {
-                        "reason": form.cleaned_data["rejection_reason"],
-                        "retry_upload_link": retry_upload_link,
-                        "photo_review_url": photo_review_url,
-                        "intro": (
-                            "Thank-you for uploading a photo of "
-                            "{candidate_name} to {site_name}, "
-                            "but unfortunately we can't use that image because:"
-                        ).format(
-                            candidate_name=candidate_name, site_name=site_name
-                        ),
-                        "possible_actions": (
-                            "You can just reply to this email if you want to "
-                            "discuss that further, or you can try uploading a "
-                            "photo with a different reason or justification "
-                            "for its use using this link:"
-                        ),
-                        "signoff": (
-                            "Many thanks from the {site_name} volunteers"
-                        ).format(site_name=site_name),
-                    },
-                ),
-                email_support_too=True,
-            )
+            form.rejected()
             flash(
                 messages.INFO,
                 "You rejected a photo upload for %s" % candidate_link,

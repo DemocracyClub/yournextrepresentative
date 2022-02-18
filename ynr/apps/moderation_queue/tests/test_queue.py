@@ -237,7 +237,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
                 QueuedImage.objects.get(pk=self.q1.id).decision, "approved"
             )
 
-    @patch("moderation_queue.views.send_mail")
+    @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     @override_settings(SUPPORT_EMAIL="support@example.com")
     def test_photo_review_upload_rejected_privileged(self, mock_send_mail):
@@ -280,7 +280,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
                 QueuedImage.objects.get(pk=self.q1.id).decision, "rejected"
             )
 
-    @patch("moderation_queue.views.send_mail")
+    @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     def test_photo_review_upload_undecided_privileged(self, mock_send_mail):
         review_url = reverse(
@@ -301,7 +301,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             QueuedImage.objects.get(pk=self.q1.id).decision, "undecided"
         )
 
-    @patch("moderation_queue.views.send_mail")
+    @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     def test_photo_review_upload_ignore_privileged(self, mock_send_mail):
         review_url = reverse(
@@ -328,7 +328,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         self.assertEqual(la.action_type, "photo-ignore")
         self.assertEqual(la.person.id, 2009)
 
-    @patch("moderation_queue.views.send_mail")
+    @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     def test_photo_review_upload_approved_privileged_no_uploading_user(
         self, mock_send_mail
@@ -380,7 +380,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
                 "approved",
             )
 
-    @patch("moderation_queue.views.send_mail")
+    @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     @override_settings(SUPPORT_EMAIL="support@example.com")
     def test_photo_review_upload_rejected_privileged_no_uploading_user(
