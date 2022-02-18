@@ -26,8 +26,8 @@ class TestPersonModels(UK2015ExamplesMixin, TmpMediaRootMixin, WebTest):
         )
 
         pi = PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/jowell-pilot.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/jowell-pilot.jpg",
             defaults={
                 "person": person,
                 "source": "Taken from Wikipedia",

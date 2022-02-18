@@ -1,8 +1,5 @@
-import os
 from datetime import date
 from enum import Enum, unique
-from tempfile import NamedTemporaryFile
-import uuid
 from urllib.parse import urljoin, quote_plus
 
 from django.conf import settings
@@ -28,11 +25,9 @@ from django_extensions.db.models import TimeStampedModel
 from slugify import slugify
 from sorl.thumbnail import get_thumbnail
 from sorl.thumbnail import delete as sorl_delete
-from PIL import Image as PillowImage
 
 
 from candidates.diffs import get_version_diffs
-from candidates.management.images import get_file_md5sum
 from candidates.models import Ballot
 from candidates.models.db import ActionType, LoggedAction
 from people.managers import (
@@ -45,11 +40,9 @@ from popolo.models import Membership, VersionNotFound
 
 def person_image_path(instance, filename):
     # Ensure the filename isn't too long
-    filename = filename[400:]
+    filename = filename[:400]
     # Upload images in a directory per person
-    return "images/people/{0}/{1}-{2}".format(
-        instance.person.id, uuid.uuid4(), filename
-    )
+    return f"images/people/{instance.person_id}/{filename}"
 
 
 @unique
@@ -806,39 +799,23 @@ class Person(TimeStampedModel, models.Model):
         self.delete()
 
     def create_person_image(self, queued_image, copyright):
-        original = PillowImage.open(queued_image.image.file)
-        # Some uploaded images are CYMK, which gives you an error when
-        # you try to write them as PNG, so convert to RGBA (this is
-        # RGBA rather than RGB so that any alpha channel (transparency)
-        # is preserved).
-        original = original.convert("RGBA")
-        cropped = original.crop(queued_image.crop_bounds)
-        ntf = NamedTemporaryFile(delete=False)
-        cropped.save(ntf.name, "PNG")
-
+        cropped_image = queued_image.crop_image()
         try:
             self.image.delete()
         except PersonImage.DoesNotExist:
             pass
 
-        md5sum = get_file_md5sum(ntf.name)
-        filename = str(self.pk) + "-" + str(uuid.uuid4()) + ".png"
-
-        if queued_image.user:
-            uploaded_by = queued_image.user.username
-        else:
-            uploaded_by = "a script"
-        source = "Uploaded by {uploaded_by}: Approved from photo moderation queue".format(
-            uploaded_by=uploaded_by
+        uploaded_by = (
+            queued_image.user.username if queued_image.user else "a script"
         )
-
+        source = (
+            f"Uploaded by {uploaded_by}: Approved from photo moderation queue"
+        )
         PersonImage.objects.create_from_file(
-            ntf.name,
-            os.path.join("images", filename),
+            filename=cropped_image.name,
             defaults={
                 "person": self,
                 "source": source,
-                "md5sum": md5sum,
                 "uploading_user": queued_image.user,
                 "user_notes": queued_image.justification_for_use,
                 "copyright": copyright,
@@ -850,7 +827,6 @@ class Person(TimeStampedModel, models.Model):
         sorl_delete(self.person_image.file, delete_file=False)
         # Update the last modified date, so this is picked up
         # as a recent edit by API consumers
-        # TODO check if this is needed
         self.save()
 
 

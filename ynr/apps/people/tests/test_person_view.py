@@ -99,8 +99,8 @@ class TestPersonView(PersonViewSharedTestsMixin):
 
     def test_photo_credits_shown(self):
         PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/jowell-pilot.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/jowell-pilot.jpg",
             defaults={
                 "person": self.person,
                 "source": "Taken from Wikipedia",
