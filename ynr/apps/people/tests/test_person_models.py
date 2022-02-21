@@ -35,7 +35,9 @@ class TestPersonModels(UK2015ExamplesMixin, TmpMediaRootMixin, WebTest):
         )
 
         url = get_thumbnail(pi.image, "x64").url
-
+        # fresh lookup of the instance is required in order to invalidate the
+        # cached value of person_image
+        person = Person.objects.get()
         self.assertEqual(person.get_display_image_url(), url)
 
     def test_get_alive_now(self):
