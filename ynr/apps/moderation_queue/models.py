@@ -125,7 +125,7 @@ class QueuedImage(models.Model):
     def uploaded_by(self):
         if self.user:
             return self.user.username
-        return "a script"
+        return "a robot 🤖"
 
     def crop_image(self):
         """

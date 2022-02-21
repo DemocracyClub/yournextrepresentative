@@ -102,18 +102,36 @@ class PhotoReviewForm(forms.Form):
         widget=forms.widgets.RadioSelect,
     )
 
-    def create_logged_action(self, action_type, update_message, version_id=""):
+    def process(self):
+        action_method = getattr(self, self.cleaned_data["decision"])
+        action_method()
+
+    def create_logged_action(self, version_id=""):
+        action_types = {
+            QueuedImage.APPROVED: ActionType.PHOTO_APPROVE,
+            QueuedImage.REJECTED: ActionType.PHOTO_REJECT,
+            QueuedImage.IGNORE: ActionType.PHOTO_IGNORE,
+        }
         LoggedAction.objects.create(
             user=self.request.user,
-            action_type=action_type,
+            action_type=action_types[self.cleaned_data["decision"]],
             ip_address=get_client_ip(self.request),
             popit_person_new_version=version_id,
             person=self.queued_image.person,
-            source=update_message,
+            source=self.update_message,
         )
 
+    @property
+    def update_message(self):
+        messages = {
+            QueuedImage.APPROVED: f'Approved a photo upload from {self.queued_image.uploaded_by} who provided the message: "{self.queued_image.justification_for_use}"',
+            QueuedImage.REJECTED: f"Rejected a photo upload from {self.queued_image.uploaded_by}",
+            QueuedImage.IGNORE: f"Ignored a photo upload from {self.queued_image.uploaded_by} (This usually means it was a duplicate)",
+        }
+        return messages[self.cleaned_data["decision"]]
+
     def approved(self):
-        self.queued_image.decision = QueuedImage.APPROVED
+        self.queued_image.decision = self.cleaned_data["decision"]
         self.queued_image.crop_min_x = self.cleaned_data["x_min"]
         self.queued_image.crop_min_y = self.cleaned_data["y_min"]
         self.queued_image.crop_max_x = self.cleaned_data["x_max"]
@@ -123,21 +141,10 @@ class PhotoReviewForm(forms.Form):
             queued_image=self.queued_image,
             copyright=self.cleaned_data["moderator_why_allowed"],
         )
-        sentence = "Approved a photo upload from {uploading_user}"
-        ' who provided the message: "{message}"'
-
-        update_message = sentence.format(
-            uploading_user=self.queued_image.uploaded_by,
-            message=self.queued_image.justification_for_use,
-        )
-        change_metadata = get_change_metadata(self.request, update_message)
+        change_metadata = get_change_metadata(self.request, self.update_message)
         self.queued_image.person.record_version(change_metadata)
         self.queued_image.person.save()
-        self.create_logged_action(
-            action_type=ActionType.PHOTO_APPROVE,
-            update_message=update_message,
-            version_id=change_metadata["version_id"],
-        )
+        self.create_logged_action(version_id=change_metadata["version_id"])
 
         candidate_full_url = self.request.build_absolute_uri(
             self.queued_image.person.get_absolute_url(self.request)
@@ -160,14 +167,9 @@ class PhotoReviewForm(forms.Form):
         )
 
     def rejected(self):
-        self.queued_image.decision = "rejected"
+        self.queued_image.decision = self.cleaned_data["decision"]
         self.queued_image.save()
-        update_message = (
-            f"Rejected a photo upload from {self.queued_image.uploaded_by}"
-        )
-        self.create_logged_action(
-            action_type=ActionType.PHOTO_REJECT, update_message=update_message
-        )
+        self.create_logged_action()
         retry_upload_link = self.request.build_absolute_uri(
             reverse(
                 "photo-upload",
@@ -200,6 +202,15 @@ class PhotoReviewForm(forms.Form):
             },
             email_support_too=True,
         )
+
+    def ignore(self):
+        self.queued_image.decision = self.cleaned_data["decision"]
+        self.queued_image.save()
+        self.create_logged_action()
+
+    def undecided(self):
+        self.queued_image.decision = self.cleaned_data["decision"]
+        self.queued_image.save()
 
     def send_mail(
         self, subject, template_name, context, email_support_too=False

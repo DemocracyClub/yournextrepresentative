@@ -6,11 +6,9 @@ from typing import Any, Dict
 
 import bleach
 from braces.views import LoginRequiredMixin
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.files import File
-from django.core.mail import send_mail
 from django.db import models
 from django.db.models import Count, Q
 from django.http import (
@@ -258,86 +256,21 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         context["person"] = person
         return context
 
-    def send_mail(self, subject, message, email_support_too=False):
-        if not self.queued_image.user:
-            # We can't send emails to bots…yet.
-            return
-        recipients = [self.queued_image.user.email]
-        if email_support_too:
-            recipients.append(settings.SUPPORT_EMAIL)
-        return send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            recipients,
-            fail_silently=False,
-        )
-
     def form_valid(self, form):
-        decision = form.cleaned_data["decision"]
-        person = Person.objects.get(id=self.queued_image.person.id)
-
-        candidate_path = person.get_absolute_url()
-        candidate_name = person.name
-        candidate_link = '<a href="{url}">{name}</a>'.format(
-            url=candidate_path, name=candidate_name
+        form.process()
+        candidate_link = f'<a href="{self.queued_image.person.get_absolute_url()}">{self.queued_image.person.name}</a>'
+        message_mapping = {
+            QueuedImage.APPROVED: f"You approved a photo upload for {candidate_link}",
+            QueuedImage.REJECTED: f"You rejected a photo upload for {candidate_link}",
+            QueuedImage.IGNORE: f"You left a photo upload for {candidate_link} in the queue",
+            QueuedImage.UNDECIDED: f"You indicated a photo upload for {candidate_link} should be ignored",
+        }
+        level_mapping = {QueuedImage.APPROVED: messages.SUCCESS}
+        message = message_mapping.get(self.queued_image.decision)
+        level = level_mapping.get(self.queued_image.decision, messages.INFO)
+        messages.add_message(
+            self.request, level, message, extra_tags="safe photo-review"
         )
-
-        def flash(level, message):
-            messages.add_message(
-                self.request, level, message, extra_tags="safe photo-review"
-            )
-
-        if self.queued_image.user:
-            uploaded_by = self.queued_image.user.username
-        else:
-            uploaded_by = "a robot 🤖"
-
-        if decision == "approved":
-            form.approved()
-            flash(
-                messages.SUCCESS,
-                "You approved a photo upload for %s" % candidate_link,
-            )
-        elif decision == "rejected":
-            form.rejected()
-            flash(
-                messages.INFO,
-                "You rejected a photo upload for %s" % candidate_link,
-            )
-        elif decision == "undecided":
-            # If it's left as undecided, just redirect back to the
-            # photo review queue...
-            flash(
-                messages.INFO,
-                "You left a photo upload for {0} in the queue".format(
-                    candidate_link
-                ),
-            )
-        elif decision == "ignore":
-            self.queued_image.decision = "ignore"
-            self.queued_image.save()
-
-            sentence = "Ignored a photo upload from {uploading_user}"
-            " (This usually means it was a duplicate)"
-
-            update_message = sentence.format(uploading_user=uploaded_by)
-            LoggedAction.objects.create(
-                user=self.request.user,
-                action_type=ActionType.PHOTO_IGNORE,
-                ip_address=get_client_ip(self.request),
-                popit_person_new_version="",
-                person=person,
-                source=update_message,
-            )
-            flash(
-                messages.INFO,
-                "You indicated a photo upload for {0} should be ignored".format(
-                    candidate_link
-                ),
-            )
-        else:
-            raise Exception("BUG: unexpected decision {}".format(decision))
         return HttpResponseRedirect(reverse("photo-review-list"))
 
     def form_invalid(self, form):
