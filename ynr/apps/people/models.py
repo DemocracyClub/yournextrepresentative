@@ -805,12 +805,7 @@ class Person(TimeStampedModel, models.Model):
         except PersonImage.DoesNotExist:
             pass
 
-        uploaded_by = (
-            queued_image.user.username if queued_image.user else "a script"
-        )
-        source = (
-            f"Uploaded by {uploaded_by}: Approved from photo moderation queue"
-        )
+        source = f"Uploaded by {queued_image.uploaded_by}: Approved from photo moderation queue"
         PersonImage.objects.create_from_file(
             filename=cropped_image.name,
             defaults={
