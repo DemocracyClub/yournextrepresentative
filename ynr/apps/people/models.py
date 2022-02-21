@@ -701,7 +701,7 @@ class Person(TimeStampedModel, models.Model):
         }
         return row
 
-    @property
+    @cached_property
     def person_image_model(self):
         """
         Returns the PersonImage instance if one exists
