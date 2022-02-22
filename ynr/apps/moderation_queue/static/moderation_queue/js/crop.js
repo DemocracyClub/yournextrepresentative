@@ -55,8 +55,8 @@ jQuery(function($) {
     cropOptions['setSelect'] = [
       image.data('default-min-x'),
       image.data('default-min-y'),
-      image.data('default-max-x'),
-      image.data('default-max-y')
+      image.data('default-min-x') + image.data('default-max-x'),
+      image.data('default-min-y') + image.data('default-max-y')
     ];
   }
 
