@@ -4,6 +4,7 @@ from tempfile import NamedTemporaryFile
 import uuid
 
 from django.contrib.auth.models import User
+
 from django.db import models
 from django.urls import reverse
 
@@ -132,11 +133,6 @@ class QueuedImage(models.Model):
         Returns a temporary file containing the cropped image
         """
         original = PillowImage.open(self.image.file)
-        # Some uploaded images are CYMK, which gives you an error when
-        # you try to write them as PNG, so convert to RGBA (this is
-        # RGBA rather than RGB so that any alpha channel (transparency)
-        # is preserved).
-        original = original.convert("RGBA")
         cropped = original.crop(self.crop_bounds)
         ntf = NamedTemporaryFile(delete=False)
         cropped.save(ntf.name, "PNG")

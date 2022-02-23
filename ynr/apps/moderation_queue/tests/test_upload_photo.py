@@ -1,6 +1,7 @@
 from os.path import dirname, join, realpath
 from shutil import rmtree
 from urllib.parse import urlsplit
+from PIL import Image as PillowImage
 
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
@@ -110,6 +111,10 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         )
         self.assertEqual(queued_image.person.id, 2009)
         self.assertEqual(queued_image.user, self.test_upload_user)
+
+        # check the image was converted to a png on upload
+        self.assertTrue(queued_image.image.name.endswith(".png"))
+        self.assertEqual(PillowImage.open(queued_image.image).format, "PNG")
 
     def test_shows_photo_policy_text_in_photo_upload_page(self):
         upload_form_url = reverse("photo-upload", kwargs={"person_id": "2009"})
