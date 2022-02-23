@@ -1,4 +1,5 @@
 import cgi
+from io import BytesIO
 from django.urls import reverse
 
 import requests
@@ -8,11 +9,11 @@ from django.core.mail import send_mail
 from django.core.exceptions import ValidationError
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
+from PIL import Image as PillowImage
+
 from candidates.models.db import ActionType, LoggedAction
 from candidates.views.version_data import get_change_metadata, get_client_ip
-
 from people.forms.forms import StrippedCharField
-
 from .models import CopyrightOptions, QueuedImage, SuggestedPostLock
 
 
@@ -48,6 +49,27 @@ class UploadPersonPhotoImageForm(forms.ModelForm):
             )
             raise ValidationError(message)
         return cleaned_data
+
+    def save(self, commit):
+        """
+        Before saving, convert the image to a PNG. This is done while
+        the image is still an InMemoryUpload object
+        """
+        original = PillowImage.open(self.instance.image.file)
+        # Some uploaded images are CYMK, which gives you an error when
+        # you try to write them as PNG, so convert to RGBA (this is
+        # RGBA rather than RGB so that any alpha channel (transparency)
+        # is preserved).
+        converted = original.convert("RGBA")
+        bytes_obj = BytesIO()
+        converted.save(bytes_obj, "PNG")
+        filename = self.instance.image.name
+        extension = filename.split(".")[-1]
+        # change the bytes object to converted image
+        self.instance.image.file.file = bytes_obj
+        # change the name use PNG
+        self.instance.image.name = filename.replace(extension, "png")
+        return super().save(commit=commit)
 
 
 class UploadPersonPhotoURLForm(forms.Form):
