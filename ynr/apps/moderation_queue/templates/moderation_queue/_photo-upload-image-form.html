@@ -10,7 +10,7 @@
       photos of {{ person.name }} in the queue, waiting to be moderated:
       <ul>
         {% for qi in queued_images %}
-          <li>Photo uploaded by {{ qi.user.username }} at {{ qi.created }}</li>
+          <li>Photo uploaded by {{ qi.user.username }} at {{ qi.created }}. {% if user_can_review_photos %}<a href="{{qi.get_absolute_url}}">Ready for review</a>{% endif %}</li>
         {% endfor %}
       </ul>
     </p>
@@ -21,7 +21,7 @@
 
   <p>
     {% if queued_images %}
-    If you still want to upload another photo of {{ person.name }}, select an image from your computer (maximum size: 50 MB):
+    If you still want to upload another photo of {{ person.name }}, cancel the existing queued photos first.
     {% else %}
     Select an image from your computer (maximum size: 50 MB):
     {% endif %}
