@@ -56,6 +56,29 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         super().tearDown()
         self.test_upload_user.delete()
 
+    def test_queued_images_form_visibility(self):
+        QueuedImage.objects.create(
+            person_id=2009,
+            user=self.test_upload_user,
+            why_allowed="copyright-assigned",
+            justification_for_use="I took this photo",
+        )
+        upload_form_url = reverse("photo-upload", kwargs={"person_id": "2009"})
+        response = self.app.get(upload_form_url, user=self.test_upload_user)
+        self.assertNotContains(response, "Photo policy")
+        self.assertContains(
+            response, "already has images in the queue waiting for review."
+        )
+
+    def test_no_queued_images_form_visibility(self):
+        upload_form_url = reverse("photo-upload", kwargs={"person_id": "2009"})
+        response = self.app.get(upload_form_url, user=self.test_upload_user)
+        self.assertContains(response, "Photo policy")
+        self.assertNotContains(
+            response,
+            "already has images in the queue waiting for review.You can review them here",
+        )
+
     def test_photo_upload_through_image_field(self):
         queued_images = QueuedImage.objects.all()
         initial_count = queued_images.count()
