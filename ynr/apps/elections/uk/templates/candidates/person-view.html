@@ -198,8 +198,11 @@
   <p class="person__photo-credit">
     {% include 'candidates/_photo-credit.html' with image=person.person_image_model %}
   </p>
+    {% if user.is_authenticated %}
+      <i>I am {{ person.name }}, and I would like to remove this photo:</i>
+      <a href="mailto:hello@democracyclub.org.uk" class="button">Request photo removal</a>
+    {% endif %}
   {% endif %}
-
 </div>
 
 <div class="person__actions">
