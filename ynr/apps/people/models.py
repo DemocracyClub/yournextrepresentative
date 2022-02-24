@@ -374,6 +374,15 @@ class Person(TimeStampedModel, models.Model):
         return request.build_absolute_uri(path)
 
     @cached_property
+    def queued_image(self):
+        return self.queuedimage_set.filter(decision="undecided").first()
+
+    def get_absolute_queued_image_url(self):
+        if not self.queued_image:
+            return None
+        return self.queued_image.get_absolute_url()
+
+    @cached_property
     def get_all_idenfitiers(self):
         return list(self.tmp_person_identifiers.all())
 
