@@ -13,6 +13,8 @@ from people.tests.factories import PersonFactory
 from popolo.models import Membership
 from django.contrib.auth import get_user_model
 
+from moderation_queue.models import QueuedImage
+
 
 class TestPersonModels(UK2015ExamplesMixin, TmpMediaRootMixin, WebTest):
     def test_get_display_image_url(self):
@@ -121,3 +123,22 @@ class TestPersonModels(UK2015ExamplesMixin, TmpMediaRootMixin, WebTest):
                         action_type=ActionType.PERSON_DELETE,
                     ).exists()
                 )
+
+    def test_queued_image(self):
+        user = get_user_model().objects.create()
+        person = PersonFactory()
+        expected = QueuedImage.objects.create(
+            user=user, person=person, image=EXAMPLE_IMAGE_FILENAME
+        )
+        self.assertEqual(person.queued_image, expected)
+
+    def test_get_absolute_queued_image_url(self):
+        user = get_user_model().objects.create()
+        person = PersonFactory()
+        queued_image = QueuedImage.objects.create(
+            user=user, person=person, image=EXAMPLE_IMAGE_FILENAME
+        )
+        self.assertEqual(
+            person.get_absolute_queued_image_url(),
+            "/moderation/photo/review/{}".format(queued_image.id),
+        )
