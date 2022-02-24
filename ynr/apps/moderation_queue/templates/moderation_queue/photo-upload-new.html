@@ -13,8 +13,13 @@
 
 {% block content %}
 
-{% include 'moderation_queue/_photo-policy.html' %}
-{% include 'moderation_queue/_photo-upload-image-form.html' with person_id=person.id %}
-{% include 'moderation_queue/_photo-upload-url-form.html' with person_id=person.id %}
-
+{% if not queued_images %}
+  {% include 'moderation_queue/_photo-policy.html' %}
+  {% include 'moderation_queue/_photo-upload-image-form.html' with person_id=person.id %}
+  {% include 'moderation_queue/_photo-upload-url-form.html' with person_id=person.id %}
+{% else %}
+  <p>
+    {{ person.name }} already has images in the queue waiting for review. {% if user_can_review_photos %}You can review them <a href="{% url 'photo-review-list' %}">here.</a>{% else %}You will have to wait until the queue is ready for a new upload.{% endif %}
+  </p>
+{% endif %}
 {% endblock %}
