@@ -25,6 +25,7 @@ from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from official_documents.models import OfficialDocument
 from people.models import Person
 from people.tests.factories import PersonFactory
+from utils.testing_utils import FuzzyInt
 from ynr.helpers import mkdir_p
 
 TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
@@ -145,7 +146,8 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 
     def test_photo_review_queue_view_logged_in_privileged(self):
         queue_url = reverse("photo-review-list")
-        response = self.app.get(queue_url, user=self.test_reviewer)
+        with self.assertNumQueries(FuzzyInt(40, 41)):
+            response = self.app.get(queue_url, user=self.test_reviewer)
         self.assertEqual(response.status_code, 200)
         queue_table = response.html.find("table")
         photo_rows = queue_table.find_all("tr")
