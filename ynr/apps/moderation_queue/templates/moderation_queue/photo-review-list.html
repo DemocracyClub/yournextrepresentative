@@ -12,6 +12,12 @@
 
 {% block content %}
 
+  <!-- filter form TODO improve UI -->
+  <form>
+    {{ filter_obj.form.as_p }}
+    <button type="submit">Submit</button>
+  </form>
+
   {% if object_list %}
     <table>
       <thead>
