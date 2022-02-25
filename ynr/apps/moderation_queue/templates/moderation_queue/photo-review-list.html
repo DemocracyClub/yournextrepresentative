@@ -16,6 +16,7 @@
   <form>
     {{ filter_obj.form.as_p }}
     <button type="submit">Submit</button>
+    <a class="button" href="{% url 'photo-review-list' %}">Clear</a>
   </form>
 
   {% if object_list %}
