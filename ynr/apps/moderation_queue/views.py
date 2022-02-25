@@ -3,6 +3,7 @@ import random
 import re
 from os.path import join
 from tempfile import NamedTemporaryFile
+from typing import Any, Dict
 import uuid
 
 import bleach
@@ -38,6 +39,7 @@ from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.views.version_data import get_change_metadata, get_client_ip
 from candidates.models.db import ActionType
 from elections.models import Election
+from moderation_queue.filters import QueuedImageFilter
 from people.models import Person, PersonImage
 from popolo.models import Membership
 
@@ -170,6 +172,16 @@ class PhotoUploadSuccess(TemplateView):
 class PhotoReviewList(GroupRequiredMixin, ListView):
     template_name = "moderation_queue/photo-review-list.html"
     required_group_name = PHOTO_REVIEWERS_GROUP_NAME
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        filter_obj = QueuedImageFilter(
+            data=self.request.GET, queryset=context["object_list"]
+        )
+        context["filter_obj"] = filter_obj
+        context["object_list"] = filter_obj.qs
+
+        return context
 
     def get_queryset(self):
         return (
