@@ -2,18 +2,24 @@ import django_filters
 from django.db.models import Max, Case, Value, When, IntegerField
 from django.forms.widgets import HiddenInput
 
-from candidates.models.popolo_extra import Ballot
 from elections.models import Election
-
 from moderation_queue.models import QueuedImage
 
 
-def get_ballots(request):
-    return Ballot.objects.current_or_future().order_by().distinct()
-
-
 def get_elections(request):
-    return Election.objects.current_or_future()
+    """
+    Returns election objects to filter the moderation queue by. To keep the
+    number of choices down this is limited to elections that have a candidate
+    with a QueuedImage awaiting review.
+    """
+    ballots_with_queued_images = (
+        QueuedImage.objects.filter(decision=QueuedImage.UNDECIDED)
+        .values_list("person__memberships__ballot", flat=True)
+        .distinct()
+    )
+    return Election.objects.filter(
+        ballot__in=ballots_with_queued_images
+    ).distinct()
 
 
 def string_to_boolean(value):
@@ -42,7 +48,7 @@ class QueuedImageFilter(django_filters.FilterSet):
     election = django_filters.ModelChoiceFilter(
         field_name="person__memberships__ballot__election",
         queryset=get_elections,
-        label="Filter by current or future election",
+        label="Filter by election - only elections that have a candidate with a queued image are included",
     )
 
     current_election = django_filters.TypedChoiceFilter(
@@ -58,6 +64,14 @@ class QueuedImageFilter(django_filters.FilterSet):
         choices=BOOLEAN_CHOICES,
         coerce=string_to_boolean,
         label="Has no current photo",
+    )
+
+    uploaded_by = django_filters.TypedChoiceFilter(
+        field_name="user",
+        lookup_expr="isnull",
+        choices=[(None, "---------"), ("True", "Script"), ("False", "Human")],
+        coerce=string_to_boolean,
+        label="Uploaded by a",
     )
 
     ordering = django_filters.OrderingFilter(
