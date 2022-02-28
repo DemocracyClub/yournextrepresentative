@@ -1,8 +1,9 @@
 import django_filters
-from candidates.models.popolo_extra import Ballot
-from django.forms.widgets import HiddenInput
-from elections.models import Election
 from django.db.models import Max, Case, Value, When, IntegerField
+from django.forms.widgets import HiddenInput
+
+from candidates.models.popolo_extra import Ballot
+from elections.models import Election
 
 from moderation_queue.models import QueuedImage
 
@@ -15,11 +16,21 @@ def get_elections(request):
     return Election.objects.current_or_future()
 
 
+def string_to_boolean(value):
+    return {"True": True, "False": False}.get(value)
+
+
 class QueuedImageFilter(django_filters.FilterSet):
     """
     Allows QueuedImage list to be filtered.
     TODO decide which filters are most useful
     """
+
+    BOOLEAN_CHOICES = [
+        (None, "---------"),
+        ("True", "True"),
+        ("False", "False"),
+    ]
 
     # hidden because the choice list is huge, but having it allows linking direct from a ballot
     ballot_paper_id = django_filters.CharFilter(
@@ -32,6 +43,21 @@ class QueuedImageFilter(django_filters.FilterSet):
         field_name="person__memberships__ballot__election",
         queryset=get_elections,
         label="Filter by current or future election",
+    )
+
+    current_election = django_filters.TypedChoiceFilter(
+        field_name="person__memberships__ballot__election__current",
+        choices=BOOLEAN_CHOICES,
+        coerce=string_to_boolean,
+        label="Candidates in a 'current' election",
+    )
+
+    has_photo = django_filters.TypedChoiceFilter(
+        field_name="person__image",
+        lookup_expr="isnull",
+        choices=BOOLEAN_CHOICES,
+        coerce=string_to_boolean,
+        label="Has no current photo",
     )
 
     ordering = django_filters.OrderingFilter(
