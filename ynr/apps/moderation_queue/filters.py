@@ -120,3 +120,10 @@ class QueuedImageFilter(django_filters.FilterSet):
             ),
         )
         super().__init__(*args, **kwargs)
+        self.form.fields[
+            "election"
+        ].label_from_instance = self.election_instance_label
+
+    @staticmethod
+    def election_instance_label(election):
+        return f"{election.name} {election.election_date}"
