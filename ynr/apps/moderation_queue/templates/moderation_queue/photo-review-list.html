@@ -13,11 +13,32 @@
 {% block content %}
 
   <!-- filter form TODO improve UI -->
-  <form>
-    {{ filter_obj.form.as_p }}
-    <button type="submit">Submit</button>
-    <a class="button" href="{% url 'photo-review-list' %}">Clear</a>
-  </form>
+  <aside class="ds-filter" aria-labelledby="filter-label">
+    <div class="ds-filter-cluster">
+      <ul>
+        <li id="filter-label" class="ds-filter-label" aria-hidden="true">Filter:</li>
+        {% url "photo-review-list" as photo_list_review_url %}
+        <li><a href="{{ photo_list_review_url }}" {% if request.get_full_path == photo_list_review_url %}aria-current="true" {% endif %}>All</a></li>
+        {% for shortcut in shortcuts.list %}
+          <li><a href="{{ photo_list_review_url }}?{{ shortcut.querystring }}" {% if shortcut.active %}aria-current="true" {% endif %}>{{ shortcut.label }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <details {% if filter_obj.data %}open=""{% endif %}>
+      <summary>Advanced filters</summary>
+      <div class="ds-advanced-filters">
+        <div class="ds-filter-cluster">
+            {% for field in filter_obj.form.visible_fields %}
+              <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+              <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">{{ field.label }}:</li>
+              {{ field }}
+              </ul>
+            {% endfor %}
+
+        </div>
+      </div>
+    </details>
+  </aside>
 
   {% if object_list %}
     <table>

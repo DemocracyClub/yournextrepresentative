@@ -1,6 +1,8 @@
 import django_filters
 from django.db.models import Max, Case, Value, When, IntegerField
 from django.forms.widgets import HiddenInput
+from django.utils.http import urlencode
+from elections.filters import DSLinkWidget
 
 from elections.models import Election
 from moderation_queue.models import QueuedImage
@@ -26,17 +28,20 @@ def string_to_boolean(value):
     return {"True": True, "False": False}.get(value)
 
 
+def script_or_human(value):
+    """
+    Convert the string value into a boolean for the database query
+    """
+    return {"script": True, "human": False}.get(value)
+
+
 class QueuedImageFilter(django_filters.FilterSet):
     """
     Allows QueuedImage list to be filtered.
     TODO decide which filters are most useful
     """
 
-    BOOLEAN_CHOICES = [
-        (None, "---------"),
-        ("True", "True"),
-        ("False", "False"),
-    ]
+    BOOLEAN_CHOICES = [(None, "---------"), ("True", "Yes"), ("False", "No")]
 
     # hidden because the choice list is huge, but having it allows linking direct from a ballot
     ballot_paper_id = django_filters.CharFilter(
@@ -49,6 +54,7 @@ class QueuedImageFilter(django_filters.FilterSet):
         field_name="person__memberships__ballot__election",
         queryset=get_elections,
         label="Filter by election - only elections that have a candidate with a queued image are included",
+        widget=HiddenInput,
     )
 
     current_election = django_filters.TypedChoiceFilter(
@@ -56,22 +62,25 @@ class QueuedImageFilter(django_filters.FilterSet):
         choices=BOOLEAN_CHOICES,
         coerce=string_to_boolean,
         label="Candidates in a 'current' election",
+        widget=DSLinkWidget,
     )
 
-    has_photo = django_filters.TypedChoiceFilter(
+    no_photo = django_filters.TypedChoiceFilter(
         field_name="person__image",
         lookup_expr="isnull",
         choices=BOOLEAN_CHOICES,
         coerce=string_to_boolean,
         label="Has no current photo",
+        widget=DSLinkWidget,
     )
 
     uploaded_by = django_filters.TypedChoiceFilter(
         field_name="user",
         lookup_expr="isnull",
-        choices=[(None, "---------"), ("True", "Script"), ("False", "Human")],
-        coerce=string_to_boolean,
+        choices=[(None, "---------"), ("script", "Script"), ("human", "Human")],
+        coerce=script_or_human,
         label="Uploaded by a",
+        widget=DSLinkWidget,
     )
 
     ordering = django_filters.OrderingFilter(
@@ -91,6 +100,7 @@ class QueuedImageFilter(django_filters.FilterSet):
             ("current_election", "current_election"),
             ("created", "created"),
         ],
+        widget=HiddenInput,
     )
 
     class Meta:
@@ -127,3 +137,32 @@ class QueuedImageFilter(django_filters.FilterSet):
     @staticmethod
     def election_instance_label(election):
         return f"{election.name} {election.election_date}"
+
+
+def filter_shortcuts(request):
+    shortcut_list = [
+        {
+            "name": "no_photo",
+            "label": "No current photo",
+            "query": {"no_photo": ["True"]},
+        },
+        {
+            "name": "current_election",
+            "label": "In a current election",
+            "query": {"current_election": ["True"]},
+        },
+        {
+            "name": "uploaded_by",
+            "label": "Uploaded by script",
+            "query": {"uploaded_by": ["script"]},
+        },
+    ]
+
+    query = dict(request.GET)
+    shortcuts = {"list": shortcut_list}
+    for shortcut in shortcuts["list"]:
+        shortcut["querystring"] = urlencode(shortcut["query"], doseq=True)
+        if shortcut["query"] == query:
+            shortcut["active"] = True
+            shortcuts["active"] = shortcut
+    return shortcuts
