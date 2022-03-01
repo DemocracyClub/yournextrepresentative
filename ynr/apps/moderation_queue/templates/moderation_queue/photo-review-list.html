@@ -3,13 +3,8 @@
 {% load pipeline %}
 {% load thumbnail %}
 
-{% block extra_css %}
-{% stylesheet 'moderation_queue' %}
-{% endblock %}
-
 {% block extra_js %}
-{% javascript 'moderation_queue' %}
-<script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+{% javascript 'image-review' %}
 {% endblock %}
 
 {% block body_class %}{% endblock %}
@@ -22,7 +17,6 @@
 
 {% block content %}
 
-  <!-- filter form TODO improve UI -->
   <aside class="ds-filter" aria-labelledby="filter-label">
     <div class="ds-filter-cluster">
       <ul>
