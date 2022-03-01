@@ -15,7 +15,8 @@
   "dependencies": {
     "foundation-sites": "^5.5.3",
     "jquery": "^2.2.4",
-    "select2": "^4.0.13"
+    "select2": "^4.0.13",
+    "sorttable": "^1.0.2"
   },
   "devDependencies": {
     "gulp": "^4.0.2",

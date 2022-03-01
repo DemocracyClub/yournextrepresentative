@@ -4,6 +4,7 @@ var concat = require('gulp-concat');
 const foundationDir = './node_modules/foundation-sites';
 const jqueryDir = './node_modules/jquery';
 const select2Dir = './node_modules/select2';
+const sorttable = './node_modules/sorttable';
 
 const paths = {
     foundation_js: [`${foundationDir}/scss/*`,`${foundationDir}/scss/*/**`,]
@@ -48,11 +49,19 @@ function foundation_scss() {
         .pipe(gulp.dest('ynr/assets/scss/'))
 }
 
+function sorttable_js() {
+    var paths = [
+        `${sorttable}/sorttable.js`,
+    ];
+    return gulp.src(paths)
+        .pipe(gulp.dest('ynr/assets/js/'))
+}
 
 exports.default = gulp.series(
     jquery_js,
     select2_js,
     select2_css,
     foundation_scss,
-    foundation_js
+    foundation_js, 
+    sorttable_js,
 );
