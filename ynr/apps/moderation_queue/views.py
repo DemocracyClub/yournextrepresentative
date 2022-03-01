@@ -39,7 +39,7 @@ from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.views.version_data import get_change_metadata, get_client_ip
 from candidates.models.db import ActionType
 from elections.models import Election
-from moderation_queue.filters import QueuedImageFilter
+from moderation_queue.filters import QueuedImageFilter, filter_shortcuts
 from people.models import Person, PersonImage
 from popolo.models import Membership
 from moderation_queue.helpers import (
@@ -144,6 +144,7 @@ class PhotoReviewList(GroupRequiredMixin, ListView):
         )
         context["filter_obj"] = filter_obj
         context["object_list"] = filter_obj.qs
+        context["shortcuts"] = filter_shortcuts(self.request)
 
         return context
 
