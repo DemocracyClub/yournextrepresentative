@@ -252,6 +252,11 @@ PIPELINE = {
             "output_filename": "css/image-review.css",
             "extra_context": {"media": "screen"},
         },
+        "moderation_queue": {
+            "source_filenames": ("moderation_queue/css/moderation.scss",),
+            "output_filename": "css/moderation_queue.css",
+            "extra_context": {"media": "screen"},
+        },
         "official_documents": {
             "source_filenames": (
                 "official_documents/css/official_documents.scss",
@@ -284,6 +289,10 @@ PIPELINE = {
                 "moderation_queue/js/crop.js",
             ),
             "output_filename": "js/image-review.js",
+        },
+        "moderation_queue": {
+            "source_filenames": ("moderation_queue/js/moderation.js",),
+            "output_filename": "js/moderation_queue.js",
         },
         "bulk_adding": {
             "source_filenames": ("bulk_adding/js/bulk.js",),
