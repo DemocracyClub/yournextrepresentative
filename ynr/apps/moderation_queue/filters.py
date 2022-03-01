@@ -8,20 +8,23 @@ from elections.models import Election
 from moderation_queue.models import QueuedImage
 
 
-def get_elections(request):
+def get_election_dates():
     """
-    Returns election objects to filter the moderation queue by. To keep the
+    Returns election dates to filter the moderation queue by. To keep the
     number of choices down this is limited to elections that have a candidate
     with a QueuedImage awaiting review.
     """
     ballots_with_queued_images = (
         QueuedImage.objects.filter(decision=QueuedImage.UNDECIDED)
-        .values_list("person__memberships__ballot", flat=True)
+        .values("person__memberships__ballot")
         .distinct()
     )
-    return Election.objects.filter(
-        ballot__in=ballots_with_queued_images
-    ).distinct()
+    return (
+        Election.objects.filter(ballot__in=ballots_with_queued_images)
+        .values_list("election_date", "election_date")
+        .distinct()
+        .order_by("-election_date")
+    )
 
 
 def string_to_boolean(value):
@@ -38,7 +41,6 @@ def script_or_human(value):
 class QueuedImageFilter(django_filters.FilterSet):
     """
     Allows QueuedImage list to be filtered.
-    TODO decide which filters are most useful
     """
 
     BOOLEAN_CHOICES = [(None, "---------"), ("True", "Yes"), ("False", "No")]
@@ -50,10 +52,14 @@ class QueuedImageFilter(django_filters.FilterSet):
         widget=HiddenInput,
     )
 
-    election = django_filters.ModelChoiceFilter(
-        field_name="person__memberships__ballot__election",
-        queryset=get_elections,
-        label="Filter by election - only elections that have a candidate with a queued image are included",
+    election_date = django_filters.ChoiceFilter(
+        field_name="person__memberships__ballot__election__election_date",
+        choices=get_election_dates,
+        label="Election date",
+    )
+
+    election_slug = django_filters.CharFilter(
+        field_name="person__memberships__ballot__election__slug",
         widget=HiddenInput,
     )
 
@@ -105,7 +111,7 @@ class QueuedImageFilter(django_filters.FilterSet):
 
     class Meta:
         model = QueuedImage
-        fields = ["ballot_paper_id", "election"]
+        fields = ["ballot_paper_id", "election_date"]
 
     def __init__(self, *args, **kwargs):
         """
@@ -130,39 +136,35 @@ class QueuedImageFilter(django_filters.FilterSet):
             ),
         )
         super().__init__(*args, **kwargs)
-        self.form.fields[
-            "election"
-        ].label_from_instance = self.election_instance_label
 
-    @staticmethod
-    def election_instance_label(election):
-        return f"{election.name} {election.election_date}"
+    @property
+    def shortcuts(self):
+        """
+        Returns filter shorcuts
+        """
+        shortcut_list = [
+            {
+                "name": "no_photo",
+                "label": "No current photo",
+                "query": {"no_photo": ["True"]},
+            },
+            {
+                "name": "current_election",
+                "label": "In a current election",
+                "query": {"current_election": ["True"]},
+            },
+            {
+                "name": "uploaded_by",
+                "label": "Uploaded by a bot",
+                "query": {"uploaded_by": ["script"]},
+            },
+        ]
 
-
-def filter_shortcuts(request):
-    shortcut_list = [
-        {
-            "name": "no_photo",
-            "label": "No current photo",
-            "query": {"no_photo": ["True"]},
-        },
-        {
-            "name": "current_election",
-            "label": "In a current election",
-            "query": {"current_election": ["True"]},
-        },
-        {
-            "name": "uploaded_by",
-            "label": "Uploaded by script",
-            "query": {"uploaded_by": ["script"]},
-        },
-    ]
-
-    query = dict(request.GET)
-    shortcuts = {"list": shortcut_list}
-    for shortcut in shortcuts["list"]:
-        shortcut["querystring"] = urlencode(shortcut["query"], doseq=True)
-        if shortcut["query"] == query:
-            shortcut["active"] = True
-            shortcuts["active"] = shortcut
-    return shortcuts
+        query = dict(self.request.GET)
+        shortcuts = {"list": shortcut_list}
+        for shortcut in shortcuts["list"]:
+            shortcut["querystring"] = urlencode(shortcut["query"], doseq=True)
+            if shortcut["query"] == query:
+                shortcut["active"] = True
+                shortcuts["active"] = shortcut
+        return shortcuts

@@ -24,20 +24,23 @@
         {% endfor %}
       </ul>
     </div>
-    <details {% if filter_obj.data %}open=""{% endif %}>
-      <summary>Advanced filters</summary>
-      <div class="ds-advanced-filters">
-        <div class="ds-filter-cluster">
-            {% for field in filter_obj.form.visible_fields %}
-              <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
-              <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">{{ field.label }}:</li>
-              {{ field }}
-              </ul>
-            {% endfor %}
+    <form>
+      <details {% if filter_obj.data %}open=""{% endif %}>
+        <summary>Advanced filters</summary>
+        <div class="ds-advanced-filters">
+          <div class="ds-filter-cluster">
+              {% for field in filter_obj.form.visible_fields %}
+                <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+                <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">{{ field.label }}:</li>
+                {{ field }}
+                </ul>
+              {% endfor %}
 
+          </div>
         </div>
-      </div>
-    </details>
+        <button type="submit" class="button">Filter</button>
+      </details>
+    </form>
   </aside>
 
   {% if object_list %}
