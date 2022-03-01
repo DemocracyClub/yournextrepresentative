@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 
+{% load pipeline %}
 {% load thumbnail %}
+
+{% block extra_css %}
+{% stylesheet 'moderation_queue' %}
+{% endblock %}
+
+{% block extra_js %}
+{% javascript 'moderation_queue' %}
+<script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+{% endblock %}
 
 {% block body_class %}{% endblock %}
 
@@ -44,13 +54,14 @@
   </aside>
 
   {% if object_list %}
-    <table>
+    <table id="queue-table" style="width: 100%;" class="sortable">
       <thead>
         <tr>
           <th></th>
           <th>Date uploaded</th>
+          <th>Election Date</a></th>
           <th>Uploading user</th>
-          <th>Candidate ID</th>
+          <th>Candidate ID</a></th>
           <th>Action</th>
         </tr>
       </thead>
@@ -58,11 +69,12 @@
       {% for queued_image in object_list %}
         <tr>
           <td>
-          {% thumbnail queued_image.image "x200" as im %}
+          {% thumbnail queued_image.image "x100" as im %}
             <a href="{% url 'photo-review' queued_image_id=queued_image.id %}"><img src="{{ im.url }}"></a>
           {% endthumbnail %}
           </td>
           <td>{{ queued_image.created }}</td>
+          <td>{{ queued_image.election_date }}</td>
           <td>{% if queued_image.user %}{{ queued_image.user.username }}{% else %}a robot 🤖{% endif %}</td>
           <td>{{ queued_image.person.id }}</td>
           <td><a href="{% url 'photo-review' queued_image_id=queued_image.id %}">Review</a></td>
@@ -74,4 +86,7 @@
     <p><strong>Congratulations!</strong> There are no more photos to review.</p>
   {% endif %}
 
+
+
 {% endblock %}
+
