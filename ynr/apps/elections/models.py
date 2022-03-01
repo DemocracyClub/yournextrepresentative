@@ -6,6 +6,9 @@ from django.db import connection, models
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.http import urlencode
+from django.utils.functional import cached_property
+from moderation_queue.models import QueuedImage
 
 from utils.mixins import EEModifiedMixin
 
@@ -241,3 +244,18 @@ class Election(EEModifiedMixin, models.Model):
             )
 
         self.delete()
+
+    @cached_property
+    def get_absolute_queued_image_review_url(self):
+        """
+        If the ballot has candidates with undecided images, returns a URL to the
+        moderation queue list review page, filtered by this ballot paper ID
+        """
+        if not QueuedImage.objects.filter(
+            person__memberships__ballot__election__slug=self.slug
+        ).exists():
+            return ""
+
+        querystring = urlencode({"election_slug": self.slug})
+        url = reverse("photo-review-list")
+        return f"{url}?{querystring}"
