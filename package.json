@@ -1,7 +1,8 @@
 {
   "name": "yournextrepresentative",
   "scripts": {
-    "build": "gulp"
+    "build": "gulp",
+    "local:install": "npm run build"
   },
   "repository": {
     "type": "git",
