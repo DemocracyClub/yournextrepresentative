@@ -14,6 +14,7 @@ from candidates.tests.factories import (
     PostFactory,
 )
 from elections.tests.test_ballot_view import SingleBallotStatesMixin
+from moderation_queue.tests.factories import QueuedImageFactory
 from uk_results.models import ResultSet
 
 from candidates.models import Ballot
@@ -78,7 +79,7 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
             candidates_locked=True,
         )
 
-    def create_memberships(self, ballot, parties, candidates_per_party=1):
+    def create_memberships(self, parties, candidates_per_party=1):
         for i in range(candidates_per_party):
             for party in parties:
                 person = PersonFactory()
@@ -88,23 +89,23 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
 
     def test_uncontested_when_winner_count_same_as_memberships(self):
         parties = self.create_parties(2)
-        self.create_memberships(self.ballot, parties)
+        self.create_memberships(parties)
         self.assertTrue(self.ballot.uncontested)
 
     def test_uncontested_when_winner_count_is_less_than_memberships(self):
         parties = self.create_parties(3)
-        self.create_memberships(self.ballot, parties)
+        self.create_memberships(parties)
         self.assertFalse(self.ballot.uncontested)
 
     def test_uncontested_when_winner_count_is_more_than_memberships(self):
         parties = self.create_parties(1)
-        self.create_memberships(self.ballot, parties)
+        self.create_memberships(parties)
         self.assertTrue(self.ballot.uncontested)
 
     def test_mark_uncontested_winners(self):
         parties = self.create_parties(2)
 
-        self.create_memberships(self.ballot, parties)
+        self.create_memberships(parties)
         self.assertTrue(self.ballot.uncontested)
         self.ballot.mark_uncontested_winners(
             ip_address="111.11.1111", user=self.user
@@ -116,7 +117,7 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
 
     def test_unmark_uncontested_winners(self):
         parties = self.create_parties(3)
-        self.create_memberships(self.ballot, parties)
+        self.create_memberships(parties)
         self.assertFalse(self.ballot.uncontested)
         self.ballot.unmark_uncontested_winners(
             ip_address="111.11.1111", user=self.user
@@ -125,6 +126,20 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
             self.ballot.membership_set.filter(elected=False).count(), 2
         )
         self.assertEqual(LoggedAction.objects.count(), 3)
+
+    def test_get_absolute_queued_image_review_url(self):
+        parties = self.create_parties(3)
+        self.create_memberships(parties)
+        self.assertEqual(self.ballot.get_absolute_queued_image_review_url, "")
+        person = self.ballot.membership_set.first().person
+        # create a queued image for a candidate in the ballot
+        QueuedImageFactory(person=person)
+        # lookup the ballot again to clear cache
+        ballot = Ballot.objects.get(pk=self.ballot.pk)
+        self.assertEqual(
+            ballot.get_absolute_queued_image_review_url,
+            f"/moderation/photo/review?ballot_paper_id={self.ballot.ballot_paper_id}",
+        )
 
 
 class BallotsWithResultsMixin(SingleBallotStatesMixin):

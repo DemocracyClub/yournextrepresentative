@@ -154,6 +154,10 @@
       {% include "elections/includes/_ballot_suggest_locking.html" %}
       {% include "elections/includes/_ballot_lock_form.html" %}
 
+      {% if user_can_review_photos and ballot.get_absolute_queued_image_review_url %}
+        <p>This ballot has candidate photos awaiting approval.<a href="{{ ballot.get_absolute_queued_image_review_url }}"> Do you have time to review them?</a></p>
+      {% endif %}
+
       {% if membership_edits_allowed %}
         <p>
           <a class="show-new-candidate-form button" href="{% url 'person-create' ballot_paper_id=ballot.ballot_paper_id %}">
