@@ -52,10 +52,11 @@ class QueuedImageFilter(django_filters.FilterSet):
         widget=HiddenInput,
     )
 
-    election_date = django_filters.ChoiceFilter(
+    election_date = django_filters.TypedChoiceFilter(
         field_name="person__memberships__ballot__election__election_date",
         choices=get_election_dates,
         label="Election date",
+        widget=DSLinkWidget,
     )
 
     election_slug = django_filters.CharFilter(
