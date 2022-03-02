@@ -282,6 +282,7 @@ PIPELINE = {
                 "moderation_queue/js/jquery.color.js",
                 "moderation_queue/js/jquery.Jcrop.js",
                 "moderation_queue/js/crop.js",
+                "js/sorttable.js",
             ),
             "output_filename": "js/image-review.js",
         },
