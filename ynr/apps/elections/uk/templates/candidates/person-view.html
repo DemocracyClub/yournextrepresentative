@@ -216,10 +216,17 @@
     <h2>Improve this data!</h2>
     {% if user_can_edit and person_edits_allowed %}
       <p>Our database is built by people like you.</p>
-      <p>Please do add extra details about this candidate – it only takes a moment.</p>
+      <p>Please add extra details about this candidate – it only takes a moment.</p>
       {% if user.is_authenticated %}
         <a href="{% url 'person-update' person_id=person.id %}" class="button">Edit candidate</a>
-        <a href="{% url 'photo-upload' person.id %}" class="button">Upload candidate photo</a>
+        {% if person.queued_image %} 
+          {% if user_can_review_photos %}
+            <p>{{ person.name }} has a photo that needs to be reviewed</p>
+            <a href="{{ person.get_absolute_queued_image_url}}" class="button">Review image</a>
+          {% endif %} 
+        {% else %}
+          <a href="{% url 'photo-upload' person.id %}" class="button">Upload candidate photo</a>
+        {% endif %} 
       {% else %}
         <a href="{% url 'account_login' %}?next={{ redirect_after_login }}" class="button">Log in to edit</a>
       {% endif %}

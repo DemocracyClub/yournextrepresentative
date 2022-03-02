@@ -25,8 +25,8 @@ class CopyrightOptions:
             COPYRIGHT_ASSIGNED,
             (
                 "I own copyright of this photo and I assign the copyright "
-                "to Democracy Club Limited in return for it being displayed "
-                "on this site"
+                "to Democracy Club in return for it being displayed "
+                "on this site."
             ),
         ),
         (
