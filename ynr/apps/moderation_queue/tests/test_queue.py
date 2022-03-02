@@ -154,7 +154,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         self.assertEqual(3, len(photo_rows))
         cells = photo_rows[1].find_all("td")
         self.assertEqual(cells[3].text, "john")
-        self.assertEqual(cells[2].text, "16th March 2022")
+        self.assertEqual(cells[2].text, "17th March 2022")
         a = cells[5].find("a")
         link_text = re.sub(r"\s+", " ", a.text).strip()
         link_url = a["href"]
@@ -355,7 +355,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             image = person.image
 
             self.assertEqual(
-                "Uploaded by a bot: Approved from photo moderation queue",
+                "Uploaded by a robot 🤖: Approved from photo moderation queue",
                 image.source,
             )
             self.assertEqual(427, image.image.width)
@@ -408,7 +408,9 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             self.assertEqual(la.user.username, "jane")
             self.assertEqual(la.action_type, "photo-reject")
             self.assertEqual(la.person.id, 2009)
-            self.assertEqual(la.source, "Rejected a photo upload from a bot")
+            self.assertEqual(
+                la.source, "Rejected a photo upload from a robot 🤖"
+            )
 
             self.assertFalse(mock_send_mail.called)
 
