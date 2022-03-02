@@ -10,6 +10,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.functional import cached_property
+from django.utils.http import urlencode
+from moderation_queue.models import QueuedImage
 from utils.mixins import EEModifiedMixin
 
 from django.db.models import Count, F
@@ -493,6 +495,21 @@ class Ballot(EEModifiedMixin, models.Model):
         return self.election.persons_not_standing_tmp.filter(
             memberships__ballot=previous_ballot
         ).only("pk")
+
+    @cached_property
+    def get_absolute_queued_image_review_url(self):
+        """
+        If the ballot has candidates with undecided images, returns a URL to the
+        moderation queue list review page, filtered by this ballot paper ID
+        """
+        if not self.membership_set.filter(
+            person__queuedimage__decision=QueuedImage.UNDECIDED
+        ).exists():
+            return ""
+
+        querystring = urlencode({"ballot_paper_id": self.ballot_paper_id})
+        url = reverse("photo-review-list")
+        return f"{url}?{querystring}"
 
 
 class PartySet(models.Model):

@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
+{% load pipeline %}
 {% load thumbnail %}
+
+{% block extra_js %}
+{% javascript 'image-review' %}
+{% endblock %}
 
 {% block body_class %}{% endblock %}
 
@@ -12,14 +17,45 @@
 
 {% block content %}
 
+  <aside class="ds-filter" aria-labelledby="filter-label">
+    <div class="ds-filter-cluster">
+      <ul>
+        <li id="filter-label" class="ds-filter-label" aria-hidden="true">Filter:</li>
+        {% url "photo-review-list" as photo_list_review_url %}
+        <li><a href="{{ photo_list_review_url }}" {% if request.get_full_path == photo_list_review_url %}aria-current="true" {% endif %}>All</a></li>
+        {% for shortcut in shortcuts.list %}
+          <li><a href="{{ photo_list_review_url }}?{{ shortcut.querystring }}" {% if shortcut.active %}aria-current="true" {% endif %}>{{ shortcut.label }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <form>
+      <details {% if filter_obj.data %}open=""{% endif %}>
+        <summary>Advanced filters</summary>
+        <div class="ds-advanced-filters">
+          <div class="ds-filter-cluster">
+              {% for field in filter_obj.form.visible_fields %}
+                <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+                <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">{{ field.label }}:</li>
+                {{ field }}
+                </ul>
+              {% endfor %}
+
+          </div>
+        </div>
+        <button type="submit" class="button">Filter</button>
+      </details>
+    </form>
+  </aside>
+
   {% if object_list %}
-    <table>
+    <table id="queue-table" style="width: 100%;" class="sortable">
       <thead>
         <tr>
           <th></th>
           <th>Date uploaded</th>
+          <th>Election Date</a></th>
           <th>Uploading user</th>
-          <th>Candidate ID</th>
+          <th>Candidate ID</a></th>
           <th>Action</th>
         </tr>
       </thead>
@@ -27,13 +63,14 @@
       {% for queued_image in object_list %}
         <tr>
           <td>
-          {% thumbnail queued_image.image "x200" as im %}
+          {% thumbnail queued_image.image "x100" as im %}
             <a href="{% url 'photo-review' queued_image_id=queued_image.id %}"><img src="{{ im.url }}"></a>
           {% endthumbnail %}
           </td>
           <td>{{ queued_image.created }}</td>
+          <td>{{ queued_image.election_date }}</td>
           <td>{% if queued_image.user %}{{ queued_image.user.username }}{% else %}a robot 🤖{% endif %}</td>
-          <td>{{ queued_image.person.id }}</td>
+          <td><a href="{% url 'person-view' person_id=queued_image.person.id %}">{{ queued_image.person.id }}</a></td>
           <td><a href="{% url 'photo-review' queued_image_id=queued_image.id %}">Review</a></td>
         </tr>
       {% endfor %}
@@ -43,4 +80,7 @@
     <p><strong>Congratulations!</strong> There are no more photos to review.</p>
   {% endif %}
 
+
+
 {% endblock %}
+

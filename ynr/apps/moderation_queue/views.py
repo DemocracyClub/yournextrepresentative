@@ -3,6 +3,7 @@ import random
 import re
 from os.path import join
 from tempfile import NamedTemporaryFile
+from typing import Any, Dict
 import uuid
 
 import bleach
@@ -20,7 +21,7 @@ from django.http import (
     HttpResponseRedirect,
     JsonResponse,
 )
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from urllib.parse import quote
@@ -38,8 +39,13 @@ from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.views.version_data import get_change_metadata, get_client_ip
 from candidates.models.db import ActionType
 from elections.models import Election
+from moderation_queue.filters import QueuedImageFilter
 from people.models import Person, PersonImage
 from popolo.models import Membership
+from moderation_queue.helpers import (
+    upload_photo_response,
+    image_form_valid_response,
+)
 
 from .forms import (
     PhotoReviewForm,
@@ -54,18 +60,7 @@ def upload_photo(request, person_id):
     person = get_object_or_404(Person, id=person_id)
     image_form = UploadPersonPhotoImageForm(initial={"person": person})
     url_form = UploadPersonPhotoURLForm(initial={"person": person})
-    return render(
-        request,
-        "moderation_queue/photo-upload-new.html",
-        {
-            "image_form": image_form,
-            "url_form": url_form,
-            "queued_images": QueuedImage.objects.filter(
-                person=person, decision="undecided"
-            ).order_by("created"),
-            "person": person,
-        },
-    )
+    return upload_photo_response(request, person, image_form, url_form)
 
 
 @login_required
@@ -74,34 +69,11 @@ def upload_photo_image(request, person_id):
     image_form = UploadPersonPhotoImageForm(request.POST, request.FILES)
     url_form = UploadPersonPhotoURLForm(initial={"person": person})
     if image_form.is_valid():
-        # Make sure that we save the user that made the upload
-        queued_image = image_form.save(commit=False)
-        queued_image.user = request.user
-        queued_image.save()
-        # Record that action:
-        LoggedAction.objects.create(
-            user=request.user,
-            action_type=ActionType.PHOTO_UPLOAD,
-            ip_address=get_client_ip(request),
-            popit_person_new_version="",
-            person=person,
-            source=image_form.cleaned_data["justification_for_use"],
+        return image_form_valid_response(
+            request=request, person=person, image_form=image_form
         )
-        return HttpResponseRedirect(
-            reverse("photo-upload-success", kwargs={"person_id": person.id})
-        )
-
-    return render(
-        request,
-        "moderation_queue/photo-upload-new.html",
-        {
-            "image_form": image_form,
-            "url_form": url_form,
-            "queued_images": QueuedImage.objects.filter(
-                person=person, decision="undecided"
-            ).order_by("created"),
-            "person": person,
-        },
+    return upload_photo_response(
+        request=request, person=person, image_form=image_form, url_form=url_form
     )
 
 
@@ -144,17 +116,11 @@ def upload_photo_url(request, person_id):
         finally:
             os.remove(img_temp_filename)
     else:
-        return render(
-            request,
-            "moderation_queue/photo-upload-new.html",
-            {
-                "image_form": image_form,
-                "url_form": url_form,
-                "queued_images": QueuedImage.objects.filter(
-                    person=person, decision="undecided"
-                ).order_by("created"),
-                "person": person,
-            },
+        return upload_photo_response(
+            request=request,
+            person=person,
+            image_form=image_form,
+            url_form=url_form,
         )
 
 
@@ -170,6 +136,19 @@ class PhotoUploadSuccess(TemplateView):
 class PhotoReviewList(GroupRequiredMixin, ListView):
     template_name = "moderation_queue/photo-review-list.html"
     required_group_name = PHOTO_REVIEWERS_GROUP_NAME
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        filter_obj = QueuedImageFilter(
+            data=self.request.GET,
+            queryset=context["object_list"],
+            request=self.request,
+        )
+        context["filter_obj"] = filter_obj
+        context["object_list"] = filter_obj.qs
+        context["shortcuts"] = filter_obj.shortcuts
+
+        return context
 
     def get_queryset(self):
         return (

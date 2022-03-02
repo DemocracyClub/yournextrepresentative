@@ -25,6 +25,7 @@ from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from official_documents.models import OfficialDocument
 from people.models import Person
 from people.tests.factories import PersonFactory
+from utils.testing_utils import FuzzyInt
 from ynr.helpers import mkdir_p
 
 TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
@@ -145,15 +146,16 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 
     def test_photo_review_queue_view_logged_in_privileged(self):
         queue_url = reverse("photo-review-list")
-        response = self.app.get(queue_url, user=self.test_reviewer)
+        with self.assertNumQueries(FuzzyInt(40, 41)):
+            response = self.app.get(queue_url, user=self.test_reviewer)
         self.assertEqual(response.status_code, 200)
         queue_table = response.html.find("table")
         photo_rows = queue_table.find_all("tr")
         self.assertEqual(3, len(photo_rows))
         cells = photo_rows[1].find_all("td")
-        self.assertEqual(cells[2].text, "john")
-        self.assertEqual(cells[3].text, "2009")
-        a = cells[4].find("a")
+        self.assertEqual(cells[3].text, "john")
+        self.assertEqual(cells[2].text, "16th March 2022")
+        a = cells[5].find("a")
         link_text = re.sub(r"\s+", " ", a.text).strip()
         link_url = a["href"]
         self.assertEqual(link_text, "Review")
