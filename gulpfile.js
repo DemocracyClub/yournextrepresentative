@@ -1,5 +1,7 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
+var convertEncoding = require('gulp-convert-encoding');
+
 
 const foundationDir = './node_modules/foundation-sites';
 const jqueryDir = './node_modules/jquery';
@@ -9,6 +11,8 @@ const sorttable = './node_modules/sorttable';
 const paths = {
     foundation_js: [`${foundationDir}/scss/*`,`${foundationDir}/scss/*/**`,]
 };
+
+
 
 function jquery_js() {
     var paths = [
@@ -54,6 +58,7 @@ function sorttable_js() {
         `${sorttable}/sorttable.js`,
     ];
     return gulp.src(paths)
+        .pipe(convertEncoding({from: 'iso-8859-15', to: 'utf8'}))
         .pipe(gulp.dest('ynr/assets/js/'))
 }
 
