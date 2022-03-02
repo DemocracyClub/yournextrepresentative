@@ -355,7 +355,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             image = person.image
 
             self.assertEqual(
-                "Uploaded by a script: Approved from photo moderation queue",
+                "Uploaded by a bot: Approved from photo moderation queue",
                 image.source,
             )
             self.assertEqual(427, image.image.width)
@@ -408,7 +408,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             self.assertEqual(la.user.username, "jane")
             self.assertEqual(la.action_type, "photo-reject")
             self.assertEqual(la.person.id, 2009)
-            self.assertEqual(la.source, "Rejected a photo upload from a script")
+            self.assertEqual(la.source, "Rejected a photo upload from a bot")
 
             self.assertFalse(mock_send_mail.called)
 

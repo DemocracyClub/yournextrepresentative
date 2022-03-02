@@ -31,11 +31,11 @@ def string_to_boolean(value):
     return {"True": True, "False": False}.get(value)
 
 
-def script_or_human(value):
+def bot_or_human(value):
     """
     Convert the string value into a boolean for the database query
     """
-    return {"script": True, "human": False}.get(value)
+    return {"bot": True, "human": False}.get(value)
 
 
 class QueuedImageFilter(django_filters.FilterSet):
@@ -83,8 +83,8 @@ class QueuedImageFilter(django_filters.FilterSet):
     uploaded_by = django_filters.TypedChoiceFilter(
         field_name="user",
         lookup_expr="isnull",
-        choices=[(None, "---------"), ("script", "Script"), ("human", "Human")],
-        coerce=script_or_human,
+        choices=[(None, "---------"), ("bot", "Robot 🤖"), ("human", "Human")],
+        coerce=bot_or_human,
         label="Uploaded by a",
         widget=DSLinkWidget,
     )
@@ -155,8 +155,8 @@ class QueuedImageFilter(django_filters.FilterSet):
             },
             {
                 "name": "uploaded_by",
-                "label": "Uploaded by a bot",
-                "query": {"uploaded_by": ["script"]},
+                "label": "Uploaded by a robot 🤖",
+                "query": {"uploaded_by": ["bot"]},
             },
         ]
 

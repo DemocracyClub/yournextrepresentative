@@ -296,7 +296,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         if self.queued_image.user:
             uploaded_by = self.queued_image.user.username
         else:
-            uploaded_by = "a script"
+            uploaded_by = "a robot 🤖"
         source = "Uploaded by {uploaded_by}: Approved from photo moderation queue".format(
             uploaded_by=uploaded_by
         )
@@ -348,7 +348,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         if self.queued_image.user:
             uploaded_by = self.queued_image.user.username
         else:
-            uploaded_by = "a script"
+            uploaded_by = "a robot 🤖"
 
         if decision == "approved":
             # Crop the image...
