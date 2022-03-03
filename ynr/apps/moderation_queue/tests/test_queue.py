@@ -6,7 +6,9 @@ from urllib.parse import urlsplit
 
 from django.contrib.auth.models import Group, User
 from django.core.files.storage import FileSystemStorage
+from django.conf import settings
 from django.test.utils import override_settings
+from django.utils.formats import date_format
 from django.urls import reverse
 from django_webtest import WebTest
 from mock import patch
@@ -153,8 +155,20 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         photo_rows = queue_table.find_all("tr")
         self.assertEqual(3, len(photo_rows))
         cells = photo_rows[1].find_all("td")
+        self.assertEqual(
+            cells[1].text,
+            date_format(self.q1.created, format=settings.DATETIME_FORMAT),
+        )
+        self.assertEqual(
+            cells[2].text,
+            date_format(
+                self.dulwich_post_ballot.election.election_date,
+                format=settings.DATE_FORMAT,
+            ),
+        )
         self.assertEqual(cells[3].text, "john")
-        self.assertEqual(cells[2].text, "17th March 2022")
+        self.assertEqual(cells[4].text, "2009")
+        self.assertEqual(cells[5].text, "Review")
         a = cells[5].find("a")
         link_text = re.sub(r"\s+", " ", a.text).strip()
         link_url = a["href"]
