@@ -59,66 +59,25 @@ class Command(BaseSOPNParsingCommand):
         with open(raw_people_file) as file:
             old_raw_people = json.loads(file.read())
 
-        new_raw_people = {}
+        self.new_raw_people = {}
         for ballot in Ballot.objects.exclude(officialdocument__isnull=True):
+            ballot_data = old_raw_people.get(ballot.ballot_paper_id, {})
 
-            try:
-                raw_people = ballot.rawpeople.data
-            except RawPeople.DoesNotExist:
-                raw_people = []
+            self.compare_relevant_pages(ballot=ballot, ballot_data=ballot_data)
 
-            old_raw_people_for_ballot = old_raw_people.get(
-                ballot.ballot_paper_id, []
-            )
-            old_count = len(old_raw_people_for_ballot)
-            new_count = len(raw_people)
-            if new_count < old_count:
-                self.stderr.write(
-                    f"Uh oh, parsed people for {ballot.ballot_paper_id} decreased from {old_count} to {new_count}. Stopping."
-                )
-
-            if new_count > old_count:
-                self.stdout.write(
-                    f"{ballot.ballot_paper_id} increased from {old_count} to {new_count} parsed people.\n"
-                    f"Check the SOPN at https://candidates.democracyclub.org.uk{ballot.get_sopn_url()}."
-                )
-                for person in raw_people:
-                    if person not in old_raw_people_for_ballot:
-                        self.stdout.write(self.style.SUCCESS(person))
-
-            # when people parsed have changed e.g. different name/different party print it for further checking
-            changed_people = [
-                person
-                for person in old_raw_people_for_ballot
-                if person not in raw_people
-            ]
-            if changed_people:
-                self.stdout.write(
-                    self.style.WARNING(
-                        f"Parsed data changed for {ballot.ballot_paper_id}\n"
-                        f"New raw people data:\n"
-                        f"{raw_people}\n"
-                        "Missing people:"
-                    )
-                )
-                for person in changed_people:
-                    self.stderr.write(str(person))
-
-            new_raw_people[ballot.ballot_paper_id] = raw_people
-
-            self.parties_correct(ballot, raw_people)
+            self.compare_raw_people(ballot=ballot, ballot_data=ballot_data)
 
         # display some overall totals
         self.stdout.write(
             "Old total 'people' parsed WAS {old}\n"
             "New total 'people' parsed IS {new}".format(
                 old=self.count_people_parsed(old_raw_people),
-                new=self.count_people_parsed(new_raw_people),
+                new=self.count_people_parsed(self.new_raw_people),
             )
         )
 
         old_raw_people_obj_count = len(
-            {k: v for k, v in old_raw_people.items() if v}
+            {k: v for k, v in old_raw_people.items() if v["raw_people"]}
         )
         new_raw_people_obj_count = RawPeople.objects.count()
         style = self.style.SUCCESS
@@ -135,7 +94,64 @@ class Command(BaseSOPNParsingCommand):
             total = len(ballots)
             self.stdout.write(f"{total} ballots parsed {result}")
             # Write a new baseline
-        call_command("sopn_tooling_write_baseline", data=new_raw_people)
+        call_command("sopn_tooling_write_baseline")
+
+    def compare_relevant_pages(self, ballot, ballot_data):
+        old_relevant_pages = ballot_data["relevant_pages"]
+        new_relevant_pages = ballot.sopn.relevant_pages
+
+        if old_relevant_pages != new_relevant_pages:
+            self.stdout.write(
+                self.style.WARNING(
+                    f"RELEVANT PAGES CHANGED FROM {old_relevant_pages} to {new_relevant_pages} for {ballot.ballot_paper_id}"
+                )
+            )
+
+    def compare_raw_people(self, ballot, ballot_data):
+
+        try:
+            raw_people = ballot.rawpeople.data
+        except RawPeople.DoesNotExist:
+            raw_people = []
+
+        old_raw_people_for_ballot = ballot_data.get("raw_people", [])
+        old_count = len(old_raw_people_for_ballot)
+        new_count = len(raw_people)
+        if new_count < old_count:
+            self.stderr.write(
+                f"Uh oh, parsed people for {ballot.ballot_paper_id} decreased from {old_count} to {new_count}. Stopping."
+            )
+
+        if new_count > old_count:
+            self.stdout.write(
+                f"{ballot.ballot_paper_id} increased from {old_count} to {new_count} parsed people.\n"
+                f"Check the SOPN at https://candidates.democracyclub.org.uk{ballot.get_sopn_url()}."
+            )
+            for person in raw_people:
+                if person not in old_raw_people_for_ballot:
+                    self.stdout.write(self.style.SUCCESS(person))
+
+        # when people parsed have changed e.g. different name/different party print it for further checking
+        changed_people = [
+            person
+            for person in old_raw_people_for_ballot
+            if person not in raw_people
+        ]
+        if changed_people:
+            self.stdout.write(
+                self.style.WARNING(
+                    f"Parsed data changed for {ballot.ballot_paper_id}\n"
+                    f"New raw people data:\n"
+                    f"{raw_people}\n"
+                    "Missing people:"
+                )
+            )
+            for person in changed_people:
+                self.stderr.write(str(person))
+
+        self.new_raw_people[ballot.ballot_paper_id] = {"raw_people": raw_people}
+
+        self.parties_correct(ballot, raw_people)
 
     def count_people_parsed(self, raw_people_data):
         """
@@ -144,7 +160,9 @@ class Command(BaseSOPNParsingCommand):
         accurately parsed. Therefore this total is best used to look for large
         changes that should then be checked in detail.
         """
-        return sum([len(people) for people in raw_people_data.values()])
+        return sum(
+            [len(data["raw_people"]) for data in raw_people_data.values()]
+        )
 
     def parties_correct(self, ballot, raw_people_for_ballot):
         candidates = Membership.objects.filter(ballot=ballot)

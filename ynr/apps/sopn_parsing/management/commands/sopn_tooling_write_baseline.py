@@ -40,7 +40,10 @@ class Command(BaseCommand):
                 except RawPeople.DoesNotExist:
                     raw_people = []
 
-                json_data[ballot.ballot_paper_id] = raw_people
+                json_data[ballot.ballot_paper_id] = {
+                    "raw_people": raw_people,
+                    "relevant_pages": ballot.sopn.relevant_pages,
+                }
 
         file_path = os.path.join(
             os.getcwd(), "ynr/apps/sopn_parsing/tests/data/sopn_baseline.json"
