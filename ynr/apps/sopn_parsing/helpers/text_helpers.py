@@ -34,6 +34,7 @@ def _clean_text(text, recheck=True, split_braces=True):
     text = re.sub(r"(^[a-z])\s([a-z][a-z]+)", r"\1\2", text)
     text = re.sub(r"(^[0-9])\s", r"", text)
     text = text.replace("*", "")
+    text = " ".join(char for char in text.split() if not char.isdigit())
     if split_braces:
         text = text.split("(")[0].strip()
     if recheck:

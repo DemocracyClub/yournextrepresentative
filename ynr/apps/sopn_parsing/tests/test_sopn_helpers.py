@@ -62,8 +62,6 @@ class TestSOPNHelpers(TestCase):
                 "on",
                 "thursday",
                 "february",
-                "28",
-                "2019",
                 # table headers
                 "candidate",
                 "name",

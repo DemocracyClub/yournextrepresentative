@@ -21,6 +21,7 @@ FIRST_NAME_FIELDS = [
     "other names",
     "candidate forename",
     "candidates other names",
+    "other names in full",
 ]
 LAST_NAME_FIELDS = [
     "surname",
