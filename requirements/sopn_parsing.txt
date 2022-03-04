@@ -1,5 +1,5 @@
 -r base.txt
 
-pdfminer.six==20201018
+pdfminer.six==20211012
 camelot-py[cv]==0.8.2
 pypandoc==1.7.2
