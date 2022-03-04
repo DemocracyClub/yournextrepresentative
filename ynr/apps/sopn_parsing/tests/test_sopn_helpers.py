@@ -205,4 +205,4 @@ class TestSOPNHelpers(TestCase):
         self.assertEqual(len(document_obj.pages), 2)
 
         document_obj.match_all_pages()
-        self.assertEqual(strensall.sopn.relevant_pages, "1,2")
+        self.assertEqual(strensall.sopn.relevant_pages, "all")

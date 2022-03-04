@@ -74,11 +74,14 @@ class SOPNDocument:
         return [page for page in self.pages.values() if not page.matched]
 
     @property
-    def has_single_page_and_single_document(self) -> bool:
+    def guess_all_pages(self) -> bool:
         """
-        Return if there is only one page and one related OfficialDocument
+        Return if there is only one page or one related OfficialDocument
         """
-        return len(self.pages) == 1 and len(self.unmatched_documents) == 1
+        if len(self.pages) == 1:
+            return True
+
+        return len(self.pages) < 4 and len(self.unmatched_documents) == 1
 
     def all_official_documents_with_source(self):
         """
@@ -221,7 +224,7 @@ class SOPNDocument:
         match its associated Ballot with pages in the PDF file. If matches are
         found, the OfficialDocument's relevant_pages field is updated.
         """
-        if self.has_single_page_and_single_document:
+        if self.guess_all_pages:
             document = self.unmatched_documents.pop()
             document.relevant_pages = "all"
             return document.save()
