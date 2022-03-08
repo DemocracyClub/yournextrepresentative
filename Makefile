@@ -1,5 +1,14 @@
 export DJANGO_SETTINGS_MODULE?=ynr.settings.sopn_testing
 
+
+.PHONY: sopn-runserver
+sopn-runserver:
+	python manage.py runserver
+
+.PHONY: sopn-shell
+sopn-shell:
+	python manage.py shell_plus
+
 .PHONY: migrate-db
 migrate-db:
 	python manage.py migrate
@@ -25,3 +34,7 @@ delete-test-sopns:
 .PHONY: create-baseline-file
 create-baseline-file:
 	python manage.py sopn_tooling_write_baseline
+
+.PHONY: copy-baseline-file
+copy-baseline-file:
+	cp ynr/apps/sopn_parsing/tests/data/sopn_baseline.json ynr/apps/sopn_parsing/tests/data/sopn_baseline_copy.json

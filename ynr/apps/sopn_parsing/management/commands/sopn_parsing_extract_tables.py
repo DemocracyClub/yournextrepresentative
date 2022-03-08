@@ -1,3 +1,6 @@
+from django.db.models import OuterRef, Subquery
+from official_documents.models import OfficialDocument
+
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 from sopn_parsing.helpers.extract_tables import extract_ballot_table
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
@@ -18,7 +21,18 @@ class Command(BaseSOPNParsingCommand):
             qs = qs.filter(**filter_kwargs)
 
         # We can't extract tables when we don't know about the pages
-        qs = qs.exclude(officialdocument__relevant_pages="")
+        # It is possible for an a ballot to have more than one
+        # OfficialDocument so we need to get the latest one to check
+        # that we know which pages to parse tables from
+        latest_sopns = OfficialDocument.objects.filter(
+            ballot=OuterRef("pk")
+        ).order_by("-created")
+        qs = qs.annotate(
+            sopn_relevant_pages=Subquery(
+                latest_sopns.values("relevant_pages")[:1]
+            )
+        )
+        qs = qs.exclude(sopn_relevant_pages="")
         for ballot in qs:
             try:
                 extract_ballot_table(ballot)
