@@ -85,8 +85,8 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             value="tessa.jowell@example.com", value_type="email"
         )
         PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/jowell-pilot.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/jowell-pilot.jpg",
             defaults={
                 "person": person,
                 "source": "Taken from Wikipedia",
@@ -176,8 +176,8 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/collins-pilot.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/collins-pilot.jpg",
             defaults={
                 "person": person,
                 "source": "Taken from Twitter",

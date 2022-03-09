@@ -1,6 +1,5 @@
 from datetime import date
 from enum import Enum, unique
-import uuid
 from urllib.parse import urljoin, quote_plus
 
 from django.conf import settings
@@ -25,6 +24,8 @@ from django.utils.html import format_html
 from django_extensions.db.models import TimeStampedModel
 from slugify import slugify
 from sorl.thumbnail import get_thumbnail
+from sorl.thumbnail import delete as sorl_delete
+
 
 from candidates.diffs import get_version_diffs
 from candidates.models import Ballot
@@ -39,11 +40,9 @@ from popolo.models import Membership, VersionNotFound
 
 def person_image_path(instance, filename):
     # Ensure the filename isn't too long
-    filename = filename[400:]
+    filename = filename[:400]
     # Upload images in a directory per person
-    return "images/people/{0}/{1}-{2}".format(
-        instance.person.id, uuid.uuid4(), filename
-    )
+    return f"images/people/{instance.person_id}/{filename}"
 
 
 @unique
@@ -798,6 +797,32 @@ class Person(TimeStampedModel, models.Model):
             source=source,
         )
         self.delete()
+
+    def create_person_image(self, queued_image, copyright):
+        cropped_image = queued_image.crop_image()
+        try:
+            self.image.delete()
+        except PersonImage.DoesNotExist:
+            pass
+
+        source = f"Uploaded by {queued_image.uploaded_by}: Approved from photo moderation queue"
+        PersonImage.objects.create_from_file(
+            filename=cropped_image.name,
+            defaults={
+                "person": self,
+                "source": source,
+                "uploading_user": queued_image.user,
+                "user_notes": queued_image.justification_for_use,
+                "copyright": copyright,
+                "user_copyright": queued_image.why_allowed,
+                "notes": "Approved from photo moderation queue",
+            },
+        )
+
+        sorl_delete(self.person_image.file, delete_file=False)
+        # Update the last modified date, so this is picked up
+        # as a recent edit by API consumers
+        self.save()
 
 
 class PersonNameSynonym(models.Model):

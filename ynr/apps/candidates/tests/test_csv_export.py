@@ -37,8 +37,8 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             gender="female",
         )
         PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/jowell-pilot.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/jowell-pilot.jpg",
             defaults={
                 "person": self.gb_person,
                 "source": "Taken from Wikipedia",
