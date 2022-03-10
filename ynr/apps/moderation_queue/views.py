@@ -1,4 +1,3 @@
-import os
 import random
 import re
 
@@ -8,7 +7,6 @@ import bleach
 from braces.views import LoginRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.files import File
 from django.db import models
 from django.db.models import Count, Q
 from django.http import (
@@ -23,10 +21,11 @@ from urllib.parse import quote
 from django.views.generic import CreateView, ListView, TemplateView, View
 
 from auth_helpers.views import GroupRequiredMixin
-from candidates.management.images import (
+from moderation_queue.helpers import (
     ImageDownloadException,
     download_image_from_url,
 )
+
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.views.version_data import get_client_ip
 from candidates.models.db import ActionType
@@ -75,45 +74,43 @@ def upload_photo_url(request, person_id):
     image_form = UploadPersonPhotoImageForm(initial={"person": person})
     url_form = UploadPersonPhotoURLForm(request.POST)
 
-    if url_form.is_valid():
-        image_url = url_form.cleaned_data["image_url"]
-        try:
-            img_temp_filename = download_image_from_url(image_url)
-        except ImageDownloadException as ide:
-            return HttpResponseBadRequest(str(ide).encode("utf-8"))
-        try:
-            queued_image = QueuedImage(
-                why_allowed=url_form.cleaned_data["why_allowed_url"],
-                justification_for_use=url_form.cleaned_data[
-                    "justification_for_use_url"
-                ],
-                person=person,
-                user=request.user,
-            )
-            queued_image.save()
-            with open(img_temp_filename, "rb") as f:
-                queued_image.image.save(image_url, File(f))
-            queued_image.save()
-            LoggedAction.objects.create(
-                user=request.user,
-                action_type=ActionType.PHOTO_UPLOAD,
-                ip_address=get_client_ip(request),
-                popit_person_new_version="",
-                person=person,
-                source=url_form.cleaned_data["justification_for_use_url"],
-            )
-            return HttpResponseRedirect(
-                reverse("photo-upload-success", kwargs={"person_id": person.id})
-            )
-        finally:
-            os.remove(img_temp_filename)
-    else:
+    if not url_form.is_valid():
         return upload_photo_response(
             request=request,
             person=person,
             image_form=image_form,
             url_form=url_form,
         )
+
+    image_url = url_form.cleaned_data["image_url"]
+    try:
+        image_bytes = download_image_from_url(image_url)
+    except ImageDownloadException as ide:
+        return HttpResponseBadRequest(str(ide).encode("utf-8"))
+
+    filename = image_url.split("/")[-1]
+    extension = filename.split(".")[-1]
+    filename = filename.replace(extension, "png")
+    queued_image = QueuedImage(
+        why_allowed=url_form.cleaned_data["why_allowed_url"],
+        justification_for_use=url_form.cleaned_data[
+            "justification_for_use_url"
+        ],
+        person=person,
+        user=request.user,
+    )
+    queued_image.image.save(filename, image_bytes, save=True)
+    LoggedAction.objects.create(
+        user=request.user,
+        action_type=ActionType.PHOTO_UPLOAD,
+        ip_address=get_client_ip(request),
+        popit_person_new_version="",
+        person=person,
+        source=url_form.cleaned_data["justification_for_use_url"],
+    )
+    return HttpResponseRedirect(
+        reverse("photo-upload-success", kwargs={"person_id": person.id})
+    )
 
 
 class PhotoUploadSuccess(TemplateView):
