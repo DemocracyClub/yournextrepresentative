@@ -11,8 +11,9 @@ from django_webtest import WebTest
 from mock import Mock, patch
 from webtest import Upload
 
-from candidates.management.images import (
+from moderation_queue.helpers import (
     ImageDownloadException,
+    convert_image_to_png,
     download_image_from_url,
 )
 from candidates.models import LoggedAction
@@ -123,7 +124,7 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
 
 
 @patch("moderation_queue.forms.requests")
-@patch("candidates.management.images.requests")
+@patch("moderation_queue.helpers.requests")
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
 
@@ -222,6 +223,15 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
         final_count = LoggedAction.objects.all().count()
         self.assertEqual(final_count, initial_count + 1)
 
+    def test_image_converted_to_png(self, *all_mock_requests):
+        self.assertEqual(
+            PillowImage.open(self.example_image_filename).format, "JPEG"
+        )
+        self.successful_get_image(*all_mock_requests)
+        self.valid_form().submit()
+        queued_image = QueuedImage.objects.all().last()
+        self.assertEqual(PillowImage.open(queued_image.image).format, "PNG")
+
     def test_loads_success_page_if_upload_was_successful(
         self, *all_mock_requests
     ):
@@ -274,3 +284,14 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
             str(context.exception),
             "The image exceeded the maximum allowed size",
         )
+
+    def test_convert_image_to_png_helper(self, *all_mock_requests):
+        with open(EXAMPLE_IMAGE_FILENAME, "rb") as file:
+            self.assertEqual(PillowImage.open(file).format, "JPEG")
+            converted_image = convert_image_to_png(file)
+            self.assertEqual(PillowImage.open(converted_image).format, "PNG")
+
+    def test_download_image_from_url_helper(self, *all_mock_requests):
+        self.successful_get_image(*all_mock_requests)
+        image = download_image_from_url("http://foo.com/bar.jpg")
+        self.assertEqual(PillowImage.open(image).format, "PNG")
