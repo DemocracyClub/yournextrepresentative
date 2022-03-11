@@ -32,6 +32,10 @@ class NotStandingValidationError(ValueError):
     pass
 
 
+class WelshOnlyValidationError(ValueError):
+    pass
+
+
 class Organization(Dateframeable, TimeStampedModel, models.Model):
     """
     A group with a common purpose or reason for existence that goes beyond the
@@ -346,6 +350,12 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
     elected = models.BooleanField(null=True)
     party_list_position = models.PositiveSmallIntegerField(null=True)
     ballot = models.ForeignKey("candidates.Ballot", on_delete=models.CASCADE)
+
+    # stores previous party affiliations within 12 months of this candidacy
+    # TODO better related_name
+    previous_party_affiliations = models.ManyToManyField(
+        to="parties.Party", related_name="alliated_memberships", blank=True
+    )
 
     objects = MembershipQuerySet.as_manager()
 
