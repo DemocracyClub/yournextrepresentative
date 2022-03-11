@@ -141,6 +141,57 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
             f"/moderation/photo/review?ballot_paper_id={self.ballot.ballot_paper_id}",
         )
 
+    def test_is_welsh_run_false(self):
+        non_welsh_election_types = [
+            "parl.",
+            "nia.",
+            "europarl.",
+            "sp.",
+            "gla.",
+            "ref.",
+            # TODO confirm if these could be welsh run?
+            "pcc." "mayor.",
+            # TODO check this one
+            "naw.",
+        ]
+        for election_type in non_welsh_election_types:
+            ballot = Ballot(ballot_paper_id=election_type)
+            with self.subTest(msg=election_type):
+                self.assertFalse(ballot.is_welsh_run)
+
+        non_welsh_nuts1_codes = [
+            "UKC",
+            "UKD",
+            "UKE",
+            "UKF",
+            "UKG",
+            "UKH",
+            "UKI",
+            "UKJ",
+            "UKK",
+            "UKM",
+            "UKN",
+        ]
+        for nuts_code in non_welsh_nuts1_codes:
+            non_welsh_local_ballot = Ballot(
+                ballot_paper_id="local.",
+                tags={"NUTS1": {"KEY": nuts_code, "VALUE": ""}},
+            )
+            with self.subTest(msg=nuts_code):
+                self.assertFalse(non_welsh_local_ballot.is_welsh_run)
+
+    def test_is_welsh_run_true(self):
+        welsh_ballots = [
+            Ballot(ballot_paper_id="senedd."),
+            Ballot(
+                ballot_paper_id="local.",
+                tags={"NUTS1": {"KEY": "UKL", "VALUE": ""}},
+            ),
+        ]
+        for ballot in welsh_ballots:
+            with self.subTest(msg=str(ballot)):
+                self.assertTrue(ballot.is_welsh_run)
+
 
 class BallotsWithResultsMixin(SingleBallotStatesMixin):
     """
