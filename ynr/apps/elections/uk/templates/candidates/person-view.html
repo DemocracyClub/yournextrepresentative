@@ -49,7 +49,7 @@
   <div class="person__photo">
 
     <img class="person-avatar" src="{{ person.get_display_image_url }}"/>
-    {% if not person.primary_image and user.is_authenticated %}
+    {% if not person.person_image and user.is_authenticated %}
       <a class="upload-photo" href="{% url 'photo-upload' person.id %}">
         Upload photo
       </a>
@@ -193,13 +193,16 @@
     </dl>
   {% endif %}
 
-  {% if person.primary_image %}
+  {% if person.person_image %}
   <h2>Photo Credit:</h2>
   <p class="person__photo-credit">
-    {% include 'candidates/_photo-credit.html' with image=person.primary_image_model %}
+    {% include 'candidates/_photo-credit.html' with image=person.person_image_model %}
   </p>
+    {% if user.is_authenticated %}
+      <i>I am {{ person.name }}, and I would like to remove this photo:</i>
+      <a href="mailto:hello@democracyclub.org.uk" class="button">Request photo removal</a>
+    {% endif %}
   {% endif %}
-
 </div>
 
 <div class="person__actions">
@@ -216,10 +219,17 @@
     <h2>Improve this data!</h2>
     {% if user_can_edit and person_edits_allowed %}
       <p>Our database is built by people like you.</p>
-      <p>Please do add extra details about this candidate – it only takes a moment.</p>
+      <p>Please add extra details about this candidate – it only takes a moment.</p>
       {% if user.is_authenticated %}
         <a href="{% url 'person-update' person_id=person.id %}" class="button">Edit candidate</a>
-        <a href="{% url 'photo-upload' person.id %}" class="button">Upload candidate photo</a>
+        {% if person.queued_image %} 
+          {% if user_can_review_photos %}
+            <p>{{ person.name }} has a photo that needs to be reviewed</p>
+            <a href="{{ person.get_absolute_queued_image_url}}" class="button">Review image</a>
+          {% endif %} 
+        {% else %}
+          <a href="{% url 'photo-upload' person.id %}" class="button">Upload candidate photo</a>
+        {% endif %} 
       {% else %}
         <a href="{% url 'account_login' %}?next={{ redirect_after_login }}" class="button">Log in to edit</a>
       {% endif %}

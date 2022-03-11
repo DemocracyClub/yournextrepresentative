@@ -1,6 +1,5 @@
 from datetime import date
 from enum import Enum, unique
-import uuid
 from urllib.parse import urljoin, quote_plus
 
 from django.conf import settings
@@ -25,6 +24,8 @@ from django.utils.html import format_html
 from django_extensions.db.models import TimeStampedModel
 from slugify import slugify
 from sorl.thumbnail import get_thumbnail
+from sorl.thumbnail import delete as sorl_delete
+
 
 from candidates.diffs import get_version_diffs
 from candidates.models import Ballot
@@ -39,11 +40,9 @@ from popolo.models import Membership, VersionNotFound
 
 def person_image_path(instance, filename):
     # Ensure the filename isn't too long
-    filename = filename[400:]
+    filename = filename[:400]
     # Upload images in a directory per person
-    return "images/people/{0}/{1}-{2}".format(
-        instance.person.id, uuid.uuid4(), filename
-    )
+    return f"images/people/{instance.person_id}/{filename}"
 
 
 @unique
@@ -59,8 +58,8 @@ class PersonImage(models.Model):
     notes they have.
     """
 
-    person = models.ForeignKey(
-        "people.Person", related_name="images", on_delete=models.CASCADE
+    person = models.OneToOneField(
+        "people.Person", related_name="image", on_delete=models.CASCADE
     )
     image = models.ImageField(upload_to=person_image_path, max_length=512)
     source = models.CharField(max_length=400)
@@ -72,7 +71,6 @@ class PersonImage(models.Model):
     md5sum = models.CharField(max_length=32, blank=True)
     user_copyright = models.CharField(max_length=128, blank=True)
     notes = models.TextField(blank=True)
-    is_primary = models.BooleanField(default=False)
 
     objects = PersonImageManager()
 
@@ -375,6 +373,15 @@ class Person(TimeStampedModel, models.Model):
         return request.build_absolute_uri(path)
 
     @cached_property
+    def queued_image(self):
+        return self.queuedimage_set.filter(decision="undecided").first()
+
+    def get_absolute_queued_image_url(self):
+        if not self.queued_image:
+            return None
+        return self.queued_image.get_absolute_url()
+
+    @cached_property
     def get_all_idenfitiers(self):
         return list(self.tmp_person_identifiers.all())
 
@@ -625,15 +632,15 @@ class Person(TimeStampedModel, models.Model):
         image_uploading_user_notes = ""
         proxy_image_url_template = ""
 
-        primary_image = None
-        for image in self.images.all():
-            if image.is_primary:
-                primary_image = image
-        primary_image_url = None
-        if primary_image:
-            primary_image_url = urljoin(base_url, primary_image.image.url)
+        try:
+            person_image = self.image
+        except PersonImage.DoesNotExist:
+            person_image = None
+        person_image_url = None
+        if person_image:
+            person_image_url = urljoin(base_url, person_image.image.url)
             if settings.IMAGE_PROXY_URL and base_url:
-                encoded_url = quote_plus(primary_image_url)
+                encoded_url = quote_plus(person_image_url)
                 proxy_image_url_template = (
                     settings.IMAGE_PROXY_URL
                     + encoded_url
@@ -641,11 +648,11 @@ class Person(TimeStampedModel, models.Model):
                 )
 
             try:
-                image_copyright = primary_image.copyright
-                user = primary_image.uploading_user
+                image_copyright = person_image.copyright
+                user = person_image.uploading_user
                 if user is not None:
-                    image_uploading_user = primary_image.uploading_user.username
-                image_uploading_user_notes = primary_image.user_notes
+                    image_uploading_user = person_image.uploading_user.username
+                image_uploading_user_notes = person_image.user_notes
             except ObjectDoesNotExist:
                 pass
 
@@ -689,7 +696,7 @@ class Person(TimeStampedModel, models.Model):
             "wikidata_id": self.get_single_identifier_value("wikidata_id"),
             "theyworkforyou_url": theyworkforyou_url,
             "parlparse_id": parlparse_id,
-            "image_url": primary_image_url,
+            "image_url": person_image_url,
             "proxy_image_url_template": proxy_image_url_template,
             "image_copyright": image_copyright,
             "image_uploading_user": image_uploading_user,
@@ -702,25 +709,34 @@ class Person(TimeStampedModel, models.Model):
         }
         return row
 
-    @property
-    def primary_image_model(self):
-        images = self.images.filter(is_primary=True)
-        if images.exists():
-            return images.first()
+    @cached_property
+    def person_image_model(self):
+        """
+        Returns the PersonImage instance if one exists
+        """
+        try:
+            return self.image
+        except PersonImage.DoesNotExist:
+            return None
 
     @property
-    def primary_image(self):
-        image = self.primary_image_model
-        if image:
-            return image.image
+    def person_image(self):
+        """
+        Returns the image of the person from their PersonImage instance if one
+        exists
+        """
+        if not self.person_image_model:
+            return None
+
+        return self.person_image_model.image
 
     def get_display_image_url(self):
         """
         Return either the person's primary image or blank outline of a person
         """
-        if self.primary_image:
+        if self.person_image:
             try:
-                return get_thumbnail(self.primary_image.file, "x64").url
+                return get_thumbnail(self.person_image.file, "x64").url
             except FileNotFoundError:
                 pass
 
@@ -781,6 +797,32 @@ class Person(TimeStampedModel, models.Model):
             source=source,
         )
         self.delete()
+
+    def create_person_image(self, queued_image, copyright):
+        cropped_image = queued_image.crop_image()
+        try:
+            self.image.delete()
+        except PersonImage.DoesNotExist:
+            pass
+
+        source = f"Uploaded by {queued_image.uploaded_by}: Approved from photo moderation queue"
+        PersonImage.objects.create_from_file(
+            filename=cropped_image.name,
+            defaults={
+                "person": self,
+                "source": source,
+                "uploading_user": queued_image.user,
+                "user_notes": queued_image.justification_for_use,
+                "copyright": copyright,
+                "user_copyright": queued_image.why_allowed,
+                "notes": "Approved from photo moderation queue",
+            },
+        )
+
+        sorl_delete(self.person_image.file, delete_file=False)
+        # Update the last modified date, so this is picked up
+        # as a recent edit by API consumers
+        self.save()
 
 
 class PersonNameSynonym(models.Model):

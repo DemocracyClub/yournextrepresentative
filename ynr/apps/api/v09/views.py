@@ -123,10 +123,9 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
                             "party", "post", "ballot__election"
                         ),
                     ),
-                    "person__images",
                     "person__other_names",
                 )
-                .select_related("person")
+                .select_related("person", "person__image")
             ):
                 candidates.append(
                     serializers.NoVersionPersonSerializer(
@@ -216,7 +215,6 @@ class PersonViewSet(viewsets.ModelViewSet):
             ),
             "memberships__ballot__election",
             "other_names",
-            "images",
         ).order_by("id")
         date_qs = self.request.query_params.get("updated_gte", None)
         if date_qs:

@@ -49,7 +49,6 @@ git submodule update
 
 ```
 npm install
-npm run build
 ```
 
 ## (Optional) Code linting

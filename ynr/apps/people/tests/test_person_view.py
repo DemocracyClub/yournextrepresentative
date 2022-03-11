@@ -2,6 +2,7 @@ import re
 
 from django.test import override_settings
 from django_webtest import WebTest
+from django.contrib.auth.models import Group
 
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.dates import templates_before, templates_after
@@ -11,6 +12,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from people.models import PersonImage
 from people.tests.factories import PersonFactory
+from moderation_queue.models import QueuedImage, PHOTO_REVIEWERS_GROUP_NAME
 
 
 class PersonViewSharedTestsMixin(
@@ -75,17 +77,32 @@ class TestPersonView(PersonViewSharedTestsMixin):
         response = self.app.get("/person/2009/tessa-jowell", user=self.user)
         self.assertContains(response, 'href="/person/2009/update"')
 
-    def test_links_to_person_photo_upload_page(self):
+    def test_links_to_review_photos_permission(self):
+        group, _ = Group.objects.get_or_create(name=PHOTO_REVIEWERS_GROUP_NAME)
+        self.user.groups.add(group)
+        queued_image = QueuedImage.objects.create(
+            user=self.user, person=self.person, image=EXAMPLE_IMAGE_FILENAME
+        )
         response = self.app.get("/person/2009/tessa-jowell", user=self.user)
-        self.assertContains(response, 'href="/moderation/photo/upload/2009"')
+        self.assertContains(response, "has a photo that needs to be reviewed")
+        self.assertContains(response, queued_image.get_absolute_url())
+
+    def test_links_to_review_photos_no_permission(self):
+        queued_image = QueuedImage.objects.create(
+            user=self.user, person=self.person, image=EXAMPLE_IMAGE_FILENAME
+        )
+        response = self.app.get("/person/2009/tessa-jowell", user=self.user)
+        self.assertNotContains(
+            response, "has a photo that needs to be reviewed"
+        )
+        self.assertNotContains(response, queued_image.get_absolute_url())
 
     def test_photo_credits_shown(self):
         PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/jowell-pilot.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/jowell-pilot.jpg",
             defaults={
                 "person": self.person,
-                "is_primary": True,
                 "source": "Taken from Wikipedia",
                 "copyright": "example-license",
                 "uploading_user": self.user,

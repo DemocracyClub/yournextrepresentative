@@ -8,8 +8,8 @@ from moderation_queue.models import QueuedImage
 # These magic values are because the AWS API crops faces quite tightly by
 # default, meaning we literally just get the face. These values are about
 # right or, they are more right than the default crop.
-MIN_SCALING_FACTOR = 0.3
-MAX_SCALING_FACTOR = 2
+MIN_SCALING_FACTOR = 0.7
+MAX_SCALING_FACTOR = 1.3
 
 
 class Command(BaseCommand):
@@ -40,13 +40,13 @@ class Command(BaseCommand):
         if any_failed:
             raise CommandError("Broken images found (see above)")
 
-    def get_bound(self, bound, im_size):
+    def get_bound(self, bound, im_size, scaling_factor):
         """
         In some situations the bound can be <0, and this breaks the DB
         constraint. Use this methd to return at least 0
 
         """
-        bound = bound * im_size * MIN_SCALING_FACTOR
+        bound = bound * im_size * scaling_factor
         return max(0, bound)
 
     def set_x_y_from_response(self, qi, detected, verbosity=0):
@@ -54,10 +54,26 @@ class Command(BaseCommand):
             im_width = qi.image.width
             im_height = qi.image.height
             bounding_box = detected["FaceDetails"][0]["BoundingBox"]
-            qi.crop_min_x = self.get_bound(bounding_box["Left"], im_width)
-            qi.crop_min_y = self.get_bound(bounding_box["Top"], im_height)
-            qi.crop_max_x = self.get_bound(bounding_box["Width"], im_width)
-            qi.crop_max_y = self.get_bound(bounding_box["Height"], im_height)
+            qi.crop_min_x = self.get_bound(
+                bound=bounding_box["Left"],
+                im_size=im_width,
+                scaling_factor=MIN_SCALING_FACTOR,
+            )
+            qi.crop_min_y = self.get_bound(
+                bound=bounding_box["Top"],
+                im_size=im_height,
+                scaling_factor=MIN_SCALING_FACTOR,
+            )
+            qi.crop_max_x = self.get_bound(
+                bound=bounding_box["Width"],
+                im_size=im_width,
+                scaling_factor=MAX_SCALING_FACTOR,
+            )
+            qi.crop_max_y = self.get_bound(
+                bound=bounding_box["Height"],
+                im_size=im_height,
+                scaling_factor=MAX_SCALING_FACTOR,
+            )
             qi.detection_metadata = json.dumps(detected, indent=4)
 
             if int(verbosity) > 1:

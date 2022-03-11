@@ -22,6 +22,8 @@ from .uk_examples import UK2015ExamplesMixin
 
 
 class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
+    maxDiff = None
+
     def setUp(self):
         super().setUp()
         self.storage = DefaultStorage()
@@ -35,11 +37,10 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             gender="female",
         )
         PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/jowell-pilot.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/jowell-pilot.jpg",
             defaults={
                 "person": self.gb_person,
-                "is_primary": True,
                 "source": "Taken from Wikipedia",
                 "copyright": "example-license",
                 "uploading_user": self.user,
@@ -127,7 +128,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
 
     def test_as_dict_2010(self):
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(3):
             memberships_dicts, elected = memberships_dicts_for_csv(
                 self.earlier_election.slug
             )
@@ -137,14 +138,13 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         self.assertEqual(membership_dict["id"], 2009)
 
     def test_csv_output(self):
-        tessa_image_url = self.gb_person.primary_image.url
+        tessa_image_url = self.gb_person.image.image.url
         election_date = date_in_near_future
         earlier_election_date = date_in_near_future - timedelta(
             days=FOUR_YEARS_IN_DAYS
         )
         PersonRedirect.objects.create(old_person_id=12, new_person_id=1953)
         PersonRedirect.objects.create(old_person_id=56, new_person_id=1953)
-        self.maxDiff = None
         example_output = (
             "id,name,election,ballot_paper_id,election_date,seats_contested,party_id,party_name,party_description_text,post_id,post_label,organisation_name,NUTS1,honorific_prefix,honorific_suffix,gender,birth_date,elected,email,twitter_username,facebook_page_url,party_ppc_page_url,facebook_personal_url,homepage_url,wikipedia_url,linkedin_url,image_url,proxy_image_url_template,image_copyright,image_uploading_user,image_uploading_user_notes,twitter_user_id,election_current,party_lists_in_use,party_list_position,old_person_ids,gss_code,parlparse_id,theyworkforyou_url,party_ec_id,favourite_biscuits,cancelled_poll,wikidata_id,blog_url,instagram_url,youtube_profile\r\n"
             + f"1953,Daithí McKay,parl.2010-05-06,parl.66135.2010-05-06,{earlier_election_date},1,party:39,Sinn Féin,,66135,North Antrim,House of Commons,,,,male,,,,,,,,,,,,,,,,,False,False,,12;56,,,,PP39,,False,,,,\r\n"
@@ -153,7 +153,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             + f"2009,Tessa Jowell,parl.2015-05-07,parl.65913.2015-05-07,{election_date},1,party:53,Labour Party,,65913,Camberwell and Peckham,House of Commons,,Ms,DBE,female,,,jowell@example.com,,,,,,,,{tessa_image_url},,example-license,john,A photo of Tessa Jowell,,True,False,,,,uk.org.publicwhip/person/10326,http://www.theyworkforyou.com/mp/10326,PP53,,False,Q123456,,,\r\n"
         )
 
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(3):
             memberships_dicts, elected = memberships_dicts_for_csv()
         all_members = []
         for slug, members in memberships_dicts.items():

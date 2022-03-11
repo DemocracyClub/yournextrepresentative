@@ -164,16 +164,15 @@ class TestBallotView(
     def test_person_photo_shown(self):
         self.create_memberships(self.ballot, self.parties)
         person = self.ballot.membership_set.first().person
-        im = PersonImage.objects.update_or_create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/imported.jpg",
-            person=person,
+        im = PersonImage.objects.create_from_file(
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/imported.jpg",
             defaults={
+                "person": person,
                 "md5sum": "md5sum",
                 "copyright": "example-license",
                 "uploading_user": self.user,
                 "user_notes": "Here's an image...",
-                "is_primary": True,
                 "source": "Found on the candidate's Flickr feed",
             },
         )

@@ -6,7 +6,9 @@ from urllib.parse import urlsplit
 
 from django.contrib.auth.models import Group, User
 from django.core.files.storage import FileSystemStorage
+from django.conf import settings
 from django.test.utils import override_settings
+from django.utils.formats import date_format
 from django.urls import reverse
 from django_webtest import WebTest
 from mock import patch
@@ -25,6 +27,7 @@ from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from official_documents.models import OfficialDocument
 from people.models import Person
 from people.tests.factories import PersonFactory
+from utils.testing_utils import FuzzyInt
 from ynr.helpers import mkdir_p
 
 TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
@@ -145,15 +148,28 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 
     def test_photo_review_queue_view_logged_in_privileged(self):
         queue_url = reverse("photo-review-list")
-        response = self.app.get(queue_url, user=self.test_reviewer)
+        with self.assertNumQueries(FuzzyInt(40, 41)):
+            response = self.app.get(queue_url, user=self.test_reviewer)
         self.assertEqual(response.status_code, 200)
         queue_table = response.html.find("table")
         photo_rows = queue_table.find_all("tr")
         self.assertEqual(3, len(photo_rows))
         cells = photo_rows[1].find_all("td")
-        self.assertEqual(cells[2].text, "john")
-        self.assertEqual(cells[3].text, "2009")
-        a = cells[4].find("a")
+        self.assertEqual(
+            cells[1].text,
+            date_format(self.q1.created, format=settings.DATETIME_FORMAT),
+        )
+        self.assertEqual(
+            cells[2].text,
+            date_format(
+                self.dulwich_post_ballot.election.election_date,
+                format=settings.DATE_FORMAT,
+            ),
+        )
+        self.assertEqual(cells[3].text, "john")
+        self.assertEqual(cells[4].text, "2009")
+        self.assertEqual(cells[5].text, "Review")
+        a = cells[5].find("a")
         link_text = re.sub(r"\s+", " ", a.text).strip()
         link_url = a["href"]
         self.assertEqual(link_text, "Review")
@@ -184,7 +200,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         response = self.app.get(review_url, user=self.test_reviewer)
         self.assertContains(response, "Photo policy")
 
-    @patch("moderation_queue.views.send_mail")
+    @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     def test_photo_review_upload_approved_privileged(self, mock_send_mail):
         with self.settings(SITE_ID=1):
@@ -212,9 +228,8 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             )
 
             person = Person.objects.get(id=2009)
-            image = person.images.last()
+            image = person.image
 
-            self.assertTrue(image.is_primary)
             self.assertEqual(
                 "Uploaded by john: Approved from photo moderation queue",
                 image.source,
@@ -236,7 +251,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
                 QueuedImage.objects.get(pk=self.q1.id).decision, "approved"
             )
 
-    @patch("moderation_queue.views.send_mail")
+    @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     @override_settings(SUPPORT_EMAIL="support@example.com")
     def test_photo_review_upload_rejected_privileged(self, mock_send_mail):
@@ -279,7 +294,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
                 QueuedImage.objects.get(pk=self.q1.id).decision, "rejected"
             )
 
-    @patch("moderation_queue.views.send_mail")
+    @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     def test_photo_review_upload_undecided_privileged(self, mock_send_mail):
         review_url = reverse(
@@ -300,7 +315,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             QueuedImage.objects.get(pk=self.q1.id).decision, "undecided"
         )
 
-    @patch("moderation_queue.views.send_mail")
+    @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     def test_photo_review_upload_ignore_privileged(self, mock_send_mail):
         review_url = reverse(
@@ -327,7 +342,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         self.assertEqual(la.action_type, "photo-ignore")
         self.assertEqual(la.person.id, 2009)
 
-    @patch("moderation_queue.views.send_mail")
+    @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     def test_photo_review_upload_approved_privileged_no_uploading_user(
         self, mock_send_mail
@@ -351,11 +366,10 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             mock_send_mail.assert_not_called()
 
             person = Person.objects.get(id=2009)
-            image = person.images.last()
+            image = person.image
 
-            self.assertTrue(image.is_primary)
             self.assertEqual(
-                "Uploaded by a script: Approved from photo moderation queue",
+                "Uploaded by a robot 🤖: Approved from photo moderation queue",
                 image.source,
             )
             self.assertEqual(427, image.image.width)
@@ -380,7 +394,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
                 "approved",
             )
 
-    @patch("moderation_queue.views.send_mail")
+    @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     @override_settings(SUPPORT_EMAIL="support@example.com")
     def test_photo_review_upload_rejected_privileged_no_uploading_user(
@@ -408,7 +422,9 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             self.assertEqual(la.user.username, "jane")
             self.assertEqual(la.action_type, "photo-reject")
             self.assertEqual(la.person.id, 2009)
-            self.assertEqual(la.source, "Rejected a photo upload from a script")
+            self.assertEqual(
+                la.source, "Rejected a photo upload from a robot 🤖"
+            )
 
             self.assertFalse(mock_send_mail.called)
 

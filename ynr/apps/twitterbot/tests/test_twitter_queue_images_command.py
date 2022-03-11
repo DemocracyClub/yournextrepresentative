@@ -66,11 +66,10 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         # If they've had an image accepted, they'll probably have an
         # Image too, so create that:
         self.image_create_from_queue = PersonImage.objects.create_from_file(
-            self.image_filename,
-            "images/person-accepted.jpg",
+            filename=self.image_filename,
+            new_filename="images/person-accepted.jpg",
             defaults={
                 "person": self.p_accepted_image_in_queue,
-                "is_primary": True,
                 "source": "From Flickr, used as an example image",
                 "copyright": "example-license",
                 "uploading_user": self.user,
@@ -85,11 +84,10 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
             internal_identifier="1006", value_type="twitter_username"
         )
         self.image_create_from_queue = PersonImage.objects.create_from_file(
-            self.image_filename,
-            "images/person-existing-image.jpg",
+            filename=self.image_filename,
+            new_filename="images/person-existing-image.jpg",
             defaults={
                 "person": self.p_existing_image_but_none_in_queue,
-                "is_primary": True,
                 "source": "From Flickr, used as an example image",
                 "copyright": "example-license",
                 "uploading_user": self.user,

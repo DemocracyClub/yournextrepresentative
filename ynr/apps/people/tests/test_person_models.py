@@ -13,6 +13,8 @@ from people.tests.factories import PersonFactory
 from popolo.models import Membership
 from django.contrib.auth import get_user_model
 
+from moderation_queue.models import QueuedImage
+
 
 class TestPersonModels(UK2015ExamplesMixin, TmpMediaRootMixin, WebTest):
     def test_get_display_image_url(self):
@@ -24,11 +26,10 @@ class TestPersonModels(UK2015ExamplesMixin, TmpMediaRootMixin, WebTest):
         )
 
         pi = PersonImage.objects.create_from_file(
-            EXAMPLE_IMAGE_FILENAME,
-            "images/jowell-pilot.jpg",
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/jowell-pilot.jpg",
             defaults={
                 "person": person,
-                "is_primary": True,
                 "source": "Taken from Wikipedia",
                 "copyright": "example-license",
                 "user_notes": "A photo of Tessa Jowell",
@@ -36,7 +37,9 @@ class TestPersonModels(UK2015ExamplesMixin, TmpMediaRootMixin, WebTest):
         )
 
         url = get_thumbnail(pi.image, "x64").url
-
+        # fresh lookup of the instance is required in order to invalidate the
+        # cached value of person_image
+        person = Person.objects.get()
         self.assertEqual(person.get_display_image_url(), url)
 
     def test_get_alive_now(self):
@@ -120,3 +123,22 @@ class TestPersonModels(UK2015ExamplesMixin, TmpMediaRootMixin, WebTest):
                         action_type=ActionType.PERSON_DELETE,
                     ).exists()
                 )
+
+    def test_queued_image(self):
+        user = get_user_model().objects.create()
+        person = PersonFactory()
+        expected = QueuedImage.objects.create(
+            user=user, person=person, image=EXAMPLE_IMAGE_FILENAME
+        )
+        self.assertEqual(person.queued_image, expected)
+
+    def test_get_absolute_queued_image_url(self):
+        user = get_user_model().objects.create()
+        person = PersonFactory()
+        queued_image = QueuedImage.objects.create(
+            user=user, person=person, image=EXAMPLE_IMAGE_FILENAME
+        )
+        self.assertEqual(
+            person.get_absolute_queued_image_url(),
+            "/moderation/photo/review/{}".format(queued_image.id),
+        )

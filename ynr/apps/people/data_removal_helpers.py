@@ -6,6 +6,7 @@ interface, typically after a GDPR request for removal.
 """
 import abc
 from collections import defaultdict
+from people.models import PersonImage
 
 DELETED_STR = "<DELETED>"
 
@@ -44,12 +45,19 @@ class PhotoCheck(BaseCheck):
 
     def run_collect(self):
         photos_to_remove = []
-        for photo in self.person.images.all():
-            photos_to_remove.append(self.get_item_display_info(photo))
+        try:
+            photos_to_remove.append(
+                self.get_item_display_info(self.person.image)
+            )
+        except PersonImage.DoesNotExist:
+            pass
         return photos_to_remove
 
     def run_remove(self):
-        self.person.images.all().delete()
+        try:
+            self.person.image.delete()
+        except PersonImage.DoesNotExist:
+            pass
 
 
 class VersionHistoryCheck(BaseCheck):

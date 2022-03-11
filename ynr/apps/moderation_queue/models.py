@@ -1,10 +1,15 @@
 from datetime import date
 from os.path import join, splitext
+from tempfile import NamedTemporaryFile
 import uuid
 
 from django.contrib.auth.models import User
+
 from django.db import models
 from django.urls import reverse
+
+from PIL import Image as PillowImage
+
 
 PHOTO_REVIEWERS_GROUP_NAME = "Photo Reviewers"
 VERY_TRUSTED_USER_GROUP_NAME = "Very Trusted User"
@@ -25,8 +30,8 @@ class CopyrightOptions:
             COPYRIGHT_ASSIGNED,
             (
                 "I own copyright of this photo and I assign the copyright "
-                "to Democracy Club Limited in return for it being displayed "
-                "on this site"
+                "to Democracy Club in return for it being displayed "
+                "on this site."
             ),
         ),
         (
@@ -104,9 +109,34 @@ class QueuedImage(models.Model):
         return reverse("photo-review", kwargs={"queued_image_id": self.id})
 
     @property
+    def crop_fields(self):
+        return ["crop_min_x", "crop_min_y", "crop_max_x", "crop_max_y"]
+
+    @property
     def has_crop_bounds(self):
-        crop_fields = ["crop_min_x", "crop_min_y", "crop_max_x", "crop_max_y"]
-        return not any(getattr(self, c) is None for c in crop_fields)
+        return not any(getattr(self, c) is None for c in self.crop_fields)
+
+    @property
+    def crop_bounds(self):
+        if not self.has_crop_bounds:
+            return []
+        return [getattr(self, field) for field in self.crop_fields]
+
+    @property
+    def uploaded_by(self):
+        if self.user:
+            return self.user.username
+        return "a robot 🤖"
+
+    def crop_image(self):
+        """
+        Returns a temporary file containing the cropped image
+        """
+        original = PillowImage.open(self.image.file)
+        cropped = original.crop(self.crop_bounds)
+        ntf = NamedTemporaryFile(delete=False)
+        cropped.save(ntf.name, "PNG")
+        return ntf
 
 
 class SuggestedPostLock(models.Model):

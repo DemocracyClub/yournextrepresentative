@@ -1,6 +1,7 @@
 from os.path import dirname, join, realpath
 from shutil import rmtree
 from urllib.parse import urlsplit
+from PIL import Image as PillowImage
 
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
@@ -10,8 +11,9 @@ from django_webtest import WebTest
 from mock import Mock, patch
 from webtest import Upload
 
-from candidates.management.images import (
+from moderation_queue.helpers import (
     ImageDownloadException,
+    convert_image_to_png,
     download_image_from_url,
 )
 from candidates.models import LoggedAction
@@ -56,6 +58,29 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         super().tearDown()
         self.test_upload_user.delete()
 
+    def test_queued_images_form_visibility(self):
+        QueuedImage.objects.create(
+            person_id=2009,
+            user=self.test_upload_user,
+            why_allowed="copyright-assigned",
+            justification_for_use="I took this photo",
+        )
+        upload_form_url = reverse("photo-upload", kwargs={"person_id": "2009"})
+        response = self.app.get(upload_form_url, user=self.test_upload_user)
+        self.assertNotContains(response, "Photo policy")
+        self.assertContains(
+            response, "already has images in the queue waiting for review."
+        )
+
+    def test_no_queued_images_form_visibility(self):
+        upload_form_url = reverse("photo-upload", kwargs={"person_id": "2009"})
+        response = self.app.get(upload_form_url, user=self.test_upload_user)
+        self.assertContains(response, "Photo policy")
+        self.assertNotContains(
+            response,
+            "already has images in the queue waiting for review.You can review them here",
+        )
+
     def test_photo_upload_through_image_field(self):
         queued_images = QueuedImage.objects.all()
         initial_count = queued_images.count()
@@ -88,6 +113,10 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         self.assertEqual(queued_image.person.id, 2009)
         self.assertEqual(queued_image.user, self.test_upload_user)
 
+        # check the image was converted to a png on upload
+        self.assertTrue(queued_image.image.name.endswith(".png"))
+        self.assertEqual(PillowImage.open(queued_image.image).format, "PNG")
+
     def test_shows_photo_policy_text_in_photo_upload_page(self):
         upload_form_url = reverse("photo-upload", kwargs={"person_id": "2009"})
         response = self.app.get(upload_form_url, user=self.test_upload_user)
@@ -95,7 +124,7 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
 
 
 @patch("moderation_queue.forms.requests")
-@patch("candidates.management.images.requests")
+@patch("moderation_queue.helpers.requests")
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
 
@@ -194,6 +223,15 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
         final_count = LoggedAction.objects.all().count()
         self.assertEqual(final_count, initial_count + 1)
 
+    def test_image_converted_to_png(self, *all_mock_requests):
+        self.assertEqual(
+            PillowImage.open(self.example_image_filename).format, "JPEG"
+        )
+        self.successful_get_image(*all_mock_requests)
+        self.valid_form().submit()
+        queued_image = QueuedImage.objects.all().last()
+        self.assertEqual(PillowImage.open(queued_image.image).format, "PNG")
+
     def test_loads_success_page_if_upload_was_successful(
         self, *all_mock_requests
     ):
@@ -246,3 +284,14 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
             str(context.exception),
             "The image exceeded the maximum allowed size",
         )
+
+    def test_convert_image_to_png_helper(self, *all_mock_requests):
+        with open(EXAMPLE_IMAGE_FILENAME, "rb") as file:
+            self.assertEqual(PillowImage.open(file).format, "JPEG")
+            converted_image = convert_image_to_png(file)
+            self.assertEqual(PillowImage.open(converted_image).format, "PNG")
+
+    def test_download_image_from_url_helper(self, *all_mock_requests):
+        self.successful_get_image(*all_mock_requests)
+        image = download_image_from_url("http://foo.com/bar.jpg")
+        self.assertEqual(PillowImage.open(image).format, "PNG")

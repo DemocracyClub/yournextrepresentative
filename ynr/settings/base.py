@@ -282,6 +282,7 @@ PIPELINE = {
                 "moderation_queue/js/jquery.color.js",
                 "moderation_queue/js/jquery.Jcrop.js",
                 "moderation_queue/js/crop.js",
+                "js/sorttable.js",
             ),
             "output_filename": "js/image-review.js",
         },
@@ -415,7 +416,6 @@ ELECTION_APP = "uk"
 ELECTION_APP_FULLY_QUALIFIED = "elections.uk"
 
 HOIST_ELECTED_CANDIDATES = True
-
 
 RESULTS_FEATURE_ACTIVE = True
 CAN_EDIT_ELECTIONS = False
