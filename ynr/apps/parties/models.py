@@ -32,7 +32,7 @@ class Party(TimeStampedModel):
 
     ec_id = models.CharField(
         db_index=True,
-        max_length=20,
+        max_length=25,
         unique=True,
         verbose_name="Electoral Commission Idenfitier",
         help_text="""
