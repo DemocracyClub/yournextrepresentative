@@ -253,7 +253,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertFalse(RawPeople.objects.exists())
         # Test the flash message
         self.assertContains(
-            new_response, "There are still more documents that verifying!"
+            new_response, "There are still more documents that need verifying!"
         )
 
     def test_flash_message_with_doc_for_multiple_ballots(self):
