@@ -393,7 +393,7 @@ class NoVersionPersonSerializer(PersonSerializer):
             "contact_details",
             "links",
             "memberships",
-            "image",
+            "images",
             "extra_fields",
             "thumbnail",
         )
