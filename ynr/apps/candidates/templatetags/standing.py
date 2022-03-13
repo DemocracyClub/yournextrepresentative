@@ -68,6 +68,12 @@ def post_in_election(person, election):
             )
         prefix, suffix = get_known_candidacy_prefix_and_suffix(candidacy)
         result = prefix + result + suffix
+        if candidacy.previous_party_affiliations.exists():
+            for party in candidacy.previous_party_affiliations.all():
+                result += '<br><span class="">Previous party affiliation: {}</span>'.format(
+                    party.name
+                )
+
     else:
         if election in person.not_standing.all():
             if not election.in_past:

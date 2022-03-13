@@ -72,6 +72,9 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         for membership in context["ballot"].membership_set.all():
             person = membership.person
             person.party = membership.party
+            person.previous_party_affiliations = (
+                membership.previous_party_affiliations.all()
+            )
 
             people_set.add(person)
 

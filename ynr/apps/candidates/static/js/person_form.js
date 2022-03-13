@@ -6,6 +6,7 @@ var PARTY_LIST_POSITION_INPUT_CLASS = "input.party-list-position";
 var BALLOT_GROUP_CLASS = ".ballot_group";
 var PREVIOUS_PARTY_AFFILIATIONS_SELECT_CLASS = "select.previous-party-affiliations";
 
+
 var setup_ballot_select2 = function(ballots) {
   $(BALLOT_INPUT_CLASS).each(function(el) {
     var BallotInput = $(this);
@@ -165,19 +166,42 @@ var populate_party_selects = function() {
   allPartySelects.attr("disabled", false);
   $(PARTY_WIDGET_INPUT_CLASS).hide();
   allPartySelects.each(setup_single_party_select);
-
-  $(PREVIOUS_PARTY_AFFILIATIONS_SELECT_CLASS).select2({
-    width: '100%',
-    placeholder: 'Select previous party affiliations',
-    allowClear: true
-  })
 };
 
-$(document).ready(function() {
+var populate_prev_party_selects = function() {
+  var allPrevPartySelects = $(PREVIOUS_PARTY_AFFILIATIONS_SELECT_CLASS);
+  allPrevPartySelects.attr("disabled", false);
+  $(PREVIOUS_PARTY_AFFILIATIONS_SELECT_CLASS).hide();
+  $(PREVIOUS_PARTY_AFFILIATIONS_SELECT_CLASS).select2({
+    width: '95%',
+    placeholder: 'Select previous party affiliations',
+    allowClear: true,
+    closeOnSelect: true,
+    minimumInputLength: 0,
+    multiple: true,
+    // ajax: { 
+    // instead of writing the function to execute the request we use Select2's convenient helper
+    //   url: '/ajax/parties/parties_for_select.json',
+    //   dataType: 'json',
+    //   delay: 250,
+    //   data: function (params) {
+    //     return {
+    //       q: params.term,
+    //       page: params.page
+    //     };
+    //   }
+  })
+  allPartySelects.each(setup_single_party_select);
+};
+
+
+$(document).ready(function() { 
   populate_ballot_selects();
-  populate_party_selects()
-  addTitleCaseButton()
+  populate_party_selects();
+  populate_prev_party_selects();
+  addTitleCaseButton(); 
 });
+
 
 
 /* This title-casing function should uppercase any letter after a word
@@ -208,5 +232,18 @@ function addTitleCaseButton() {
       let name = name_fields[i].value;
       name_fields[i].value = compressWhitespace(toTitleCase(name));
     })
-  } 
+  }
+}
+
+function addPreviousParty(){
+  var prev_party_btns = document.querySelectorAll('.previous-party-btn');
+  var prev_party_label = document.querySelectorAll('.previous-party-label');
+  var input_fields = document.querySelectorAll('.previous-party-input');
+  for (let i = 0; i < prev_party_btns.length; i++) {
+    prev_party_btns[i].addEventListener('click', function() {
+      prev_party_btns[i].style.display = 'none';
+      prev_party_label[i].style.display = 'inline'; 
+      input_fields[i].style.display = 'inline';
+    })
+  }
 }
