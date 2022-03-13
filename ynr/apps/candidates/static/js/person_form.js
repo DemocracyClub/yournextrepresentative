@@ -5,6 +5,7 @@ var PARTY_WIDGET_INPUT_CLASS = "input.party_widget_input";
 var PARTY_LIST_POSITION_INPUT_CLASS = "input.party-list-position";
 var BALLOT_GROUP_CLASS = ".ballot_group";
 
+
 var setup_ballot_select2 = function(ballots) {
   $(BALLOT_INPUT_CLASS).each(function(el) {
     var BallotInput = $(this);
@@ -170,6 +171,7 @@ $(document).ready(function() {
   populate_ballot_selects();
   populate_party_selects()
   addTitleCaseButton()
+  handlePreviousParty() 
 });
 
 
@@ -201,5 +203,37 @@ function addTitleCaseButton() {
       let name = name_fields[i].value;
       name_fields[i].value = compressWhitespace(toTitleCase(name));
     })
+  }
+}
+
+function handlePreviousParty(){
+  var previous_party_input = document.querySelectorAll('.previous-party-input');
+  for (let i = 0; i < previous_party_input.length; i++) {
+    previous_party_input[i].style.display = 'none';
   } 
+  // TO DO: IF the welsh sopn has previous party data, trigger this function:
+  addPreviousParty()
+}
+
+function addPreviousParty(){
+  var btn_th = document.querySelectorAll('.previous-party-label');
+  for (let i = 0; i < btn_th.length; i++) {
+    var btn = document.createElement("button");
+    btn.innerHTML = "Add Previous Political Affiliation";
+    btn.type = "button";
+    btn.className = "prev-party-btn button tiny secondary"
+    btn_th[i].appendChild(btn);
+  }
+
+  var prev_party_btns = document.querySelectorAll('.prev-party-btn');
+  for (let i = 0; i < prev_party_btns.length; i++) {
+    prev_party_btns[i].addEventListener('click', function() {
+      var prev_party_label = document.createElement("label");
+      prev_party_label.innerHTML = "Previous Political Affiliation";
+      prev_party_label.className = "previous-party-label"
+      prev_party_btns[i].replaceWith(prev_party_label);
+      var input_fields = document.querySelectorAll('.previous-party-input');
+      input_fields[i].style.display = 'block';
+    })
+  }
 }

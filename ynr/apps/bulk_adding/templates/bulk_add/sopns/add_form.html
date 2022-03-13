@@ -100,7 +100,7 @@
         <th>
           {{ form.party.errors }}
           <label for="{{ form.party.id_for_label }}">{{ form.party.label }}</label>
-        </th>
+        </th> 
         {% if form.name.initial %}
           <th class="delete_column">
           <abbr title="Select if this person is listed already">Duplicate?</abbr>
@@ -119,7 +119,15 @@
         {{ form.DELETE }}
         </td>
         {% endif %}
-
+      </tr>
+      <tr>
+        <th class="previous-party-label"> 
+        </th>
+      </tr>
+      <tr>
+        <td class="previous-party" style="background-color:#fff">
+          <input type="text" class="previous-party-input" id="previous-party" name="previous-party">
+        </td>
       </tr>
       </tbody>
     {% endfor %}
