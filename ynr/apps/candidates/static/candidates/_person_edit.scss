@@ -1,3 +1,43 @@
 .person-edit-separate-form {
   margin-bottom: 1em;
 }
+
+input.select2-search__field{
+  width: 100% !important;
+  height:1.2rem; 
+}
+
+li.select2-search {
+  width: 100% !important;
+  line-height: 1.2em;
+} 
+
+.select2-results__option {
+  font-size:0.875rem;
+  padding: 3px;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__rendered li {
+  font-size: 0.875rem;
+}
+
+ul.select2-results__option, .select2-results__option--highlighted, .select2-selection-choice{
+    line-height: 1.2em;
+}
+
+li.input.select2-search_field {
+  width: 100% !important;
+}
+
+.select2-container--default .select2-search--inline .select2-search__field {
+  font-size: .875rem;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+  border: solid #444 1px;
+}
+
+.select2-container--default .select2-selection--multiple {
+  margin-bottom: 1rem;
+}
+
+
