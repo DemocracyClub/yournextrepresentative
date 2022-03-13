@@ -10,6 +10,7 @@
 
 {% block extra_js %}
 {% javascript 'bulk_adding' %}
+
 {% endblock %}
 
 {% block content %}
@@ -100,34 +101,41 @@
         <th>
           {{ form.party.errors }}
           <label for="{{ form.party.id_for_label }}">{{ form.party.label }}</label>
-        </th>
+        </th> 
         {% if form.name.initial %}
           <th class="delete_column">
           <abbr title="Select if this person is listed already">Duplicate?</abbr>
           </th>
         {% endif %}
-
       </tr>
-        <tr>
+      <tr>
         <td>{{ form.name }}</td>
         <td {% if not form.name.initial %}colspan="2"{% endif %}>
           {{ form.party }}<br>
           If the party is blank on the SOPN, enter "Independent"
         </td>
+        
         {% if form.name.initial %}
         <td class="delete_column">
         {{ form.DELETE }}
         </td>
         {% endif %}
-      
-        {% if ballot.is_welsh_run %}
-          <tr>
-            <td>{{ form.previous_party_affiliations }}</td>
-          </tr>
-        {% endif %}
-
       </tr>
-      </tbody>
+
+      {% if ballot.is_welsh_run %}
+      <tr class="previous-party-affiliation">
+        <th>
+          <details>
+            <summary type="button" class="button btn tiny secondary">
+                Add Previous Party Affilations
+            </summary>
+            <p class="previous-party-input" colspan=3 >
+              {{ form.previous_party_affiliations }}
+            </p> 
+          </details> 
+        </th> 
+      </tr> 
+      {% endif %} 
     {% endfor %}
     </table>
   <button type=submit>Review</button>
