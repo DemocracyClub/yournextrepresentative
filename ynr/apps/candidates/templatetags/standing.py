@@ -2,7 +2,6 @@ from django import template
 from django.conf import settings
 from django.db.models import Prefetch
 from django.utils.safestring import mark_safe
-
 from popolo.models import Membership
 from uk_results.models import CandidateResult
 
@@ -70,7 +69,7 @@ def post_in_election(person, election):
         result = prefix + result + suffix
         if candidacy.previous_party_affiliations.exists():
             for party in candidacy.previous_party_affiliations.all():
-                result += '<br><span class="">Previous party affiliation: {}</span>'.format(
+                result += '<ul class="previous-party"><li>Previous party affiliation: {}</li></ul>'.format(
                     party.name
                 )
 

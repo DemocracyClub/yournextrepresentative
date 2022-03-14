@@ -168,30 +168,22 @@ var populate_party_selects = function() {
   allPartySelects.each(setup_single_party_select);
 };
 
-var populate_prev_party_selects = function() {
+var setup_multiple_party_select = function(i, partySelect) {
   var allPrevPartySelects = $(PREVIOUS_PARTY_AFFILIATIONS_SELECT_CLASS);
   allPrevPartySelects.attr("disabled", false);
   $(PREVIOUS_PARTY_AFFILIATIONS_SELECT_CLASS).hide();
   $(PREVIOUS_PARTY_AFFILIATIONS_SELECT_CLASS).select2({
-    width: '95%',
+    width: '100%',
     placeholder: 'Select previous party affiliations',
     allowClear: true,
     closeOnSelect: true,
-    minimumInputLength: 0,
     multiple: true,
-    // ajax: { 
-    // instead of writing the function to execute the request we use Select2's convenient helper
-    //   url: '/ajax/parties/parties_for_select.json',
-    //   dataType: 'json',
-    //   delay: 250,
-    //   data: function (params) {
-    //     return {
-    //       q: params.term,
-    //       page: params.page
-    //     };
-    //   }
   })
-  allPartySelects.each(setup_single_party_select);
+} 
+
+var populate_prev_party_selects = function() {
+  var allPrevPartySelects = $(PREVIOUS_PARTY_AFFILIATIONS_SELECT_CLASS);
+  allPrevPartySelects.each(setup_multiple_party_select);
 };
 
 

@@ -95,14 +95,21 @@
       <thead>
         <th>Ballot</th>
         <th>Party</th>
-        <th>Previous Party</th> 
       </thead>
       <tbody>
       {% for membership in current_locked_ballots %}
         <tr>
           <td>{{ membership.ballot.ballot_paper_id }}</td>
-          <td>{{ membership.party.name }}</td>
-          <td>{{ membership.previous_party_affiliations.name }}</td>
+          <td>{{ membership.party.name }}<br>
+          <i class="previous-party">Previous Party Affiliations:</i>  
+            <ul class="previous-party">
+            {% for party in membership.previous_party_affiliations.all %}
+              
+              <li>{{ party.name }}</li>
+              
+            {% endfor %}
+          </ul>
+          </td>
         </tr>
       {% endfor %}
       </tbody>
