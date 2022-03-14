@@ -522,7 +522,7 @@ class Ballot(EEModifiedMixin, models.Model):
         if not self.ballot_paper_id.startswith("local."):
             return False
 
-        return self.tags["NUTS1"]["KEY"] == "UKL"
+        return self.tags.get("NUTS1", {}).get("key") == "UKL"
 
 
 class PartySet(models.Model):
