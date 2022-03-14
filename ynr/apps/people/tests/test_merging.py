@@ -13,6 +13,7 @@ from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from people.merging import InvalidMergeError, PersonMerger, UnsafeToDelete
 from people.models import GenderGuess, Person, PersonImage
 from people.tests.factories import PersonFactory
+from popolo.models import Membership
 from results.models import ResultEvent
 from uk_results.models import CandidateResult, ResultSet
 
@@ -158,6 +159,33 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertEqual(
             self.dest_person.memberships.get().result.num_ballots, 3
+        )
+
+    def test_merge_with_previous_party_affiliations(self):
+        source_membership = self.source_person.memberships.create(
+            ballot=self.senedd_ballot, party=self.ld_party
+        )
+        source_membership.previous_party_affiliations.add(
+            self.conservative_party
+        )
+
+        # create the duplication membership without the previous party
+        dest_membership = self.dest_person.memberships.create(
+            ballot=self.senedd_ballot, party=self.ld_party
+        )
+        self.assertEqual(dest_membership.previous_party_affiliations.count(), 0)
+
+        # merge and assert that affiliations have been carried over and source
+        # membership has been deleted
+        merger = PersonMerger(self.dest_person, self.source_person)
+        merger.merge()
+        self.assertEqual(dest_membership.previous_party_affiliations.count(), 1)
+        self.assertEqual(
+            dest_membership.previous_party_affiliations.first(),
+            self.conservative_party,
+        )
+        self.assertFalse(
+            Membership.objects.filter(pk=source_membership.pk).exists()
         )
 
     def test_other_names_created(self):
