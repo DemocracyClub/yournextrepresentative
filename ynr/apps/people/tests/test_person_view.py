@@ -13,6 +13,10 @@ from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from people.models import PersonImage
 from people.tests.factories import PersonFactory
 from moderation_queue.models import QueuedImage, PHOTO_REVIEWERS_GROUP_NAME
+from parties.tests.factories import PartyFactory
+from popolo.models import Membership
+from candidates.tests.factories import BallotPaperFactory
+from candidates.tests.factories import PostFactory
 
 
 class PersonViewSharedTestsMixin(
@@ -120,3 +124,29 @@ class TestPersonView(PersonViewSharedTestsMixin):
     def test_versions_hidden_when_not_logged_in(self):
         response = self.app.get("/person/2009/tessa-jowell")
         self.assertNotContains(response, "<h2>All versions</h2>")
+
+    def test_previous_party_affiliations(self):
+        person = PersonFactory.create(id=2222, name="Jacob Jones")
+        post = PostFactory.create(label="Counsellor for Cardiff")
+        ballot = BallotPaperFactory.create(
+            election=self.election,
+            post=post,
+            ballot_paper_id="senedd.foo.bar.2022-05-05",
+            winner_count=2,
+        )
+        party = PartyFactory()
+        self.old_party = PartyFactory()
+        self.membership = Membership.objects.create(
+            person=person, party=party, post=ballot.post, ballot=ballot
+        )
+        response = self.app.get(person.get_absolute_url())
+        self.assertNotContains(response, self.old_party.name)
+        self.membership.previous_party_affiliations.add(self.old_party)
+        self.assertEqual(
+            self.old_party.name,
+            self.membership.previous_party_affiliations.all()[0].name,
+        )
+        response = self.app.get(person.get_absolute_url())
+        self.assertContains(
+            response, self.membership.previous_party_affiliations.all()[0].name
+        )

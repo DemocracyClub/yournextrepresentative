@@ -123,12 +123,12 @@
       <dt>Party</dt>
       <dd>{{ last_candidacy.party.name }}</dd>
     {% endif %}
+    
     {% if person.biography %}
       <dt>Statement to voters</dt>
       <dd class="person_biography">{{ person.biography|linebreaks }}</dd>
     {% endif %}
   </dl>
-
   <h2>Candidacies:</h2>
   <dl>
     {% for election in person.current_elections_standing_down %}
@@ -143,11 +143,12 @@
            Contesting the {{ election_data.name }} ({{ election_data.election_date }})
         {% endif %}</dt>
       <dd>{{ person|post_in_election:election_data }}</dd>
+
     {% empty %}
       <p>No candidacies known at the moment.</p>
     {% endfor %}
   </dl>
-
+ 
   <h2>Links and social media:</h2>
 
   <dl>
