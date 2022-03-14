@@ -175,7 +175,7 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
         for nuts_code in non_welsh_nuts1_codes:
             non_welsh_local_ballot = Ballot(
                 ballot_paper_id="local.",
-                tags={"NUTS1": {"KEY": nuts_code, "VALUE": ""}},
+                tags={"NUTS1": {"key": nuts_code, "value": ""}},
             )
             with self.subTest(msg=nuts_code):
                 self.assertFalse(non_welsh_local_ballot.is_welsh_run)
@@ -185,7 +185,7 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
             Ballot(ballot_paper_id="senedd."),
             Ballot(
                 ballot_paper_id="local.",
-                tags={"NUTS1": {"KEY": "UKL", "VALUE": ""}},
+                tags={"NUTS1": {"key": "UKL", "value": ""}},
             ),
         ]
         for ballot in welsh_ballots:
