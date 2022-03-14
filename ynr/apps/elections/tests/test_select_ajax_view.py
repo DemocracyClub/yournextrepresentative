@@ -7,6 +7,9 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 class TestPostsView(UK2015ExamplesMixin, WebTest):
     maxDiff = None
 
+    def setUp(self):
+        self.senedd_election.delete()
+
     def test_ajax_view_cache_headers(self):
         resp = self.app.get(reverse("ajax_ballots_for_select"))
         self.assertEqual(resp.headers["Cache-Control"], "max-age=60")
