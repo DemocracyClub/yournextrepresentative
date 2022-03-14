@@ -85,6 +85,14 @@ def get_person_as_version_data(person, new_person=False):
                 candidacy[
                     "party_list_position"
                 ] = membership.party_list_position
+            if ballot.is_welsh_run:
+                ec_ids = membership.previous_party_affiliations.values_list(
+                    "ec_id", flat=True
+                )
+                candidacy["previous_party_affiliations"] = ", ".join(
+                    ec_ids
+                ).strip()
+
             candidacies[ballot.ballot_paper_id] = candidacy
 
         for not_standing_in_election in person.not_standing.all():
@@ -157,6 +165,9 @@ def revert_person_from_version_data(person, version_data):
         .filter(ballot__candidates_locked=False)
     )
     for membership in qs:
+        # clear the previous party affiliations if they exist
+        if membership.ballot.is_welsh_run:
+            membership.previous_party_affiliations.clear()
         raise_if_unsafe_to_delete(membership)
         membership.delete()
     # Also remove the indications of elections that this person is
@@ -166,7 +177,7 @@ def revert_person_from_version_data(person, version_data):
         ballot = Ballot.objects.get(ballot_paper_id=ballot_paper_id)
         # Get the corresponding party membership data:
         party = Party.objects.get(ec_id=candidacy["party"])
-        Membership.objects.update_or_create(
+        membership, _ = Membership.objects.update_or_create(
             person=person,
             ballot=ballot,
             defaults={
@@ -176,6 +187,12 @@ def revert_person_from_version_data(person, version_data):
                 "party_list_position": candidacy.get("party_list_position"),
             },
         )
+        if candidacy.get("previous_party_affiliations"):
+            ec_ids = candidacy["previous_party_affiliations"].split(", ")
+            parties = Party.objects.filter(ec_id__in=ec_ids)
+            for party in parties:
+                membership.previous_party_affiliations.add(party)
+
     for election_slug in version_data.get("not_standing", []):
         election = Election.objects.get(slug=election_slug)
         person.not_standing.add(election)
