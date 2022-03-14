@@ -311,6 +311,12 @@ class PersonMerger:
                 mdest.elected = msource.elected
                 mdest.save()
 
+        # copy any previous party allifiations if this is for a welsh run ballot
+        if msource.ballot.is_welsh_run:
+            for previous_party in msource.previous_party_affiliations.all():
+                mdest.previous_party_affiliations.add(previous_party)
+                msource.previous_party_affiliations.remove(previous_party)
+
         self.safe_delete(msource)
 
     def merge_memberships(self):
