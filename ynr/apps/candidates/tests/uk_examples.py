@@ -139,9 +139,12 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
             ballot = post.ballot_set.get(election=cls.earlier_election)
             setattr(cls, ballot_attr_name, ballot)
 
-        # Also create a local election and post:
+        # Also create a local election and post, and senedd election, post:
         cls.local_council = factories.OrganizationFactory.create(
             name="Maidstone", slug="local-authority:maidstone"
+        )
+        cls.senedd_org = factories.OrganizationFactory.create(
+            name="Senedd Cymru", slug="senedd:senedd"
         )
         cls.local_election = factories.ElectionFactory.create(
             slug="local.maidstone.2016-05-05",
@@ -150,6 +153,13 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
             for_post_role="Local Councillor",
             election_date=date(2016, 5, 5),
         )
+        cls.senedd_election = factories.ElectionFactory.create(
+            slug="senedd.c.2021-05-06",
+            organization=cls.senedd_org,
+            name="Senedd Cymru elections (Constituencies)",
+            election_date=date(2021, 5, 6),
+            for_post_role="Senedd Cymru elections",
+        )
         cls.local_post = factories.PostFactory.create(
             elections=(cls.local_election,),
             slug="DIW:E05005004",
@@ -157,8 +167,17 @@ class UK2015ExamplesMixin(object, metaclass=ABCMeta):
             party_set=cls.gb_parties,
             organization=cls.local_council,
         )
+        cls.welsh_run_post = factories.PostFactory.create(
+            elections=(cls.senedd_election,),
+            slug="aberavon",
+            label="Aberavon",
+            party_set=cls.gb_parties,
+            organization=cls.senedd_org,
+        )
 
         cls.local_ballot = cls.local_post.ballot_set.get()
+
+        cls.senedd_ballot = cls.welsh_run_post.ballot_set.get()
 
     def create_lots_of_candidates(self, election, parties_and_counts):
         posts = [

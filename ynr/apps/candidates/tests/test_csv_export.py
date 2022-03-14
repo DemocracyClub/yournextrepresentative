@@ -179,6 +179,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
                     "candidates-local.maidstone.2016-05-05.csv",
                     "candidates-2015-05-07.csv",
                     "candidates-2010-05-06.csv",
+                    "candidates-senedd.c.2021-05-06.csv",
                 ]
             ),
         )
@@ -230,6 +231,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
                     "candidates-local.maidstone.2016-05-05.csv",
                     "candidates-2015-05-07.csv",
                     "candidates-2010-05-06.csv",
+                    "candidates-senedd.c.2021-05-06.csv",
                 ]
             ),
         )
