@@ -305,7 +305,6 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             url, data={"version_id": "1", "source": "Testing"}, follow=True
         )
         self.assertEqual(response.status_code, 200)
-        # import ipdb; ipdb.set_trace()
         with self.assertRaises(Membership.DoesNotExist):
             membership.refresh_from_db()
         new_membership = person.memberships.get()
