@@ -187,6 +187,92 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             membership.party_description_text, "Green Party Stop Fracking Now"
         )
 
+    def test_submitting_form_with_previous_party_affiliations(self):
+        """
+        Test that submitting previous party affiliations is possible with a
+        welsh ballot, and results in a membership being created with the
+        previous_party_affiliations relationships created
+        """
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            ballot=self.senedd_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        # this is much higher due to the use of the SelectMultiple() widget on
+        # the form, changing to load use a select2 widget using JS should
+        # reduce this
+        # TODO check again when select2 is used
+        with self.assertNumQueries(41):
+            response = self.app.get(
+                f"/bulk_adding/sopn/{self.senedd_ballot.ballot_paper_id}/",
+                user=self.user,
+            )
+
+        form = response.forms["bulk_add_form"]
+        form["form-0-name"] = "Joe Bloggs"
+        party_id = self.ld_party.ec_id
+        form["form-0-party_1"] = party_id
+        form["form-0-previous_party_affiliations"].select_multiple(
+            texts=[self.conservative_party, self.labour_party]
+        )
+
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+
+        # This takes us to a page with a radio button for adding them
+        # as a new person or alternative radio buttons if any
+        # candidates with similar names were found.
+        response = response.follow()
+        form = response.forms["bulk_add_review_formset"]
+        form["form-0-select_person"].select("_new")
+
+        # this is a smaller increase but may be unavoidable
+        with self.assertNumQueries(FuzzyInt(52, 57)):
+            response = form.submit()
+
+        self.assertEqual(Person.objects.count(), 1)
+        person = Person.objects.get()
+        self.assertEqual(person.name, "Joe Bloggs")
+        self.assertEqual(person.memberships.count(), 1)
+        membership = person.memberships.get()
+        self.assertEqual(membership.role, "Candidate")
+        self.assertEqual(membership.party.name, self.ld_party.name)
+        self.assertEqual(membership.party_name, self.ld_party.name)
+        self.assertEqual(
+            set(membership.previous_party_affiliations.all()),
+            set([self.labour_party, self.conservative_party]),
+        )
+
+    def test_submitting_form_with_previous_party_affiliations_invalid(self):
+        """
+        Test that submitting previous party affiliations is possible with a
+        welsh ballot, and results in a membership being created with the
+        previous_party_affiliations relationships created
+        """
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        response = self.app.get(
+            f"/bulk_adding/sopn/{self.dulwich_post_ballot.ballot_paper_id}/",
+            user=self.user,
+        )
+
+        form = response.forms["bulk_add_form"]
+        form["form-0-name"] = "Joe Bloggs"
+        party_id = self.ld_party.ec_id
+        form["form-0-party_1"] = party_id
+
+        with self.assertRaises(AssertionError) as e:
+            form["form-0-previous_party_affiliations"]
+            self.assertEqual(
+                e.message,
+                "No field by the name 'form-0-previous_party_affiliations' found",
+            )
+
     def _run_wizard_to_end(self):
         existing_person = PersonFactory.create(
             id="1234567", name="Bart Simpson"

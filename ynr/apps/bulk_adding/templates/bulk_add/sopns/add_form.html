@@ -119,6 +119,12 @@
         {{ form.DELETE }}
         </td>
         {% endif %}
+      
+        {% if ballot.is_welsh_run %}
+          <tr>
+            <td>{{ form.previous_party_affiliations }}</td>
+          </tr>
+        {% endif %}
 
       </tr>
       </tbody>
