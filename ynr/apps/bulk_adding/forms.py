@@ -1,7 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.utils.safestring import SafeText
+from django.utils import timezone
 
 from parties.forms import PartyIdentifierField, PopulatePartiesMixin
 from people.forms.fields import BallotInputWidget, ValidBallotField
@@ -55,10 +56,16 @@ class BulkAddFormSet(BaseBulkAddFormSet):
         self.parties = Party.objects.register(
             self.ballot.post.party_set.slug.upper()
         ).default_party_choices(extra_party_ids=self.initial_party_ids)
+        self.previous_party_affiliations_choices = (
+            self.get_previous_party_affiliations_choices()
+        )
 
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)
         kwargs["party_choices"] = self.parties
+        kwargs[
+            "previous_party_affiliations_choices"
+        ] = self.previous_party_affiliations_choices
         return kwargs
 
     @property
@@ -69,6 +76,25 @@ class BulkAddFormSet(BaseBulkAddFormSet):
         if self.initial is None:
             return []
         return [d.get("party")[0].split("__")[0] for d in self.initial]
+
+    def get_previous_party_affiliations_choices(self):
+        """
+        Return a PartyQuerySet of instances that have been active any time
+        within a year of the election date. Only applicable to welsh run
+        ballots.
+        """
+        if not self.ballot.is_welsh_run:
+            return None
+
+        election_date = self.ballot.election.election_date
+        last_year = election_date - timezone.timedelta(days=365)
+        parties = Party.objects.register("GB").filter(
+            date_registered__lt=election_date
+        )
+        parties = parties.filter(
+            Q(date_deregistered=None) | Q(date_deregistered__gte=last_year)
+        )
+        return parties
 
 
 class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
@@ -186,12 +212,36 @@ class NameOnlyPersonForm(forms.Form):
 class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
     source = forms.CharField(required=True)
     party = PartyIdentifierField()
+    # TODO change to use select2 via JS?
+    previous_party_affiliations = forms.ModelMultipleChoiceField(
+        queryset=Party.objects.none(), required=False
+    )
+
+    def __init__(self, **kwargs):
+        self.previous_party_affiliations_choices = kwargs.pop(
+            "previous_party_affiliations_choices", None
+        )
+        super().__init__(**kwargs)
+        if self.previous_party_affiliations_choices:
+            self.fields[
+                "previous_party_affiliations"
+            ].queryset = self.previous_party_affiliations_choices
 
     def has_changed(self, *args, **kwargs):
         if "name" not in self.changed_data:
             return False
         else:
             return super().has_changed(*args, **kwargs)
+
+    def clean(self):
+        if (
+            not self.cleaned_data["ballot"].is_welsh_run
+            and self.cleaned_data["previous_party_affiliations"]
+        ):
+            raise ValidationError(
+                "Previous party affiliations are invalid for this ballot"
+            )
+        return super().clean()
 
 
 class ReviewSinglePersonNameOnlyForm(forms.Form):
@@ -214,6 +264,9 @@ class ReviewSinglePersonForm(ReviewSinglePersonNameOnlyForm):
         queryset=PartyDescription.objects.all(),
     )
     party_description_text = forms.CharField(
+        required=False, widget=forms.HiddenInput()
+    )
+    previous_party_affiliations = forms.CharField(
         required=False, widget=forms.HiddenInput()
     )
 
