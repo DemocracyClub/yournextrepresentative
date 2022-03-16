@@ -1,10 +1,13 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch
 from django.utils.safestring import SafeText
-from django.utils import timezone
 
-from parties.forms import PartyIdentifierField, PopulatePartiesMixin
+from parties.forms import (
+    PartyIdentifierField,
+    PopulatePartiesMixin,
+    PreviousPartyAffiliationsField,
+)
 from people.forms.fields import BallotInputWidget, ValidBallotField
 from search.utils import search_person_by_name
 from official_documents.models import OfficialDocument
@@ -79,22 +82,17 @@ class BulkAddFormSet(BaseBulkAddFormSet):
 
     def get_previous_party_affiliations_choices(self):
         """
-        Return a PartyQuerySet of instances that have been active any time
-        within a year of the election date. Only applicable to welsh run
-        ballots.
+        Return choices for previous_party_affilations field. By getting these on
+        the formset and passing to the form, it saves the query for every
+        individual form
         """
         if not self.ballot.is_welsh_run:
-            return None
+            return []
 
-        election_date = self.ballot.election.election_date
-        last_year = election_date - timezone.timedelta(days=365)
-        parties = Party.objects.register("GB").filter(
-            date_registered__lt=election_date
+        parties = Party.objects.register("GB").active_in_last_year(
+            date=self.ballot.election.election_date
         )
-        parties = parties.filter(
-            Q(date_deregistered=None) | Q(date_deregistered__gte=last_year)
-        )
-        return parties
+        return parties.values_list("ec_id", "name")
 
 
 class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
@@ -212,24 +210,16 @@ class NameOnlyPersonForm(forms.Form):
 class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
     source = forms.CharField(required=True)
     party = PartyIdentifierField()
-    previous_party_affiliations = forms.MultipleChoiceField(
-        choices=list,
-        required=False,
-        widget=forms.SelectMultiple(
-            attrs={"class": "previous-party-affiliations"}
-        ),
-    )
+    previous_party_affiliations = PreviousPartyAffiliationsField()
 
     def __init__(self, **kwargs):
-        self.previous_party_affiliations_choices = kwargs.pop(
-            "previous_party_affiliations_choices", None
+        previous_party_affiliations_choices = kwargs.pop(
+            "previous_party_affiliations_choices", []
         )
         super().__init__(**kwargs)
-        if self.previous_party_affiliations_choices:
-            self.fields["previous_party_affiliations"].choices = [
-                (p.ec_id, p.name)
-                for p in self.previous_party_affiliations_choices
-            ]
+        self.fields[
+            "previous_party_affiliations"
+        ].choices = previous_party_affiliations_choices
 
     def has_changed(self, *args, **kwargs):
         if "name" not in self.changed_data:
