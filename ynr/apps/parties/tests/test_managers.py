@@ -46,3 +46,20 @@ class TestPartyManager(DefaultPartyFixtures, TestCase):
         date = timezone.datetime(2001, 1, 5)
         qs = Party.objects.active_for_date(date)
         self.assertEqual(qs.count(), 2)
+
+    def test_active_in_last_year(self):
+        # only PP03 should not exist
+        qs = Party.objects.active_in_last_year(
+            date=timezone.datetime(2003, 5, 6)
+        )
+        self.assertEqual(qs.count(), 4)
+        self.assertFalse(qs.filter(ec_id="PP03").exists())
+
+        # PP03 should not exist because not registered yet
+        # PP02 should not exist because it was deregistered over a year ago
+        qs = Party.objects.active_in_last_year(
+            date=timezone.datetime(2004, 5, 6)
+        )
+        self.assertEqual(qs.count(), 3)
+        self.assertFalse(qs.filter(ec_id="PP03").exists())
+        self.assertFalse(qs.filter(ec_id="PP02").exists())

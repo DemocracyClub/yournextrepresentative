@@ -4,14 +4,20 @@ from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, validate_email
 from django.utils.functional import cached_property
 from candidates.models import PartySet
+from candidates.models.popolo_extra import Ballot
 from facebook_data.tasks import extract_fb_page_id
+from official_documents.models import OfficialDocument
 from parties.models import Party
 from people.forms.fields import (
     CurrentUnlockedBallotsField,
     StrippedCharField,
     BlankApproximateDateFormField,
 )
-from parties.forms import PartyIdentifierField, PopulatePartiesMixin
+from parties.forms import (
+    PartyIdentifierField,
+    PopulatePartiesMixin,
+    PreviousPartyAffiliationsField,
+)
 from people.models import Person, PersonIdentifier
 from popolo.models import OtherName, Membership
 
@@ -147,6 +153,32 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
         self.fields["ballot_paper_id"] = CurrentUnlockedBallotsField(
             label="Ballot", user=self.user
         )
+        if self.show_previous_party_affiliations:
+            self.fields[
+                "previous_party_affiliations"
+            ] = PreviousPartyAffiliationsField(membership=self.instance)
+
+    @property
+    def show_previous_party_affiliations(self):
+        """
+        We should only include the PreviousPartyAffiliationsField if the ballot
+        is welsh run, candidates and not locked, and we have a SOPN uploaded
+        """
+        try:
+            ballot = self.instance.ballot
+        except Ballot.DoesNotExist:
+            return False
+
+        if not ballot.is_welsh_run:
+            return False
+
+        if ballot.candidates_locked:
+            return False
+
+        try:
+            return bool(ballot.sopn)
+        except OfficialDocument.DoesNotExist:
+            return False
 
     class Meta:
         model = Membership

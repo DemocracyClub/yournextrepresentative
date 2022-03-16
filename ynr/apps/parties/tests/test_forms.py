@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
@@ -5,7 +6,11 @@ from django import forms
 
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from parties.forms import PartyIdentifierField, PopulatePartiesMixin
+from parties.forms import (
+    PartyIdentifierField,
+    PopulatePartiesMixin,
+    PreviousPartyAffiliationsField,
+)
 from parties.models import Party
 from parties.tests.factories import PartyFactory
 from parties.tests.fixtures import DefaultPartyFixtures
@@ -193,4 +198,64 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
         self.assertEqual(
             form["party_identifier"].field.fields[0].choices[1],
             ("PP12", {"label": "New party", "register": "GB"}),
+        )
+
+
+class TestPreviousPartyAffiliationsField(
+    UK2015ExamplesMixin, DefaultPartyFixtures, TestCase
+):
+    def test_widget_attrs(self):
+        field = PreviousPartyAffiliationsField()
+        self.assertEqual(
+            field.widget_attrs(None), {"class": "previous-party-affiliations"}
+        )
+
+    def test_get_previous_party_affiliations_choices_called_on_init(self):
+        """
+        Test when get_previous_party_affiliations_choices gets called
+        and does not
+        """
+        with patch.object(
+            PreviousPartyAffiliationsField,
+            "get_previous_party_affiliations_choices",
+        ) as mock:
+            PreviousPartyAffiliationsField(choices=[("foo", "Bar")])
+            mock.assert_not_called()
+            PreviousPartyAffiliationsField()
+            mock.assert_called_once()
+
+    def test_get_previous_party_affiliations_choices(self):
+        # test without a membership
+        field = PreviousPartyAffiliationsField()
+        self.assertEqual(field.get_previous_party_affiliations_choices(), [])
+
+        membership = MembershipFactory(
+            ballot=self.dulwich_post_ballot,
+            person=PersonFactory(),
+            party=self.labour_party,
+        )
+        field = PreviousPartyAffiliationsField(membership=membership)
+        self.assertEqual(field.get_previous_party_affiliations_choices(), [])
+
+        # test a membership for non-welsh ballot
+        membership = MembershipFactory(
+            ballot=self.dulwich_post_ballot,
+            person=PersonFactory(),
+            party=self.labour_party,
+        )
+        field = PreviousPartyAffiliationsField(membership=membership)
+        self.assertEqual(field.get_previous_party_affiliations_choices(), [])
+
+        # test a membership for welsh-run ballot
+        membership = MembershipFactory(
+            ballot=self.senedd_ballot,
+            person=PersonFactory(),
+            party=self.labour_party,
+        )
+        expected = [
+            (party.ec_id, party.name) for party in Party.objects.register("GB")
+        ]
+        field = PreviousPartyAffiliationsField(membership=membership)
+        self.assertEqual(
+            set(field.get_previous_party_affiliations_choices()), set(expected)
         )
