@@ -213,8 +213,8 @@ class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
     source = forms.CharField(required=True)
     party = PartyIdentifierField()
     # TODO change to use select2 via JS?
-    previous_party_affiliations = forms.ModelMultipleChoiceField(
-        queryset=Party.objects.none(), required=False
+    previous_party_affiliations = forms.MultipleChoiceField(
+        choices=list, required=False
     )
 
     def __init__(self, **kwargs):
@@ -223,9 +223,10 @@ class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
         )
         super().__init__(**kwargs)
         if self.previous_party_affiliations_choices:
-            self.fields[
-                "previous_party_affiliations"
-            ].queryset = self.previous_party_affiliations_choices
+            self.fields["previous_party_affiliations"].choices = [
+                (p.ec_id, p.name)
+                for p in self.previous_party_affiliations_choices
+            ]
 
     def has_changed(self, *args, **kwargs):
         if "name" not in self.changed_data:

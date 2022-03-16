@@ -144,9 +144,8 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
                 "description_id": description_id,
             }
             if form_data["previous_party_affiliations"]:
-                candidate_data["previous_party_affiliations"] = [
-                    party.ec_id
-                    for party in form_data["previous_party_affiliations"]
+                candidate_data["previous_party_affiliations"] = form_data[
+                    "previous_party_affiliations"
                 ]
 
             raw_ballot_data.append(candidate_data)
