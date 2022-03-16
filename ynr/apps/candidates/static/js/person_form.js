@@ -4,6 +4,7 @@ var PARTY_WIDGET_SELECT_CLASS = "select.party_widget_select";
 var PARTY_WIDGET_INPUT_CLASS = "input.party_widget_input";
 var PARTY_LIST_POSITION_INPUT_CLASS = "input.party-list-position";
 var BALLOT_GROUP_CLASS = ".ballot_group";
+var PREVIOUS_PARTY_AFFILIATIONS_SELECT_CLASS = "select.previous-party-affiliations";
 
 var setup_ballot_select2 = function(ballots) {
   $(BALLOT_INPUT_CLASS).each(function(el) {
@@ -164,6 +165,12 @@ var populate_party_selects = function() {
   allPartySelects.attr("disabled", false);
   $(PARTY_WIDGET_INPUT_CLASS).hide();
   allPartySelects.each(setup_single_party_select);
+
+  $(PREVIOUS_PARTY_AFFILIATIONS_SELECT_CLASS).select2({
+    width: '100%',
+    placeholder: 'Select previous party affiliations',
+    allowClear: true
+  })
 };
 
 $(document).ready(function() {
