@@ -17,6 +17,19 @@ class PartyQuerySet(models.QuerySet):
         )
         return qs
 
+    def active_in_last_year(self, date=None):
+        """
+        Return a PartyQuerySet of instances that have been active any time
+        within a year of the given date.
+        """
+
+        date = date or timezone.now()
+        last_year = date - timezone.timedelta(days=365)
+        return self.filter(date_registered__lt=date).filter(
+            models.Q(date_deregistered=None)
+            | models.Q(date_deregistered__gte=last_year)
+        )
+
     def current(self):
         return self.active_for_date()
 

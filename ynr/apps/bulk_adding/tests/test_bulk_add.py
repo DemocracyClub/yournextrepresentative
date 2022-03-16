@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from django_webtest import WebTest
 from bulk_adding.forms import BulkAddFormSet
 
@@ -7,6 +8,7 @@ from candidates.tests.factories import MembershipFactory
 from candidates.tests.test_update_view import membership_id_set
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from official_documents.models import OfficialDocument
+from parties.models import Party
 from parties.tests.factories import PartyDescriptionFactory, PartyFactory
 from people.models import Person
 from people.tests.factories import PersonFactory
@@ -606,4 +608,29 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertEqual(
             formset.initial_party_ids, ["PP52", "joint-party:53-119"]
+        )
+
+    def test_get_previous_party_affiliations_choices_called_on_init(self):
+        kwargs = {"ballot": self.dulwich_post_ballot}
+        with patch.object(
+            BulkAddFormSet, "get_previous_party_affiliations_choices"
+        ) as mock:
+            BulkAddFormSet(**kwargs)
+            mock.assert_called_once()
+
+    def test_get_previous_party_affiliations_choices(self):
+        # check when non-welsh ballot empty list returned
+        kwargs = {"ballot": self.dulwich_post_ballot}
+        formset = BulkAddFormSet(**kwargs)
+        self.assertEqual(formset.get_previous_party_affiliations_choices(), [])
+
+        # check with a welsh ballot party choices returned
+        expected = [
+            (party.ec_id, party.name) for party in Party.objects.register("GB")
+        ]
+        kwargs = {"ballot": self.senedd_ballot}
+        formset = BulkAddFormSet(**kwargs)
+        self.assertEqual(
+            set(formset.get_previous_party_affiliations_choices()),
+            set(expected),
         )
