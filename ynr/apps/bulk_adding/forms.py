@@ -212,9 +212,12 @@ class NameOnlyPersonForm(forms.Form):
 class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
     source = forms.CharField(required=True)
     party = PartyIdentifierField()
-    # TODO change to use select2 via JS?
     previous_party_affiliations = forms.MultipleChoiceField(
-        choices=list, required=False
+        choices=list,
+        required=False,
+        widget=forms.SelectMultiple(
+            attrs={"class": "previous-party-affiliations"}
+        ),
     )
 
     def __init__(self, **kwargs):
