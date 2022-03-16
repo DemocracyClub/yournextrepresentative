@@ -199,11 +199,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ballot=self.senedd_ballot,
             uploaded_file="sopn.pdf",
         )
-        # this is much higher due to the use of the SelectMultiple() widget on
-        # the form, changing to load use a select2 widget using JS should
-        # reduce this
-        # TODO check again when select2 is used
-        with self.assertNumQueries(41):
+        with self.assertNumQueries(26):
             response = self.app.get(
                 f"/bulk_adding/sopn/{self.senedd_ballot.ballot_paper_id}/",
                 user=self.user,
@@ -214,7 +210,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         party_id = self.ld_party.ec_id
         form["form-0-party_1"] = party_id
         form["form-0-previous_party_affiliations"].select_multiple(
-            texts=[self.conservative_party, self.labour_party]
+            texts=[self.conservative_party.name, self.labour_party.name]
         )
 
         response = form.submit()
