@@ -28,6 +28,7 @@ class PersonViewSet(viewsets.ReadOnlyModelViewSet):
                 "memberships__ballot__election",
                 "tmp_person_identifiers",
                 "other_names",
+                "memberships__previous_party_affiliations",
             )
             .select_related("image", "image__uploading_user")
             .order_by("id")

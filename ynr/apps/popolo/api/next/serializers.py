@@ -64,7 +64,10 @@ BASE_CANDIDACY_FIELDS = [
 ]
 
 CANDIDACY_ON_BALLOT_FIELDS = BASE_CANDIDACY_FIELDS + ["person", "result"]
-CANDIDACY_ON_PERSON_FIELDS = BASE_CANDIDACY_FIELDS + ["ballot"]
+CANDIDACY_ON_PERSON_FIELDS = BASE_CANDIDACY_FIELDS + [
+    "ballot",
+    "previous_party_affiliations",
+]
 
 
 class CandidacySerializer(serializers.HyperlinkedModelSerializer):
@@ -87,6 +90,9 @@ class CandidacySerializer(serializers.HyperlinkedModelSerializer):
     person = serializers.SerializerMethodField(read_only=True)
     ballot = serializers.SerializerMethodField()
     result = serializers.SerializerMethodField()
+    previous_party_affiliations = MinimalPartySerializer(
+        read_only=True, many=True
+    )
 
     @swagger_serializer_method(serializer_or_field=BallotOnCandidacySerializer)
     def get_ballot(self, obj):
