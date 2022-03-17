@@ -230,6 +230,7 @@ class TestBallotView(
                 "party_ppc_page_url": "",
                 "post_id": self.ballot.post.slug,
                 "post_label": self.ballot.post.label,
+                "previous_party_affiliations": "",
                 "proxy_image_url_template": "",
                 "seats_contested": "2",
                 "theyworkforyou_url": "",
