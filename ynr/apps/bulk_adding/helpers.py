@@ -37,6 +37,7 @@ def update_person(
     source=None,
     list_position=None,
     party_description=None,
+    previous_party_affiliations=None,
 ):
     election = ballot.election
 
@@ -61,6 +62,10 @@ def update_person(
     membership, _ = Membership.objects.update_or_create(
         post=ballot.post, person=person, ballot=ballot, defaults=defaults
     )
+
+    if previous_party_affiliations:
+        for party in previous_party_affiliations:
+            membership.previous_party_affiliations.add(party)
 
     # Now remove other memberships in this election for that
     # person, although we raise an exception if there is any

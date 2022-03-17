@@ -88,6 +88,36 @@ class PartySelectField(forms.MultiWidget):
             return ["", ""]
 
 
+class PreviousPartyAffiliationsField(forms.MultipleChoiceField):
+    def __init__(self, required=False, choices=None, *args, **kwargs):
+        self.membership = kwargs.pop("membership", None)
+        choices = choices or self.get_previous_party_affiliations_choices()
+        super().__init__(required=required, choices=choices, *args, **kwargs)
+
+    def widget_attrs(self, widget):
+        """
+        Sets the class used to initialise select2
+        """
+        return {"class": "previous-party-affiliations"}
+
+    def get_previous_party_affiliations_choices(self):
+        """
+        Return a party choices made up of parties that have been active any time
+        within a year of the election date. Only applicable to welsh run ballots
+        """
+        if self.membership is None:
+            return []
+
+        ballot = self.membership.ballot
+        if not ballot.is_welsh_run:
+            return []
+
+        parties = Party.objects.register("GB").active_in_last_year(
+            date=ballot.election.election_date
+        )
+        return parties.values_list("ec_id", "name")
+
+
 class PartyIdentifierField(forms.MultiValueField):
     def compress(self, data_list):
         if data_list:
