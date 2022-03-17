@@ -2,13 +2,15 @@ from rest_framework.test import APIClient, APIRequestFactory
 from django.test import TestCase
 from django.utils import timezone
 from django.utils.http import urlencode
+from candidates.tests.factories import MembershipFactory
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 from people.models import Person
 from people.tests.factories import PersonFactory
 from people.api.next.api_views import PersonViewSet
 
 
-class TestPersonViewSet(TestCase):
+class TestPersonViewSet(UK2015ExamplesMixin, TestCase):
     def setUp(self):
         self.people = PersonFactory.create_batch(size=1001)
         self.timestamp = timezone.now() - timezone.timedelta(hours=1)
@@ -60,3 +62,23 @@ class TestPersonViewSet(TestCase):
         self.assertEqual(result.count(), 1000)
         # ordering by modified means the person we updated isnt included
         self.assertNotIn(person, result)
+
+    def test_person_with_previous_party_affiliations(self):
+        welsh_candidate = PersonFactory.create(id=3009, name="Foo bar")
+        welsh_candidacy = MembershipFactory.create(
+            person=welsh_candidate,
+            post=self.welsh_run_post,
+            ballot=self.senedd_ballot,
+            party=self.ld_party,
+        )
+        welsh_candidacy.previous_party_affiliations.add(self.conservative_party)
+        response = self.client.get("/api/next/people/3009/")
+        data = response.json()
+        previous_party_affiliations = data["candidacies"][0][
+            "previous_party_affiliations"
+        ]
+        self.assertEqual(len(previous_party_affiliations), 1)
+        self.assertEqual(
+            previous_party_affiliations[0]["ec_id"],
+            self.conservative_party.ec_id,
+        )
