@@ -162,6 +162,9 @@ class TestAPI(
         response = self.app.get("/api/next/people/2009/")
         result_json = response.json
         self.assertTrue(result_json["image"])
+        self.assertEqual(
+            result_json["candidacies"][0]["previous_party_affiliations"], []
+        )
 
     def test_all_parties_view(self):
         self.maxDiff = None
