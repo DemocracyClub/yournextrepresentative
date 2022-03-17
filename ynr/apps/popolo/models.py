@@ -389,6 +389,16 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
         """
         return f"{self.person.name} ({self.party.name})"
 
+    @property
+    def previous_party_affiliations_string(self):
+        """
+        Return a comma seperated list of EC-ID's for previous party affiliations
+        relations
+        """
+        return ", ".join(
+            [party.ec_id for party in self.previous_party_affiliations.all()]
+        )
+
     class Meta:
         unique_together = ("person", "ballot")
         ordering = ("party__name", "party_list_position", "person__name")
@@ -425,6 +435,7 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
             "NUTS1": nuts1,
             "seats_contested": self.ballot.winner_count,
             "organisation_name": self.ballot.post.organization.name,
+            "previous_party_affiliations": self.previous_party_affiliations_string,
         }
 
         if redirects and redirects.get(self.person_id):

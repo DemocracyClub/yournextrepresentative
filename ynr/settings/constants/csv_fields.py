@@ -8,6 +8,7 @@ CSV_ROW_FIELDS = [
     "party_id",
     "party_name",
     "party_description_text",
+    "previous_party_affiliations",
     "post_id",
     "post_label",
     "organisation_name",

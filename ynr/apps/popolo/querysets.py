@@ -78,7 +78,9 @@ class MembershipQuerySet(DateframeableQuerySet):
                 "party",
                 "ballot__post__organization",
             )
-            .prefetch_related("person__tmp_person_identifiers")
+            .prefetch_related(
+                "person__tmp_person_identifiers", "previous_party_affiliations"
+            )
             .order_by(
                 "ballot__election__election_date",
                 "-ballot__election__slug",
