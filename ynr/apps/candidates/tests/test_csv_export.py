@@ -266,7 +266,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         welsh_candidacy.previous_party_affiliations.add(self.conservative_party)
         welsh_candidacy.previous_party_affiliations.add(self.ld_party)
         welsh_candidacy.previous_party_affiliations.add(self.green_party)
-        expected = f"{self.conservative_party.ec_id}, {self.green_party.ec_id}, {self.ld_party.ec_id}"
+        expected = f"{self.conservative_party.ec_id}; {self.green_party.ec_id}; {self.ld_party.ec_id}"
         self.assertEqual(
             welsh_candidacy.previous_party_affiliations_string, expected
         )
