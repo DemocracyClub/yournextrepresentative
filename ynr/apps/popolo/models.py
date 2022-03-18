@@ -395,7 +395,7 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
         Return a comma seperated list of EC-ID's for previous party affiliations
         relations
         """
-        return ", ".join(
+        return "; ".join(
             [party.ec_id for party in self.previous_party_affiliations.all()]
         )
 
