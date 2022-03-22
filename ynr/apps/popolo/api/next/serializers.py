@@ -59,11 +59,12 @@ BASE_CANDIDACY_FIELDS = [
     "party",
     "party_name",
     "party_description_text",
+    "result",
     "created",
     "modified",
 ]
 
-CANDIDACY_ON_BALLOT_FIELDS = BASE_CANDIDACY_FIELDS + ["person", "result"]
+CANDIDACY_ON_BALLOT_FIELDS = BASE_CANDIDACY_FIELDS + ["person"]
 CANDIDACY_ON_PERSON_FIELDS = BASE_CANDIDACY_FIELDS + ["ballot"]
 
 
