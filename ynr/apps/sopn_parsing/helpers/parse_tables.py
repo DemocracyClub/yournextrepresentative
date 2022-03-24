@@ -29,14 +29,22 @@ LAST_NAME_FIELDS = [
     "candidates surname",
     "last name",
 ]
+WELSH_NAME_FIELDS = ["enwr ymgeisydd"]
 NAME_FIELDS = (
     FIRST_NAME_FIELDS
     + LAST_NAME_FIELDS
     + ["name of candidate", "names of candidate", "candidate name"]
+    + WELSH_NAME_FIELDS
 )
 
 
-INDEPENDENT_VALUES = ("Independent", "", "Annibynnol")
+INDEPENDENT_VALUES = ["Independent", "", "Annibynnol"]
+
+WELSH_DESCRIPTION_VALUES = ["disgrifiad or ymgeisydd"]
+DESCRIPTION_VALUES = [
+    "description of candidate",
+    "description",
+] + WELSH_DESCRIPTION_VALUES
 
 
 def iter_rows(data):
@@ -100,10 +108,8 @@ def get_name_fields(row):
 
 
 def guess_description_field(row):
-    description_strings = ("description of candidate", "description")
-
     for cell in row:
-        if cell in description_strings:
+        if cell in DESCRIPTION_VALUES:
             return cell
     raise ValueError("No description guess for {}".format(row))
 
