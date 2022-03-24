@@ -73,6 +73,9 @@ class RawPeople(TimeStampedModel):
                     "name": candidacy["name"],
                     "party": [party_id, party_id],
                     "source": self.source,
+                    "previous_party_affiliations": candidacy.get(
+                        "previous_party_affiliations", []
+                    ),
                 }
             )
         return {"initial": initial}
