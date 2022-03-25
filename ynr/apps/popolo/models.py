@@ -5,6 +5,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
@@ -398,6 +399,15 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
         return "; ".join(
             [party.ec_id for party in self.previous_party_affiliations.all()]
         )
+
+    @cached_property
+    def is_welsh_run_ballot(self):
+        """
+        Check if the associated ballot is welsh run. This is cached to reduce
+        the number of database queries as this if very unlikely to change once
+        a ballot has been created.
+        """
+        return self.ballot.is_welsh_run
 
     class Meta:
         unique_together = ("person", "ballot")

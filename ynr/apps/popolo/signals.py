@@ -13,5 +13,5 @@ def previous_party_affiliations(sender, **kwargs):
     relationships in our code or a terminal shell by mistake. We will
     use form validation to stop users adding these relationships.
     """
-    if not kwargs["instance"].ballot.is_welsh_run:
+    if not kwargs["instance"].is_welsh_run_ballot:
         raise WelshOnlyValidationError()
