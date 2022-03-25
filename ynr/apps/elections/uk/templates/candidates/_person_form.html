@@ -101,14 +101,14 @@
         <tr>
           <td>{{ membership.ballot.ballot_paper_id }}</td>
           <td>{{ membership.party.name }}<br>
-          <i class="previous-party">Previous Party Affiliations:</i>  
-            <ul class="previous-party">
-            {% for party in membership.previous_party_affiliations.all %}
-              
-              <li>{{ party.name }}</li>
-              
-            {% endfor %}
-          </ul>
+          {% if membership.is_welsh_run_ballot %}
+            <i class="previous-party">Previous Party Affiliations:</i>
+              <ul class="previous-party">
+              {% for party in membership.previous_party_affiliations.all %}
+                <li>{{ party.name }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
           </td>
         </tr>
       {% endfor %}

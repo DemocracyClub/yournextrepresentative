@@ -3,13 +3,15 @@ Implements tests specific to the popolo module.
 Run with "manage.py test popolo, or with python".
 """
 
+from unittest.mock import PropertyMock, patch
 from django.test import TestCase
 from faker import Factory
 from slugify import slugify
+from candidates.models.popolo_extra import Ballot
 
 from people.models import Person
 from popolo.behaviors.tests.test_behaviors import DateframeableTests
-from popolo.models import Organization
+from popolo.models import Membership, Organization
 
 faker = Factory.create("it_IT")  # a factory to create fake names for tests
 
@@ -62,3 +64,20 @@ class OrganizationTestCase(DateframeableTests, TestCase):
         self.assertIsNone(o.end_date)
         o.save()
         self.assertEqual(o.end_date, o.dissolution_date)
+
+
+class TestMembership(TestCase):
+    def test_is_welsh_run_ballot(self):
+        """
+        Test that when a the Ballot.is_welsh_run returns True or False, the
+        Membership.is_welsh_run_ballot returns the same
+        """
+        for case in [True, False]:
+            with self.subTest(msg=case):
+                with patch.object(
+                    Ballot, "is_welsh_run", new_callable=PropertyMock
+                ) as mock:
+                    mock.return_value = case
+                    membership = Membership(ballot=Ballot())
+                    assert membership.is_welsh_run_ballot is case
+                    mock.assert_called_once()
