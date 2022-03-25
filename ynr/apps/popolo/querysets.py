@@ -97,11 +97,13 @@ class MembershipQuerySet(DateframeableQuerySet):
             order_by += ["party__name", "party_list_position"]
         else:
             order_by += ["person__sort_name", "last_name"]
-
         qs = self.filter(ballot=ballot)
+
         qs = qs.annotate(last_name=LastWord("person__name"))
         qs = qs.order_by(*order_by)
         qs = qs.select_related("person", "person__image", "party", "result")
+        if ballot.is_welsh_run:
+            qs = qs.prefetch_related("previous_party_affiliations")
 
         if exclude_memberships_qs and exclude_memberships_qs.exists():
             qs = qs.exclude(

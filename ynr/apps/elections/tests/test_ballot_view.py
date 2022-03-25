@@ -176,14 +176,17 @@ class TestBallotView(
         )
 
         self.assertEqual(ballot.is_welsh_run, True)
-        response = self.app.get(ballot.get_absolute_url())
+        with self.assertNumQueries(10):
+            response = self.app.get(ballot.get_absolute_url())
         self.assertNotContains(response, self.old_party.name)
+
         self.membership.previous_party_affiliations.add(self.old_party)
         self.assertEqual(
             self.old_party.name,
             self.membership.previous_party_affiliations.all()[0].name,
         )
         response = self.app.get(ballot.get_absolute_url())
+
         self.assertContains(
             response, self.membership.previous_party_affiliations.all()[0].name
         )
