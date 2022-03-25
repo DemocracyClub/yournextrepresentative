@@ -139,15 +139,19 @@ class PersonIdentifierForm(forms.ModelForm):
 class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
-        if kwargs.get("instance", None):
-            kwargs.update(
-                initial={
-                    "ballot_paper_id": kwargs[
-                        "instance"
-                    ].ballot.ballot_paper_id,
-                    "party_identifier": ["", kwargs["instance"].party.ec_id],
-                }
-            )
+        instance = kwargs.get("instance", None)
+        if instance:
+            initial = {
+                "ballot_paper_id": kwargs["instance"].ballot.ballot_paper_id,
+                "party_identifier": ["", instance.party.ec_id],
+            }
+            if instance.ballot.is_welsh_run:
+                initial["previous_party_affiliations"] = list(
+                    instance.previous_party_affiliations.values_list(
+                        "ec_id", flat=True
+                    )
+                )
+            kwargs.update(initial=initial)
 
         super().__init__(*args, **kwargs)
         self.fields["ballot_paper_id"] = CurrentUnlockedBallotsField(
