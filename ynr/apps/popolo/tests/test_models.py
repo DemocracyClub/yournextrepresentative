@@ -8,6 +8,7 @@ from django.test import TestCase
 from faker import Factory
 from slugify import slugify
 from candidates.models.popolo_extra import Ballot
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 from people.models import Person
 from popolo.behaviors.tests.test_behaviors import DateframeableTests
@@ -81,3 +82,27 @@ class TestMembership(TestCase):
                     membership = Membership(ballot=Ballot())
                     assert membership.is_welsh_run_ballot is case
                     mock.assert_called_once()
+
+
+class TestMembershipQueryset(UK2015ExamplesMixin, TestCase):
+    @patch("popolo.models.MembershipQuerySet.prefetch_related")
+    def test_previous_party_affiliations_prefetched(
+        self, mock_prefetch_related
+    ):
+        """
+        Test that prefetch of previous party affiliations is only called when
+        necessary e.g. when the ballot is welsh run
+        """
+        non_welsh_ballots = Ballot.objects.exclude(
+            ballot_paper_id__contains="senedd"
+        )
+        for ballot in non_welsh_ballots:
+            with self.subTest(msg=ballot.ballot_paper_id):
+                Membership.objects.memberships_for_ballot(ballot=ballot)
+                mock_prefetch_related.assert_not_called()
+
+        with self.subTest(msg=self.senedd_ballot.ballot_paper_id):
+            Membership.objects.memberships_for_ballot(ballot=self.senedd_ballot)
+            mock_prefetch_related.assert_called_once_with(
+                "previous_party_affiliations"
+            )
