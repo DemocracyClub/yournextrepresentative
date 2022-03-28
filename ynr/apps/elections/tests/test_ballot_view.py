@@ -93,6 +93,7 @@ class TestBallotView(
                 date_in_near_past.isoformat()
             ),
             winner_count=2,
+            voting_system="FPTP",
         )
 
         self.parties = self.create_parties(3)
@@ -260,6 +261,16 @@ class TestBallotView(
         response.mustcontain(no="Waiting for election to happen")
         response.mustcontain(no="Unset the current winners")
         # TODO: Test winners in table
+
+    def test_ballot_non_fptp(self):
+        self.past_ballot.voting_system = "stv"
+        self.past_ballot.save()
+        self.create_memberships(self.past_ballot, self.parties)
+
+        response = self.app.get(self.past_ballot.get_absolute_url())
+        response.mustcontain("Winner(s) unknown")
+        response.mustcontain("Help by marking the elected candidates!")
+        response.mustcontain(no="Tell us who won")
 
     def test_constituency_with_winner_record_results_user(self):
         self.ballot.election.election_date = "2015-05-07"
