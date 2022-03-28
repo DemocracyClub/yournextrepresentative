@@ -57,12 +57,12 @@
           <li>
           <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1727">Table extraction errors</a>
           </li>
-          <li> 
-          <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1728">Table parsing errors</a> 
+          <li>
+          <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1728">Table parsing errors</a>
           </li>
         </ul>
           If you're unsure how to classify the error or for any other errors, please post a message on our <a href="https://slack.democracyclub.org.uk">Slack</a>
-          or over <a href="mailto:hello@democracyclub.org.uk">email</a>. 
+          or over <a href="mailto:hello@democracyclub.org.uk">email</a>.
         </p>
       </details>
     </div>
@@ -101,7 +101,7 @@
         <th>
           {{ form.party.errors }}
           <label for="{{ form.party.id_for_label }}">{{ form.party.label }}</label>
-        </th> 
+        </th>
         {% if form.name.initial %}
           <th class="delete_column">
           <abbr title="Select if this person is listed already">Duplicate?</abbr>
@@ -111,31 +111,28 @@
       <tr>
         <td>{{ form.name }}</td>
         <td {% if not form.name.initial %}colspan="2"{% endif %}>
-          {{ form.party }}<br>
-          If the party is blank on the SOPN, enter "Independent"
+          {{ form.party }}
+          <p>If the party is blank on the SOPN, enter "Independent"</p>
+
+          {% if ballot.is_welsh_run %}
+            <details>
+              <summary class="button btn tiny secondary">
+                Add Previous Party Affilations
+              </summary>
+              <p class="previous-party-input" colspan=3 >
+                {{ form.previous_party_affiliations }}
+              </p>
+            </details>
+          {% endif %}
+
         </td>
-        
+
         {% if form.name.initial %}
         <td class="delete_column">
         {{ form.DELETE }}
         </td>
         {% endif %}
       </tr>
-
-      {% if ballot.is_welsh_run %}
-      <tr class="previous-party-affiliation">
-        <th>
-          <details>
-            <summary type="button" class="button btn tiny secondary">
-                Add Previous Party Affilations
-            </summary>
-            <p class="previous-party-input" colspan=3 >
-              {{ form.previous_party_affiliations }}
-            </p> 
-          </details> 
-        </th> 
-      </tr> 
-      {% endif %} 
     {% endfor %}
     </table>
   <button type=submit>Review</button>
