@@ -9,6 +9,7 @@ from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.test.utils import override_settings
 from django.utils.formats import date_format
+from django.utils import timezone
 from django.urls import reverse
 from django_webtest import WebTest
 from mock import patch
@@ -157,7 +158,10 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         cells = photo_rows[1].find_all("td")
         self.assertEqual(
             cells[1].text,
-            date_format(self.q1.created, format=settings.DATETIME_FORMAT),
+            date_format(
+                timezone.localtime(self.q1.created),
+                format=settings.DATETIME_FORMAT,
+            ),
         )
         self.assertEqual(
             cells[2].text,
