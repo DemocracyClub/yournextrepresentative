@@ -98,12 +98,17 @@
               <strong>Winner(s) recorded</strong>
               <i>Uncontested Ballot</i>
           </div> 
-          {% else %}
+          {% elif ballot.can_enter_votes_cast %}
           <div class="status_in_progress">
               <strong>Winner(s) unknown</strong>:
               <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">
                 Tell us who won!
               </a>
+          </div>
+          {% else %}
+          <div class="status_in_progress">
+              <strong>Winner(s) unknown</strong>:
+              <p>Help by marking the elected candidates!</p>
           </div>
           {% endif %}
       {% endif %}
