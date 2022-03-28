@@ -46,7 +46,15 @@
 
 
           </td>
-          <td>{{ membership.party }}</td>
+          <td>
+            {{ membership.party }}
+            {% if membership.previous_party_affiliations.exists %}
+            <small>Previous party affiliations:</small>
+              {% for previous_party in membership.previous_party_affiliations.all %}
+                <small>{{ previous_party.name }}</small>
+              {% endfor %}
+            {% endif %}
+          </td>
 
         </tr>
         {% endfor %}

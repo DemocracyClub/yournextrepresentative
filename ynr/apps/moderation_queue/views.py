@@ -375,7 +375,9 @@ class SuggestLockReviewListView(
                     "membership_set",
                     Membership.objects.select_related(
                         "person", "party"
-                    ).prefetch_related("person__other_names"),
+                    ).prefetch_related(
+                        "person__other_names", "previous_party_affiliations"
+                    ),
                 ),
             )
         )
