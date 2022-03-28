@@ -83,3 +83,7 @@ class RawPeople(TimeStampedModel):
     @property
     def is_trusted(self):
         return self.source_type in self.TRUSTED_SOURCES
+
+    @property
+    def is_parsed_from_pdf(self):
+        return self.source_type == self.SOURCE_PARSED_PDF
