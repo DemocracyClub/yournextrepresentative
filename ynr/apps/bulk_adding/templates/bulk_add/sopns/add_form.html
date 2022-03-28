@@ -40,7 +40,7 @@
   </ol>
   </details>
 
-  {% if ballot.rawpeople and ballot.rawpeople.source_type == "parsed_pdf"%}
+  {% if ballot.rawpeople and ballot.rawpeople.is_parsed_from_pdf %}
     <div class="panel callout">
       <details open>
         <summary>
@@ -68,10 +68,11 @@
     </div>
   {% endif %}
 
-{% include "bulk_add/sopns/_known-people.html" %}
+  {% include "bulk_add/sopns/_known-people.html" %}
 
   <form method=POST id="bulk_add_form">
     <button type=submit>Review</button>
+    <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button">Nomination paper (SoPN)</a>
   {% csrf_token %}
   {{ formset.management_form }}
   {% if formset.non_form_errors %}
@@ -137,6 +138,8 @@
     </table>
   <button type=submit>Review</button>
 </form>
+
+{% include "bulk_add/sopns/_delete_parsed_people.html" %}
 
 {% else %}
 <p>

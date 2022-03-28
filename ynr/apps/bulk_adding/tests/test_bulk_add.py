@@ -3,6 +3,7 @@ from django_webtest import WebTest
 from bulk_adding.forms import BulkAddFormSet
 
 from bulk_adding.models import RawPeople
+from candidates.models.db import ActionType, EditType, LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.test_update_view import membership_id_set
@@ -634,3 +635,63 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             set(formset.get_previous_party_affiliations_choices()),
             set(expected),
         )
+
+    def test_delete_parsed_raw_people(self):
+        """
+        Check that if a ballot has parsed raw people, user is able to delete them
+        """
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            data=[{"name": "Bart", "party_id": "PP52"}],
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+        raw_people = RawPeople.objects.filter(ballot=self.dulwich_post_ballot)
+        self.assertEqual(raw_people.count(), 1)
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
+        )
+        response = response.forms["delete-parsed-people"].submit()
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url, self.dulwich_post_ballot.get_bulk_add_url()
+        )
+        with self.assertRaises(RawPeople.DoesNotExist):
+            RawPeople.objects.get(ballot=self.dulwich_post_ballot)
+        logged_actions = LoggedAction.objects.filter(
+            ballot=self.dulwich_post_ballot,
+            user=self.user,
+            action_type=ActionType.DELETED_PARSED_RAW_PEOPLE,
+            edit_type=EditType.USER.name,
+        )
+        self.assertEqual(logged_actions.count(), 1)
+
+    def test_delete_raw_people_not_available(self):
+        """
+        Check that if a ballot has raw people but they were not parsed by a bot
+        the form to delete them is not on the page
+        """
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            data=[{"name": "Bart", "party_id": "PP52"}],
+            source_type=RawPeople.SOURCE_BULK_ADD_FORM,
+        )
+        raw_people = RawPeople.objects.filter(ballot=self.dulwich_post_ballot)
+        self.assertEqual(raw_people.count(), 1)
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
+        )
+        with self.assertRaises(KeyError):
+            response.forms["delete-parsed-people"]

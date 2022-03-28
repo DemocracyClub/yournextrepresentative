@@ -1,8 +1,13 @@
-from django.urls import re_path
+from django.urls import re_path, path
 
 from . import views
 
 urlpatterns = [
+    path(
+        "delete-raw-people/",
+        views.DeleteRawPeople.as_view(),
+        name="delete_raw_people",
+    ),
     re_path(
         r"^(?!.*party|sopn)(?P<ballot_paper_id>[^/]+)/$",
         views.BulkAddSOPNRedirectView.as_view(),

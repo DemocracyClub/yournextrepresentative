@@ -11,6 +11,7 @@ $(function() {
   $('.source-confirmation-not-standing').hide();
   $('.source-confirmation-delete-other-name').hide()
   $('.candidates__new').hide();
+  $('.delete-parsed-people-confirm').hide();
 
   function getNewCandidateDiv(element) {
     return $('.candidates__new');
@@ -52,6 +53,18 @@ $(function() {
         return;
       }
     }
+  });
+
+  $('.js-show-delete-parsed-people-confirm').on('click', function(event){
+    event.preventDefault()
+    confirmation = $('.delete-parsed-people-confirm')
+    confirmation.show();
+  });
+
+  $('.hide-delete-parsed-people').on('click', function(event){
+    event.preventDefault()
+    confirmation = $('.delete-parsed-people-confirm')
+    confirmation.hide();
   });
 
   $('.winner-confirm').submit(function(e) {

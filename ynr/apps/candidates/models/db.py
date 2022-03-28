@@ -89,6 +89,10 @@ class ActionType(models.TextChoices):
         "suspended-twitter-account",
         "Suspended Twitter account",
     )
+    DELETED_PARSED_RAW_PEOPLE = (
+        "deleted-parsed-raw-people",
+        "Deleted parsed RawPeople",
+    )
 
     def get_action_type_display():
         return ActionType.choices
