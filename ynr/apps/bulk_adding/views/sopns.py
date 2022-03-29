@@ -254,23 +254,22 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
             ballot = context["ballot"]
             ballot.delete_outdated_suggested_locks()
 
-            if self.request.POST.get("suggest_locking") == "on":
-                SuggestedPostLock.objects.create(
-                    user=self.request.user, ballot=ballot
-                )
+            SuggestedPostLock.objects.create(
+                user=self.request.user, ballot=ballot
+            )
 
-                LoggedAction.objects.create(
-                    user=self.request.user,
-                    action_type=ActionType.SUGGEST_BALLOT_LOCK,
-                    ip_address=get_client_ip(self.request),
-                    ballot=ballot,
-                    source="Suggested after bulk adding",
-                    edit_type=EditType.BULK_ADD.name,
-                )
+            LoggedAction.objects.create(
+                user=self.request.user,
+                action_type=ActionType.SUGGEST_BALLOT_LOCK,
+                ip_address=get_client_ip(self.request),
+                ballot=ballot,
+                source="Suggested after bulk adding",
+                edit_type=EditType.BULK_ADD.name,
+            )
 
-                if hasattr(ballot, "rawpeople"):
-                    # Delete the raw import, as it's no longer useful
-                    ballot.rawpeople.delete()
+            if hasattr(ballot, "rawpeople"):
+                # Delete the raw import, as it's no longer useful
+                ballot.rawpeople.delete()
 
         messages.add_message(
             self.request,
