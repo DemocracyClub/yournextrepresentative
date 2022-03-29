@@ -21,6 +21,7 @@ from django.db.models import (
 from django.db.models.query_utils import Q
 
 from candidates.models import Ballot
+from django.conf import settings
 from elections.filters import region_choices
 from parties.models import Party
 from people.models import Person
@@ -55,28 +56,6 @@ class BaseReport:
         self.nation = nation
         self.election_type = election_type or "local"
         register = register or "GB"
-        self.nuts_to_nation = {
-            "E": [
-                "UKC",
-                "UKD",
-                "UKE",
-                "UKF",
-                "UKG",
-                "UKH",
-                "UKI",
-                "UKJ",
-                "UKK",
-            ],
-            "W": ["UKL"],
-            "S": ["UKM"],
-            "N": ["UKN"],
-        }
-        self.nation_label = {
-            "E": "England",
-            "W": "Wales",
-            "S": "Scotland",
-            "N": "Northern Ireland",
-        }
         self.elected = elected
 
         self.ballot_qs = Ballot.objects.filter(
@@ -115,10 +94,12 @@ class BaseReport:
 
         if self.nation:
             self.ballot_qs = self.ballot_qs.filter(
-                tags__NUTS1__key__in=self.nuts_to_nation[self.nation]
+                tags__NUTS1__key__in=settings.NUTS_TO_NATION[self.nation]
             )
             self.membership_qs = self.membership_qs.filter(
-                ballot__tags__NUTS1__key__in=self.nuts_to_nation[self.nation]
+                ballot__tags__NUTS1__key__in=settings.NUTS_TO_NATION[
+                    self.nation
+                ]
             )
 
         if self.elected:
@@ -142,7 +123,7 @@ class BaseReport:
         title = f"{self.date}: {self.name}, {self.election_type} elections"
         suffix = ""
         if self.nation:
-            suffix = f" ({self.nation_label[self.nation]})"
+            suffix = f" ({settings.NATION_LABEL[self.nation]})"
 
         if self.elected:
             suffix = f", elected only{suffix}"
@@ -234,7 +215,7 @@ class CandidatesPerParty(BaseReport):
         ballots = Ballot.objects.filter(election__election_date=self.date)
         if self.nation:
             ballots = ballots.filter(
-                tags__NUTS1__key__in=self.nuts_to_nation[self.nation]
+                tags__NUTS1__key__in=settings.NUTS_TO_NATION[self.nation]
             )
 
         total_seats = ballots.aggregate(seats=Sum("winner_count"))["seats"]
@@ -952,7 +933,7 @@ class CommonFirstNames(BaseReport):
         report_list.append(headers)
         qs = self.get_qs()
         if self.nation:
-            label = f"Across {self.nation_label[self.nation]}"
+            label = f"Across {settings.NATION_LABEL[self.nation]}"
         else:
             label = f"On {self.date}"
         for row in self.collect_names(label, qs):
@@ -968,7 +949,7 @@ class CommonFirstNames(BaseReport):
         for party in parties:
             label = f"{party[1]}"
             if self.nation:
-                label = f"{label} ({self.nuts_to_nation[self.nation]} only)"
+                label = f"{label} ({settings.NUTS_TO_NATION[self.nation]} only)"
             qs = self.get_qs().filter(party__ec_id=party[0])
             for row in self.collect_names(label, qs):
                 report_list.append(row)
