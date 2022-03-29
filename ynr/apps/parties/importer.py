@@ -351,11 +351,13 @@ class ECEmblem:
         extension = mimetypes.guess_extension(mime_type.decode("utf8"))
         filename = "Emblem_{}{}".format(self.emblem_dict["Id"], extension)
 
-        emblem = PartyEmblem.objects.create(
+        emblem, _ = PartyEmblem.objects.update_or_create(
             ec_emblem_id=self.emblem_dict["Id"],
-            party=self.party,
-            description=self.emblem_dict["MonochromeDescription"],
-            default=self.get_default(),
+            defaults={
+                "party": self.party,
+                "description": self.emblem_dict["MonochromeDescription"],
+                "default": self.get_default(),
+            },
         )
 
         emblem.image.save(filename, open(image_file_name, "rb"))
