@@ -109,6 +109,8 @@ def sopn_import_progress(context):
     context["SHOW_SOPN_TRACKER"] = (
         getattr(settings, "FRONT_PAGE_CTA", False) == "SOPN_TRACKER"
     )
+    context["SOPN_SHEET_URL"] = getattr(settings, "SOPN_SHEET_URL", None)
+    context["SOPN_DATES"] = getattr(settings, "SOPN_DATES", None)
     if context["SHOW_SOPN_TRACKER"]:
         context["sopn_tracker_election_name"] = settings.SOPN_TRACKER_INFO[
             "election_name"

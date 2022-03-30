@@ -3,13 +3,32 @@
 {% if SHOW_SOPN_TRACKER %}
   <h2>🗳 {{ sopn_tracker_election_name }} 🗳</h2>
   <p>Official documents containing candidate information have just been published on local authority websites.</p>
+  <p>Help us track them all down and convert them in to reusable information.
+    <a href="https://democracyclub.org.uk/blog/2022/03/29/local-elections-2022-join-hundreds-of-others-to-improve-this-years-elections/">
+      Find out more about our crowdsourcing efforts</a>
+  </p>
   {% include "candidates/homepage_sopn_progress.html" with sopn_progress=sopn_progress %}
 
-  <p>
-    <a href="https://docs.google.com/spreadsheets/d/1SiPHOzvwUDVT3_p7dMvTChivEFBs2-iLR3o5vyZCAkE/edit#gid=0">
-      The full list of SoPNs for the {{ sopn_tracker_election_name }} can be found here
-    </a>
-  </p>
+  {% if SOPN_SHEET_URL %}
+    <p>
+      <a href="{{ SOPN_SHEET_URL }}">
+        The full list of SoPNs for the {{ sopn_tracker_election_name }} can be found here
+      </a>
+    </p>
+  {% endif %}
+
+  {% if SOPN_DATES %}
+    <p>
+    The SOPN publication dates this year are:
+    </p>
+    <ul>
+      {% for nation, date in SOPN_DATES %}
+        <li><strong>{{ nation }}</strong>: {{ date|date }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if sopn_progress.sopns_imported %}
   <h2>By region</h2>
   <div class="region-grid" style="display: flex;flex-wrap: wrap;margin: -0.5em;">
     {% for nuts1_id, stats in sopn_progress_by_region.items %}
@@ -78,6 +97,5 @@
       </section>
     {% endfor %}
   </div>
-
-
+  {% endif %}
 {% endif %}
