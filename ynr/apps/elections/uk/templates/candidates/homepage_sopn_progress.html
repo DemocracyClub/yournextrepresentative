@@ -6,9 +6,18 @@
 {#     aria-valuemin="0" aria-valuemax="{{ sopn_progress.posts_total }}"> #}
 {#   <span class="meter" style="width: {{ sopn_progress.sopns_imported_percent }}%"></span> #}
 {# </div> #}
-<a class="button" href="{% url "sopn-review-required" %}?random">Start adding candidates</a>
-<br>or<br>
-<a class="button small" href="{% url "election_list_view" %}?review_required=unlocked&has_sopn=1">See the full list of SoPNs</a>
+{% if sopn_progress.sopns_imported %}
+  <a class="button" href="{% url "sopn-review-required" %}?random">Start adding candidates</a>
+  <br>or<br>
+  <a class="button small" href="{% url "election_list_view" %}?review_required=unlocked&has_sopn=1">See the full list of SoPNs</a>
+{% else %}
+  {% if SOPN_SHEET_URL %}
+    <p>
+      <a href="{{ SOPN_SHEET_URL }}" class="button">
+        Help find the SoPNs on council websites</a>
+    </p>
+  {% endif %}
+{% endif %}
 
 <h3><strong>{{ sopn_progress.posts_lock_suggested|intcomma }}</strong> areas have been entered</h3>
 <div class="radius progress success large-12" role="progressbar"

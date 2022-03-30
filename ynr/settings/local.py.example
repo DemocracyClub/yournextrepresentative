@@ -48,7 +48,15 @@ ADMINS = [()]
 # RESULTS_PROGRESS
 # BY_ELECTIONS
 # FRONT_PAGE_CTA = 'BY_ELECTIONS'
-
+SOPN_TRACKER_INFO = {}
+SOPN_TRACKER_INFO["election_date"] = "2022-05-05"
+SOPN_TRACKER_INFO["election_name"] = "May 2022 local elections"
+SOPN_SHEET_URL = "https://docs.google.com/spreadsheets/d/1eyYvkHqvpmowxvpJ3gALfDtPXfJF7nqvMt1ttxLa9fM/edit#gid=0"
+SOPN_DATES = [
+    ("Scotland", date(year=2022, month=3, day=30)),
+    ("England and Wales", date(year=2022, month=4, day=6)),
+    ("Northern Ireland", date(year=2022, month=4, day=8)),
+]
 
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
