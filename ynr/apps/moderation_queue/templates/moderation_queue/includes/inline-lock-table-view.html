@@ -17,8 +17,6 @@
       <tbody>
         {% for membership in ballot.membership_set.all|dictsort:"person.last_name_guess"%}
         <tr>
-
-
           <td>
             <a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>
           </td>
@@ -42,12 +40,14 @@
             <a data-person-id="{{ membership.person.pk }}" data-post-id="{{ membership.ballot.post.slug }}" href="{% url 'candidacy-delete' ballot_paper_id=membership.ballot.ballot_paper_id %}" class="radius secondary label known-person-not-standing" title="Mark as not standing">
               ❌
             </a>
-
-
-
           </td>
           <td>
+          {% if membership.party_description_text %}
+            {{ membership.party_description_text }}
+          {% else %}
             {{ membership.party }}
+          {% endif %}
+
             {% if membership.previous_party_affiliations.exists %}
             <small>Previous party affiliations:</small>
               {% for previous_party in membership.previous_party_affiliations.all %}
@@ -288,4 +288,3 @@
             </td>
           </tr>
         </script>
-
