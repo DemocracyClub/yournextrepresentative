@@ -162,6 +162,36 @@ class TestBallotView(
             self.assertContains(response, escape(membership.person.name))
             self.assertContains(response, membership.party.name)
 
+    def test_previous_party_affiliations(self):
+        new_candidate = PersonFactory.create(name="John Doe")
+        ballot = BallotPaperFactory.create(
+            election=self.election,
+            post=self.post,
+            ballot_paper_id="senedd.foo.bar.2022-05-05",
+            winner_count=2,
+        )
+        party = PartyFactory()
+        self.old_party = PartyFactory()
+        self.membership = Membership.objects.create(
+            person=new_candidate, party=party, post=ballot.post, ballot=ballot
+        )
+
+        self.assertEqual(ballot.is_welsh_run, True)
+        with self.assertNumQueries(10):
+            response = self.app.get(ballot.get_absolute_url())
+        self.assertNotContains(response, self.old_party.name)
+
+        self.membership.previous_party_affiliations.add(self.old_party)
+        self.assertEqual(
+            self.old_party.name,
+            self.membership.previous_party_affiliations.all()[0].name,
+        )
+        response = self.app.get(ballot.get_absolute_url())
+
+        self.assertContains(
+            response, self.membership.previous_party_affiliations.all()[0].name
+        )
+
     def test_person_photo_shown(self):
         self.create_memberships(self.ballot, self.parties)
         person = self.ballot.membership_set.first().person
@@ -231,6 +261,7 @@ class TestBallotView(
                 "party_ppc_page_url": "",
                 "post_id": self.ballot.post.slug,
                 "post_label": self.ballot.post.label,
+                "previous_party_affiliations": "",
                 "proxy_image_url_template": "",
                 "seats_contested": "2",
                 "theyworkforyou_url": "",

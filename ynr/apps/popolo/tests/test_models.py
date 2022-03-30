@@ -3,13 +3,16 @@ Implements tests specific to the popolo module.
 Run with "manage.py test popolo, or with python".
 """
 
+from unittest.mock import PropertyMock, patch
 from django.test import TestCase
 from faker import Factory
 from slugify import slugify
+from candidates.models.popolo_extra import Ballot
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 from people.models import Person
 from popolo.behaviors.tests.test_behaviors import DateframeableTests
-from popolo.models import Organization
+from popolo.models import Membership, Organization
 
 faker = Factory.create("it_IT")  # a factory to create fake names for tests
 
@@ -62,3 +65,44 @@ class OrganizationTestCase(DateframeableTests, TestCase):
         self.assertIsNone(o.end_date)
         o.save()
         self.assertEqual(o.end_date, o.dissolution_date)
+
+
+class TestMembership(TestCase):
+    def test_is_welsh_run_ballot(self):
+        """
+        Test that when a the Ballot.is_welsh_run returns True or False, the
+        Membership.is_welsh_run_ballot returns the same
+        """
+        for case in [True, False]:
+            with self.subTest(msg=case):
+                with patch.object(
+                    Ballot, "is_welsh_run", new_callable=PropertyMock
+                ) as mock:
+                    mock.return_value = case
+                    membership = Membership(ballot=Ballot())
+                    assert membership.is_welsh_run_ballot is case
+                    mock.assert_called_once()
+
+
+class TestMembershipQueryset(UK2015ExamplesMixin, TestCase):
+    @patch("popolo.models.MembershipQuerySet.prefetch_related")
+    def test_previous_party_affiliations_prefetched(
+        self, mock_prefetch_related
+    ):
+        """
+        Test that prefetch of previous party affiliations is only called when
+        necessary e.g. when the ballot is welsh run
+        """
+        non_welsh_ballots = Ballot.objects.exclude(
+            ballot_paper_id__contains="senedd"
+        )
+        for ballot in non_welsh_ballots:
+            with self.subTest(msg=ballot.ballot_paper_id):
+                Membership.objects.memberships_for_ballot(ballot=ballot)
+                mock_prefetch_related.assert_not_called()
+
+        with self.subTest(msg=self.senedd_ballot.ballot_paper_id):
+            Membership.objects.memberships_for_ballot(ballot=self.senedd_ballot)
+            mock_prefetch_related.assert_called_once_with(
+                "previous_party_affiliations"
+            )

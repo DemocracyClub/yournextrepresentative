@@ -526,6 +526,19 @@ class Ballot(EEModifiedMixin, models.Model):
         url = reverse("photo-review-list")
         return f"{url}?{querystring}"
 
+    @property
+    def is_welsh_run(self):
+        """
+        Return a boolean if this is a Welsh government run ballot
+        """
+        if self.ballot_paper_id.startswith("senedd."):
+            return True
+
+        if not self.ballot_paper_id.startswith("local."):
+            return False
+
+        return self.tags.get("NUTS1", {}).get("key") == "UKL"
+
 
 class PartySet(models.Model):
     slug = models.CharField(max_length=256, unique=True)

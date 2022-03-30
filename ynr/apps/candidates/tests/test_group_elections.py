@@ -66,6 +66,19 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
                                     ],
                                 ),
                                 (
+                                    self.senedd_election.election_date,
+                                    [
+                                        {
+                                            "role": self.senedd_election.for_post_role,
+                                            "elections": [
+                                                {
+                                                    "election": self.senedd_election
+                                                }
+                                            ],
+                                        }
+                                    ],
+                                ),
+                                (
                                     self.election.election_date,
                                     [
                                         {
@@ -166,6 +179,22 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
                                     ],
                                 ),
                                 (
+                                    self.senedd_election.election_date,
+                                    [
+                                        {
+                                            "role": self.senedd_election.for_post_role,
+                                            "elections": [
+                                                {
+                                                    "ballots": [
+                                                        self.senedd_ballot
+                                                    ],
+                                                    "election": self.senedd_election,
+                                                }
+                                            ],
+                                        }
+                                    ],
+                                ),
+                                (
                                     self.election.election_date,
                                     [
                                         {
@@ -219,6 +248,7 @@ class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
     def test_election_just_general_elections(self):
         self.sp_c_election.delete()
         self.sp_r_election.delete()
+        self.senedd_election.delete()
         with self.assertNumQueries(1):
             self.assertEqual(
                 Election.group_and_order_elections(),

@@ -5,6 +5,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
@@ -29,6 +30,10 @@ class VersionNotFound(Exception):
 
 
 class NotStandingValidationError(ValueError):
+    pass
+
+
+class WelshOnlyValidationError(ValueError):
     pass
 
 
@@ -347,6 +352,12 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
     party_list_position = models.PositiveSmallIntegerField(null=True)
     ballot = models.ForeignKey("candidates.Ballot", on_delete=models.CASCADE)
 
+    # stores previous party affiliations within 12 months of this candidacy
+    # TODO better related_name
+    previous_party_affiliations = models.ManyToManyField(
+        to="parties.Party", related_name="alliated_memberships", blank=True
+    )
+
     objects = MembershipQuerySet.as_manager()
 
     def save(self, *args, **kwargs):
@@ -378,6 +389,25 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
         Build a sting of candidate name and party name
         """
         return f"{self.person.name} ({self.party.name})"
+
+    @property
+    def previous_party_affiliations_string(self):
+        """
+        Return a comma seperated list of EC-ID's for previous party affiliations
+        relations
+        """
+        return "; ".join(
+            [party.ec_id for party in self.previous_party_affiliations.all()]
+        )
+
+    @cached_property
+    def is_welsh_run_ballot(self):
+        """
+        Check if the associated ballot is welsh run. This is cached to reduce
+        the number of database queries as this if very unlikely to change once
+        a ballot has been created.
+        """
+        return self.ballot.is_welsh_run
 
     class Meta:
         unique_together = ("person", "ballot")
@@ -415,6 +445,7 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
             "NUTS1": nuts1,
             "seats_contested": self.ballot.winner_count,
             "organisation_name": self.ballot.post.organization.name,
+            "previous_party_affiliations": self.previous_party_affiliations_string,
         }
 
         if redirects and redirects.get(self.person_id):

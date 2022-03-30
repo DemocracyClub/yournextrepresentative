@@ -248,6 +248,7 @@ class TestCurrentElections(UK2015ExamplesMixin, WebTest):
                 "parl.2015-05-07",
                 "parl.2010-05-06",
                 "local.maidstone.2016-05-05",
+                "senedd.c.2021-05-06",
             },
         )
 

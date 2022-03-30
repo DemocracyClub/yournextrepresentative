@@ -29,14 +29,22 @@ LAST_NAME_FIELDS = [
     "candidates surname",
     "last name",
 ]
+WELSH_NAME_FIELDS = ["enwr ymgeisydd"]
 NAME_FIELDS = (
     FIRST_NAME_FIELDS
     + LAST_NAME_FIELDS
     + ["name of candidate", "names of candidate", "candidate name"]
+    + WELSH_NAME_FIELDS
 )
 
 
-INDEPENDENT_VALUES = ("Independent", "", "Annibynnol")
+INDEPENDENT_VALUES = ["Independent", "", "Annibynnol"]
+
+WELSH_DESCRIPTION_VALUES = ["disgrifiad or ymgeisydd"]
+DESCRIPTION_VALUES = [
+    "description of candidate",
+    "description",
+] + WELSH_DESCRIPTION_VALUES
 
 
 def iter_rows(data):
@@ -100,12 +108,25 @@ def get_name_fields(row):
 
 
 def guess_description_field(row):
-    description_strings = ("description of candidate", "description")
-
     for cell in row:
-        if cell in description_strings:
+        if cell in DESCRIPTION_VALUES:
             return cell
     raise ValueError("No description guess for {}".format(row))
+
+
+def guess_previous_party_affiliations_field(data, sopn):
+    data = clean_row(data)
+    if not sopn.sopn.ballot.is_welsh_run:
+        return None
+
+    field_value = None
+
+    for cell in data:
+        if cell in ["statement of party membership"]:  # this could become more
+            field_value = cell
+            break
+
+    return field_value
 
 
 def clean_name(name):
@@ -280,6 +301,25 @@ def get_name(row, name_fields):
     return name
 
 
+def add_previous_party_affiliations(party_str, raw_data, sopn):
+    """
+    Attempts to find previous party affiliations and add them to the data
+    object. If no party can be found, returns the data unchanged.
+    """
+    if not party_str:
+        return raw_data
+
+    party = get_party(
+        description_model=None, description_str=party_str, sopn=sopn
+    )
+
+    if not party:
+        return raw_data
+
+    raw_data["previous_party_affiliations"] = [party.ec_id]
+    return raw_data
+
+
 def parse_table(sopn, data):
     data.columns = clean_row(data.columns)
 
@@ -290,6 +330,9 @@ def parse_table(sopn, data):
         name_fields = order_name_fields(name_fields)
 
     description_field = guess_description_field(data.columns)
+    previous_party_affiliations_field = guess_previous_party_affiliations_field(
+        data=data.columns, sopn=sopn
+    )
 
     ballot_data = []
     for row in iter_rows(data):
@@ -312,6 +355,14 @@ def parse_table(sopn, data):
         data = {"name": name, "party_id": party_obj.ec_id}
         if description_obj:
             data["description_id"] = description_obj.pk
+
+        if previous_party_affiliations_field:
+            data = add_previous_party_affiliations(
+                party_str=row[previous_party_affiliations_field],
+                raw_data=data,
+                sopn=sopn,
+            )
+
         ballot_data.append(data)
     return ballot_data
 

@@ -74,7 +74,6 @@
                   {% for candidacy in choice.choice_label.previous_candidacies %}
                     <li>{{ candidacy }}</li>
                   {% endfor %}
-
                 </td>
               </tr>
             {% endfor %}
@@ -82,6 +81,7 @@
             {{ form.source }}
             {{ form.party }}
             {{ form.party_description }}
+            {{ form.previous_party_affiliations }}
           </tbody>
         </table>
       </div>

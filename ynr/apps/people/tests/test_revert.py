@@ -1,14 +1,16 @@
+from datetime import datetime
+from django.urls import reverse
 from django_webtest import WebTest
 from mock import patch
 
-import people.tests.factories
-from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from candidates.tests.factories import MembershipFactory
 from people.models import Person, PersonIdentifier
 from popolo.models import Membership
 from uk_results.models import CandidateResult, ResultSet
 from utils.testing_utils import deep_sort
+from people.tests.factories import PersonFactory
 
 example_timestamp = "2014-09-29T10:11:59.216159"
 example_version_id = "5aa6418325c1a0bb"
@@ -85,7 +87,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def setUp(self):
         super().setUp()
-        person = people.tests.factories.PersonFactory.create(
+        person = PersonFactory.create(
             id=2009,
             name="Tessa Jowell",
             versions=self.version_template(party_slug=self.labour_party.ec_id),
@@ -98,13 +100,13 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             internal_identifier="10326",
             value_type="theyworkforyou",
         )
-        factories.MembershipFactory.create(
+        MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
             ballot=self.dulwich_post_ballot,
         )
-        factories.MembershipFactory.create(
+        MembershipFactory.create(
             person=person,
             post=self.dulwich_post,
             party=self.labour_party,
@@ -264,3 +266,46 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "source"
         ] = "Reverting to version 5469de7db0cbd155 for testing purposes"
         response = revert_form.submit()
+
+    def test_revert_with_memberships_previous_party_affiliations(self):
+        person = PersonFactory()
+        membership = MembershipFactory.create(
+            person=person, ballot=self.senedd_ballot, party=self.ld_party
+        )
+        membership.previous_party_affiliations.add(self.conservative_party)
+        # create an initial version
+        person.record_version(
+            change_metadata={
+                "information_source": "initial version",
+                "version_id": "1",
+                "timestamp": datetime.utcnow().isoformat(),
+                "username": self.user.username,
+            }
+        )
+        person.save()
+        self.assertEqual(membership.previous_party_affiliations.count(), 1)
+
+        # make a change and record the version
+        membership.previous_party_affiliations.clear()
+        person.record_version(
+            change_metadata={
+                "information_source": "cleared the previous_party_affiliations",
+                "version_id": "2",
+                "timestamp": datetime.utcnow().isoformat(),
+                "username": self.user.username,
+            }
+        )
+        person.save()
+        self.assertEqual(membership.previous_party_affiliations.count(), 0)
+
+        # revert to the earlier version
+        self.client.force_login(self.user)
+        url = reverse("person-revert", kwargs={"person_id": person.pk})
+        response = self.client.post(
+            url, data={"version_id": "1", "source": "Testing"}, follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        with self.assertRaises(Membership.DoesNotExist):
+            membership.refresh_from_db()
+        new_membership = person.memberships.get()
+        self.assertEqual(new_membership.previous_party_affiliations.count(), 1)

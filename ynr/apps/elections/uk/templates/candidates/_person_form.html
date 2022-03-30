@@ -100,7 +100,16 @@
       {% for membership in current_locked_ballots %}
         <tr>
           <td>{{ membership.ballot.ballot_paper_id }}</td>
-          <td>{{ membership.party.name }}</td>
+          <td>{{ membership.party.name }}<br>
+          {% if membership.is_welsh_run_ballot %}
+            <i class="previous-party">Previous Party Affiliations:</i>
+              <ul class="previous-party">
+              {% for party in membership.previous_party_affiliations.all %}
+                <li>{{ party.name }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          </td>
         </tr>
       {% endfor %}
       </tbody>
@@ -139,6 +148,13 @@
               {{ membership_form.party_identifier }}
               {{ membership_form.party_identifier.errors }}
             </div>
+            {% if membership_form.previous_party_affiliations %}
+              <div class="large-12 columns">
+                {{ membership_form.previous_party_affiliations.label }}
+                {{ membership_form.previous_party_affiliations }}
+                {{ membership_form.previous_party_affiliations.errors }}
+              </div>
+            {% endif %}
             <div class="large-12 columns">
               {{ membership_form.party_list_position.label }}
               {{ membership_form.party_list_position }}

@@ -72,6 +72,9 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         for membership in context["ballot"].membership_set.all():
             person = membership.person
             person.party = membership.party
+            person.previous_party_affiliations = (
+                membership.previous_party_affiliations.all()
+            )
 
             people_set.add(person)
 
@@ -99,7 +102,6 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
     template_name = "bulk_add/sopns/add_form.html"
 
     def get(self, request, *args, **kwargs):
-
         if not request.GET.get("edit"):
             self.ballot = self.get_ballot()
             if hasattr(self.ballot, "rawpeople"):
@@ -139,13 +141,17 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
                 continue
             party_id = form_data["party"]["party_id"]
             description_id = form_data["party"]["description_id"]
-            raw_ballot_data.append(
-                {
-                    "name": form_data["name"],
-                    "party_id": party_id,
-                    "description_id": description_id,
-                }
-            )
+            candidate_data = {
+                "name": form_data["name"],
+                "party_id": party_id,
+                "description_id": description_id,
+            }
+            if form_data["previous_party_affiliations"]:
+                candidate_data["previous_party_affiliations"] = form_data[
+                    "previous_party_affiliations"
+                ]
+
+            raw_ballot_data.append(candidate_data)
 
         RawPeople.objects.update_or_create(
             ballot=context["ballot"],
@@ -191,6 +197,12 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
             form["name"] = candidacy["name"]
             form["party"] = party.ec_id
             form["source"] = context["official_document"].source_url
+
+            if candidacy.get("previous_party_affiliations"):
+                form["previous_party_affiliations"] = ",".join(
+                    candidacy["previous_party_affiliations"]
+                )
+
             initial.append(form)
 
         if self.request.POST:
@@ -216,6 +228,14 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     person = Person.objects.get(pk=int(data["select_person"]))
 
                 party = Party.objects.get(ec_id=data["party"])
+                previous_party_affiliations = data.get(
+                    "previous_party_affiliations", None
+                )
+                if previous_party_affiliations:
+                    party_ids = data["previous_party_affiliations"].split(",")
+                    previous_party_affiliations = Party.objects.filter(
+                        ec_id__in=party_ids
+                    )
 
                 helpers.update_person(
                     request=self.request,
@@ -224,6 +244,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     ballot=context["ballot"],
                     source=data["source"],
                     party_description=data["party_description"],
+                    previous_party_affiliations=previous_party_affiliations,
                 )
 
             # ballot has changed so we should remove any out of date suggestions

@@ -193,7 +193,7 @@ class TestAPI(
         organizations = organizations_resp.json
 
         self.assertEqual(organizations["count"], len(organizations["results"]))
-        self.assertEqual(organizations["count"], 7)
+        self.assertEqual(organizations["count"], 8)
 
     def test_api_legacy_organization_with_parties(self):
         self._make_legacy_parties()
@@ -219,7 +219,7 @@ class TestAPI(
         elections = elections_resp.json
 
         self.assertEqual(elections["count"], len(elections["results"]))
-        self.assertEqual(elections["count"], 3)
+        self.assertEqual(elections["count"], 4)
 
     def test_api_elections_without_orgs(self):
         # Regression test that we can serve elections without an organzation
@@ -253,7 +253,7 @@ class TestAPI(
         posts = posts_resp.json
 
         self.assertEqual(posts["count"], len(posts["results"]))
-        self.assertEqual(posts["count"], 5)
+        self.assertEqual(posts["count"], 6)
 
     def test_api_post(self):
         posts_resp = self.app.get("/api/v0.9/posts/")
@@ -355,6 +355,7 @@ class TestAPI(
         ballot_1_leafname = "ballots-000001.json"
         ballot_2_leafname = "ballots-000002.json"
         ballot_3_leafname = "ballots-000003.json"
+        ballot_4_leafname = "ballots-000004.json"
 
         self.assertEqual(
             set(entries),
@@ -364,6 +365,7 @@ class TestAPI(
                 ballot_1_leafname,
                 ballot_2_leafname,
                 ballot_3_leafname,
+                ballot_4_leafname,
             },
         )
         # Get the data from those pages:

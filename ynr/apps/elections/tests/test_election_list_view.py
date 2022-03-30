@@ -31,7 +31,7 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
     def test_elections_link_to_constituencies_page(self):
 
         response = self.app.get("/elections/")
-        self.assertEqual(response.context["filter"].qs.count(), 5)
+        self.assertEqual(response.context["filter"].qs.count(), 6)
         self.assertContains(response, "2015 General Election")
         self.assertContains(response, "/elections/parl.2015-05-07/")
         self.assertFalse(response.context["filter"].data)
@@ -59,7 +59,7 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
     def test_elections_filters(self):
         # Unfiltered
         response = self.app.get("/elections/")
-        self.assertEqual(response.context["filter"].qs.count(), 5)
+        self.assertEqual(response.context["filter"].qs.count(), 6)
         self.assertEqual(response.context["filter"].data, {})
 
         # Lock suggestions, basically the same as the above test

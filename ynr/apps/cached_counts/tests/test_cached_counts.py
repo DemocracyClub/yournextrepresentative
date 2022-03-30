@@ -107,6 +107,19 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                                 "role": "Local Councillor",
                             }
                         ],
+                        str(self.senedd_election.election_date.isoformat()): [
+                            {
+                                "elections": [
+                                    {
+                                        "html_id": "senedd-c-2021-05-06",
+                                        "id": "senedd.c.2021-05-06",
+                                        "name": "Senedd Cymru elections (Constituencies)",
+                                        "total": 0,
+                                    }
+                                ],
+                                "role": "Senedd Cymru elections",
+                            }
+                        ],
                     },
                 },
                 {
@@ -136,7 +149,6 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             tuple(td.decode() for td in row.find_all("td"))
             for row in response.html.find_all("tr")
         ]
-
         self.assertEqual(
             rows,
             [
@@ -148,6 +160,11 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                 (
                     "<td>Maidstone local election</td>",
                     '<td><a href="/elections/local.maidstone.DIW:E05005004.2016-05-05/">Shepway South Ward</a></td>',
+                    "<td>0</td>",
+                ),
+                (
+                    "<td>Senedd Cymru elections (Constituencies)</td>",
+                    '<td><a href="/elections/senedd.c.aberavon.2021-05-06/">Aberavon</a></td>',
                     "<td>0</td>",
                 ),
                 (
