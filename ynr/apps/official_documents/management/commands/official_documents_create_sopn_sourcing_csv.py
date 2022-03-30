@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 
+from django.conf import settings
 from candidates.models import Ballot
 from utils.dict_io import BufferDictWriter
 
@@ -29,6 +30,12 @@ class Command(BaseCommand):
             help="Also include elections marked as not current",
         )
 
+        parser.add_argument(
+            "--nations",
+            action="store",
+            help="Limit ballots to given nations. List of [E,N,S,W]",
+        )
+
     def handle(self, *args, **options):
 
         out_csv = BufferDictWriter(self.fieldnames)
@@ -44,6 +51,16 @@ class Command(BaseCommand):
 
         if not options["non_current"]:
             qs = qs.filter(election__current=True)
+
+        if options["nations"]:
+            nations = set(
+                [n.strip().upper() for n in options["nations"].split(",")]
+            )
+            if not nations.issubset(set(settings.NUTS_TO_NATION.keys())):
+                raise ValueError(
+                    f"Nations must be in {set(settings.NUTS_TO_NATION.keys())} ({nations} provided)"
+                )
+            qs = qs.by_nation(*nations)
 
         for ballot in qs:
             row = {

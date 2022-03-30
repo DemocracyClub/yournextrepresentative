@@ -11,6 +11,8 @@ from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.functional import cached_property
 from django.utils.http import urlencode
+
+from django.conf import settings
 from moderation_queue.models import QueuedImage
 from utils.mixins import EEModifiedMixin
 
@@ -129,6 +131,19 @@ class BallotQueryset(models.QuerySet):
         Filter by NUTS1 code stored in the objects tags.
         """
         return self.filter(tags__NUTS1__key=code)
+
+    def by_nation(self, *nation_codes):
+        """
+        Filter by nation
+        """
+        nuts_codes = []
+        for nation_code in nation_codes:
+            assert (
+                nation_code in settings.NUTS_TO_NATION.keys()
+            ), f"Unknown nation {nation_code}"
+            nuts_codes += settings.NUTS_TO_NATION[nation_code]
+
+        return self.filter(tags__NUTS1__key__in=nuts_codes)
 
     def for_postcode(self, postcode):
         kwargs = {"ids_only": True, "current_only": False}
