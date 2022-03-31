@@ -29,9 +29,7 @@ class OfficialDocument(TimeStampedModel):
     uploaded_file = models.FileField(
         upload_to=document_file_name,
         max_length=800,
-        validators=[
-            FileExtensionValidator(allowed_extensions=["pdf", "docx", "html"])
-        ],
+        validators=[FileExtensionValidator(allowed_extensions=["pdf", "docx"])],
     )
     ballot = models.ForeignKey(
         "candidates.Ballot", null=False, on_delete=models.CASCADE

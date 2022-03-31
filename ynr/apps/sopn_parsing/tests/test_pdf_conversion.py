@@ -49,8 +49,8 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             ),
             source_url="example.com",
         )
-        new_file = convert_sopn_to_pdf(doc.uploaded_file)
-        self.assertTrue(new_file.name.endswith(".pdf"))
+        with self.assertRaises(PandocConversionError):
+            convert_sopn_to_pdf(doc.uploaded_file)
 
     def test_convert_other_file_to_SOPN(self):
         # when file types are not accepted, raise an error

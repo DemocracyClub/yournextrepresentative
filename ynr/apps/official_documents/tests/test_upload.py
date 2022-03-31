@@ -196,9 +196,12 @@ class TestModels(TestUserMixin, WebTest):
         with open(self.example_html_filename, "rb") as f:
             form["uploaded_file"] = Upload("pilot.html", f.read())
         response = form.submit()
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(OfficialDocument.objects.count(), 1)
-        self.assertEqual(response.location, self.ballot.get_sopn_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OfficialDocument.objects.count(), 0)
+        self.assertInHTML(
+            "File extension “html” is not allowed. Allowed extensions are: pdf, docx.",
+            response.text,
+        )
 
     @skipIf(
         should_skip_conversion_tests(), "Required conversion libs not installed"
@@ -227,6 +230,6 @@ class TestModels(TestUserMixin, WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(OfficialDocument.objects.count(), 0)
         self.assertInHTML(
-            "File extension “jpg” is not allowed. Allowed extensions are: pdf, docx, html.",
+            "File extension “jpg” is not allowed. Allowed extensions are: pdf, docx.",
             response.text,
         )

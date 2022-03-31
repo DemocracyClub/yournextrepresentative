@@ -17,9 +17,7 @@ class UploadDocumentForm(forms.ModelForm):
         widgets = {"ballot": forms.HiddenInput()}
 
     uploaded_file = forms.FileField(
-        validators=[
-            FileExtensionValidator(allowed_extensions=["pdf", "docx", "html"])
-        ]
+        validators=[FileExtensionValidator(allowed_extensions=["pdf", "docx"])]
     )
 
     document_type = forms.CharField(widget=forms.HiddenInput())

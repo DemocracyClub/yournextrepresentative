@@ -4,7 +4,7 @@ import pypandoc
 from django.core.files.base import ContentFile
 from raven.contrib.django.raven_compat.models import client
 
-ACCEPTED_FILE_TYPES = ["docx", "html", "pdf"]
+ACCEPTED_FILE_TYPES = ["docx", "pdf"]
 
 
 class PandocConversionError(Exception):
