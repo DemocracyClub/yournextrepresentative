@@ -1,7 +1,7 @@
 import csv
 
 from bulk_adding.models import RawPeople
-from candidates.models import LoggedAction, raise_if_unsafe_to_delete
+from candidates.models import LoggedAction, raise_if_unsafe_to_delete, Ballot
 from candidates.models.db import EditType, ActionType
 from candidates.views.version_data import get_change_metadata, get_client_ip
 from parties.models import Party, PartyDescription
@@ -126,6 +126,8 @@ class CSVImporter:
 
     @property
     def post_header_name(self):
+        if "ballot_paper_id" in self.header_rows:
+            return "ballot_paper_id"
         POST_LABELS = [
             "Electoral Area Name",
             "Election Area",
@@ -159,6 +161,8 @@ class CSVImporter:
         return name
 
     def match_division_to_ballot(self, row):
+        if "ballot_paper_id" in row:
+            return Ballot.objects.get(ballot_paper_id=row["ballot_paper_id"])
         post_name = self.clean_area_name(row[self.post_header_name])
         for ballot in self.election.ballot_set.all():
             print(self.clean_area_name(ballot.post.label), post_name)
@@ -211,23 +215,27 @@ class CSVImporter:
     def clean_party_name(self, name):
         if name == "Ukip":
             name = "UKIP"
-        return name
+        return name.lower()
 
     def get_party_description(self, row, ballot):
         register = self.get_register_for_ballot(ballot)
         desc = self.clean_party_name(row[self.party_description_header_name])
         try:
             return PartyDescription.objects.get(
-                description=desc, party__register=register
+                description__iexact=desc, party__register=register
             )
         except PartyDescription.DoesNotExist:
             try:
                 return PartyDescription.objects.get(
-                    description__startswith="{} |".format(desc),
+                    description__istartswith="{} |".format(desc),
                     party__register=register,
                 )
             except PartyDescription.DoesNotExist:
-                return None
+                pass
+        try:
+            return Party.objects.get(name__iexact=desc).descriptions.first()
+        except Party.DoesNotExist:
+            return None
 
     def get_party_id(self, row, ballot_model):
         register = self.get_register_for_ballot(ballot_model)
