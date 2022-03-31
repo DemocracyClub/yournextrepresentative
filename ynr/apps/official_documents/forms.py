@@ -28,7 +28,9 @@ class UploadDocumentForm(forms.ModelForm):
         uploaded_file = self.cleaned_data["uploaded_file"]
         # try and convert
         try:
-            uploaded_file = convert_sopn_to_pdf(uploaded_file)
+            self.cleaned_data["uploaded_file"] = convert_sopn_to_pdf(
+                uploaded_file
+            )
         except PandocConversionError:
             raise forms.ValidationError(
                 "File is invalid. Please convert to a PDF and retry"

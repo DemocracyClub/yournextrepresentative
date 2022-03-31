@@ -10,7 +10,7 @@ from official_documents.tests.paths import (
     EXAMPLE_HTML_FILENAME,
 )
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from ynr.apps.sopn_parsing.helpers.convert_pdf import PandocConversionError
+from sopn_parsing.helpers.convert_pdf import PandocConversionError
 from sopn_parsing.helpers.convert_pdf import convert_sopn_to_pdf
 from sopn_parsing.tests import should_skip_conversion_tests
 
@@ -35,9 +35,8 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             ),
             source_url="example.com",
         )
-        convert_sopn_to_pdf(doc.uploaded_file)
-        doc.refresh_from_db()
-        self.assertTrue(doc.uploaded_file.name.endswith(".pdf"))
+        new_file = convert_sopn_to_pdf(doc.uploaded_file)
+        self.assertTrue(new_file.name.endswith(".pdf"))
 
     def test_convert_html_SOPN(self):
         # test converting html to pdf
@@ -50,18 +49,19 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             ),
             source_url="example.com",
         )
-        convert_sopn_to_pdf(doc.uploaded_file)
-        self.assertTrue(doc.uploaded_file.name.endswith(".pdf"))
+        new_file = convert_sopn_to_pdf(doc.uploaded_file)
+        self.assertTrue(new_file.name.endswith(".pdf"))
 
     def test_convert_other_file_to_SOPN(self):
         # when file types are not accepted, raise an error
+        doc = OfficialDocument.objects.create(
+            ballot=self.dulwich_post_ballot,
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            uploaded_file=SimpleUploadedFile(
+                "example-file.jpg",
+                open(self.example_image_filename, "rb").read(),
+            ),
+            source_url="example.com",
+        )
         with self.assertRaises(PandocConversionError):
-            OfficialDocument.objects.create(
-                ballot=self.dulwich_post_ballot,
-                document_type=OfficialDocument.NOMINATION_PAPER,
-                uploaded_file=SimpleUploadedFile(
-                    "example-file.jpg",
-                    open(self.example_image_filename, "rb").read(),
-                ),
-                source_url="example.com",
-            )
+            convert_sopn_to_pdf(doc.uploaded_file)
