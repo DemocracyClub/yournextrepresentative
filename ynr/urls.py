@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.urls import include, re_path
+from django.urls import include, re_path, path
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -37,6 +37,11 @@ urlpatterns = [
     re_path(r"^results/", include("results.urls")),
     re_path(r"^duplicates/", include("duplicates.urls")),
     re_path(r"^wombles/", include("wombles.urls")),
+    path(
+        "volunteer/",
+        TemplateView.as_view(template_name="volunteer.html"),
+        name="volunteer-view",
+    ),
     re_path(r"", include("ynr_refactoring.urls")),
     re_path(
         r"^robots\.txt$",
