@@ -4,7 +4,7 @@ import pypandoc
 from django.core.files.base import ContentFile
 from raven.contrib.django.raven_compat.models import client
 
-ACCEPTED_FILE_TYPES = ["docx", "html", "pdf"]
+ACCEPTED_FILE_TYPES = ["docx", "pdf"]
 
 
 class PandocConversionError(Exception):
@@ -13,11 +13,12 @@ class PandocConversionError(Exception):
 
 def convert_sopn_to_pdf(uploaded_file):
     """
-    Convert a SOPN to a PDF.
+    Takes a File-like object, attempts to convert it to a PDF, and returns the
+    new file that can then be used to store against an OfficialDocument
     """
     filetype = uploaded_file.name.split(".")[-1]
     if filetype not in ACCEPTED_FILE_TYPES:
-        raise ValueError(f"Cannot convert {filetype} files")
+        raise PandocConversionError(f"Cannot convert {filetype} files")
 
     if filetype == "pdf":
         return uploaded_file
@@ -41,6 +42,4 @@ def convert_sopn_to_pdf(uploaded_file):
 
         # return with converted file object and updated name
         pdf_file_name = uploaded_file.name.replace(f".{filetype}", ".pdf")
-        uploaded_file.file = ContentFile(content=temp_file.file.read())
-        uploaded_file.name = pdf_file_name
-        return uploaded_file
+        return ContentFile(content=temp_file.file.read(), name=pdf_file_name)

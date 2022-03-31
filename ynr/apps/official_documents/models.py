@@ -1,10 +1,9 @@
 import os
 
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.urls import reverse
 from django_extensions.db.models import TimeStampedModel
-
-from ynr.apps.sopn_parsing.helpers.convert_pdf import convert_sopn_to_pdf
 
 DOCUMENT_UPLOADERS_GROUP_NAME = "Document Uploaders"
 
@@ -28,7 +27,9 @@ class OfficialDocument(TimeStampedModel):
         max_length=100,
     )
     uploaded_file = models.FileField(
-        upload_to=document_file_name, max_length=800
+        upload_to=document_file_name,
+        max_length=800,
+        validators=[FileExtensionValidator(allowed_extensions=["pdf", "docx"])],
     )
     ballot = models.ForeignKey(
         "candidates.Ballot", null=False, on_delete=models.CASCADE
@@ -41,11 +42,6 @@ class OfficialDocument(TimeStampedModel):
         max_length=50,
         default="",
     )
-
-    def save(self, *args, **kwargs):
-        if self.uploaded_file:
-            self.uploaded_file = convert_sopn_to_pdf(self.uploaded_file)
-        super().save(*args, **kwargs)
 
     class Meta:
         get_latest_by = "modified"
