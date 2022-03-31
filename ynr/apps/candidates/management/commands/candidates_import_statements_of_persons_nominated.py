@@ -13,7 +13,7 @@ from django.core.management.base import BaseCommand
 
 from candidates.models import Ballot
 from official_documents.models import OfficialDocument
-from sopn_parsing.helpers.convert_pdf import PandocConversionError
+from ynr.apps.sopn_parsing.helpers.convert_pdf import PandocConversionError
 from sopn_parsing.tasks import extract_and_parse_tables_for_ballot
 
 allowed_mime_types = {

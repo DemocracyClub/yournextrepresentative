@@ -10,6 +10,7 @@ from official_documents.tests.paths import (
     EXAMPLE_HTML_FILENAME,
 )
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from ynr.apps.sopn_parsing.helpers.convert_pdf import PandocConversionError
 from sopn_parsing.helpers.convert_pdf import convert_sopn_to_pdf
 from sopn_parsing.tests import should_skip_conversion_tests
 
@@ -54,7 +55,7 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
 
     def test_convert_other_file_to_SOPN(self):
         # when file types are not accepted, raise an error
-        with self.assertRaises(ValueError):
+        with self.assertRaises(PandocConversionError):
             OfficialDocument.objects.create(
                 ballot=self.dulwich_post_ballot,
                 document_type=OfficialDocument.NOMINATION_PAPER,

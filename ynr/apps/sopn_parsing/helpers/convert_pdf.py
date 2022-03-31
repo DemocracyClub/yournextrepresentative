@@ -17,7 +17,7 @@ def convert_sopn_to_pdf(uploaded_file):
     """
     filetype = uploaded_file.name.split(".")[-1]
     if filetype not in ACCEPTED_FILE_TYPES:
-        raise ValueError(f"Cannot convert {filetype} files")
+        raise PandocConversionError(f"Cannot convert {filetype} files")
 
     if filetype == "pdf":
         return uploaded_file
