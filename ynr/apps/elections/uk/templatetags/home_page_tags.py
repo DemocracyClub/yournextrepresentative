@@ -120,9 +120,7 @@ def sopn_import_progress(context):
 
         value = settings.SOPN_TRACKER_INFO["election_date"]
 
-        base_ballot_qs = Ballot.objects.filter(
-            election__election_date=value
-        ).filter(cancelled=False)
+        base_ballot_qs = Ballot.objects.filter(election__election_date=value)
         context["sopn_progress"] = sopn_progress_by_value(
             base_ballot_qs, lookup_value="election__election_date"
         )[value]
