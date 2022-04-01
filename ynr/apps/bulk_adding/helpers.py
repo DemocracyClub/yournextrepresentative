@@ -220,22 +220,22 @@ class CSVImporter:
     def get_party_description(self, row, ballot):
         register = self.get_register_for_ballot(ballot)
         desc = self.clean_party_name(row[self.party_description_header_name])
-        try:
-            return PartyDescription.objects.get(
-                description__iexact=desc, party__register=register
-            )
-        except PartyDescription.DoesNotExist:
-            try:
-                return PartyDescription.objects.get(
-                    description__istartswith="{} |".format(desc),
-                    party__register=register,
-                )
-            except PartyDescription.DoesNotExist:
-                pass
-        try:
-            return Party.objects.get(name__iexact=desc).descriptions.first()
-        except Party.DoesNotExist:
-            return None
+        qs = PartyDescription.objects.filter(
+            description__iexact=desc, party__register=register
+        )
+        if qs.exists():
+            return qs.first()
+
+        qs = PartyDescription.objects.filter(
+            description__istartswith="{}".format(desc), party__register=register
+        )
+        if qs.exists():
+            return qs.first()
+        return (
+            Party.objects.current()
+            .get(name__iexact=desc, register=register)
+            .descriptions.first()
+        )
 
     def get_party_id(self, row, ballot_model):
         register = self.get_register_for_ballot(ballot_model)
