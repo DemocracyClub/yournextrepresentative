@@ -67,10 +67,12 @@ def sopn_progress_by_value(base_qs, lookup_value, label_field=None):
 
     ballot_qs = base_qs.values(*values).distinct()
     ballot_qs = ballot_qs.annotate(
-        has_sopn_count=Count("officialdocument"),
+        has_sopn_count=Count(
+            "pk", filter=Q(officialdocument__isnull=False), distinct=True
+        ),
         locked_count=Sum(Cast("candidates_locked", IntegerField())),
         locksuggested_count=Count("suggestedpostlock"),
-        count=Count("ballot_paper_id"),
+        count=Count("ballot_paper_id", distinct=True),
     ).order_by(lookup_value)
     values_dict = {}
 
@@ -118,9 +120,7 @@ def sopn_import_progress(context):
 
         value = settings.SOPN_TRACKER_INFO["election_date"]
 
-        base_ballot_qs = Ballot.objects.filter(
-            election__election_date=value
-        ).filter(cancelled=False)
+        base_ballot_qs = Ballot.objects.filter(election__election_date=value)
         context["sopn_progress"] = sopn_progress_by_value(
             base_ballot_qs, lookup_value="election__election_date"
         )[value]
