@@ -94,9 +94,12 @@
               </a>
             </td>
             <td>
-              {{ candidate.party.name }}
-            </td> 
-            
+              {{ candidate.party_name }}
+              {% if candidate.party_description_text %}
+              <br>({{ candidate.party_description_text }})
+              {% endif %}
+            </td>
+
             {% if ballot.is_welsh_run %}
               <td>
                 <ul class="previous-party">
@@ -104,8 +107,8 @@
                   <li>{{ party.name }}</li>
                 {% endfor %}
                 </ul>
-              </td>  
-            {% endif %}  
+              </td>
+            {% endif %}
 
             {% if ballot.has_results %}
             <td>
@@ -138,7 +141,7 @@
               {% endif %}
               <a href="{% url 'person-update' person_id=candidate.person.pk %}" class="button tiny secondary">
                 Edit
-              </a> 
+              </a>
             </td>
             {% endif %}
           </tr>
