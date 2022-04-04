@@ -51,7 +51,9 @@ DEFAULT_EMBLEMS = {
     # Newcastle Independents
     "PP905": 7315,
     # The Democratic Network
-    "PP12759": 7834,
+    "PP12759": 7833,
+    # Christian Peoples Alliance
+    "PP79": 7395,
 }
 
 JOINT_DESCRIPTION_REGEX = r"^(.*?) \(joint descriptions? with\s?(.*)\)"
