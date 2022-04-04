@@ -212,13 +212,9 @@ class CandidatesPerParty(BaseReport):
     def report(self):
         report = ["Party Name\tParty Register\tCandidates\tPercent of seats"]
 
-        ballots = Ballot.objects.filter(election__election_date=self.date)
-        if self.nation:
-            ballots = ballots.filter(
-                tags__NUTS1__key__in=settings.NUTS_TO_NATION[self.nation]
-            )
-
-        total_seats = ballots.aggregate(seats=Sum("winner_count"))["seats"]
+        total_seats = self.ballot_qs.aggregate(seats=Sum("winner_count"))[
+            "seats"
+        ]
 
         for party in self.get_qs():
             report.append(
@@ -233,6 +229,56 @@ class CandidatesPerParty(BaseReport):
                                 float(
                                     party["membership_count"]
                                     / total_seats
+                                    * 100
+                                ),
+                                2,
+                            ),
+                        ]
+                    ]
+                )
+            )
+        return "\n".join(report)
+
+
+class WardsContestedPerParty(BaseReport):
+    def get_qs(self):
+        # get candidates distinct by party and ballot
+        qs = self.membership_qs.distinct("party_id", "ballot_id").order_by()
+        # use the pk's to create a new queryset to work with
+        # we need the new qs so we can use annotate later
+        qs = qs.values_list("pk")
+        qs = Membership.objects.filter(pk__in=qs)
+        # count the number of candidates per party now we have removed
+        # candidacies where multiple candidates are standing per party
+        qs = qs.values("party__name", "party__register")
+        qs = qs.annotate(membership_count=Count("party_id"))
+        qs = qs.order_by("-membership_count")
+        return qs
+
+    @property
+    def name(self):
+        total_wards = self.ballot_qs.count()
+        return f"Wards contested per party ({total_wards})"
+
+    def report(self):
+        report = [
+            "Party Name\tParty Register\tCandidates standing\tPercent of wards"
+        ]
+
+        total_ballots = self.ballot_qs.count()
+        for party in self.get_qs():
+            report.append(
+                "\t".join(
+                    [
+                        str(v)
+                        for v in [
+                            party["party__name"],
+                            party["party__register"],
+                            party["membership_count"],
+                            round(
+                                float(
+                                    party["membership_count"]
+                                    / total_ballots
                                     * 100
                                 ),
                                 2,
