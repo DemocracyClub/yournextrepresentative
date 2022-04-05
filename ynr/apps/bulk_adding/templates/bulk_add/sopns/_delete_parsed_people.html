@@ -1,0 +1,11 @@
+{% if ballot.rawpeople and ballot.rawpeople.is_parsed_from_pdf %}
+  <a id="delete-parsed-people" class="button js-show-delete-parsed-people-confirm">🤖 Delete all people parsed by our bot 🤖</a>
+  <div class="delete-parsed-people-confirm">
+    <form id="delete-parsed-people" method="post" action="{% url 'delete_raw_people' %}">
+      {% csrf_token %}
+      <input type="hidden" name="ballot_paper_id" value="{{ ballot.ballot_paper_id }}" />
+      <input type="submit" class="button primary small" value="Confirm delete" />
+      <a class="button secondary small hide-delete-parsed-people">Cancel</a>
+    </form>
+  </div>
+{% endif %}

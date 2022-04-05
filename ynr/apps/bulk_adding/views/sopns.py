@@ -6,7 +6,7 @@ from django.db.models.query import Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.views.generic import RedirectView, TemplateView
+from django.views.generic import RedirectView, TemplateView, FormView
 
 from bulk_adding import forms, helpers
 from bulk_adding.models import RawPeople
@@ -118,6 +118,9 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
 
         if hasattr(context["ballot"], "rawpeople"):
             form_kwargs.update(context["ballot"].rawpeople.as_form_kwargs())
+            context["has_parsed_people"] = (
+                context["ballot"].rawpeople.source_type == "parsed_pdf"
+            )
 
         if (
             "official_document" in context
@@ -251,23 +254,22 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
             ballot = context["ballot"]
             ballot.delete_outdated_suggested_locks()
 
-            if self.request.POST.get("suggest_locking") == "on":
-                SuggestedPostLock.objects.create(
-                    user=self.request.user, ballot=ballot
-                )
+            SuggestedPostLock.objects.create(
+                user=self.request.user, ballot=ballot
+            )
 
-                LoggedAction.objects.create(
-                    user=self.request.user,
-                    action_type=ActionType.SUGGEST_BALLOT_LOCK,
-                    ip_address=get_client_ip(self.request),
-                    ballot=ballot,
-                    source="Suggested after bulk adding",
-                    edit_type=EditType.BULK_ADD.name,
-                )
+            LoggedAction.objects.create(
+                user=self.request.user,
+                action_type=ActionType.SUGGEST_BALLOT_LOCK,
+                ip_address=get_client_ip(self.request),
+                ballot=ballot,
+                source="Suggested after bulk adding",
+                edit_type=EditType.BULK_ADD.name,
+            )
 
-                if hasattr(ballot, "rawpeople"):
-                    # Delete the raw import, as it's no longer useful
-                    ballot.rawpeople.delete()
+            if hasattr(ballot, "rawpeople"):
+                # Delete the raw import, as it's no longer useful
+                ballot.rawpeople.delete()
 
         messages.add_message(
             self.request,
@@ -291,3 +293,29 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
 
     def form_invalid(self, context):
         return self.render_to_response(context)
+
+
+class DeleteRawPeople(LoginRequiredMixin, FormView):
+    """
+    View to delete a RawPeople object for a ballot
+    """
+
+    form_class = forms.DeleteRawPeopleForm
+
+    def form_valid(self, form):
+        ballot = get_object_or_404(
+            Ballot, ballot_paper_id=form.cleaned_data["ballot_paper_id"]
+        )
+        try:
+            ballot.rawpeople.delete()
+            LoggedAction.objects.create(
+                user=self.request.user,
+                ip_address=get_client_ip(self.request),
+                action_type=ActionType.DELETED_PARSED_RAW_PEOPLE,
+                ballot=ballot,
+                edit_type=EditType.USER.name,
+            )
+        except RawPeople.DoesNotExist:
+            pass
+
+        return HttpResponseRedirect(ballot.get_bulk_add_url())

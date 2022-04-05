@@ -389,3 +389,8 @@ class SelectPartyForm(forms.Form):
 class AddByPartyForm(forms.Form):
 
     source = forms.CharField(required=True)
+
+
+class DeleteRawPeopleForm(forms.Form):
+
+    ballot_paper_id = forms.CharField(required=True, widget=forms.HiddenInput)

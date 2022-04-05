@@ -40,7 +40,7 @@
   </ol>
   </details>
 
-  {% if ballot.rawpeople and ballot.rawpeople.source_type == "parsed_pdf"%}
+  {% if ballot.rawpeople and ballot.rawpeople.is_parsed_from_pdf %}
     <div class="panel callout">
       <details open>
         <summary>
@@ -49,7 +49,8 @@
         <p>
           This is a new feature that might not work perfectly. The form fields below
           should be popluated with the candidates on the nomination paper, but
-          they still need checking against the document.
+          they still need checking against the document. If it has been parsed incorrectly
+          you can <a href="#delete-parsed-people">clear the form using the button at the bottom of the page</a>.
         </p>
         <p>
           To help us resolve bugs quicker, please report SOPN related errors in github:
@@ -68,10 +69,11 @@
     </div>
   {% endif %}
 
-{% include "bulk_add/sopns/_known-people.html" %}
+  {% include "bulk_add/sopns/_known-people.html" %}
 
   <form method=POST id="bulk_add_form">
     <button type=submit>Review</button>
+    <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button">Nomination paper (SoPN)</a>
   {% csrf_token %}
   {{ formset.management_form }}
   {% if formset.non_form_errors %}
@@ -137,6 +139,8 @@
     </table>
   <button type=submit>Review</button>
 </form>
+
+{% include "bulk_add/sopns/_delete_parsed_people.html" %}
 
 {% else %}
 <p>
