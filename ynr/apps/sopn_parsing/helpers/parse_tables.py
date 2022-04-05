@@ -33,7 +33,12 @@ WELSH_NAME_FIELDS = ["enwr ymgeisydd"]
 NAME_FIELDS = (
     FIRST_NAME_FIELDS
     + LAST_NAME_FIELDS
-    + ["name of candidate", "names of candidate", "candidate name"]
+    + [
+        "name of candidate",
+        "names of candidate",
+        "candidate name",
+        "surname other names",
+    ]
     + WELSH_NAME_FIELDS
 )
 
