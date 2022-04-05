@@ -1,5 +1,5 @@
 {% if ballot.rawpeople and ballot.rawpeople.is_parsed_from_pdf %}
-  <a class="button js-show-delete-parsed-people-confirm">🤖 Delete all people parsed by our bot 🤖</a>
+  <a id="delete-parsed-people" class="button js-show-delete-parsed-people-confirm">🤖 Delete all people parsed by our bot 🤖</a>
   <div class="delete-parsed-people-confirm">
     <form id="delete-parsed-people" method="post" action="{% url 'delete_raw_people' %}">
       {% csrf_token %}
