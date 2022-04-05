@@ -22,12 +22,14 @@ FIRST_NAME_FIELDS = [
     "candidate forename",
     "candidates other names",
     "other names in full",
+    "other names / enwau eraill",
 ]
 LAST_NAME_FIELDS = [
     "surname",
     "candidate surname",
     "candidates surname",
     "last name",
+    "surname / cyfenw",
 ]
 WELSH_NAME_FIELDS = ["enwr ymgeisydd"]
 NAME_FIELDS = (
