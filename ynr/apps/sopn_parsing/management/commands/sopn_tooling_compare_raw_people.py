@@ -97,7 +97,7 @@ class Command(BaseSOPNParsingCommand):
         call_command("sopn_tooling_write_baseline")
 
     def compare_relevant_pages(self, ballot, ballot_data):
-        old_relevant_pages = ballot_data["relevant_pages"]
+        old_relevant_pages = ballot_data.get("relevant_pages", "")
         new_relevant_pages = ballot.sopn.relevant_pages
 
         if old_relevant_pages != new_relevant_pages:
