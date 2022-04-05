@@ -40,6 +40,7 @@ NAME_FIELDS = (
         "names of candidate",
         "candidate name",
         "surname other names",
+        "surname other names in full",
     ]
     + WELSH_NAME_FIELDS
 )
