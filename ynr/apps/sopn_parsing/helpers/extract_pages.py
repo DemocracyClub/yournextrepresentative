@@ -1,4 +1,4 @@
-from pdfminer.pdfparser import PDFSyntaxError
+from pdfminer.pdftypes import PDFException
 from sopn_parsing.helpers.pdf_helpers import SOPNDocument
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
@@ -23,10 +23,10 @@ def extract_pages_for_ballot(ballot):
         raise NoTextInDocumentError(
             f"Failed to extract pages for {ballot.sopn.uploaded_file.path} as a NoTextInDocumentError was raised"
         )
-    except PDFSyntaxError:
+    except PDFException:
         print(
             f"{ballot.ballot_paper_id} failed to parse as a PDFSyntaxError was raised"
         )
-        raise PDFSyntaxError(
+        raise PDFException(
             f"Failed to extract pages for {ballot.sopn.uploaded_file.path} as a PDFSyntaxError was raised"
         )
