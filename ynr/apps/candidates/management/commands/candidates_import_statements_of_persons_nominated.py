@@ -62,6 +62,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--delete-existing", action="store_true")
+        parser.add_argument("--reparse", action="store_true")
         parser.add_argument("url")
 
     def handle(self, *args, **options):  # noqa
@@ -88,6 +89,20 @@ class Command(BaseCommand):
                 if options["delete_existing"]:
                     print("Removing existing documents")
                     existing_documents.delete()
+                elif options["reparse"]:
+                    if ballot.candidates_locked:
+                        continue
+                    if hasattr(ballot, "raw_people"):
+                        continue
+                    try:
+                        print(f"REPARSING {ballot.ballot_paper_id}")
+                        extract_and_parse_tables_for_ballot(
+                            ballot.ballot_paper_id
+                        )
+                        continue
+                    except Exception as e:
+                        print(e)
+                        continue
                 else:
                     continue
             try:
