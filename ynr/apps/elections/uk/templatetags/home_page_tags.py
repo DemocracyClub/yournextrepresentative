@@ -1,16 +1,6 @@
 from django import template
 from django.conf import settings
-from django.db.models import (
-    Sum,
-    IntegerField,
-    Count,
-    Func,
-    F,
-    Value,
-    TextField,
-    Q,
-)
-from django.db.models.functions import Cast
+from django.db.models import Sum, Count, Func, F, Value, TextField, Q
 
 from candidates.models import Ballot
 from elections.filters import filter_shortcuts
@@ -70,8 +60,10 @@ def sopn_progress_by_value(base_qs, lookup_value, label_field=None):
         has_sopn_count=Count(
             "pk", filter=Q(officialdocument__isnull=False), distinct=True
         ),
-        locked_count=Sum(Cast("candidates_locked", IntegerField())),
-        locksuggested_count=Count("suggestedpostlock"),
+        locked_count=Count(
+            "pk", filter=Q(candidates_locked=True), distinct=True
+        ),
+        locksuggested_count=Count("suggestedpostlock", distinct=True),
         count=Count("ballot_paper_id", distinct=True),
     ).order_by(lookup_value)
     values_dict = {}
