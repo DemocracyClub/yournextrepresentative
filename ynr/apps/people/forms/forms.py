@@ -211,7 +211,22 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
         self.instance.party_description_text = (
             party_data["description_text"] or ""
         )
-        return super().save(commit)
+        self.instance = super().save(commit)
+        if "previous_party_affiliations" in self.cleaned_data:
+            parties = self.cleaned_data.get("previous_party_affiliations", None)
+            if parties:
+                self.instance.previous_party_affiliations.set(parties)
+            else:
+                self.instance.previous_party_affiliations.clear()
+
+        return self.instance
+
+    def clean_previous_party_affiliations(self):
+        parties = self.cleaned_data.get("previous_party_affiliations", None)
+        if parties:
+            parties = [Party.objects.get(ec_id=ec_id) for ec_id in parties]
+
+        return parties
 
 
 class BasePersonForm(forms.ModelForm):
