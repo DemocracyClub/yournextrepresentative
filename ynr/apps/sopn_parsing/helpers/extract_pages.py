@@ -16,7 +16,9 @@ def extract_pages_for_ballot(ballot):
     """
     try:
         sopn = SOPNDocument(
-            file=ballot.sopn.uploaded_file, source_url=ballot.sopn.source_url
+            file=ballot.sopn.uploaded_file,
+            source_url=ballot.sopn.source_url,
+            election_date=ballot.election.election_date,
         )
         return sopn.match_all_pages()
     except (NoTextInDocumentError):

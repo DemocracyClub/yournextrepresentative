@@ -22,12 +22,13 @@ CONTINUATION_THRESHOLD = 0.5
 
 
 class SOPNDocument:
-    def __init__(self, file, source_url, strict=False):
+    def __init__(self, file, source_url, election_date, strict=False):
         """
         Represents a collection of pages from a single PDF file.
         """
         self.file = file
         self.source_url = source_url
+        self.election_date = election_date
         self.strict = strict
         self.unmatched_documents = list(
             self.all_official_documents_with_source()
@@ -94,7 +95,10 @@ class SOPNDocument:
         ward name "Foo"
         """
         return (
-            OfficialDocument.objects.filter(source_url=self.source_url)
+            OfficialDocument.objects.filter(
+                source_url=self.source_url,
+                ballot__election__election_date=self.election_date,
+            )
             .select_related("ballot", "ballot__post")
             .order_by(-Length("ballot__post__label"), "ballot__post__label")
         )

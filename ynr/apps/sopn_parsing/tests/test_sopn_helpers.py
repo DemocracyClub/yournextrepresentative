@@ -29,7 +29,9 @@ class TestSOPNHelpers(TestCase):
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
         )
         doc = SOPNDocument(
-            file=open(example_doc_path, "rb"), source_url="http://example.com"
+            file=open(example_doc_path, "rb"),
+            source_url="http://example.com",
+            election_date="2019-02-28",
         )
         doc.heading = {"reason", "2019", "a", "election", "the", "labour"}
         self.assertEqual(len(doc.pages), 1)
@@ -42,7 +44,9 @@ class TestSOPNHelpers(TestCase):
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
         )
         doc = SOPNDocument(
-            open(example_doc_path, "rb"), source_url="http://example.com"
+            open(example_doc_path, "rb"),
+            source_url="http://example.com",
+            election_date="2022-02-28",
         )
         self.assertSetEqual(
             doc.document_heading_set,
@@ -116,7 +120,9 @@ class TestSOPNHelpers(TestCase):
         self.assertEqual(official_document.relevant_pages, "")
 
         document_obj = SOPNDocument(
-            file=sopn_file, source_url="http://example.com/strensall"
+            file=sopn_file,
+            source_url="http://example.com/strensall",
+            election_date=ballot.election.election_date,
         )
         self.assertEqual(len(document_obj.pages), 1)
 
@@ -135,7 +141,9 @@ class TestSOPNHelpers(TestCase):
         example_doc_path = abspath(
             join(dirname(__file__), "data/NI-Assembly-Election-2016.pdf")
         )
-        election = ElectionFactory(slug="nia.2016-05-05")
+        election = ElectionFactory(
+            slug="nia.2016-05-05", election_date="2016-05-05"
+        )
         organization = OrganizationFactory(slug="nia:nia")
         mid_ulster = BallotPaperFactory(
             ballot_paper_id="nia.mid-ulster.2016-05-05",
@@ -165,7 +173,9 @@ class TestSOPNHelpers(TestCase):
             self.assertEqual(official_document.relevant_pages, "")
 
         document_obj = SOPNDocument(
-            file=sopn_file, source_url="http://example.com"
+            file=sopn_file,
+            source_url="http://example.com",
+            election_date=election.election_date,
         )
         self.assertEqual(len(document_obj.pages), 9)
         document_obj.match_all_pages()
@@ -198,7 +208,9 @@ class TestSOPNHelpers(TestCase):
         self.assertEqual(official_document.relevant_pages, "")
 
         document_obj = SOPNDocument(
-            file=sopn_file, source_url="http://example.com/strensall"
+            file=sopn_file,
+            source_url="http://example.com/strensall",
+            election_date=strensall.election.election_date,
         )
         self.assertEqual(len(document_obj.pages), 2)
 
