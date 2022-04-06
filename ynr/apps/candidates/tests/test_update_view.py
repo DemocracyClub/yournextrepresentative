@@ -3,6 +3,7 @@ from urllib.parse import urlsplit
 
 from django_webtest import WebTest
 from webtest.forms import Text
+from official_documents.models import OfficialDocument
 
 from people.models import Person
 from people.tests.factories import PersonFactory
@@ -208,3 +209,82 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         memberships_afterwards = membership_id_set(person)
         membership_ids = memberships_afterwards - memberships_before
         self.assertEqual(len(membership_ids), 0)
+
+    def test_update_person_add_previous_party_affiliations(self):
+        """
+        Test that when a person has a candidacy for a welsh run
+        ballot previous party affiliations can be added
+        """
+        person = Person.objects.get(pk=2009)
+        OfficialDocument.objects.create(
+            ballot=self.senedd_ballot,
+            document_type=OfficialDocument.NOMINATION_PAPER,
+        )
+        membership = MembershipFactory(
+            person=person, party=self.labour_party, ballot=self.senedd_ballot
+        )
+        self.assertEqual(membership.previous_party_affiliations.count(), 0)
+        response = self.app.get("/person/2009/update", user=self.user)
+        response = self.app.get("/person/2009/update", user=self.user)
+        form = response.forms["person-details"]
+        form["memberships-1-previous_party_affiliations"] = [
+            self.ld_party.ec_id
+        ]
+        form["source"] = "Test adding previous party affiliation"
+        response = form.submit()
+
+        self.assertEqual(response.status_code, 302)
+        split_location = urlsplit(response.location)
+        self.assertEqual("/person/2009", split_location.path)
+        self.assertEqual(membership.previous_party_affiliations.count(), 1)
+
+    def test_update_person_remove_previous_party_affiliations(self):
+        """
+        Test that when a person has a candidacy for a welsh run
+        ballot previous party affiliations can be removed
+        """
+        person = Person.objects.get(pk=2009)
+        OfficialDocument.objects.create(
+            ballot=self.senedd_ballot,
+            document_type=OfficialDocument.NOMINATION_PAPER,
+        )
+        membership = MembershipFactory(
+            person=person, party=self.labour_party, ballot=self.senedd_ballot
+        )
+        membership.previous_party_affiliations.add(self.ld_party)
+        self.assertEqual(membership.previous_party_affiliations.count(), 1)
+        response = self.app.get("/person/2009/update", user=self.user)
+        response = self.app.get("/person/2009/update", user=self.user)
+        form = response.forms["person-details"]
+        form["memberships-1-previous_party_affiliations"] = []
+        form["source"] = "Test removing previous party affiliation"
+        response = form.submit()
+
+        self.assertEqual(response.status_code, 302)
+        split_location = urlsplit(response.location)
+        self.assertEqual("/person/2009", split_location.path)
+        self.assertEqual(membership.previous_party_affiliations.count(), 0)
+
+    def test_cannot_update_previous_party_affiliations_when_ballot_locked(self):
+        """
+        Test that when a person has a candidacy for a welsh run but
+        the ballot is locked, previous party affiliations cannot be
+        updated
+        """
+        person = Person.objects.get(pk=2009)
+        OfficialDocument.objects.create(
+            ballot=self.senedd_ballot,
+            document_type=OfficialDocument.NOMINATION_PAPER,
+        )
+        membership = MembershipFactory(
+            person=person, party=self.labour_party, ballot=self.senedd_ballot
+        )
+        self.senedd_ballot.candidates_locked = True
+        self.senedd_ballot.save()
+        self.assertEqual(membership.previous_party_affiliations.count(), 0)
+        response = self.app.get("/person/2009/update", user=self.user)
+        response = self.app.get("/person/2009/update", user=self.user)
+        form = response.forms["person-details"]
+        with self.assertRaises(AssertionError):
+            form["memberships-1-previous_party_affiliations"] = self.ld_party
+            self.assertEqual(membership.previous_party_affiliations.count(), 0)
