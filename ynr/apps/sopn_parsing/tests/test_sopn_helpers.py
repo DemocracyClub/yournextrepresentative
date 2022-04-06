@@ -24,6 +24,17 @@ class TestSOPNHelpers(TestCase):
         text = "\n C andidates (Namés)"
         self.assertEqual(clean_text(text), "candidates")
 
+    def test_clean_text_removes_digits(self):
+        for text in [
+            "enwr ymgeisydd candidate name5",
+            "enwr ymgeisydd candidate name 5",
+            "enwr ymgeisydd candidate name\n5",
+        ]:
+            with self.subTest(msg=text):
+                self.assertEqual(
+                    clean_text(text), "enwr ymgeisydd candidate name"
+                )
+
     def test_empty_documents(self):
         example_doc_path = abspath(
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
