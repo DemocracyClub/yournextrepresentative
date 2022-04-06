@@ -31,7 +31,7 @@ LAST_NAME_FIELDS = [
     "last name",
     "surname / cyfenw",
 ]
-WELSH_NAME_FIELDS = ["enwr ymgeisydd"]
+WELSH_NAME_FIELDS = ["enwr ymgeisydd", "enwr ymgeisydd candidate name"]
 NAME_FIELDS = (
     FIRST_NAME_FIELDS
     + LAST_NAME_FIELDS
@@ -40,6 +40,7 @@ NAME_FIELDS = (
         "names of candidate",
         "candidate name",
         "surname other names",
+        "surname other names in full",
     ]
     + WELSH_NAME_FIELDS
 )
@@ -47,7 +48,10 @@ NAME_FIELDS = (
 
 INDEPENDENT_VALUES = ["Independent", "", "Annibynnol"]
 
-WELSH_DESCRIPTION_VALUES = ["disgrifiad or ymgeisydd"]
+WELSH_DESCRIPTION_VALUES = [
+    "disgrifiad or ymgeisydd",
+    "disgrifiad or ymgeisydd description of candidate",
+]
 DESCRIPTION_VALUES = [
     "description of candidate",
     "description",
