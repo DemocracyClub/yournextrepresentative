@@ -40,6 +40,7 @@ from moderation_queue.helpers import (
 
 from .forms import (
     PhotoReviewForm,
+    SuggestedPostLockForm,
     UploadPersonPhotoImageForm,
     UploadPersonPhotoURLForm,
 )
@@ -296,7 +297,16 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
     """This handles creating a SuggestedPostLock from a form submission"""
 
     model = SuggestedPostLock
-    fields = ["justification", "ballot"]
+    form_class = SuggestedPostLockForm
+
+    def form_invalid(self, form):
+        messages.add_message(
+            request=self.request,
+            level=messages.ERROR,
+            message="Cannot add a lock suggestion because candidates are already locked",
+            extra_tags="ballot-changed",
+        )
+        return HttpResponseRedirect(form.instance.ballot.get_absolute_url())
 
     def form_valid(self, form):
         user = self.request.user
@@ -314,6 +324,7 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
             self.request,
             messages.SUCCESS,
             message="Thanks for suggesting we lock an area!",
+            extra_tags="ballot-changed",
         )
 
         return super().form_valid(form)
@@ -360,7 +371,8 @@ class SuggestLockReviewListView(
         the user in the request.
         """
         return (
-            Ballot.objects.exclude(
+            Ballot.objects.exclude(candidates_locked=True)
+            .exclude(
                 Q(suggestedpostlock__isnull=True)
                 | Q(suggestedpostlock__user=self.request.user)
             )

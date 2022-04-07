@@ -168,6 +168,12 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         errors = []
         if not hasattr(self, "ballot"):
             return super().clean()
+
+        if self.ballot.candidates_locked:
+            raise ValidationError(
+                "Candidates have already been locked for this ballot"
+            )
+
         for form_data in self.cleaned_data:
 
             if (

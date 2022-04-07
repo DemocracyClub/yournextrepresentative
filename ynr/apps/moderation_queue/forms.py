@@ -252,3 +252,11 @@ class SuggestedPostLockForm(forms.ModelForm):
             "ballot": forms.HiddenInput(),
             "justification": forms.Textarea(attrs={"rows": 1, "columns": 72}),
         }
+
+    def clean(self):
+        ballot = self.cleaned_data["ballot"]
+        if ballot.candidates_locked:
+            raise ValidationError(
+                "Cannot create a lock suggestion for a locked ballot"
+            )
+        return self.cleaned_data
