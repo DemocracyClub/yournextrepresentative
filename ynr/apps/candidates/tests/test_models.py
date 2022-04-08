@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.db.models import Max
 from django.db.models.functions import Greatest
 from mock import patch
+from candidates.models.db import ActionType
 
 from candidates.tests.factories import (
     BallotPaperFactory,
@@ -115,17 +116,84 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
         )
         self.assertEqual(LoggedAction.objects.count(), 2)
 
-    def test_unmark_uncontested_winners(self):
+    def test_unmark_uncontested_winners_without_results(self):
+        """
+        Test that if there were no candidates marked as elected, do nothing
+        """
         parties = self.create_parties(3)
         self.create_memberships(parties)
-        self.assertFalse(self.ballot.uncontested)
+        self.assertFalse(self.ballot.has_results)
         self.ballot.unmark_uncontested_winners(
             ip_address="111.11.1111", user=self.user
         )
-        self.assertTrue(
-            self.ballot.membership_set.filter(elected=False).count(), 2
+        self.assertEqual(
+            self.ballot.membership_set.filter(elected=True).count(), 0
         )
-        self.assertEqual(LoggedAction.objects.count(), 3)
+        self.assertEqual(LoggedAction.objects.count(), 0)
+        self.assertEqual(
+            self.ballot.membership_set.filter(elected=None).count(), 3
+        )
+
+    def test_unmark_uncontested_winners_with_results(self):
+        """
+        Test that if there were candidates were marked as elected as
+        the marked uncontested, that the winners are unset and logged actions created
+        """
+        parties = self.create_parties(2)
+        self.create_memberships(parties)
+        self.assertTrue(self.ballot.uncontested)
+        self.ballot.mark_uncontested_winners()
+        self.assertEqual(
+            self.ballot.membership_set.filter(elected=True).count(), 2
+        )
+        self.ballot.unmark_uncontested_winners(
+            ip_address="111.11.1111", user=self.user
+        )
+        self.assertEqual(
+            self.ballot.membership_set.filter(elected=True).count(), 0
+        )
+        self.assertEqual(
+            LoggedAction.objects.filter(
+                action_type=ActionType.SET_CANDIDATE_NOT_ELECTED
+            ).count(),
+            2,
+        )
+        self.assertEqual(
+            self.ballot.membership_set.filter(elected=None).count(), 2
+        )
+
+    def test_unmark_uncontested_winners_unmarks_winners_if_was_uncontested(
+        self,
+    ):
+        """
+        Test that if there were candidates were marked as elected as
+        the marked uncontested, that the winners are unset and logged actions created
+        """
+        parties = self.create_parties(2)
+        self.create_memberships(parties)
+        self.assertTrue(self.ballot.uncontested)
+        self.ballot.mark_uncontested_winners()
+        self.assertEqual(
+            self.ballot.membership_set.filter(elected=True).count(), 2
+        )
+        # unlock the ballot
+        self.ballot.locked = False
+        self.ballot.save()
+        self.ballot.unmark_uncontested_winners(
+            ip_address="111.11.1111", user=self.user
+        )
+        self.assertEqual(
+            self.ballot.membership_set.filter(elected=True).count(), 0
+        )
+        self.assertEqual(
+            LoggedAction.objects.filter(
+                action_type=ActionType.SET_CANDIDATE_NOT_ELECTED
+            ).count(),
+            2,
+        )
+        self.assertEqual(
+            self.ballot.membership_set.filter(elected=None).count(), 2
+        )
 
     def test_get_absolute_queued_image_review_url(self):
         parties = self.create_parties(3)
@@ -428,3 +496,25 @@ class TestBallotQuerySetMethods(TestCase, SingleBallotStatesMixin):
         self.create_memberships(ballot, parties)
         uncontested_ballots = Ballot.objects.uncontested()
         self.assertIn(ballot, uncontested_ballots)
+
+    def test_looks_uncontested(self):
+        election = self.create_election("Strensall Local Election")
+        election.slug = "local.adur.2021-05-06"
+        post = self.create_post(post_label="Strensall")
+        ballot = self.create_ballot(
+            ballot_paper_id="local.strensall.foo.2020-05-06",
+            election=election,
+            post=post,
+            winner_count=2,
+            candidates_locked=False,
+        )
+        for case in [
+            {"num_parties": 1, "expected": True},
+            {"num_parties": 2, "expected": True},
+            {"num_parties": 3, "expected": False},
+        ]:
+            with self.subTest(msg=case["num_parties"]):
+                parties = self.create_parties(case["num_parties"])
+                self.create_memberships(ballot, parties)
+                self.assertEqual(ballot.looks_uncontested, case["expected"])
+                ballot.membership_set.all().delete()

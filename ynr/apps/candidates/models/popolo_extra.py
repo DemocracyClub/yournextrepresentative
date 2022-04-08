@@ -378,6 +378,13 @@ class Ballot(EEModifiedMixin, models.Model):
             return True
         return False
 
+    @property
+    def looks_uncontested(self):
+        """
+        Does the ballot have more or equal seats up than candidates
+        """
+        return self.get_winner_count >= self.membership_set.count()
+
     def mark_uncontested_winners(self, ip_address=None, user=None):
         """
         If the election is uncontested mark all candidates as elected
@@ -397,10 +404,20 @@ class Ballot(EEModifiedMixin, models.Model):
             )
 
     def unmark_uncontested_winners(self, ip_address=None, user=None):
-        if self.uncontested:
+        """
+        Do nothing if we dont have any elected candidates
+        Do nothing if we have results, but they were not marked
+        winners because ballot looks uncontested
+        Otherwise unmark winners and create logged actions
+        """
+        if not self.has_results:
             return
-        self.membership_set.update(elected=False)
-        candidates_not_elected = self.membership_set.filter(elected=False)
+
+        if not self.looks_uncontested:
+            return
+
+        self.membership_set.update(elected=None)
+        candidates_not_elected = self.membership_set.filter(elected=None)
         for candidate in candidates_not_elected:
             LoggedAction.objects.create(
                 action_type=ActionType.SET_CANDIDATE_NOT_ELECTED,
