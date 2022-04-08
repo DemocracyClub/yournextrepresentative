@@ -170,6 +170,11 @@ def clean_name(name):
     last_names = clean_last_names(names)
     first_names = " ".join([name for name in names if not name.isupper()])
     full_name = f"{first_names} {last_names}".strip()
+    
+    commas = re.match("(.*),(.*)",full_name)
+    if commas:
+        full_name= " ".join(n[2],n[1])
+         
     return full_name
 
 
