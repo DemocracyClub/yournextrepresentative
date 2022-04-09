@@ -3,12 +3,13 @@ from collections import OrderedDict
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models.functions import Coalesce
 
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType
 from candidates.views.version_data import get_client_ip
 from uk_results.helpers import RecordBallotResultsHelper
-from utils.db import LastWord
+from utils.db import LastWord, NullIfBlank
 
 from .models import CandidateResult, ResultSet
 
@@ -52,8 +53,13 @@ class ResultSetForm(forms.ModelForm):
         fields = OrderedDict()
         memberships = (
             ballot.membership_set.all()
-            .annotate(sorted_name=LastWord("person__name"))
-            .order_by("sorted_name")
+            .annotate(last_name=LastWord("person__name"))
+            .annotate(
+                name_for_ordering=Coalesce(
+                    NullIfBlank("person__sort_name"), "last_name"
+                )
+            )
+            .order_by("name_for_ordering")
         )
 
         for membership in memberships:
