@@ -8,6 +8,7 @@ urlpatterns = [
     re_path(r"^bulk_adding/", include("bulk_adding.urls")),
     re_path(r"^uk_results/", include("uk_results.urls")),
     re_path(r"^$", frontpage.HomePageView.as_view(), name="lookup-postcode"),
+    re_path(r"^$", frontpage.HomePageView.as_view(), name="lookup-postcode"),
     re_path(
         r"^postcode/(?P<postcode>[^/]+)/$",
         frontpage.PostcodeView.as_view(),

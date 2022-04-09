@@ -70,4 +70,4 @@ class Command(BaseCommand):
                 register=options["register"],
                 nation=options["nation"],
                 elected=options["elected"],
-            )
+            ).as_text()

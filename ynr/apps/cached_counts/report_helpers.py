@@ -7,6 +7,7 @@ New parties
 """
 import collections
 import sys
+import abc
 from collections import Counter
 
 from django.db.models import (
@@ -43,7 +44,9 @@ EXCLUSION_IDS = [
 ]
 
 
-class BaseReport:
+class BaseReport(abc.ABC):
+    name: str
+
     def __init__(
         self,
         date,
@@ -116,7 +119,7 @@ class BaseReport:
             self.f_winners / self.f_candidates, output_field=FloatField()
         )
 
-    def run(self):
+    def print_text(self):
         print()
         print()
         print()
@@ -133,13 +136,21 @@ class BaseReport:
         print(title)
         print("=" * len(title))
         print()
-        print(self.report())
+        print(self.as_text())
+
+    @abc.abstractmethod
+    def as_text(self):
+        pass
+
+    @abc.abstractmethod
+    def as_dict(self):
+        pass
 
 
 def report_runner(name, date, **kwargs):
     this_module = sys.modules[__name__]
     if hasattr(this_module, name):
-        return getattr(this_module, name)(date=date, **kwargs).run()
+        return getattr(this_module, name)(date=date, **kwargs)
     else:
         raise ValueError(
             "{} is unknown. Pick one of: {}".format(
@@ -167,16 +178,25 @@ class NumberOfCandidates(BaseReport):
             .order_by()
         )
 
-    def report(self):
-        report = []
+    def as_text(self):
+        report_data = self.as_dict()["report"]
+        lines = []
+        for report in report_data:
+            for key, value in report.items():
+                lines.append(f"{key}\t{value}")
+        return "\n".join(lines)
+
+    def as_dict(self):
+        report_dict = {"name": self.name, "report": []}
         for election_type in self.get_qs():
-            report.append(
-                "{}\t{}".format(
-                    election_type["ballot__election__for_post_role"],
-                    election_type["seats"],
-                )
+            report_dict["report"].append(
+                {
+                    election_type[
+                        "ballot__election__for_post_role"
+                    ]: election_type["seats"]
+                }
             )
-        return "\n".join(report)
+        return report_dict
 
 
 class NumberOfSeats(BaseReport):
@@ -187,16 +207,25 @@ class NumberOfSeats(BaseReport):
             seats=Sum("winner_count")
         )
 
-    def report(self):
-        report = []
+    def as_dict(self):
+        report_dict = {"name": self.name, "report": []}
         for election_type in self.get_qs():
-            report.append(
-                "{}\t{}".format(
-                    election_type["election__for_post_role"],
-                    election_type["seats"],
-                )
+            report_dict["report"].append(
+                {
+                    election_type["election__for_post_role"]: election_type[
+                        "seats"
+                    ]
+                }
             )
-        return "\n".join(report)
+        return report_dict
+
+    def as_text(self):
+        report_data = self.as_dict()["report"]
+        lines = []
+        for report in report_data:
+            for key, value in report.items():
+                lines.append(f"{key}\t{value}")
+        return "\n".join(lines)
 
 
 class CandidatesPerParty(BaseReport):
@@ -209,7 +238,7 @@ class CandidatesPerParty(BaseReport):
             .order_by("-membership_count")
         )
 
-    def report(self):
+    def as_text(self):
         report = ["Party Name\tParty Register\tCandidates\tPercent of seats"]
 
         total_seats = self.ballot_qs.aggregate(seats=Sum("winner_count"))[
@@ -301,7 +330,7 @@ class UncontestedBallots(BaseReport):
             .order_by("ballot_paper_id")
         )
 
-    def report(self):
+    def as_text(self):
         report_list = []
         qs = self.get_qs()
         report_list.append(["{} uncontested seats".format(qs.count())])
@@ -337,7 +366,7 @@ class NcandidatesPerSeat(BaseReport):
             .filter(per_seat__gt=self.n)
         )
 
-    def report(self):
+    def as_text(self):
         qs = self.get_qs()
         report_list = []
         headers = [
@@ -396,7 +425,7 @@ class TwoWayRace(BaseReport):
             .order_by("ballot_paper_id")
         )
 
-    def report(self):
+    def as_text(self):
         qs = self.get_qs()
         report_list = []
         headers = [
@@ -448,7 +477,7 @@ class MostPerSeat(BaseReport):
             .order_by("per_seat")
         )
 
-    def report(self):
+    def as_text(self):
         qs = self.get_qs()
         report_list = [
             ["Ballot paper ID", "num candidates", "per seat", "winners"]
@@ -468,7 +497,7 @@ class NewParties(BaseReport):
             party__date_registered__year=self.date.split("-")[0]
         ).order_by("party_id")
 
-    def report(self):
+    def as_text(self):
         qs = self.get_qs()
         report_list = []
         headers = ["Party Name", "Ballot Paper ID", "Candidate name"]
@@ -494,7 +523,7 @@ class GenderSplitByDate(BaseReport):
             .annotate(gender_count=Count("person__gender_guess__gender"))
         )
 
-    def report(self):
+    def as_text(self):
         qs = self.get_qs()
         report_list = []
         headers = ["Gender", "Gender Count"]
@@ -525,7 +554,7 @@ class NamesAndGenderGuessOnly(BaseReport):
             .select_related("ballot", "person", "person__gender_guess")
         )
 
-    def report(self):
+    def as_text(self):
         qs = self.get_qs()
         report_list = []
         headers = ["Name", "Guessed Gender", "Person ID", "Ballot URL", "Party"]
@@ -555,7 +584,7 @@ class GenderSplitByParty(BaseReport):
             .order_by("party__name")
         )
 
-    def report(self):
+    def as_text(self):
         qs = self.get_qs()
         report_list = []
         headers = ["Gender", "Gender Count", "Party Name"]
@@ -583,7 +612,7 @@ class GenderSplitByRegion(BaseReport):
             .order_by("ballot__tags__NUTS1__value")
         )
 
-    def report(self):
+    def as_text(self):
         qs = self.get_qs()
         report_list = []
         headers = ["Gender", "Gender Count", "Region"]
@@ -612,7 +641,7 @@ class GenderSplitByElectionType(BaseReport):
             .order_by("ballot__election__for_post_role")
         )
 
-    def report(self):
+    def as_text(self):
         qs = self.get_qs()
         report_list = []
         headers = ["Gender", "Gender Count", "Party Name"]
@@ -640,7 +669,7 @@ class GenderSplitBySeatsContested(BaseReport):
             .order_by("ballot__winner_count")
         )
 
-    def report(self):
+    def as_text(self):
         qs = self.get_qs()
         report_list = []
         headers = ["Seats Contested", "F", "M", "Ratio"]
@@ -676,7 +705,7 @@ class SingleGenderedBallots(BaseReport):
             .values_list("ballot__ballot_paper_id", flat=True)
         )
 
-    def report(self):
+    def as_text(self):
         report_list = []
         headers = ["Label", "Count", "Sample"]
         report_list.append(headers)
@@ -720,7 +749,7 @@ class PartyMovers(BaseReport):
             .filter(party_count__gt=1)
         )
 
-    def report(self):
+    def as_text(self):
         qs = self.get_qs()
         report_list = []
         headers = ["Person ID", "Person Name", "Party Count"]
@@ -747,7 +776,7 @@ class PartyMovers(BaseReport):
 class RegionalNumCandidatesPerSeat(BaseReport):
     name = "Number of candidates per seat per region"
 
-    def report(self):
+    def as_text(self):
         report_list = []
         headers = [
             "Region Name",
@@ -800,7 +829,7 @@ class SmallPartiesCandidatesCouncilAreas(BaseReport):
         parties = parties or self.PARTIES
         return Party.objects.filter(name__in=parties, register="GB").distinct()
 
-    def report(self):
+    def as_text(self):
         report_list = []
         headers = [
             "Party Name",
@@ -858,7 +887,7 @@ class NumCandidatesStandingInMultipleSeats(BaseReport):
         )
         return people.annotate(num_candidacies=current_candidacies)
 
-    def report(self):
+    def as_text(self):
         report_list = []
         headers = [
             "Num Candidacies",
@@ -902,7 +931,7 @@ class PeopleWithMultipleCandidaciesDetailed(
             )
         )
 
-    def report(self):
+    def as_text(self):
         report_list = []
         headers = ["ID", "Name", "Num candidacies", "Ballot ID's"]
         report_list.append(headers)
@@ -926,7 +955,7 @@ class NumCandidatesStandingInMultipleSeatsPerGender(
 
     name = "Num candidates standing in multiple per seats, per gender"
 
-    def report(self):
+    def as_text(self):
 
         genders = (
             self.membership_qs.values_list(
@@ -973,7 +1002,7 @@ class CommonFirstNames(BaseReport):
         for name, count in collector.most_common(30):
             yield [label, name, count]
 
-    def report(self):
+    def as_text(self):
         report_list = []
         headers = ["Type", "Name", "Count"]
         report_list.append(headers)
@@ -1030,7 +1059,7 @@ class CandidatesWithWithoutStatement(BaseReport):
     def get_qs(self):
         return self.membership_qs.select_related("person")
 
-    def report(self):
+    def as_text(self):
         report_list = []
         headers = ["", "Number", "%"]
         report_list.append(headers)
@@ -1059,7 +1088,7 @@ class CandidatesWithWithoutStatement(BaseReport):
 
 ALL_REPORT_CLASSES = []
 for x in list(locals().values()):
-    if type(x) == type and issubclass(x, BaseReport):
+    if type(x) == abc.ABCMeta and issubclass(x, BaseReport):
         if x.__name__ == "BaseReport":
             continue
         ALL_REPORT_CLASSES.append(x.__name__)
