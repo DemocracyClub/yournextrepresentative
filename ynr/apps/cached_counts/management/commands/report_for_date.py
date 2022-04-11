@@ -44,7 +44,7 @@ class Command(BaseCommand):
             action="store",
             help="Run reports for a single nation",
             required=False,
-            choices=["E", "S", "W"],
+            choices=["E", "S", "W", "N"],
         )
 
         parser.add_argument(
