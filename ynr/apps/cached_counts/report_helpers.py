@@ -51,12 +51,14 @@ class BaseReport:
         register=None,
         nation=None,
         elected=False,
+        exclude_cancelled=False,
     ):
         self.date = date
         self.nation = nation
         self.election_type = election_type or "local"
         register = register or "GB"
         self.elected = elected
+        self.exclude_cancelled = exclude_cancelled
 
         self.ballot_qs = Ballot.objects.filter(
             election__election_date=self.date
@@ -65,13 +67,9 @@ class BaseReport:
             self.ballot_qs = self.ballot_qs.filter(
                 ballot_paper_id__startswith=self.election_type
             )
-        # as discussed with Peter, dont exclude all by elections this year
-        # only those in Wales/Scotland
-        # .exclude(ballot_paper_id__contains=".by.")
         self.ballot_qs = (
             self.ballot_qs.exclude(ballot_paper_id__in=EXCLUSION_IDS)
             .filter(post__party_set__slug=register.lower())
-            .exclude(cancelled=True)
             .exclude(membership=None)
         )
 
@@ -82,15 +80,9 @@ class BaseReport:
             self.membership_qs = self.membership_qs.filter(
                 ballot__ballot_paper_id__startswith=self.election_type
             )
-        self.membership_qs = (
-            self.membership_qs.filter(
-                ballot__post__party_set__slug=register.lower()
-            )
-            # as discussed with Peter, dont exclude all by elections this year
-            # only those in Wales/Scotland
-            # .exclude(ballot__ballot_paper_id__contains=".by.")
-            .exclude(ballot__ballot_paper_id__in=EXCLUSION_IDS)
-        )
+        self.membership_qs = self.membership_qs.filter(
+            ballot__post__party_set__slug=register.lower()
+        ).exclude(ballot__ballot_paper_id__in=EXCLUSION_IDS)
 
         if self.nation:
             self.ballot_qs = self.ballot_qs.filter(
@@ -104,6 +96,12 @@ class BaseReport:
 
         if self.elected:
             self.membership_qs = self.membership_qs.filter(elected=True)
+
+        if self.exclude_cancelled:
+            self.ballot_qs = self.ballot_qs.exclude(cancelled=True)
+            self.membership_qs = self.membership_qs.exclude(
+                ballot__cancelled=True
+            )
 
         template = "%(function)s(%(expressions)s AS FLOAT)"
         self.f_candidates = Func(
