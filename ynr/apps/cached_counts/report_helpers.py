@@ -361,15 +361,19 @@ class NcandidatesPerSeat(BaseReport):
             if ballot.cancelled is True:
                 continue
 
-            parties = Counter(
-                ballot.membership_set.all().values_list(
-                    "party__name", flat=True
-                )
+            parties = (
+                ballot.membership_set.all()
+                .values_list("party__name", flat=True)
+                .distinct()
             )
-            will_win, will_win_seats = parties.most_common(1)[0]
-            del parties[will_win]
-            will_win_seats -= sum(parties.values())
 
+            if parties.count() > ballot.winner_count:
+                continue
+
+            parties = Counter(parties)
+            will_win, will_win_seats = parties.most_common(1)[0]
+            parties[will_win] -= ballot.winner_count
+            will_win_seats -= sum(parties.values())
             for membership in ballot.membership_set.all():
                 is_a_winner = False
                 if membership.party.name == will_win and will_win_seats:
