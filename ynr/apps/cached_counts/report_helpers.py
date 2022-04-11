@@ -52,6 +52,7 @@ class BaseReport:
         nation=None,
         elected=False,
         exclude_cancelled=False,
+        nuts_code=None,
     ):
         self.date = date
         self.nation = nation
@@ -59,6 +60,7 @@ class BaseReport:
         register = register or "GB"
         self.elected = elected
         self.exclude_cancelled = exclude_cancelled
+        self.nuts_code = nuts_code
 
         self.ballot_qs = Ballot.objects.filter(
             election__election_date=self.date
@@ -92,6 +94,14 @@ class BaseReport:
                 ballot__tags__NUTS1__key__in=settings.NUTS_TO_NATION[
                     self.nation
                 ]
+            )
+
+        if self.nuts_code:
+            self.ballot_qs = self.ballot_qs.filter(
+                tags__NUTS1__key=self.nuts_code
+            )
+            self.membership_qs = self.membership_qs.filter(
+                ballot__tags__NUTS1__key=self.nuts_code
             )
 
         if self.elected:
