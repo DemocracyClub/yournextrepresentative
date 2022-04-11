@@ -371,9 +371,15 @@ class NcandidatesPerSeat(BaseReport):
                 continue
 
             parties = Counter(parties)
-            will_win, will_win_seats = parties.most_common(1)[0]
-            parties[will_win] -= ballot.winner_count
-            will_win_seats -= sum(parties.values())
+            will_win, _ = parties.most_common(1)[0]
+            # remove the candidates of the party we know will
+            # definitely win some seats
+            del parties[will_win]
+            # subtract the total number of candidates from other
+            # parties from the number of seats up. The result is the
+            # minimum number of seats the winning party will win
+            will_win_seats = ballot.winner_count - sum(parties.values())
+
             for membership in ballot.membership_set.all():
                 is_a_winner = False
                 if membership.party.name == will_win and will_win_seats:
