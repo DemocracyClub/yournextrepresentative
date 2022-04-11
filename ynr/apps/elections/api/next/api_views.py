@@ -1,5 +1,6 @@
 from typing import OrderedDict
 from django.db.models import Prefetch
+from django.db.models.functions import Coalesce
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from drf_yasg import openapi
@@ -16,7 +17,7 @@ from elections.filters import BallotFilter
 from elections.models import Election
 from official_documents.models import OfficialDocument
 from popolo.models import Membership
-from utils.db import LastWord
+from utils.db import LastWord, NullIfBlank
 
 
 class ElectionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -46,12 +47,16 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
                 queryset=Membership.objects.all()
                 .select_related("result", "person", "party")
                 .annotate(last_name=LastWord("person__name"))
+                .annotate(
+                    name_for_ordering=Coalesce(
+                        NullIfBlank("person__sort_name"), "last_name"
+                    )
+                )
                 .order_by(
                     "-elected",
                     "-result__num_ballots",
                     "party_list_position",
-                    "person__sort_name",
-                    "last_name",
+                    "name_for_ordering",
                 ),
             ),
             Prefetch(

@@ -8,9 +8,7 @@ class LastWord(Transform):
 
     function = "LastWord"
     template = """
-    (regexp_split_to_array(%(field)s, ' '))[
-      array_upper(regexp_split_to_array(%(field)s, ' '), 1)
-    ]
+    regexp_replace(%(field)s, '^.* ', '')
     """
 
     def __init__(self, column, output_field=None):
@@ -18,6 +16,10 @@ class LastWord(Transform):
 
     def as_postgresql(self, compiler, connection):
         return self.as_sql(compiler, connection)
+
+
+class NullIfBlank(Func):
+    template = "NULLIF(%(expressions)s, '')"
 
 
 class Levenshtein(Func):
