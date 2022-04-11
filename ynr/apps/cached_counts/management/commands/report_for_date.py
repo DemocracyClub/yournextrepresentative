@@ -61,6 +61,13 @@ class Command(BaseCommand):
             default=False,
             required=False,
         )
+        parser.add_argument(
+            "--nuts-code",
+            action="store",
+            dest="nuts_code",
+            help="Run reports for single NUTS1 code",
+            required=False,
+        )
 
     def handle(self, *args, **options):
         if options["reports"] is None:
@@ -80,4 +87,5 @@ class Command(BaseCommand):
                 nation=options["nation"],
                 elected=options["elected"],
                 exclude_cancelled=options["exclude_cancelled"],
+                nuts_code=options["nuts_code"],
             )
