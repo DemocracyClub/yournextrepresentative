@@ -52,6 +52,15 @@ class Command(BaseCommand):
             action="store_true",
             help="Run reports for elected candidates only",
         )
+        parser.add_argument(
+            "--exclude-cancelled",
+            "--c",
+            action="store_true",
+            dest="exclude_cancelled",
+            help="Exclude cancelled ballots in reports",
+            default=False,
+            required=False,
+        )
 
     def handle(self, *args, **options):
         if options["reports"] is None:
@@ -70,4 +79,5 @@ class Command(BaseCommand):
                 register=options["register"],
                 nation=options["nation"],
                 elected=options["elected"],
+                exclude_cancelled=options["exclude_cancelled"],
             )
