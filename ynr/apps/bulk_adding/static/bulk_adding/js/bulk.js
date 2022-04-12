@@ -139,7 +139,7 @@ $(function(){
     }
 
     // Remove empty fieldsets
-    var always_show_extra = $("form#bulk_add_form")[0].dataset['winnerCount'] * 3;
+    var always_show_extra = $("form#bulk_add_form")[0].dataset.winnerCount * 3;
     $("#bulk_add_form .sopn_adding_table tbody").each(function(i) {
       var tbody = $(this);
       if (tbody_is_empty(tbody)) {
