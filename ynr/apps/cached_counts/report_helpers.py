@@ -119,6 +119,8 @@ class BaseReport(abc.ABC):
             self.f_winners / self.f_candidates, output_field=FloatField()
         )
 
+        self.report_data = {"header": [], "lines": [], "name": self.name}
+
     def print_text(self):
         print()
         print()
@@ -138,9 +140,17 @@ class BaseReport(abc.ABC):
         print()
         print(self.as_text())
 
-    @abc.abstractmethod
+    def header_text(self):
+        text = "\t".join(self.report_data["header"])
+        text = text + f"\n{'-'*len(text)}"
+        return text
+
     def as_text(self):
-        pass
+        report_data = self.as_dict()
+        lines = [self.header_text()]
+        for report in report_data["lines"]:
+            lines.append("\t".join([str(field) for field in report]))
+        return "\n".join(lines)
 
     @abc.abstractmethod
     def as_dict(self):
@@ -178,25 +188,16 @@ class NumberOfCandidates(BaseReport):
             .order_by()
         )
 
-    def as_text(self):
-        report_data = self.as_dict()["report"]
-        lines = []
-        for report in report_data:
-            for key, value in report.items():
-                lines.append(f"{key}\t{value}")
-        return "\n".join(lines)
-
     def as_dict(self):
-        report_dict = {"name": self.name, "report": []}
+        self.report_data["header"] = ["Election Type", "Candidates"]
         for election_type in self.get_qs():
-            report_dict["report"].append(
-                {
-                    election_type[
-                        "ballot__election__for_post_role"
-                    ]: election_type["seats"]
-                }
+            self.report_data["lines"].append(
+                [
+                    election_type["ballot__election__for_post_role"],
+                    election_type["seats"],
+                ]
             )
-        return report_dict
+        return self.report_data
 
 
 class NumberOfSeats(BaseReport):
@@ -208,24 +209,15 @@ class NumberOfSeats(BaseReport):
         )
 
     def as_dict(self):
-        report_dict = {"name": self.name, "report": []}
+        self.report_data["header"] = ["Election Type", "Candidates"]
         for election_type in self.get_qs():
-            report_dict["report"].append(
-                {
-                    election_type["election__for_post_role"]: election_type[
-                        "seats"
-                    ]
-                }
+            self.report_data["lines"].append(
+                [
+                    election_type["election__for_post_role"],
+                    election_type["seats"],
+                ]
             )
-        return report_dict
-
-    def as_text(self):
-        report_data = self.as_dict()["report"]
-        lines = []
-        for report in report_data:
-            for key, value in report.items():
-                lines.append(f"{key}\t{value}")
-        return "\n".join(lines)
+        return self.report_data
 
 
 class CandidatesPerParty(BaseReport):
@@ -238,35 +230,27 @@ class CandidatesPerParty(BaseReport):
             .order_by("-membership_count")
         )
 
-    def as_text(self):
-        report = ["Party Name\tParty Register\tCandidates\tPercent of seats"]
+    def as_dict(self):
+        self.report_data["header"] = [
+            "Party Name",
+            "Party Register",
+            "Candidates",
+            "Percent of seats",
+        ]
 
         total_seats = self.ballot_qs.aggregate(seats=Sum("winner_count"))[
             "seats"
         ]
 
         for party in self.get_qs():
-            report.append(
-                "\t".join(
-                    [
-                        str(v)
-                        for v in [
-                            party["party__name"],
-                            party["party__register"],
-                            party["membership_count"],
-                            round(
-                                float(
-                                    party["membership_count"]
-                                    / total_seats
-                                    * 100
-                                ),
-                                2,
-                            ),
-                        ]
-                    ]
-                )
-            )
-        return "\n".join(report)
+            line = [
+                party["party__name"],
+                party["party__register"],
+                party["membership_count"],
+                round(float(party["membership_count"] / total_seats * 100), 2),
+            ]
+            self.report_data["lines"].append(line)
+        return self.report_data
 
 
 class WardsContestedPerParty(BaseReport):
@@ -289,37 +273,36 @@ class WardsContestedPerParty(BaseReport):
         total_wards = self.ballot_qs.count()
         return f"Wards contested per party ({total_wards})"
 
-    def report(self):
-        report = [
-            "Party Name\tParty Register\tCandidates standing\tPercent of wards"
+    def as_dict(self):
+        self.report_data["header"] = [
+            "Party Name",
+            "Party Register",
+            "Candidates standing",
+            "Percent of wards",
         ]
 
         total_ballots = self.ballot_qs.count()
         for party in self.get_qs():
-            report.append(
-                "\t".join(
-                    [
-                        str(v)
-                        for v in [
-                            party["party__name"],
-                            party["party__register"],
-                            party["membership_count"],
-                            round(
-                                float(
-                                    party["membership_count"]
-                                    / total_ballots
-                                    * 100
-                                ),
-                                2,
+            self.report_data["lines"].append(
+                [
+                    str(v)
+                    for v in [
+                        party["party__name"],
+                        party["party__register"],
+                        party["membership_count"],
+                        round(
+                            float(
+                                party["membership_count"] / total_ballots * 100
                             ),
-                        ]
+                            2,
+                        ),
                     ]
-                )
+                ]
             )
-        return "\n".join(report)
+        return self.report_data
 
 
-class UncontestedBallots(BaseReport):
+class NumUncontestedBallots(BaseReport):
     name = "Uncontested Ballots"
 
     def get_qs(self):
@@ -330,24 +313,32 @@ class UncontestedBallots(BaseReport):
             .order_by("ballot_paper_id")
         )
 
-    def as_text(self):
-        report_list = []
+    def as_dict(self):
+        self.report_data["header"] = ["Total"]
         qs = self.get_qs()
-        report_list.append(["{} uncontested seats".format(qs.count())])
+        self.report_data["lines"].append([qs.count()])
+        return self.report_data
 
-        report_list.append("\n")
-        for ballot in qs:
 
-            for membership in ballot.membership_set.all():
-                report_list.append(
-                    [
-                        ballot.ballot_paper_id,
-                        membership.person.name,
-                        membership.party.name,
-                    ]
-                )
-
-        return "\n".join(["\t".join(r) for r in report_list])
+class uncontestedWinners(NumUncontestedBallots):
+    def as_dict(self):
+        self.report_data["header"] = ["Ballot", "Person", "Party"]
+        qs = self.get_qs()
+        self.report_data["lines"].append(["Total", qs.count()])
+        #
+        # report_list.append("\n")
+        # for ballot in qs:
+        #
+        #     for membership in ballot.membership_set.all():
+        #         report_list.append(
+        #             [
+        #                 ballot.ballot_paper_id,
+        #                 membership.person.name,
+        #                 membership.party.name,
+        #             ]
+        #         )
+        #
+        # return "\n".join(["\t".join(r) for r in report_list])
 
 
 class NcandidatesPerSeat(BaseReport):
@@ -969,7 +960,7 @@ class NumCandidatesStandingInMultipleSeatsPerGender(
         headers = ["Gender", "Num Candidacies", "Num people standing"]
         report_list.append(headers)
         qs = self.get_qs()
-        # very arbritary safeguard but im assuming you would never have someone
+        # very arbitrary safeguard but im assuming you would never have someone
         # stand on this many ballots for the same election type and date
         for num in range(1, 10):
             for gender in genders:

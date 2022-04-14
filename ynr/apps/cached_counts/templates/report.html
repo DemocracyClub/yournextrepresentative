@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+  <link rel="stylesheet" href="https://DemocracyClub.github.io/design-system/styles/system.css" />
+  <div class="ds-scope">
+    <h1>{{ report_info.title }} {{ report_info.date }}</h1>
+    {{ reports }}
+    <h2>{{ reports.NumberOfCandidates.report_json.name }}</h2>
+    {% for title, data in reports.NumberOfCandidates.report_json.report.0.items %}
+    <p>{{ data|intcomma }}</p>
+  {% endfor %}
+  </div>
+
+{% endblock %}
