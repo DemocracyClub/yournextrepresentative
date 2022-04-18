@@ -13,7 +13,7 @@ def search_person_by_name(name, synonym=True):
     and_name = " & ".join(name.split(" "))
     or_name = " | ".join(name.split(" "))
     name = f"({and_name}) | ({or_name})"
-    query = SearchQuery(name, search_type="raw", config="english")
+    query = SearchQuery(name, search_type="raw", config="simple")
 
     search_args = {}
     if synonym:

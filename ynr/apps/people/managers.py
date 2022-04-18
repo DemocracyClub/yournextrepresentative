@@ -43,9 +43,9 @@ POPULATE_NAME_SEARCH_COLUMN_SQL = """
     UPDATE people_person
     SET name_search_vector = sq.terms
     FROM (
-        SELECT pp.id as id, setweight(to_tsvector(coalesce(pp.name, '')), 'A')
+        SELECT pp.id as id, setweight(to_tsvector('simple', coalesce(pp.name, '')), 'A')
                ||
-           setweight(to_tsvector(coalesce(string_agg(ppon.name, ' '), '')), 'B') as terms
+           setweight(to_tsvector('simple', coalesce(string_agg(ppon.name, ' '), '')), 'B') as terms
         FROM people_person pp
         LEFT JOIN popolo_othername ppon
         ON pp.id = ppon.object_id
@@ -68,8 +68,8 @@ NAME_SEARCH_TRIGGER_SQL = """
                                    ), ','
                            ) as other_names
             )
-            SELECT setweight(to_tsvector('pg_catalog.english', coalesce(new.name, '')), 'A') ||
-                   setweight(to_tsvector(coalesce(po_names.other_names, '')), 'D')
+            SELECT setweight(to_tsvector('simple', coalesce(new.name, '')), 'A') ||
+                   setweight(to_tsvector('simple', coalesce(po_names.other_names, '')), 'D')
             FROM po_names
         );
       return new;
