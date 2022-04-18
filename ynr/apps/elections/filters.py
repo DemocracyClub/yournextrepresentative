@@ -169,7 +169,7 @@ class BaseBallotFilter(django_filters.FilterSet):
 
     def postcode_filter(self, queryset, name, value):
         """
-        Filter queryset by region using the NUTS1 code
+        Filter queryset by postcode
         """
         return queryset.for_postcode(postcode=value)
 

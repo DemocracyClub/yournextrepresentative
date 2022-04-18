@@ -7,6 +7,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 import elections.api.next.serializers
@@ -15,6 +16,7 @@ from candidates import models as extra_models
 from candidates.api.next.serializers import LoggedActionSerializer
 from elections.filters import BallotFilter
 from elections.models import Election
+from elections.uk.geo_helpers import BadPostcodeException
 from official_documents.models import OfficialDocument
 from popolo.models import Membership
 from utils.db import LastWord, NullIfBlank
@@ -72,6 +74,17 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = ResultsSetPagination
 
     filterset_class = BallotFilter
+
+    def filter_queryset(self, queryset):
+        try:
+            return super().filter_queryset(queryset)
+        except BadPostcodeException as e:
+            # Catch BadPostcodeException and replace the
+            # non-ascii chars in the initial exception
+            error = str(e).replace("’", "'")
+            error = error.replace("“", '"')
+            error = error.replace("”", '"')
+            raise ValidationError(detail=error)
 
     def list(self, request, *args, **kwargs):
         """
