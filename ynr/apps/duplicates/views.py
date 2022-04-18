@@ -1,9 +1,11 @@
 from django.contrib import messages
+from django.db.models import Prefetch
 from django.views.generic import ListView, UpdateView
 from django.urls import reverse_lazy
 
 from auth_helpers.views import GroupRequiredMixin
 from candidates.models.auth import TRUSTED_TO_MERGE_GROUP_NAME
+from popolo.models import Membership
 
 from .models import DuplicateSuggestion
 from .forms import RejectionForm
@@ -12,12 +14,28 @@ from .forms import RejectionForm
 class DuplicateSuggestionListView(GroupRequiredMixin, ListView):
     model = DuplicateSuggestion
     required_group_name = TRUSTED_TO_MERGE_GROUP_NAME
+    paginate_by = 50
 
     def get_queryset(self):
         """
         Only display suggestions that are open
         """
-        return DuplicateSuggestion.objects.open()
+        return (
+            DuplicateSuggestion.objects.open()
+            .select_related("person", "other_person", "user")
+            .prefetch_related(
+                Prefetch(
+                    "person__memberships",
+                    Membership.objects.all().select_related("ballot", "party"),
+                ),
+                Prefetch(
+                    "other_person__memberships",
+                    Membership.objects.all().select_related("ballot", "party"),
+                ),
+                "person__other_names",
+                "other_person__other_names",
+            )
+        )
 
 
 class RejectSuggestion(GroupRequiredMixin, UpdateView):
