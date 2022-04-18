@@ -10,7 +10,7 @@
   {% for membership in person.memberships.all %}
     <tr>
       <td><a href="{{ membership.ballot.get_absolute_url }}">{{ membership.ballot.ballot_paper_id }}</a></td>
-      <td>{{ membership.party.name }}</td>
+      <td>{{ membership.party_name }}</td>
     </tr>
   {% endfor %}
 </table>
