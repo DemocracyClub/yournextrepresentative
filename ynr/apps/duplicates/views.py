@@ -14,6 +14,7 @@ from .forms import RejectionForm
 class DuplicateSuggestionListView(GroupRequiredMixin, ListView):
     model = DuplicateSuggestion
     required_group_name = TRUSTED_TO_MERGE_GROUP_NAME
+    paginate_by = 50
 
     def get_queryset(self):
         """
