@@ -76,7 +76,7 @@ def search_person_by_name(name: str, synonym: bool = False) -> PersonQuerySet:
                 weights=[0.1, 0.3, 0.4, 1],
             )
         )
-        .filter(rank__gt=0.2)
+        .select_related("image")
         .order_by("-rank", "membership_count")
         .defer("biography", "versions")
     )
