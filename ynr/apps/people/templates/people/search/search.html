@@ -27,7 +27,7 @@
                 <img class="person-avatar" src="{{ result.get_display_image_url }}" height="64" width="64"/>
                 <div class="person-name-and-party">
                   <a href="{% url 'person-view' result.id result.name|slugify %}" class="candidate-name">{{ result.name }}</a>
-                  <span class="party">{{ result.last_party }}</span>
+                  <span class="party">{{ result.party_name }}</span>
                 </div>
                 <a href="{% url 'person-update' person_id=result.pk %}" class="button secondary small">Add more details</a>
             </li>
