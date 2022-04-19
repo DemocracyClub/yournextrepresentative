@@ -852,17 +852,14 @@ class PersonNameSynonymLookup(Lookup):
         params = lhs_params + rhs_params
         return (
             """
-            %s @@
-                tsquery_or(
-                    %s,
-                    ts_rewrite(
+            %s @@ ts_rewrite(
                         %s,
-                        'SELECT term, synonym FROM people_personnamesynonym'
+                        'SELECT term, synonym FROM people_personnamesynonym
+                        WHERE ''%s''::tsquery @> term'
                     )
-                )
             """
-            % (lhs, rhs, rhs),
-            params + params,
+            % (lhs, rhs, params[1]),
+            params,
         )
 
 
