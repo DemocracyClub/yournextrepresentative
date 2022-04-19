@@ -24,6 +24,8 @@ def search_person_by_name(name: str, synonym: bool = False) -> PersonQuerySet:
     name = name.lower()
     name = re.sub(r"[^a-z ]", " ", name)
     name = " ".join(name.strip().split())
+    if not name:
+        return Person.objects.none()
     and_name = " & ".join(name.split(" "))
     or_name = " | ".join(name.split(" "))
     name = f"({and_name}) | ({or_name})"
