@@ -336,7 +336,7 @@ class TestHasResultsOrNoResults(BallotsWithResultsMixin, TestCase):
         Ballot.objects.last_updated(datetime=datetime_obj)
         mock_with_last_updated.assert_called_once()
         mock_with_last_updated.return_value.filter.assert_called_once_with(
-            last_updated__gt=datetime_obj
+            last_updated__gte=datetime_obj
         )
 
     @patch("candidates.models.popolo_extra.BallotQueryset.annotate")

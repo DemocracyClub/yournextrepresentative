@@ -196,7 +196,7 @@ class BallotQueryset(models.QuerySet):
         """
         Filter on the last_updated timestamp
         """
-        return self.with_last_updated().filter(last_updated__gt=datetime)
+        return self.with_last_updated().filter(last_updated__gte=datetime)
 
     def ordered_by_latest_ee_modified(self):
         """
