@@ -190,6 +190,50 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             membership.party_description_text, "Green Party Stop Fracking Now"
         )
 
+    def test_submitting_form_when_candidates_locked(self):
+        """
+        Tests that if candidates have been locked whilst another user
+        is completing the bulk add process to create a lock suggestion
+        that the lock suggestion is not created
+        """
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        # Add a party description
+        party_description = PartyDescriptionFactory(
+            description="Green Party Stop Fracking Now", party=self.green_party
+        )
+
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
+        )
+
+        form = response.forms["bulk_add_form"]
+        form["form-0-name"] = "Homer Simpson"
+        party_id = f"{self.green_party.ec_id}__{party_description.pk}"
+        form["form-0-party_1"] = party_id
+
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+
+        # meanwhile candidates have been locked
+        self.dulwich_post_ballot.candidates_locked = True
+        self.dulwich_post_ballot.save()
+
+        response = response.follow()
+        form = response.forms["bulk_add_review_formset"]
+        form["form-0-select_person"].select("_new")
+        response = form.submit()
+        self.assertEqual(
+            self.dulwich_post_ballot.suggestedpostlock_set.count(), 0
+        )
+        self.assertContains(
+            response, "Candidates have already been locked for this ballot"
+        )
+
     def test_submitting_form_with_previous_party_affiliations(self):
         """
         Test that submitting previous party affiliations is possible with a

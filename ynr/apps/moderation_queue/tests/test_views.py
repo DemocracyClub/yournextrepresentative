@@ -1,5 +1,8 @@
 from django.test import TestCase
 from django.test.client import RequestFactory
+from django.urls import reverse
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.models import SuggestedPostLock
 
 from moderation_queue.views import SuggestLockReviewListView
@@ -129,3 +132,58 @@ class TestSuggestLockReviewListView(TestCase):
         result = self.view.get_lock_suggestions()
         self.assertEqual(result.count(), 0)
         self.assertFalse(result.exists())
+
+    def test_get_lock_suggestions_excludes_locked_ballots(self):
+        """
+        It should not be possible now for a user to create a lock
+        suggestion fora locked ballot via the website. But this is a
+        safeguard check to make sure that the lock suggestion would
+        not appear in the review list anyway
+        """
+        create_lock_suggestion(ballot=self.ecclesall, user=self.other_user)
+        self.ecclesall.candidates_locked = True
+        self.ecclesall.save()
+        queryset = self.view.get_lock_suggestions()
+        self.assertEqual(queryset.count(), 0)
+
+
+class TestSuggestLockView(TestUserMixin, UK2015ExamplesMixin, TestCase):
+    def test_lock_suggestion_created(self):
+        url = reverse(
+            "constituency-suggest-lock",
+            kwargs={"election_id": self.local_ballot.ballot_paper_id},
+        )
+        self.client.force_login(user=self.user)
+        self.assertFalse(self.local_ballot.candidates_locked)
+        self.assertEqual(self.local_ballot.suggestedpostlock_set.count(), 0)
+        response = self.client.post(
+            url,
+            data={"ballot": self.local_ballot.pk, "justification": "Testing"},
+            follow=True,
+        )
+        self.assertEqual(self.local_ballot.suggestedpostlock_set.count(), 1)
+        messages = list(response.context["messages"])
+        self.assertEqual(
+            messages[0].message, "Thanks for suggesting we lock an area!"
+        )
+
+    def test_lock_suggestion_not_created_when_ballot_locked(self):
+        self.local_ballot.candidates_locked = True
+        self.local_ballot.save()
+        url = reverse(
+            "constituency-suggest-lock",
+            kwargs={"election_id": self.local_ballot.ballot_paper_id},
+        )
+        self.client.force_login(user=self.user)
+        self.assertEqual(self.local_ballot.suggestedpostlock_set.count(), 0)
+        response = self.client.post(
+            url,
+            data={"ballot": self.local_ballot.pk, "justification": "Testing"},
+            follow=True,
+        )
+        self.assertEqual(self.local_ballot.suggestedpostlock_set.count(), 0)
+        messages = list(response.context["messages"])
+        self.assertEqual(
+            messages[0].message,
+            "Cannot add a lock suggestion because candidates are already locked",
+        )

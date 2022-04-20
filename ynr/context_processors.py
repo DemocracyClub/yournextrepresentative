@@ -60,6 +60,7 @@ def add_notification_data(request):
         if TRUSTED_TO_LOCK_GROUP_NAME in groups:
             result["suggestions_to_lock"] = (
                 SuggestedPostLock.objects.exclude(user=request.user)
+                .exclude(ballot__candidates_locked=True)
                 .distinct("ballot")
                 .count()
             )

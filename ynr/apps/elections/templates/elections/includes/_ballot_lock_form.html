@@ -2,7 +2,10 @@
 {% if candidates.exists and user_can_lock %}
   <form method="post" action="{% url 'constituency-lock' ballot_id=ballot.ballot_paper_id %}">
     {% csrf_token %}
-    {% if ballot.has_lock_suggestion and sopn %}
+
+    {% if ballot.candidates_locked %}
+      <input type="submit" class="button small" value="Unlock candidate list">
+    {% elif ballot.has_lock_suggestion and sopn %}
       {% if current_user_suggested_lock %}
          <p>
           Locking disabled because you suggested locking this ballot.
@@ -14,8 +17,6 @@
         <input type="submit" class="button small" value="Lock candidate list">
       {% endif %}
 
-    {% elif ballot.candidates_locked %}
-      <input type="submit" class="button small" value="Unlock candidate list">
     {% endif %}
 
     {% if ballot.candidates_locked %}
