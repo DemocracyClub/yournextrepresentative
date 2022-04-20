@@ -4,55 +4,67 @@
 {% load thumbnail %}
 
 {% block content %}
-<h2>Search candidates</h2>
+  <h2>Search candidates</h2>
 
-    <form class="search" method="get" action="{% url 'person-search' %}">
-        <input type="search" placeholder="Find a candidate…" name="q" value="{{ query|default_if_none:'' }}"/>
-        <button type="submit">Search</button>
-    </form>
+  <form class="search" method="get" action="{% url 'person-search' %}">
+    <input type="search" placeholder="Find a candidate…" name="q" value="{{ query|default_if_none:'' }}"/>
+    <button type="submit">Search</button>
+  </form>
 
-    {% if looks_like_postcode %}
+  {% if looks_like_postcode %}
     <h3>Looking information in your postcode?</h3>
     <p>Try going to <a href="https://whocanivotefor.co.uk/elections/{{ query }}/">
-        'Who Can I Vote For' for information on your candidates and elections</a></p>
-    {% endif %}
+      'Who Can I Vote For' for information on your candidates and elections</a></p>
+  {% endif %}
 
-    {% if results %}
+  {% if object_list %}
     <h3>Existing candidates</h3>
 
-        <ul class="candidate-list search_results">
-        {% for result in results %}
+    <ul class="candidate-list search_results">
+      {% for result in object_list %}
 
-            <li class="candidates-list__person">
-                <img class="person-avatar" src="{{ result.get_display_image_url }}" height="64" width="64"/>
-                <div class="person-name-and-party">
-                  <a href="{% url 'person-view' result.id result.name|slugify %}" class="candidate-name">{{ result.name }}</a>
-                  <span class="party">{{ result.last_party }}</span>
-                </div>
-                <a href="{% url 'person-update' person_id=result.pk %}" class="button secondary small">Add more details</a>
-            </li>
-        {% empty %}
+        <li class="candidates-list__person">
+          <img class="person-avatar" src="{{ result.get_display_image_url }}" height="64" width="64"/>
+          <div class="person-name-and-party">
+            <a href="{% url 'person-view' result.id result.name|slugify %}" class="candidate-name">{{ result.name }}</a>
+            <span class="party">{{ result.party_name }}</span>
+          </div>
+          <a href="{% url 'person-update' person_id=result.pk %}" class="button secondary small">Add more details</a>
+        </li>
+      {% empty %}
         <p>No results found.</p>
-        {% endfor %}
-        </ul>
+      {% endfor %}
+    </ul>
 
-        {% if page.has_previous or page.has_next %}
-            <div>
-                {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&larr; Previous{% if page.has_previous %}</a>{% endif %}
-                |
-                {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &rarr;{% if page.has_next %}</a>{% endif %}
-            </div>
+
+
+    <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+          <a href="?page=1&q={{ query }}">&laquo; first</a>
+          <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}">previous</a>
         {% endif %}
-    {% endif %}
 
-    <h3>Add a new candidate</h3>
+      <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
 
-    {% url 'person-create-select-election' as select_election_view %}
-    <p>If we don't have this person in our database already, you can add them yourself.</p>
-    <p>Please check that they aren't in the results above first – you can update
-      existing candidates if they are standing in another election!</p>
-    <a href="{{ select_election_view }}?name={{ query }}" class="button">
-      Add "{{ query }}" as a new candidate</a>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}">last &raquo;</a>
+      {% endif %}
+    </span>
+    </div>
+  {% endif %}
+
+  <h3>Add a new candidate</h3>
+
+  {% url 'person-create-select-election' as select_election_view %}
+  <p>If we don't have this person in our database already, you can add them yourself.</p>
+  <p>Please check that they aren't in the results above first – you can update
+    existing candidates if they are standing in another election!</p>
+  <a href="{{ select_election_view }}?name={{ query }}" class="button">
+    Add "{{ query }}" as a new candidate</a>
 
 
 

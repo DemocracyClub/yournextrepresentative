@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import transaction
 from django.db.models import JSONField
-from django.contrib.postgres.indexes import GistIndex
+from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import (
     SearchVectorField,
     SearchQuery,
@@ -301,7 +301,7 @@ class Person(TimeStampedModel, models.Model):
     class Meta:
         verbose_name_plural = "People"
         indexes = (
-            GistIndex(
+            GinIndex(
                 fields=["name_search_vector"], name="name_vector_search_index"
             ),
         )
@@ -852,17 +852,14 @@ class PersonNameSynonymLookup(Lookup):
         params = lhs_params + rhs_params
         return (
             """
-            %s @@
-                tsquery_or(
-                    %s,
-                    ts_rewrite(
+            %s @@ ts_rewrite(
                         %s,
-                        'SELECT term, synonym FROM people_personnamesynonym'
+                        'SELECT term, synonym FROM people_personnamesynonym
+                        WHERE ''%s''::tsquery @> term'
                     )
-                )
             """
-            % (lhs, rhs, rhs),
-            params + params,
+            % (lhs, rhs, params[1]),
+            params,
         )
 
 

@@ -43,9 +43,19 @@ POPULATE_NAME_SEARCH_COLUMN_SQL = """
     UPDATE people_person
     SET name_search_vector = sq.terms
     FROM (
-        SELECT pp.id as id, setweight(to_tsvector(coalesce(pp.name, '')), 'A')
-               ||
-           setweight(to_tsvector(coalesce(string_agg(ppon.name, ' '), '')), 'B') as terms
+        SELECT pp.id as id,
+            ---- First and last names are weight A
+            --- First Name
+            setweight(to_tsvector('simple', split_part(pp.name, ' ', 1)), 'A')
+            ||
+            --- Last Name
+            setweight(to_tsvector('simple', regexp_replace(pp.name, '^.* ', '')), 'A')
+            ||
+            --- Full name is weight B, further boosting first and last names, adding middle names
+            setweight(to_tsvector('simple', coalesce(pp.name, '')), 'B')
+            ||
+            --- Other names are weight C
+            setweight(to_tsvector('simple', coalesce(string_agg(ppon.name, ' '), '')), 'C') as terms
         FROM people_person pp
         LEFT JOIN popolo_othername ppon
         ON pp.id = ppon.object_id
@@ -68,8 +78,17 @@ NAME_SEARCH_TRIGGER_SQL = """
                                    ), ','
                            ) as other_names
             )
-            SELECT setweight(to_tsvector('pg_catalog.english', coalesce(new.name, '')), 'A') ||
-                   setweight(to_tsvector(coalesce(po_names.other_names, '')), 'D')
+            SELECT
+            setweight(to_tsvector('simple', split_part(new.name, ' ', 1)), 'A')
+            ||
+            --- Last Name
+            setweight(to_tsvector('simple', regexp_replace(new.name, '^.* ', '')), 'A')
+            ||
+            --- Full name is weight B, further boosting first and last names, adding middle names
+            setweight(to_tsvector('simple', coalesce(new.name, '')), 'B')
+            ||
+            --- Other names are weight C
+            setweight(to_tsvector('simple', coalesce(string_agg(po_names.other_names, ' '), '')), 'C') as terms
             FROM po_names
         );
       return new;
