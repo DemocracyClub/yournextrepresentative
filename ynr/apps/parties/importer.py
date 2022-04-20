@@ -4,11 +4,14 @@ import re
 from datetime import datetime
 from tempfile import NamedTemporaryFile
 from urllib.parse import urlencode
+from django.db import connection
+from django.contrib.admin.utils import NestedObjects
 
 import dateutil.parser
 import magic
 import requests
 
+from candidates.models.popolo_extra import UnsafeToDelete
 from .constants import (
     CORRECTED_DESCRIPTION_DATES,
     CORRECTED_PARTY_NAMES_IN_DESC,
@@ -131,6 +134,10 @@ class ECPartyImporter:
 
         The lower number ID is always first.
 
+        After successfully creating the joint party, delete the
+        PartyDescription related to the individual parties, to make
+        sure the joint party is always used.
+
         """
 
         qs = PartyDescription.objects.filter(
@@ -185,6 +192,16 @@ class ECPartyImporter:
                 )
                 if created:
                     self.collector.append(joint_party)
+
+            # check the description is safe to delete
+            nested_objects = NestedObjects(using=connection.cursor().db.alias)
+            nested_objects.collect([description])
+            if len(nested_objects.nested()) > 1:
+                raise UnsafeToDelete(
+                    f"Can't delete election {description} with related objects"
+                )
+
+            description.delete()
 
 
 class ECParty(dict):
