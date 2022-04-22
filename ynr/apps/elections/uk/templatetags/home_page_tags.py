@@ -1,3 +1,4 @@
+from datetime import datetime
 from django import template
 from django.conf import settings
 from django.db.models import Sum, Count, Func, F, Value, TextField, Q
@@ -146,9 +147,8 @@ def current_election_stats(context):
 
     if context["SHOW_ELECTION_STATS"]:
         context["election_name"] = settings.SOPN_TRACKER_INFO["election_name"]
-        election_qs = Election.objects.filter(
-            election_date=settings.SOPN_TRACKER_INFO["election_date"]
-        )
+        election_date = settings.SOPN_TRACKER_INFO["election_date"]
+        election_qs = Election.objects.filter(election_date=election_date)
 
         stats = {
             "elections": election_qs.count(),
@@ -160,6 +160,16 @@ def current_election_stats(context):
             ).count(),
         }
         context["elction_stats"] = stats
+
+        try:
+            election_date_obj = datetime.strptime(
+                election_date, "%Y-%m-%d"
+            ).date()
+            context["SHOW_SPREADSHEET_LINKS"] = (
+                election_date_obj > datetime.now().date()
+            )
+        except ValueError:
+            context["SHOW_SPREADSHEET_LINKS"] = False
 
     return context
 

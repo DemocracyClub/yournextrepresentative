@@ -9,5 +9,11 @@
 <p>{{ elction_stats.candidates|intcomma }} candidates</p>
 
 <p><a href="/help/api">Get the data</a></p>
+
+{% if SHOW_SPREADSHEET_LINKS %}
+    {% include "includes/spreadsheet_links.html" %}
+{% endif %}
+
+</div>
 {% endcache %}
 {% endif %}
