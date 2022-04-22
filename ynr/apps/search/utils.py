@@ -2,10 +2,11 @@ import re
 
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db import connection
-from django.db.models import Count, F, Max
+from django.db.models import Count, F, Subquery, OuterRef
 
 from people.managers import PersonQuerySet
 from people.models import Person
+from popolo.models import Membership
 
 
 def search_person_by_name(name: str, synonym: bool = False) -> PersonQuerySet:
@@ -65,11 +66,16 @@ def search_person_by_name(name: str, synonym: bool = False) -> PersonQuerySet:
         query = SearchQuery(name, search_type="raw", config="simple")
 
     # Build the query
+    membership_subquery = Subquery(
+        Membership.objects.filter(person=OuterRef("id"))
+        .order_by("-pk")
+        .values("party_name")[:1]
+    )
     qs = (
         Person.objects.annotate(membership_count=Count("memberships"))
         .filter(name_search_vector=query)
         .annotate(vector=F("name_search_vector"))
-        .annotate(party_name=Max("memberships__party_name"))
+        .annotate(party_name=membership_subquery)
         .annotate(
             rank=SearchRank(
                 F("vector"),
