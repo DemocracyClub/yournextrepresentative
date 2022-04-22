@@ -4,9 +4,9 @@
 {% if SHOW_ELECTION_STATS %}
 {% cache 43200 ELECTION_STATS %}
 <h2>🗳 {{ election_name }} 🗳 </h2>
-<p>{{ elction_stats.elections|intcomma }} elections</p>
-<p>{{ elction_stats.seats_contested|intcomma }} seats contested</p>
-<p>{{ elction_stats.candidates|intcomma }} candidates</p>
+<p>{{ election_stats.elections|intcomma }} elections</p>
+<p>{{ election_stats.seats_contested|intcomma }} seats contested</p>
+<p>{{ election_stats.candidates|intcomma }} candidates</p>
 
 <p><a href="/help/api">Get the data</a></p>
 

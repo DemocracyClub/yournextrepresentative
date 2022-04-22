@@ -159,7 +159,7 @@ def current_election_stats(context):
                 ballot__election__in=election_qs
             ).count(),
         }
-        context["elction_stats"] = stats
+        context["election_stats"] = stats
 
         try:
             election_date_obj = datetime.strptime(
