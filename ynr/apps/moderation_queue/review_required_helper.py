@@ -238,6 +238,29 @@ class RevertedEdits(BaseReviewRequiredDecider):
             return self.Status.UNDECIDED
 
 
+class LockedBallotNameEdits(BaseReviewRequiredDecider):
+    """If a user has made a name edit to a locked ballot, flag it"""
+
+    def review_description_text(self):
+        return "Edit of name of current candidate with locked ballot"
+
+    def needs_review(self):
+        if self.logged_action.person:
+            la = self.logged_action
+            qs = la.person.memberships.filter(
+                ballot__election__current=True, ballot__candidates_locked=True
+            )
+            for version_diff in la.person.version_diffs:
+                if version_diff["version_id"] == la.popit_person_new_version:
+                    this_diff = version_diff["diffs"][0]["parent_diff"]
+                    for op in this_diff:
+                        if op["path"] == "name":
+                            if qs.exists():
+                                return self.Status.NEEDS_REVIEW
+                            return self.Status.UNDECIDED
+        return self.Status.UNDECIDED
+
+
 class EditTypesThatNeverNeedReview(BaseReviewRequiredDecider):
     def review_description_text(self):
         return "Type of edit that never needs a review"
@@ -296,6 +319,11 @@ REVIEW_TYPES = (
         type="needs_review_due_to_too_many_reverts",
         label="Too many reverts in 24 hours",
         cls=RevertedEdits,
+    ),
+    ReviewType(
+        type="needs_review_due_to_name_change_in_locked_ballot",
+        label="Edit of name of current candidate with locked ballot",
+        cls=LockedBallotNameEdits,
     ),
 )
 
