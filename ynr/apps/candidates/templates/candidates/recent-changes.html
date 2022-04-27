@@ -88,13 +88,10 @@
     {% if action.diff_html %}
     <tbody class="diff-row">
       <tr>
+        <td></td>
         <td colspan="6">
           <div class="diff-html">
-            {{ action.diff_html|safe }}
-            <p>Added</p>
-            
-            <p>Removed</p>
-            <p>Changed</p>
+            <p>{{ action.person.version_fields }}</p>
           </div>
         </td>
       </tr>
