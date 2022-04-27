@@ -41,4 +41,4 @@ class TestRecentChangesView(TestUserMixin, WebTest):
         # Just a smoke test to check that the page loads:
         response = self.app.get("/recent-changes")
         table = response.html.find("table")
-        self.assertEqual(3, len(table.find_all("tr")))
+        self.assertEqual(5, len(table.find_all("tr")))

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load humanize %}
 {% load get_query %}
+{% load pipeline %}
 
 {% block body_class %}{% endblock %}
 
@@ -60,14 +61,16 @@
     <th>Candidate edited</th>
     <th>Information source</th>
     <th>Needs review?</th>
+    <th>View diff</th>
   </tr>
   {% for action in actions %}
-    <tr>
-      <td>
-        <a href="{% url "recent-changes" %}?username={{ action.user.username }}" title="Filter by this user only">
-          {{ action.user.username }}
-        </a>
-      </td>
+    <tbody>
+      <tr>
+        <td>
+          <a href="{% url "recent-changes" %}?username={{ action.user.username }}" title="Filter by this user only">
+            {{ action.user.username }}
+          </a>
+        </td> 
       <td>{{ action.created|naturaltime }}</td>
       <td>{{ action.get_action_type_display }}</td>
       {% if action.person %}
@@ -77,7 +80,26 @@
       {% endif %}
       <td>{{ action.source }}</td>
       <td>{{ action.flagged_reason|default_if_none:"" }}</td>
-    </tr>
+      {% if action.diff_html %}
+      <td><button id="diff-button-{{ forloop.counter }}" class="button secondary tiny js-toggle-diff-row">Show</button></td>
+      {% endif %} 
+      </tr>
+    </tbody>
+    {% if action.diff_html %}
+    <tbody class="diff-row">
+      <tr>
+        <td colspan="6">
+          <div class="diff-html">
+            {{ action.diff_html|safe }}
+            <p>Added</p>
+            
+            <p>Removed</p>
+            <p>Changed</p>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+    {% endif %}
   {% endfor %}
 </table>
 
