@@ -83,33 +83,33 @@
       </div>
       {% else %}
           {% if ballot.has_results %}
-          <div class="status_done">
-              <strong>Winner(s) recorded</strong>
-              {% if ballot.can_enter_votes_cast %}
-                <p>
-                  <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">
-                    Edit the results
-                  </a>
-                </p>
-              {% endif %}
-          </div>
+            <div class="status_done">
+                <strong>Winner(s) recorded</strong>
+                {% if ballot.can_enter_votes_cast %}
+                  <p>
+                    <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">
+                      Edit the results
+                    </a>
+                  </p>
+                {% endif %}
+            </div>
           {% elif ballot.uncontested %}
-          <div class="status_done">
-              <strong>Winner(s) recorded</strong>
-              <i>Uncontested Ballot</i>
-          </div> 
+            <div class="status_done">
+                <strong>Winner(s) recorded</strong>
+                <i>Uncontested Ballot</i>
+            </div>
           {% elif ballot.can_enter_votes_cast %}
-          <div class="status_in_progress">
-              <strong>Winner(s) unknown</strong>:
-              <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">
-                Tell us who won!
-              </a>
-          </div>
+            <div class="status_in_progress">
+                <strong>Winner(s) unknown</strong>:
+                <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">
+                  Tell us who won!
+                </a>
+            </div>
           {% else %}
-          <div class="status_in_progress">
-              <strong>Winner(s) unknown</strong>:
-              <p>Help by marking the elected candidates!</p>
-          </div>
+            <div class="status_in_progress">
+                <strong>Winner(s) unknown</strong>:
+                <p>At present we do not support results for {{ ballot.nice_voting_system }} ballots, but you can still help by marking the elected candidates!</p>
+            </div>
           {% endif %}
       {% endif %}
     {% endif %}

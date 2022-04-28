@@ -260,6 +260,21 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
             with self.subTest(msg=str(ballot)):
                 self.assertTrue(ballot.is_welsh_run)
 
+    def test_nice_voting_system(self):
+        ballots = [
+            ("Single Transferable Vote", Ballot(voting_system="STV")),
+            ("Supplementary Vote", Ballot(voting_system="sv")),
+            ("First Past The Post", Ballot(voting_system="FPTP")),
+            ("Additional Member System", Ballot(voting_system="AMS")),
+        ]
+        for ballot in ballots:
+            with self.subTest(msg=ballot[0]):
+                self.assertEqual(ballot[1].nice_voting_system, ballot[0])
+
+        # test ballot with unknown voting system slug
+        ballot = Ballot(voting_system="PR")
+        self.assertEqual(ballot.nice_voting_system, "PR")
+
 
 class BallotsWithResultsMixin(SingleBallotStatesMixin):
     """

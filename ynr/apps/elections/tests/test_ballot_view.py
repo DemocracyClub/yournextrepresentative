@@ -300,7 +300,9 @@ class TestBallotView(
 
         response = self.app.get(self.past_ballot.get_absolute_url())
         response.mustcontain("Winner(s) unknown")
-        response.mustcontain("Help by marking the elected candidates!")
+        response.mustcontain(
+            "At present we do not support results for Single Transferable Vote ballots, but you can still help by marking the elected candidates!"
+        )
         response.mustcontain(no="Tell us who won")
 
     def test_constituency_with_winner_record_results_user(self):
