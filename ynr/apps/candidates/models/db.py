@@ -4,6 +4,7 @@ from enum import Enum, unique
 
 from django.contrib.auth.models import User
 from django.db.models import JSONField
+from django.contrib.postgres.fields import ArrayField
 from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.urls import reverse
@@ -152,6 +153,13 @@ class LoggedAction(models.Model):
         default=EditType.USER.name,
         max_length=20,
     )
+    version_fields = ArrayField(
+        models.CharField(max_length=200),
+        null=True,
+        blank=True,
+        help_text="The fields that have changed",
+    )
+
     approved = JSONField(null=True)
 
     objects = LoggedActionQuerySet.as_manager()
@@ -227,7 +235,7 @@ class LoggedAction(models.Model):
 
         if self.person:
             self.person_pk = self.person.pk
-
+        self.version_fields = self.version_fields()
         super().save(**kwargs)
 
         if not has_initial_pk and self.flagged_type and self.person:

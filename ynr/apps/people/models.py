@@ -342,7 +342,6 @@ class Person(TimeStampedModel, models.Model):
 
         self.versions = versions
 
-    @property
     def version_fields(self):
         diff = get_version_diffs(self.versions)[0]["diffs"][0]["parent_diff"]
         field_list = [i["path"] for i in diff]
