@@ -35,7 +35,7 @@ class Command(BaseCommand):
                 except IndexError:
                     continue
 
-        url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTI29qljbILmtJ9QD0WUAjufnwWo-vb3Yn0kfmv0BbS7rNm-WPZ_sdWZyLY_L4vHmbw41gKkzIl94__/pub?output=csv"
+        url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSrvvnN4kPPMWqFWKmlSvsAGY64Ary_Fh3o268nym2HLU-LUmqNVejpOYMzBNBEgVtnZVBWlbOeKBzC/pub?gid=0&single=true&output=csv"
         data = []
         for row in read_csv_from_url(url):
             uses_mg = row.get("Uses MG?") or ""
