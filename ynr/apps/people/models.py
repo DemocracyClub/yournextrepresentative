@@ -343,15 +343,18 @@ class Person(TimeStampedModel, models.Model):
         self.versions = versions
 
     def version_fields(self):
-        diff = get_version_diffs(self.versions)[0]["diffs"][0]["parent_diff"]
-        field_list = [i["path"] for i in diff]
-        if "extra_fields/favourite_biscuit" in field_list:
-            field_list.remove("extra_fields/favourite_biscuit")
-            field_list.append("favourite_biscuit")
-        field_list = [
-            i.replace("_", " ").split("/")[-1].title() for i in field_list
-        ]
-        return ", ".join(field_list)
+        if self.versions:
+            diff = get_version_diffs(self.versions)[0]["diffs"][0][
+                "parent_diff"
+            ]
+            field_list = [i["path"] for i in diff]
+            if "extra_fields/favourite_biscuit" in field_list:
+                field_list.remove("extra_fields/favourite_biscuit")
+                field_list.append("favourite_biscuit")
+            field_list = [
+                i.replace("_", " ").split("/")[-1].title() for i in field_list
+            ]
+            return field_list
 
     def get_slug(self):
         return slugify(self.name)

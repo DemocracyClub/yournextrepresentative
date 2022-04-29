@@ -235,7 +235,7 @@ class LoggedAction(models.Model):
 
         if self.person:
             self.person_pk = self.person.pk
-        self.version_fields = self.version_fields()
+            self.version_fields = self.person.version_fields()
         super().save(**kwargs)
 
         if not has_initial_pk and self.flagged_type and self.person:
