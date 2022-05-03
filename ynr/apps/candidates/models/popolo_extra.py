@@ -306,6 +306,17 @@ class Ballot(EEModifiedMixin, models.Model):
         """
         return self.voting_system in [self.VOTING_SYSTEM_FPTP]
 
+    @property
+    def nice_voting_system(self):
+        voting_systems = {
+            "STV": "Single Transferable Vote",
+            "FPTP": "First Past The Post",
+            "SV": "Supplementary Vote",
+            "AMS": "Additional Member System",
+        }
+        voting_system_slug = self.voting_system.upper()
+        return voting_systems.get(voting_system_slug, voting_system_slug)
+
     def safe_delete(self):
         collector = NestedObjects(using=connection.cursor().db.alias)
         collector.collect([self])
