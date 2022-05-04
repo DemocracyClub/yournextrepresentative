@@ -10,6 +10,9 @@
       <li>
         <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
         <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}" class="button tiny">Add results</a>
+        {% if ballot.results_by_bot %}
+          <p>🤖 A robot will likely import these results. Skip me for now.</p>
+        {% endif %}
       </li>
     {% endfor %}
   </ul>

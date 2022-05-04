@@ -1,5 +1,6 @@
 import csv
 from datetime import date
+import os
 
 from braces.views import LoginRequiredMixin
 from django.http import HttpResponse
@@ -10,6 +11,7 @@ from candidates.models import Ballot
 from popolo.models import Membership
 from results.models import ResultEvent
 from uk_results.forms import ResultSetForm
+from ynr.apps import resultsbot
 
 
 class ResultsHomeView(TemplateView):
@@ -79,6 +81,29 @@ class CurrentElectionsWithNoResuts(TemplateView):
         )
 
         return context
+
+    def get_ballot_paper_ids_from_csv(self):
+        path = os.path.join(
+            os.path.dirname(resultsbot.__file__), "election_id_to_url.csv"
+        )
+        with open(path) as f:
+            csv_file = csv.reader(f)
+            ballot_paper_ids = []
+            for row in csv_file:
+                try:
+                    ballot_paper_ids.append(row[0])
+                except IndexError:
+                    continue
+            return ballot_paper_ids
+
+    def results_by_bot(self):
+        elections = self.context["elections"]
+        ballot_paper_ids = self.get_ballot_paper_ids_from_csv()
+        for election in elections:
+            if election.ballot_paper_id in ballot_paper_ids:
+                return True
+            else:
+                return False
 
 
 class Parl19ResultsCSVView(TemplateView):
