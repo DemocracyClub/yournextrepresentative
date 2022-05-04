@@ -1,3 +1,4 @@
+local.city-of-london.aldersgate.2022-03-24, https://aldersgate.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=1
 local.swindon.2018-05-03,https://ww5.swindon.gov.uk/moderngov/mgWebService.asmx/GetElectionResults?lElectionId=1
 local.aylesbury-vale.2018-05-03,https://aylesburyvale.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=51
 local.barking-and-dagenham.2018-05-03,https://modgov.lbbd.gov.uk/internet/mgWebService.asmx/GetElectionResults?lElectionId=5
