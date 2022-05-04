@@ -121,8 +121,8 @@ class CandidateBot(object):
         """
         self.edit_field("email", email)
 
-    def add_twitter_username(self, username):
-        self.edit_field("twitter_username", username)
+    def add_twitter_username(self, username, update=False):
+        self.edit_field("twitter_username", username, update)
 
     def add_homepage_url(self, username):
         self.edit_field("homepage_url", username)
