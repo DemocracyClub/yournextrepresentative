@@ -124,3 +124,10 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
             url, user=self.user_who_can_record_results, expect_errors=True
         )
         self.assertEqual(resp.status_code, 200)
+
+    def test_results_home_view(self):
+        response = self.app.get(reverse("results-home"))
+        self.assertContains(
+            response,
+            'Find <a href="/elections/?has_results=0&amp;is_cancelled=0">an area without results yet</a>',
+        )
