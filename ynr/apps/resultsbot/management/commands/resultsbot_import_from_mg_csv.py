@@ -54,15 +54,27 @@ class Command(BaseCommand):
                     continue
 
                 candidates = list(importer.candidates(div))
-                all_candidates += candidates
-                has_any_votes = any([c.votes for c in candidates])
-
-                if has_any_votes:
-                    print("Adding results for {}".format(div.title))
-                    bot = ResultsBot()
-                    bot.add_results(
-                        division=div,
-                        candidate_list=candidates,
-                        source=importer.api_url_to_web_url(url),
+                candidates_len = len(candidates)
+                if candidates_len != div.local_area.membership_set.count():
+                    print(
+                        f"Only found {candidates_len} candidates for {div.local_area.ballot_paper_id}, skipping"
                     )
+                    continue
+
+                # avoids storing a partial result
+                has_all_votes = all([c.votes for c in candidates])
+                if not has_all_votes:
+                    print(
+                        f"Couldn't find a vote count for every candidate, skipping {div.local_area.ballot_paper_id}"
+                    )
+                    continue
+
+                all_candidates += candidates
+                print("Adding results for {}".format(div.title))
+                bot = ResultsBot()
+                bot.add_results(
+                    division=div,
+                    candidate_list=candidates,
+                    source=importer.api_url_to_web_url(url),
+                )
         print(len(all_candidates))

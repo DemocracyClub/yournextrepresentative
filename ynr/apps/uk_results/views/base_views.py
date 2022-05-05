@@ -2,8 +2,9 @@ import csv
 from datetime import date
 
 from braces.views import LoginRequiredMixin
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.views.generic import FormView, TemplateView
 
 from candidates.models import Ballot
@@ -18,6 +19,10 @@ class ResultsHomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        elections_list = reverse("election_list_view")
+        context[
+            "elections_without_results_url"
+        ] = f"{elections_list}?has_results=0&is_cancelled=0"
         return context
 
     def test_func(self, user):
@@ -37,6 +42,12 @@ class BallotPaperResultsUpdateView(LoginRequiredMixin, FormView):
             voting_system=Ballot.VOTING_SYSTEM_FPTP,
             ballot_paper_id=self.kwargs["ballot_paper_id"],
         )
+
+        if not self.ballot.polls_closed:
+            raise Http404(
+                f"Polls are still open for {self.ballot.ballot_paper_id}. Please check back after polls close at 10pm."
+            )
+
         try:
             kwargs["instance"] = self.ballot.resultset
         except:
