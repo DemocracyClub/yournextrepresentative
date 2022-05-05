@@ -7,8 +7,11 @@ from django_extensions.db.models import TimeStampedModel
 class ResultSet(TimeStampedModel):
     ballot = models.OneToOneField("candidates.Ballot", on_delete=models.CASCADE)
 
-    num_turnout_reported = models.PositiveIntegerField(
-        null=True, verbose_name="Reported Turnout"
+    num_turnout_reported = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        verbose_name="Reported Turnout",
     )
     turnout_percentage = models.FloatField(
         validators=[MinValueValidator(0), MaxValueValidator(100)],
