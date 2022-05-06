@@ -1,4 +1,3 @@
-from typing import OrderedDict
 from django.db.models import Prefetch
 from django.db.models.functions import Coalesce
 from django.utils.decorators import method_decorator
@@ -76,8 +75,9 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_class = BallotFilter
 
     def filter_queryset(self, queryset):
+
         try:
-            return super().filter_queryset(queryset)
+            queryset = super().filter_queryset(queryset)
         except BadPostcodeException as e:
             # Catch BadPostcodeException and replace the
             # non-ascii chars in the initial exception
@@ -86,28 +86,36 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
             error = error.replace("”", '"')
             raise ValidationError(detail=error)
 
+        is_last_updated_query = self.request.query_params.get("last_updated")
+        if is_last_updated_query:
+            queryset = queryset[:1000]
+
+        return queryset
+
     def list(self, request, *args, **kwargs):
         """
         If the last_updated filter param is used objects are ordered oldest
         changes first, and in maximum chunks of 200
         """
-        is_last_updated_query = self.request.query_params.get("last_updated")
-        if not is_last_updated_query:
-            return super().list(request, *args, **kwargs)
+        return super().list(request, *args, **kwargs)
+        # TEMP return a paginated response to increase speed 2022 elections imported
+        # is_last_updated_query = self.request.query_params.get("last_updated")
+        # if not is_last_updated_query:
+        #     return super().list(request, *args, **kwargs)
 
-        queryset = self.filter_queryset(self.get_queryset())
-        queryset = queryset[:200]
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(
-            OrderedDict(
-                [
-                    ("count", len(serializer.data)),
-                    ("next", None),
-                    ("previous", None),
-                    ("results", serializer.data),
-                ]
-            )
-        )
+        # queryset = self.filter_queryset(self.get_queryset())
+        # queryset = queryset[:200]
+        # serializer = self.get_serializer(queryset, many=True)
+        # return Response(
+        #     OrderedDict(
+        #         [
+        #             ("count", len(serializer.data)),
+        #             ("next", None),
+        #             ("previous", None),
+        #             ("results", serializer.data),
+        #         ]
+        #     )
+        # )
 
     def get_queryset(self):
         """
