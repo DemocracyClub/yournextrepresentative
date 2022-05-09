@@ -96,7 +96,18 @@ class ModGovImporter(BaseImporter):
 
     def get_data(self):
         try:
-            self.data = requests.get(self.url).content
+            self.data = requests.get(
+                self.url,
+                headers={
+                    "Connection": "keep-alive",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0",
+                    "Upgrade-Insecure-Requests": "1",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "en-US,en;q=0.5",
+                    "Accept-Encoding": "gzip, deflate",
+                },
+                verify=False,
+            ).content
             self.soup = BeautifulSoup(self.data, "xml")
         except requests.RequestException:
             print("Error getting {}".format(self.url))

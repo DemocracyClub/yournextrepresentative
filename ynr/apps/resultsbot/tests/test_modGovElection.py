@@ -19,7 +19,7 @@ KIRKLEES_XML = open(
 ).read()
 
 
-def mock_mod_gov(url):
+def mock_mod_gov(*args, **kwargs):
 
     return mock.Mock(content=KIRKLEES_XML)
 
