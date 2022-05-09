@@ -50,6 +50,12 @@ class Command(BaseCommand):
                 ):
                     continue
 
+                if (
+                    div.local_area.ballot_paper_id
+                    == "local.kingston-upon-thames.berrylands.2022-05-05"
+                ):
+                    continue
+
                 if hasattr(div.local_area, "resultset"):
                     continue
 
