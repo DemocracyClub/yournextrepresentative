@@ -145,8 +145,8 @@ local.stockport.2021-05-06,http://democracy.stockport.gov.uk/mgWebService.asmx/G
 local.west-lancashire.2021-05-06,https://democracy.westlancs.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=3
 local.wirral.2021-05-06,https://democracy.wirral.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=10
 local.west-sussex.2021-05-06,https://westsussex.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=18
-local.isle-of-anglesey.2022-05-05,https://democracy.anglesey.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=18
 local.barking-and-dagenham.2022-05-05,https://modgov.lbbd.gov.uk/Internet/mgWebService.asmx/GetElectionResults?lElectionId=9
+local.flintshire.2022-05-05,https://committeemeetings.flintshire.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=80
 local.basildon.2022-05-05,https://www.basildonmeetings.info/mgWebService.asmx/GetElectionResults?lElectionId=52
 local.bexley.2022-05-05,https://democracy.bexley.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=16
 local.brent.2022-05-05,https://democracy.brent.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=44
@@ -169,7 +169,6 @@ local.lambeth.2022-05-05,https://moderngov.lambeth.gov.uk/mgWebService.asmx/GetE
 local.lewisham.2022-05-05,https://councilmeetings.lewisham.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=9
 local.maidstone.2022-05-05,https://meetings.maidstone.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=58
 local.merton.2022-05-05,https://merton.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=23
-local.monmouthshire.2022-05-05,https://democracy.monmouthshire.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=12
 local.newcastle-upon-tyne.2022-05-05,https://democracy.newcastle.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=13
 local.portsmouth.2022-05-05,https://democracy.portsmouth.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=15
 local.richmond-upon-thames.2022-05-05,https://cabnet.richmond.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=18
@@ -185,3 +184,11 @@ local.wandsworth.2022-05-05,https://democracy.wandsworth.gov.uk/mgWebService.asm
 local.wirral.2022-05-05,https://democracy.wirral.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=13
 local.wokingham.2022-05-05,https://wokingham.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=21
 local.wolverhampton.2022-05-05,https://wolverhampton.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=33
+local.tameside.2022-05-05,https://tameside.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=59
+local.kingston-upon-thames.2022-05-05,https://moderngov.kingston.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=21
+local.tower-hamlets.2022-05-05,https://democracy.towerhamlets.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=52
+local.gwynedd.2022-05-05,https://democracy.gwynedd.llyw.cymru/mgWebService.asmx/GetElectionResults?lElectionId=9
+local.isle-of-anglesey.2022-05-05,https://democracy.anglesey.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=17
+local.monmouthshire.2022-05-05,https://democracy.monmouthshire.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=12
+local.neath-port-talbot.2022-05-05,https://democracy.npt.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=91
+
