@@ -71,7 +71,7 @@ class Command(BaseCommand):
         election_qs = Election.objects.all()
         if election_slug:
             election_qs = election_qs.filter(slug=election_slug)
-        for election in election_qs:
+        for election in election_qs.iterator():
             safely_write(
                 self.slug_to_file_name(election.slug),
                 membership_by_election.get(election.slug, []),

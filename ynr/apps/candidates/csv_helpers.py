@@ -36,7 +36,9 @@ def memberships_dicts_for_csv(election_slug=None, post_slug=None):
     memberships_by_election = defaultdict(list)
     elected_by_election = defaultdict(list)
 
-    for membership in memberships:
+    # NB by using iterator this will ignore previous prefetch_related
+    # calls see https://docs.djangoproject.com/en/4.0/ref/models/querysets/#iterator
+    for membership in memberships.iterator(chunk_size=4000):
         election_slug = membership.ballot.election.slug
         line = membership.dict_for_csv(redirects=redirects)
         memberships_by_election[election_slug].append(line)

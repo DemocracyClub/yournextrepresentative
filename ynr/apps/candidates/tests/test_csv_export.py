@@ -128,7 +128,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         )
 
     def test_as_dict_2010(self):
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(8):
             memberships_dicts, elected = memberships_dicts_for_csv(
                 self.earlier_election.slug
             )
@@ -153,7 +153,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             + f"2009,Tessa Jowell,parl.2015-05-07,parl.65913.2015-05-07,{election_date},1,party:53,Labour Party,,,65913,Camberwell and Peckham,House of Commons,,Ms,DBE,female,,,jowell@example.com,,,,,,,,{tessa_image_url},,example-license,john,A photo of Tessa Jowell,,True,False,,,,uk.org.publicwhip/person/10326,http://www.theyworkforyou.com/mp/10326,PP53,,False,Q123456,,,\r\n"
         )
 
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(14):
             memberships_dicts, elected = memberships_dicts_for_csv()
         all_members = []
         for slug, members in memberships_dicts.items():
