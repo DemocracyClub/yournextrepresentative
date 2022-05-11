@@ -209,6 +209,11 @@ class LoggedAction(models.Model):
         except VersionNotFound as e:
             return "<p>{}</p>".format(escape(str(e)))
 
+    def changed_version_fields(self):
+        if not self.version_fields:
+            return ""
+        return ", ".join(self.version_fields)
+
     def set_review_required(self):
         """
         Runs all `ReviewRequiredDecider` classed over a LoggedAction
