@@ -239,8 +239,9 @@ class LoggedAction(models.Model):
             self.set_review_required()
 
         if self.person:
+            version_id = self.popit_person_new_version
             self.person_pk = self.person.pk
-            self.version_fields = self.person.version_fields()
+            self.version_fields = self.person.version_fields(version_id)
         super().save(**kwargs)
 
         if not has_initial_pk and self.flagged_type and self.person:
