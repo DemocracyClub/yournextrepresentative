@@ -214,6 +214,10 @@ class LoggedAction(models.Model):
             return ""
         return ", ".join(self.version_fields)
 
+    def candidacy_edit(self):
+        if self.version_fields and "candidacies" in self.diff_html:
+            return True
+
     def set_review_required(self):
         """
         Runs all `ReviewRequiredDecider` classed over a LoggedAction

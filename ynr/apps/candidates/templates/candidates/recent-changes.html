@@ -81,7 +81,7 @@
       </td>
       <td>
         {{ action.get_action_type_display }}
-        {% if action.get_action_type_display == "Person updated" %}
+        {% if action.get_action_type_display == "Person updated" and not action.candidacy_edit %}
         <br>
         <em>{{ action.changed_version_fields }}</em>
         {% endif %}
