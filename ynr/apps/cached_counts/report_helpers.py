@@ -597,6 +597,14 @@ class GenderSplitByParty(BaseReport):
         return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
 
 
+class GenderSplitWinnersByParty(GenderSplitByParty):
+    name = "Gender Split of Winners By Party"
+
+    def get_qs(self):
+        self.membership_qs = self.membership_qs.filter(elected=True)
+        return super().get_qs()
+
+
 class GenderSplitByRegion(BaseReport):
     name = "Gender Split By Region"
 
