@@ -524,6 +524,14 @@ class GenderSplitByDate(BaseReport):
         return "\n".join(["\t".join([str(c) for c in r]) for r in report_list])
 
 
+class GenderSplitWinners(GenderSplitByDate):
+    name = "GenderSplit of winners by date"
+
+    def get_qs(self):
+        self.membership_qs = self.membership_qs.filter(elected=True)
+        return super().get_qs()
+
+
 class NamesAndGenderGuessOnly(BaseReport):
     """
     Filters the membership QS to only include candidates where a gender value
