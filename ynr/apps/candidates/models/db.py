@@ -212,7 +212,10 @@ class LoggedAction(models.Model):
     def changed_version_fields(self):
         if not self.version_fields:
             return ""
-        return ", ".join(self.version_fields)
+        pretty_fieldnames = [
+            field.replace("_", " ").title() for field in self.version_fields
+        ]
+        return ", ".join(pretty_fieldnames)
 
     def candidacy_edit(self):
         if self.version_fields and "candidacies" in self.diff_html:

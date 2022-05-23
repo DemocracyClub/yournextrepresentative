@@ -354,14 +354,11 @@ class Person(TimeStampedModel, models.Model):
             return []
 
         field_list = [i["path"] for i in diff]
-
         if "extra_fields/favourite_biscuits" in field_list:
             field_list.remove("extra_fields/favourite_biscuits")
             field_list.append("favourite_biscuits")
-        field_list = [
-            i.replace("_", " ").split("/")[-1].title() for i in field_list
-        ]
-        return field_list
+
+        return list(set(field.split("/")[0] for field in field_list))
 
     def get_slug(self):
         return slugify(self.name)
