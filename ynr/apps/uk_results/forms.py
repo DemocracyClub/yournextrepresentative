@@ -112,9 +112,6 @@ class ResultSetForm(forms.ModelForm):
         """
         cleaned_data = super().clean()
 
-        if self.ballot.winner_count is None:
-            return cleaned_data
-
         if len(self._tied_vote_winners) > self.ballot.winner_count:
             raise forms.ValidationError(
                 "Cant have more coin toss winners than seats up!"
@@ -160,12 +157,6 @@ class ResultSetForm(forms.ModelForm):
 
             instance.record_version()
 
-            # save the ballot if we were not able to record any winners due to a
-            # missing winner_count to make the ballot appear updated, allowing
-            # the vote counts to update in WCIVF
-            if not instance.ballot.winner_count:
-                instance.ballot.save()
-
             LoggedAction.objects.create(
                 user=instance.user,
                 action_type=ActionType.ENTERED_RESULTS_DATA,
@@ -191,10 +182,6 @@ class ResultSetForm(forms.ModelForm):
         Return a dictionary of fieldname, num votes for each of candidates with
         the most votes.
         """
-        # if we dont know how many winners there should be in total return early
-        if not self.ballot.winner_count:
-            return {}
-
         results = {
             field: votes
             for field, votes in self.cleaned_data.items()

@@ -9,9 +9,7 @@
   {% for post_info in posts %}
     <div>
       <h4>{{ post_info.ballot.post.label }} {{ post_info.ballot.cancelled_status_html }} {{ post_info.ballot.locked_status_html }}</h4>
-      {% if post_info.ballot.winner_count %}
       <p>{{ post_info.ballot.winner_count }} seat{{ post_info.ballot.winner_count|pluralize }} contested.</p>
-      {% endif %}
       {% if post_info.existing %}
       <h5>Existing {{ party.name }} candidates</h5>
       <ul>

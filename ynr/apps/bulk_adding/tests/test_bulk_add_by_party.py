@@ -133,33 +133,3 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # We should have created 2 logged actions, one for person-create
         # and one for person-update (adding the membership)
         self.assertEqual(LoggedAction.objects.count(), 2)
-
-    def test_when_winner_count_not_set(self):
-        """
-        Regression test to check that when a ballot does not have a winner_count
-        set that the bulk add form and review form renders without error
-        """
-        ballot = self.election.ballot_set.first()
-        ballot.winner_count = 0
-        ballot.save()
-
-        try:
-            form = self.app.get(
-                "/bulk_adding/party/parl.2015-05-07/PP52/", user=self.user
-            ).forms[1]
-        except TypeError as e:
-            self.fail(f"Test failed: {e}")
-
-        self.assertEqual(len(form.fields), 28)
-
-        form["source"] = "https://example.com/candidates/"
-        form[f"{ballot.pk}-0-name"] = "Pemphero Pasternak"
-
-        try:
-            response = form.submit().follow()
-        except TypeError as e:
-            self.fail(f"Test failed: {e}")
-
-        self.assertContains(
-            response, '<label>Add a new profile "Pemphero Pasternak"</label>'
-        )

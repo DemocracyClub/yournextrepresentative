@@ -3,6 +3,7 @@ from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
 
 from django.utils import timezone
+from django.db import IntegrityError
 from django.db.models import Max
 from django.db.models.functions import Greatest
 from mock import patch
@@ -429,6 +430,21 @@ class TestHasResultsOrNoResults(BallotsWithResultsMixin, TestCase):
         qs = Ballot.objects.ordered_by_latest_ee_modified()
         # check that the new ballot is now the first returned
         assert qs.first() == new_ballot
+
+
+class TestBallotSave(TestCase):
+    def test_winner_count_cannot_be_null(self):
+        """
+        Regression test to make sure that a Ballot cannot be saved
+        without a winner_count. If this test fails because of an
+        intentional change to allow winner_count to be null, you will
+        need to update the application code to expect cases where it
+        is null.
+        """
+        with self.assertRaisesRegex(
+            IntegrityError, 'null value in column "winner_count"'
+        ):
+            BallotPaperFactory(winner_count=None)
 
 
 class TestBallotQuerySetMethods(TestCase, SingleBallotStatesMixin):

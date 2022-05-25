@@ -64,7 +64,7 @@ class ConstituencyRecordWinnerView(
     def form_valid(self, form):
         all_winners_set = (
             self.ballot.membership_set.filter(elected=True).count()
-            >= self.ballot.get_winner_count
+            >= self.ballot.winner_count
         )
         if all_winners_set:
             form.add_error(

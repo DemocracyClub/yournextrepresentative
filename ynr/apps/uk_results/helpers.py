@@ -21,7 +21,7 @@ class RecordBallotResultsHelper:
         """
         self.ballot = ballot
         self.user = user
-        self.max_winners = self.ballot.get_winner_count
+        self.max_winners = self.ballot.winner_count
 
     @property
     def existing_winners(self):
