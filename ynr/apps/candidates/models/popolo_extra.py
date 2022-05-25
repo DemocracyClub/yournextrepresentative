@@ -238,7 +238,9 @@ class Ballot(EEModifiedMixin, models.Model):
     ballot_paper_id = models.CharField(blank=True, max_length=255, unique=True)
 
     candidates_locked = models.BooleanField(default=False)
-    winner_count = models.PositiveSmallIntegerField(blank=True, null=True)
+    winner_count = models.PositiveSmallIntegerField(
+        blank=True, null=False, default=1
+    )
     cancelled = models.BooleanField(default=False)
     replaces = models.OneToOneField(
         "Ballot",

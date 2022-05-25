@@ -140,7 +140,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         set that the bulk add form and review form renders without error
         """
         ballot = self.election.ballot_set.first()
-        ballot.winner_count = None
+        ballot.winner_count = 0
         ballot.save()
 
         try:
