@@ -266,7 +266,7 @@ class EEElection(dict):
         voting_system = self["voting_system"] or {}
         ballot_data = {
             "post": self.post_object,
-            "winner_count": self["seats_contested"],
+            "winner_count": self["seats_contested"] or 1,
             "cancelled": self["cancelled"],
             "replaces": self.get_replaced_ballot(),
             "tags": self.get("tags", {}),

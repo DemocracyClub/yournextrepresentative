@@ -34,9 +34,7 @@
     {{ ballot.locked_status_html }}
   </h3>
   <p>
-    {% if ballot.winner_count %}
-      {{ ballot.winner_count }} seat{{ ballot.winner_count|pluralize }} up for election.
-    {% endif %}
+    {{ ballot.winner_count }} seat{{ ballot.winner_count|pluralize }} up for election.
     {{ ballot.membership_set.count }} candidates known.
   </p>
 

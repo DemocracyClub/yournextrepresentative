@@ -238,7 +238,9 @@ class Ballot(EEModifiedMixin, models.Model):
     ballot_paper_id = models.CharField(blank=True, max_length=255, unique=True)
 
     candidates_locked = models.BooleanField(default=False)
-    winner_count = models.PositiveSmallIntegerField(blank=True, null=True)
+    winner_count = models.PositiveSmallIntegerField(
+        blank=True, null=False, default=1
+    )
     cancelled = models.BooleanField(default=False)
     replaces = models.OneToOneField(
         "Ballot",
@@ -262,11 +264,7 @@ class Ballot(EEModifiedMixin, models.Model):
             locked=(
                 " candidates_locked=True" if self.candidates_locked else ""
             ),
-            w=(
-                " winner_count={}".format(self.winner_count)
-                if (self.winner_count is not None)
-                else ""
-            ),
+            w=(" winner_count={}".format(self.winner_count)),
         )
 
     def get_absolute_url(self, viewname="election_view"):
@@ -385,7 +383,7 @@ class Ballot(EEModifiedMixin, models.Model):
     def uncontested(self):
         if not self.candidates_locked:
             return False
-        if self.get_winner_count >= self.membership_set.count():
+        if self.winner_count >= self.membership_set.count():
             return True
         return False
 
@@ -394,7 +392,7 @@ class Ballot(EEModifiedMixin, models.Model):
         """
         Does the ballot have more or equal seats up than candidates
         """
-        return self.get_winner_count >= self.membership_set.count()
+        return self.winner_count >= self.membership_set.count()
 
     def mark_uncontested_winners(self, ip_address=None, user=None):
         """
@@ -454,18 +452,6 @@ class Ballot(EEModifiedMixin, models.Model):
     @property
     def has_lock_suggestion(self):
         return self.suggestedpostlock_set.exists()
-
-    @property
-    def get_winner_count(self):
-        """
-        Returns 0 rather than None if the winner_count is unknown. See comment in
-        https://github.com/DemocracyClub/yournextrepresentative/pull/621#issuecomment-417252565
-
-        :return:
-        """
-        if self.winner_count:
-            return self.winner_count
-        return 0
 
     @property
     def hashed_memberships(self):
