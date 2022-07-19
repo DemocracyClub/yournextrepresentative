@@ -4,6 +4,7 @@ from enum import Enum, unique
 
 from django.contrib.auth.models import User
 from django.db.models import JSONField
+from django.contrib.postgres.fields import ArrayField
 from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.urls import reverse
@@ -152,6 +153,13 @@ class LoggedAction(models.Model):
         default=EditType.USER.name,
         max_length=20,
     )
+    version_fields = ArrayField(
+        models.CharField(max_length=200),
+        null=True,
+        blank=True,
+        help_text="The fields that have changed",
+    )
+
     approved = JSONField(null=True)
 
     objects = LoggedActionQuerySet.as_manager()
@@ -201,6 +209,18 @@ class LoggedAction(models.Model):
         except VersionNotFound as e:
             return "<p>{}</p>".format(escape(str(e)))
 
+    def changed_version_fields(self):
+        if not self.version_fields:
+            return ""
+        pretty_fieldnames = [
+            field.replace("_", " ").title() for field in self.version_fields
+        ]
+        return ", ".join(pretty_fieldnames)
+
+    def candidacy_edit(self):
+        if self.version_fields and "candidacies" in self.diff_html:
+            return True
+
     def set_review_required(self):
         """
         Runs all `ReviewRequiredDecider` classed over a LoggedAction
@@ -226,8 +246,9 @@ class LoggedAction(models.Model):
             self.set_review_required()
 
         if self.person:
+            version_id = self.popit_person_new_version
             self.person_pk = self.person.pk
-
+            self.version_fields = self.person.version_fields(version_id)
         super().save(**kwargs)
 
         if not has_initial_pk and self.flagged_type and self.person:

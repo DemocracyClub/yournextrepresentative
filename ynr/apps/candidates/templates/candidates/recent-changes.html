@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load humanize %}
 {% load get_query %}
+{% load pipeline %}
 
 {% block body_class %}{% endblock %}
 
@@ -55,29 +56,61 @@
 <table class="table recent-changes">
   <tr>
     <th>User</th>
-    <th>Date and time</th>
-    <th>Action</th>
-    <th>Candidate edited</th>
-    <th>Information source</th>
-    <th>Needs review?</th>
+    <th>Edited</th>
+    <th>Change</th>
+    <th>Source</th>
+    <th>Flagged</th>
+    <th>View diff</th>
   </tr>
   {% for action in actions %}
-    <tr>
-      <td>
-        <a href="{% url "recent-changes" %}?username={{ action.user.username }}" title="Filter by this user only">
-          {{ action.user.username }}
-        </a>
-      </td>
-      <td>{{ action.created|naturaltime }}</td>
-      <td>{{ action.get_action_type_display }}</td>
+    <tbody>
+      <tr>
+        <td>
+          <a href="{% url "recent-changes" %}?username={{ action.user.username }}" title="Filter by this user only">
+            {{ action.user.username }}<br>
+          </a>
+          {{ action.created|naturaltime }}
+        </td>
+        <td>
       {% if action.person %}
-        <td><a href="{% url 'person-view' person_id=action.person.id %}">{{ action.person.name }}</a></td>
-      {% else %}
-        <td></td>
+        <a href="{{ action.person.get_absolute_url }}">{{ action.person.name }}</a>
       {% endif %}
-      <td>{{ action.source }}</td>
-      <td>{{ action.flagged_reason|default_if_none:"" }}</td>
-    </tr>
+      {% if action.ballot %}
+        <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.post.label }}</a>
+      {% endif %}
+      </td>
+      <td>
+        {{ action.get_action_type_display }}
+        {% if action.get_action_type_display == "Person updated" and not action.candidacy_edit %}
+        <br>
+        <em>{{ action.changed_version_fields }}</em>
+        {% endif %}
+
+      </td>
+
+      <td style="overflow: scroll; width: 15%">{{ action.source }}</td>
+      <td>
+        {% if action.flagged_reason %}
+        ⚠
+        {% endif %}
+      </td>
+      {% if action.diff_html %}
+      <td><button id="diff-button-{{ forloop.counter }}" class="button secondary tiny js-toggle-diff-row">Show</button></td>
+      {% endif %}
+      </tr>
+    </tbody>
+    {% if action.diff_html %}
+    <tbody class="diff-row">
+      <tr>
+        <td></td>
+        <td colspan="6">
+          <div class="diff-html">
+            <p>{{ action.diff_html|safe }}</p>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+    {% endif %}
   {% endfor %}
 </table>
 

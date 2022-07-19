@@ -12,6 +12,31 @@ def get_action_types():
     return ActionType.choices
 
 
+def get_version_fields():
+    return [
+        ("name", "Name"),
+        ("honorific_suffix", "Suffix"),
+        ("gender", "Gender"),
+        ("birth_date", "Birth Date"),
+        ("email", "Email"),
+        ("twitter_username", "Twitter Profile"),
+        ("facebook_page_url", "Facebook Page URL"),
+        ("facebook_personal_url", "Facebook Personal URL"),
+        ("favourite_biscuits", "Favourite Biscuits"),
+        ("linkedin_url", "LinkedIn URL"),
+        ("other_name", "Other Name"),
+        ("biography", "Statement to Voters"),
+        ("party_ppc_page_url", "Party PPC Page URL"),
+        ("wikipedia_url", "Wikipedia URL"),
+        ("homepage_url", "Homepage URL"),
+        ("image_url", "Image URL"),
+        ("image_copyright", "Image Copyright"),
+        ("blog_url", "Blog URL"),
+        ("instagram_url", "Instagram URL"),
+        ("youtube_profile", "YouTube Profile"),
+    ]
+
+
 class LoggedActionAPIFilter(django_filters.FilterSet):
 
     created = django_filters.DateFilter(lookup_expr="gte")
@@ -30,7 +55,13 @@ class LoggedActionRecentChangesFilter(django_filters.FilterSet):
 
     class Meta:
         model = LoggedAction
-        fields = ["action_type", "flagged_type", "edit_type", "username"]
+        fields = [
+            "action_type",
+            "version_fields",
+            "flagged_type",
+            "edit_type",
+            "username",
+        ]
 
     flagged_type = django_filters.ChoiceFilter(
         choices=[
@@ -39,6 +70,12 @@ class LoggedActionRecentChangesFilter(django_filters.FilterSet):
             if not t.type.startswith("no_review_")
         ],
         widget=DSLinkWidget(),
+    )
+
+    version_fields = django_filters.ChoiceFilter(
+        choices=get_version_fields,
+        widget=DSLinkWidget(),
+        lookup_expr="icontains",
     )
 
     edit_type = django_filters.ChoiceFilter(
