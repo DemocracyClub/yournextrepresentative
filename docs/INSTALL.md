@@ -29,6 +29,7 @@ cp ynr/settings/local.py.example ynr/settings/local.py
 Add database credentials to `DATABASES` dict in `local.py`
 
 ```
+brew install libmagic
 ./manage.py migrate
 ```
 
@@ -48,6 +49,7 @@ git submodule update
 ## Build frontend assets
 
 ```
+npm run build
 npm install
 ```
 
@@ -80,3 +82,5 @@ pip install -r requirements/sopn_parsing.txt
 File conversion relies on `pandoc` to turn non-pdf SOPN files into pdf files.
 To install `pandoc`, visit https://pandoc.org/installing.html and follow instructions
 for Mac OS and Ubuntu. 
+
+_If you have omitted SOPN and are having problems getting the project to run, you may need to follow the SOPN steps._
