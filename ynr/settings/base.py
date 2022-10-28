@@ -32,12 +32,6 @@ ALLOWED_HOSTS = []
 SITE_ID = 1
 SITE_NAME = "Democracy Club Candidates"
 
-# Google analytics settings:
-GOOGLE_ANALYTICS_ACCOUNT = "UA-52202336-3"
-# This should be set to true unless you're using the old version of
-# Google Analytics.
-USE_UNIVERSAL_ANALYTICS = True
-
 # The Twitter account referenced in the Twitter card data:
 TWITTER_USERNAME = "democlub"
 
