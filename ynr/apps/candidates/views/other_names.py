@@ -112,7 +112,7 @@ class PersonOtherNameDeleteView(LoginRequiredMixin, PersonMixin, DeleteView):
     model = OtherName
     raise_exception = True
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, request, *args, **kwargs):
         with transaction.atomic():
             result_redirect = super().delete(request, *args, **kwargs)
             change_metadata = get_change_metadata(
