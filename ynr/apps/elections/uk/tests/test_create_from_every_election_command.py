@@ -1,3 +1,4 @@
+import datetime
 from unittest import mock
 import pytest
 from urllib.parse import urlencode, urljoin
@@ -638,8 +639,12 @@ class TestRecenlyUpdated:
         Test that the latest ee_modified timestamp is returned from
         either the Ballot or Election
         """
-        earlier = timezone.datetime(2021, 9, 20, 0, 0, 0, tzinfo=timezone.utc)
-        later = timezone.datetime(2021, 10, 1, 0, 0, 0, tzinfo=timezone.utc)
+        earlier = timezone.datetime(
+            2021, 9, 20, 0, 0, 0, tzinfo=datetime.timezone.utc
+        )
+        later = timezone.datetime(
+            2021, 10, 1, 0, 0, 0, tzinfo=datetime.timezone.utc
+        )
         ballot = BallotPaperFactory(
             ee_modified=later, election__ee_modified=earlier
         )
@@ -671,7 +676,9 @@ class TestEEElection:
         net so that a field that we rely on elsewhere is not removed
         that might otherwise go unnoticed e.g. the 'ee_modifoed' field
         """
-        modified = timezone.datetime(2021, 10, 1, 0, 0, 0, tzinfo=timezone.utc)
+        modified = timezone.datetime(
+            2021, 10, 1, 0, 0, 0, tzinfo=datetime.timezone.utc
+        )
         data = {
             "group": "local.2021-10-21",
             "seats_contested": 1,
@@ -717,7 +724,9 @@ class TestEEElection:
         net so that a field that we rely on elsewhere is not removed
         that might otherwise go unnoticed e.g. the 'ee_modifoed' field
         """
-        modified = timezone.datetime(2021, 10, 1, 0, 0, 0, tzinfo=timezone.utc)
+        modified = timezone.datetime(
+            2021, 10, 1, 0, 0, 0, tzinfo=datetime.timezone.utc
+        )
         poll_open_date = timezone.datetime(2021, 10, 6).date()
         data = {
             "election_id": "local.2021-10-21",
