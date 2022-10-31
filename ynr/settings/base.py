@@ -412,7 +412,7 @@ HOIST_ELECTED_CANDIDATES = True
 
 RESULTS_FEATURE_ACTIVE = True
 CAN_EDIT_ELECTIONS = False
-DATE_FORMAT = "jS E Y"
+FORMAT_MODULE_PATH = "settings.formats"
 
 SITE_OWNER = "Democracy Club"
 COPYRIGHT_HOLDER = "Democracy Club Community Interest Company"
