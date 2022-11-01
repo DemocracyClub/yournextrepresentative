@@ -39,9 +39,7 @@ def validate_partial_date(value):
             try:
                 datetime.strptime(value, "%Y")
             except ValueError:
-                raise ValidationError(
-                    u"date seems not to be correct %s" % value
-                )
+                raise ValidationError("date seems not to be correct %s" % value)
 
 
 class Dateframeable(models.Model):

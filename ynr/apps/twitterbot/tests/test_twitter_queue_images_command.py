@@ -45,8 +45,10 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         self.p_only_rejected_in_queue = PersonFactory.create(
             id=3, name="Person With Only Rejected Images In The Queue"
         )
-        self.existing_rejected_image = self.p_only_rejected_in_queue.queuedimage_set.create(
-            decision=QueuedImage.REJECTED, user=self.user
+        self.existing_rejected_image = (
+            self.p_only_rejected_in_queue.queuedimage_set.create(
+                decision=QueuedImage.REJECTED, user=self.user
+            )
         )
         self.p_only_rejected_in_queue.tmp_person_identifiers.create(
             internal_identifier="1003", value_type="twitter_username"
@@ -57,8 +59,10 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         self.p_accepted_image_in_queue = PersonFactory.create(
             id=5, name="Person With An Accepted Image In The Queue"
         )
-        self.existing_accepted_image = self.p_accepted_image_in_queue.queuedimage_set.create(
-            decision=QueuedImage.APPROVED, user=self.user
+        self.existing_accepted_image = (
+            self.p_accepted_image_in_queue.queuedimage_set.create(
+                decision=QueuedImage.APPROVED, user=self.user
+            )
         )
         self.p_accepted_image_in_queue.tmp_person_identifiers.create(
             internal_identifier="1005", value_type="twitter_username"

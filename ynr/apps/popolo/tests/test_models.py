@@ -23,7 +23,7 @@ class PersonTestCase(TestCase):
 
     def create_instance(self, **kwargs):
         if "name" not in kwargs:
-            kwargs.update({"name": u"test instance"})
+            kwargs.update({"name": "test instance"})
         return Person.objects.create(**kwargs)
 
 
@@ -33,21 +33,21 @@ class OrganizationTestCase(DateframeableTests, TestCase):
 
     def create_instance(self, **kwargs):
         if "name" not in kwargs:
-            kwargs.update({"name": u"test instance"})
+            kwargs.update({"name": "test instance"})
         kwargs["slug"] = slugify("-".join([v for k, v in kwargs.items()]))
         return Organization.objects.create(**kwargs)
 
     def test_add_post(self):
         o = Organization.objects.create(name=faker.company())
-        o.add_post(label=u"CEO", identifier="123")
+        o.add_post(label="CEO", identifier="123")
         self.assertEqual(o.posts.count(), 1)
 
     def test_add_posts(self):
         o = Organization.objects.create(name=faker.company())
         o.add_posts(
             [
-                {"label": u"Presidente", "identifier": 123},
-                {"label": u"Vicepresidente", "identifier": 456},
+                {"label": "Presidente", "identifier": 123},
+                {"label": "Vicepresidente", "identifier": 456},
             ]
         )
         self.assertEqual(o.posts.count(), 2)

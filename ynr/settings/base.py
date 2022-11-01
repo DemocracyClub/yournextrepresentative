@@ -319,7 +319,7 @@ SASS_ARGUMENT_LIST.append("--sourcemap")
 PIPELINE["SASS_ARGUMENTS"] = " ".join(SASS_ARGUMENT_LIST)
 
 
-SOURCE_HINTS = u"""
+SOURCE_HINTS = """
     Please don't quote third-party candidate sites \u2014 we prefer URLs of
     news stories or official candidate pages."""
 

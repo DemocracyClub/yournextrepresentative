@@ -99,12 +99,16 @@ class Command(BaseCommand):
 
     def get_api_results(self, endpoint, api_version="next"):
         if "ballots" in endpoint:
-            url = "{base_url}/media/cached-api/latest/ballots-000001.json".format(
-                base_url=self.ynr_url
+            url = (
+                "{base_url}/media/cached-api/latest/ballots-000001.json".format(
+                    base_url=self.ynr_url
+                )
             )
         elif "people" in endpoint:
-            url = "{base_url}/media/cached-api/latest/people-000001.json".format(
-                base_url=self.ynr_url
+            url = (
+                "{base_url}/media/cached-api/latest/people-000001.json".format(
+                    base_url=self.ynr_url
+                )
             )
         else:
             url = "{base_url}api/{api_version}/{endpoint}/?format=json&page_size=200".format(

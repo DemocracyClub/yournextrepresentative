@@ -139,8 +139,10 @@ class Parl19ResultsCSVView(TemplateView):
             )
             theyworkforyou_url = None
             if twfy_id:
-                theyworkforyou_url = "http://www.theyworkforyou.com/mp/{}".format(
-                    twfy_id.internal_identifier
+                theyworkforyou_url = (
+                    "http://www.theyworkforyou.com/mp/{}".format(
+                        twfy_id.internal_identifier
+                    )
                 )
 
             result = ResultEvent.objects.filter(
