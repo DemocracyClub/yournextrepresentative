@@ -29,9 +29,9 @@ jobs:
       - checkout
 
       # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}
+      # - restore_cache:
+      #     keys:
+      #       - v1-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}
       - run:
           name: Install APT packages
           command: |
@@ -46,13 +46,13 @@ jobs:
       - run:
           name: install Tox
           command: |
-            python3 -m venv .venv
+            python -m venv .venv
             . .venv/bin/activate
             pip install -U pip tox coveralls
       - run:
           name: install dependencies
           command: |
-            python3 -m venv .venv
+            python -m venv .venv
             . .venv/bin/activate
             pip install -r requirements/testing.txt
             tox --notest --workdir /home/circleci/repo/.tox/
@@ -71,7 +71,7 @@ jobs:
             RUN_ENV: test
           command: |
             . .venv/bin/activate
-            tox --workdir /home/circleci/repo/.tox/
+            pytest -sx
 
       # Coverage
       - run:
