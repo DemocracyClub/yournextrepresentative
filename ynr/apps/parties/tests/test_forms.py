@@ -36,7 +36,7 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
             form.as_p(),
             """
             <p>
-                <label for="id_party_0">Party:</label>
+                <label>Party:</label>
                 <select class="party_widget_select" disabled name="party_0"
                 id="id_party_0">
                     <option value="" selected>
