@@ -31,7 +31,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
            keys:
-             - v1-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
+             - v2-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
       - run:
           name: Install APT packages
           command: |
@@ -63,7 +63,7 @@ jobs:
       - save_cache:
           paths:
             - .venv
-          key: v1-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
+          key: v2-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
 
       - run:
           name: Pre test checks
