@@ -1,3 +1,4 @@
+import datetime
 import faker
 from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
@@ -348,7 +349,7 @@ class TestHasResultsOrNoResults(BallotsWithResultsMixin, TestCase):
         Ballot queryset the correct modified fields are filtered
         against.
         """
-        datetime_obj = timezone.now()
+        datetime_obj = timezone.now
         Ballot.objects.last_updated(datetime=datetime_obj)
         mock_with_last_updated.assert_called_once()
         mock_with_last_updated.return_value.filter.assert_called_once_with(
@@ -381,16 +382,18 @@ class TestHasResultsOrNoResults(BallotsWithResultsMixin, TestCase):
         Call the method to order the ballots by latest_ee_modified and
         check that they were ordered with the one updated 'now' first
         """
-        now = timezone.datetime.now()
+        now = timezone.now()
         BallotPaperFactory.create_batch(
             size=100,
             ee_modified=fake.date_time_between(
-                start_date="-30d", end_date=now, tzinfo=timezone.utc
+                start_date="-30d", end_date=now, tzinfo=datetime.timezone.utc
             ),
             election=ElectionFactory(
                 slug=fake.slug(),
                 ee_modified=fake.date_time_between(
-                    start_date="-30d", end_date=now, tzinfo=timezone.utc
+                    start_date="-30d",
+                    end_date=now,
+                    tzinfo=datetime.timezone.utc,
                 ),
             ),
             post=PostFactory(
@@ -402,7 +405,7 @@ class TestHasResultsOrNoResults(BallotsWithResultsMixin, TestCase):
         )
         expected = BallotPaperFactory(
             ee_modified=fake.date_time_between(
-                start_date="-30d", end_date=now, tzinfo=timezone.utc
+                start_date="-30d", end_date=now, tzinfo=datetime.timezone.utc
             ),
             election=election_with_latest_ee_modified,
             post=PostFactory(
@@ -419,7 +422,9 @@ class TestHasResultsOrNoResults(BallotsWithResultsMixin, TestCase):
             ee_modified=latest,
             election=ElectionFactory(
                 ee_modified=fake.date_time_between(
-                    start_date="-30d", end_date=now, tzinfo=timezone.utc
+                    start_date="-30d",
+                    end_date=now,
+                    tzinfo=datetime.timezone.utc,
                 )
             ),
             post=PostFactory(

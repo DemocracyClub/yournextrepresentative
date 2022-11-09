@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% load markdown_deux_tags %}
+{% load markdown_filter %}
 {% block content %}
-  {% filter markdown%}
-<div markdown="1">
+{% filter markdown%}
+
 # Democracy needs you! How to Volunteer: collect candidate information
 
 We need your help collecting candidate information. Read this guide to understand how you can help!
 
 Democracy Club Candidates is an open-source database of all candidates standing in UK elections. Its data powers
-Democracy Club’s [Who Can I Vote For?](https://whocanivotefor.co.uk/), and is regularly used by a wide range of
+Democracy Club's [Who Can I Vote For?](https://whocanivotefor.co.uk/), and is regularly used by a wide range of
 organisations, including [The Electoral Commission](https://www.electoralcommission.org.uk/), social media
 companies, and national newspapers.
 
@@ -25,15 +25,15 @@ Edits are reviewed by Democracy Club staff, and users will be banned if vandalis
 Now you need to find a candidate. You can find an existing candidate profile using the search function. Please make
 sure you have checked to see whether a profile already exists before creating a new candidate.
 
-When on a candidate page, you can use the View [candidate’s] page on WhoCanIVoteFor.co.uk link to see the public-facing
+When on a candidate page, you can use the View [candidate's] page on WhoCanIVoteFor.co.uk link to see the public-facing
 profile. Edits to Democracy Club Candidates can take between a few minutes and a couple of hours to update on
 WhoCanIVoteFor, depending on current site traffic.
 
 ## Adding candidates to an election
 
-You can add candidates to forthcoming elections on the candidate’s profile, or add an existing or new candidate
+You can add candidates to forthcoming elections on the candidate's profile, or add an existing or new candidate
 directly to the relevant ballot, selected from the ballot column on the
-[list of upcoming elections](https://candidates.democracyclub.org.uk/elections/). Alternatively, you can ‘bulk add’
+[list of upcoming elections](https://candidates.democracyclub.org.uk/elections/). Alternatively, you can 'bulk add'
 all candidates for a single party by using the “add candidates for a single party” feature, accessed by selecting the
 relevant election from the election column.
 
@@ -53,7 +53,7 @@ on the nomination papers. Alternative names are automatically added when the mai
 At present we only store the registered name of a political party, not alternative descriptors. For example, all
 Conservative candidates are listed as Conservative and Unionist Party.
 
-The statement to voters should be taken from a candidate’s official webpage or leaflet, and be directly relevant
+The statement to voters should be taken from a candidate's official webpage or leaflet, and be directly relevant
 to the upcoming election.
 
 ### Favourite biscuit
@@ -68,7 +68,7 @@ All photo uploads will be moderated by a Democracy Club staff member or experien
 profile. We also have an automated system for obtaining Twitter profile photos, described below.
 
 ## Citing sources
-Please provide a link to a primary source whenever editing a profile. Ideally, this will be a link to a candidate’s
+Please provide a link to a primary source whenever editing a profile. Ideally, this will be a link to a candidate's
 party webpage or specific social media post. Unsourced edits are liable to be removed.
 
 ## SOPNs and ballot locking
@@ -77,12 +77,12 @@ the relevant council website (this varies depending on the nation and election t
 days before the poll).
 
 Democracy Club Candidates archives all SOPNs and makes them accessible from the relevant ballot page. Once a SoPN is
-published, you can add it to a ballot by selecting ‘Upload SOPN’ and adding the PDF file from your computer.
+published, you can add it to a ballot by selecting ‘Upload SOPN' and adding the PDF file from your computer.
 
 Once the SOPN is uploaded, please add any remaining candidates and remove those not nominated. Then select ‘suggest
-locking’. This will add the ballot to a queue to be double checked by a member of the Democracy Club team or a experienced volunteer.
+locking'. This will add the ballot to a queue to be double checked by a member of the Democracy Club team or a experienced volunteer.
 
-Once this final process is complete, the ballot will be ‘locked’ and no new candidates can be added.
+Once this final process is complete, the ballot will be ‘locked' and no new candidates can be added.
 
 ### Automation
 Democracy Club Candidates automates certain tasks:
@@ -126,13 +126,13 @@ candidates@democracyclub.org.uk or join our Slack group.
 
 ## What this site is
 Democracy Club Candidates is an open-source database of all candidates standing in UK elections. Its data powers
-Democracy Club’s [Who Can I Vote For?](https://whocanivotefor.co.uk/), and is regularly used by a wide range of
+Democracy Club's [Who Can I Vote For?](https://whocanivotefor.co.uk/), and is regularly used by a wide range of
 organisations, including [The Electoral Commission](https://www.electoralcommission.org.uk/), social media companies,
 and national newspapers.
 
 The database includes UK general elections from 2010, other scheduled elections from 2014/2015, and by-elections
 (including council by-elections) from May 2017. You can see a list of all elections in the database on the
-[‘Numbers’ page](https://candidates.democracyclub.org.uk/numbers/), and a summary of the types of elections covered
+['Numbers' page](https://candidates.democracyclub.org.uk/numbers/), and a summary of the types of elections covered
 can be found at the end of this guide.
 
 ## What this site is not
@@ -142,14 +142,6 @@ representatives. If an elected official leaves office or changes political party
 they subsequently stand for election under the new label. This also applies to the weblinks, statements, and other
 information attached to candidate profiles.
 
-
-
-
-
-</div>
-
-
-
-  {% endfilter %}
+{% endfilter %}
 
 {% endblock %}

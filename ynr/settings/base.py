@@ -32,12 +32,6 @@ ALLOWED_HOSTS = []
 SITE_ID = 1
 SITE_NAME = "Democracy Club Candidates"
 
-# Google analytics settings:
-GOOGLE_ANALYTICS_ACCOUNT = "UA-52202336-3"
-# This should be set to true unless you're using the old version of
-# Google Analytics.
-USE_UNIVERSAL_ANALYTICS = True
-
 # The Twitter account referenced in the Twitter card data:
 TWITTER_USERNAME = "democlub"
 
@@ -117,7 +111,6 @@ INSTALLED_APPS = (
     "allauth.socialaccount.providers.facebook",
     "allauth.socialaccount.providers.twitter",
     "corsheaders",
-    "markdown_deux",
     "raven.contrib.django.raven_compat",
     "uk_results",
     "bulk_adding",
@@ -326,7 +319,7 @@ SASS_ARGUMENT_LIST.append("--sourcemap")
 PIPELINE["SASS_ARGUMENTS"] = " ".join(SASS_ARGUMENT_LIST)
 
 
-SOURCE_HINTS = u"""
+SOURCE_HINTS = """
     Please don't quote third-party candidate sites \u2014 we prefer URLs of
     news stories or official candidate pages."""
 
@@ -346,13 +339,13 @@ DATABASES = {
 CACHES = {
     "default": {
         "TIMEOUT": None,  # cache keys never expire; we invalidate them
-        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
         "LOCATION": "127.0.0.1:11211",
         "KEY_PREFIX": DATABASES["default"]["NAME"],
     },
     "thumbnails": {
         "TIMEOUT": 60 * 60 * 24 * 2,  # expire after two days
-        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
         "LOCATION": "127.0.0.1:11211",
         "KEY_PREFIX": DATABASES["default"]["NAME"] + "-thumbnails",
     },
@@ -419,7 +412,7 @@ HOIST_ELECTED_CANDIDATES = True
 
 RESULTS_FEATURE_ACTIVE = True
 CAN_EDIT_ELECTIONS = False
-DATE_FORMAT = "jS E Y"
+FORMAT_MODULE_PATH = "settings.formats"
 
 SITE_OWNER = "Democracy Club"
 COPYRIGHT_HOLDER = "Democracy Club Community Interest Company"

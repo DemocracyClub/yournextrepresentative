@@ -8,12 +8,12 @@ jobs:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: cimg/python:3.8.10
+      - image: cimg/python:3.10.4
         environment:
           CIRCLECI: true
           PGHOST: 127.0.0.1
           RUN_ENV: test
-      - image: circleci/postgres:12-alpine-ram
+      - image: cimg/postgres:11.17
         environment:
           POSTGRES_USER: ynr
           POSTGRES_DB: ynr
@@ -30,40 +30,52 @@ jobs:
 
       # Download and cache dependencies
       - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}
+           keys:
+             - v2-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
       - run:
           name: Install APT packages
           command: |
             sudo apt-get update
             sudo apt-get install python-tk ghostscript
-      - run: 
+      - run:
           name: Install pandoc
           command: |
             wget https://github.com/jgm/pandoc/releases/download/2.17.1.1/pandoc-2.17.1.1-1-amd64.deb
             sudo dpkg -i pandoc-2.17.1.1-1-amd64.deb
             sudo apt install texlive-latex-base texlive-latex-extra
       - run:
-          name: install Tox
+          name: Create venv
           command: |
-            python3 -m venv .venv
+            python -m venv .venv
             . .venv/bin/activate
-            pip install -U pip tox coveralls
+            pip install -U pip
+      - run:
+          name: Install Coveralls
+          command: |
+            . .venv/bin/activate
+            pip install coveralls
       - run:
           name: install dependencies
           command: |
-            python3 -m venv .venv
             . .venv/bin/activate
             pip install -r requirements/testing.txt
-            tox --notest --workdir /home/circleci/repo/.tox/
 
       - save_cache:
           paths:
-            - ./.venv
-            - /home/circleci/repo/.tox/
-          key: v1-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}
+            - .venv
+          key: v2-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
 
-      # run tests!
+      - run:
+          name: Pre test checks
+          environment:
+            CIRCLECI: true
+            RUN_ENV: test
+          command: |
+            . .venv/bin/activate
+            pip check
+            python manage.py check
+            python manage.py makemigrations --check
+            black --check .
       - run:
           name: run tests
           environment:
@@ -71,7 +83,7 @@ jobs:
             RUN_ENV: test
           command: |
             . .venv/bin/activate
-            tox --workdir /home/circleci/repo/.tox/
+            pytest -x --cov-report= --cov --flakes --junitxml=test-results/junit.xml
 
       # Coverage
       - run:
@@ -85,4 +97,3 @@ jobs:
 
       - store_artifacts:
           path: test-results
-

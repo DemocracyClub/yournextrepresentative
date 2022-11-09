@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [("candidates", "0081_alter_loggedaction_action_type")]
+    dependencies = [("candidates", "0082_alter_ballot_winner_count")]
 
     operations = [
         migrations.AddField(

@@ -1,3 +1,4 @@
+import datetime
 from functools import update_wrapper
 from django.utils import timezone
 
@@ -48,5 +49,5 @@ def four_weeks_before_election_date(election):
         election_date.year,
         election_date.month,
         election_date.day,
-        tzinfo=timezone.utc,
+        tzinfo=datetime.timezone.utc,
     )

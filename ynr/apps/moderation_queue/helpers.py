@@ -60,7 +60,7 @@ class ImageDownloadException(Exception):
     pass
 
 
-def download_image_from_url(image_url, max_size_bytes=(50 * 2 ** 20)):
+def download_image_from_url(image_url, max_size_bytes=(50 * 2**20)):
     """This downloads an image to a temporary file and returns the filename
 
     It raises an ImageDownloadException if a GET for the URL results
