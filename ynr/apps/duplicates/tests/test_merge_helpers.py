@@ -100,3 +100,55 @@ class TestMergeHelper(TestUserMixin, TestCase):
         self.assertEqual(DuplicateSuggestion.objects.all().count(), 1)
         assert ds2.person.pk == 1
         assert ds2.other_person.pk == 2
+
+    def test_regresson_test_three_way_suggestion_merging(self):
+        """
+        From a real world situation we call "A case of too many Agnews",
+        where we had duplicate suggestions for:
+
+        77394 -> 95456
+        64525 -> 95456
+        64525 -> 77394
+
+        Attempting a merge of any one of them caused a 500:
+
+        IntegrityError: duplicate key value violates unique constraint
+            "duplicates_duplicatesugg_person_id_other_person_i_229d66a0_uniq"
+        DETAIL:  Key (person_id, other_person_id)=(64525, 77394) already exists.
+
+        """
+
+        Agnew_leaf_64525 = PersonFactory(pk=64525)
+        Agnew_start_77394 = PersonFactory(pk=77394)
+        Agnew_hope_95456 = PersonFactory(pk=95456)
+
+        ds1 = DuplicateSuggestion.objects.create(
+            person=Agnew_start_77394,
+            other_person=Agnew_hope_95456,
+            user=self.user,
+        )
+        ds2 = DuplicateSuggestion.objects.create(
+            person=Agnew_leaf_64525,
+            other_person=Agnew_hope_95456,
+            user=self.user,
+        )
+        DuplicateSuggestion.objects.create(
+            person=Agnew_leaf_64525,
+            other_person=Agnew_start_77394,
+            user=self.user,
+        )
+
+        # Do one merge
+        merge_helpers.alter_duplicate_suggestion_post_merge(
+            source_person=ds1.person, dest_person=ds1.other_person
+        )
+        # Even though we have 3 merge suggestions, we should only have 1 left,
+        # because the 3rd suggestion would have been a duplicate
+        assert DuplicateSuggestion.objects.count() == 1
+
+        # Do another merge
+        merge_helpers.alter_duplicate_suggestion_post_merge(
+            source_person=ds2.person, dest_person=ds2.other_person
+        )
+        # This should close all open duplicate suggestions
+        assert DuplicateSuggestion.objects.count() == 0
