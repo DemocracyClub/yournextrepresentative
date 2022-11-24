@@ -27,9 +27,18 @@ def alter_duplicate_suggestion_post_merge(source_person, dest_person):
     # is the destination of this merge, update the source to be the destination
     # of this merge
     # we need to loop through and save individually to make sure that the
-    # people are sorted correctly
+    # people are sorted correctly.
+    # We also need to check that we're not going to make a duplicate
+    # suggestion. This can happen when we have three-way or circular suggestions
+    existing_suggestions = DuplicateSuggestion.objects.filter(
+        other_person=dest_person
+    ).values_list("person_id", "other_person_id")
     for suggestion in DuplicateSuggestion.objects.filter(
         other_person=source_person
     ):
+        if (suggestion.person_id, dest_person.id) in existing_suggestions:
+            # This suggestion already exists, so we don't need it anymore
+            suggestion.delete()
+            continue
         suggestion.other_person = dest_person
         suggestion.save()

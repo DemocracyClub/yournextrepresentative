@@ -57,9 +57,6 @@ class DuplicateSuggestion(StatusModel, TimeStampedModel):
     A model for storing duplicate suggestions.
 
     TODO:
-
-    * If a person has N duplicate suggestions and one gets merged in to the
-      other, what do we do?
     * Mark people known as not duplicate in a KnownNotDuplicateQuerySet –
       this prevents people from marking someone as a duplicate when it's known
       they are not (for example, because they've been suggested before)

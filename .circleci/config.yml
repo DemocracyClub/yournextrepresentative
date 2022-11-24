@@ -8,7 +8,7 @@ jobs:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: cimg/python:3.10.4
+      - image: cimg/python:3.10.7
         environment:
           CIRCLECI: true
           PGHOST: 127.0.0.1
@@ -31,7 +31,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
            keys:
-             - v2-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
+             - v3-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
       - run:
           name: Install APT packages
           command: |
@@ -63,7 +63,7 @@ jobs:
       - save_cache:
           paths:
             - .venv
-          key: v2-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
+          key: v3-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
 
       - run:
           name: Pre test checks
