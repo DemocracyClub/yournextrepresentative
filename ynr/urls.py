@@ -27,6 +27,7 @@ urlpatterns = [
     re_path(r"^", include("elections.urls")),
     re_path(r"", include("facebook_data.urls")),
     re_path(r"^", include("candidates.urls")),
+    re_path(r"^", include("elections.uk.urls")),
     re_path(r"^", include("people.urls")),
     re_path(r"^", include("search.urls")),
     re_path(r"^admin/doc/", include("django.contrib.admindocs.urls")),

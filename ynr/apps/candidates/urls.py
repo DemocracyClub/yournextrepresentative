@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.urls import include, re_path
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
@@ -12,7 +11,6 @@ urlpatterns = [
         r"^api-auth/",
         include("rest_framework.urls", namespace="rest_framework"),
     ),
-    re_path(r"^", include(settings.ELECTION_APP_FULLY_QUALIFIED + ".urls")),
     re_path(
         r"^election/(?P<ballot_paper_id>[^/]+)/record-winner$",
         views.ConstituencyRecordWinnerView.as_view(),

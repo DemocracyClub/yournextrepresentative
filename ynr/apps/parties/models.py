@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import QuerySet
 from django.utils import timezone
 from django_extensions.db.models import TimeStampedModel
 
@@ -194,3 +195,57 @@ class PartyEmblem(TimeStampedModel):
 
     def __str__(self):
         return '{} ("{}")'.format(self.pk, self.description)
+
+
+class PartySpendingQueryset(QuerySet):
+    def recent(self):
+        return self.order_by("-published")[:10]
+
+    def invoices(self):
+        return self.filter(raw_data__RedactedSupportingInvoiceId__isnull=False)
+
+
+class PartySpending(TimeStampedModel):
+    ec_id = models.CharField(primary_key=True, max_length=15)
+    party = models.ForeignKey(Party, on_delete=models.CASCADE)
+    published = models.DateField(null=True)
+    raw_data = models.JSONField()
+
+    objects = PartySpendingQueryset.as_manager()
+
+
+class PartyAccountsQueryset(QuerySet):
+    def recent(self):
+        return self.order_by("-published")[:10]
+
+    def invoices(self):
+        return self.filter(raw_data__RedactedSupportingInvoiceId__isnull=False)
+
+
+class PartyAccounts(TimeStampedModel):
+    ec_id = models.CharField(primary_key=True, max_length=15)
+    party = models.ForeignKey(Party, on_delete=models.CASCADE)
+    published = models.DateField(null=True)
+    raw_data = models.JSONField()
+
+    objects = PartyAccountsQueryset.as_manager()
+
+
+class PartyDonationsQueryset(QuerySet):
+    def recent(self):
+        return self.order_by("-published")[:10]
+
+    def invoices(self):
+        return self.filter(raw_data__RedactedSupportingInvoiceId__isnull=False)
+
+    def individuals(self):
+        return self.filter(raw_data__DonorStatus="Individual")
+
+
+class PartyDonations(TimeStampedModel):
+    ec_id = models.CharField(primary_key=True, max_length=15)
+    party = models.ForeignKey(Party, on_delete=models.CASCADE)
+    published = models.DateField(null=True)
+    raw_data = models.JSONField()
+
+    objects = PartyDonationsQueryset.as_manager()

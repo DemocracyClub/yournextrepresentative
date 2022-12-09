@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, DetailView
 
 from candidates.models import Ballot
 from elections.models import Election
@@ -58,3 +58,14 @@ class CandidatesByElectionForPartyView(TemplateView):
         context["candidates"] = candidates_qs
 
         return context
+
+
+class PartyView(DetailView):
+    model = Party
+    # = "ec_id"
+    slug_url_kwarg = "ec_id"
+    slug_field = "ec_id"
+
+    def get_queryset(self):
+        qs = Party.objects.prefetch_related("descriptions", "emblems")
+        return qs
