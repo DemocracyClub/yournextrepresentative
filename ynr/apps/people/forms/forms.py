@@ -1,8 +1,11 @@
+from typing import Optional
+
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, validate_email
 from django.utils.functional import cached_property
+from typing import Optional
 from candidates.models import PartySet
 from candidates.models.popolo_extra import Ballot
 from facebook_data.tasks import extract_fb_page_id
@@ -139,7 +142,8 @@ class PersonIdentifierForm(forms.ModelForm):
 class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
-        instance = kwargs.get("instance", None)
+        instance: Membership = kwargs.get("instance", None)
+        person: Person = kwargs.pop("person")
         if instance:
             initial = {
                 "ballot_paper_id": kwargs["instance"].ballot.ballot_paper_id,
@@ -155,7 +159,7 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
 
         super().__init__(*args, **kwargs)
         self.fields["ballot_paper_id"] = CurrentUnlockedBallotsField(
-            label="Ballot", user=self.user
+            label="Ballot", user=self.user, person=person
         )
         if self.show_previous_party_affiliations:
             self.fields[

@@ -30,7 +30,12 @@ class MembershipFormSet(BaseInlineFormSet):
         qs = super().get_queryset()
         return qs.filter(
             ballot__candidates_locked=False, ballot__election__current=True
-        )
+        ).select_related("ballot", "ballot__election")
+
+    def get_form_kwargs(self, index):
+        kwargs = super().get_form_kwargs(index)
+        kwargs["person"] = self.instance
+        return kwargs
 
 
 PersonMembershipFormsetFactory = forms.inlineformset_factory(
