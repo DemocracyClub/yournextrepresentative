@@ -1,0 +1,49 @@
+// Ripped from the design system
+// TODO: remove this when design system is implemented
+
+.ds-field-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-top: 1em;
+}
+
+.ds-field-checkbox input {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
+.ds-field-checkbox > span {
+    display: flex;
+    align-items: center;
+}
+
+.ds-field-checkbox > span::before {
+    content: '';
+    width: 1em;
+    height: 1em;
+    border: 2px solid #000000;
+    margin-right: 0.375rem;
+    background-color: #FFFFFF;
+    float: left;
+    /* This prop isn't in DS but I've added it here to help center the checkmark */
+    display: flex;
+}
+
+.ds-field-checkbox > input:checked + span::before {
+    content: '✓';
+    color: #E6007C;
+    /* This prop isn't in DS but I've added it here to help center the checkmark */
+    align-items: center;
+}
+
+.ds-field-checkbox > input:focus + span {
+    text-decoration: underline;
+    text-decoration-color: #FFC037;
+    text-decoration-thickness: 2px;
+}
