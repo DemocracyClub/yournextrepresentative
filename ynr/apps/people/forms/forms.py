@@ -143,7 +143,7 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         instance: Membership = kwargs.get("instance", None)
-        person: Person = kwargs.pop("person")
+        person: Person = kwargs.pop("person", None)
         if instance:
             initial = {
                 "ballot_paper_id": kwargs["instance"].ballot.ballot_paper_id,

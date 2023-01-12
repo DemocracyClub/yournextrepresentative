@@ -13,7 +13,7 @@ from ynr.settings.constants.formats.en.formats import (
     DATE_FORMAT,
     SHORT_DATE_FORMAT,
 )
-
+import pytest
 
 class ElectionTests(TestCase):
     def setUp(self):
@@ -42,7 +42,7 @@ class ElectionTests(TestCase):
         self.election.save()
         self.assertFalse(Election.objects.are_upcoming_elections())
 
-    @freeze_time("5 December 2022")
+    @pytest.mark.freeze_time("5 December 2022")
     def test_election_date_format(self):
         # assert that today's date is formatted according to DATE_FORMAT
         self.assertEqual(
@@ -50,10 +50,10 @@ class ElectionTests(TestCase):
             "5 December 2022",
         )
 
-    @freeze_time("5 December 2022")
+    @pytest.mark.freeze_time("5 December 2022")
     def test_short_election_date_format(self):
         # assert that a given ballot date is formatted according to SHORT_DATE_FORMAT
         self.assertEqual(
             date_filter(self.election.election_date, SHORT_DATE_FORMAT),
-            ("5 Dec 2022"),
+            "5 Dec 2022",
         )
