@@ -1,5 +1,5 @@
+import pytest
 from datetime import date, timedelta
-from freezegun import freeze_time
 from django.test import TestCase
 
 from candidates.tests.factories import (
@@ -13,7 +13,7 @@ from ynr.settings.constants.formats.en.formats import (
     DATE_FORMAT,
     SHORT_DATE_FORMAT,
 )
-import pytest
+
 
 class ElectionTests(TestCase):
     def setUp(self):
