@@ -2,6 +2,7 @@
 Foo Bar
 
 """
+import json
 import sys
 
 from argparse import ArgumentParser
@@ -44,6 +45,14 @@ class BallotMover:
 
     def move_memberships(self):
         self.move_simple(Membership)
+        for membership in Membership.objects.filter(ballot=self.new_ballot):
+            person = membership.person
+            text_version = json.dumps(person.versions)
+            text_version.replace(
+                self.old_ballot.ballot_paper_id, self.new_ballot.ballot_paper_id
+            )
+            person.versions = json.loads(text_version)
+            person.save()
 
     def move_logged_actions(self):
         self.move_simple(LoggedAction)
