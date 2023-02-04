@@ -45,6 +45,8 @@ def get_descriptive_value(operation, ballot_paper_id, attribute, value, leaf):
                 verb = "standing"
             else:
                 verb = "stood"
+            if not value:
+                value = {}
             if value.get("party_list_position"):
                 extra = " (list position: {}) ".format(
                     value["party_list_position"]
@@ -52,7 +54,7 @@ def get_descriptive_value(operation, ballot_paper_id, attribute, value, leaf):
             else:
                 extra = ""
             message = "{verb} for {party_id} {extra}".format(
-                verb=verb, party_id=value["party"], extra=extra
+                verb=verb, party_id=value.get("party"), extra=extra
             ).strip()
 
         return message.format(
