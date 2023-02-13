@@ -41,7 +41,7 @@ idna>=2.9,<3.4
 ipaddress==1.0.23
 ipdb==0.13.9
 ipython-genutils==0.2.0
-ipython==7.31.1
+ipython==8.10.0
 jsonpatch==1.32
 jsonpointer==2.1
 libsass==0.22.0
