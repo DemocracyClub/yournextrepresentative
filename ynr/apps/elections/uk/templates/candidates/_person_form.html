@@ -159,9 +159,16 @@
               {{ membership_form.party_list_position.label }}
               {{ membership_form.party_list_position }}
             </div>
+            {% if membership_form.instance.pk %}
+              <div class="large-12 columns">
+                <label class="ds-field-checkbox">
+                  {{ membership_form.DELETE }}
+                  <span>Delete this candidacy</span>
+                </label>
+              </div>
+            {% endif %}
           </div>
         </fieldset>
-
       </div>
     {% endfor %}
     {% endif %}

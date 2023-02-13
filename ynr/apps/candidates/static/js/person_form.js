@@ -12,6 +12,8 @@ var setup_ballot_select2 = function(ballots) {
     var BallotInput = $(this);
     var ballot_group = BallotInput.closest(BALLOT_GROUP_CLASS);
     var party_list_input = ballot_group.find(PARTY_LIST_POSITION_INPUT_CLASS).parent();
+    let existingMemberships = BallotInput.data("existingMemberships").split(",").filter(ballot => ballot !== '');
+
     party_list_input.hide();
     var BallotSelect = $("<select>")
       .attr("id", BallotInput.attr("id"))
@@ -20,6 +22,15 @@ var setup_ballot_select2 = function(ballots) {
       .val(BallotInput.val())
       .insertAfter(BallotInput);
     BallotInput.hide().attr("required", false);
+
+    if (existingMemberships.includes(BallotInput.val()) && existingMemberships.length > 0) {
+        BallotSelect.prop("disabled", true);
+    } else {
+        existingMemberships.forEach(function(electionId) {
+            let forbiddenBallot = BallotSelect.find(`option[value='${electionId}']`);
+            $(forbiddenBallot).prop("disabled", true);
+        });
+    }
 
     BallotSelect.select2({
       placeholder: "Select a ballot",

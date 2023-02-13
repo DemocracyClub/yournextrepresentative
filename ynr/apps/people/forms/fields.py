@@ -2,8 +2,10 @@ from django import forms
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 from django_date_extensions.fields import ApproximateDateFormField
+from typing import Optional
 
 from candidates.models import Ballot
+from people.models import Person
 
 
 class BallotInputWidget(forms.TextInput):
@@ -22,7 +24,21 @@ class ValidBallotField(forms.CharField):
             self.user = user
         else:
             self.user = AnonymousUser
+        person: Person = kwargs.pop("person", None)
+        existing_memberships = []
+        if isinstance(person, Person):
+            memberships = person._state.fields_cache.get(
+                "memberships", person.memberships
+            )
+            for membership in memberships.all():
+                if membership.ballot.election.current:
+                    existing_memberships.append(
+                        membership.ballot.ballot_paper_id
+                    )
         super().__init__(*args, **kwargs)
+        self.widget.attrs["data-existing-memberships"] = ",".join(
+            existing_memberships
+        )
 
     widget = BallotInputWidget
 
