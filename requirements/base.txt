@@ -43,7 +43,7 @@ ipdb==0.13.9
 ipython-genutils==0.2.0
 ipython==8.10.0
 jsonpatch==1.32
-jsonpointer==2.1
+jsonpointer==2.3
 libsass==0.22.0
 lxml==4.9.1
 Markdown==3.3.4
