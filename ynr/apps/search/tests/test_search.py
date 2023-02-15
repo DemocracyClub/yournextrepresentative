@@ -145,3 +145,11 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "` ' £$$^*   ($ £%  Henry   " "Jekyll \t"
             ).exists()
         )
+
+    def test_search_person_by_name_with_special_characters(self):
+        name = "Z$^o@&ë%"
+        person = PersonFactory(name=name)
+        person.save()
+        qs = search_person_by_name(name=person.name)
+        self.assertEqual(qs.count(), 1)
+        self.assertEqual(qs.first().name, person.name)
