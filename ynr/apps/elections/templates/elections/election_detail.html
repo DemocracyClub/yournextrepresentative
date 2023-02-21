@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 
 {% block title %}
+{% if ballot.candidates_locked %}
+  Candidates for each ballot in the {{ object.name }}
+{% else %}
   Known candidates for each ballot in the {{ object.name }}
+{% endif %}
 {% endblock %}
 
 {% block hero %}
