@@ -82,3 +82,26 @@ class TestPersonViewSet(UK2015ExamplesMixin, TestCase):
             previous_party_affiliations[0]["ec_id"],
             self.conservative_party.ec_id,
         )
+
+    def test_person_versions_view(self):
+        """
+        Smoke test to ensure the versions view works properly
+
+        :return:
+        """
+        person_id = self.people[0].pk
+        response = self.client.get(f"/api/next/people/{person_id}/versions/")
+        self.assertEqual(response.json(), [])
+
+    def test_person_history_view(self):
+        """
+        Smoke test to ensure the history view works properly
+
+        :return:
+        """
+        person_id = self.people[0].pk
+        response = self.client.get(f"/api/next/people/{person_id}/history/")
+        self.assertEqual(
+            response.json(),
+            {"count": 0, "next": None, "previous": None, "results": []},
+        )
