@@ -1,5 +1,3 @@
-import json
-
 import people.api.next.serializers
 from api.next.views import ResultsSetPagination
 from candidates import models as extra_models
@@ -95,7 +93,7 @@ class PersonViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True, methods=["get"], name="Versions")
     def versions(self, request, pk=None, **kwargs):
-        return Response(json.loads(self.get_object().versions))
+        return Response(self.get_object().versions)
 
     serializer_class = people.api.next.serializers.PersonSerializer
     pagination_class = ResultsSetPagination
