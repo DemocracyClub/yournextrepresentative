@@ -53,4 +53,14 @@ Install pypandoc (or via `requirements.txt`):
 
 If `pypandoc` does not install via `pip`, visit https://pypi.org/project/pypandoc/ for further instructions. 
 
- 
+# Pre-election Tasks
+
+# Enable Candidate Leaderboard
+
+The candidate leaderboard is a way of showing the most active candidates on the site. It is a way of volunteers to add more information about candidates and elections.
+
+We take a slice of edits in YNR and assign them to a election leaderboard. 
+
+This is defined here: https://github.com/DemocracyClub/yournextrepresentative/blob/master/ynr/apps/candidates/views/mixins.py#L20
+
+We can modify the old value to reflect the current election. Change, PR, merge, [currently Sym needs to deploy]
