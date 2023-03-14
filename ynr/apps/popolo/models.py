@@ -533,6 +533,7 @@ class OtherName(Dateframeable, GenericRelatable, models.Model):
     )
 
     objects = OtherNameQuerySet.as_manager()
+    needs_review = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
