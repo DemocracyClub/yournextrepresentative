@@ -50,6 +50,9 @@
     {% endif %}
   {{ form.name }}
   </p>
+  {% if person.has_locked_and_current_ballots %}
+    <p class="help-text">This candidate is on a locked ballot. Changes to this candidate's name will be reviewed by a second person before being published.</p>
+  {% endif %}
   {{ form.name.errors }}
 
   {% if not add_candidate_form %}

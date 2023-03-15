@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -10,7 +8,6 @@ from candidates.models.popolo_extra import Ballot
 from facebook_data.tasks import extract_fb_page_id
 from official_documents.models import OfficialDocument
 from parties.models import Party
-from django import forms
 from people.forms.fields import (
     CurrentUnlockedBallotsField,
     StrippedCharField,
@@ -330,14 +327,21 @@ class BasePersonForm(forms.ModelForm):
         )
         return clean_biography
 
-    def save(self, commit=True):
-        if "name" in self.changed_data and self.initial["name"]:
-            old_name = self.initial["name"]
-            self.instance.other_names.update_or_create(
-                name=old_name,
-                defaults={
-                    "note": "Added when main name changed on person edit form"
-                },
+    def save(self, commit=True, user=None):
+        suggested_name = self.cleaned_data["name"]
+        initial_name = self.initial["name"]
+        # If the user is creating a new person, or the name has changed and doesn't match the existing name
+        if (
+            initial_name
+            and "name" in self.changed_data
+            and (initial_name != suggested_name)
+        ):
+            suggested_name = self.cleaned_data["name"]
+            initial_name = self.initial["name"]
+            self.instance.edit_name(
+                suggested_name=suggested_name,
+                initial_name=initial_name,
+                user=user,
             )
         return super().save(commit)
 

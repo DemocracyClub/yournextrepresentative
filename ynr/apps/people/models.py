@@ -1,20 +1,23 @@
 from datetime import date
 from enum import Enum, unique
-from urllib.parse import urljoin, quote_plus
+from urllib.parse import quote_plus, urljoin
+
+from auth_helpers.views import user_in_group
+from candidates.diffs import get_version_diffs
+from candidates.models.db import ActionType, LoggedAction
+from candidates.models.popolo_extra import Ballot
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
-from django.db import transaction
-from django.db.models import JSONField
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import (
-    SearchVectorField,
     SearchQuery,
     SearchQueryField,
+    SearchVectorField,
 )
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
-from django.db.models import Lookup
+from django.db import models, transaction
+from django.db.models import JSONField, Lookup
 from django.template import loader
 from django.templatetags.static import static
 from django.urls import reverse
@@ -22,20 +25,23 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django_extensions.db.models import TimeStampedModel
-from slugify import slugify
-from sorl.thumbnail import get_thumbnail
-from sorl.thumbnail import delete as sorl_delete
-
-
+from auth_helpers.views import user_in_group
 from candidates.diffs import get_version_diffs
-from candidates.models import Ballot
 from candidates.models.db import ActionType, LoggedAction
+from candidates.models.popolo_extra import Ballot
+
 from people.managers import (
     PersonIdentifierQuerySet,
     PersonImageManager,
     PersonQuerySet,
 )
 from popolo.models import Membership, VersionNotFound
+from slugify import slugify
+from sorl.thumbnail import delete as sorl_delete
+from sorl.thumbnail import get_thumbnail
+
+
+TRUSTED_TO_EDIT_NAME = "Trusted to edit person name"
 
 
 def person_image_path(instance, filename):
@@ -307,6 +313,77 @@ class Person(TimeStampedModel, models.Model):
         )
 
     objects = PersonQuerySet.as_manager()
+
+    @property
+    def has_locked_and_current_ballots(self):
+        return (
+            True
+            if self.memberships.filter(
+                ballot__election__current=True, ballot__candidates_locked=True
+            )
+            else False
+        )
+
+    def edit_name(self, suggested_name, initial_name, user):
+        # To prevent vandalism, when an edit is made
+        # to a person name on a locked ballot,
+        # if the user is not trusted,
+        # create a new OtherName object
+        # and send it to the moderation queue
+        # for review.
+
+        qs = self.memberships.filter(
+            ballot__election__current=True, ballot__candidates_locked=True
+        )
+        if not qs.exists():
+            try:
+                self.other_names.get(name=initial_name)
+            except self.other_names.model.DoesNotExist:
+                self.other_names.create(
+                    name=initial_name,
+                    needs_review=False,
+                )
+                LoggedAction.objects.create(
+                    user=user,
+                    action_type=ActionType.PERSON_UPDATE,
+                    person=self,
+                    source="Person edit form",
+                )
+            return
+
+        if user.is_authenticated and user_in_group(user, TRUSTED_TO_EDIT_NAME):
+            # since the user is trusted, whether or not there are locked ballots,
+            # we can update the name field
+            # and skip the review in the moderation queue
+            try:
+                self.other_names.get(name=suggested_name)
+            except self.other_names.model.DoesNotExist:
+                self.other_names.create(
+                    name=suggested_name,
+                    needs_review=False,
+                )
+            self.name == suggested_name
+            LoggedAction.objects.create(
+                user=user,
+                action_type=ActionType.PERSON_OTHER_NAME_UPDATE,
+                person=self,
+                source="Person edit form",
+            )
+        else:
+            try:
+                self.other_names.get(name=suggested_name)
+            except self.other_names.model.DoesNotExist:
+                self.other_names.create(
+                    name=suggested_name,
+                    needs_review=True,
+                )
+            self.name = initial_name
+            LoggedAction.objects.create(
+                user=user,
+                action_type=ActionType.PERSON_OTHER_NAME_UPDATE,
+                person=self,
+                source="Person edit form",
+            )
 
     @property
     def current_or_future_candidacies(self):
