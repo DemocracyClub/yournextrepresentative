@@ -7,12 +7,6 @@ from people.tests.test_person_view import PersonViewSharedTestsMixin
 from webtest import Text
 
 
-
-
-
-
-
-
 class TestPersonUpdate(PersonViewSharedTestsMixin):
     def test_update_favourite_biscuit(self):
         self.assertIsNone(self.person.favourite_biscuit)
@@ -131,11 +125,15 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         self.person.refresh_from_db()
         self.assertEqual(self.person.age, "37 or 38")
 
-    # def test_user_cannot_review_person_name(self):
-    #     #current user is not in the TRUSTED_TO_EDIT_NAME group
-    #     # visit the moderation page and return a 403
-    #     response = self.app.get("/moderation/person_name_review/", user=self.user)
-    #     self.assertContains(response, "403 Forbidden")
+    def test_user_cannot_review_person_name(self):
+        # current user is not in the TRUSTED_TO_EDIT_NAME group
+        # visit the moderation page and return a 403
+        response = self.app.get(
+            "/moderation/person_name_review/",
+            user=self.user,
+            expect_errors=True,
+        )
+        self.assertEqual(response.status_code, 403)
 
     def test_user_can_review_person_name(self):
         # Test that a user who is in the TRUSTED_TO_EDIT_NAME group
@@ -144,7 +142,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         response = self.app.get(
             "/moderation/person_name_review/", user=self.user
         )
-        self.assertContains(response, "Review Person name edits")
+        self.assertContains(response, "Review person name suggestions")
 
     def test_change_name_by_untrusted_user_no_locked_ballots(self):
         # Test that a user who is not in the TRUSTED_TO_EDIT_NAME group
