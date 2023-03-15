@@ -1,6 +1,9 @@
 import re
+from urllib.parse import quote
 
+from auth_helpers.views import GroupRequiredMixin, user_in_group
 from braces.views import LoginRequiredMixin
+from candidates.models.db import ActionType
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
@@ -14,12 +17,9 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from urllib.parse import quote
 from django.views.decorators.cache import cache_control
-from django.views.generic import FormView, TemplateView, View, UpdateView
+from django.views.generic import FormView, TemplateView, UpdateView, View
 from django.views.generic.detail import DetailView
-
-from auth_helpers.views import GroupRequiredMixin, user_in_group
 from duplicates.forms import DuplicateSuggestionForm
 from elections.mixins import ElectionMixin
 from elections.models import Election
@@ -31,15 +31,15 @@ from people.forms.formsets import (
 )
 from people.models import Person
 from popolo.models import NotStandingValidationError
-from ynr.apps.people.merging import PersonMerger, InvalidMergeError
-from candidates.models.db import ActionType
+
+from ynr.apps.people.merging import InvalidMergeError, PersonMerger
 
 from ..diffs import get_version_diffs
 from ..models import (
     TRUSTED_TO_MERGE_GROUP_NAME,
+    Ballot,
     LoggedAction,
     PersonRedirect,
-    Ballot,
 )
 from ..models.versions import revert_person_from_version_data
 from .helpers import ProcessInlineFormsMixin
@@ -157,11 +157,8 @@ class RevertPersonView(LoginRequiredMixin, View):
         source = self.request.POST["source"]
 
         with transaction.atomic():
-
             person = get_object_or_404(Person, id=person_id)
-
             versions = person.versions
-
             data_to_revert_to = None
             for version in versions:
                 if version["version_id"] == version_id:
@@ -465,7 +462,7 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
             identifiers_formset.save()
 
             membership_formset.save()
-            person = form.save()
+            person = form.save(user=self.request.user)
             change_metadata = get_change_metadata(
                 self.request, form.cleaned_data.pop("source")
             )
