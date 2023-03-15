@@ -1,0 +1,35 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Review Person name edits</h2>
+<p>This step is to prevent the few cases of vandalism on Person names</p>
+
+<table>
+    <tr> 
+        <th>Person ID</th>
+        <th>Current Name</th>
+        <th>Suggested Name</th>
+        <th>Review</th>
+    </tr>
+
+    {% for other_name in object_list %}
+        <tr>
+            <td>{{ other_name.object_id }}</a></td>
+            <td><a href="/person/{{other_name.object_id}}">{{ other_name.content_object.name }}</td>
+            <td>{{ other_name.name }} - {{other_name.pk }}</td>
+            <td>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <input class="button" type="submit" name="decision_{{other_name.pk}}" value="Approve" style="background-color:green;color:white">
+                    {% comment %} Keep as an other_name but don't make it the primary name {% endcomment %}
+                    <input class="button" type="submit" name="decision_{{other_name.pk}}" value="Ignore" style="background-color:yellow;color:black">
+                    <input class="button" type="submit" name="decision_{{other_name.pk}}" value="Reject" style="background-color:red; color:white">
+                </form> 
+            </td>
+        </tr>
+    {% endfor %}
+   
+    </tr>
+</table> 
+{% endblock %}

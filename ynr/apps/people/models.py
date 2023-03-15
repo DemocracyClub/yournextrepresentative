@@ -6,7 +6,6 @@ from auth_helpers.views import user_in_group
 from candidates.diffs import get_version_diffs
 from candidates.models.db import ActionType, LoggedAction
 from candidates.models.popolo_extra import Ballot
-
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.indexes import GinIndex
@@ -25,11 +24,6 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django_extensions.db.models import TimeStampedModel
-from auth_helpers.views import user_in_group
-from candidates.diffs import get_version_diffs
-from candidates.models.db import ActionType, LoggedAction
-from candidates.models.popolo_extra import Ballot
-
 from people.managers import (
     PersonIdentifierQuerySet,
     PersonImageManager,

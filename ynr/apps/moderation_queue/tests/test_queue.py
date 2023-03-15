@@ -4,21 +4,24 @@ from os.path import dirname, join, realpath
 from shutil import rmtree
 from urllib.parse import urlsplit
 
+from candidates.models import LoggedAction
+from candidates.models.popolo_extra import Ballot
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.factories import (
+    ElectionFactory,
+    MembershipFactory,
+    PostFactory,
+)
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.contrib.auth.models import Group, User
 from django.core.files.storage import FileSystemStorage
 from django.utils import timezone
 
 from django.test.utils import override_settings
-from django.utils.formats import date_format
 from django.urls import reverse
+from django.utils.formats import date_format
 from django_webtest import WebTest
 from mock import patch
-from PIL import Image
-
-from candidates.models import LoggedAction
-from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import MembershipFactory
-from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.models import (
     PHOTO_REVIEWERS_GROUP_NAME,
     QueuedImage,
@@ -26,9 +29,13 @@ from moderation_queue.models import (
 )
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from official_documents.models import OfficialDocument
+from parties.tests.factories import PartyFactory
 from people.models import Person
 from people.tests.factories import PersonFactory
+from PIL import Image
+from popolo.models import OtherName
 from utils.testing_utils import FuzzyInt
+
 from ynr.helpers import mkdir_p
 from ynr.settings.constants.formats.en.formats import (
     DATE_FORMAT,
@@ -539,3 +546,80 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         response = self.app.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Dulwich")
+
+
+class PersonNameEditReviewTest(TestUserMixin, WebTest):
+    def setUp(self):
+        super().setUp()
+        self.person = PersonFactory.create(id=2009, name="Tessa Jowell")
+        self.post = PostFactory.create(label="Dulwich and West Norwood")
+        self.party = PartyFactory.create(name="Labour Party")
+        self.ballot = Ballot.objects.create(
+            post=self.post, election=ElectionFactory.create()
+        )
+
+        MembershipFactory.create(
+            person=self.person,
+            post=self.post,
+            party=self.party,
+            ballot=self.ballot,
+        )
+        self.other_name = self.person.other_names.create(
+            name="Tessa Palmer",
+            needs_review=True,
+        )
+
+    def test_approve_name_change(self):
+        # assert that the person has an other name that needs review
+        self.assertTrue(OtherName.objects.filter(needs_review=True).exists())
+        user = User.objects.get(username="george")
+        self.client.post(
+            path=reverse(
+                "person-name-review",
+            ),
+            user=user,
+            params={
+                "decision": "approve",
+                "pk": self.other_name.pk,
+            },
+        )
+        self.assertTrue("Tessa Palmer", self.person.name)
+        self.assertTrue(self.other_name.needs_review, False)
+
+    def test_ignore_name_change(self):
+        # assert that the person has an other name that needs review
+        self.assertTrue(OtherName.objects.filter(needs_review=True).exists())
+        user = User.objects.get(username="george")
+        # approve the name change
+        self.client.post(
+            path=reverse(
+                "person-name-review",
+            ),
+            user=user,
+            params={
+                "decision": "ignore",
+                "pk": self.other_name.pk,
+            },
+        )
+        # assert that the person still has the original name
+        self.assertTrue("Tessa Jowell", self.person.name)
+        self.assertTrue(self.other_name.needs_review, False)
+
+    def test_reject_name_change(self):
+        # assert that the person has an other name that needs review
+        self.assertTrue(OtherName.objects.filter(needs_review=True).exists())
+        user = User.objects.get(username="george")
+        # approve the name change
+        self.client.post(
+            path=reverse(
+                "person-name-review",
+            ),
+            user=user,
+            params={
+                "decision": "reject",
+                "pk": self.other_name.pk,
+            },
+        )
+        # assert that the name has not been changed
+        self.assertTrue("Tessa Jowell", self.person.name)
+        self.assertTrue(self.other_name.needs_review, False)

@@ -221,7 +221,7 @@ with the source: \n> {source}
         return self.message
 
     def post_message(self):
-        self.sh.client.chat.post_message(
+        self.sh.post_message(
             getattr(settings, "SLACK_REVIEW_CHANNEL", "C59LHLH7A"),
             text="Edit to {}".format(self.logged_action.person.name),
             blocks=self.message,
