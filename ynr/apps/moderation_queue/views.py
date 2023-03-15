@@ -1,10 +1,14 @@
 import random
 import re
-
 from typing import Any, Dict
+from urllib.parse import quote
 
 import bleach
+from auth_helpers.views import GroupRequiredMixin
 from braces.views import LoginRequiredMixin
+from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
+from candidates.models.db import ActionType
+from candidates.views.version_data import get_client_ip
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import models
@@ -14,29 +18,19 @@ from django.http import (
     HttpResponseRedirect,
     JsonResponse,
 )
-
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from urllib.parse import quote
 from django.views.generic import CreateView, ListView, TemplateView, View
-
-from auth_helpers.views import GroupRequiredMixin
+from elections.models import Election
+from moderation_queue.filters import QueuedImageFilter
 from moderation_queue.helpers import (
     ImageDownloadException,
     download_image_from_url,
-)
-
-from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
-from candidates.views.version_data import get_client_ip
-from candidates.models.db import ActionType
-from elections.models import Election
-from moderation_queue.filters import QueuedImageFilter
-from people.models import Person
-from popolo.models import Membership
-from moderation_queue.helpers import (
-    upload_photo_response,
     image_form_valid_response,
+    upload_photo_response,
 )
+from people.models import TRUSTED_TO_EDIT_NAME, Person
+from popolo.models import Membership, OtherName
 
 from .forms import (
     PhotoReviewForm,
@@ -449,6 +443,49 @@ class PersonNameCleanupView(TemplateView):
         context["two_upper"] = [p for p in people if regex.search(p.name)]
 
         return context
+
+
+class PersonNameEditReviewListView(GroupRequiredMixin, ListView):
+    http_method_names = ["get", "post"]
+    template_name = "moderation_queue/person_name_review.html"
+    required_group_name = TRUSTED_TO_EDIT_NAME
+    model = OtherName
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        object_list = OtherName.objects.filter(needs_review=True)
+        context = super().get_context_data(**kwargs)
+        context["object_list"] = object_list
+
+        return context
+
+    def post(self, request, **kwargs):
+        for key, value in request.POST.items():
+            if key.startswith("decision_"):
+                pk = key.split("_")[-1]
+                decision = value
+                other_name = OtherName.objects.get(pk=pk)
+
+                if decision == "Approve":
+                    self.approve_name_change(other_name)
+                elif decision == "Ignore":
+                    self.ignore_name_change(other_name)
+                else:
+                    self.reject_name_change(other_name)
+        return HttpResponseRedirect(reverse("person-name-review"))
+
+    def approve_name_change(self, other_name):
+        other_name.content_object.name = other_name.name
+        other_name.content_object.save()
+        other_name.needs_review = False
+        other_name.save()
+
+    def ignore_name_change(self, other_name):
+        other_name.needs_review = False
+        other_name.save()
+
+    def reject_name_change(self, other_name):
+        other_name.delete()
 
 
 class RemoveSuggestedLocksView(LoginRequiredMixin, GroupRequiredMixin, View):

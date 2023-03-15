@@ -4,6 +4,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .views import (
     PersonNameCleanupView,
+    PersonNameEditReviewListView,
     PhotoReview,
     PhotoReviewList,
     PhotoUploadSuccess,
@@ -62,6 +63,11 @@ urlpatterns = [
         r"^person_name_cleanup/$",
         PersonNameCleanupView.as_view(),
         name="person_name_cleanup",
+    ),
+    re_path(
+        r"^person_name_review/$",
+        PersonNameEditReviewListView.as_view(),
+        name="person-name-review",
     ),
     re_path(
         r"^sopn-review-required/remove-ajax/$",
