@@ -325,7 +325,6 @@ class Person(TimeStampedModel, models.Model):
         # create a new OtherName object
         # and send it to the moderation queue
         # for review.
-
         qs = self.memberships.filter(
             ballot__election__current=True, ballot__candidates_locked=True
         )

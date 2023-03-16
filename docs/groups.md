@@ -65,3 +65,14 @@ in this group attempts to rename a candidate when
 `RESTRICT_RENAMES` is true, an email describing the attempted
 rename is sent to the support email address instead of the
 rename taking effect.
+
+`TRUSTED_TO_EDIT_NAME` is a similar option, but it only
+restricts the ability to change the name of a candidate on the `person` page.
+
+These users can review the queue of names waiting to be reviewed. 
+
+This is a list of names that have been changed by users who don't have the permission to change names. The queue is available at:
+
+    `/moderation/person_name_review`
+
+Any logged in user can suggest a name edit. 

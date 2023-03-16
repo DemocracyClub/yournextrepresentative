@@ -16,6 +16,7 @@ from moderation_queue.models import (
     SuggestedPostLock,
 )
 from official_documents.models import DOCUMENT_UPLOADERS_GROUP_NAME
+from people.models import TRUSTED_TO_EDIT_NAME
 
 SETTINGS_TO_ADD = (
     "ELECTION_APP",
@@ -84,6 +85,7 @@ def add_group_permissions(request):
             ("user_can_lock", TRUSTED_TO_LOCK_GROUP_NAME),
             ("user_can_record_results", RESULT_RECORDERS_GROUP_NAME),
             ("user_can_bulk_add", TRUSTED_TO_BULK_ADD_GROUP_NAME),
+            ("user_can_edit_name", TRUSTED_TO_EDIT_NAME),
         )
     }
     result["user_can_edit"] = settings.EDITS_ALLOWED or request.user.is_staff
