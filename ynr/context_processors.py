@@ -17,6 +17,7 @@ from moderation_queue.models import (
 )
 from official_documents.models import DOCUMENT_UPLOADERS_GROUP_NAME
 from people.models import TRUSTED_TO_EDIT_NAME
+from popolo.models import OtherName
 
 SETTINGS_TO_ADD = (
     "ELECTION_APP",
@@ -69,6 +70,10 @@ def add_notification_data(request):
             result[
                 "duplicate_suggestions"
             ] = DuplicateSuggestion.objects.open().count()
+        if TRUSTED_TO_EDIT_NAME in groups:
+            result["person_name_edits"] = OtherName.objects.filter(
+                needs_review=True
+            ).count()
     return result
 
 
