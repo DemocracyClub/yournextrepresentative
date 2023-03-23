@@ -1,10 +1,21 @@
 from django.urls import reverse
 from webtest import Text
+from django.contrib.auth.models import User
+
 
 from people.tests.test_person_view import PersonViewSharedTestsMixin
 from candidates.views.version_data import get_change_metadata
-from candidates.tests.factories import ElectionFactory, BallotPaperFactory
+from candidates.tests.factories import (
+    ElectionFactory,
+    BallotPaperFactory,
+)
 from people.models import EditLimitationStatuses
+
+
+
+
+
+
 
 
 class TestPersonUpdate(PersonViewSharedTestsMixin):
@@ -125,19 +136,112 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         self.person.refresh_from_db()
         self.assertEqual(self.person.age, "37 or 38")
 
-    def test_change_name_creates_other_names(self):
-        self.assertFalse(self.person.other_names.exists())
+    # def test_user_cannot_review_person_name(self):
+    #     #current user is not in the TRUSTED_TO_EDIT_NAME group
+    #     # visit the moderation page and return a 403
+    #     response = self.app.get("/moderation/person_name_review/", user=self.user)
+    #     self.assertContains(response, "403 Forbidden")
+
+    def test_user_can_review_person_name(self):
+        # Test that a user who is in the TRUSTED_TO_EDIT_NAME group
+        # can visit the moderation page and see the page
+        self.user = User.objects.get(username="george")
+        response = self.app.get(
+            "/moderation/person_name_review/", user=self.user
+        )
+        self.assertContains(response, "Review Person name edits")
+
+    def test_change_name_by_untrusted_user_no_locked_ballots(self):
+        # Test that a user who is not in the TRUSTED_TO_EDIT_NAME group
+        # makes a change to a person's name (who does not have current, locked ballots),
+        # the change is saved directly and an other name is created and not
+        # flagged for review
         response = self.app.get(
             "/person/{}/update".format(self.person.pk), user=self.user
         )
 
+        # confirm the original name prior to edits
+        self.assertEqual(self.person.name, "Tessa Jowell")
         form = response.forms[1]
         form["name"] = "Tessa Palmer"
+        # make a change to another field to ensure that edit is saved
+        # regardless of name change
+        form["birth_date"] = 1950
         form["source"] = "Mumsnet"
         form.submit()
         self.person.refresh_from_db()
-        self.assertEqual(self.person.other_names.first().name, "Tessa Jowell")
         self.assertEqual(self.person.name, "Tessa Palmer")
+        # check that the suggested name has not been created
+        self.assertEqual(self.person.other_names.count(), 1)
+        self.assertEqual(self.person.other_names.first().needs_review, False)
+
+    def test_change_name_by_untrusted_user_with_locked_ballots(self):
+        # Test that a user who is not in the TRUSTED_TO_EDIT_NAME group
+        # makes a change to a person's name (who has current, locked ballots),
+        # but the change is not saved and the suggested name is flagged for review
+        current_election = ElectionFactory(
+            election_date="2023-05-05", slug="parl.2023-05-05", current=True
+        )
+        ballot = BallotPaperFactory(
+            election=current_election,
+            post=self.dulwich_post,
+            ballot_paper_id="parl.foo.2023-05-05",
+            candidates_locked=True,
+        )
+
+        self.person.memberships.create(
+            ballot=ballot,
+            post=self.dulwich_post,
+            party=self.green_party,
+            label="Test Membership",
+        )
+
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        # check on the name that is currently set
+        self.assertEqual(self.person.name, "Tessa Jowell")
+        form = response.forms[1]
+        form["name"] = "Tessa Palmer"
+        # make a change to another field to ensure that change occurs regardless of name change
+        form["birth_date"] = 1950
+        form["source"] = "Mumsnet"
+        form.submit()
+        self.person.refresh_from_db()
+        # check that the name has not been changed
+        self.assertEqual(self.person.name, "Tessa Jowell")
+        # check that the name has been added to the other names and needs review
+        self.assertEqual(self.person.other_names.first().name, "Tessa Palmer")
+        self.assertEqual(self.person.other_names.first().needs_review, True)
+
+    def test_change_name_by_trusted_user(self):
+        # Test that a user who is in the TRUSTED_TO_EDIT_NAME group
+        # makes a change to a person's name,
+        # the change is saved directly and an other_name is created,
+        # but the other_name is not flagged for review
+        self.assertEqual(len(self.person.other_names.all()), 0)
+        # get the test user in the TRUSTED_TO_EDIT_NAME group
+        self.user = User.objects.get(username="george")
+
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        # check on the name that is currently set
+        self.assertEqual(self.person.name, "Tessa Jowell")
+        form = response.forms[1]
+        form["name"] = "Tessa Palmer"
+        # make a change to another field to ensure that change occurs regardless of name change
+        form["birth_date"] = 1950
+        form["source"] = "Mumsnet"
+        form.submit()
+        self.person.refresh_from_db()
+        # check that the name has not been changed
+        self.assertEqual(self.person.name, "Tessa Palmer")
+        # check an other names has been created
+        self.assertEqual(len(self.person.other_names.all()), 1)
+        self.assertEqual(self.person.other_names.first().needs_review, False)
 
     def test_edits_prevented(self):
         # See if we get a 403 when submitting a person form

@@ -7,6 +7,7 @@ from candidates.models import (
 )
 from moderation_queue.models import VERY_TRUSTED_USER_GROUP_NAME
 from official_documents.models import DOCUMENT_UPLOADERS_GROUP_NAME
+from people.models import TRUSTED_TO_EDIT_NAME
 
 
 class TestUserMixin(object):
@@ -31,6 +32,7 @@ class TestUserMixin(object):
                 "user_who_can_record_results",
                 [RESULT_RECORDERS_GROUP_NAME],
             ),
+            ("george", "user_can_edit_name", [TRUSTED_TO_EDIT_NAME]),
         ):
             u = User.objects.create_user(
                 username, username + "@example.com", "notagoodpassword"
