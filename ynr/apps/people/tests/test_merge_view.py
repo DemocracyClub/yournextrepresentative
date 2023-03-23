@@ -566,15 +566,7 @@ class TestMergePeopleView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # then directly merge
         merge_form = response.forms[MERGE_FORM_ID]
         response = merge_form.submit()
-
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location, "/person/1/merge_conflict/2009/not_standing/"
-        )
-        response = response.follow()
-        form = response.forms[1]
-        response = form.submit()
-        response.follow()
         self.assertEqual(response.location, "/person/1/tessa-jowell")
 
     def test_merge_same_person_shows_error(self):

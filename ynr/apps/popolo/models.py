@@ -363,18 +363,8 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
     def save(self, *args, **kwargs):
         if self.ballot and getattr(self, "check_for_broken", True):
             if self.ballot.election in self.person.not_standing.all():
-                msg = (
-                    "Trying to add a Membership with an election "
-                    '"{election}", but that\'s in {person} '
-                    "({person_id})'s not_standing list."
-                )
-                raise NotStandingValidationError(
-                    msg.format(
-                        election=self.ballot.election,
-                        person=self.person.name,
-                        person_id=self.person.id,
-                    )
-                )
+                # remove not_standing status
+                self.person.not_standing.remove(self.ballot.election)
         if not self.party_name:
             self.party_name = self.party.name
 
