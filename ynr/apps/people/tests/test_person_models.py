@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType
+from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import faker_factory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.tests.helpers import TmpMediaRootMixin
@@ -12,11 +13,15 @@ from people.models import Person, PersonImage
 from people.tests.factories import PersonFactory
 from popolo.models import Membership
 from django.contrib.auth import get_user_model
-
 from moderation_queue.models import QueuedImage
 
 
-class TestPersonModels(UK2015ExamplesMixin, TmpMediaRootMixin, WebTest):
+class TestPersonModels(
+    TestUserMixin, UK2015ExamplesMixin, TmpMediaRootMixin, WebTest
+):
+    def setUp(self):
+        super().setUp()
+
     def test_get_display_image_url(self):
         person = PersonFactory(name=faker_factory.name())
 
@@ -63,6 +68,31 @@ class TestPersonModels(UK2015ExamplesMixin, TmpMediaRootMixin, WebTest):
         self.assertEqual(
             person.current_elections_standing_down(), [self.election]
         )
+
+    def test_current_elections_not_standing_then_standing_again(self):
+        # This is a test for when a person is marked as not standing in an
+        # election, but then later is marked as standing in that same election.
+        # This can happen if a person is marked as not standing in an election
+        # and then later is added to the ballot paper.
+        ballot = self.election.ballot_set.first()
+        self.person = PersonFactory()
+        self.assertEqual(self.person.not_standing.all().count(), 0)
+        self.person.not_standing.add(ballot.election)
+
+        # adding a person to a ballot removes the ballot from that person's not standing list
+        response = self.app.get(
+            f"/person/{self.person.id}/update", user=self.user, auto_follow=True
+        )
+        form = response.forms["person-details"]
+        form["memberships-0-ballot_paper_id"].value = ballot.ballot_paper_id
+        form["memberships-0-party_identifier_0"].value = self.labour_party.ec_id
+        form[
+            "source"
+        ] = "Test adding a person to a ballot removes them from the not standing list"
+        form.submit()
+
+        # check that the person is no longer marked as not standing in the election
+        self.assertEqual(self.person.not_standing.all().count(), 0)
 
     def test_delete_with_logged_action(self):
         """
