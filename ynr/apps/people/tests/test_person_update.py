@@ -1,15 +1,10 @@
-from django.urls import reverse
-from webtest import Text
-from django.contrib.auth.models import User
-
-
-from people.tests.test_person_view import PersonViewSharedTestsMixin
+from candidates.tests.factories import BallotPaperFactory, ElectionFactory
 from candidates.views.version_data import get_change_metadata
-from candidates.tests.factories import (
-    ElectionFactory,
-    BallotPaperFactory,
-)
+from django.contrib.auth.models import User
+from django.urls import reverse
 from people.models import EditLimitationStatuses
+from people.tests.test_person_view import PersonViewSharedTestsMixin
+from webtest import Text
 
 
 
