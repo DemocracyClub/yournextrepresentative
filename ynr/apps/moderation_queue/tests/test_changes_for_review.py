@@ -176,15 +176,11 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
         form.submit()
 
         example_person.refresh_from_db()
-        self.assertEqual(example_person.name, "A different name")
-
-        self.assertEqual(LoggedAction.objects.all().count(), 22)
-        self.assertEqual(
-            LoggedAction.objects.filter(
-                flagged_type="needs_review_due_to_current_candidate_name_change"
-            ).count(),
-            1,
-        )
+        self.assertEqual(example_person.name, "A name")
+        self.assertTrue(example_person.other_names.last, "A different name")
+        # TO DO: Now we are logging the change to the other name as well as the person edit
+        # but I'm not sure we need to do both
+        self.assertEqual(LoggedAction.objects.all().count(), 24)
 
     def make_edit_to_dead_person(self, user, example_person):
         response = self.app.get(
@@ -258,7 +254,7 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
     def update_person(self, example_person):
         for i in range(3):
-            la = LoggedAction.objects.create(
+            LoggedAction.objects.create(
                 id=(1500 + i),
                 user=self.user,
                 action_type=ActionType.PERSON_UPDATE,
@@ -273,7 +269,7 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
 
     def revert_edit_to_person(self, example_person):
         for i in range(3):
-            la = LoggedAction.objects.create(
+            LoggedAction.objects.create(
                 id=(1600 + i),
                 user=self.user,
                 action_type=ActionType.PERSON_REVERT,
@@ -293,7 +289,6 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
         example_person = people.tests.factories.PersonFactory.create(
             id=4758, name="Phil Hutty", favourite_biscuit="Gingerbread"
         )
-        user = self.user
 
         # update person 3x to create a user history
         self.update_person(example_person)
