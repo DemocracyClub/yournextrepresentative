@@ -6,7 +6,7 @@ from urllib.parse import urlsplit
 
 from django.contrib.auth.models import Group, User
 from django.core.files.storage import FileSystemStorage
-from django.conf import settings
+from django.utils import timezone
 
 from django.test.utils import override_settings
 from django.utils.formats import date_format
@@ -164,7 +164,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             cells[1].text,
             date_format(
-                self.q1.created,
+                timezone.localtime(self.q1.created),
                 format=DATETIME_FORMAT,
             ),
         )
