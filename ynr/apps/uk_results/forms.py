@@ -128,7 +128,6 @@ class ResultSetForm(forms.ModelForm):
             )
             instance.ip_address = get_client_ip(request)
             instance.save()
-
             winners = self.get_winners()
             if winners:
                 # we have winners so initially mark all candidates not elected
@@ -142,12 +141,15 @@ class ResultSetForm(forms.ModelForm):
             for membership, field_name in self.memberships:
                 tied_vote_winner = self.cleaned_data[f"tied_vote_{field_name}"]
                 num_votes = self.cleaned_data[field_name]
+                rank = self.get_candidate_rank(num_votes)
                 winner = field_name in winners
+
                 instance.candidate_results.update_or_create(
                     membership=membership,
                     defaults={
                         "num_ballots": num_votes,
                         "tied_vote_winner": tied_vote_winner,
+                        "rank": rank,
                     },
                 )
                 if winner:
@@ -165,6 +167,27 @@ class ResultSetForm(forms.ModelForm):
             )
 
         return instance
+
+    def get_candidate_rank(self, num_votes):
+        """
+        Returns the rank of a candidate in the
+        ballot based on the number of votes received
+        """
+        results = {
+            field: votes
+            for field, votes in self.cleaned_data.items()
+            if field.startswith("memberships_")
+        }
+
+        sorted_results = sorted(
+            results.items(), reverse=True, key=lambda result: result[1]
+        )
+        candidates = self.ballot.membership_set.all()
+        total_candidates = len(candidates)
+        for i, (field, votes) in enumerate(sorted_results):
+            if num_votes == votes:
+                return i + 1
+        return total_candidates + 1
 
     @property
     def _tied_vote_winners(self):

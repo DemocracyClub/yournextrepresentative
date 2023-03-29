@@ -77,6 +77,9 @@
             {% if ballot.has_results %}
             <th>Results</th>
             {% endif %}
+            {% if ballot.has_results %}
+            <th>Rank</th>
+            {% endif %}
             {% if user.is_authenticated %}
             <th>Actions</th>
             {% endif %}
@@ -116,8 +119,15 @@
               {% if candidate.elected %} (elected){% endif %}
             </td>
             {% endif %}
-            {% if user.is_authenticated %}
+
+            {% if ballot.has_results %}
             <td>
+              {{ candidate.result.rank }}
+            </td>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <td> 
               {% if membership_edits_allowed %}
                 <a class="button tiny js-toggle-source-confirmation not-standing">
                   Not actually standing?
