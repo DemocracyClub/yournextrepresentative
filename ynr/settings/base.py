@@ -368,6 +368,12 @@ TWITTER_APP_ONLY_BEARER_TOKEN = os.environ.get(
     "TWITTER_APP_ONLY_BEARER_TOKEN", None
 )
 
+# A bearer token for the Mastodon API for mapping between
+# Mastodon usernames and IDs.
+MASTODON_APP_ONLY_BEARER_TOKEN = os.environ.get(
+    "MASTODON_APP_ONLY_BEARER_TOKEN", None
+)
+
 # Django Rest Framework settings:
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("candidates.api_permissions.ReadOnly",),

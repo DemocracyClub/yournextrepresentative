@@ -166,9 +166,6 @@ class PersonIdentifier(TimeStampedModel):
         if self.value_type == "twitter_username":
             url = format_html("https://twitter.com/{}", self.value)
 
-        if self.value_type == "mastodon_username":
-            url = format_html("https://mastodon.social/@{}", self.value)
-
         if self.value.startswith("http"):
             url = format_html("{}", self.value)
 
