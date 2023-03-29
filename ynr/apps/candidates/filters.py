@@ -20,6 +20,7 @@ def get_version_fields():
         ("birth_date", "Birth Date"),
         ("email", "Email"),
         ("twitter_username", "Twitter Profile"),
+        ("mastodon_username", "Mastodon Profile"),
         ("facebook_page_url", "Facebook Page URL"),
         ("facebook_personal_url", "Facebook Personal URL"),
         ("favourite_biscuits", "Favourite Biscuits"),
