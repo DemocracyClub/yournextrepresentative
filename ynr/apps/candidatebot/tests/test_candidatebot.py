@@ -48,6 +48,7 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
             "party_ppc_page_url": "",
             "candidacies": {},
             "twitter_username": "",
+            "mastodon_username": "",
             "wikidata_id": "",
             "wikipedia_url": "",
             "youtube_profile": "",

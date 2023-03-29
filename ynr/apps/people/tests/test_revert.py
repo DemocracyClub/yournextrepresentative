@@ -149,6 +149,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "gender": "",
                 "instagram_url": "",
                 "linkedin_url": "",
+                "mastodon_username": "",
                 "id": "2009",
                 "other_names": [
                     {

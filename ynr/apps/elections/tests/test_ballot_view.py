@@ -247,6 +247,7 @@ class TestBallotView(
                 "image_url": "",
                 "instagram_url": "",
                 "linkedin_url": "",
+                "mastodon_username": "",
                 "name": membership.person.name,
                 "NUTS1": "",
                 "old_person_ids": "",
