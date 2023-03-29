@@ -4,7 +4,14 @@ from dateutil import parser
 from django.conf import settings
 from django_date_extensions.fields import ApproximateDate
 
+from urllib.parse import urlparse
+
 from candidates.twitter_api import TwitterAPITokenMissing, get_twitter_user_id
+
+from candidates.mastodon_api import (
+    MastodonAPITokenMissing,
+    verify_mastodon_account,
+)
 
 
 def parse_approximate_date(s):
@@ -69,6 +76,39 @@ def squash_whitespace(s):
     return re.sub(
         r"(?ims)\s+", lambda m: "\n" if "\n" in m.group(0) else " ", s
     )
+
+
+def clean_mastodon_username(username):
+    # Accounts can be on any domain name and we can expect we can get valid
+    # input in at least two formats: @username@domain.com or domain.com/@username.
+    # Both are valid formats, and to verify the acount is valid, we will need
+    # to extract the domain.
+    parsed_username = urlparse(username)
+
+    if (
+        not parsed_username.scheme
+        or not parsed_username.netloc
+        or not parsed_username.path
+    ) or not re.search(r"^/@", parsed_username.path):
+        message = "The Mastodon account must follow the format https://domain/@username. The domain can be any valid Mastodon domain name."
+        raise ValueError(message)
+    name = parsed_username.path
+    name = re.sub(r"^/@", "", name)
+    name = re.sub(r"/$", "", name)
+    name = name.strip()
+    domain = parsed_username.netloc
+    domain = domain.strip()
+
+    username = "https://{domain}/@{name}".format(domain=domain, name=name)
+    # if the format is correct, check that the account exists
+    if username:
+        try:
+            verify_mastodon_account(domain, name)
+        except MastodonAPITokenMissing:
+            # If there's no API token, we can't check the screen name,
+            # but don't fail validation
+            pass
+    return username
 
 
 def clean_twitter_username(username):

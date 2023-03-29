@@ -172,6 +172,18 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
             PersonIdentifier.objects.get().value, "madeuptwitteraccount"
         )
 
+    def test_mastodon_bad_url(self):
+        # submit a username missing the `@` symbol
+        resp = self._submit_mastodon_values("https://mastodon.social/joe")
+        form = resp.context["identifiers_formset"]
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form[0].non_field_errors(),
+            [
+                "The Mastodon account must follow the format https://domain/@username. The domain can be any valid Mastodon domain name."
+            ],
+        )
+
     def test_mastodon_full_url(self):
         self.mastodon = PersonIdentifier.objects.create(
             person=self.person,
@@ -181,11 +193,11 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         )
         resp = self._submit_values("https://mastodon.social/@joe")
         self.assertEqual(resp.status_code, 200)
-        qs = PersonIdentifier.objects.filter(value_type="mastodon_username")
+        qs = PersonIdentifier.objects.all()
         self.assertEqual(qs[0].value, "joe")
 
     def test_bad_email_address(self):
-        resp = self._submit_values("whps", "email")
+        resp = self._submit_values("whoops", "email")
         form = resp.context["identifiers_formset"]
         self.assertFalse(form.is_valid())
         self.assertEqual(
