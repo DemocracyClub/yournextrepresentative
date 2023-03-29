@@ -15,6 +15,7 @@ class PersonIdentifierFields(Enum):
     linkedin_url = "Linkedin"
     party_ppc_page_url = "Party PPC Page"
     twitter_username = "Twitter"
+    mastodon_username = "Mastodon"
     wikipedia_url = "Wikipedia"
     wikidata_id = "Wikidata"
     youtube_profile = "YouTube Profile"

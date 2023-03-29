@@ -145,6 +145,7 @@ class PersonIdentifier(TimeStampedModel):
             "homepage_url": "Homepage",
             "party_ppc_page_url": "Party candidate page",
             "twitter_username": "Twitter",
+            "mastodon_username": "Mastodon",
             "wikipedia_url": "Wikipedia",
             "wikidata_id": "Wikidata",
             "ynmep_id": "YourNextMEP ID",
@@ -164,6 +165,9 @@ class PersonIdentifier(TimeStampedModel):
 
         if self.value_type == "twitter_username":
             url = format_html("https://twitter.com/{}", self.value)
+
+        if self.value_type == "mastodon_username":
+            url = format_html("https://mastodon.social/@{}", self.value)
 
         if self.value.startswith("http"):
             url = format_html("{}", self.value)
@@ -499,6 +503,10 @@ class Person(TimeStampedModel, models.Model):
         return self.get_single_identifier_value("twitter_username")
 
     @property
+    def get_mastodon_username(self):
+        return self.get_single_identifier_value("mastodon_username")
+
+    @property
     def get_facebook_personal_url(self):
         return self.get_single_identifier_value("facebook_personal_url")
 
@@ -750,7 +758,9 @@ class Person(TimeStampedModel, models.Model):
             twitter_user_name = twitter_id.value
         else:
             twitter_user_name = twitter_user_id = ""
-
+        mastodon_username = self.get_single_identifier_of_type(
+            "mastodon_username"
+        )
         theyworkforyou_url = ""
         parlparse_id = ""
         twfy_id = self.get_single_identifier_of_type("theyworkforyou")
@@ -768,6 +778,7 @@ class Person(TimeStampedModel, models.Model):
             "email": self.get_email,
             "twitter_username": twitter_user_name,
             "twitter_user_id": twitter_user_id,
+            "mastodon_username": mastodon_username,
             "facebook_page_url": self.get_single_identifier_value(
                 "facebook_page_url"
             ),
