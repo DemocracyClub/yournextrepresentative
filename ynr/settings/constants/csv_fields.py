@@ -20,6 +20,7 @@ CSV_ROW_FIELDS = [
     "elected",
     "email",
     "twitter_username",
+    "mastodon_username",
     "facebook_page_url",
     "party_ppc_page_url",
     "facebook_personal_url",
