@@ -36,6 +36,10 @@ class ResultSet(TimeStampedModel):
     def __str__(self):
         return "Result for {}".format(self.ballot.ballot_paper_id)
 
+    @property
+    def rank(self):
+        self.ballot.result_sets.order_by("-num_turnout_reported").index(self)
+
     def calculate_turnout_percentage(self):
         """
         Return turnout as a percentage, rounded to two decimal places
@@ -123,6 +127,7 @@ class CandidateResult(TimeStampedModel):
         default=False,
         help_text="Did this person win after receiving same votes as another candidate, via coin toss, lots etc",
     )
+    rank = models.PositiveIntegerField(null=True, verbose_name="Results Rank")
 
     class Meta:
         ordering = ("-num_ballots",)

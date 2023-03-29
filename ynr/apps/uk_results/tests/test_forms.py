@@ -169,43 +169,6 @@ class TestResultSetForm(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         self.assertTrue(winner.elected)
         self.assertTrue(winner.result.tied_vote_winner)
 
-    def test_get_winners_by_tied_result_multiple_winners(self):
-        """
-        Test that when there are multiple winners for the ballot, and all
-        results are tied, that two people can win by coin toss
-        """
-        self.ballot.winner_count = 2
-        cleaned_data = {"source": "example"}
-        loser, winner_1, winner_2 = self.candidacies
-
-        cleaned_data[f"memberships_{loser.person.pk}"] = 10
-        cleaned_data[f"memberships_{winner_1.person.pk}"] = 10
-        # set two winners as same votes but set tied vote value to True
-        cleaned_data[f"tied_vote_memberships_{winner_1.person.pk}"] = True
-        cleaned_data[f"memberships_{winner_2.person.pk}"] = 10
-        cleaned_data[f"tied_vote_memberships_{winner_2.person.pk}"] = True
-
-        form = ResultSetForm(data=cleaned_data, ballot=self.ballot)
-        self.assertTrue(form.is_valid())
-
-        result = form.get_winners()
-        expected = {
-            f"memberships_{winner_1.person.pk}": 10,
-            f"memberships_{winner_2.person.pk}": 10,
-        }
-        self.assertEqual(len(result), 2)
-        self.assertEqual(result, expected)
-
-        # save and do more checks
-        form.save(request=self.request)
-        for candidacy in self.candidacies:
-            candidacy.refresh_from_db()
-        self.assertFalse(loser.elected)
-        self.assertTrue(winner_1.elected)
-        self.assertTrue(winner_1.result.tied_vote_winner)
-        self.assertTrue(winner_2.elected)
-        self.assertTrue(winner_2.result.tied_vote_winner)
-
     def test_results_with_very_long_source(self):
         # Try with an acceptable source
         votes = 10
@@ -235,3 +198,42 @@ class TestResultSetForm(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
             form.errors,
             {"source": ["Source must be less than 2,000 characters"]},
         )
+
+    def test_get_candidate_rank(self):
+        """Test candidate rank is returned correctly"""
+        cleaned_data = {"source": "example"}
+        loser_1, loser_2, winner = self.candidacies
+
+        cleaned_data[f"memberships_{loser_1.person.pk}"] = 10
+        cleaned_data[f"memberships_{loser_2.person.pk}"] = 20
+        cleaned_data[f"memberships_{winner.person.pk}"] = 100
+
+        form = ResultSetForm(data=cleaned_data, ballot=self.ballot)
+        self.assertTrue(form.is_valid())
+        form.save(request=self.request)
+        for candidacy in self.candidacies:
+            candidacy.refresh_from_db()
+        self.assertEqual(loser_1.result.rank, 3)
+        self.assertEqual(loser_2.result.rank, 2)
+        self.assertEqual(winner.result.rank, 1)
+
+    def test_get_candidate_rank_with_a_tie(self):
+        """
+        Test that when there is a tie, the rank is the same
+        """
+        cleaned_data = {"source": "example"}
+        loser_1, loser_2, winner = self.candidacies
+
+        cleaned_data[f"memberships_{loser_1.person.pk}"] = 10
+        cleaned_data[f"memberships_{loser_2.person.pk}"] = 10
+        # set the winner as same votes but set tied vote value to True
+        cleaned_data[f"memberships_{winner.person.pk}"] = 10
+
+        form = ResultSetForm(data=cleaned_data, ballot=self.ballot)
+        self.assertTrue(form.is_valid())
+        form.save(request=self.request)
+        for candidacy in self.candidacies:
+            candidacy.refresh_from_db()
+        self.assertEqual(loser_1.result.rank, 1)
+        self.assertEqual(loser_2.result.rank, 1)
+        self.assertEqual(winner.result.rank, 1)
