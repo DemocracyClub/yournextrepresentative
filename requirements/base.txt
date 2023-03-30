@@ -18,7 +18,7 @@ django-celery-results==2.4.0
 django-cors-headers==3.11.0
 django-date-extensions==3.1.2
 django-debug-toolbar-template-timings
-django-debug-toolbar==3.2.2
+django-debug-toolbar==3.8.1
 django-extensions==3.2.1
 django-filter==21.1
 django-model-utils==4.2.0
