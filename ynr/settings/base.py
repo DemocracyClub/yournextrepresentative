@@ -211,7 +211,7 @@ LANGUAGES = [("en-gb", "British English")]
 LANGUAGE_CODE = "en-gb"
 TIME_ZONE = "Europe/London"
 USE_I18N = False
-USE_L10N = False
+USE_L10N = True
 USE_TZ = True
 DD_MM_DATE_FORMAT_PREFERRED = True
 
@@ -412,7 +412,7 @@ HOIST_ELECTED_CANDIDATES = True
 
 RESULTS_FEATURE_ACTIVE = True
 CAN_EDIT_ELECTIONS = False
-FORMAT_MODULE_PATH = "settings.formats"
+FORMAT_MODULE_PATH = "ynr.settings.constants.formats"
 
 SITE_OWNER = "Democracy Club"
 COPYRIGHT_HOLDER = "Democracy Club Community Interest Company"

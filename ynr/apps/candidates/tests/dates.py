@@ -21,7 +21,8 @@ default_templates = settings.TEMPLATES
 
 
 def mock_in_past():
-    return timezone.make_aware(datetime(2019, 1, 1, 10, 10, 10))
+    year_in_past = datetime.now().year - 3
+    return timezone.make_aware(datetime(year_in_past, 1, 1, 10, 10, 10))
 
 
 def mock_on_election_day(election):

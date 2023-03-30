@@ -6,10 +6,10 @@ from urllib.parse import urlsplit
 
 from django.contrib.auth.models import Group, User
 from django.core.files.storage import FileSystemStorage
-from django.conf import settings
+from django.utils import timezone
+
 from django.test.utils import override_settings
 from django.utils.formats import date_format
-from django.utils import timezone
 from django.urls import reverse
 from django_webtest import WebTest
 from mock import patch
@@ -30,6 +30,10 @@ from people.models import Person
 from people.tests.factories import PersonFactory
 from utils.testing_utils import FuzzyInt
 from ynr.helpers import mkdir_p
+from ynr.settings.constants.formats.en.formats import (
+    DATE_FORMAT,
+    DATETIME_FORMAT,
+)
 
 TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
 
@@ -156,18 +160,19 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         photo_rows = queue_table.find_all("tr")
         self.assertEqual(3, len(photo_rows))
         cells = photo_rows[1].find_all("td")
+
         self.assertEqual(
             cells[1].text,
             date_format(
                 timezone.localtime(self.q1.created),
-                format=settings.DATETIME_FORMAT,
+                format=DATETIME_FORMAT,
             ),
         )
         self.assertEqual(
             cells[2].text,
             date_format(
                 self.dulwich_post_ballot.election.election_date,
-                format=settings.DATE_FORMAT,
+                format=DATE_FORMAT,
             ),
         )
         self.assertEqual(cells[3].text, "john")

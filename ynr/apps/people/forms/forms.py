@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -8,6 +10,7 @@ from candidates.models.popolo_extra import Ballot
 from facebook_data.tasks import extract_fb_page_id
 from official_documents.models import OfficialDocument
 from parties.models import Party
+from django import forms
 from people.forms.fields import (
     CurrentUnlockedBallotsField,
     StrippedCharField,
@@ -139,7 +142,8 @@ class PersonIdentifierForm(forms.ModelForm):
 class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
-        instance = kwargs.get("instance", None)
+        instance: Membership = kwargs.get("instance", None)
+        person: Person = kwargs.pop("person", None)
         if instance:
             initial = {
                 "ballot_paper_id": kwargs["instance"].ballot.ballot_paper_id,
@@ -155,8 +159,9 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
 
         super().__init__(*args, **kwargs)
         self.fields["ballot_paper_id"] = CurrentUnlockedBallotsField(
-            label="Ballot", user=self.user
+            label="Ballot", user=self.user, person=person
         )
+
         if self.show_previous_party_affiliations:
             self.fields[
                 "previous_party_affiliations"

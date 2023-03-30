@@ -8,6 +8,8 @@ from people.managers import PersonQuerySet
 from people.models import Person
 from popolo.models import Membership
 
+import unicodedata
+
 
 def search_person_by_name(name: str, synonym: bool = False) -> PersonQuerySet:
     """
@@ -22,6 +24,11 @@ def search_person_by_name(name: str, synonym: bool = False) -> PersonQuerySet:
     see the comment in line about a workaround for a performance bug.
 
     """
+    name = (
+        unicodedata.normalize("NFKD", name)
+        .encode("ascii", "ignore")
+        .decode("ascii")
+    )
     name = name.lower()
     name = re.sub(r"[^a-z ]", " ", name)
     name = " ".join(name.strip().split())
