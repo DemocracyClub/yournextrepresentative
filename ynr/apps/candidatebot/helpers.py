@@ -5,7 +5,11 @@ from django.db import transaction, IntegrityError
 from candidates.models import LoggedAction
 from candidates.views.version_data import get_change_metadata
 from people.models import Person, PersonIdentifier
-from people.helpers import clean_twitter_username, clean_wikidata_id
+from people.helpers import (
+    clean_mastodon_username,
+    clean_twitter_username,
+    clean_wikidata_id,
+)
 from ynr_refactoring.settings import PersonIdentifierFields
 
 
@@ -88,6 +92,9 @@ class CandidateBot(object):
 
     def clean_twitter_username(self, value):
         return clean_twitter_username(value)
+
+    def clean_mastodon_username(self, value):
+        return clean_mastodon_username
 
     def clean_wikidata_id(self, value):
         return clean_wikidata_id(value)

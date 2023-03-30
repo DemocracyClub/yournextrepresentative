@@ -153,6 +153,19 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         form.submit()
         return form.submit()
 
+    def _submit_mastodon_values(self, value, value_type="mastodon_username"):
+        resp = self.app.get(
+            reverse("person-update", kwargs={"person_id": self.person.pk}),
+            user=self.user,
+        )
+
+        form = resp.forms[1]
+        form["source"] = "They changed their username"
+        form["tmp_person_identifiers-0-value_type"] = value_type
+        form["tmp_person_identifiers-0-value"] = value
+        form.submit()
+        return form.submit()
+
     def test_twitter_bad_url(self):
         resp = self._submit_values("http://example.com/blah")
         form = resp.context["identifiers_formset"]

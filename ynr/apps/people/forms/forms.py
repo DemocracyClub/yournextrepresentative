@@ -21,7 +21,11 @@ from parties.forms import (
 from people.models import Person, PersonIdentifier
 from popolo.models import OtherName, Membership
 
-from people.helpers import clean_twitter_username, clean_wikidata_id
+from people.helpers import (
+    clean_twitter_username,
+    clean_wikidata_id,
+    clean_mastodon_username,
+)
 
 
 class BaseCandidacyForm(forms.Form):
@@ -116,6 +120,18 @@ class PersonIdentifierForm(forms.ModelForm):
 
         try:
             return clean_twitter_username(username)
+        except ValueError as e:
+            raise ValidationError(e)
+
+    def clean_mastodon_username(self, username):
+        if self.instance.value != username:
+            self.instance.internal_identifier = None
+
+        if self.instance.internal_identifier:
+            return username
+
+        try:
+            return clean_mastodon_username(username)
         except ValueError as e:
             raise ValidationError(e)
 
