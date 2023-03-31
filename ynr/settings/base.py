@@ -316,7 +316,6 @@ PIPELINE = {
 SASS_INCLUDE_PATHS = (root("assets/scss/"),)
 SASS_ARGUMENT_LIST = ["-I " + p for p in SASS_INCLUDE_PATHS]
 SASS_ARGUMENT_LIST.append("--style compressed")
-SASS_ARGUMENT_LIST.append("--sourcemap")
 PIPELINE["SASS_ARGUMENTS"] = " ".join(SASS_ARGUMENT_LIST)
 
 
