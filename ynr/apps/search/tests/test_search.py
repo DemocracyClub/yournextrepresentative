@@ -147,9 +147,13 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_search_person_by_name_with_special_characters(self):
-        name = "Z$^o@&ë%"
+        name = "Zoe"
         person = PersonFactory(name=name)
         person.save()
-        qs = search_person_by_name(name=person.name)
-        self.assertEqual(qs.count(), 1)
-        self.assertEqual(qs.first().name, person.name)
+        name_with_umlaut = "Zoë"
+        umlaut_person = PersonFactory(name=name_with_umlaut)
+        umlaut_person.save()
+
+        qs = search_person_by_name(name=umlaut_person.name)
+        self.assertEqual(qs.count(), 2)
+        self.assertEqual(qs.first().name, umlaut_person.name)
