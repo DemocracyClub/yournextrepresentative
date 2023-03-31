@@ -12,11 +12,11 @@ var SOPN_VIEWER = (function () {
             var scale = 1.2;
             var page_container = document.createElement("div");
             var canvas = document.createElement("canvas");
-            var viewport = page.getViewport(scale);
+            var viewport = page.getViewport({"scale": scale});
 
             page_container.className = "page_container";
+            $(page_container).css({"position": "relative"});
             page_container.appendChild(canvas);
-
             if (canvas.getAttribute("data") !== "loaded") {
                 canvas.setAttribute("data", "loaded");
                 var context = canvas.getContext("2d");
@@ -28,7 +28,7 @@ var SOPN_VIEWER = (function () {
                 };
 
                 var renderTask = page.render(renderContext);
-                renderTask.then(function () {
+                renderTask.promise.then(function () {
                     container.append(page_container);
                     return page.getTextContent({normalizeWhitespace: true});
                 }).then(function (textContent) {
@@ -36,20 +36,20 @@ var SOPN_VIEWER = (function () {
                         page_text_layer = document.createElement("div");
                     page_text_layer.className = "text_layer";
                     page_container.appendChild(page_text_layer);
-
-                    var canvas_offset = pdf_canvas.offset();
-                    var canvas_height = pdf_canvas.get(0).height;
-                    var canvas_width = pdf_canvas.get(0).width;
+                    var canvas_offset_left = pdf_canvas.context.offsetLeft;
+                    var canvas_offset_top = pdf_canvas.context.offsetTop;
+                    var canvas_height = pdf_canvas.context.height;
+                    var canvas_width = pdf_canvas.context.width;
 
                     $(page_text_layer).css({
-                        left: canvas_offset.left + "px",
-                        top: canvas_offset.top + "px",
+                        left: canvas_offset_left + "px",
+                        top: canvas_offset_top + "px",
                         height: canvas_height + "px",
                         width: canvas_width + "px"
                     });
 
                     pdfjsLib.renderTextLayer({
-                        textContent: textContent,
+                        textContentSource: textContent,
                         container: page_text_layer,
                         viewport: viewport,
                         textDivs: []

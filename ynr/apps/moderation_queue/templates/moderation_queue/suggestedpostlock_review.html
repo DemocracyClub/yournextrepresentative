@@ -15,9 +15,8 @@
 {% endblock %}
 
 {% block content %}
-
-<script src="{% static "official_documents/js/pdf.2.0.943.js" %}"></script>
-<script src="{% static "official_documents/js/pdf.worker.2.0.943.js" %}"></script>
+<script src="{% static "official_documents/js/pdf.worker.min.js" %}"></script>
+<script src="{% static "official_documents/js/pdf.min.js" %}"></script>
 {% javascript 'sopn_viewer' %}
 {% include "moderation_queue/includes/ajax_lock_button_js.html" %}
 

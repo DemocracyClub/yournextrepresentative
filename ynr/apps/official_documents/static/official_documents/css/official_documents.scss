@@ -1,3 +1,7 @@
+html {
+  --scale-factor: 1.2;
+}
+
 .document_viewer {
   width:100%;
   min-height:800px;
@@ -8,6 +12,9 @@
   border:1px solid #EEE;
   max-width:100% !important;
   width:90em !important;
+}
+.page_container {
+  position: relative;
 }
 
 .page_container .text_layer {
@@ -21,7 +28,7 @@
   line-height: 1.0;
 }
 
-.page_container .text_layer > div {
+.page_container .text_layer > span {
   color: transparent;
   position: absolute;
   white-space: pre;
@@ -29,7 +36,7 @@
   transform-origin: 0 0;
 }
 
-.page_container .text_layer > div.highlight{
+.page_container .text_layer > span.highlight{
   color: black;
   background-color: yellow;
   border:1em solid yellow;
