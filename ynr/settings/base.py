@@ -142,6 +142,7 @@ CELERY_RESULT_BACKEND = "django-db"
 CELERY_TASK_ALWAYS_EAGER = True
 
 MIDDLEWARE = (
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -226,7 +227,7 @@ STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, "assets"),)
 
 STATICFILES_LOCATION = "static"
 MEDIAFILES_LOCATION = "media"
-
+STATICFILES_STORAGE = "ynr.storages.StaticStorage"
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
