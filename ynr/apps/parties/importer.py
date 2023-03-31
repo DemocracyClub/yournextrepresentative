@@ -362,10 +362,10 @@ class ECEmblem:
 
         image_file_name = self.download_emblem()
         mime_type = magic.Magic(mime=True).from_file(image_file_name)
-        if not mime_type.startswith(b"image/"):
+        if not mime_type.startswith("image/"):
             # This isn't an image, so let's not try to save it
             return
-        extension = mimetypes.guess_extension(mime_type.decode("utf8"))
+        extension = mimetypes.guess_extension(mime_type)
         filename = "Emblem_{}{}".format(self.emblem_dict["Id"], extension)
 
         emblem, _ = PartyEmblem.objects.update_or_create(
