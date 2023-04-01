@@ -29,3 +29,5 @@ node_modules/
 
 # PyCharm
 .idea/
+
+deploy/.vault_pass.txt

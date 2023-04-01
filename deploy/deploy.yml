@@ -1,0 +1,77 @@
+---
+- hosts: ynr
+  vars_files:
+    - vars.yml
+    - vault.yml
+  gather_facts: true
+  become: true
+  become_user: "{{ project_name }}"
+  remote_user: ubuntu
+  roles:
+    - common
+  tasks:
+    - name: Pull sources from the repository.
+      git:
+        repo: "{{ project_repo }}"
+        dest: "{{ project_root }}/code/"
+        version: "{{branch}}"
+        accept_hostkey: true
+      notify:
+        - restart web frontend
+      register: application_git_repo
+
+    - name: Upload configuration.
+      template:
+        src: "webapp_settings/production.py"
+        dest: "{{ project_root }}/code/ynr/settings/local.py"
+      notify:
+        - restart web frontend
+      register: application_config
+      become_user: root
+      become: true
+
+    - name: Upgrade the virtualenv.
+      pip:
+        requirements: "{{ project_root }}/code/requirements.txt"
+        virtualenv: "{{ project_root }}/env/"
+      notify:
+        - restart web frontend
+      when: application_git_repo.changed
+
+    - name: Migrate django
+      django_manage:
+        command: migrate --noinput
+        app_path: "{{ project_root }}/code"
+        virtualenv: "{{ project_root }}/env"
+      when: (application_git_repo.changed) or (application_config.changed)
+
+    - name: Install packages based on package.json.
+      npm:
+        path: "{{ project_root }}/code"
+
+    - name: Build NPM assets
+      command: npm run build
+      args:
+        chdir: "{{ project_root }}/code"
+
+    - name: Generate Django media.
+      django_manage:
+        command: collectstatic --noinput
+        app_path: "{{ project_root }}/code"
+        virtualenv: "{{ project_root }}/env"
+      when: (application_git_repo.changed) or (application_config.changed)
+      run_once: true
+
+    - name: Check django is working
+      django_manage:
+        command: check
+        app_path: "{{ project_root }}/code"
+        virtualenv: "{{ project_root }}/env"
+
+    - name: Flush handlers
+      meta: flush_handlers
+
+    - name: Check gunicorn is up
+      command: service ynr_gunicorn status
+      args:
+        warn: false

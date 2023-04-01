@@ -1,7 +1,7 @@
 import os
 
 from django.conf import settings
-from django.contrib.staticfiles.storage import ManifestFilesMixin
+from whitenoise.storage import CompressedStaticFilesStorage
 from django.core.files.storage import FileSystemStorage
 from pipeline.storage import PipelineMixin
 from storages.backends.s3boto3 import S3Boto3Storage, SpooledTemporaryFile
@@ -32,13 +32,13 @@ class PatchedS3Boto3Storage(S3Boto3Storage):
             content_autoclose.close()
 
 
-class StaticStorage(PipelineMixin, ManifestFilesMixin, PatchedS3Boto3Storage):
+class StaticStorage(PipelineMixin, CompressedStaticFilesStorage):
     """
     Store static files on S3 at STATICFILES_LOCATION, post-process with pipeline
     and then create manifest files for them.
     """
 
-    location = settings.STATICFILES_LOCATION
+    manifest_strict = False
 
 
 class MediaStorage(PatchedS3Boto3Storage):

@@ -1,14 +1,13 @@
-# Python CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-python/ for more details
-#
-version: 2
+orbs:
+  aws-sg-white-list-circleci-ip: inokappa/aws-sg-white-list-circleci-ip@0.0.1
+  aws-cli: circleci/aws-cli@3.1.3
+version: 2.1
 jobs:
-  build:
+  build_and_test:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: cimg/python:3.8.10
+      - image: cimg/python:3.8.15
         environment:
           CIRCLECI: true
           PGHOST: 127.0.0.1
@@ -31,7 +30,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
            keys:
-             - v5-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
+             - v6-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
       - run:
           name: Install APT packages
           command: |
@@ -64,7 +63,7 @@ jobs:
       - save_cache:
           paths:
             - .venv
-          key: v5-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
+          key: v6-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
 
       - run:
           name: Pre test checks
@@ -98,3 +97,61 @@ jobs:
 
       - store_artifacts:
           path: test-results
+
+  deploy:
+    docker:
+      - image: cimg/python:3.8.15
+        environment:
+          CIRCLECI: true
+          PGHOST: 127.0.0.1
+          RUN_ENV: test
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - aws-cli/setup
+      - restore_cache:
+          keys:
+            - v1-deploy-{{ checksum "requirements/deploy.txt" }}
+      - run:
+          name: Create venv
+          command: |
+            python -m venv .venv
+            . .venv/bin/activate
+            pip install -U pip
+      - run:
+          name: install dependencies
+          command: |
+            . .venv/bin/activate
+            pip install -r requirements/deploy.txt
+      - run:
+          name: Create Vault pass file
+          command: |
+            echo $VAULT_PASS > deploy/.vault_pass.txt
+      - aws-sg-white-list-circleci-ip/add:
+          group-id: sg-807bc0e9
+          port: 22
+      - run:
+          name: Ansible Deploy
+          command: |
+            . .venv/bin/activate
+            cd deploy
+            ansible-playbook deploy.yml -e branch=$CIRCLE_SHA1
+      - aws-sg-white-list-circleci-ip/del:
+          group-id: sg-807bc0e9
+          port: 22
+      - save_cache:
+          paths:
+            - .venv
+          key: v1-deploy-{{ checksum "requirements/deploy.txt" }}
+
+
+workflows:
+  version: 2
+  test_build_deploy:
+    jobs:
+    - build_and_test
+    - deploy:
+        requires:
+        - build_and_test
+        filters: { branches: { only: [ main, master, deployment-upgrades] } }
+        context: [ deployment-production-ynr ]
