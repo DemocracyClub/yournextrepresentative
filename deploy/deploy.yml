@@ -2,7 +2,6 @@
 - hosts: ynr
   vars_files:
     - vars.yml
-    - vault.yml
   gather_facts: true
   become: true
   become_user: "{{ project_name }}"
@@ -19,6 +18,28 @@
       notify:
         - restart web frontend
       register: application_git_repo
+
+    - name: Copy env writer script
+      template:
+        src: "scripts/write_envfile.py"
+        dest: "{{ project_root }}/code/write_envfile.py"
+      notify:
+        - restart web frontend
+      become_user: "{{project_name}}"
+      become: true
+
+    - name: Write envfile
+      shell: |
+        source {{ project_root }}/env/bin/activate
+        python write_envfile.py --key-prefix /ynr/production
+      args:
+        chdir: "{{ project_root }}/code"
+        executable: /bin/bash
+      notify:
+        - restart web frontend
+      become_user: "{{project_name}}"
+      become: true
+
 
     - name: Upload configuration.
       template:

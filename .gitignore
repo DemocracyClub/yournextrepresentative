@@ -31,3 +31,5 @@ node_modules/
 .idea/
 
 deploy/.vault_pass.txt
+deploy/.env
+.dev
