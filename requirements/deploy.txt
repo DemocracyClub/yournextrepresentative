@@ -1,6 +1,6 @@
 boto3==1.26.104
 ansible==3.2.0
-appdirs==1.4.3
+appdirs==1.4.4
 asn1crypto==0.22.0
 paramiko>=2.1.6
 pyasn1==0.2.3
