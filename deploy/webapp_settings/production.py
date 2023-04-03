@@ -1,26 +1,21 @@
 # Only set this to True in development environments
+import os
 from datetime import date
+
+import requests
 
 from .base import *  # noqa
 
-DEBUG = False
-CAN_EDIT_ELECTIONS = False
 
-# Set this to a long random string and keep it secret
-# This is a handy tool:
-# https://www.miniwebtool.com/django-secret-key-generator/
-SECRET_KEY = "{{ production_django_secret_key }}"
 MEDIA_ROOT = "{{ django_media_root }}"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "{{project_name}}",
-        "USER": "{{postgres_username}}",
-        "PASSWORD": "{{postgres_password}}",
-        "HOST": "{{postgres_host}}",
-    },
-}
+try:
+    EC2_IP = requests.get(
+        "http://169.254.169.254/latest/meta-data/local-ipv4", timeout=2
+    ).text
+    ALLOWED_HOSTS.append(EC2_IP)  # noqa
+except requests.exceptions.RequestException:
+    pass
 
 # A list of tuples containing (Full name, email address)
 ADMINS = [("YNR Prod Developers", "developers+ynr-prod@democracyclub.org.uk")]
@@ -41,7 +36,6 @@ SITE_WIDE_MESSAGES = [
 
 # **** Other settings that might be useful to change locally
 
-ALLOWED_HOSTS = ["*"]
 INTERNAL_IPS = [
     "127.0.0.1",
     "localhost",
@@ -52,23 +46,21 @@ CACHES = {
         "TIMEOUT": None,  # cache keys never expire; we invalidate them
         "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
         "LOCATION": "127.0.0.1:11211",
-        "KEY_PREFIX": DATABASES["default"]["NAME"],
+        "KEY_PREFIX": DATABASES["default"]["NAME"],  # noqa
     },
     "thumbnails": {
         "TIMEOUT": 60 * 60 * 24 * 2,  # expire after two days
         "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
         "LOCATION": "127.0.0.1:11211",
-        "KEY_PREFIX": DATABASES["default"]["NAME"] + "-thumbnails",
+        "KEY_PREFIX": DATABASES["default"]["NAME"] + "-thumbnails",  # noqa
     },
 }
 
 
 # **** Settings that might be useful in production
-
-TWITTER_APP_ONLY_BEARER_TOKEN = "{{TWITTER_APP_ONLY_BEARER_TOKEN}}"
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
-RAVEN_CONFIG = {"dsn": "{{RAVEN_DSN}}"}
+RAVEN_CONFIG = {"dsn": os.environ.get("RAVEN_DSN")}
 
 RUNNING_TESTS = False
 
@@ -104,7 +96,7 @@ AWS_BUCKET_ACL = AWS_DEFAULT_ACL
 
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://{{ domain }}",
+    f"https://{os.environ.get('FQDN')}",
 ]
 
 USE_X_FORWARDED_HOST = True
@@ -113,8 +105,8 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_PORT = 587
 EMAIL_HOST = "email-smtp.eu-west-1.amazonaws.com"
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "{{smtp_username}}"
-EMAIL_HOST_PASSWORD = "{{smtp_password}}"
+EMAIL_HOST_USER = os.environ.get("SMTP_USERNAME")
+EMAIL_HOST_PASSWORD = os.environ.get("SMTP_PASSWORD")
 
 
 #  Send errors to sentry by default
@@ -129,14 +121,10 @@ LOGGING["handlers"]["sentry"] = {  # noqa
 # }
 
 
-SLACK_TOKEN = "{{slack_token}}"
+SLACK_TOKEN = os.environ.get("SLACK_TOKEN")
 
 CELERY_IMPORTS = [
     "ynr.apps.sopn_parsing.tasks",
 ]
 ALWAYS_ALLOW_RESULT_RECORDING = True
-FF_COOKIE_PATH = "/var/www/ynr/cookies.sqlite"
-FACEBOOK_TOKEN = "EAAHFkAGrkL8BAEDkR3PMZBYBhNKTcxrejQQm3cpfkpApT9BhenJmqkzgTeCYDNSkY2nZBDoPo1ztaOKsf8EKCHpsel8dasjJxua1dS0XIlZBBlIgpovpwY6S1hGXStM6tlK78OF6hr4owcZAZAcZA3WS2dHG6CGNIEuEEqFpLCHkB9WaT56HWt"
-
-
 EDITS_ALLOWED = True

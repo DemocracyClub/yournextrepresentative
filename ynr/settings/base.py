@@ -27,7 +27,7 @@ BASE_DIR = root("..")
 
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.environ.get("FQDN", None)]
 
 SITE_ID = 1
 SITE_NAME = "Democracy Club Candidates"
@@ -50,7 +50,7 @@ SERVER_EMAIL = "candidates@democracyclub.org.uk"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = None
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", None)
 
 TEMPLATES = [
     {
@@ -328,10 +328,10 @@ EE_CACHE_SECONDS = 86400
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "",
-        # Note that there are various comments on the web
-        # suggesting that settings CONN_MAX_AGE != 0 is a bad
-        # idea when eventlet or gevent workers are being used.
+        "NAME": os.environ.get("DATABASE_NAME", "ynr"),
+        "USER": os.environ.get("POSTGRES_USERNAME", ""),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
+        "HOST": os.environ.get("POSTGRES_HOST", ""),
         "CONN_MAX_AGE": 0 if DEBUG else 60,
     }
 }
@@ -364,7 +364,9 @@ EDITS_ALLOWED = True
 
 # A bearer token for the Twitter API for mapping between
 # Twitter usernames and IDs.
-TWITTER_APP_ONLY_BEARER_TOKEN = None
+TWITTER_APP_ONLY_BEARER_TOKEN = os.environ.get(
+    "TWITTER_APP_ONLY_BEARER_TOKEN", None
+)
 
 # Django Rest Framework settings:
 REST_FRAMEWORK = {

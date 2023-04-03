@@ -123,10 +123,6 @@ jobs:
           command: |
             . .venv/bin/activate
             pip install -r requirements/deploy.txt
-      - run:
-          name: Create Vault pass file
-          command: |
-            echo $VAULT_PASS > deploy/.vault_pass.txt
       - aws-sg-white-list-circleci-ip/add:
           group-id: sg-807bc0e9
           port: 22
