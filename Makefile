@@ -38,3 +38,8 @@ create-baseline-file:
 .PHONY: copy-baseline-file
 copy-baseline-file:
 	cp ynr/apps/sopn_parsing/tests/data/sopn_baseline.json ynr/apps/sopn_parsing/tests/data/sopn_baseline_copy.json
+
+.PHONY: prod-import-sopns
+prod-import-sopns:
+	cd deploy; \
+	ansible-playbook import_sopns.yml
