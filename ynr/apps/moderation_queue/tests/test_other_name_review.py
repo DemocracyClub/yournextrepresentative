@@ -32,7 +32,7 @@ class OtherNameReviewTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
             reverse("person-name-review"), user=self.user_who_can_name_review
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, "Approve")
+        self.assertContains(resp, "Set as primary name")
 
         form = resp.forms[f"review_name_form_{self.other_name.pk}"]
         form.submit(name="decision_approve")
@@ -45,10 +45,23 @@ class OtherNameReviewTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
             reverse("person-name-review"), user=self.user_who_can_name_review
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, "Reject")
+        self.assertContains(resp, "Keep as other name")
 
         form = resp.forms[f"review_name_form_{self.other_name.pk}"]
         form.submit(name="decision_reject")
         self.person.refresh_from_db()
         self.assertEqual(self.person.name, "Tessa Jowell")
         self.assertFalse(OtherName.objects.filter(needs_review=True).exists())
+
+    def test_name_edit_page_delete(self):
+        resp = self.app.get(
+            reverse("person-name-review"), user=self.user_who_can_name_review
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "Delete")
+
+        form = resp.forms[f"review_name_form_{self.other_name.pk}"]
+        form.submit(name="decision_delete")
+        self.person.refresh_from_db()
+        self.assertEqual(self.person.name, "Tessa Jowell")
+        self.assertFalse(OtherName.objects.exists())
