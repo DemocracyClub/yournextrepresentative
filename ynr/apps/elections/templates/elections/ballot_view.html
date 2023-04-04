@@ -180,11 +180,7 @@
             Add a new candidate
           </a>
         </p>
-        {% if sopn %}
-          <a href="{{ ballot.get_bulk_add_url }}" class="button">
-            Add candidates from nomination paper in {{ballot.post.label}}
-          </a>
-        {% endif %}
+
 
       {% elif not user.is_authenticated %}
         <p>
@@ -194,7 +190,11 @@
         </p>
       {% endif %}
     </div>
-
+    {% if user.is_authenticated and sopn%}
+      <a href="{{ ballot.get_bulk_add_url }}" class="button">
+        Add candidates from nomination paper in {{ballot.post.label}}
+      </a>
+    {% endif %}
     {% if membership_edits_allowed %}
       {% if add_candidate_form %}
         <div class="candidates__new" {% if add_candidate_form.errors %}style="display: block"{% endif %}>
