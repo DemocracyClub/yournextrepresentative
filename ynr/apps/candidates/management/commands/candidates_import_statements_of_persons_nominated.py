@@ -121,9 +121,7 @@ class Command(BaseCommand):
                 )
                 continue
 
-            mime_type = mime_type_magic.from_file(downloaded_filename).decode(
-                "utf8"
-            )
+            mime_type = mime_type_magic.from_file(downloaded_filename)
             extension = mimetypes.guess_extension(mime_type)
 
             if mime_type not in allowed_mime_types:
