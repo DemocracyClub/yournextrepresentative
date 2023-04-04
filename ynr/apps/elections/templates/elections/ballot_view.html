@@ -190,10 +190,12 @@
         </p>
       {% endif %}
     </div>
-    {% if user.is_authenticated and sopn%}
-      <a href="{{ ballot.get_bulk_add_url }}" class="button">
-        Add candidates from nomination paper in {{ballot.post.label}}
-      </a>
+    {% if user.is_authenticated and sopn %}
+        {% if not ballot.has_lock_suggestion and not ballot.locked %}
+          <a href="{{ ballot.get_bulk_add_url }}" class="button">
+            Add candidates from nomination paper in {{ballot.post.label}}
+          </a>
+        {% endif %}
     {% endif %}
     {% if membership_edits_allowed %}
       {% if add_candidate_form %}
