@@ -464,10 +464,11 @@ class PersonNameEditReviewListView(GroupRequiredMixin, ListView):
 
         if "decision_approve" in request.POST:
             self.approve_name_change(other_name)
-        elif "decision_ignore" in request.POST:
-            self.ignore_name_change(other_name)
         elif "decision_reject" in request.POST:
             self.reject_name_change(other_name)
+        elif "decision_delete" in request.POST:
+            self.delete_name_change(other_name)
+
         else:
             raise ValueError("Invalid decision")
         return HttpResponseRedirect(reverse("person-name-review"))
@@ -478,12 +479,12 @@ class PersonNameEditReviewListView(GroupRequiredMixin, ListView):
         other_name.needs_review = False
         other_name.save()
 
-    def ignore_name_change(self, other_name):
-        other_name.needs_review = False
-        other_name.save()
+    def delete_name_change(self, other_name):
+        other_name.delete()
 
     def reject_name_change(self, other_name):
-        other_name.delete()
+        other_name.needs_review = False
+        other_name.save()
 
 
 class RemoveSuggestedLocksView(LoginRequiredMixin, GroupRequiredMixin, View):
