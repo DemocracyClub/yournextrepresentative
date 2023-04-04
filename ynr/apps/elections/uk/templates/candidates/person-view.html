@@ -109,11 +109,11 @@
     <dd>{{ person.name_with_honorifics }}</dd>
     <dt>ID</dt>
     <dd>{{ person.pk }}</dd>
-    {% if person.other_names.exists %}
+    {% if other_names.exists %}
       <dt>Also known as</dt>
     {% endif %}
-    {% for other_name in person.other_names.all %}
-      <dd>{{ other_name.name }}{% if other_name.note %} ({{ other_name.note }}){% endif %}</dd>
+    {% for other_name in other_names.all %}
+        <dd>{{ other_name.name }}{% if other_name.note %} ({{ other_name.note }}){% endif %}</dd>
     {% endfor %}
     {% if person.get_email  %}
       <dt>Email</dt>

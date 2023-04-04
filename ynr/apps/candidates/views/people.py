@@ -100,6 +100,11 @@ class PersonView(TemplateView):
         context["redirect_after_login"] = quote(path)
         context["canonical_url"] = self.person.wcivf_url()
         context["person"] = self.person
+        context["other_names"] = self.person.other_names
+        if not self.request.user.is_authenticated:
+            context["other_names"] = context["other_names"].filter(
+                needs_review=False
+            )
 
         context["elections_to_list"] = Election.objects.filter(
             ballot__membership__person=self.person
