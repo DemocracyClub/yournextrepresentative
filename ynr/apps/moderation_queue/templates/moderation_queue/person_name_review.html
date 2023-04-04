@@ -5,7 +5,7 @@
 <h2>Review Person name edits</h2>
 <p>This step is to prevent the few cases of vandalism on Person names</p>
 
-<table>
+<table class="table">
     <tr> 
         <th>Person ID</th>
         <th>Current Name</th>
@@ -22,11 +22,10 @@
                 <form action="" method="post" id="review_name_form_{{other_name.pk}}">
                     {% csrf_token %}
                     <input type="hidden" name="other_name_pk" value="{{other_name.pk}}">
-                    <input class="button" type="submit" name="decision_approve" value="Approve" style="background-color:green;color:white">
-                    {% comment %} Keep as an other_name but don't make it the primary name {% endcomment %}
-                    <input class="button" type="submit" name="decision_ignore" value="Ignore" style="background-color:yellow;color:black">
-                    <input class="button" type="submit" name="decision_reject" value="Reject" style="background-color:red; color:white">
-                </form> 
+                    <input class="button small success" type="submit" name="decision_approve" value="Approve">
+                    <input class="button small secondary" type="submit" name="decision_ignore" value="Ignore">
+                    <input class="button small secondary" type="submit" name="decision_reject" value="Reject">
+                </form>
             </td>
         </tr>
     {% endfor %}
