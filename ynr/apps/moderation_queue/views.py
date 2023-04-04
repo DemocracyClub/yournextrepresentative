@@ -460,18 +460,16 @@ class PersonNameEditReviewListView(GroupRequiredMixin, ListView):
         return context
 
     def post(self, request, **kwargs):
-        for key, value in request.POST.items():
-            if key.startswith("decision_"):
-                pk = key.split("_")[-1]
-                decision = value
-                other_name = OtherName.objects.get(pk=pk)
+        other_name = OtherName.objects.get(pk=request.POST.get("other_name_pk"))
 
-                if decision == "Approve":
-                    self.approve_name_change(other_name)
-                elif decision == "Ignore":
-                    self.ignore_name_change(other_name)
-                else:
-                    self.reject_name_change(other_name)
+        if "decision_approve" in request.POST:
+            self.approve_name_change(other_name)
+        elif "decision_ignore" in request.POST:
+            self.ignore_name_change(other_name)
+        elif "decision_reject" in request.POST:
+            self.reject_name_change(other_name)
+        else:
+            raise ValueError("Invalid decision")
         return HttpResponseRedirect(reverse("person-name-review"))
 
     def approve_name_change(self, other_name):

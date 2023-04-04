@@ -15,16 +15,17 @@
 
     {% for other_name in object_list %}
         <tr>
-            <td>{{ other_name.object_id }}</a></td>
-            <td><a href="/person/{{other_name.object_id}}">{{ other_name.content_object.name }}</td>
+            <td>{{ other_name.object_id }}</td>
+            <td><a href="/person/{{other_name.object_id}}">{{ other_name.content_object.name }}</a></td>
             <td>{{ other_name.name }} - {{other_name.pk }}</td>
             <td>
-                <form action="" method="post">
+                <form action="" method="post" id="review_name_form_{{other_name.pk}}">
                     {% csrf_token %}
-                    <input class="button" type="submit" name="decision_{{other_name.pk}}" value="Approve" style="background-color:green;color:white">
+                    <input type="hidden" name="other_name_pk" value="{{other_name.pk}}">
+                    <input class="button" type="submit" name="decision_approve" value="Approve" style="background-color:green;color:white">
                     {% comment %} Keep as an other_name but don't make it the primary name {% endcomment %}
-                    <input class="button" type="submit" name="decision_{{other_name.pk}}" value="Ignore" style="background-color:yellow;color:black">
-                    <input class="button" type="submit" name="decision_{{other_name.pk}}" value="Reject" style="background-color:red; color:white">
+                    <input class="button" type="submit" name="decision_ignore" value="Ignore" style="background-color:yellow;color:black">
+                    <input class="button" type="submit" name="decision_reject" value="Reject" style="background-color:red; color:white">
                 </form> 
             </td>
         </tr>
