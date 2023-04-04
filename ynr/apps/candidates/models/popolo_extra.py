@@ -367,9 +367,12 @@ class Ballot(EEModifiedMixin, models.Model):
 
     @property
     def sopn(self):
-        return self.officialdocument_set.filter(
-            document_type=self.officialdocument_set.model.NOMINATION_PAPER
-        ).latest()
+        try:
+            return self.officialdocument_set.filter(
+                document_type=self.officialdocument_set.model.NOMINATION_PAPER
+            ).latest()
+        except self.officialdocument_set.model.DoesNotExist:
+            return None
 
     @cached_property
     def has_results(self):
@@ -490,8 +493,10 @@ class Ballot(EEModifiedMixin, models.Model):
             return False
 
         # If the ballot is unlocked and not cancelled, anyone
-        # can edit the memberships
-        if not self.candidates_locked and not self.cancelled:
+        # can edit the memberships. Also prevent adding via the ballot
+        # forms when we have a SOPN for this ballot, as the bulk adding forms
+        # should be used instead.
+        if not self.candidates_locked and not self.cancelled and not self.sopn:
             return True
 
         if (

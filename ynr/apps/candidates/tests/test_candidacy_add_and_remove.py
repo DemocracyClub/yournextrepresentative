@@ -5,6 +5,7 @@ from people.tests.factories import PersonFactory
 from .auth import TestUserMixin
 from .factories import MembershipFactory
 from .uk_examples import UK2015ExamplesMixin
+from ..models import Ballot
 
 
 class TestCandidacyCreateView(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -52,3 +53,22 @@ class TestCandidacyDeleteView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["source"] = "Tests"
         form.submit()
         self.assertEqual(self.person.memberships.count(), 0)
+
+
+class TestEditButtonsShown(TestUserMixin, UK2015ExamplesMixin, WebTest):
+    def test_can_see_add_button_with_no_sopn(self):
+        ballot: Ballot = self.dulwich_post_ballot
+        response = self.app.get(
+            ballot.get_absolute_url(),
+            user=self.user,
+        )
+        self.assertContains(response, "Add a new candidate")
+        ballot.officialdocument_set.create(
+            document_type=ballot.officialdocument_set.model.NOMINATION_PAPER
+        )
+        ballot.refresh_from_db()
+        response = self.app.get(
+            ballot.get_absolute_url(),
+            user=self.user,
+        )
+        self.assertNotContains(response, "Add a new candidate")
