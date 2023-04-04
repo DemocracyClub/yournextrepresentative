@@ -2,5 +2,5 @@
 
 pdfminer.six==20201018
 camelot-py[cv]==0.8.2
-pypandoc==1.7.2
+pypandoc==1.11
 PyPDF2<3.0
