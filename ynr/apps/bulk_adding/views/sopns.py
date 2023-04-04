@@ -134,6 +134,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             )
         else:
             context["formset"] = forms.BulkAddFormSetFactory(**form_kwargs)
+            context["formset"].extra = max(self.ballot.winner_count * 5, 15)
 
         return context
 

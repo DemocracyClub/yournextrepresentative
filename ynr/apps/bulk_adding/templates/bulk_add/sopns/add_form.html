@@ -71,7 +71,7 @@
 
   {% include "bulk_add/sopns/_known-people.html" %}
 
-  <form method=POST id="bulk_add_form">
+  <form method=POST id="bulk_add_form" data-winner-count="{{ ballot.winner_count }}">
     <button type=submit>Review</button>
     <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button">Nomination paper (SoPN)</a>
   {% csrf_token %}
@@ -84,9 +84,6 @@
 
   <table class="table sopn_adding_table" >
     {% for form in formset %}
-      {% for field in form.hidden_fields %}
-        {{ field }}
-      {% endfor %}
       <thead>
         <tr>
           <th colspan="3" {% if form.has_error %}class="form-error-summary"{% endif %}>
@@ -95,6 +92,9 @@
         </tr>
       </thead>
       <tbody class="ballot_group" data-party-register="{{ ballot.post.party_set.slug|upper }}">
+        {% for field in form.hidden_fields %}
+          {{ field }}
+        {% endfor %}
       <tr>
         <th>
           {{ form.name.errors }}
@@ -135,6 +135,7 @@
         </td>
         {% endif %}
       </tr>
+      </tbody>
     {% endfor %}
     </table>
   <button type=submit>Review</button>
