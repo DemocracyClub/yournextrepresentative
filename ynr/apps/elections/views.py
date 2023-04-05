@@ -157,7 +157,7 @@ class BallotPaperView(TemplateView):
         # Check if adding and removing Memberships for this ballot
         # is allowed.
         context["membership_edits_allowed"] = ballot.user_can_edit_membership(
-            self.request.user, allow_if_trusted_to_lock=False
+            self.request.user, allow_if_trusted_to_lock=True
         )
 
         if context["membership_edits_allowed"]:
