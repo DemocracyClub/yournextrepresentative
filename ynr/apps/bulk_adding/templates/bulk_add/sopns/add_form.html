@@ -5,150 +5,150 @@
 {% block title %}Add candidates from nomination paper{% endblock %}
 
 {% block extra_css %}
-{% stylesheet 'bulk_adding' %}
+    {% stylesheet 'bulk_adding' %}
 {% endblock %}
 
 {% block extra_js %}
-{% javascript 'bulk_adding' %}
+    {% javascript 'bulk_adding' %}
 
 {% endblock %}
 
 {% block content %}
-<h2>Add candidates to {{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h2>
-{% if official_document %}
-  <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button tiny">Nomination paper (SoPN)</a>
-  <details open class="panel">
-  <summary>How to add or check candidates</summary>
+    <h2>Add candidates to {{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h2>
+    {% if official_document %}
+        <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button tiny">Nomination paper (SoPN)</a>
+        <details open class="panel">
+            <summary>How to add or check candidates</summary>
 
-  <ol>
-    <li>Open the nomination paper using the button above (opens in a new window)</li>
-    <li>Find the part of the document about {{ post.label }}</li>
-    <li>Either
-      <ol type="a">
-        <li>Add new candidates in the form below,</li>
-        <li>Or check that any list below is correct. </li>
-      </ol>
-    </li>
-    <li>Press review.
-      <ol type="a">
-        <li>If you have added candidates, this will check for duplicates. Press ‘Add new person’ if you’re happy that we don’t already have that person.</li>
-      </ol>
-    </li>
-    <li>If you think this is the complete list, check the box.</li>
-    <li>Bask in the glow of making democracy better for everyone.</li>
-    <li>Return to the home page to do another one!</li>
-  </ol>
-  </details>
+            <ol>
+                <li>Open the nomination paper using the button above (opens in a new window)</li>
+                <li>Find the part of the document about {{ post.label }}</li>
+                <li>Either
+                    <ol type="a">
+                        <li>Add new candidates in the form below,</li>
+                        <li>Or check that any list below is correct. </li>
+                    </ol>
+                </li>
+                <li>Press review.
+                    <ol type="a">
+                        <li>If you have added candidates, this will check for duplicates. Press ‘Add new person’ if you’re happy that we don’t already have that person.</li>
+                    </ol>
+                </li>
+                <li>If you think this is the complete list, check the box.</li>
+                <li>Bask in the glow of making democracy better for everyone.</li>
+                <li>Return to the home page to do another one!</li>
+            </ol>
+        </details>
 
-  {% if ballot.rawpeople and ballot.rawpeople.is_parsed_from_pdf %}
-    <div class="panel callout">
-      <details open>
-        <summary>
-          🤖 This SoPN has been parsed by a bot 🤖
-        </summary>
-        <p>
-          This is a new feature that might not work perfectly. The form fields below
-          should be popluated with the candidates on the nomination paper, but
-          they still need checking against the document. If it has been parsed incorrectly
-          you can <a href="#delete-parsed-people">clear the form using the button at the bottom of the page</a>.
-        </p>
-        <p>
-          To help us resolve bugs quicker, please report SOPN related errors in github:
-          <ul>
-          <li>
-          <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1727">Table extraction errors</a>
-          </li>
-          <li>
-          <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1728">Table parsing errors</a>
-          </li>
-        </ul>
-          If you're unsure how to classify the error or for any other errors, please post a message on our <a href="https://slack.democracyclub.org.uk">Slack</a>
-          or over <a href="mailto:hello@democracyclub.org.uk">email</a>.
-        </p>
-      </details>
-    </div>
-  {% endif %}
-
-  {% include "bulk_add/sopns/_known-people.html" %}
-
-  <form method=POST id="bulk_add_form">
-    <button type=submit>Review</button>
-    <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button">Nomination paper (SoPN)</a>
-  {% csrf_token %}
-  {{ formset.management_form }}
-  {% if formset.non_form_errors %}
-    <div class="error-message">
-    {{ formset.non_form_errors }}
-    </div>
-  {% endif %}
-
-  <table class="table sopn_adding_table" >
-    {% for form in formset %}
-      {% for field in form.hidden_fields %}
-        {{ field }}
-      {% endfor %}
-      <thead>
-        <tr>
-          <th colspan="3" {% if form.has_error %}class="form-error-summary"{% endif %}>
-            Person {{ forloop.counter }}
-          </th>
-        </tr>
-      </thead>
-      <tbody class="ballot_group" data-party-register="{{ ballot.post.party_set.slug|upper }}">
-      <tr>
-        <th>
-          {{ form.name.errors }}
-          <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
-        </th>
-        <th>
-          {{ form.party.errors }}
-          <label for="{{ form.party.id_for_label }}">{{ form.party.label }}</label>
-        </th>
-        {% if form.name.initial %}
-          <th class="delete_column">
-          <abbr title="Select if this person is listed already">Duplicate?</abbr>
-          </th>
+        {% if ballot.rawpeople and ballot.rawpeople.is_parsed_from_pdf %}
+            <div class="panel callout">
+                <details open>
+                    <summary>
+                        🤖 This SoPN has been parsed by a bot 🤖
+                    </summary>
+                    <p>
+                        This is a new feature that might not work perfectly. The form fields below
+                        should be popluated with the candidates on the nomination paper, but
+                        they still need checking against the document. If it has been parsed incorrectly
+                        you can <a href="#delete-parsed-people">clear the form using the button at the bottom of the page</a>.
+                    </p>
+                    <p>
+                        To help us resolve bugs quicker, please report SOPN related errors in github:
+                    <ul>
+                        <li>
+                            <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1727">Table extraction errors</a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1728">Table parsing errors</a>
+                        </li>
+                    </ul>
+                    If you're unsure how to classify the error or for any other errors, please post a message on our <a href="https://slack.democracyclub.org.uk">Slack</a>
+                    or over <a href="mailto:hello@democracyclub.org.uk">email</a>.
+                    </p>
+                </details>
+            </div>
         {% endif %}
-      </tr>
-      <tr>
-        <td>{{ form.name }}</td>
-        <td {% if not form.name.initial %}colspan="2"{% endif %}>
-          {{ form.party }}
-          <p>If the party is blank on the SOPN, enter "Independent"</p>
 
-          {% if ballot.is_welsh_run %}
-            <details>
-              <summary class="button btn tiny secondary">
-                Add Previous Party Affilations
-              </summary>
-              <p class="previous-party-input" colspan=3 >
-                {{ form.previous_party_affiliations }}
-              </p>
-            </details>
-          {% endif %}
+        {% include "bulk_add/sopns/_known-people.html" %}
 
-        </td>
+        <form method=POST id="bulk_add_form">
+            <button type=submit>Review</button>
+            <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button">Nomination paper (SoPN)</a>
+            {% csrf_token %}
+            {{ formset.management_form }}
+            {% if formset.non_form_errors %}
+                <div class="error-message">
+                    {{ formset.non_form_errors }}
+                </div>
+            {% endif %}
 
-        {% if form.name.initial %}
-        <td class="delete_column">
-        {{ form.DELETE }}
-        </td>
-        {% endif %}
-      </tr>
-    {% endfor %}
-    </table>
-  <button type=submit>Review</button>
-</form>
+            <table class="table sopn_adding_table" >
+                {% for form in formset %}
+                    {% for field in form.hidden_fields %}
+                        {{ field }}
+                    {% endfor %}
+                    <thead>
+                    <tr>
+                        <th colspan="3" {% if form.has_error %}class="form-error-summary"{% endif %}>
+                            Person {{ forloop.counter }}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody class="ballot_group" data-party-register="{{ ballot.post.party_set.slug|upper }}">
+                    <tr>
+                        <th>
+                            {{ form.name.errors }}
+                            <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                        </th>
+                        <th>
+                            {{ form.party.errors }}
+                            <label for="{{ form.party.id_for_label }}">{{ form.party.label }}</label>
+                        </th>
+                        {% if form.name.initial %}
+                            <th class="delete_column">
+                                <abbr title="Select if this person is listed already">Duplicate?</abbr>
+                            </th>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>{{ form.name }}</td>
+                        <td {% if not form.name.initial %}colspan="2"{% endif %}>
+                            {{ form.party }}
+                            <p>If the party is blank on the SOPN, enter "Independent"</p>
 
-{% include "bulk_add/sopns/_delete_parsed_people.html" %}
+                            {% if ballot.is_welsh_run %}
+                                <details>
+                                    <summary class="button btn tiny secondary">
+                                        Add Previous Party Affilations
+                                    </summary>
+                                    <p class="previous-party-input" colspan=3 >
+                                        {{ form.previous_party_affiliations }}
+                                    </p>
+                                </details>
+                            {% endif %}
 
-{% else %}
-<p>
-This post doesn't have a nomination paper.
+                        </td>
+
+                        {% if form.name.initial %}
+                            <td class="delete_column">
+                                {{ form.DELETE }}
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+            <button type=submit>Review</button>
+        </form>
+
+        {% include "bulk_add/sopns/_delete_parsed_people.html" %}
+
+    {% else %}
+        <p>
+            This post doesn't have a nomination paper.
             Can you help us by
             <a href="{% url 'upload_document_view' ballot_paper_id=ballot.ballot_paper_id %}">uploading
-            the PDF of the Statement of Persons Nominated?</a>
-</p>
-{% endif %}
+                the PDF of the Statement of Persons Nominated?</a>
+        </p>
+    {% endif %}
 
 {% endblock content %}
