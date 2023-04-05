@@ -29,10 +29,13 @@ class BulkAddSOPNRedirectView(RedirectView):
 
 def sort_tables(key):
     if isinstance(key, QuickAddSinglePersonForm):
-        return key.initial.get("name", "")
+        name = key.initial.get("name", None)
+        value = "zzzzzzzzzz"
+        if name:
+            value = name.split(" ")[-1]
     if isinstance(key, Person):
-        return key.name
-    return key
+        value = key.last_name_guess
+    return (value is not None, value)
 
 
 class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
@@ -145,7 +148,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             context["formset"] = forms.BulkAddFormSetFactory(**form_kwargs)
 
         tables = list(context["formset"]) + context["known_people"]
-        sorted_tables = sorted(tables, key=sort_tables, reverse=True)
+        sorted_tables = sorted(tables, key=sort_tables, reverse=False)
         sorted_with_type = []
         for table in sorted_tables:
             if isinstance(table, QuickAddSinglePersonForm):

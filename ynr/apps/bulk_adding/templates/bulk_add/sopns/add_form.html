@@ -85,6 +85,7 @@
             {% for table in sorted_with_type %}
                 {% include table.template_name with data=table.data %}
             {% endfor %}
+        <button type=submit>Review</button>
         </form>
 
         {% include "bulk_add/sopns/_delete_parsed_people.html" %}
