@@ -1,0 +1,118 @@
+{% with data as person %}
+    <table class="table sopn_adding_table">
+        <thead>
+        <tr>
+            <th class="name">Name</th>
+            <th>Also known as</th>
+            <th>Party</th>
+            {% if ballot.is_welsh_run %}
+                <th>Previous party affiliations</th>
+            {% endif %}
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td class="name">
+                <a href="{% url 'person-view' person.pk %}" target="_blank">{{ person }}</a>
+            </td>
+            <td>
+                {% if person.other_names.exists %}
+                    <ul class="other-names">
+                        {% for name in person.other_names.all %}
+                            <li class="other-name">{{ name }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </td>
+            <td>
+                {{ person.party.name }}
+            </td>
+            {% if ballot.is_welsh_run %}
+                <td>
+                    {% if person.previous_party_affiliations %}
+                        {% for party in person.previous_party_affiliations.all %}
+                            {% if person.previous_party_affiliations.all.count > 1 %}
+                                <ul class="previous-party>">
+                                    <li>{{ party.name }}</li>
+                                </ul>
+                            {% else %}
+                                {{ party.name }}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </td>
+            {% endif %}
+            <td>
+                <a class="button tiny js-toggle-source-confirmation not-standing">
+                    Not actually standing?
+                </a>
+                {% include 'candidates/_source_confirmation.html' with standing='not-standing' action='candidacy-delete' person_id=person.id source=official_document.source_url %}
+            </td>
+        </tr>
+        <tr>
+            {% if person.edits_allowed %}
+                <td colspan=2 class="actions">
+
+                    <a href="{% url 'person-update' person.pk %}" target="_blank" class="button secondary tiny">
+                        Edit candidate
+                    </a>
+                    <a href="{% url 'person-other-name-create' person.pk %}"
+                       class="button secondary tiny js-bulk-known-person-alternate-name">
+                        Nomination paper shows different name variant
+                    </a>
+                    <a data-person-id="{{ person.pk }}" data-post-id="{{ post.slug }}"
+                       href="{% url 'candidacy-delete' election=election %}"
+                       class="button secondary tiny js-bulk-known-person-not-standing">
+                        Not standing
+                    </a>
+                </td>
+            {% endif %}
+
+            <script type="text/html" class="js-bulk-known-person-alternate-name-form">
+                <tr>
+                    <td colspan="3" class="js-row">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <p>
+                                <label for="alt-name">Name as it appears on nomination paper:</label>
+                                <input id="alt-name" name="name" type="text">
+                            </p>
+                            <p>
+                                <input id="alt-source" name="source" type="hidden" value="{{ official_document.source_url }}">
+                            </p>
+                            <p>
+                                <button type="button" class="button secondary js-bulk-known-person-alternate-name-cancel">Cancel
+                                </button>
+                                <button type="submit" class="button primary">Add alternate name</button>
+                            </p>
+                        </form>
+                    </td>
+                </tr>
+            </script>
+
+            <script type="text/html" class="js-bulk-known-person-not-standing-form">
+                <tr>
+                    <td colspan="3" class="js-row">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <p>
+                                Are you sure you want to mark this candidate as not standing?
+                                <input id="alt-source" name="source" type="hidden" value="{{ official_document.source_url }}">
+                            </p>
+                            <p>
+                                <button type="button" class="button secondary js-bulk-known-person-not-standing-cancel">Cancel
+                                </button>
+                                <button type="submit" class="button primary">Mark Not Standing</button>
+                            </p>
+                        </form>
+                    </td>
+                </tr>
+            </script>
+
+
+        </tr>
+        </tbody>
+    </table>
+{% endwith %}

@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.views.generic import RedirectView, TemplateView, FormView
 
 from bulk_adding import forms, helpers
+from bulk_adding.forms import QuickAddSinglePersonForm
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot, LoggedAction
 from candidates.models.db import EditType, ActionType
@@ -24,6 +25,14 @@ class BulkAddSOPNRedirectView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         ballot = Ballot.objects.get(ballot_paper_id=kwargs["ballot_paper_id"])
         return ballot.get_bulk_add_url()
+
+
+def sort_tables(key):
+    if isinstance(key, QuickAddSinglePersonForm):
+        return key.initial.get("name", "")
+    if isinstance(key, Person):
+        return key.name
+    return key
 
 
 class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
@@ -134,6 +143,23 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             )
         else:
             context["formset"] = forms.BulkAddFormSetFactory(**form_kwargs)
+
+        tables = list(context["formset"]) + context["known_people"]
+        sorted_tables = sorted(tables, key=sort_tables, reverse=True)
+        sorted_with_type = []
+        for table in sorted_tables:
+            if isinstance(table, QuickAddSinglePersonForm):
+                row = {
+                    "template_name": "bulk_add/sopns/quick_add_form.html",
+                    "data": table,
+                }
+            if isinstance(table, Person):
+                row = {
+                    "template_name": "bulk_add/sopns/existing_person_table.html",
+                    "data": table,
+                }
+            sorted_with_type.append(row)
+        context["sorted_with_type"] = sorted_with_type
 
         return context
 
