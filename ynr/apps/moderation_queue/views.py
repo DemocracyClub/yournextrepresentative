@@ -457,4 +457,6 @@ class RemoveSuggestedLocksView(LoginRequiredMixin, GroupRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         ballot = Ballot.objects.get(ballot_paper_id=request.POST["ballot"])
         ballot.suggestedpostlock_set.all().delete()
-        return JsonResponse({"removed": True})
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"removed": True})
+        return HttpResponseRedirect(ballot.get_absolute_url())

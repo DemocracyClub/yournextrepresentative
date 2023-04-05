@@ -7,6 +7,12 @@
       <p>Thanks, you've suggested we lock this ballot – we'll review it soon.</p>
     {% else %}
       <p>Someone has suggested locking this ballot.</p>
+      <form method=post action="{% url 'remove-lock-suggestion-ajax' %}">
+      {% csrf_token %}
+      <input type="hidden" name="ballot" value="{{ ballot.ballot_paper_id }}">
+      <button type="submit" class="button small alert">Remove suggested lock</button>
+      </form>
+
     {% endif %}
   {% elif candidates.exists %}
     <h3>Suggest locking</h3>
