@@ -492,17 +492,18 @@ class Ballot(EEModifiedMixin, models.Model):
         if not user.is_authenticated:
             return False
 
+        if (
+            allow_if_trusted_to_lock
+            and user.groups.filter(name=TRUSTED_TO_LOCK_GROUP_NAME).exists()
+            and not self.candidates_locked
+        ):
+            return True
+
         # If the ballot is unlocked and not cancelled, anyone
         # can edit the memberships. Also prevent adding via the ballot
         # forms when we have a SOPN for this ballot, as the bulk adding forms
         # should be used instead.
         if not self.candidates_locked and not self.cancelled and not self.sopn:
-            return True
-
-        if (
-            allow_if_trusted_to_lock
-            and user.groups.filter(name=TRUSTED_TO_LOCK_GROUP_NAME).exists()
-        ):
             return True
 
         # Special case where elections are cancelled before they are locked

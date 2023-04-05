@@ -69,7 +69,7 @@
             </div>
         {% endif %}
 
-        {% include "bulk_add/sopns/_known-people.html" %}
+
 
         <form method=POST id="bulk_add_form">
             <button type=submit>Review</button>
@@ -82,66 +82,12 @@
                 </div>
             {% endif %}
 
-            <table class="table sopn_adding_table" >
-                {% for form in formset %}
-                    {% for field in form.hidden_fields %}
-                        {{ field }}
-                    {% endfor %}
-                    <thead>
-                    <tr>
-                        <th colspan="3" {% if form.has_error %}class="form-error-summary"{% endif %}>
-                            Person {{ forloop.counter }}
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody class="ballot_group" data-party-register="{{ ballot.post.party_set.slug|upper }}">
-                    <tr>
-                        <th>
-                            {{ form.name.errors }}
-                            <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
-                        </th>
-                        <th>
-                            {{ form.party.errors }}
-                            <label for="{{ form.party.id_for_label }}">{{ form.party.label }}</label>
-                        </th>
-                        {% if form.name.initial %}
-                            <th class="delete_column">
-                                <abbr title="Select if this person is listed already">Duplicate?</abbr>
-                            </th>
-                        {% endif %}
-                    </tr>
-                    <tr>
-                        <td>{{ form.name }}</td>
-                        <td {% if not form.name.initial %}colspan="2"{% endif %}>
-                            {{ form.party }}
-                            <p>If the party is blank on the SOPN, enter "Independent"</p>
-
-                            {% if ballot.is_welsh_run %}
-                                <details>
-                                    <summary class="button btn tiny secondary">
-                                        Add Previous Party Affilations
-                                    </summary>
-                                    <p class="previous-party-input" colspan=3 >
-                                        {{ form.previous_party_affiliations }}
-                                    </p>
-                                </details>
-                            {% endif %}
-
-                        </td>
-
-                        {% if form.name.initial %}
-                            <td class="delete_column">
-                                {{ form.DELETE }}
-                            </td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
-            </table>
-            <button type=submit>Review</button>
+            {% for table in sorted_with_type %}
+                {% include table.template_name with data=table.data %}
+            {% endfor %}
         </form>
 
         {% include "bulk_add/sopns/_delete_parsed_people.html" %}
-
     {% else %}
         <p>
             This post doesn't have a nomination paper.
