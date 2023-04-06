@@ -436,7 +436,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         form = response.forms["bulk_add_form"]
-        form["form-0-name"] = "Bart Simpson"
+        form["form-0-name"] = "Bartholomew Jojo Simpson"
         form["form-0-party_1"] = self.green_party.ec_id
 
         response = form.submit()
@@ -451,6 +451,9 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = form.submit()
 
         person = Person.objects.get(name="Bart Simpson")
+        self.assertEqual(
+            person.other_names.first().name, "Bartholomew Jojo Simpson"
+        )
         memberships_after = membership_id_set(person)
         new_memberships = memberships_after - memberships_before
         self.assertEqual(len(new_memberships), 0)
