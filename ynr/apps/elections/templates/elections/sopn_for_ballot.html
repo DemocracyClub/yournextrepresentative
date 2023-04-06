@@ -40,9 +40,11 @@
       </p>
     {% endif %}
 
+    {% if request.user.is_authenticated %}
+        {% include "elections/includes/_sopn_debug.html" %}
+    {% endif %}
 
     <div id="sopn-{{ object.ballot_paper_id }}" class="pdf_container"></div>
-
 
   {% else %}
     No SOPN uploaded for this ballot paper yet.
