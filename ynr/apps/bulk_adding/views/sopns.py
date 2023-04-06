@@ -277,6 +277,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     source=data["source"],
                     party_description=data["party_description"],
                     previous_party_affiliations=previous_party_affiliations,
+                    data=data,
                 )
 
             # ballot has changed so we should remove any out of date suggestions

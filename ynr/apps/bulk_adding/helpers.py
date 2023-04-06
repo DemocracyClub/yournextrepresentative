@@ -38,6 +38,7 @@ def update_person(
     list_position=None,
     party_description=None,
     previous_party_affiliations=None,
+    data=None,
 ):
     election = ballot.election
 
@@ -92,9 +93,12 @@ def update_person(
         raise ValueError(
             "Attempt to create invalid memberships for {}".format(person)
         )
-
+    if not data:
+        data = {}
+    other_name = data.get("name")
+    if other_name and person.name != other_name:
+        person.other_names.get_or_create(name=other_name)
     change_metadata = get_change_metadata(request, source)
-
     person.record_version(change_metadata)
     person.save()
 
