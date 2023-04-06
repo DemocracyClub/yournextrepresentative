@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
 from django.utils.safestring import SafeText
 
+from elections.models import Election
 from parties.forms import (
     PartyIdentifierField,
     PopulatePartiesMixin,
@@ -98,10 +99,24 @@ class BulkAddFormSet(BaseBulkAddFormSet):
 class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
     def suggested_people(self, person_name):
         if person_name:
-            qs = search_person_by_name(person_name, synonym=False)
+            qs = search_person_by_name(
+                person_name, synonym=True
+            ).prefetch_related(
+                Prefetch(
+                    "memberships",
+                    queryset=Membership.objects.select_related(
+                        "party",
+                        "ballot",
+                        "ballot__election",
+                        "ballot__election__organization",
+                    ),
+                ),
+            )
             return qs[:5]
 
-    def format_value(self, suggestion):
+    def format_value(
+        self, suggestion, new_party=None, new_election: Election = None
+    ):
         """
         Turn the whole form in to a value string
         """
@@ -110,7 +125,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
 
         candidacies = (
             suggestion.memberships.select_related(
-                "post", "party", "ballot__election"
+                "ballot__post", "ballot__election", "party"
             )
             .prefetch_related(
                 Prefetch(
@@ -118,7 +133,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
                     queryset=OfficialDocument.objects.filter(
                         document_type=OfficialDocument.NOMINATION_PAPER
                     ).order_by("-modified"),
-                )
+                ),
             )
             .order_by("-ballot__election__election_date")[:3]
         )
@@ -127,10 +142,19 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             suggestion_dict["previous_candidacies"] = []
 
         for candidacy in candidacies:
+            party = candidacy.party
+            party_str = f"{party.name}"
+            if new_party == party.ec_id:
+                party_str = f"<strong>{party.name}</strong>"
+
+            election = candidacy.ballot.election
+            election_str = f"{election.name}"
+            if new_election.organization == election.organization:
+                election_str = f"<strong>{election.name}</strong>"
             text = """{election}: {post} – {party}""".format(
                 post=candidacy.ballot.post.short_label,
-                election=candidacy.ballot.election.name,
-                party=candidacy.party.name,
+                election=election_str,
+                party=party_str,
             )
             sopn = candidacy.ballot.officialdocument_set.first()
             if sopn:
@@ -150,7 +174,12 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         CHOICES = [("_new", "Add new person")]
         if suggestions:
             CHOICES += [
-                self.format_value(suggestion) for suggestion in suggestions
+                self.format_value(
+                    suggestion,
+                    new_party=form.initial.get("party"),
+                    new_election=self.ballot.election,
+                )
+                for suggestion in suggestions
             ]
         form.fields["select_person"] = forms.ChoiceField(
             choices=CHOICES, widget=forms.RadioSelect()

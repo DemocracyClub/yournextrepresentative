@@ -37,7 +37,19 @@
                   {% else %}
                     <label>Same as
                       <a href="{{ choice.choice_label.object.get_absolute_url }}"
-                         target="_blank">{{ choice.choice_label.name }}</a></label>
+                         target="_blank">{{ choice.choice_label.name }}</a>
+                    {{ choice.choice_label.object }}
+                    {% if choice.choice_label.object.other_names.exists %}
+                        Also known as
+                        <ul>
+                        {% for other_name in choice.choice_label.object.other_names.all %}
+                        {{ other_name.name }}
+                        {% endfor %}
+
+                        </ul>
+                    {% endif %}
+
+                    </label>
                   {% endif %}
                 </td>
                 <td>

@@ -271,7 +271,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["form-0-select_person"].select("_new")
 
         # this is a smaller increase but may be unavoidable
-        with self.assertNumQueries(FuzzyInt(52, 57)):
+        with self.assertNumQueries(FuzzyInt(56, 58)):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
