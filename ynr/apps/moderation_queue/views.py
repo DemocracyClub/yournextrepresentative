@@ -474,10 +474,25 @@ class PersonNameEditReviewListView(GroupRequiredMixin, ListView):
         return HttpResponseRedirect(reverse("person-name-review"))
 
     def approve_name_change(self, other_name):
+        # initial_name = other_name.content_object.name
+        # suggested_name = other_name.name
+
+        # this doesn't save edits to the person object since it was designed for the context of form instance edits
+        # other_name.content_object.edit_name(initial_name=initial_name, suggested_name=suggested_name, user=self.request.user)
+
+        # save the initial name to a list of other names on the person object
+        other_name.content_object.other_names.get_or_create(
+            name=other_name.content_object.name
+        )
+        # set the person object name to the suggested name
         other_name.content_object.name = other_name.name
         other_name.content_object.save()
         other_name.needs_review = False
         other_name.save()
+        # if the current name is already in the list of other names, remove it
+        other_name.content_object.other_names.filter(
+            name=other_name.name
+        ).delete()
 
     def delete_name_change(self, other_name):
         other_name.delete()
