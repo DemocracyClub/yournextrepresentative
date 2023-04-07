@@ -46,19 +46,24 @@ POPULATE_NAME_SEARCH_COLUMN_SQL = """
         SELECT pp.id as id,
             ---- First and last names are weight A
             --- First Name
-            setweight(to_tsvector('simple', split_part(pp.name, ' ', 1)), 'A')
+            setweight(to_tsvector('simple', split_part(pp.name, ' ', 1)), 'B')
             ||
             --- Last Name
             setweight(to_tsvector('simple', regexp_replace(pp.name, '^.* ', '')), 'A')
             ||
             --- Full name is weight B, further boosting first and last names, adding middle names
-            setweight(to_tsvector('simple', coalesce(pp.name, '')), 'B')
+            setweight(to_tsvector('simple', coalesce(pp.name, '')), 'C')
             ||
             --- Other names are weight C
-            setweight(to_tsvector('simple', coalesce(string_agg(ppon.name, ' '), '')), 'C') as terms
+            setweight(to_tsvector('simple', coalesce(string_agg(ppon.name, ' '), '')), 'D') as terms
         FROM people_person pp
         LEFT JOIN popolo_othername ppon
         ON pp.id = ppon.object_id
+        WHERE ppon.content_type_id = (
+            select id
+            from django_content_type
+            where app_label='people'
+              and model='person')
         GROUP BY pp.id, pp.name
     ) as sq
     where sq.id = people_person.id
@@ -75,20 +80,25 @@ NAME_SEARCH_TRIGGER_SQL = """
                                        select po.name
                                        from popolo_othername po
                                        where po.object_id = new.id
+                                       and po.content_type_id = (
+                                        select id
+                                        from django_content_type
+                                        where app_label='people'
+                                          and model='person')
                                    ), ','
                            ) as other_names
             )
             SELECT
-            setweight(to_tsvector('simple', split_part(new.name, ' ', 1)), 'A')
+            setweight(to_tsvector('simple', split_part(new.name, ' ', 1)), 'B')
             ||
             --- Last Name
             setweight(to_tsvector('simple', regexp_replace(new.name, '^.* ', '')), 'A')
             ||
             --- Full name is weight B, further boosting first and last names, adding middle names
-            setweight(to_tsvector('simple', coalesce(new.name, '')), 'B')
+            setweight(to_tsvector('simple', coalesce(new.name, '')), 'C')
             ||
             --- Other names are weight C
-            setweight(to_tsvector('simple', coalesce(string_agg(po_names.other_names, ' '), '')), 'C') as terms
+            setweight(to_tsvector('simple', coalesce(string_agg(po_names.other_names, ' '), '')), 'D') as terms
             FROM po_names
         );
       return new;
