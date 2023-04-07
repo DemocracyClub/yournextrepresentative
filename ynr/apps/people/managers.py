@@ -59,6 +59,11 @@ POPULATE_NAME_SEARCH_COLUMN_SQL = """
         FROM people_person pp
         LEFT JOIN popolo_othername ppon
         ON pp.id = ppon.object_id
+        WHERE ppon.content_type_id = (
+            select id
+            from django_content_type
+            where app_label='people'
+              and model='person')
         GROUP BY pp.id, pp.name
     ) as sq
     where sq.id = people_person.id
@@ -75,6 +80,11 @@ NAME_SEARCH_TRIGGER_SQL = """
                                        select po.name
                                        from popolo_othername po
                                        where po.object_id = new.id
+                                       and po.content_type_id = (
+                                        select id
+                                        from django_content_type
+                                        where app_label='people'
+                                          and model='person')
                                    ), ','
                            ) as other_names
             )
