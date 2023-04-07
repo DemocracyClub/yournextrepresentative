@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
-from django.utils.safestring import SafeText
+from django.utils.safestring import SafeText, mark_safe
 
 from elections.models import Election
 from parties.forms import (
@@ -115,12 +115,18 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             return qs[:5]
 
     def format_value(
-        self, suggestion, new_party=None, new_election: Election = None
+        self,
+        suggestion,
+        new_party=None,
+        new_election: Election = None,
+        new_name=None,
     ):
         """
         Turn the whole form in to a value string
         """
         name = suggestion.name
+        if name == new_name:
+            name = mark_safe(f"<strong>{name}</strong>")
         suggestion_dict = {"name": name, "object": suggestion}
 
         candidacies = (
@@ -151,6 +157,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             election_str = f"{election.name}"
             if new_election.organization == election.organization:
                 election_str = f"<strong>{election.name}</strong>"
+
             text = """{election}: {post} – {party}""".format(
                 post=candidacy.ballot.post.short_label,
                 election=election_str,
@@ -178,6 +185,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
                     suggestion,
                     new_party=form.initial.get("party"),
                     new_election=self.ballot.election,
+                    new_name=form.initial.get("name"),
                 )
                 for suggestion in suggestions
             ]
