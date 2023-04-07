@@ -235,7 +235,9 @@ class NameOnlyPersonForm(forms.Form):
     name = forms.CharField(
         label="Name (style: Ali Smith, not SMITH Ali)",
         required=True,
-        widget=forms.TextInput(attrs={"class": "person_name"}),
+        widget=forms.TextInput(
+            attrs={"class": "person_name", "spellcheck": "false"}
+        ),
     )
     ballot = ValidBallotField(
         widget=BallotInputWidget(attrs={"type": "hidden"})
