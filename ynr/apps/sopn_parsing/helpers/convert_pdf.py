@@ -16,7 +16,7 @@ def convert_sopn_to_pdf(uploaded_file):
     Takes a File-like object, attempts to convert it to a PDF, and returns the
     new file that can then be used to store against an OfficialDocument
     """
-    filetype = uploaded_file.name.split(".")[-1]
+    filetype = uploaded_file.name.split(".")[-1].lower()
     if filetype not in ACCEPTED_FILE_TYPES:
         raise PandocConversionError(f"Cannot convert {filetype} files")
 
