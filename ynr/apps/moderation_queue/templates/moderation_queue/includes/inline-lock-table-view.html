@@ -1,6 +1,8 @@
 <tr>
   <td>
-    Suggested by<br>
+    <a href="{{ ballot.get_absolute_url }}">
+      {{ ballot.post.short_label }}
+    </a> suggested by<br>
       {% for spl in ballot.suggestedpostlock_set.all %}
         {{ spl.user }}{% if spl.justification %}: {{ spl.justification }}{% endif %}<br>
       {% endfor %}
