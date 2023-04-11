@@ -65,3 +65,24 @@ class OtherNameReviewTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.person.refresh_from_db()
         self.assertEqual(self.person.name, "Tessa Jowell")
         self.assertFalse(OtherName.objects.exists())
+
+    def test_approve_name_keeps_previous_name(self):
+
+        self.person.name = "Foo Bar"
+        self.person.save()
+
+        resp = self.app.get(
+            reverse("person-name-review"), user=self.user_who_can_name_review
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "Set as primary name")
+
+        form = resp.forms[f"review_name_form_{self.other_name.pk}"]
+        form.submit(name="decision_approve")
+
+        self.person.refresh_from_db()
+        self.assertEqual(
+            set(self.person.other_names.all().values_list("name", flat=True)),
+            {"Foo Bar"},
+        )
+        self.assertEqual(self.person.name, "Tessa Palmer")
