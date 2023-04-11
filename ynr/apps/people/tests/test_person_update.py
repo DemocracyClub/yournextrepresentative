@@ -232,7 +232,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         self.person.refresh_from_db()
         # check that the name has not been changed
         self.assertEqual(self.person.name, "Tessa Palmer")
-        # check an other names has been created
+        # check an other_names has been created
         self.assertEqual(len(self.person.other_names.all()), 1)
         self.assertEqual(self.person.other_names.first().needs_review, False)
 

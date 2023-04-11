@@ -359,6 +359,7 @@ class BasePersonForm(forms.ModelForm):
                 initial_name=initial_name,
                 user=user,
             )
+
         return super().save(commit)
 
 

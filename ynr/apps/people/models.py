@@ -320,64 +320,49 @@ class Person(TimeStampedModel, models.Model):
         )
 
     def edit_name(self, suggested_name, initial_name, user):
-        # To prevent vandalism, when an edit is made
-        # to a person name on a locked ballot,
-        # if the user is not trusted,
-        # create a new OtherName object
-        # and send it to the moderation queue
-        # for review.
+        """
+        Edit a person name and store the previous version.
+
+        To prevent vandalism, when an edit is made to a person name on a locked ballot,
+        if the user is not trusted, create a new OtherName object
+        and send it to the moderation queue for review.
+        """
+
         qs = self.memberships.filter(
             ballot__election__current=True, ballot__candidates_locked=True
         )
-        if not qs.exists():
-            try:
-                self.other_names.get(name=initial_name)
-            except self.other_names.model.DoesNotExist:
-                self.other_names.create(
-                    name=initial_name,
-                    needs_review=False,
-                )
-                LoggedAction.objects.create(
-                    user=user,
-                    action_type=ActionType.PERSON_UPDATE,
-                    person=self,
-                    source="Person edit form",
-                )
-            return
+        name_edit_restricted = qs.exists()
 
-        if user.is_authenticated and user_in_group(user, TRUSTED_TO_EDIT_NAME):
+        user_can_edit = (
+            user_in_group(user, TRUSTED_TO_EDIT_NAME)
+            or not name_edit_restricted
+        )
+        needs_review = not user_can_edit
+
+        if user_can_edit:
             # since the user is trusted, whether or not there are locked ballots,
             # we can update the name field
             # and skip the review in the moderation queue
-            try:
-                self.other_names.get(name=suggested_name)
-            except self.other_names.model.DoesNotExist:
-                self.other_names.create(
-                    name=suggested_name,
-                    needs_review=False,
-                )
-            self.name == suggested_name
-            LoggedAction.objects.create(
-                user=user,
-                action_type=ActionType.PERSON_OTHER_NAME_UPDATE,
-                person=self,
-                source="Person edit form",
-            )
+            self.name = suggested_name
+            # Make an other_name for the initial name
+            other_name, _ = self.other_names.get_or_create(name=initial_name)
+            other_name.needs_review = needs_review
+            other_name.save()
         else:
-            try:
-                self.other_names.get(name=suggested_name)
-            except self.other_names.model.DoesNotExist:
-                self.other_names.create(
-                    name=suggested_name,
-                    needs_review=True,
-                )
             self.name = initial_name
-            LoggedAction.objects.create(
-                user=user,
-                action_type=ActionType.PERSON_OTHER_NAME_UPDATE,
-                person=self,
-                source="Person edit form",
-            )
+
+        # Make an other_name for the suggested name
+        other_name, _ = self.other_names.get_or_create(name=suggested_name)
+        other_name.needs_review = needs_review
+        other_name.save()
+        self.other_names.filter(name=self.name).delete()
+
+        LoggedAction.objects.create(
+            user=user,
+            action_type=ActionType.PERSON_OTHER_NAME_UPDATE,
+            person=self,
+            source="Person edit form",
+        )
 
     @property
     def current_or_future_candidacies(self):

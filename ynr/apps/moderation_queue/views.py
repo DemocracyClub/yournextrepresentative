@@ -476,10 +476,9 @@ class PersonNameEditReviewListView(GroupRequiredMixin, ListView):
         return HttpResponseRedirect(reverse("person-name-review"))
 
     def approve_name_change(self, other_name):
-        other_name.content_object.name = other_name.name
-        other_name.content_object.save()
-        other_name.needs_review = False
-        other_name.save()
+        person = other_name.content_object
+        person.edit_name(other_name.name, person.name, user=self.request.user)
+        person.save()
 
     def delete_name_change(self, other_name):
         other_name.delete()
