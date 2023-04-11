@@ -59,7 +59,7 @@
         </tr>
       </thead>
       <tbody>
-      {% for queued_image in object_list %}
+      {% for queued_image in object_list.object_list %}
         <tr>
           <td>
           {% thumbnail queued_image.image "x100" as im %}
@@ -82,4 +82,3 @@
 
 
 {% endblock %}
-

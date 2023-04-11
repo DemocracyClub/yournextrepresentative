@@ -4,6 +4,8 @@ from typing import Any, Dict
 from urllib.parse import quote
 
 import bleach
+from django.core.paginator import Paginator
+
 from auth_helpers.views import GroupRequiredMixin
 from braces.views import LoginRequiredMixin
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
@@ -129,7 +131,7 @@ class PhotoReviewList(GroupRequiredMixin, ListView):
             request=self.request,
         )
         context["filter_obj"] = filter_obj
-        context["object_list"] = filter_obj.qs
+        context["object_list"] = Paginator(filter_obj.qs, 20).page(1)
         context["shortcuts"] = filter_obj.shortcuts
 
         return context
