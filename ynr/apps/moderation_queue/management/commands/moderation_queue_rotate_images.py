@@ -1,9 +1,10 @@
 import json
+from io import BytesIO
+
 import sorl
 from PIL import Image
 from django.core.management.base import BaseCommand, CommandError
 from moderation_queue.models import QueuedImage
-from django.core.files.storage import default_storage
 
 
 class Command(BaseCommand):
@@ -14,38 +15,39 @@ class Command(BaseCommand):
             detection_metadata=""
         )
 
-        for qi in qs:
-            queued_image = default_storage.open(qi.image.name, "r")
+        for queued_image in qs:
             try:
-                detected = json.loads(qi.detection_metadata)
-                if len(detected["FaceDetails"]) > 0:
-                    self.rotate_queued_images(
-                        s3_queued_image=queued_image,
-                        queued_image=qi.image,
-                        detected=detected,
-                    )
-                    sorl.thumbnail.delete(queued_image.name, delete_file=False)
-                else:
-                    msg = "No face details found for image: {queued_image.id}"
-                    self.stdout.write(msg)
+                self.rotate_queued_images(
+                    queued_image=queued_image,
+                )
             except Exception as e:
                 msg = "Skipping QueuedImage {id}: {error}"
-                self.stdout.write(msg.format(id=qi.id, error=e))
+                self.stdout.write(msg.format(id=queued_image.id, error=e))
                 any_failed = True
-            qi.save()
+            queued_image.save()
         if any_failed:
             raise CommandError("Broken images found (see above)")
 
-    def rotate_queued_images(self, s3_queued_image, queued_image, detected):
+    def rotate_queued_images(self, queued_image):
         """
         Detects the rotation of an image and returns an integer
         """
+        detected = json.loads(queued_image.detection_metadata)
+        if not detected["FaceDetails"]:
+            self.stdout.write(
+                "No face details found for image: {queued_image.id}"
+            )
+            return
 
-        PILimage = Image.open(queued_image, formats=None)
+        PILimage = Image.open(queued_image.image, formats=None)
         # Calculate the angle image is rotated by rounding the roll
         # value to the nearest multiple of 90
+
         roll = detected["FaceDetails"][0]["Pose"]["Roll"]
         img_rotation_angle = round(roll / 90) * 90
         rotated = PILimage.rotate(angle=img_rotation_angle, expand=True)
-        s3_queued_image.write(queued_image.name)
+        buffer = BytesIO()
+        rotated.save(buffer, format="PNG")
+        queued_image.image.save(queued_image.image.name, buffer)
+        sorl.thumbnail.delete(queued_image.image.name, delete_file=False)
         return rotated
