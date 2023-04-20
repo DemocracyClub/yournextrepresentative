@@ -1,4 +1,3 @@
-from candidates.views.agreement import *  # noqa
 from candidates.views.areas import *  # noqa
 from candidates.views.candidacies import *  # noqa
 from candidates.views.constituencies import *  # noqa

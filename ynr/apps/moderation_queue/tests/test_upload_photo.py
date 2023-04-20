@@ -51,8 +51,6 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         self.test_upload_user = User.objects.create_user(
             "john", "john@example.com", "notagoodpassword"
         )
-        self.test_upload_user.terms_agreement.assigned_to_dc = True
-        self.test_upload_user.terms_agreement.save()
 
     def tearDown(self):
         super().tearDown()
@@ -150,8 +148,6 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
         self.test_upload_user = User.objects.create_user(
             "john", "john@example.com", "notagoodpassword"
         )
-        self.test_upload_user.terms_agreement.assigned_to_dc = True
-        self.test_upload_user.terms_agreement.save()
         upload_form_url = reverse("photo-upload", kwargs={"person_id": "2009"})
         self.form_page_response = self.app.get(
             upload_form_url, user=self.test_upload_user

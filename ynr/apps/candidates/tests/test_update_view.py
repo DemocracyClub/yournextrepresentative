@@ -48,32 +48,11 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual("/accounts/login/", split_location.path)
         self.assertEqual("next=/person/2009/update", split_location.query)
 
-    def test_update_person_view_get_refused_copyright(self):
-        response = self.app.get("/person/2009/update", user=self.user_refused)
-        self.assertEqual(response.status_code, 302)
-        split_location = urlsplit(response.location)
-        self.assertEqual("/copyright-question", split_location.path)
-        self.assertEqual("next=/person/2009/update", split_location.query)
-
     def test_update_person_view_get(self):
         # For the moment just check that the form's actually there:
         response = self.app.get("/person/2009/update", user=self.user)
         form = response.forms["person-details"]
         self.assertIsNotNone(form)
-
-    def test_update_person_submission_copyright_refused(self):
-        response = self.app.get("/person/2009/update", user=self.user)
-        form = response.forms["person-details"]
-        form[
-            "tmp_person_identifiers-0-value"
-        ] = "http://en.wikipedia.org/wiki/Tessa_Jowell"
-        form["tmp_person_identifiers-0-value_type"] = "wikipedia_url"
-        form["memberships-0-party_identifier_1"] = self.labour_party.ec_id
-        form["source"] = "Some source of this information"
-        submission_response = form.submit(user=self.user_refused)
-        split_location = urlsplit(submission_response.location)
-        self.assertEqual("/copyright-question", split_location.path)
-        self.assertEqual("next=/person/2009/update", split_location.query)
 
     def test_update_person_submission(self):
         memberships_before = membership_id_set(Person.objects.get(pk=2009))
