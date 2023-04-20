@@ -241,7 +241,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
 
 class NameOnlyPersonForm(forms.Form):
     name = forms.CharField(
-        label="Name (style: Ali Smith, not SMITH Ali)",
+        label="Name (style: Ali McKay Smith not SMITH Ali McKay)",
         required=True,
         widget=forms.TextInput(
             attrs={"class": "person_name", "spellcheck": "false"}
