@@ -11,7 +11,7 @@ from parties.models import Party
 from people.forms.fields import (
     CurrentUnlockedBallotsField,
     StrippedCharField,
-    BlankApproximateDateFormField,
+    PastOnlyBlankApproximateDateFormField,
 )
 from parties.forms import (
     PartyIdentifierField,
@@ -288,7 +288,7 @@ class BasePersonForm(forms.ModelForm):
         required=False,
         widget=forms.NumberInput,
     )
-    death_date = BlankApproximateDateFormField(
+    death_date = PastOnlyBlankApproximateDateFormField(
         label="Date of death (a four digit year or a full date)", required=False
     )
 

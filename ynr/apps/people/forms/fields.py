@@ -1,8 +1,10 @@
+from datetime import datetime
+
+from dateutil.parser import parser
 from django import forms
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 from django_date_extensions.fields import ApproximateDateFormField
-from typing import Optional
 
 from candidates.models import Ballot
 from people.models import Person
@@ -125,3 +127,19 @@ class BlankApproximateDateFormField(ApproximateDateFormField):
         return "{year:04d}-{month:02d}-{day:02d}".format(
             year=value.year, month=value.month, day=value.day
         )
+
+
+class PastOnlyBlankApproximateDateFormField(BlankApproximateDateFormField):
+    """
+    Same as BlankApproximateDateFormField, but only allows dates in the past.
+    """
+
+    def clean(self, value):
+        date = super().clean(value)
+        if date:
+            date = date.replace("-00", "-01")
+            date_obj: datetime.date = parser().parse(date).date()
+            today = datetime.today().date()
+            if date_obj > today:
+                raise ValidationError("Can't enter a date in the future")
+        return date

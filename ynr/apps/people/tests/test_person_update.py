@@ -1,3 +1,5 @@
+import datetime
+
 from candidates.tests.factories import BallotPaperFactory, ElectionFactory
 from candidates.views.version_data import get_change_metadata
 from django.contrib.auth.models import User
@@ -64,7 +66,6 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             form.submit()
 
     def test_set_death_date_too_long(self):
-
         response = self.app.get(
             "/person/{}/update".format(self.person.pk), user=self.user
         )
@@ -124,6 +125,34 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         form.submit().follow()
         self.person.refresh_from_db()
         self.assertEqual(self.person.age, "37 or 38")
+
+    def test_validate_death_date_not_in_future(self):
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        form = response.forms[1]
+        form["birth_date"] = "1962"
+        form["death_date"] = "2200"
+        form["source"] = "BBC News"
+        response = form.submit()
+        self.assertEqual(
+            response.context["form"].errors,
+            {"death_date": ["Can't enter a date in the future"]},
+        )
+
+    def test_validate_death_date_can_be_today(self):
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+        death_date = datetime.datetime.today().date().isoformat()
+        form = response.forms[1]
+        form["birth_date"] = "1962"
+        form["death_date"] = death_date
+        form["source"] = "BBC News"
+        form.submit().follow()
+        self.person.refresh_from_db()
+        self.assertEqual(self.person.death_date, death_date)
 
     def test_user_cannot_review_person_name(self):
         # current user is not in the TRUSTED_TO_EDIT_NAME group
