@@ -95,9 +95,22 @@ def update_person(
         )
     if not data:
         data = {}
-    other_name = data.get("name")
-    if other_name and person.name != other_name:
-        person.other_names.get_or_create(name=other_name)
+
+    # Writing this as a configable in case we come back to changing this
+    # The reason is it's not clear if we want to take the newly entered name as
+    # the main name, or keep the previous main name and keep the newly entered name
+    # as an "other name".
+    # We want to keep both names either way.
+    # Set either NAME_MODE to `KEEP_SOPN_NAME` or `KEEP_EXISTING_NAME`
+    NAME_MODE = "KEEP_SOPN_NAME"
+    sopn_name = data.get("name")
+    if sopn_name and person.name != sopn_name:
+        if NAME_MODE == "KEEP_SOPN_NAME":
+            person.other_names.get_or_create(name=person.name)
+            person.name = sopn_name
+        if NAME_MODE == "KEEP_EXISTING_NAME":
+            person.other_names.get_or_create(name=sopn_name)
+
     change_metadata = get_change_metadata(request, source)
     person.record_version(change_metadata)
     person.save()

@@ -450,10 +450,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["form-0-select_person"].select("1234567")
         response = form.submit()
 
-        person = Person.objects.get(name="Bart Simpson")
-        self.assertEqual(
-            person.other_names.first().name, "Bartholomew Jojo Simpson"
-        )
+        person = Person.objects.get(name="Bartholomew Jojo Simpson")
+        self.assertEqual(person.other_names.first().name, "Bart Simpson")
         memberships_after = membership_id_set(person)
         new_memberships = memberships_after - memberships_before
         self.assertEqual(len(new_memberships), 0)
