@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import Count, Prefetch, Q
+from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -28,6 +29,7 @@ from parties.models import Party
 from people.forms.forms import NewPersonForm
 from people.forms.formsets import PersonIdentifierFormsetFactory
 from popolo.models import Membership
+from utils.db import NullIfBlank, LastWord
 
 
 class ElectionView(DetailView):
@@ -47,9 +49,16 @@ class ElectionView(DetailView):
             .prefetch_related(
                 Prefetch(
                     "membership_set",
-                    Membership.objects.select_related(
-                        "party", "person"
-                    ).order_by("-elected", "-result__num_ballots"),
+                    Membership.objects.select_related("party", "person")
+                    .annotate(last_name=LastWord("person__name"))
+                    .annotate(
+                        name_for_ordering=Coalesce(
+                            NullIfBlank("person__sort_name"), "last_name"
+                        )
+                    )
+                    .order_by(
+                        "-elected", "-result__num_ballots", "name_for_ordering"
+                    ),
                 )
             )
         )
@@ -161,7 +170,6 @@ class BallotPaperView(TemplateView):
         )
 
         if context["membership_edits_allowed"]:
-
             # New person form
             context["add_candidate_form"] = NewPersonForm(
                 initial={"ballot_paper_id": ballot.ballot_paper_id}
@@ -190,7 +198,6 @@ class BallotPaperView(TemplateView):
         return context
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
 
         context["ballot"] = ballot = get_object_or_404(
@@ -364,7 +371,6 @@ class BallotsForSelectAjaxView(View):
             if ballot.election.name != election_name:
                 election_name = ballot.election.name
                 if data:
-
                     data.append("</optgroup>")
                 data.append(f"<optgroup label='{election_name}'>")
 
