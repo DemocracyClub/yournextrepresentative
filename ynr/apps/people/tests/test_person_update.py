@@ -236,6 +236,27 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         self.assertEqual(len(self.person.other_names.all()), 1)
         self.assertEqual(self.person.other_names.first().needs_review, False)
 
+    def test_case_change_doesnt_make_other_name(self):
+        self.assertEqual(len(self.person.other_names.all()), 0)
+        # get the test user in the TRUSTED_TO_EDIT_NAME group
+        self.user = User.objects.get(username="george")
+
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        # check on the name that is currently set
+        self.assertEqual(self.person.name, "Tessa Jowell")
+        form = response.forms[1]
+        form["name"] = "TeSSa  JoweLL"
+        # make a change to another field to ensure that change occurs regardless of name change
+        form["source"] = "Mumsnet"
+        form.submit()
+        self.person.refresh_from_db()
+        self.assertEqual(self.person.name, "TeSSa  JoweLL")
+        # check an other_names has not been created
+        self.assertEqual(len(self.person.other_names.all()), 0)
+
     def test_edits_prevented(self):
         # See if we get a 403 when submitting a person form
         # for a person who's edits are prevented

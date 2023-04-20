@@ -145,3 +145,11 @@ def clean_wikidata_id(identifier):
     if not re.match(r"Q[\d]+", identifier):
         raise ValueError("Wikidata ID be a 'Q12345' type identifier")
     return identifier
+
+
+def person_names_equal(name, other_name):
+    def _normalize(name):
+        name = name.lower()
+        return name.replace(" ", "")
+
+    return _normalize(name) == _normalize(other_name)

@@ -25,6 +25,7 @@ from people.helpers import (
     clean_twitter_username,
     clean_wikidata_id,
     clean_mastodon_username,
+    person_names_equal,
 )
 
 
@@ -350,7 +351,7 @@ class BasePersonForm(forms.ModelForm):
         if (
             initial_name
             and "name" in self.changed_data
-            and (initial_name != suggested_name)
+            and not person_names_equal(initial_name, suggested_name)
         ):
             suggested_name = self.cleaned_data["name"]
             initial_name = self.initial["name"]
