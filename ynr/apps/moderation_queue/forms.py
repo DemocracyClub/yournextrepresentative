@@ -1,18 +1,19 @@
 import cgi
-from django.urls import reverse
 
 import requests
-from django import forms
-from django.conf import settings
-from django.core.mail import send_mail
-from django.core.exceptions import ValidationError
-from django.contrib.sites.models import Site
-from django.template.loader import render_to_string
-
 from candidates.models.db import ActionType, LoggedAction
 from candidates.views.version_data import get_change_metadata, get_client_ip
+from django import forms
+from django.conf import settings
+from django.contrib.sites.models import Site
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.urls import reverse
 from moderation_queue.helpers import convert_image_to_png
 from people.forms.forms import StrippedCharField
+from PIL import Image as PILImage
+
 from .models import CopyrightOptions, QueuedImage, SuggestedPostLock
 
 
@@ -31,7 +32,7 @@ class UploadPersonPhotoImageForm(forms.ModelForm):
             "decision": forms.HiddenInput(),
             "why_allowed": forms.RadioSelect(),
             "justification_for_use": forms.Textarea(
-                attrs={"rows": 1, "columns": 72}
+                attrs={"rows": 1, "columns": 72},
             ),
         }
 
@@ -87,6 +88,37 @@ class UploadPersonPhotoURLForm(forms.Form):
             msg = "This URL isn't for an image - it had Content-Type: {0}"
             raise ValidationError(msg.format(main))
         return image_url
+
+
+class PhotoRotateForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.queued_image = kwargs.pop("queued_image")
+        self.request = kwargs.pop("request")
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        return super().clean()
+
+    def process(self):
+        if "rotate_left" in self.request._post:
+            rotation_direction = "left"
+            self.rotate_photo(self.queued_image.id, rotation_direction)
+        elif "rotate_right" in self.request._post:
+            rotation_direction = "right"
+            self.rotate_photo(self.queued_image.id, rotation_direction)
+        else:
+            raise Exception("No rotation direction specified")
+
+    def rotate_photo(self, queued_image_id, rotation_direction):
+        queued_image = QueuedImage.objects.get(id=queued_image_id)
+        image_path = queued_image.image.path
+        image = PILImage.open(queued_image.image)
+        if rotation_direction == "left":
+            rotated = image.rotate(90, expand=True)
+        elif rotation_direction == "right":
+            rotated = image.rotate(-90, expand=True)
+        rotated.save(image_path, "PNG")
+        return rotated
 
 
 class PhotoReviewForm(forms.Form):

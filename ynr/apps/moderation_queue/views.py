@@ -1,11 +1,10 @@
 import random
 import re
+import sorl
 from typing import Any, Dict
 from urllib.parse import quote
 
 import bleach
-from django.core.paginator import Paginator
-
 from auth_helpers.views import GroupRequiredMixin
 from braces.views import LoginRequiredMixin
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
@@ -13,6 +12,7 @@ from candidates.models.db import ActionType
 from candidates.views.version_data import get_client_ip
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import Count, Q
 from django.http import (
@@ -36,6 +36,7 @@ from popolo.models import Membership, OtherName
 
 from .forms import (
     PhotoReviewForm,
+    PhotoRotateForm,
     SuggestedPostLockForm,
     UploadPersonPhotoImageForm,
     UploadPersonPhotoURLForm,
@@ -251,42 +252,62 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         return context
 
     def form_valid(self, form):
-        form.process()
-        candidate_link = f'<a href="{self.queued_image.person.get_absolute_url()}">{self.queued_image.person.name}</a>'
-        message_mapping = {
-            QueuedImage.APPROVED: f"You approved a photo upload for {candidate_link}",
-            QueuedImage.REJECTED: f"You rejected a photo upload for {candidate_link}",
-            QueuedImage.IGNORE: f"You left a photo upload for {candidate_link} in the queue",
-            QueuedImage.UNDECIDED: f"You indicated a photo upload for {candidate_link} should be ignored",
-        }
-        level_mapping = {QueuedImage.APPROVED: messages.SUCCESS}
-        message = message_mapping.get(self.queued_image.decision)
-        level = level_mapping.get(self.queued_image.decision, messages.INFO)
-        messages.add_message(
-            self.request, level, message, extra_tags="safe photo-review"
-        )
-        return HttpResponseRedirect(reverse("photo-review-list"))
+        self.form.process()
+        if isinstance(form, PhotoReviewForm):
+            candidate_link = f'<a href="{self.queued_image.person.get_absolute_url()}">{self.queued_image.person.name}</a>'
+            message_mapping = {
+                QueuedImage.APPROVED: f"You approved a photo upload for {candidate_link}",
+                QueuedImage.REJECTED: f"You rejected a photo upload for {candidate_link}",
+                QueuedImage.IGNORE: f"You left a photo upload for {candidate_link} in the queue",
+                QueuedImage.UNDECIDED: f"You indicated a photo upload for {candidate_link} should be ignored",
+            }
+            level_mapping = {QueuedImage.APPROVED: messages.SUCCESS}
+            message = message_mapping.get(self.queued_image.decision)
+            level = level_mapping.get(self.queued_image.decision, messages.INFO)
+            messages.add_message(
+                self.request, level, message, extra_tags="safe photo-review"
+            )
+            return HttpResponseRedirect(reverse("photo-review-list"))
+        else:
+            self.queued_image.rotation_tried = True
+            self.queued_image.save()
+            sorl.thumbnail.delete(
+                self.queued_image.image.name, delete_file=False
+            )
+            return HttpResponseRedirect(
+                reverse(
+                    "photo-review",
+                    kwargs={"queued_image_id": self.queued_image.id},
+                )
+            )
 
     def form_invalid(self, form):
-        return self.render_to_response(
-            self.get_context_data(
-                queued_image_id=self.queued_image.id, form=form
-            )
-        )
+        return self.render_to_response(self.get_context_data(form=form))
 
     def post(self, request, *args, **kwargs):
         self.queued_image = QueuedImage.objects.get(
             pk=kwargs["queued_image_id"]
         )
-        form = PhotoReviewForm(
-            data=self.request.POST,
-            request=request,
-            queued_image=self.queued_image,
-        )
-        if form.is_valid():
-            return self.form_valid(form)
+        if (
+            "rotate_left" in request.POST
+            or "rotate_right" in request.POST
+            and request.method == "POST"
+        ):
+            self.form = PhotoRotateForm(
+                data=self.request.POST,
+                request=request,
+                queued_image=self.queued_image,
+            )
         else:
-            return self.form_invalid(form)
+            self.form = PhotoReviewForm(
+                data=self.request.POST,
+                request=request,
+                queued_image=self.queued_image,
+            )
+        if self.form.is_valid():
+            return self.form_valid(self.form)
+        else:
+            return self.form_invalid(self.form)
 
 
 class SuggestLockView(LoginRequiredMixin, CreateView):

@@ -212,6 +212,26 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         response = self.app.get(review_url, user=self.test_reviewer)
         self.assertContains(response, "Photo policy")
 
+    def test_photo_review_rotate_photo_privileged(self):
+        review_url = reverse(
+            "photo-review", kwargs={"queued_image_id": self.q1.id}
+        )
+        queued_image = QueuedImage.objects.get(id=self.q1.id)
+
+        self.assertFalse(queued_image.rotation_tried)
+
+        response = self.app.get(review_url, user=self.test_reviewer)
+        form = response.forms["photo-review-form"]
+        response = form.submit(name="rotate_right", value="right")
+        queued_image.refresh_from_db()
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(queued_image.rotation_tried)
+        split_location = urlsplit(response.location)
+        self.assertEqual(
+            "/moderation/photo/review/{}".format(self.q1.id),
+            split_location.path,
+        )
+
     @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     def test_photo_review_upload_approved_privileged(self, mock_send_mail):
@@ -225,7 +245,9 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             form = review_page_response.forms["photo-review-form"]
             form["decision"] = "approved"
             form["moderator_why_allowed"] = "profile-photo"
+            self.assertFalse(self.q1.rotation_tried)
             response = form.submit(user=self.test_reviewer)
+            self.assertFalse(self.q1.rotation_tried)
             # FIXME: check that mocked_person_put got the right calls
             self.assertEqual(response.status_code, 302)
             split_location = urlsplit(response.location)
@@ -246,8 +268,8 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
                 "Uploaded by john: Approved from photo moderation queue",
                 image.source,
             )
-            self.assertEqual(427, image.image.width)
-            self.assertEqual(639, image.image.height)
+            self.assertEqual(639, image.image.width)
+            self.assertEqual(427, image.image.height)
 
             self.q1.refresh_from_db()
             self.assertEqual("public-domain", self.q1.why_allowed)
@@ -384,8 +406,9 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
                 "Uploaded by a robot 🤖: Approved from photo moderation queue",
                 image.source,
             )
-            self.assertEqual(427, image.image.width)
-            self.assertEqual(639, image.image.height)
+            self.assertFalse(self.q1.rotation_tried)
+            self.assertEqual(639, image.image.width)
+            self.assertEqual(427, image.image.height)
 
             self.q_no_uploading_user.refresh_from_db()
             self.assertEqual(
