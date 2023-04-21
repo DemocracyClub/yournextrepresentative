@@ -1,10 +1,10 @@
 import random
 import re
-import sorl
 from typing import Any, Dict
 from urllib.parse import quote
 
 import bleach
+import sorl
 from auth_helpers.views import GroupRequiredMixin
 from braces.views import LoginRequiredMixin
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
