@@ -24,6 +24,8 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django_extensions.db.models import TimeStampedModel
+
+from people.helpers import person_names_equal
 from people.managers import (
     PersonIdentifierQuerySet,
     PersonImageManager,
@@ -351,10 +353,11 @@ class Person(TimeStampedModel, models.Model):
         else:
             self.name = initial_name
 
-        # Make an other_name for the suggested name
-        other_name, _ = self.other_names.get_or_create(name=suggested_name)
-        other_name.needs_review = needs_review
-        other_name.save()
+        if not person_names_equal(suggested_name, initial_name):
+            # Make an other_name for the suggested name
+            other_name, _ = self.other_names.get_or_create(name=suggested_name)
+            other_name.needs_review = needs_review
+            other_name.save()
         self.other_names.filter(name=self.name).delete()
 
         LoggedAction.objects.create(

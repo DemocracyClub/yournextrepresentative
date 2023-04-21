@@ -1,8 +1,10 @@
+import pytest
 from django_webtest import WebTest
 
 from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from people.helpers import person_names_equal
 from people.tests.factories import PersonFactory
 from popolo.models import OtherName
 
@@ -266,3 +268,18 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = form.submit()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.person_other_names.other_names.count(), 2)
+
+
+@pytest.mark.parametrize(
+    "name,other_name,equal",
+    [
+        ("John Smith", "John Smith", True),
+        ("John Smith", "John      Smith", True),
+        ("John Smith", "John smith", True),
+        ("John Smith", "JoHn smiTh", True),
+        ("John Smith", "JoHn Jones", False),
+        ("John MacFoo", "John Macfoo", True),
+    ],
+)
+def test_person_names_equal(name, other_name, equal):
+    assert person_names_equal(name, other_name) == equal
