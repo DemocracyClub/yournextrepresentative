@@ -95,6 +95,7 @@ class QueuedImage(models.Model):
     detection_metadata = models.TextField(blank=True)
 
     face_detection_tried = models.BooleanField(default=False)
+    rotation_tried = models.BooleanField(default=False)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
