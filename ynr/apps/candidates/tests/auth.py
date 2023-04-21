@@ -37,9 +37,6 @@ class TestUserMixin(object):
             u = User.objects.create_user(
                 username, username + "@example.com", "notagoodpassword"
             )
-            terms = u.terms_agreement
-            terms.assigned_to_dc = True
-            terms.save()
             for group_name in group_names:
                 group, _ = Group.objects.get_or_create(name=group_name)
                 group.user_set.add(u)

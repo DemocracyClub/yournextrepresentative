@@ -89,11 +89,6 @@ urlpatterns = [
         TemplateView.as_view(template_name="candidates/photo-policy.html"),
         name="help-photo-policy",
     ),
-    re_path(
-        r"^copyright-question$",
-        views.AskForCopyrightAssigment.as_view(),
-        name="ask-for-copyright-assignment",
-    ),
     # ----------------- Legacy redirect views
     re_path(
         r"^areas/(?P<type_and_area_ids>.*?)(?:/(?P<ignored_slug>.*))?$",

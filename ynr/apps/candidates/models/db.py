@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from django.db.models import JSONField
 from django.contrib.postgres.fields import ArrayField
 from django.db import models, transaction
-from django.db.models.signals import post_save
 from django.urls import reverse
 from django.utils.html import escape
 
@@ -274,18 +273,3 @@ class PersonRedirect(models.Model):
             new_to_sorted_old[new].append(old)
             new_to_sorted_old[new].sort()
         return new_to_sorted_old
-
-
-class UserTermsAgreement(models.Model):
-    user = models.OneToOneField(
-        User, related_name="terms_agreement", on_delete=models.CASCADE
-    )
-    assigned_to_dc = models.BooleanField(default=False)
-
-
-def create_user_terms_agreement(sender, instance, created, **kwargs):
-    if created:
-        UserTermsAgreement.objects.create(user=instance)
-
-
-post_save.connect(create_user_terms_agreement, sender=User)

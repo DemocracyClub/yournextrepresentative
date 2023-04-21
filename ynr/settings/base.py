@@ -150,7 +150,6 @@ MIDDLEWARE = (
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "candidates.middleware.LogoutDisabledUsersMiddleware",
-    "candidates.middleware.CopyrightAssignmentMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "candidates.middleware.DisableCachingForAuthenticatedUsers",

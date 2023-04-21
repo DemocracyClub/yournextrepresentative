@@ -6,7 +6,6 @@ from candidates.models.auth import (  # noqa
 from candidates.models.db import (  # noqa
     LoggedAction,
     PersonRedirect,
-    UserTermsAgreement,
 )
 from candidates.models.merge import merge_popit_people  # noqa
 from candidates.models.popolo_extra import (  # noqa

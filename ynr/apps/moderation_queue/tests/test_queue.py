@@ -93,13 +93,9 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         self.test_upload_user = User.objects.create_user(
             "john", "john@example.com", "notagoodpassword"
         )
-        self.test_upload_user.terms_agreement.assigned_to_dc = True
-        self.test_upload_user.terms_agreement.save()
         self.test_reviewer = User.objects.create_superuser(
             "jane", "jane@example.com", "alsonotagoodpassword"
         )
-        self.test_reviewer.terms_agreement.assigned_to_dc = True
-        self.test_reviewer.terms_agreement.save()
         group, _ = Group.objects.get_or_create(name=PHOTO_REVIEWERS_GROUP_NAME)
         self.test_reviewer.groups.add(group)
         self.q1 = QueuedImage.objects.create(
@@ -160,7 +156,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 
     def test_photo_review_queue_view_logged_in_privileged(self):
         queue_url = reverse("photo-review-list")
-        with self.assertNumQueries(FuzzyInt(40, 42)):
+        with self.assertNumQueries(FuzzyInt(38, 40)):
             response = self.app.get(queue_url, user=self.test_reviewer)
         self.assertEqual(response.status_code, 200)
         queue_table = response.html.find("table")

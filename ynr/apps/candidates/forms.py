@@ -1,25 +1,8 @@
 from django import forms
-from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 
 from candidates.models import Ballot
 from people.forms.forms import AddElectionFieldsMixin, StrippedCharField
-
-
-class UserTermsAgreementForm(forms.Form):
-
-    assigned_to_dc = forms.BooleanField(required=False)
-    next_path = StrippedCharField(max_length=512, widget=forms.HiddenInput())
-
-    def clean_assigned_to_dc(self):
-        assigned_to_dc = self.cleaned_data["assigned_to_dc"]
-        if not assigned_to_dc:
-            message = (
-                "You can only edit data on {site_name} if you agree to "
-                "this copyright assignment."
-            ).format(site_name=Site.objects.get_current().name)
-            raise ValidationError(message)
-        return assigned_to_dc
 
 
 class ToggleLockForm(forms.ModelForm):

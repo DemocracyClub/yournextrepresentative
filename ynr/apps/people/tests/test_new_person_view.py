@@ -1,5 +1,3 @@
-from urllib.parse import urlsplit
-
 from django.urls import reverse
 from django_webtest import WebTest
 
@@ -14,19 +12,6 @@ from parties.models import Party
 class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
-
-    def test_new_person_submission_refused_copyright(self):
-        # Just a smoke test for the moment:
-        response = self.app.get(
-            "/constituency/65808/dulwich-and-west-norwood",
-            user=self.user_refused,
-        )
-        split_location = urlsplit(response.location)
-        self.assertEqual("/copyright-question", split_location.path)
-        self.assertEqual(
-            "next=/constituency/65808/dulwich-and-west-norwood",
-            split_location.query,
-        )
 
     def test_new_person_submission(self):
         response = self.app.get(
