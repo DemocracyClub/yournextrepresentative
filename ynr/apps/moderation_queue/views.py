@@ -282,11 +282,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         self.queued_image = QueuedImage.objects.get(
             pk=kwargs["queued_image_id"]
         )
-        if (
-            "rotate_left" in request.POST
-            or "rotate_right" in request.POST
-            and request.method == "POST"
-        ):
+        if "rotate" in request.POST:
             self.form = PhotoRotateForm(
                 data=self.request.POST,
                 request=request,

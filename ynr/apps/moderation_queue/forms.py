@@ -103,29 +103,24 @@ class PhotoRotateForm(forms.Form):
         return super().clean()
 
     def process(self):
-        if "rotate_left" in self.request._post:
-            rotation_direction = "left"
-            self.rotate_photo(self.queued_image.id, rotation_direction)
-        elif "rotate_right" in self.request._post:
-            rotation_direction = "right"
-            self.rotate_photo(self.queued_image.id, rotation_direction)
-        else:
-            raise Exception("No rotation direction specified")
+        rotation_direction = self.request.POST.get("rotate")
+        if not rotation_direction:
+            return self.queued_image
+        self.rotate_photo(rotation_direction)
         return self.queued_image
 
-    def rotate_photo(self, queued_image_id, rotation_direction):
-        queued_image = QueuedImage.objects.get(id=queued_image_id)
-        image = PILImage.open(queued_image.image.file)
+    def rotate_photo(self, rotation_direction):
+        image = PILImage.open(self.queued_image.image.file)
         if rotation_direction == "left":
             rotated = image.rotate(90, expand=True)
         elif rotation_direction == "right":
             rotated = image.rotate(-90, expand=True)
         buffer = BytesIO()
         rotated.save(buffer, "PNG")
-        queued_image.image.save(queued_image.image.name, buffer)
+        self.queued_image.image.save(self.queued_image.image.name, buffer)
         self.queued_image.rotation_tried = True
         sorl.thumbnail.delete(self.queued_image.image.name, delete_file=False)
-        return queued_image
+        self.queued_image.save()
 
 
 class PhotoReviewForm(forms.Form):

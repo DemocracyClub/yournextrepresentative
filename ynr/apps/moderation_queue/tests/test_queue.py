@@ -213,19 +213,21 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "Photo policy")
 
     def test_photo_review_rotate_photo_privileged(self):
+        self.assertEqual(428, self.q1.image.width)
+        self.assertEqual(640, self.q1.image.height)
         review_url = reverse(
             "photo-review", kwargs={"queued_image_id": self.q1.id}
         )
-        queued_image = QueuedImage.objects.get(id=self.q1.id)
-
-        self.assertFalse(queued_image.rotation_tried)
+        self.assertFalse(self.q1.rotation_tried)
 
         response = self.app.get(review_url, user=self.test_reviewer)
         form = response.forms["photo-review-form"]
-        response = form.submit(name="rotate_right", value="right")
-        queued_image.refresh_from_db()
+        response = form.submit(name="rotate", value="right")
+        self.q1.refresh_from_db()
+        self.assertEqual(640, self.q1.image.width)
+        self.assertEqual(428, self.q1.image.height)
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(queued_image.rotation_tried)
+        self.assertTrue(self.q1.rotation_tried)
         split_location = urlsplit(response.location)
         self.assertEqual(
             "/moderation/photo/review/{}".format(self.q1.id),
@@ -268,8 +270,8 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
                 "Uploaded by john: Approved from photo moderation queue",
                 image.source,
             )
-            self.assertEqual(639, image.image.width)
-            self.assertEqual(427, image.image.height)
+            self.assertEqual(427, image.image.width)
+            self.assertEqual(639, image.image.height)
 
             self.q1.refresh_from_db()
             self.assertEqual("public-domain", self.q1.why_allowed)
@@ -407,8 +409,8 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
                 image.source,
             )
             self.assertFalse(self.q1.rotation_tried)
-            self.assertEqual(639, image.image.width)
-            self.assertEqual(427, image.image.height)
+            self.assertEqual(427, image.image.width)
+            self.assertEqual(639, image.image.height)
 
             self.q_no_uploading_user.refresh_from_db()
             self.assertEqual(
