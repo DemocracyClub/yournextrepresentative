@@ -20,35 +20,37 @@ class Command(BaseCommand):
             detection_metadata=""
         )
 
-        for qi in qs:
+        for queued_image in qs:
             try:
-                detected = json.loads(qi.detection_metadata)
-                if len(detected["FaceDetails"]) > 0:
-                    self.rotate_queued_images(image=qi.image, detected=detected)
-                else:
-                    msg = "No face details found for image: {qi.image.id}"
-                    self.stdout.write(msg)
+                self.rotate_queued_images(
+                    queued_image=queued_image,
+                )
             except Exception as e:
                 msg = "Skipping QueuedImage{id}: {error}"
-                self.stdout.write(msg.format(id=qi.id, error=e))
+                self.stdout.write(msg.format(id=queued_image.id, error=e))
                 any_failed = True
-            qi.save()
+            queued_image.save()
         if any_failed:
             raise CommandError("Broken images found (see above)")
 
-    def rotate_queued_images(self, image, detected):
+    def rotate_queued_images(self, queued_image):
         """
         Detects the rotation of an image and returns an integer
         """
-        image_path = image.path
-        queued_image = Image.open(image, formats=None)
+        detected = json.loads(queued_image.detection_metadata)
+        if not detected["FaceDetails"]:
+            self.stdout.write(
+                "No face details found for image: {queued_image.id}"
+            )
+            return
+        PILimage = Image.open(queued_image.image, formats=None)
         # Calculate the angle image is rotated by rounding the roll
         # value to the nearest multiple of 90
         roll = detected["FaceDetails"][0]["Pose"]["Roll"]
         img_rotation_angle = round(roll / 90) * 90
-        rotated = queued_image.rotate(angle=img_rotation_angle, expand=True)
+        rotated = PILimage.rotate(angle=img_rotation_angle, expand=True)
         buffer = BytesIO()
-        rotated.save(image_path, "PNG")
+        rotated.save(buffer, "PNG")
         queued_image.image.save(queued_image.image.name, buffer)
         queued_image.rotation_tried = True
         sorl.thumbnail.delete(queued_image.image.name, delete_file=False)
