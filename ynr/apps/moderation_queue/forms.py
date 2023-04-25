@@ -1,6 +1,9 @@
 import cgi
+from io import BytesIO
 
 import requests
+import sorl
+
 from candidates.models.db import ActionType, LoggedAction
 from candidates.views.version_data import get_change_metadata, get_client_ip
 from django import forms
@@ -108,17 +111,21 @@ class PhotoRotateForm(forms.Form):
             self.rotate_photo(self.queued_image.id, rotation_direction)
         else:
             raise Exception("No rotation direction specified")
+        return self.queued_image
 
     def rotate_photo(self, queued_image_id, rotation_direction):
         queued_image = QueuedImage.objects.get(id=queued_image_id)
-        image_path = queued_image.image.path
-        image = PILImage.open(queued_image.image)
+        image = PILImage.open(queued_image.image.file)
         if rotation_direction == "left":
             rotated = image.rotate(90, expand=True)
         elif rotation_direction == "right":
             rotated = image.rotate(-90, expand=True)
-        rotated.save(image_path, "PNG")
-        return rotated
+        buffer = BytesIO()
+        rotated.save(buffer, "PNG")
+        queued_image.image.save(queued_image.image.name, buffer)
+        self.queued_image.rotation_tried = True
+        sorl.thumbnail.delete(self.queued_image.image.name, delete_file=False)
+        return queued_image
 
 
 class PhotoReviewForm(forms.Form):
@@ -149,6 +156,7 @@ class PhotoReviewForm(forms.Form):
     def process(self):
         action_method = getattr(self, self.cleaned_data["decision"])
         action_method()
+        return self.queued_image
 
     def create_logged_action(self, version_id=""):
         action_types = {

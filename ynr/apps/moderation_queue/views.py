@@ -4,7 +4,6 @@ from typing import Any, Dict
 from urllib.parse import quote
 
 import bleach
-import sorl
 from auth_helpers.views import GroupRequiredMixin
 from braces.views import LoginRequiredMixin
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
@@ -252,7 +251,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         return context
 
     def form_valid(self, form):
-        self.form.process()
+        self.queued_image = self.form.process()
         if isinstance(form, PhotoReviewForm):
             candidate_link = f'<a href="{self.queued_image.person.get_absolute_url()}">{self.queued_image.person.name}</a>'
             message_mapping = {
@@ -269,11 +268,6 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             )
             return HttpResponseRedirect(reverse("photo-review-list"))
         else:
-            self.queued_image.rotation_tried = True
-            self.queued_image.save()
-            sorl.thumbnail.delete(
-                self.queued_image.image.name, delete_file=False
-            )
             return HttpResponseRedirect(
                 reverse(
                     "photo-review",
