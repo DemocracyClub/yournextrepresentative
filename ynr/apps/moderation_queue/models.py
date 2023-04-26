@@ -1,3 +1,4 @@
+import ast
 from datetime import date
 from os.path import join, splitext
 from tempfile import NamedTemporaryFile
@@ -138,6 +139,13 @@ class QueuedImage(models.Model):
         ntf = NamedTemporaryFile(delete=False)
         cropped.save(ntf.name, "PNG")
         return ntf
+
+    @property
+    def facial_detection(self):
+        if self.detection_metadata:
+            self.detection_metadata = ast.literal_eval(self.detection_metadata)
+            return self.detection_metadata
+        return {}
 
 
 class SuggestedPostLock(models.Model):

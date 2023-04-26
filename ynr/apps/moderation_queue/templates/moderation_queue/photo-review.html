@@ -95,7 +95,18 @@
   <input type="hidden" name="queued_image_id" value="{{ queued_image.id }}">
   <button name="rotate" type="submit" value="left">Anti-clockwise ⟲</button>
   <button name="rotate" type="submit" value="right">Clockwise ⟳</button>
-  
+
+  <p>
+    {% if queued_image.detection_metadata and queued_image.user.is_superuser %}
+      <details>
+        <summary>Facial recognition data (click to expand)</summary>
+        <pre>{{ queued_image.detection_metadata | pprint}}<pre>
+      </details>
+    {% elif not queued_image.detection_metadata %}
+      Image analysis is not available for this photo.
+    {% endif %}
+    </p>
+ 
   <h3>User-submitted information</h3>
 
     <p>
