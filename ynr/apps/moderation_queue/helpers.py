@@ -8,6 +8,7 @@ from candidates.views.version_data import get_client_ip
 from .models import QueuedImage
 from django.shortcuts import render
 from PIL import Image as PillowImage
+from PIL import ExifTags, ImageOps
 
 
 def upload_photo_response(request, person, image_form, url_form):
@@ -44,16 +45,50 @@ def image_form_valid_response(request, person, image_form):
     )
 
 
-def convert_image_to_png(image):
+def convert_image_to_png(photo):
     # Some uploaded images are CYMK, which gives you an error when
     # you try to write them as PNG, so convert to RGBA (this is
     # RGBA rather than RGB so that any alpha channel (transparency)
     # is preserved).
-    original = PillowImage.open(image)
-    converted = original.convert("RGBA")
+
+    # If the photo is not already a PillowImage object
+    # coming from the form, then we need to
+    # open it as a PillowImage object before
+    # converting
+    if not isinstance(photo, PillowImage.Image):
+        photo = PillowImage.open(photo)
+    converted = photo.convert("RGBA")
     bytes_obj = BytesIO()
     converted.save(bytes_obj, "PNG")
     return bytes_obj
+
+
+def rotate_photo(image):
+    # TO DO issue #2026 : This does not handle URL
+    # uploads.
+    original = PillowImage.open(image)
+
+    for orientation in ExifTags.TAGS.keys():
+        if ExifTags.TAGS[orientation] == "Orientation":
+            break
+        exif = original._getexif()
+        if exif:
+            if exif[274] != 1:
+                # If an image has an EXIF Orientation tag, other than 1,
+                # return a new image that is transposed accordingly.
+                # The new image will have the orientation data removed.
+                # Otherwise, return a copy of the image.
+                rotated_photo = ImageOps.exif_transpose(original)
+                # save the rotated photo to the same file path as the original photo
+            else:
+                # if the image has an exif orientation tag of 1:
+                # this usually indicates a horizontal photo,
+                # uploaded by mobile device
+                rotated_photo = original.rotate(angle=270, expand=True)
+            rotated_photo.save(image)
+            original.close()
+            return rotated_photo
+        return original
 
 
 class ImageDownloadException(Exception):

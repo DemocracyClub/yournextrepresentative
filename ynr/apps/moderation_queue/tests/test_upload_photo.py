@@ -1,26 +1,29 @@
 from os.path import dirname, join, realpath
 from shutil import rmtree
 from urllib.parse import urlsplit
-from PIL import Image as PillowImage
 
+from candidates.models import LoggedAction
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.test.utils import override_settings
 from django.urls import reverse
 from django_webtest import WebTest
 from mock import Mock, patch
-from webtest import Upload
-
 from moderation_queue.helpers import (
     ImageDownloadException,
     convert_image_to_png,
     download_image_from_url,
 )
-from candidates.models import LoggedAction
-from candidates.tests.uk_examples import UK2015ExamplesMixin
 from moderation_queue.models import QueuedImage
-from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from moderation_queue.tests.paths import (
+    EXAMPLE_IMAGE_FILENAME,
+    ROTATED_IMAGE_FILENAME,
+)
 from people.tests.factories import PersonFactory
+from PIL import Image as PillowImage
+from webtest import Upload
+
 from ynr.helpers import mkdir_p
 
 TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
@@ -30,6 +33,7 @@ TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
 class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
 
     example_image_filename = EXAMPLE_IMAGE_FILENAME
+    rotated_image_filename = ROTATED_IMAGE_FILENAME
 
     @classmethod
     def setUpClass(cls):
@@ -55,6 +59,42 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
     def tearDown(self):
         super().tearDown()
         self.test_upload_user.delete()
+
+    def invalid_form(self):
+        return self.form_page_response.forms["person-upload-photo-url"]
+
+    def valid_form(self):
+        form = self.form_page_response.forms["person-upload-photo-image"]
+        form["image"] = Upload(self.rotated_image_filename)
+        form["justification_for_use"] = "copyright-assigned"
+        form["why_allowed"] = "profile-photo"
+        return form
+
+    def get_and_head_methods(self, *all_mock_requests):
+        return [
+            getattr(mock_requests, attr)
+            for mock_requests in all_mock_requests
+            for attr in ("get", "head")
+        ]
+
+    def successful_get_rotated_image(self, *all_mock_requests, **kwargs):
+        content_type = kwargs.get("content_type", "image/jpeg")
+        headers = {"content-type": content_type}
+        with open(self.rotated_image_filename, "rb") as image:
+            image_data = image.read()
+            for mock_method in self.get_and_head_methods(*all_mock_requests):
+                setattr(
+                    mock_method,
+                    "return_value",
+                    Mock(
+                        status_code=200,
+                        headers=headers,
+                        # The chunk size is larger than the example
+                        # image, so we don't need to worry about
+                        # returning subsequent chunks.
+                        iter_content=lambda **kwargs: [image_data],
+                    ),
+                )
 
     def test_queued_images_form_visibility(self):
         QueuedImage.objects.create(
@@ -119,6 +159,21 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         upload_form_url = reverse("photo-upload", kwargs={"person_id": "2009"})
         response = self.app.get(upload_form_url, user=self.test_upload_user)
         self.assertContains(response, "Photo policy")
+
+    def test_rotate_image_from_file_upload(self, *all_mock_requests):
+        exif = PillowImage.open(ROTATED_IMAGE_FILENAME)._getexif()
+        # assert exif[274] == 1 before upload
+        self.assertTrue(exif[274], 1)
+
+        upload_form_file = reverse("photo-upload", kwargs={"person_id": "2009"})
+        self.form_page_response = self.app.get(
+            upload_form_file, user=self.test_upload_user
+        )
+        self.successful_get_rotated_image(*all_mock_requests)
+        self.valid_form().submit()
+        queued_image = QueuedImage.objects.filter(person_id=2009).last()
+        exif = PillowImage.open(queued_image.image)._getexif()
+        self.assertEquals(exif, None)
 
 
 @patch("moderation_queue.forms.requests")
