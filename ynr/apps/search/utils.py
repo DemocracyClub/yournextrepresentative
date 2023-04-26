@@ -37,6 +37,7 @@ def search_person_by_name(name: str, synonym: bool = False) -> PersonQuerySet:
     and_name = " & ".join(name.split(" "))
     or_name = " | ".join(name.split(" "))
     name = f"({and_name}) | ({or_name})"
+    name = name.strip()
 
     if synonym:
         # First perform a query that builts the final query
