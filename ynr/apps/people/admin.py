@@ -1,13 +1,12 @@
+from candidates.models import LoggedAction
+from candidates.models.db import ActionType
+from candidates.views.version_data import get_client_ip
 from django import forms
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import path, reverse
+from django.utils.html import mark_safe
 from django.views.generic import TemplateView
-from sorl.thumbnail.admin.current import AdminImageWidget
-
-from candidates.models import LoggedAction
-from candidates.models.db import ActionType
-from candidates.views.version_data import get_client_ip
 from people.data_removal_helpers import DataRemover
 from people.models import (
     EditLimitationStatuses,
@@ -16,6 +15,7 @@ from people.models import (
     PersonNameSynonym,
 )
 from popolo.models import Membership
+from sorl.thumbnail.admin.current import AdminImageWidget
 
 
 class RemovePersonalDataView(TemplateView):
@@ -96,7 +96,31 @@ class PersonAdmin(admin.ModelAdmin):
     )
 
     list_filter = ("edit_limitations",)
+    list_display = (
+        "name",
+        "image_preview",
+        "image_filetype",
+    )
     inlines = [PersonImageInline]
+
+    def image_preview(self, obj):
+        person = Person.objects.get(pk=obj.pk)
+        image_url = mark_safe(
+            '<img src="/media/{}" width="50" height="50" />'.format(
+                obj.image.image.name
+            )
+        )
+        if person.image:
+            return image_url
+        else:
+            return "No Image Found"
+
+    def image_filetype(self, obj):
+        person = Person.objects.get(pk=obj.pk)
+        if person.image:
+            return person.image.image.name.split(".")[-1]
+        else:
+            return "No Image Found"
 
     def get_urls(self):
         urls = super().get_urls()
@@ -129,6 +153,13 @@ class PersonAdmin(admin.ModelAdmin):
             )
 
         super().save_model(request, obj, form, change)
+
+
+class PersonImageAdmin(admin.ModelAdmin):
+    model = PersonImage
+    list_display = ("person", "image", "id", "is_primary")
+    list_filter = ("is_primary",)
+    fields = ("id", "image", "is_primary", "person")
 
 
 class PersonNameSynonymAdmin(admin.ModelAdmin):
