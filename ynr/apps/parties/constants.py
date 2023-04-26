@@ -56,6 +56,8 @@ DEFAULT_EMBLEMS = {
     "PP79": 7395,
     # Conservative and Unionist Party
     "PP52": 7730,
+    # Mansfield Independents
+    "PP504": 8345,
 }
 
 JOINT_DESCRIPTION_REGEX = r"^(.*?) \(joint descriptions? with\s?(.*)\)"
