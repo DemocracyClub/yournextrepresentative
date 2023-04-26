@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.test import override_settings
 from django.urls import reverse
 from django_webtest import WebTest
@@ -11,7 +12,6 @@ from people.tests.factories import PersonFactory
 @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN=None)
 class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
     def setUp(self):
-        # super().setUp()
         self.person = PersonFactory(name=faker_factory.name())
         self.pi = PersonIdentifier.objects.create(
             person=self.person,
@@ -273,7 +273,10 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         self.assertEqual(pi.value_type, "twitter_username")
         self.assertEqual(pi.internal_identifier, None)
 
-    def test_duplicate_values_raises_form_error(self):
+    def test_duplicate_identifiers_does_not_raise_form_error(self):
+        """If a user submits a form with duplicate person identifiers,
+        but one value is blank, the form should not raise a
+        validation error and only save the completed field and value."""
 
         resp = self.app.get(
             reverse("person-update", kwargs={"person_id": self.person.pk}),
@@ -291,6 +294,7 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         form["tmp_person_identifiers-0-value_type"] = "email"
         form["tmp_person_identifiers-0-value"] = "person@example.com"
 
+        form["tmp_person_identifiers-1-id"] = pi.pk
         form[
             "tmp_person_identifiers-1-value"
         ] = "https://www.facebook.com/example"
@@ -301,9 +305,62 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         form["tmp_person_identifiers-2-value_type"] = "facebook_personal_url"
 
         resp = form.submit()
-
         self.assertEqual(resp.status_code, 302)
         resp = resp.follow()
         self.assertEqual(
             resp.context["person"].tmp_person_identifiers.count(), 2
         )
+
+    def test_duplicate_identifier_values_raises_form_error(self):
+        """If a user submits a form with duplicate person identifiers,
+        even if there are unique values,
+        the form should raise a validation error."""
+
+        resp = self.app.get(
+            reverse("person-update", kwargs={"person_id": self.person.pk}),
+            user=self.user,
+        )
+
+        form = resp.forms[1]
+        form["source"] = "They changed their username"
+        form["tmp_person_identifiers-0-value_type"] = "email"
+        form["tmp_person_identifiers-0-value"] = "person@example.com"
+        resp = form.submit()
+        resp = resp.follow()
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "person@example.com")
+
+        resp = self.app.get(
+            reverse("person-update", kwargs={"person_id": self.person.pk}),
+            user=self.user,
+        )
+
+        form["source"] = "Test duplicate identifier values"
+        form["tmp_person_identifiers-1-value_type"] = "email"
+        form["tmp_person_identifiers-1-value"] = "person@example.com"
+
+        resp = form.submit()
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            resp.context["identifiers_formset"].non_form_errors()[0],
+            "Please correct the duplicate data for value.",
+        )
+        self.assertEqual(
+            resp.context["person"].tmp_person_identifiers.count(), 1
+        )
+
+    def test_duplicate_identifier_values_raises_internal_server_error(self):
+        """Recreate Internal Server Error."""
+        self.person = PersonFactory()
+        PersonIdentifier.objects.create(
+            person=self.person,
+            value_type="twitter_username",
+            value="Nualla541",
+        )
+
+        with self.assertRaises(IntegrityError):
+            PersonIdentifier.objects.create(
+                person=self.person,
+                value_type="twitter_username",
+                value="Nualla541",
+            )
