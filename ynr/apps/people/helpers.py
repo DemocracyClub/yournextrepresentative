@@ -6,7 +6,6 @@ from django_date_extensions.fields import ApproximateDate
 
 from urllib.parse import urlparse
 
-from candidates.twitter_api import TwitterAPITokenMissing, get_twitter_user_id
 
 from candidates.mastodon_api import (
     MastodonAPITokenMissing,
@@ -122,17 +121,6 @@ def clean_twitter_username(username):
     if not re.search(r"^\w*$", username):
         message = "The Twitter username must only consist of alphanumeric characters or underscore"
         raise ValueError(message)
-    if username:
-        try:
-            user_id = get_twitter_user_id(username)
-            if not user_id:
-                message = "The Twitter account {screen_name} doesn't exist"
-                raise ValueError(message.format(screen_name=username))
-        except TwitterAPITokenMissing:
-            # If there's no API token, we can't check the screen name,
-            # but don't fail validation because the site owners
-            # haven't set that up.
-            return username
     return username
 
 
