@@ -486,3 +486,33 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         self.assertEqual(
             resp.url, "/election/parl.65808.2015-05-07/person/create/?name=foo"
         )
+
+    def test_person_name_edit_does_not_have_spaces_after_saving(self):
+        current_election = ElectionFactory(
+            election_date="2023-05-05", slug="parl.2023-05-05", current=True
+        )
+        ballot = BallotPaperFactory(
+            election=current_election,
+            post=self.dulwich_post,
+            ballot_paper_id="parl.foo.2023-05-05",
+            candidates_locked=True,
+        )
+
+        self.person.memberships.create(
+            ballot=ballot,
+            post=self.dulwich_post,
+            party=self.green_party,
+            label="Test Membership",
+        )
+
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+
+        self.assertEqual(self.person.name, "Tessa Jowell")
+        form = response.forms[1]
+        form["name"] = " Tessa   Palmer   "
+        form["source"] = "Testing spaces are stripped out of person name"
+        form.submit()
+        self.person.refresh_from_db()
+        self.assertEqual(self.person.name, "Tessa Jowell")

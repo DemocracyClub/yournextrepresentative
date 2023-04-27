@@ -740,3 +740,34 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         with self.assertRaises(KeyError):
             response.forms["delete-parsed-people"]
+
+    def test_bulk_add_person_removes_spaces_from_name(self):
+        """Test that spaces are removed from the name field when bulk adding people"""
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        # create a party that isnt included in the default_party_choices as it
+        # doesnt have any current candidates
+        PartyFactory(
+            ec_id="PP530",
+            name="Barnsley Independent Group",
+            legacy_slug="party:530",
+            register="GB",
+            current_candidates=0,
+        )
+        request = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
+        )
+
+        form = request.forms["bulk_add_form"]
+        form["form-0-name"] = "    Bart Simpson    "
+        form["form-0-party_1"] = self.green_party.ec_id
+        resp = form.submit()
+        self.assertEqual(resp.status_code, 302)
+        resp = resp.follow()
+        self.assertContains(resp, "Review candidates")
+        resp = form.submit()
+        self.assertContains(resp, "Bart Simpson")
