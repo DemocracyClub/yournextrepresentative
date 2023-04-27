@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.test import override_settings
 from django.urls import reverse
 from django_webtest import WebTest
@@ -273,8 +274,28 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         self.assertEqual(pi.value_type, "twitter_username")
         self.assertEqual(pi.internal_identifier, None)
 
-    def test_duplicate_values_raises_form_error(self):
+    def test_duplicate_values_raises_internal_server_error(self):
+        """IntegrityError at /person/80775/update
+        duplicate key value violates unique constraint
+        "people_personidentifier_person_id_value_911463b2_uniq"
+        DETAIL:  Key (person_id, value)=(80775, Nuala5411) already exists."""
+        self.client.force_login(self.user)
+        new_person = PersonFactory()
+        PersonIdentifier.objects.create(
+            person=new_person,
+            value="Nuala5411",
+            value_type="twitter_username",
+            internal_identifier=self.person.pk,
+        )
+        with self.assertRaises(IntegrityError):
+            PersonIdentifier.objects.create(
+                person=self.person,
+                value="Nuala5411",
+                value_type="twitter_username",
+                internal_identifier=new_person.pk,
+            )
 
+    def test_duplicate_values_raises_form_error(self):
         resp = self.app.get(
             reverse("person-update", kwargs={"person_id": self.person.pk}),
             user=self.user,
