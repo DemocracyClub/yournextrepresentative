@@ -134,6 +134,27 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(submission_response.status_code, 302)
         self.assertTrue(Person.objects.get(name="Elizabeth Bennet"))
 
+    def test_person_create_does_not_have_spaces_after_saving(self):
+        """Test that the name of a person does not have spaces
+        before or after the name after creating or editing a person.
+        Create a person through the person form and check that the name
+        does not have spaces before or after the name.
+        """
+        url = reverse(
+            "person-create",
+            kwargs={
+                "ballot_paper_id": self.dulwich_post_ballot.ballot_paper_id
+            },
+        )
+        response = self.app.get(url, user=self.user)
+        form = response.forms["new-candidate-form"]
+        form["name"] = " Elizabeth Bennet "
+        form["party_identifier_1"] = self.labour_party.ec_id
+        form["source"] = "Testing spaces are stripped out of person name"
+        submission_response = form.submit()
+        self.assertEqual(submission_response.status_code, 302)
+        self.assertTrue(Person.objects.get(name="Elizabeth Bennet"))
+
     def test_party_identifier_has_choices(self):
         url = reverse(
             "person-create",
