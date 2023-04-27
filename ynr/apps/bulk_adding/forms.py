@@ -9,7 +9,11 @@ from parties.forms import (
     PopulatePartiesMixin,
     PreviousPartyAffiliationsField,
 )
-from people.forms.fields import BallotInputWidget, ValidBallotField
+from people.forms.fields import (
+    BallotInputWidget,
+    StrippedCharField,
+    ValidBallotField,
+)
 from search.utils import search_person_by_name
 from official_documents.models import OfficialDocument
 from parties.models import PartyDescription, Party
@@ -240,7 +244,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
 
 
 class NameOnlyPersonForm(forms.Form):
-    name = forms.CharField(
+    name = StrippedCharField(
         label="Name (style: Ali McKay Smith not SMITH Ali McKay)",
         required=True,
         widget=forms.TextInput(
@@ -288,7 +292,7 @@ class ReviewSinglePersonNameOnlyForm(forms.Form):
         kwargs.pop("party_choices", None)
         super().__init__(*args, **kwargs)
 
-    name = forms.CharField(
+    name = StrippedCharField(
         required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
     )
 
