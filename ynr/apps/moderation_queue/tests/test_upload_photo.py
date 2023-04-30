@@ -1,3 +1,4 @@
+import os
 from os.path import dirname, join, realpath
 from shutil import rmtree
 from urllib.parse import urlsplit
@@ -19,6 +20,7 @@ from moderation_queue.models import QueuedImage
 from moderation_queue.tests.paths import (
     EXAMPLE_IMAGE_FILENAME,
     ROTATED_IMAGE_FILENAME,
+    XL_IMAGE_FILENAME,
 )
 from people.tests.factories import PersonFactory
 from PIL import Image as PillowImage
@@ -34,6 +36,7 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
 
     example_image_filename = EXAMPLE_IMAGE_FILENAME
     rotated_image_filename = ROTATED_IMAGE_FILENAME
+    xl_image_filename = XL_IMAGE_FILENAME
 
     @classmethod
     def setUpClass(cls):
@@ -81,6 +84,25 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         content_type = kwargs.get("content_type", "image/jpeg")
         headers = {"content-type": content_type}
         with open(self.rotated_image_filename, "rb") as image:
+            image_data = image.read()
+            for mock_method in self.get_and_head_methods(*all_mock_requests):
+                setattr(
+                    mock_method,
+                    "return_value",
+                    Mock(
+                        status_code=200,
+                        headers=headers,
+                        # The chunk size is larger than the example
+                        # image, so we don't need to worry about
+                        # returning subsequent chunks.
+                        iter_content=lambda **kwargs: [image_data],
+                    ),
+                )
+
+    def successful_get_oversized_image(self, *all_mock_requests, **kwargs):
+        content_type = kwargs.get("content_type", "image/jpeg")
+        headers = {"content-type": content_type}
+        with open(self.xl_image_filename, "rb") as image:
             image_data = image.read()
             for mock_method in self.get_and_head_methods(*all_mock_requests):
                 setattr(
@@ -159,6 +181,23 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         upload_form_url = reverse("photo-upload", kwargs={"person_id": "2009"})
         response = self.app.get(upload_form_url, user=self.test_upload_user)
         self.assertContains(response, "Photo policy")
+
+    def test_resize_image(self, *all_mock_requests):
+        # Test that the image is less than or equal to 5MB after
+        # upload and before saving to the database.
+        image_size = os.path.getsize(self.xl_image_filename)
+        self.assertGreater(image_size, 5000000)
+
+        upload_form_file = reverse("photo-upload", kwargs={"person_id": "2009"})
+        self.form_page_response = self.app.get(
+            upload_form_file, user=self.test_upload_user
+        )
+        self.successful_get_oversized_image(*all_mock_requests)
+        self.valid_form().submit()
+
+        queued_image = QueuedImage.objects.filter(person_id=2009).last()
+        image_size = queued_image.image.size
+        self.assertLessEqual(image_size, 5000000)
 
     def test_rotate_image_from_file_upload(self, *all_mock_requests):
         exif = PillowImage.open(ROTATED_IMAGE_FILENAME)._getexif()

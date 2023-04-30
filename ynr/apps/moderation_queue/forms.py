@@ -13,7 +13,11 @@ from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.urls import reverse
-from moderation_queue.helpers import convert_image_to_png, rotate_photo
+from moderation_queue.helpers import (
+    convert_image_to_png,
+    resize_photo,
+    rotate_photo,
+)
 from people.forms.forms import StrippedCharField
 from PIL import Image as PILImage
 
@@ -55,11 +59,13 @@ class UploadPersonPhotoImageForm(forms.ModelForm):
 
     def save(self, commit):
         """
-        Before saving, rotate the image and convert the image to a PNG.
-        This is done while the image is still an InMemoryUpload object
+        Before saving, resize and rotate the image as needed
+        and convert the image to a PNG. This is done while the
+        image is still an InMemoryUpload object.
         """
-        photo = rotate_photo(image=self.instance.image)
-        # pass a PIL image to the convert_image_to_png function
+
+        photo = resize_photo(self.instance.image)
+        photo = rotate_photo(image=photo)
         png_image = convert_image_to_png(photo)
         filename = self.instance.image.name
         extension = filename.split(".")[-1]
