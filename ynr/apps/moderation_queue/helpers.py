@@ -45,6 +45,19 @@ def image_form_valid_response(request, person, image_form):
     )
 
 
+def resize_photo(photo):
+    if photo.size > 5000000:
+        image_path = photo.path
+
+        photo = PillowImage.open(photo)
+        # resize the photo to less than or equal to 5MB and return it
+        resized_photo = photo.resize(
+            (photo.width // 2, photo.height // 2), PillowImage.ANTIALIAS
+        )
+        photo = resized_photo.save(image_path)
+    return photo
+
+
 def convert_image_to_png(photo):
     # Some uploaded images are CYMK, which gives you an error when
     # you try to write them as PNG, so convert to RGBA (this is
@@ -54,7 +67,7 @@ def convert_image_to_png(photo):
     # If the photo is not already a PillowImage object
     # coming from the form, then we need to
     # open it as a PillowImage object before
-    # converting
+    # converting it to RGBA.
     if not isinstance(photo, PillowImage.Image):
         photo = PillowImage.open(photo)
     converted = photo.convert("RGBA")

@@ -12,3 +12,7 @@ ROTATED_IMAGE_FILENAME = abspath(
 QUEUED_IMAGE_FILENAME = abspath(
     join(dirname(__file__), "media/queued-images/example-queued-image.png")
 )
+
+XL_IMAGE_FILENAME = abspath(
+    join(dirname(__file__), "example-queued-image-xl.jpg")
+)
