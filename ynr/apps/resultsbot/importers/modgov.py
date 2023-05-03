@@ -203,7 +203,7 @@ class ModGovElectionMatcher(object):
             base_domain = base_domain + "/"
         self.base_domain = base_domain
         self.start_id = 1
-        self.lookahead = 30
+        self.lookahead = 50
         self.elections_by_id = {}
         self.election_obj = Election.objects.get(slug=election_id)
         self.http_only = False
