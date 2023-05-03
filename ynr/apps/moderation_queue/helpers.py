@@ -45,16 +45,45 @@ def image_form_valid_response(request, person, image_form):
     )
 
 
-def resize_photo(photo):
-    if photo.size > 5000000:
-        image_path = photo.path
+def rotate_photo(original_image):
+    # TO DO issue #2026 : This does not handle URL
+    # uploads.
+    pil_image = PillowImage.open(original_image)
 
-        photo = PillowImage.open(photo)
-        # resize the photo to less than or equal to 5MB and return it
-        resized_photo = photo.resize(
-            (photo.width // 2, photo.height // 2), PillowImage.ANTIALIAS
-        )
-        photo = resized_photo.save(image_path)
+    for orientation in ExifTags.TAGS.keys():
+        if ExifTags.TAGS[orientation] == "Orientation":
+            break
+        exif = pil_image._getexif()
+        if exif:
+            if exif[274] != 1:
+                # If an image has an EXIF Orientation tag, other than 1,
+                # return a new image that is transposed accordingly.
+                # The new image will have the orientation data removed.
+                # Otherwise, return a copy of the image.
+                rotated_photo = ImageOps.exif_transpose(pil_image)
+            else:
+                # if the image has an exif orientation tag of 1:
+                # this usually indicates a horizontal photo,
+                # uploaded by mobile device
+                rotated_photo = pil_image.rotate(angle=270, expand=True)
+                buffer = BytesIO()
+                rotated_photo.save(buffer, "PNG")
+                return rotated_photo
+        return original_image
+
+
+def resize_photo(photo, original_image):
+    if not isinstance(photo, PillowImage.Image):
+        pil_image = PillowImage.open(photo)
+    else:
+        pil_image = photo
+
+    if original_image.width > 5000 or original_image.height > 5000:
+        size = 2000, 2000
+        pil_image.thumbnail(size)
+        buffer = BytesIO()
+        pil_image.save(buffer, "PNG")
+        return pil_image
     return photo
 
 
@@ -74,34 +103,6 @@ def convert_image_to_png(photo):
     bytes_obj = BytesIO()
     converted.save(bytes_obj, "PNG")
     return bytes_obj
-
-
-def rotate_photo(image):
-    # TO DO issue #2026 : This does not handle URL
-    # uploads.
-    original = PillowImage.open(image)
-
-    for orientation in ExifTags.TAGS.keys():
-        if ExifTags.TAGS[orientation] == "Orientation":
-            break
-        exif = original._getexif()
-        if exif:
-            if exif[274] != 1:
-                # If an image has an EXIF Orientation tag, other than 1,
-                # return a new image that is transposed accordingly.
-                # The new image will have the orientation data removed.
-                # Otherwise, return a copy of the image.
-                rotated_photo = ImageOps.exif_transpose(original)
-                # save the rotated photo to the same file path as the original photo
-            else:
-                # if the image has an exif orientation tag of 1:
-                # this usually indicates a horizontal photo,
-                # uploaded by mobile device
-                rotated_photo = original.rotate(angle=270, expand=True)
-            rotated_photo.save(image)
-            original.close()
-            return rotated_photo
-        return original
 
 
 class ImageDownloadException(Exception):

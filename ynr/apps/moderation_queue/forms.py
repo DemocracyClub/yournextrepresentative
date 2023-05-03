@@ -64,9 +64,10 @@ class UploadPersonPhotoImageForm(forms.ModelForm):
         image is still an InMemoryUpload object.
         """
 
-        photo = resize_photo(self.instance.image)
-        photo = rotate_photo(image=photo)
-        png_image = convert_image_to_png(photo)
+        original_image = self.instance.image
+        photo = rotate_photo(original_image)
+        resized_photo = resize_photo(photo, original_image)
+        png_image = convert_image_to_png(resized_photo)
         filename = self.instance.image.name
         extension = filename.split(".")[-1]
         filename = filename.replace(extension, "png")
