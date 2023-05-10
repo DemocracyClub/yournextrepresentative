@@ -4,6 +4,7 @@ from django.db.models import Prefetch
 from django.utils.safestring import mark_safe
 from popolo.models import Membership
 from uk_results.models import CandidateResult
+from django.contrib.humanize.templatetags.humanize import ordinal
 
 register = template.Library()
 
@@ -37,6 +38,11 @@ def get_known_candidacy_prefix_and_suffix(candidacy):
             suffix += '<span class="candidate-result-confirmed candidate-result-confirmed-not-elected">Not elected</span>'
         suffix += ' <span class="vote-count">({} votes)</span>'.format(
             candidate_result.num_ballots
+        )
+        suffix += "<br>"
+        suffix += " <span>{} / {} candidates </span>".format(
+            ordinal(candidate_result.rank),
+            candidacy.ballot.membership_set.count(),
         )
         suffix += "<br>"
 
