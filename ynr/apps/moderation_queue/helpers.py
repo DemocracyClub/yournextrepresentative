@@ -48,28 +48,26 @@ def image_form_valid_response(request, person, image_form):
 def rotate_photo(original_image):
     # TO DO issue #2026 : This does not handle URL
     # uploads.
+
+    # If an image has an EXIF Orientation tag, other than 1,
+    # return a new image that is transposed accordingly.
+    # The new image will have the orientation data removed.
+    # https://pillow.readthedocs.io/en/stable/_modules/PIL/ImageOps.html#exif_transpose
+    # Otherwise, return a copy of the image. If an image
+    # has an EXIF Orientation tag of 1, it might still
+    # need to be rotated, but we can handle that in the
+    # review process.
     pil_image = PillowImage.open(original_image)
 
     for orientation in ExifTags.TAGS.keys():
         if ExifTags.TAGS[orientation] == "Orientation":
             break
-        exif = pil_image._getexif()
-        if exif:
-            if exif[274] != 1:
-                # If an image has an EXIF Orientation tag, other than 1,
-                # return a new image that is transposed accordingly.
-                # The new image will have the orientation data removed.
-                # Otherwise, return a copy of the image.
-                rotated_photo = ImageOps.exif_transpose(pil_image)
-            else:
-                # if the image has an exif orientation tag of 1:
-                # this usually indicates a horizontal photo,
-                # uploaded by mobile device
-                rotated_photo = pil_image.rotate(angle=270, expand=True)
-                buffer = BytesIO()
-                rotated_photo.save(buffer, "PNG")
-                return rotated_photo
-        return original_image
+        exif = pil_image.getexif()
+        if exif and exif[274]:
+            pil_image = ImageOps.exif_transpose(pil_image)
+        buffer = BytesIO()
+        pil_image.save(buffer, "PNG")
+    return pil_image
 
 
 def resize_photo(photo, original_image):
