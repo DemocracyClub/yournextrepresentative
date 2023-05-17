@@ -44,7 +44,8 @@ class Command(BaseCommand):
 
             election_id = row["Election ID"]
             url = row["ModGov Install"]
-            if not election_id or not url:
+            print(repr(election_id))
+            if not election_id:
                 continue
 
             data.append((election_id, url))
