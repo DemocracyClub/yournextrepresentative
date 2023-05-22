@@ -65,8 +65,8 @@ def rotate_photo(original_image):
         exif = pil_image.getexif()
         if exif and exif[274]:
             pil_image = ImageOps.exif_transpose(pil_image)
-        buffer = BytesIO()
-        pil_image.save(buffer, "PNG")
+    buffer = BytesIO()
+    pil_image.save(buffer, "PNG")
     return pil_image
 
 
