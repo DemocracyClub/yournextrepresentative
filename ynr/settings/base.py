@@ -10,6 +10,9 @@ import os
 from os.path import join, abspath, dirname
 import sys
 
+import sentry_sdk
+from sentry_sdk.integrations import django
+
 
 # PATH vars
 def here(*path):
@@ -44,6 +47,17 @@ ADMINS = [()]
 
 # The From: address for all emails except error emails
 DEFAULT_FROM_EMAIL = "candidates@democracyclub.org.uk"
+
+
+# Sentry config
+sentry_sdk.init(
+    dsn=os.environ.get("SENTRY_DSN"),
+    integrations=[
+        django.DjangoIntegration(),
+    ],
+    environment=os.environ.get("DC_ENVIRONMENT"),
+    traces_sample_rate=0,
+)
 
 # The From: address for error emails
 SERVER_EMAIL = "candidates@democracyclub.org.uk"

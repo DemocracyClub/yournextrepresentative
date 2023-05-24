@@ -21,6 +21,11 @@ class CustomSignupView(SignupView):
         return super().post(request, *args, **kwargs)
 
 
+def trigger_error(request):
+    division_by_zero = 1 / 0
+    return division_by_zero
+
+
 urlpatterns = [
     re_path(r"^parties/", include("parties.urls")),
     re_path(r"^", include("api.urls")),
@@ -49,6 +54,7 @@ urlpatterns = [
             template_name="robots.txt", content_type="text/plain"
         ),
     ),
+    path("sentry-debug/", trigger_error),
 ]
 
 if settings.DEBUG:
