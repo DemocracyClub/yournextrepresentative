@@ -111,7 +111,6 @@ INSTALLED_APPS = (
     "allauth.socialaccount.providers.facebook",
     "allauth.socialaccount.providers.twitter",
     "corsheaders",
-    "raven.contrib.django.raven_compat",
     "uk_results",
     "bulk_adding",
     "celery",
