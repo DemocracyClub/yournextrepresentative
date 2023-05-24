@@ -110,18 +110,6 @@ EMAIL_HOST_USER = os.environ.get("SMTP_USERNAME")
 EMAIL_HOST_PASSWORD = os.environ.get("SMTP_PASSWORD")
 
 
-#  Send errors to sentry by default
-LOGGING["handlers"]["sentry"] = {  # noqa
-    "level": "WARNING",
-    "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
-}
-# LOGGING["loggers"]["account_adapter"]: {
-#     'level': 'WARNING',
-#     'handlers': ['sentry'],
-#     'propagate': False,
-# }
-
-
 SLACK_TOKEN = os.environ.get("SLACK_TOKEN")
 
 CELERY_IMPORTS = [
