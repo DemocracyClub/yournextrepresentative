@@ -230,6 +230,7 @@ class ECParty(dict):
                 "date_registered": self.parse_date(self["ApprovedDate"]),
                 "date_deregistered": self.date_deregistered,
                 "legacy_slug": make_slug(self.ec_id),
+                "ec_data": self,
             },
         )
 

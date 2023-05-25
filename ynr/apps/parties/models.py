@@ -75,6 +75,7 @@ class Party(TimeStampedModel):
     )
     current_candidates = models.PositiveSmallIntegerField(default=0)
     total_candidates = models.PositiveIntegerField(default=0)
+    ec_data = models.JSONField(default=dict)
 
     objects = PartyQuerySet.as_manager()
 
