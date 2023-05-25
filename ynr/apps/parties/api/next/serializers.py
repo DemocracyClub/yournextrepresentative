@@ -43,6 +43,7 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
             "ec_id",
             "url",
             "name",
+            "alternative_name",
             "register",
             "status",
             "date_registered",

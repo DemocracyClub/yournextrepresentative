@@ -41,6 +41,7 @@ class Party(TimeStampedModel):
         """,
     )
     name = models.CharField(max_length=255, verbose_name="Party name")
+    alternative_name = models.CharField(max_length=255, null=True)
     register = models.CharField(
         max_length=2,
         db_index=True,

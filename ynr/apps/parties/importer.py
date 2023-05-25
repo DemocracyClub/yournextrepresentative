@@ -224,6 +224,7 @@ class ECParty(dict):
             ec_id=self.ec_id,
             defaults={
                 "name": self.cleaned_name,
+                "alternative_name": self.alternative_name,
                 "register": self.register,
                 "status": self.registration_status,
                 "date_registered": self.parse_date(self["ApprovedDate"]),
@@ -325,6 +326,10 @@ class ECParty(dict):
                 )
             )
         return self["RegistrationStatusName"]
+
+    @property
+    def alternative_name(self):
+        return self["RegulatedEntityAlternateName"]
 
     def parse_date(self, date_str):
         timestamp = re.match(r"\/Date\((\d+)\)\/", date_str).group(1)
