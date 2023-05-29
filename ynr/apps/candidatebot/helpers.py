@@ -152,6 +152,12 @@ class CandidateBot(object):
         """
         self.edit_field("email", email)
 
+    def add_wikidata_id(self, wikidata_id):
+        self.edit_field("wikidata_id", wikidata_id)
+
+    def add_mnis_id(self, mnis_id):
+        self.edit_field("mnis_id", mnis_id)
+
     def add_twitter_username(self, username, update=False):
         self.edit_field("twitter_username", username, update)
 
