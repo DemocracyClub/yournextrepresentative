@@ -29,7 +29,7 @@ def get_descriptive_value(operation, ballot_paper_id, attribute, value, leaf):
         # Assume this is an older ballot
         future_ballot = False
 
-    if attribute == "candidacies":
+    if value and attribute == "candidacies":
         message = value
         if leaf:
             if leaf == "party_list_position":
