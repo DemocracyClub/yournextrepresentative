@@ -32,10 +32,13 @@ class CandidateBot(object):
         "name",
     ] + SUPPORTED_PERSON_IDENTIFIER_FIELDS
 
-    def __init__(self, person_id):
+    def __init__(self, person_id, ignore_errors=False, update=False):
+        self.update = update
         self.user = User.objects.get(username=settings.CANDIDATE_BOT_USERNAME)
         self.person = Person.objects.get_by_id_with_redirects(person_id)
         self.edits_made = False
+        if ignore_errors:
+            self.IGNORE_ERRORS = True
 
     def get_change_metadata_for_bot(self, source):
         """
@@ -53,7 +56,9 @@ class CandidateBot(object):
         if save:
             return self.save(source)
 
-    def edit_field(self, field_name, field_value, update=False):
+    def edit_field(self, field_name, field_value, update=None):
+        if update is None:
+            update = self.update
         ignore_edit = False
         if field_name not in self.SUPPORTED_EDIT_FIELDS:
             raise ValueError(
@@ -72,22 +77,36 @@ class CandidateBot(object):
                     return None
                 raise
 
-        if hasattr(PersonIdentifierFields, field_name):
+        if field_name in self.SUPPORTED_PERSON_IDENTIFIER_FIELDS:
             kwargs = {"person": self.person, "value_type": field_name}
-            if update:
-                kwargs["defaults"] = {"value": field_value}
-            else:
-                kwargs["value"] = field_value
-            try:
-                PersonIdentifier.objects.update_or_create(**kwargs)
-            except IntegrityError:
-                if not update and not self.IGNORE_ERRORS:
-                    raise
-                if self.IGNORE_ERRORS:
-                    ignore_edit = True
 
-            if not ignore_edit:
-                self.edits_made = True
+            try:
+                # Try to get this exact record
+                PersonIdentifier.objects.get(value=field_value, **kwargs)
+                # If it exists, do nothing
+                self.edits_made = False
+            except PersonIdentifier.DoesNotExist:
+                # The exact record doesn't already exist
+                try:
+                    existing = PersonIdentifier.objects.get(**kwargs)
+                    if not update and not self.IGNORE_ERRORS:
+                        raise IntegrityError(
+                            f"Person {self.person.pk} already has a {field_name}"
+                        )
+                    if update:
+                        existing.value = field_value
+                        existing.save()
+                except PersonIdentifier.DoesNotExist:
+                    # The person doesn't have this value type at all
+                    PersonIdentifier.objects.create(
+                        person=self.person,
+                        value_type=field_name,
+                        value=field_value,
+                    )
+                    self.edits_made = True
+
+                    if not ignore_edit:
+                        self.edits_made = True
 
     def clean_email(self, value):
         # The lightest of validation
