@@ -23,9 +23,14 @@ class CandidateBot(object):
     # raised when adding values that already exist. Default to raise
     IGNORE_ERRORS = False
 
-    SUPPORTED_EDIT_FIELDS = ["other_names", "name"] + [
+    SUPPORTED_PERSON_IDENTIFIER_FIELDS = [
         f.name for f in PersonIdentifierFields
     ]
+    SUPPORTED_PERSON_IDENTIFIER_FIELDS.append("mnis_id")
+    SUPPORTED_EDIT_FIELDS = [
+        "other_names",
+        "name",
+    ] + SUPPORTED_PERSON_IDENTIFIER_FIELDS
 
     def __init__(self, person_id):
         self.user = User.objects.get(username=settings.CANDIDATE_BOT_USERNAME)
