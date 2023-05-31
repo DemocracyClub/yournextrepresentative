@@ -190,9 +190,10 @@ class PartyEmblem(TimeStampedModel):
     description = models.CharField(max_length=255)
     date_approved = models.DateField(null=True)
     default = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ("-default", "ec_emblem_id")
+        ordering = ("-default", "-active", "ec_emblem_id")
 
     def __str__(self):
         return '{} ("{}")'.format(self.pk, self.description)

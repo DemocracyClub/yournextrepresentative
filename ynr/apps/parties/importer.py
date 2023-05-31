@@ -257,6 +257,9 @@ class ECParty(dict):
                 },
             )
 
+        if self.registration_status == "Registered":
+            self.mark_inactive_emblems()
+
         for emblem_dict in self.get("PartyEmblems", []):
             emblem = ECEmblem(self.model, emblem_dict)
             emblem.save()
@@ -336,6 +339,21 @@ class ECParty(dict):
         timestamp = re.match(r"\/Date\((\d+)\)\/", date_str).group(1)
         dt = datetime.fromtimestamp(int(timestamp) / 1000.0)
         return dt.strftime("%Y-%m-%d")
+
+    def mark_inactive_emblems(self):
+        ec_emblem_id_list = [
+            emblem["Id"] for emblem in self.get("PartyEmblems", [])
+        ]
+        inactive_emblems = (
+            PartyEmblem.objects.exclude(ec_emblem_id__in=ec_emblem_id_list)
+            .filter(party_id=self.model.id)
+            .all()
+        )
+
+        for emblem in inactive_emblems:
+            if emblem.active is not False:
+                emblem.active = False
+                emblem.save()
 
 
 class ECEmblem:

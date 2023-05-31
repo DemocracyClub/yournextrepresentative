@@ -19,10 +19,11 @@ from parties.management.commands.parties_import_from_ec import Command
 from parties.models import Party, PartyDescription, PartyEmblem
 from parties.tests.fixtures import DefaultPartyFixtures
 
-from .factories import PartyDescriptionFactory, PartyFactory
+from .factories import PartyDescriptionFactory, PartyFactory, PartyEmblemFactory
 
 FAKE_PARTY_DICT = {
     "RegulatedEntityName": "Wombles Alliance",
+    "RegulatedEntityAlternateName": "Cynghrair Wombles",
     "ECRef": "PP01",
     "RegisterName": "Great Britain",
     "RegistrationStatusName": "Registered",
@@ -149,6 +150,38 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
         self.assertEqual(
             party_model.default_emblem.description, "Box containing the word"
         )
+
+    @patch("parties.importer.ECEmblem.download_emblem")
+    def test_emblem_marked_inactive(self, FakeEmblemPath):
+        FakeEmblemPath.return_value = make_tmp_file_from_source(
+            EXAMPLE_IMAGE_FILENAME
+        )
+        party = ECParty(FAKE_PARTY_DICT)
+        model, created = party.save()
+        PartyEmblemFactory(
+            party=model,
+            ec_emblem_id=861,
+            image=EXAMPLE_IMAGE_FILENAME,
+            description="test",
+            default=False,
+        )
+        party.mark_inactive_emblems()
+
+        active_emblems = PartyEmblem.objects.filter(
+            active=True, party_id=model.id
+        ).all()
+        self.assertEqual(len(active_emblems), 1)
+        self.assertEqual(
+            active_emblems[0].ec_emblem_id,
+            FAKE_PARTY_DICT["PartyEmblems"][0]["Id"],
+        )
+
+        inactive_emblems = PartyEmblem.objects.filter(
+            active=False, party_id=model.id
+        ).all()
+        self.assertEqual(len(inactive_emblems), 1)
+        self.assertEqual(inactive_emblems[0].ec_emblem_id, 861)
+
 
     @patch("parties.importer.ECEmblem.download_emblem")
     def test_save_with_non_image_emblem(self, FakeEmblemPath):

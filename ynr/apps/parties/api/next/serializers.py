@@ -13,6 +13,7 @@ class PartyEmblemSerializer(serializers.HyperlinkedModelSerializer):
             "date_approved",
             "ec_emblem_id",
             "default",
+            "active",
         )
         swagger_schema_fields = {"description": model.__doc__}
 
