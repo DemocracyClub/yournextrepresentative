@@ -33,7 +33,7 @@ class PartyDescriptionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PartyDescription
         ref_name = None  # Tells swagger that this is always embedded
-        fields = ("description", "date_description_approved")
+        fields = ("description", "date_description_approved", "active")
         swagger_schema_fields = {"description": model.__doc__}
 
 

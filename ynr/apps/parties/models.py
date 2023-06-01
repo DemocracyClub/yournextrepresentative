@@ -162,6 +162,10 @@ class PartyDescription(TimeStampedModel):
 
     description = models.CharField(max_length=800)
     date_description_approved = models.DateField(null=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["-active"]
 
 
 def emblem_upload_path(instance, filename):

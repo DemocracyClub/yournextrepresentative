@@ -10,6 +10,7 @@ from django.contrib.admin.utils import NestedObjects
 import dateutil.parser
 import magic
 import requests
+from typing import Dict
 
 from candidates.models.popolo_extra import UnsafeToDelete
 from .constants import (
@@ -44,6 +45,26 @@ def extract_number_from_id(party_id):
 def make_joint_party_id(id1, id2):
     numbers = sorted(map(extract_number_from_id, [id1, id2]))
     return "joint-party:{}-{}".format(*numbers)
+
+
+def make_description_text(ec_description: Dict) -> str:
+    """
+    Create text for `PartyDescription.description` field from EC-shaped description object
+    :return: string
+    """
+    text = " | ".join(
+        [
+            d
+            for d in (
+                ec_description["Description"],
+                ec_description.get("Translation", None),
+            )
+            if d
+        ]
+    )
+
+    # replace en-dash with minus
+    return text.replace("\u2013", "\u002d")
 
 
 class ECPartyImporter:
@@ -234,19 +255,12 @@ class ECParty(dict):
             },
         )
 
+        if self.registration_status == "Registered":
+            self.mark_inactive_descriptions()
+            self.mark_inactive_emblems()
+
         for description in self.get("PartyDescriptions", []):
-            text = " | ".join(
-                [
-                    d
-                    for d in (
-                        description["Description"],
-                        description.get("Translation", None),
-                    )
-                    if d
-                ]
-            )
-            # replace dash with hyphen
-            text = text.replace("\u2013", "\u002d")
+            text = make_description_text(description)
             PartyDescription.objects.update_or_create(
                 description=text,
                 party=self.model,
@@ -256,9 +270,6 @@ class ECParty(dict):
                     )
                 },
             )
-
-        if self.registration_status == "Registered":
-            self.mark_inactive_emblems()
 
         for emblem_dict in self.get("PartyEmblems", []):
             emblem = ECEmblem(self.model, emblem_dict)
@@ -354,6 +365,29 @@ class ECParty(dict):
             if emblem.active is not False:
                 emblem.active = False
                 emblem.save()
+
+    def mark_inactive_descriptions(self):
+        ec_description_list = []
+
+        for description in self.get("PartyDescriptions", []):
+            ec_description_list.append(make_description_text(description))
+
+        inactive_descriptions = (
+            PartyDescription.objects.exclude(
+                description__in=ec_description_list
+            )
+            .filter(party_id=self.model.id)
+            .all()
+        )
+
+        all_descriptions = PartyDescription.objects.filter(
+            party_id=self.model.id
+        ).all()
+
+        for description in inactive_descriptions:
+            if description.active is not False:
+                description.active = False
+                description.save()
 
 
 class ECEmblem:
