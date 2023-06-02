@@ -53,7 +53,14 @@ Install pypandoc (or via `requirements.txt`):
 
 If `pypandoc` does not install via `pip`, visit https://pypi.org/project/pypandoc/ for further instructions. 
 
+# Sentry Error Reporting
+
+Sentry is used to report errors in production. We have added a url for `sentry-debug` to the `urls.py` file. This is to allow us verify that Sentry is configured correctly and working in production.
+
+```
+
 # Pre-election Tasks
+ <!-- TO DO -->
 
 # Enable Candidate Leaderboard
 
