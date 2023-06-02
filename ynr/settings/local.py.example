@@ -35,9 +35,7 @@ ADMINS = [()]
 # STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
-# RAVEN_CONFIG = {
-#     'dsn': ''
-# }
+
 
 # To disable new accounts
 # ACCOUNT_ADAPTER = 'ynr.account_adapter.NoNewUsersAccountAdapter'
