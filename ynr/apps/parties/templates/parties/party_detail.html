@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% load thumbnail %}
+{% load humanize %}
+
+
+{% block hero %}
+    <h1>{{ object.name }}</h1>
+{% endblock %}
+
+{% block content %}
+
+    {{ object.name }} was registered on {{ object.date_registered }}.
+    <h2>Descriptions</h2>
+    <ul>
+        {% for description in object.descriptions.all %}
+            <li>{{ description.description }}</li>
+        {% endfor %}
+    </ul>
+    {#    <h2>Emblems</h2>#}
+    {#    <ul>#}
+    {#    {% for emblem in object.emblems.all %}#}
+    {#    <li>{% thumbnail emblem.image "240" as im %}#}
+    {#        <img src="{{ im.url }}"/>#}
+    {#      {% endthumbnail %}#}
+    {#        {{ emblem }}</li>#}
+    {#    {% endfor %}#}
+    {#    </ul>#}
+
+
+    <h2>Latest Spending</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Category</th>
+            <th>Reporting Period Name</th>
+            <th>Supplier</th>
+            <th>Amount</th>
+            <th>Invoice</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for spending in object.partyspending_set.recent %}
+            <tr>
+                <td>{{ spending.raw_data.ExpenseCategoryName }}</td>
+                <td>{{ spending.raw_data.ReportingPeriodName }}</td>
+                <td>{{ spending.raw_data.SupplierName }}</td>
+                <td>£{{ spending.raw_data.TotalExpenditure|intcomma }}</td>
+                <td>
+                    {% if spending.raw_data.RedactedSupportingInvoiceId %}
+                        <a href="http://search.electoralcommission.org.uk/Api/Spending/invoices/{{ spending.raw_data.RedactedSupportingInvoiceId }}">
+                            Invoice (PDF)
+                        </a>
+                    {% else %}
+                        (Not online)
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+
+    <h2>Accounts</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Accounting Unit Name</th>
+            <th>Reporting Period Type</th>
+            <th>Total Income</th>
+            <th>Total Expenditure</th>
+            <th>PDF</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for accounts in object.partyaccounts_set.recent %}
+            <tr>
+                <td>{{ accounts.raw_data.AccountingUnitName }}</td>
+                <td>{{ accounts.raw_data.ReportingPeriodType }}</td>
+                <td>£{{ accounts.raw_data.TotalIncome|intcomma }}</td>
+                <td>£{{ accounts.raw_data.TotalExpenditure|intcomma }}</td>
+                <td>
+                    {% if accounts.raw_data.SOARedactedDocumentId %}
+                        <a href="http://search.electoralcommission.org.uk/Api/Accounts/invoices/{{ spending.raw_data.RedactedSupportingInvoiceId }}">
+                            PDF
+                        </a>
+                    {% else %}
+                        (Not online)
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Donations from Individuals</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Accounting Unit Name</th>
+            <th>Donor Name</th>
+            <th>Amount</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for donation in object.partydonations_set.individuals.recent %}
+            <tr>
+                <td>{{ donation.raw_data.AccountingUnitName }}</td>
+                <td>{{ donation.raw_data.DonorName }}</td>
+                <td>£{{ donation.raw_data.Value|intcomma }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
