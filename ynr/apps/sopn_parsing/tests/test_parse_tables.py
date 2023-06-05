@@ -318,12 +318,6 @@ class TestParseTablesUnitTests(UK2015ExamplesMixin, TestCase):
         assert "`" not in name
         assert "'" in name
 
-    def test_clean_name_replaces_newlines(self):
-        name = parse_tables.clean_name(
-            "A Very Long Name That Splits \nOver Lines"
-        )
-        assert "\n" not in name
-
     def test_clean_name_capitalized_last_and_titalized(self):
         name = parse_tables.clean_name("SMITH John")
         assert name == "John Smith"

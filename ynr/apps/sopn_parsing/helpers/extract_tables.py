@@ -25,6 +25,7 @@ def extract_ballot_table(ballot, parse_flavor="lattice"):
             document.uploaded_file.path,
             pages=document.relevant_pages,
             flavor=parse_flavor,
+            strip_text="\n",
         )
     except (NotImplementedError, AttributeError):
         # * NotImplementedError is thrown if the PDF is an image or generally
