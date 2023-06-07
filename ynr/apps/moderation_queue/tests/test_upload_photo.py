@@ -200,7 +200,8 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         self.assertLessEqual(image_size, 5000000)
 
     def test_rotate_image_from_file_upload(self, *all_mock_requests):
-        exif = PillowImage.open(ROTATED_IMAGE_FILENAME)._getexif()
+        pil_image = PillowImage.open(ROTATED_IMAGE_FILENAME)
+        exif = pil_image.getexif()
         self.assertEqual(exif[274], 1)
 
         upload_form_file = reverse("photo-upload", kwargs={"person_id": "2009"})
@@ -210,8 +211,9 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         self.successful_get_rotated_image(*all_mock_requests)
         self.valid_form().submit()
         queued_image = QueuedImage.objects.filter(person_id=2009).last()
-        exif = PillowImage.open(queued_image.image)._getexif()
-        self.assertEqual(exif, None)
+        pil_image = PillowImage.open(queued_image.image)
+        exif = pil_image.getexif()
+        self.assertEqual(exif._info, None)
 
 
 @patch("moderation_queue.forms.requests")

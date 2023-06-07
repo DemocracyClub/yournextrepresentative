@@ -55,8 +55,8 @@ def rotate_photo(original_image):
     # https://pillow.readthedocs.io/en/stable/_modules/PIL/ImageOps.html#exif_transpose
     # Otherwise, return a copy of the image. If an image
     # has an EXIF Orientation tag of 1, it might still
-    # need to be rotated, but we can handle that in the
-    # review process.
+    # need to be rotated, but we can handle that manually
+    # in the review process.
     pil_image = PillowImage.open(original_image)
 
     for orientation in ExifTags.TAGS.keys():
