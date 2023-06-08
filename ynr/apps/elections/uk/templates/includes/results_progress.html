@@ -1,5 +1,5 @@
 {% load humanize %}
-{% if SHOW_RESULTS_PROGRESS %}
+{% comment %} {% if SHOW_RESULTS_PROGRESS %}
   <h3>Enter results as they come in</h3>
   <p><a href="{% url "election_list_view"%}?{{ has_results_shortcut.querystring }}" class="button">Get started</a></p>
   <p><a href="{% url "results-home"%}" class="button">Get the data</a></p>
@@ -59,4 +59,4 @@
     {% endfor %}
   </div>
 
-{% endif %}
+{% endif %} {% endcomment %}
