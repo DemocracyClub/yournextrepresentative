@@ -6,7 +6,7 @@ paramiko>=2.1.6
 pyasn1==0.2.3
 pycparser==2.17
 pycrypto==2.6.1
-pyparsing==2.2.0
+pyparsing==3.1.0
 PyYAML==6.0
 -e git+https://github.com/confirm/ansibleci.git#egg=ansibleci
 Jinja2==3.1.2
