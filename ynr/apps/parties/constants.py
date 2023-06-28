@@ -70,7 +70,7 @@ CORRECTED_PARTY_NAMES_IN_DESC = {
     "The Christian Party Christian Peoples Alliance": "Christian Party Christian Peoples Alliance",
     "St. George's Independents": "Weybridge & St. George's Independents",
     "English Democrats Party": "English Democrats",
-    "Tattenhams' Residents' Association": "Tattenhams Residents' Association",
+    "Tattenhams' Residents' Association": "Tattenham & Preston Residents",
     "Trade Unionists and Socialists Coalition": "Trade Unionist and Socialist Coalition",
     "Molesey Residents Association": "The Molesey Residents Association",
 }
