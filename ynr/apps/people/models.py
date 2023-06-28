@@ -788,6 +788,7 @@ class Person(TimeStampedModel, models.Model):
             "homepage_url": self.get_single_identifier_value("homepage_url"),
             "wikipedia_url": self.get_single_identifier_value("wikipedia_url"),
             "wikidata_id": self.get_single_identifier_value("wikidata_id"),
+            "mnis_id": self.get_single_identifier_value("mnis_id"),
             "theyworkforyou_url": theyworkforyou_url,
             "parlparse_id": parlparse_id,
             "image_url": person_image_url,
