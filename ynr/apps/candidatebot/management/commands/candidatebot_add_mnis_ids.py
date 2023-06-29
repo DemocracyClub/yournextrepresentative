@@ -36,9 +36,7 @@ class WikiDataPerson:
         bot.add_wikidata_id(self.wikidata_id)
         bot.save(source="Wikidata")
         if bot.edits_made:
-            self.stdout.write(
-                f"Updated person {person.pk} with MNIS ID {self.mnis_id}"
-            )
+            return f"Updated person {person.pk} with MNIS ID {self.mnis_id}"
 
 
 class WikidataHelper:
@@ -92,4 +90,5 @@ class Command(BaseCommand):
         wikidata = WikidataHelper()
         for result in wikidata.get_objects_with_mnis_ids():
             wikidata_person = WikiDataPerson.from_wikidata_query(result)
-            wikidata_person.update_ynr_person()
+            if output := wikidata_person.update_ynr_person():
+                self.stdout.write(output)
