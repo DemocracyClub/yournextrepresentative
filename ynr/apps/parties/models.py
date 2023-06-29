@@ -41,6 +41,7 @@ class Party(TimeStampedModel):
         """,
     )
     name = models.CharField(max_length=255, verbose_name="Party name")
+    alternative_name = models.CharField(max_length=255, null=True)
     register = models.CharField(
         max_length=2,
         db_index=True,
@@ -74,6 +75,7 @@ class Party(TimeStampedModel):
     )
     current_candidates = models.PositiveSmallIntegerField(default=0)
     total_candidates = models.PositiveIntegerField(default=0)
+    ec_data = models.JSONField(default=dict)
 
     objects = PartyQuerySet.as_manager()
 
@@ -160,6 +162,10 @@ class PartyDescription(TimeStampedModel):
 
     description = models.CharField(max_length=800)
     date_description_approved = models.DateField(null=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["-active"]
 
 
 def emblem_upload_path(instance, filename):
@@ -188,9 +194,10 @@ class PartyEmblem(TimeStampedModel):
     description = models.CharField(max_length=255)
     date_approved = models.DateField(null=True)
     default = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ("-default", "ec_emblem_id")
+        ordering = ("-default", "-active", "ec_emblem_id")
 
     def __str__(self):
         return '{} ("{}")'.format(self.pk, self.description)

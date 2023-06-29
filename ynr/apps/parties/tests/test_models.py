@@ -24,17 +24,15 @@ class TestPartyModels(TmpMediaRootMixin, TestCase):
         party = PartyFactory()
         PartyEmblemFactory.create_batch(3, party=party)
         self.assertEqual(party.emblems.count(), 3)
-        print(party.emblems.first().image.url)
-        self.assertTrue(
-            party.emblems.first().image.url.startswith(
-                "{}/emblems/PP0/0_example".format(settings.MEDIA_ROOT)
-            )
+        first_emblem = party.emblems.first()
+        self.assertEqual(
+            first_emblem.image.url,
+            f"{settings.MEDIA_ROOT}/emblems/PP0/{first_emblem.ec_emblem_id}_example.jpg",
         )
 
         # Add a default image and assert it's the deafult on the party
         PartyEmblemFactory(party=party, __sequence=99, default=True)
-        self.assertTrue(
-            party.default_emblem.image.url.startswith(
-                "{}/emblems/PP0/99_example".format(settings.MEDIA_ROOT)
-            )
+        self.assertEqual(
+            party.default_emblem.image.url,
+            f"{settings.MEDIA_ROOT}/emblems/PP0/99_example.jpg",
         )
