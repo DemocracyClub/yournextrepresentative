@@ -2,6 +2,8 @@ from datetime import date
 from enum import Enum, unique
 from urllib.parse import quote_plus, urljoin
 
+from django.utils.safestring import SafeString
+
 from auth_helpers.views import user_in_group
 from candidates.diffs import get_version_diffs
 from candidates.models.db import ActionType, LoggedAction
@@ -151,14 +153,17 @@ class PersonIdentifier(TimeStampedModel):
             "wikipedia_url": "Wikipedia",
             "wikidata_id": "Wikidata",
             "ynmep_id": "YourNextMEP ID",
+            "mnis_id": """
+                <abbr title="MNIS — the Members' Names Information Service from the UK Parliament">MNIS ID</abbr>
+                """,
         }
         if self.value_type in STRING_TO_LABEL:
-            return STRING_TO_LABEL[self.value_type]
+            return SafeString(STRING_TO_LABEL[self.value_type])
 
         text = self.value_type.replace("_", " ")
         text = text.replace(" url", "")
 
-        return text.title().strip()
+        return SafeString(text.title().strip())
 
     @property
     def get_value_html(self):
@@ -176,6 +181,11 @@ class PersonIdentifier(TimeStampedModel):
 
         if self.value_type == "wikidata_id":
             url = format_html("https://www.wikidata.org/wiki/{}", self.value)
+
+        if self.value_type == "mnis_id":
+            url = format_html(
+                "https://members.parliament.uk/member/{}/", self.value
+            )
 
         if url:
             text = format_html("""<a href="{}" rel="nofollow">{{}}</a>""", url)
@@ -778,6 +788,7 @@ class Person(TimeStampedModel, models.Model):
             "homepage_url": self.get_single_identifier_value("homepage_url"),
             "wikipedia_url": self.get_single_identifier_value("wikipedia_url"),
             "wikidata_id": self.get_single_identifier_value("wikidata_id"),
+            "mnis_id": self.get_single_identifier_value("mnis_id"),
             "theyworkforyou_url": theyworkforyou_url,
             "parlparse_id": parlparse_id,
             "image_url": person_image_url,

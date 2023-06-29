@@ -26,6 +26,7 @@ CSV_ROW_FIELDS = [
     "facebook_personal_url",
     "homepage_url",
     "wikipedia_url",
+    "mnis_id",
     "linkedin_url",
     "image_url",
     "proxy_image_url_template",

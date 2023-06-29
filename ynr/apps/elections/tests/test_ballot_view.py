@@ -270,6 +270,7 @@ class TestBallotView(
                 "twitter_user_id": "",
                 "wikipedia_url": "",
                 "wikidata_id": "",
+                "mnis_id": "",
                 "youtube_profile": "",
             },
         )

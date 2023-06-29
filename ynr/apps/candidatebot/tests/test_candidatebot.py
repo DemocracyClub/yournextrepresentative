@@ -107,3 +107,14 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
         bot.edit_field("email", "INVALID")
         person = bot.save("a source")
         self.assertEqual(person.get_email, None)
+
+    def test_identical_edit_no_logged_action(self):
+        self.assertFalse(LoggedAction.objects.exists())
+        bot = CandidateBot(self.person.pk, ignore_errors=True, update=True)
+        bot.add_email("foo@bar.com")
+        bot.save("a source")
+        self.assertEqual(LoggedAction.objects.count(), 1)
+        bot = CandidateBot(self.person.pk, ignore_errors=True)
+        bot.add_email("foo@bar.com")
+        bot.save("a source")
+        self.assertEqual(LoggedAction.objects.count(), 1)
