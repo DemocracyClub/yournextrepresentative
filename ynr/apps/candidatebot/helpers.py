@@ -34,7 +34,9 @@ class CandidateBot(object):
 
     def __init__(self, person_id, ignore_errors=False, update=False):
         self.update = update
-        self.user = User.objects.get(username=settings.CANDIDATE_BOT_USERNAME)
+        self.user, _ = User.objects.get_or_create(
+            username=settings.CANDIDATE_BOT_USERNAME
+        )
         self.person = Person.objects.get_by_id_with_redirects(person_id)
         self.edits_made = False
         if ignore_errors:
