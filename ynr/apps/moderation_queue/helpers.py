@@ -63,7 +63,7 @@ def rotate_photo(original_image):
         if ExifTags.TAGS[orientation] == "Orientation":
             break
         exif = pil_image.getexif()
-        if exif and exif[274]:
+        if exif and exif.get(274):
             pil_image = ImageOps.exif_transpose(pil_image)
         buffer = BytesIO()
         pil_image.save(buffer, "PNG")
