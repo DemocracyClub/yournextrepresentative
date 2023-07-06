@@ -1,4 +1,4 @@
-# v0.9 is legacy code
+# v0.9 is legacy code: Code in this app should not be edited, but can be used as a reference for new code.
 import json
 import subprocess
 import sys
