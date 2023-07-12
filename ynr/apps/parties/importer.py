@@ -252,6 +252,7 @@ class ECParty(dict):
                 "date_deregistered": self.date_deregistered,
                 "legacy_slug": make_slug(self.ec_id),
                 "ec_data": self,
+                "nations": self.nation_list,
             },
         )
 
@@ -350,6 +351,30 @@ class ECParty(dict):
         timestamp = re.match(r"\/Date\((\d+)\)\/", date_str).group(1)
         dt = datetime.fromtimestamp(int(timestamp) / 1000.0)
         return dt.strftime("%Y-%m-%d")
+
+    @property
+    def nation_list(self):
+        """
+        Generate data for the `nations` field on the party.
+        For GB parties, return a list of nation codes where candidates are fielded.
+        For NI parties, return None.
+        """
+
+        if self.register == "NI":
+            return None
+
+        nation_list = []
+
+        if self["FieldingCandidatesInEngland"]:
+            nation_list.append("ENG")
+
+        if self["FieldingCandidatesInScotland"]:
+            nation_list.append("SCO")
+
+        if self["FieldingCandidatesInWales"]:
+            nation_list.append("WAL")
+
+        return nation_list
 
     def mark_inactive_emblems(self):
         ec_emblem_id_list = [
