@@ -351,6 +351,7 @@ class PersonSerializer(MinimalPersonSerializer):
             "party PPC page": "party_ppc_page_url",
             "linkedin": "linkedin_url",
             "facebook page": "facebook_page_url",
+            "mastodon": "mastodon_username",
             "wikipedia": "wikipedia_url",
         }
         pi_types_to_notes = {v: k for k, v in notes_tp_pi_types.items()}
