@@ -46,6 +46,7 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
             "name",
             "alternative_name",
             "register",
+            "nations",
             "status",
             "date_registered",
             "date_deregistered",
