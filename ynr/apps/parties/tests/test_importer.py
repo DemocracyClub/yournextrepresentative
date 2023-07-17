@@ -27,6 +27,9 @@ FAKE_PARTY_DICT = {
     "ECRef": "PP01",
     "RegisterName": "Great Britain",
     "RegistrationStatusName": "Registered",
+    "FieldingCandidatesInEngland": True,
+    "FieldingCandidatesInScotland": True,
+    "FieldingCandidatesInWales": True,
     "ApprovedDate": "/Date(1134345600000)/",
     "PartyDescriptions": [
         {
@@ -126,6 +129,35 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
                 }
             )
             self.assertEqual(party.cleaned_name, cleaned_name)
+
+    def test_nations(self):
+        party = ECParty(
+            {
+                "ECRef": "PP01",
+                "RegulatedEntityName": "The S-Club Party",
+                "RegisterName": "Northern Ireland",
+                "FieldingCandidatesInEngland": False,
+                "FieldingCandidatesInWales": False,
+                "FieldingCandidatesInScotland": False,
+            }
+        )
+
+        # Northern Ireland
+        self.assertEqual(party.nation_list, None)
+
+        # Great Britain
+        party["RegisterName"] = "Great Britain"
+        # England Only
+        party["FieldingCandidatesInEngland"] = True
+        self.assertEqual(party.nation_list, ["ENG"])
+
+        # England and Wales
+        party["FieldingCandidatesInWales"] = True
+        self.assertEqual(party.nation_list, ["ENG", "WAL"])
+
+        # England, Wales and Scotland
+        party["FieldingCandidatesInScotland"] = True
+        self.assertEqual(party.nation_list, ["ENG", "SCO", "WAL"])
 
     def test_make_description_text(self):
         description_only_plus_en_dash = {

@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django_extensions.db.models import TimeStampedModel
+from django.contrib.postgres.fields import ArrayField
 
 from .managers import PartyQuerySet
 
@@ -76,6 +77,17 @@ class Party(TimeStampedModel):
     current_candidates = models.PositiveSmallIntegerField(default=0)
     total_candidates = models.PositiveIntegerField(default=0)
     ec_data = models.JSONField(default=dict)
+    nations = ArrayField(
+        models.CharField(max_length=3),
+        max_length=3,
+        null=True,
+        verbose_name="Party nations",
+        help_text="""
+                Some subset of ["ENG", "WAL", "SCO"],
+                depending on where the party fields candidates. 
+                Nullable as not applicable to NI-based parties.
+            """,
+    )
 
     objects = PartyQuerySet.as_manager()
 
