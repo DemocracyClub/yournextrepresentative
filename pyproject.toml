@@ -1,2 +1,38 @@
 [tool.black]
 line-length = 80
+
+[tool.ruff]
+line-length = 80
+ignore = ["E501"]
+extend-select = [
+    "I",
+    "C4",
+    "SIM",
+    "Q003",
+    "RET",
+]
+extend-exclude = ["ynr/settings/local.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "if __name__ == .__main__.:",
+    "@abstractmethod"
+]
+
+[tool.pytest.ini_options]
+norecursedirs =[
+    "ynr/static",
+    "deploy",
+    ".aws-sam",
+    ".ruff-cache",
+]
+DJANGO_SETTINGS_MODULE = "democracy_club.settings.testing"
+addopts =[
+    "--ignore=*/__pycache__",
+    "--ignore=.*",
+    "--ignore=.download-cache",
+    "--ignore=democracy_club/settings/local.py",
+    "--ignore=lib",
+    "--ruff",
+    "--black",
+]
