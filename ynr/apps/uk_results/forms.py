@@ -10,6 +10,7 @@ from candidates.models.db import ActionType
 from candidates.views.version_data import get_client_ip
 from uk_results.helpers import RecordBallotResultsHelper
 from utils.db import LastWord, NullIfBlank
+from utils.widgets import DCNumberInput
 
 from .models import CandidateResult, ResultSet
 
@@ -32,7 +33,11 @@ class ResultSetForm(forms.ModelForm):
                     "rows": 1,
                     "columns": 72,
                 }
-            )
+            ),
+            "num_turnout_reported": DCNumberInput(),
+            "turnout_percentage": DCNumberInput(),
+            "num_spoilt_ballots": DCNumberInput(),
+            "total_electorate": DCNumberInput(),
         }
 
     def __init__(self, ballot, *args, **kwargs):
@@ -76,6 +81,7 @@ class ResultSetForm(forms.ModelForm):
                 label=membership.name_and_party,
                 initial=initial.get("num_ballots"),
                 required=True,
+                widget=DCNumberInput,
             )
             fields[f"tied_vote_{name}"] = forms.BooleanField(
                 required=False,
