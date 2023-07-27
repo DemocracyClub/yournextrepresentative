@@ -1,17 +1,18 @@
 from unittest import skipIf
 
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
-
-from candidates.tests.uk_examples import UK2015ExamplesMixin
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from official_documents.models import OfficialDocument
 from official_documents.tests.paths import (
     EXAMPLE_DOCX_FILENAME,
     EXAMPLE_HTML_FILENAME,
 )
-from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from sopn_parsing.helpers.convert_pdf import PandocConversionError
-from sopn_parsing.helpers.convert_pdf import convert_sopn_to_pdf
+from sopn_parsing.helpers.convert_pdf import (
+    PandocConversionError,
+    convert_sopn_to_pdf,
+)
 from sopn_parsing.tests import should_skip_conversion_tests
 
 
@@ -26,12 +27,14 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
 
     def test_convert_docx_SOPN(self):
         # test converting docx to pdf
+        with open(self.example_docx_filename, "rb") as f:
+            sopn_file = f.read()
         doc = OfficialDocument.objects.create(
             ballot=self.dulwich_post_ballot,
             document_type=OfficialDocument.NOMINATION_PAPER,
             uploaded_file=SimpleUploadedFile(
                 "example-file.docx",
-                open(self.example_docx_filename, "rb").read(),
+                sopn_file,
             ),
             source_url="example.com",
         )
@@ -40,12 +43,14 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
 
     def test_convert_html_SOPN(self):
         # test converting html to pdf
+        with open(self.example_html_filename, "rb") as f:
+            sopn_file = f.read()
         doc = OfficialDocument.objects.create(
             ballot=self.dulwich_post_ballot,
             document_type=OfficialDocument.NOMINATION_PAPER,
             uploaded_file=SimpleUploadedFile(
                 "example-file.html",
-                open(self.example_html_filename, "rb").read(),
+                sopn_file,
             ),
             source_url="example.com",
         )
@@ -54,12 +59,14 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
 
     def test_convert_other_file_to_SOPN(self):
         # when file types are not accepted, raise an error
+        with open(self.example_image_filename, "rb") as f:
+            sopn_file = f.read()
         doc = OfficialDocument.objects.create(
             ballot=self.dulwich_post_ballot,
             document_type=OfficialDocument.NOMINATION_PAPER,
             uploaded_file=SimpleUploadedFile(
                 "example-file.jpg",
-                open(self.example_image_filename, "rb").read(),
+                sopn_file,
             ),
             source_url="example.com",
         )

@@ -41,7 +41,7 @@ def extract_ballot_table(ballot, parse_flavor="lattice"):
     table_list.sort(key=lambda t: (t.page, t.order))
 
     if not table_list:
-        return
+        return None
 
     table_data = table_list.pop(0).df
     for table in table_list:
@@ -61,3 +61,4 @@ def extract_ballot_table(ballot, parse_flavor="lattice"):
             defaults={"raw_data": json.dumps(table_data.to_dict())},
         )
         return parsed
+    return None

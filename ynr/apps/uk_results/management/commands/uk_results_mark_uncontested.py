@@ -1,5 +1,5 @@
-from django.core.management.base import BaseCommand
 from candidates.models import Ballot
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):

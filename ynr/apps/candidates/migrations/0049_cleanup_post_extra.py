@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterUniqueTogether(
             name="postextraelection",
-            unique_together=set([("election", "post")]),
+            unique_together={("election", "post")},
         ),
         migrations.RemoveField(model_name="postextra", name="base"),
         migrations.RemoveField(model_name="postextra", name="elections"),

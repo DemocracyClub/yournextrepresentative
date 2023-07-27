@@ -18,7 +18,8 @@ class SavedMapping(dict):
 
     def load(self):
         try:
-            self.update(json.loads(open(self.path).read()))
+            with open(self.path) as f:
+                self.update(json.loads(f.read()))
         except (IOError, json.JSONDecodeError):
             with open(self.path, "w") as f:
                 f.write("{}")

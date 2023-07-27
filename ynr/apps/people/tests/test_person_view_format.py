@@ -1,7 +1,7 @@
-from django_webtest import WebTest
-from django.test import TestCase
-from people.forms.forms import BasePersonForm
 from candidates.tests.auth import TestUserMixin
+from django.test import TestCase
+from django_webtest import WebTest
+from people.forms.forms import BasePersonForm
 
 
 class PersonFormsTestCase(TestUserMixin, WebTest, TestCase):

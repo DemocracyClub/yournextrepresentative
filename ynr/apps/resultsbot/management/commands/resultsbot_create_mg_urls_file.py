@@ -1,6 +1,8 @@
 import csv
+
 import requests
 from django.core.management.base import BaseCommand
+
 from ynr import settings
 
 

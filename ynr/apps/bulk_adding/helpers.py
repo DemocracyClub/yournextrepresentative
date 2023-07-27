@@ -1,8 +1,8 @@
 import csv
 
 from bulk_adding.models import RawPeople
-from candidates.models import LoggedAction, raise_if_unsafe_to_delete, Ballot
-from candidates.models.db import EditType, ActionType
+from candidates.models import Ballot, LoggedAction, raise_if_unsafe_to_delete
+from candidates.models.db import ActionType, EditType
 from candidates.views.version_data import get_change_metadata, get_client_ip
 from parties.models import Party, PartyDescription
 from people.models import Person
@@ -128,7 +128,8 @@ def update_person(
 
 class CSVImporter:
     def __init__(self, file_name, election):
-        self.csv_data = list(csv.DictReader(open(file_name).readlines()))
+        with open(file_name) as f:
+            self.csv_data = list(csv.DictReader(f.readlines()))
         self.header_rows = self.csv_data[0].keys()
         self.election = election
 
@@ -174,8 +175,7 @@ class CSVImporter:
 
         name = name.replace(" Ward", "").strip().lower()
         name = name.replace("`", "'")
-        name = name.replace(" & ", " and ")
-        return name
+        return name.replace(" & ", " and ")
 
     def match_division_to_ballot(self, row):
         if "ballot_paper_id" in row:
@@ -223,11 +223,7 @@ class CSVImporter:
 
     def get_register_for_ballot(self, ballot):
         group = ballot.post.group
-        if group == "Northern Ireland":
-            register = "NI"
-        else:
-            register = "GB"
-        return register
+        return "NI" if group == "Northern Ireland" else "GB"
 
     def clean_party_name(self, name):
         if name == "Ukip":
@@ -275,9 +271,7 @@ class CSVImporter:
         Figure out if the posts in this CSV look right, raise if not
         """
 
-        unique_posts = set(
-            [row[self.post_header_name] for row in self.csv_data]
-        )
+        unique_posts = {row[self.post_header_name] for row in self.csv_data}
         if len(unique_posts) != self.election.ballot_set.count():
             raise ValueError("Number of posts don't match")
 

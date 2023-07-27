@@ -1,11 +1,9 @@
 import uuid
 
-from django.core.files import File
-from django.db import models
-from django.db import connection
 from candidates.management.images import get_file_md5sum
-
 from candidates.models import PersonRedirect
+from django.core.files import File
+from django.db import connection, models
 from ynr_refactoring.settings import PersonIdentifierFields
 
 

@@ -1,6 +1,5 @@
 from django import forms
 from django.core.exceptions import ValidationError
-
 from elections.uk.geo_helpers import (
     BadPostcodeException,
     UnknownGeoException,

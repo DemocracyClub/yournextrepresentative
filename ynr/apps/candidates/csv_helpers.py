@@ -1,10 +1,9 @@
 from collections import defaultdict
 
-from django.conf import settings
-
 from candidates.models import PersonRedirect
-from utils.dict_io import BufferDictWriter
+from django.conf import settings
 from popolo.models import Membership
+from utils.dict_io import BufferDictWriter
 
 
 def list_to_csv(membership_list):

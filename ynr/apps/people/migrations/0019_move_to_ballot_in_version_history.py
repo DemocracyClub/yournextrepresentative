@@ -38,14 +38,12 @@ election_slug_fixes = {
     "local.glasgow.2016-05-05": "local.glasgow-city.2016-05-05",
 }
 
-post_slug_fixes = json.load(
-    open("ynr/apps/people/migrations/0019_post_slug_fixes.json")
-)
+with open("ynr/apps/people/migrations/0019_post_slug_fixes.json") as f:
+    post_slug_fixes = json.load(f)
 
 
-mapit_id_to_gss = json.load(
-    open("ynr/apps/people/migrations/parl_mapit_to_gss.json")
-)
+with open("ynr/apps/people/migrations/parl_mapit_to_gss.json") as f:
+    mapit_id_to_gss = json.load(f)
 
 
 def move_to_ballot_in_version_history(apps, schema_editor):
@@ -102,27 +100,29 @@ def move_to_ballot_in_version_history(apps, schema_editor):
                     "DIW:E05008823",
                 ]
 
-                if election_id in election_slugs:
-                    if candidacy["post_id"] in post_slugs:
-                        """
-                        These are versions with a very special set of
-                        circumstances:
+                if (
+                    election_id in election_slugs
+                    and candidacy["post_id"] in post_slugs
+                ):
+                    """
+                    These are versions with a very special set of
+                    circumstances:
 
-                        1. A post was made incorrectly in YNR (incorrect because
-                           it stoped existing after a boundary change, but we
-                           imported it to the site before knowing that)
-                        2. The post was in place over SOPN day
-                        3. A user used the “bulk adding form” and didn’t spot
-                           that the post name and the ward name on the SOPN
-                           didn’t match (“The First Page Problem”)
-                        4. The post was removed at some point, but the version
-                           history shows the old, incorrect nomination still
+                    1. A post was made incorrectly in YNR (incorrect because
+                       it stoped existing after a boundary change, but we
+                       imported it to the site before knowing that)
+                    2. The post was in place over SOPN day
+                    3. A user used the “bulk adding form” and didn’t spot
+                       that the post name and the ward name on the SOPN
+                       didn’t match (“The First Page Problem”)
+                    4. The post was removed at some point, but the version
+                       history shows the old, incorrect nomination still
 
-                        In this case, we'll just delete the version, as it's not
-                        useful at all.
-                        """
-                        del versions[i]
-                        continue
+                    In this case, we'll just delete the version, as it's not
+                    useful at all.
+                    """
+                    del versions[i]
+                    continue
 
                 initial_election_id = election_id
                 election_id = election_slug_fixes.get(election_id, election_id)
@@ -157,7 +157,6 @@ def move_to_ballot_in_version_history(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("people", "0018_gender_guess"),
         ("popolo", "0035_attach_memberships_to_posts"),

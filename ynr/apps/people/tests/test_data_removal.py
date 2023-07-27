@@ -1,8 +1,7 @@
-from django_webtest import WebTest
-
 import people.tests.factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django_webtest import WebTest
 from people.data_removal_helpers import DataRemover
 from people.tests.test_merge_view import EXAMPLE_VERSIONS
 

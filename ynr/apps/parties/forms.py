@@ -1,6 +1,5 @@
 from django import forms
 from django.core.exceptions import ValidationError
-
 from parties.models import Party
 from people.forms.fields import BallotInputWidget
 from utils.widgets import SelectWithAttrs
@@ -84,8 +83,7 @@ class PartySelectField(forms.MultiWidget):
     def decompress(self, value):
         if value:
             return value
-        else:
-            return ["", ""]
+        return ["", ""]
 
 
 class PreviousPartyAffiliationsField(forms.MultipleChoiceField):
@@ -175,7 +173,7 @@ class PopulatePartiesMixin:
                 if not isinstance(initial_for_field, (list, tuple)):
                     raise ValueError("list or tuple required for initial")
 
-                if not len(initial_for_field) == 2:
+                if len(initial_for_field) != 2:
                     continue
 
                 extra_party_id = initial_for_field[1]

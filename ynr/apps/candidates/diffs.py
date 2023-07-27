@@ -7,10 +7,9 @@ import re
 
 import jsonpatch
 import jsonpointer
-from dateutil.parser import parse
-from django.utils.timezone import now, make_aware
-
 from candidates.models.versions import get_versions_parent_map
+from dateutil.parser import parse
+from django.utils.timezone import make_aware, now
 
 
 def get_descriptive_value(operation, ballot_paper_id, attribute, value, leaf):
@@ -41,10 +40,7 @@ def get_descriptive_value(operation, ballot_paper_id, attribute, value, leaf):
                     message = "Marked as not elected"
 
         else:
-            if future_ballot:
-                verb = "standing"
-            else:
-                verb = "stood"
+            verb = "standing" if future_ballot else "stood"
             if value.get("party_list_position"):
                 extra = " (list position: {}) ".format(
                     value["party_list_position"]
@@ -58,6 +54,7 @@ def get_descriptive_value(operation, ballot_paper_id, attribute, value, leaf):
         return message.format(
             ballot_paper_id=ballot_paper_id, value=value, party_id=value
         )
+    return None
 
 
 def explain_candidacy(operation, attribute, ballot_paper_id, leaf):
@@ -104,10 +101,7 @@ def get_version_diff(from_data, to_data):
         if operation["path"].strip("/").startswith("candidacies/"):
             parts = operation["path"].split("/")[1:]
             attribute, ballot_paper_id, *leaf = parts
-            if leaf:
-                leaf = leaf[0]
-            else:
-                leaf = None
+            leaf = leaf[0] if leaf else None
             explain_candidacy(operation, attribute, ballot_paper_id, leaf)
 
         if op in ("replace", "remove", "move"):
@@ -117,12 +111,15 @@ def get_version_diff(from_data, to_data):
                 else:
                     # Ignore replacing no data with no data:
                     ignore = True
-        elif op == "add":
+        elif (
+            op == "add"
+            and (not operation["value"])
+            and (attribute != "standing_in")
+        ):
             # It's important that we don't skip the case where a
             # standing_in value is being set to None, because that's
             # saying 'we *know* they're not standing then'
-            if (not operation["value"]) and (attribute != "standing_in"):
-                ignore = True
+            ignore = True
         operation["path"] = re.sub(r"^/", "", operation["path"])
         if not ignore:
             result.append(operation)

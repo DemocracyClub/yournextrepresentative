@@ -1,10 +1,9 @@
-from django.conf import settings
-from django.db import migrations
-
 from auth_helpers.migrations import (
     get_migration_group_create,
     get_migration_group_delete,
 )
+from django.conf import settings
+from django.db import migrations
 from official_documents.models import DOCUMENT_UPLOADERS_GROUP_NAME
 
 

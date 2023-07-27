@@ -1,9 +1,8 @@
+from candidates.models import Ballot
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.defaults import page_not_found
 from django.views.generic import RedirectView
-
-from candidates.models import Ballot
 from elections.models import Election
 from official_documents.models import OfficialDocument
 from parties.models import Party
@@ -100,9 +99,7 @@ class RedirectConstituencyDetailCSVView(PermanentRedirectView):
             election__slug=self.kwargs["election"],
             post__slug=self.kwargs["post_id"],
         )
-        url = "{}.csv".format(ballot.get_absolute_url().rstrip("/"))
-
-        return url
+        return "{}.csv".format(ballot.get_absolute_url().rstrip("/"))
 
 
 class RedirectPartyDetailView(PermanentRedirectView):

@@ -1,7 +1,6 @@
 from django import forms
 from django.forms import BaseInlineFormSet
 from django.forms.formsets import DELETION_FIELD_NAME
-
 from people.forms.forms import PersonIdentifierForm, PersonMembershipForm
 from people.models import Person, PersonIdentifier
 from popolo.models import Membership

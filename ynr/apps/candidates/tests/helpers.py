@@ -25,16 +25,16 @@ def deep_cast_to_unicode(obj):
     """
     if isinstance(obj, str):
         return obj
-    elif isinstance(obj, bytes):
+    if isinstance(obj, bytes):
         return obj.decode("utf-8")
-    elif isinstance(obj, dict):
+    if isinstance(obj, dict):
         return {
             deep_cast_to_unicode(k): deep_cast_to_unicode(v)
             for k, v in obj.items()
         }
-    elif isinstance(obj, list):
+    if isinstance(obj, list):
         return [deep_cast_to_unicode(k) for k in obj]
-    elif obj is None:
+    if obj is None:
         return None
     return repr(obj)
 
@@ -76,11 +76,7 @@ def equal_call_args(args1, args2):
         message = "The argument lists were different lengths: {0} and {1}"
         p(message.format(len(args1), len(args2)))
 
-    for i, arg1 in enumerate(args1):
-        if not equal_arg(arg1, args2[i]):
-            return False
-
-    return True
+    return all(equal_arg(arg1, args2[i]) for i, arg1 in enumerate(args1))
 
 
 @override_settings(

@@ -1,9 +1,6 @@
-from drf_yasg.utils import swagger_serializer_method
-
-from rest_framework import serializers
-
 from api.next.serializers import OrganizationSerializer
 from candidates import models as candidates_models
+from drf_yasg.utils import swagger_serializer_method
 from elections import models as election_models
 from official_documents.api.next.serializers import OfficialDocumentSerializer
 from official_documents.models import OfficialDocument
@@ -11,6 +8,7 @@ from popolo.api.next.serializers import (
     CandidacyOnBallotSerializer,
     MinimalPostSerializer,
 )
+from rest_framework import serializers
 
 
 class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):

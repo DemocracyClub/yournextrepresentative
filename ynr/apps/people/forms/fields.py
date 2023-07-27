@@ -1,12 +1,11 @@
 from datetime import datetime
 
+from candidates.models import Ballot
 from dateutil.parser import parser
 from django import forms
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 from django_date_extensions.fields import ApproximateDateFormField
-
-from candidates.models import Ballot
 from people.models import Person
 
 
@@ -64,8 +63,7 @@ class ValidBallotField(forms.CharField):
             raise ValidationError("Invalid ballot paper ID")
         base_qs = Ballot.objects.all().select_related("election")
         try:
-            ballot = base_qs.get(ballot_paper_id__iexact=value.strip())
-            return ballot
+            return base_qs.get(ballot_paper_id__iexact=value.strip())
         except Ballot.DoesNotExist:
             raise ValidationError("Unknown ballot paper ID")
 

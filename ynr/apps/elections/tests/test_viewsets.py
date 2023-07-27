@@ -1,9 +1,7 @@
 import mock
-
 from django.utils import timezone
-from rest_framework.test import APIRequestFactory
-
 from elections.api.next.api_views import BallotViewSet
+from rest_framework.test import APIRequestFactory
 
 
 class TestBallotViewSet:

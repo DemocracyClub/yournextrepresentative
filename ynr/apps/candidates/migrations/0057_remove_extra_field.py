@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterUniqueTogether(
-            name="personextrafieldvalue", unique_together=set([])
+            name="personextrafieldvalue", unique_together=set()
         ),
         migrations.RemoveField(
             model_name="personextrafieldvalue", name="field"

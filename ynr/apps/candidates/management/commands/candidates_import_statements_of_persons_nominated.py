@@ -8,10 +8,9 @@ from os.path import dirname, exists, join
 
 import magic
 import requests
+from candidates.models import Ballot
 from django.core.files.storage import DefaultStorage
 from django.core.management.base import BaseCommand
-
-from candidates.models import Ballot
 from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.convert_pdf import (
     PandocConversionError,
@@ -128,7 +127,7 @@ class Command(BaseCommand):
                 recovered = False
                 # Attempt to get a PDF link form the URL
                 ignore_urls = ["drive.google.com"]
-                if not any([x in document_url for x in ignore_urls]):
+                if not any(x in document_url for x in ignore_urls):
                     try:
 
                         req = requests.get(
@@ -154,8 +153,7 @@ class Command(BaseCommand):
                                         ballot.ballot_paper_id
                                     )
                                 )
-                            else:
-                                recovered = True
+                            recovered = True
                     except Exception as e:
                         print(e)
 

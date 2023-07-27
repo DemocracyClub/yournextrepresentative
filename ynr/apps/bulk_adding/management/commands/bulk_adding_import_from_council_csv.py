@@ -1,6 +1,5 @@
-from django.core.management.base import BaseCommand
-
 from bulk_adding.helpers import CSVImporter
+from django.core.management.base import BaseCommand
 from elections.models import Election
 
 

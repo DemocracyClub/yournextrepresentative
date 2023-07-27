@@ -6,10 +6,9 @@ import tempfile
 from urllib.parse import urlencode
 
 import requests
+from celery import shared_task
 from django.conf import settings
 from django.core.files import File
-
-from celery import shared_task
 from facebook_data.models import FacebookAdvert
 from people.models import PersonIdentifier
 
@@ -146,7 +145,7 @@ def extract_fb_page_id(idetifier_pk):
         match = extractor.extract()
     except FacebookExtractionError as e:
         print("\t".join([str(identifier.person_id), identifier.value, str(e)]))
-        return None
+        return
 
     if match:
         identifier.internal_identifier = int(match.group(1))
@@ -197,8 +196,6 @@ def save_advert_image(ad_id):
 
         subprocess.call(args)
         saved_filename = f.name
-
-        advert.image.save(
-            "{}.png".format(ad_id), File(open(saved_filename, "rb"))
-        )
-        advert.save()
+        with open(saved_filename, "rb") as f:
+            advert.image.save("{}.png".format(ad_id), File(f))
+            advert.save()

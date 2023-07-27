@@ -6,7 +6,6 @@ from collections import namedtuple
 
 from django.test import TestCase
 from django.utils import timezone
-
 from parties.models import Party
 from parties.tests.fixtures import DefaultPartyFixtures
 

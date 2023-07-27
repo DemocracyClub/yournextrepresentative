@@ -1,7 +1,7 @@
-import pytest
-
-from candidates.forms import ToggleLockForm
 from unittest.mock import MagicMock
+
+import pytest
+from candidates.forms import ToggleLockForm
 from candidates.models import Ballot
 from django.core.exceptions import ValidationError
 

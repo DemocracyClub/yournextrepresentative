@@ -5,7 +5,9 @@ interface, typically after a GDPR request for removal.
 
 """
 import abc
+import contextlib
 from collections import defaultdict
+
 from people.models import PersonImage
 
 DELETED_STR = "<DELETED>"
@@ -45,19 +47,16 @@ class PhotoCheck(BaseCheck):
 
     def run_collect(self):
         photos_to_remove = []
-        try:
+        with contextlib.suppress(PersonImage.DoesNotExist):
             photos_to_remove.append(
                 self.get_item_display_info(self.person.image)
             )
-        except PersonImage.DoesNotExist:
-            pass
+
         return photos_to_remove
 
     def run_remove(self):
-        try:
+        with contextlib.suppress(PersonImage.DoesNotExist):
             self.person.image.delete()
-        except PersonImage.DoesNotExist:
-            pass
 
 
 class VersionHistoryCheck(BaseCheck):
@@ -86,27 +85,23 @@ class VersionHistoryCheck(BaseCheck):
         versions = self.person.versions
         for version in versions:
             for key, value in version.get("data").items():
-                if key not in never_remove:
-                    if value or value == DELETED_STR:
-                        if key == "identifiers":
-                            for v in value:
-                                if (
-                                    not v.get("scheme")
-                                    in never_remove_identifiers
-                                ):
-                                    if v["identifier"] == DELETED_STR:
-                                        continue
-                                    to_remove[
-                                        "Identifier: " + v.get("scheme")
-                                    ].add(v["identifier"])
-                                    if do_remove:
-                                        v["identifier"] = DELETED_STR
-                        else:
-                            if str(value) == DELETED_STR:
-                                continue
-                            to_remove[key].add(str(value))
-                            if do_remove:
-                                version["data"][key] = DELETED_STR
+                if key not in never_remove and (value or value == DELETED_STR):
+                    if key == "identifiers":
+                        for v in value:
+                            if v.get("scheme") not in never_remove_identifiers:
+                                if v["identifier"] == DELETED_STR:
+                                    continue
+                                to_remove["Identifier: " + v.get("scheme")].add(
+                                    v["identifier"]
+                                )
+                                if do_remove:
+                                    v["identifier"] = DELETED_STR
+                    else:
+                        if str(value) == DELETED_STR:
+                            continue
+                        to_remove[key].add(str(value))
+                        if do_remove:
+                            version["data"][key] = DELETED_STR
 
         for remove in to_remove.items():
             if not remove[1]:

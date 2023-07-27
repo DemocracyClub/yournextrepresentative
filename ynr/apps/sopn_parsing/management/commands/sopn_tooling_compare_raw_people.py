@@ -1,11 +1,10 @@
 import json
 import os
-
 from collections import Counter
-from django.core.management import call_command
 
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot
+from django.core.management import call_command
 from official_documents.models import OfficialDocument
 from popolo.models import Membership
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
@@ -177,7 +176,7 @@ class Command(BaseSOPNParsingCommand):
             self.candidates_results[self.ZERO_CANDIDATES].append(
                 ballot.ballot_paper_id
             )
-            return
+            return None
 
         num_candidates_correct = candidates.count() == len(
             raw_people_for_ballot

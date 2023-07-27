@@ -1,9 +1,7 @@
 import requests
-
-from django.core.management.base import BaseCommand
-from django.core.files.base import ContentFile
-
 from candidates.models import Ballot
+from django.core.files.base import ContentFile
+from django.core.management.base import BaseCommand
 from elections.models import Election
 from official_documents.models import OfficialDocument
 
@@ -116,3 +114,4 @@ class Command(BaseCommand):
         # ballots e.g. parliamentary elections
         if next_page:
             return self.create_official_documents(url=next_page)
+        return None

@@ -1,5 +1,6 @@
-from io import BytesIO
 import json
+from io import BytesIO
+
 import sorl
 from django.core.management.base import BaseCommand, CommandError
 from moderation_queue.models import QueuedImage
@@ -42,7 +43,7 @@ class Command(BaseCommand):
             self.stdout.write(
                 "No face details found for image: {queued_image.id}"
             )
-            return
+            return None
         PILimage = Image.open(queued_image.image, formats=None)
         # Calculate the angle image is rotated by rounding the roll
         # value to the nearest multiple of 90

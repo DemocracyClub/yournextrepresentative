@@ -1,21 +1,18 @@
-from django.test import TestCase
-from django.test.client import RequestFactory
-from django.urls import reverse
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.uk_examples import UK2015ExamplesMixin
-from moderation_queue.models import SuggestedPostLock
-
-from moderation_queue.views import SuggestLockReviewListView
-from django.contrib.auth import get_user_model
-from django.utils.text import slugify
-
 from candidates.tests.factories import (
     BallotPaperFactory,
     ElectionFactory,
     OrganizationFactory,
     PostFactory,
 )
-
+from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django.test.client import RequestFactory
+from django.urls import reverse
+from django.utils.text import slugify
+from moderation_queue.models import SuggestedPostLock
+from moderation_queue.views import SuggestLockReviewListView
 
 User = get_user_model()
 

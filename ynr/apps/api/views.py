@@ -1,12 +1,10 @@
 from collections import OrderedDict
 
 from django.views.generic import TemplateView
-
-from rest_framework.request import Request
 from drf_yasg import openapi
 from drf_yasg.generators import OpenAPISchemaGenerator
-
 from elections.models import Election
+from rest_framework.request import Request
 
 
 class OpenAPISchemaMixin:
@@ -14,7 +12,7 @@ class OpenAPISchemaMixin:
     patterns = None
 
     def _sort_ordered_dict_by_keys(self, od):
-        keys = sorted(list(od.keys()))
+        keys = sorted(od.keys())
         new_od = OrderedDict()
         for key in keys:
             if type(od[key]) == OrderedDict:

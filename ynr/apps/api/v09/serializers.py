@@ -1,14 +1,13 @@
 # v0.9 is legacy code
-from rest_framework import serializers
-from rest_framework.fields import JSONField
-from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
-
 import people.models
 from candidates import models as candidates_models
 from elections import models as election_models
 from parties.models import Party
 from people.models import PersonImage
 from popolo import models as popolo_models
+from rest_framework import serializers
+from rest_framework.fields import JSONField
+from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
 
 # These are serializer classes from the Django-REST-framework API
 #

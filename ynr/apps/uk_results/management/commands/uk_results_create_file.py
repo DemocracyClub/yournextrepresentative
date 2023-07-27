@@ -5,10 +5,9 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
 from django.core.management.base import BaseCommand
 from django.db.models import Prefetch
-
-from utils.dict_io import BufferDictWriter
 from popolo.models import Membership
 from uk_results.models import ResultSet
+from utils.dict_io import BufferDictWriter
 
 
 class Command(BaseCommand):
@@ -81,7 +80,7 @@ class Command(BaseCommand):
                             .get()
                             .identifier
                         )
-                except:
+                except membership.party.DoesNotExist:
                     party_id = ""
                 row["party_id"] = party_id
                 row["party_name"] = party.name

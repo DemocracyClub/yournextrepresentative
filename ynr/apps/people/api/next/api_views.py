@@ -15,7 +15,7 @@ from rest_framework.reverse import reverse
 
 class PersonViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
-        queryset = (
+        return (
             Person.objects.prefetch_related(
                 Prefetch(
                     "memberships",
@@ -31,7 +31,6 @@ class PersonViewSet(viewsets.ReadOnlyModelViewSet):
             .select_related("image", "image__uploading_user")
             .order_by("id")
         )
-        return queryset
 
     def filter_queryset(self, queryset):
         """

@@ -1,16 +1,14 @@
+import contextlib
 import re
-
-from dateutil import parser
-from django.conf import settings
-from django_date_extensions.fields import ApproximateDate
-
 from urllib.parse import urlparse
-
 
 from candidates.mastodon_api import (
     MastodonAPITokenMissing,
     verify_mastodon_account,
 )
+from dateutil import parser
+from django.conf import settings
+from django_date_extensions.fields import ApproximateDate
 
 
 def parse_approximate_date(s):
@@ -101,12 +99,10 @@ def clean_mastodon_username(username):
     username = "https://{domain}/@{name}".format(domain=domain, name=name)
     # if the format is correct, check that the account exists
     if username:
-        try:
-            verify_mastodon_account(domain, name)
-        except MastodonAPITokenMissing:
+        with contextlib.suppress(MastodonAPITokenMissing):
             # If there's no API token, we can't check the screen name,
             # but don't fail validation
-            pass
+            verify_mastodon_account(domain, name)
     return username
 
 

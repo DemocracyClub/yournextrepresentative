@@ -1,13 +1,10 @@
 import datetime
+import json
 
 import requests
-
-from django.conf import settings
-
 from celery import shared_task
-
+from django.conf import settings
 from utils.slack import SlackHelper
-import json
 
 
 class FlaggedEditSlackPoster:
@@ -54,11 +51,10 @@ class FlaggedEditSlackPoster:
         value = self._dict_to_kv_format(value)
         if value:
             value = value.replace("was known to be ", " ")
-        if diff["op"] == "replace":
-            if not path == "biography":
-                value = "{} \n *previously:*\n{}\n---------".format(
-                    value, diff["previous_value"]
-                )
+        if diff["op"] == "replace" and path != "biography":
+            value = "{} \n *previously:*\n{}\n---------".format(
+                value, diff["previous_value"]
+            )
         text = default_text.format(path=path, value=value)
         return {"text": text, "path": path}
 

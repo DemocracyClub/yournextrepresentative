@@ -9,24 +9,22 @@ import collections
 import sys
 from collections import Counter
 
+from candidates.models import Ballot
+from django.conf import settings
 from django.db.models import (
     Count,
     ExpressionWrapper,
     F,
     FloatField,
     Func,
-    Sum,
     Prefetch,
+    Sum,
 )
 from django.db.models.query_utils import Q
-
-from candidates.models import Ballot
-from django.conf import settings
 from elections.filters import region_choices
 from parties.models import Party
 from people.models import Person
 from popolo.models import Membership
-
 
 EXCLUSION_IDS = [
     "local.flintshire.gwernymynydd.by.2021-05-06",
@@ -148,20 +146,19 @@ def report_runner(name, date, **kwargs):
     this_module = sys.modules[__name__]
     if hasattr(this_module, name):
         return getattr(this_module, name)(date=date, **kwargs).run()
-    else:
-        raise ValueError(
-            "{} is unknown. Pick one of: {}".format(
-                name,
-                "\n\t".join(
-                    [
-                        x
-                        for x in dir(this_module)
-                        if hasattr(getattr(this_module, x), "__base__")
-                        and getattr(this_module, x).__base__ == BaseReport
-                    ]
-                ),
-            )
+    raise ValueError(
+        "{} is unknown. Pick one of: {}".format(
+            name,
+            "\n\t".join(
+                [
+                    x
+                    for x in dir(this_module)
+                    if hasattr(getattr(this_module, x), "__base__")
+                    and getattr(this_module, x).__base__ == BaseReport
+                ]
+            ),
         )
+    )
 
 
 class NumberOfCandidates(BaseReport):
@@ -260,8 +257,7 @@ class WardsContestedPerParty(BaseReport):
         # candidacies where multiple candidates are standing per party
         qs = qs.values("party__name", "party__register")
         qs = qs.annotate(membership_count=Count("party_id"))
-        qs = qs.order_by("-membership_count")
-        return qs
+        return qs.order_by("-membership_count")
 
     @property
     def name(self):
@@ -446,8 +442,7 @@ class TwoWayRaceForNewParties(TwoWayRace):
     def get_qs(self):
         qs = super().get_qs()
         year = self.date.split("-")[0]
-        qs = qs.filter(membership__party__date_registered__year=year)
-        return qs
+        return qs.filter(membership__party__date_registered__year=year)
 
 
 class TwoWayRaceForNcandidates(TwoWayRace):
@@ -764,7 +759,7 @@ class PartyMovers(BaseReport):
             memberships = person.memberships.all().order_by(
                 "ballot__election__election_date"
             )
-            id_set = set([m.party.ec_id for m in memberships])
+            id_set = {m.party.ec_id for m in memberships}
             if id_set == {"PP53", "joint-party:53-119"}:
                 continue
             report_list.append(

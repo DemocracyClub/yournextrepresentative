@@ -1,11 +1,9 @@
 import requests
-
-from django.conf import settings
-from django.contrib.auth.models import User
-
 from candidates.models import LoggedAction
 from candidates.models.db import EditType
 from candidates.views.version_data import get_change_metadata
+from django.conf import settings
+from django.contrib.auth.models import User
 
 
 class TwitterBot(object):

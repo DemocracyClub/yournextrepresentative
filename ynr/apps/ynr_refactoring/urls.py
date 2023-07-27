@@ -1,5 +1,4 @@
 from django.urls import re_path
-
 from ynr_refactoring import views
 
 urlpatterns = [

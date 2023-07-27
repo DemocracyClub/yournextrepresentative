@@ -2,25 +2,24 @@ import os
 from tempfile import NamedTemporaryFile
 
 import mock
-from django.test import TestCase
-
 from candidates.tests.factories import (
     BallotPaperFactory,
     ElectionFactory,
     OrganizationFactory,
     PostFactory,
 )
+from django.test import TestCase
 from resultsbot.importers.modgov import ModGovElection, ModGovImporter
 
-KIRKLEES_XML = open(
+with open(
     os.path.join(
         os.path.dirname(__file__), "data/modgov-local.kirklees.2017-10-26.xml"
     )
-).read()
+) as f:
+    KIRKLEES_XML = f.read()
 
 
 def mock_mod_gov(*args, **kwargs):
-
     return mock.Mock(content=KIRKLEES_XML)
 
 
@@ -64,7 +63,6 @@ class TestModGov(KirkleesBatleyEastMixin, TestCase):
         side_effect=mock_mapping_path,
     )
     def test_ModGovImporter_class(self, *args):
-
         mg_importer = ModGovImporter(
             election_id="local.kirklees.2017-10-26",
             url="https://democracy.kirklees.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=15",

@@ -21,7 +21,7 @@ def deep_sort(obj):
 
     if isinstance(obj, dict):
         _sorted = {}
-        for key in sorted(list(obj)):
+        for key in sorted(obj):
             _sorted[key] = deep_sort(obj[key])
 
     elif isinstance(obj, list):
@@ -30,7 +30,7 @@ def deep_sort(obj):
         for val in obj:
             new_list.append(deep_sort(val))
             if isinstance(val, dict):
-                sort_key = sorted(list(val))[0]
+                sort_key = sorted(val)[0]
         _sorted = sorted(new_list, key=lambda k: k[sort_key])
 
     else:

@@ -1,7 +1,6 @@
-from django.conf import settings
 from bulk_adding.models import RawPeople
+from django.conf import settings
 from django.core.management.base import BaseCommand
-
 from official_documents.models import OfficialDocument
 
 

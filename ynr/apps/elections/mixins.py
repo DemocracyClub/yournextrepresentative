@@ -1,6 +1,6 @@
+from candidates.models import Ballot
 from django.shortcuts import get_object_or_404
 
-from candidates.models import Ballot
 from .models import Election
 
 

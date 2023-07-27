@@ -3,7 +3,6 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 from dateutil import parser
-
 from elections.models import Election
 from resultsbot.matchers.candidate import CandidateMatcher
 from resultsbot.matchers.mappings import SavedMapping
@@ -83,8 +82,9 @@ class ModGovDivision(BaseDivision):
             try:
                 if spoiled.description.get_text(strip=True) == "Rejected":
                     return int(spoiled.numvotes.get_text(strip=True))
-            except:
+            except ValueError:
                 pass
+        return None
 
 
 class ModGovImporter(BaseImporter):
@@ -162,8 +162,7 @@ class ModGovImporter(BaseImporter):
             "mgWebService.asmx/GetElectionResults",
             "mgElectionElectionAreaResults.aspx",
         )
-        url = url.replace("lElectionId=", "Page=all&EID=")
-        return url
+        return url.replace("lElectionId=", "Page=all&EID=")
 
 
 class ModGovElection(object):
@@ -247,21 +246,21 @@ class ModGovElectionMatcher(object):
                 return parser.parse(
                     heading.get_text().split(" - ")[-1].strip()
                 ).date()
-            except:
+            except ValueError:
                 print("title_str")
+        return None
 
     def uses_election_feature(self):
         try:
             req = requests.get(self.format_elections_index_url(), timeout=2)
             req.raise_for_status()
-        except:
+        except requests.RequestException:
             self.http_only = True
             req = requests.get(self.format_elections_index_url(), timeout=2)
         print(req.url)
         if "No published elections found." in req.text:
             return False
-        else:
-            return True
+        return True
 
     def find_elections(self):
         if not self.uses_election_feature():
@@ -289,7 +288,7 @@ class ModGovElectionMatcher(object):
         try:
             req = requests.get(url, timeout=2, verify=False)
             req.raise_for_status()
-        except:
+        except requests.RequestException:
             url = url.replace("https://", "http://")
             req = requests.get(url, timeout=2, verify=False)
             self.http_only = True
@@ -306,9 +305,10 @@ class ModGovElectionMatcher(object):
                 continue
         if len(found_elections.values()) == 1:
             return list(found_elections.values())[0]
-        elif len(found_elections.values()) > 1:
+        if len(found_elections.values()) > 1:
             print("Found more than one election for this date!")
             for election_id, election in found_elections.items():
                 print("\t{}\t{}".format(election_id, election.title))
             selected = int(input("Pick one: "))
             return found_elections[selected]
+        return None

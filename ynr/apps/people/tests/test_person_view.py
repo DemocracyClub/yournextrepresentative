@@ -1,22 +1,23 @@
 import re
 
-from django.test import override_settings
-from django_webtest import WebTest
-from django.contrib.auth.models import Group
-
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.dates import templates_before, templates_after
-from candidates.tests.factories import MembershipFactory
+from candidates.tests.dates import templates_after, templates_before
+from candidates.tests.factories import (
+    BallotPaperFactory,
+    MembershipFactory,
+    PostFactory,
+)
 from candidates.tests.helpers import TmpMediaRootMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.contrib.auth.models import Group
+from django.test import override_settings
+from django_webtest import WebTest
+from moderation_queue.models import PHOTO_REVIEWERS_GROUP_NAME, QueuedImage
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from parties.tests.factories import PartyFactory
 from people.models import PersonImage
 from people.tests.factories import PersonFactory
-from moderation_queue.models import QueuedImage, PHOTO_REVIEWERS_GROUP_NAME
-from parties.tests.factories import PartyFactory
 from popolo.models import Membership
-from candidates.tests.factories import BallotPaperFactory
-from candidates.tests.factories import PostFactory
 
 
 class PersonViewSharedTestsMixin(

@@ -1,8 +1,3 @@
-from django.urls import include, re_path
-from django.views.decorators.cache import cache_page
-from django.views.generic import TemplateView, RedirectView
-from rest_framework import routers
-
 import elections.api.next.api_views
 import parties.api.next.api_views
 import people.api.next.api_views
@@ -10,23 +5,27 @@ from api import slack_hooks
 from api.next import views as next_views
 from api.v09 import views as v09views
 from api.views import (
-    APIDocsEndpointsView,
     APIDocsDefinitionsView,
-    NextAPIDocsView,
+    APIDocsEndpointsView,
     CSVListView,
+    NextAPIDocsView,
     ResultsDocs,
 )
+from django.urls import include, re_path
+from django.views.decorators.cache import cache_page
+from django.views.generic import RedirectView, TemplateView
 from facebook_data.api.next.views import FacebookAdvertViewSet
 from parties.api.next.api_views import (
-    PartyViewSet,
-    PartyRegisterList,
     CurrentPartyNamesCSVView,
+    PartyRegisterList,
+    PartyViewSet,
 )
+from rest_framework import routers
+from uk_results.api.next.api_views import ElectedViewSet, ResultViewSet
 from uk_results.api.v09.api_views import (
     CandidateResultViewSet,
     ResultSetViewSet,
 )
-from uk_results.api.next.api_views import ResultViewSet, ElectedViewSet
 
 v09_api_router = routers.DefaultRouter()
 

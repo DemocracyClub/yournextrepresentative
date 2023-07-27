@@ -1,15 +1,14 @@
-from rest_framework import serializers
-from rest_framework.reverse import reverse
-
 from parties.api.next.serializers import MinimalPartySerializer
 from popolo.api.next.serializers import (
-    BallotOnCandidacySerializer,
-    PersonOnBallotSerializer,
-    CandidacyOnBallotSerializer,
     CANDIDACY_ON_PERSON_FIELDS,
+    BallotOnCandidacySerializer,
+    CandidacyOnBallotSerializer,
+    PersonOnBallotSerializer,
 )
 from popolo.models import Membership
-from uk_results.models import ResultSet, CandidateResult
+from rest_framework import serializers
+from rest_framework.reverse import reverse
+from uk_results.models import CandidateResult, ResultSet
 
 
 class CandidateResultSerializer(serializers.ModelSerializer):

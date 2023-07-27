@@ -1,15 +1,15 @@
 import csv
 
+from candidates.filters import (
+    LoggedActionRecentChangesFilter,
+    recent_changes_filter_shortcuts,
+)
 from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Count
 from django.http import HttpResponse
 from django.views.generic import TemplateView, View
 
-from candidates.filters import (
-    LoggedActionRecentChangesFilter,
-    recent_changes_filter_shortcuts,
-)
 from .mixins import ContributorsMixin
 
 

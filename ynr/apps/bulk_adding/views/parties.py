@@ -1,10 +1,9 @@
 from braces.views import LoginRequiredMixin
+from bulk_adding import forms, helpers
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import FormView, TemplateView
-
-from bulk_adding import forms, helpers
 from elections.models import Election
 from parties.models import Party
 from people.models import Person
@@ -28,8 +27,7 @@ class BasePartyBulkAddView(LoginRequiredMixin, TemplateView):
 
     def get_ballot_qs(self, election):
         qs = election.ballot_set.all()
-        qs = qs.order_by("post__label")
-        return qs
+        return qs.order_by("post__label")
 
 
 class SelectPartyForm(BasePartyBulkAddView, FormView):
@@ -49,7 +47,7 @@ class SelectPartyForm(BasePartyBulkAddView, FormView):
     def form_invalid(self, form):
         form_data = dict(form.data)
         for k in list(form_data):
-            if not k == "csrfmiddlewaretoken":
+            if k != "csrfmiddlewaretoken":
                 del form_data[k]
             form.data = form_data
         return self.render_to_response(self.get_context_data(form=form))
@@ -108,7 +106,7 @@ class BulkAddPartyView(BasePartyBulkAddView):
         form = forms.AddByPartyForm(self.request.POST)
 
         has_some_data = any(
-            [v for k, v in self.request.POST.items() if k.endswith("-name")]
+            v for k, v in self.request.POST.items() if k.endswith("-name")
         )
         if not has_some_data:
             form.add_error(None, "Please enter at least one name")
@@ -188,9 +186,7 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
         qs = self.get_ballot_qs(self.get_election())
         formsets = []
         ballot_ids = {
-            int(k.split("-")[0])
-            for k in request.POST.keys()
-            if k.endswith("-name")
+            int(k.split("-")[0]) for k in request.POST if k.endswith("-name")
         }
         for ballot in qs.filter(pk__in=ballot_ids):
             formset = forms.PartyBulkAddReviewNameOnlyFormSet(
@@ -199,10 +195,9 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
 
             formsets.append(formset)
 
-        if all([f.is_valid() for f in formsets]):
+        if all(f.is_valid() for f in formsets):
             return self.form_valid(formsets)
-        else:
-            return self.form_invalid()
+        return self.form_invalid()
 
     def form_valid(self, formsets):
 

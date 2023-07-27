@@ -1,3 +1,4 @@
+from candidates.views.mixins import ContributorsMixin
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -5,8 +6,6 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import FormView, TemplateView
-
-from candidates.views.mixins import ContributorsMixin
 from elections.uk.geo_helpers import (
     get_ballots_from_coords,
     get_ballots_from_postcode,
@@ -31,8 +30,7 @@ class HomePageView(ContributorsMixin, FormView):
                 "initial": self.get_initial(),
                 "prefix": self.get_prefix(),
             }
-        else:
-            return super().get_form_kwargs()
+        return super().get_form_kwargs()
 
     def get(self, request, *args, **kwargs):
         if "q" in request.GET:
@@ -40,8 +38,7 @@ class HomePageView(ContributorsMixin, FormView):
             # get_form_kwargs to make sure the GET parameters are used
             # for the form in this case.
             return self.post(request, *args, **kwargs)
-        else:
-            return super().get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         postcode = form.cleaned_data["q"]

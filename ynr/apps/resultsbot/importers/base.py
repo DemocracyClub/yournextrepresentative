@@ -1,3 +1,4 @@
+from candidates.models import Ballot
 from elections.models import Election
 from resultsbot.matchers.mappings import SavedMapping
 
@@ -64,8 +65,8 @@ class BaseDivision(object):
                     ballot_paper_id__in=self.matched
                 ).get(post__label__iexact=name)
                 self.local_area = area
-                return
-            except:
+                return None
+            except Ballot.DoesNotExist:
                 continue
         # Try a regex…I know
         for name in guesses:
@@ -77,8 +78,8 @@ class BaseDivision(object):
                     ballot_paper_id__in=self.matched
                 ).get(post__label__iregex=name)
                 self.local_area = area
-                return
-            except:
+                return None
+            except Ballot.DoesNotExist:
                 continue
 
         # If all else fails, just ask the user
@@ -88,13 +89,12 @@ class BaseDivision(object):
             "{self.remote_name}"
             """
         )
-        possible = [
-            ballot
-            for ballot in self.election.ballot_set.all()
+        possible = list(
+            self.election.ballot_set.all()
             .exclude(ballot_paper_id__in=self.matched)
             .order_by("post__label")
             .select_related("post")
-        ]
+        )
         for i, ballot in enumerate(possible, start=1):
             print("\t{}\t{}".format(i, ballot.post.label))
         answer = input("Pick a number or 'd' if it's deleted: ")
@@ -102,8 +102,7 @@ class BaseDivision(object):
             self.saved_matches[key] = "--deleted--"
             self.saved_matches.save()
             return "--deleted--"
-        else:
-            answer = int(answer) - 1
+        answer = int(answer) - 1
         area = possible[answer]
         self.saved_matches[key] = area.ballot_paper_id
         self.saved_matches.save()

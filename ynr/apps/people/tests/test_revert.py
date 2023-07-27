@@ -1,16 +1,16 @@
 from datetime import datetime
+
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.factories import MembershipFactory
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.urls import reverse
 from django_webtest import WebTest
 from mock import patch
-
-from candidates.tests.auth import TestUserMixin
-from candidates.tests.uk_examples import UK2015ExamplesMixin
-from candidates.tests.factories import MembershipFactory
 from people.models import Person, PersonIdentifier
+from people.tests.factories import PersonFactory
 from popolo.models import Membership
 from uk_results.models import CandidateResult, ResultSet
 from utils.testing_utils import deep_sort
-from people.tests.factories import PersonFactory
 
 example_timestamp = "2014-09-29T10:11:59.216159"
 example_version_id = "5aa6418325c1a0bb"

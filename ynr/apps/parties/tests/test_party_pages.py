@@ -1,7 +1,6 @@
-from django_webtest import WebTest
-
 from candidates.tests.factories import MembershipFactory, PostFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django_webtest import WebTest
 from people.models import PersonIdentifier
 from people.tests.factories import PersonFactory
 

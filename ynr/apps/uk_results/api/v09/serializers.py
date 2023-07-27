@@ -1,7 +1,5 @@
-from rest_framework import serializers
-
 from api.v09.serializers import MembershipSerializer
-
+from rest_framework import serializers
 from uk_results.models import CandidateResult, ResultSet
 
 

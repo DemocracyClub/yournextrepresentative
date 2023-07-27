@@ -1,5 +1,6 @@
-from django.db import migrations
+import contextlib
 
+from django.db import migrations
 from moderation_queue.models import VERY_TRUSTED_USER_GROUP_NAME
 
 
@@ -10,10 +11,8 @@ def add_group(apps, schema_editor):
 
 def remove_group(apps, schema_editor):
     Group = apps.get_model("auth", "Group")
-    try:
+    with contextlib.suppress(Group.DoesNotExist):
         Group.objects.get(name=VERY_TRUSTED_USER_GROUP_NAME).delete()
-    except Group.DoesNotExist:
-        pass
 
 
 class Migration(migrations.Migration):

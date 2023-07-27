@@ -1,9 +1,8 @@
 import csv
 import os
 
-from django.core.management.base import BaseCommand
-
 import resultsbot
+from django.core.management.base import BaseCommand
 from elections.models import Election
 
 

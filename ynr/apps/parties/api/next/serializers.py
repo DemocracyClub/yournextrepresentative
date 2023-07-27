@@ -1,6 +1,5 @@
-from rest_framework import serializers
-
 from parties.models import Party, PartyDescription, PartyEmblem
+from rest_framework import serializers
 
 
 class PartyEmblemSerializer(serializers.HyperlinkedModelSerializer):

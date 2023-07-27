@@ -1,11 +1,10 @@
+from candidatebot.helpers import CandidateBot
+from candidates.models import LoggedAction
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.test import TestCase
-
-from candidatebot.helpers import CandidateBot
-from candidates.models import LoggedAction
-from candidates.tests.uk_examples import UK2015ExamplesMixin
 from people.tests.factories import PersonFactory
 
 

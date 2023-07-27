@@ -1,11 +1,9 @@
 import csv
 import os
 
-from django.core.management.base import BaseCommand
-
 import resultsbot
+from django.core.management.base import BaseCommand
 from resultsbot.importers.modgov import ModGovElectionMatcher
-
 from uk_results.helpers import read_csv_from_url
 
 
@@ -52,7 +50,7 @@ class Command(BaseCommand):
 
         for election_id, url in data:
 
-            if election_id in id_to_url.keys():
+            if election_id in id_to_url:
                 continue
             print(election_id)
             matcher = ModGovElectionMatcher(

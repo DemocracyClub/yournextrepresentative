@@ -3,8 +3,7 @@ import unicodedata
 
 from django.core.management.base import BaseCommand
 from gender_detector.gender_detector import GenderDetector
-
-from people.models import Person, GenderGuess
+from people.models import GenderGuess, Person
 
 
 class Command(BaseCommand):

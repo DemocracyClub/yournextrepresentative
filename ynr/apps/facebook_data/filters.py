@@ -1,5 +1,4 @@
-from django_filters import filterset, filters
-
+from django_filters import filters, filterset
 from facebook_data.models import FacebookAdvert
 
 

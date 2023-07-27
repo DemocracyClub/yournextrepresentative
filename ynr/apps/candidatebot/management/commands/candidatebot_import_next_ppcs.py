@@ -1,14 +1,12 @@
 import csv
 
 import requests
-
+from candidatebot.helpers import CandidateBot
 from django.core.management.base import BaseCommand
 from django.db import transaction
-
-from candidatebot.helpers import CandidateBot
 from elections.models import Election
-from people.models import Person
 from parties.models import Party
+from people.models import Person
 from popolo.models import Membership, NotStandingValidationError
 
 
@@ -126,17 +124,20 @@ class Command(BaseCommand):
                 # The source for the email is different, save now
                 bot.save(line["Email Source"])
 
-        if line["Twitter"]:
-            if not person.tmp_person_identifiers.filter(value=line["Twitter"]):
-                bot.add_twitter_username(line["Twitter"])
+        if line["Twitter"] and not person.tmp_person_identifiers.filter(
+            value=line["Twitter"]
+        ):
+            bot.add_twitter_username(line["Twitter"])
 
-        if line["Facebook"]:
-            if not person.tmp_person_identifiers.filter(value=line["Facebook"]):
-                bot.add_facebook_page_url(line["Facebook"])
+        if line["Facebook"] and not person.tmp_person_identifiers.filter(
+            value=line["Facebook"]
+        ):
+            bot.add_facebook_page_url(line["Facebook"])
 
-        if line["Website"]:
-            if not person.tmp_person_identifiers.filter(value=line["Website"]):
-                bot.add_homepage_url(line["Website"])
+        if line["Website"] and not person.tmp_person_identifiers.filter(
+            value=line["Website"]
+        ):
+            bot.add_homepage_url(line["Website"])
 
         if any([line["Twitter"], line["Website"], line["Facebook"]]):
             bot.save(self.get_source_from_line(line))

@@ -1,8 +1,7 @@
 import abc
-from enum import Enum, unique
 from collections import namedtuple
 from datetime import datetime, timedelta
-
+from enum import Enum, unique
 
 from django.conf import settings
 
@@ -93,9 +92,11 @@ class HighProfileCandidateEditDecider(BaseReviewRequiredDecider):
         return "Edit of a candidate whose record may be particularly liable to vandalism"
 
     def needs_review(self):
-        if self.logged_action.person:
-            if self.logged_action.person.liable_to_vandalism:
-                return self.Status.NEEDS_REVIEW
+        if (
+            self.logged_action.person
+            and self.logged_action.person.liable_to_vandalism
+        ):
+            return self.Status.NEEDS_REVIEW
         return self.Status.UNDECIDED
 
 
@@ -216,6 +217,7 @@ class CandidateCurrentNameDecider(BaseReviewRequiredDecider):
                                 # this is an edit to a name
                                 return self.Status.NEEDS_REVIEW
             return self.Status.UNDECIDED
+        return None
 
 
 class RevertedEdits(BaseReviewRequiredDecider):
@@ -236,6 +238,7 @@ class RevertedEdits(BaseReviewRequiredDecider):
             if recent_revert_qs.count() >= settings.NEEDS_REVIEW_MAX_REVERTS:
                 return self.Status.NEEDS_REVIEW
             return self.Status.UNDECIDED
+        return None
 
 
 class EditTypesThatNeverNeedReview(BaseReviewRequiredDecider):

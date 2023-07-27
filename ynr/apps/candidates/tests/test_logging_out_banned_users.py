@@ -1,6 +1,5 @@
-from django_webtest import WebTest
-
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django_webtest import WebTest
 
 from .auth import TestUserMixin
 

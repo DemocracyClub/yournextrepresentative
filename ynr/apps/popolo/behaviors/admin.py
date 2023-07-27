@@ -1,8 +1,7 @@
 from django.contrib.contenttypes.admin import (
-    GenericTabularInline,
     GenericStackedInline,
+    GenericTabularInline,
 )
-
 from popolo import models
 
 

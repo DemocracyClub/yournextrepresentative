@@ -32,30 +32,28 @@ class PartyMatacher(object):
     def match_party_id(self, cleaned_name):
         try:
             return Party.objects.get(ec_id=cleaned_name)
-        except:
+        except Party.DoesNotExist:
             return None
 
     def match_party_name(self, cleaned_name):
         try:
             Party.objects.get(name__iexact=cleaned_name)
-        except:
-            return None
+        except Party.DoesNotExist:
+            return
 
     def match_party_description(self, cleaned_name):
         try:
             PartyDescription.objects.get(name__iexact=cleaned_name)
         except Exception:
-            return None
+            return
 
     def divison_options(self):
         if not self.division:
             return set()
-        return set(
-            [
-                (mem.party.name, mem.party.ec_id)
-                for mem in self.division.local_area.membership_set.all()
-            ]
-        )
+        return {
+            (mem.party.name, mem.party.ec_id)
+            for mem in self.division.local_area.membership_set.all()
+        }
 
     def match(self, picker=True):
         matchers = [

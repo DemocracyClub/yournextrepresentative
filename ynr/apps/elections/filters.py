@@ -1,15 +1,13 @@
 from urllib.parse import urlencode
 
 import django_filters
+from api.next.filters import LastUpdatedMixin
+from candidates.models import Ballot
+from django import forms
 from django.db.models import BLANK_CHOICE_DASH
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django_filters.widgets import LinkWidget
-
-from django import forms
-from api.next.filters import LastUpdatedMixin
-
-from candidates.models import Ballot
 from elections.models import Election
 
 
@@ -74,10 +72,9 @@ class HasResultsFilter(django_filters.BooleanFilter):
     def filter(self, qs, value):
         if value is True:
             return qs.exclude(resultset=None)
-        elif value is False:
+        if value is False:
             return qs.filter(resultset=None)
-        else:
-            return qs
+        return qs
 
 
 class DSLinkWidget(LinkWidget):
@@ -143,20 +140,17 @@ class BaseBallotFilter(django_filters.FilterSet):
     def has_sopn_filter(self, queryset, name, value):
         if int(value):
             return queryset.exclude(officialdocument=None)
-        else:
-            return queryset.filter(officialdocument=None)
+        return queryset.filter(officialdocument=None)
 
     def is_by_election_filter(self, queryset, name, value):
         if int(value):
             return queryset.filter(ballot_paper_id__contains=".by.")
-        else:
-            return queryset.exclude(ballot_paper_id__contains=".by.")
+        return queryset.exclude(ballot_paper_id__contains=".by.")
 
     def is_cancelled_filter(self, queryset, name, value):
         if int(value):
             return queryset.filter(cancelled=True)
-        else:
-            return queryset.filter(cancelled=False)
+        return queryset.filter(cancelled=False)
 
     def election_type_filter(self, queryset, name, value):
         return queryset.filter(election__slug__startswith=value)

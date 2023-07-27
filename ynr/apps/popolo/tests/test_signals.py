@@ -1,7 +1,8 @@
-from django.test import TestCase
 from unittest.mock import PropertyMock, patch
+
 from candidates.tests.factories import BallotPaperFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.test import TestCase
 from parties.tests.factories import PartyFactory
 from people.tests.factories import PersonFactory
 from popolo.models import Membership, WelshOnlyValidationError

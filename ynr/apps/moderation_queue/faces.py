@@ -35,7 +35,7 @@ def detectFaces(im):
     cv.EqualizeHist(cv_im, cv_im)
 
     # Detect the faces
-    faces = cv.HaarDetectObjects(
+    return cv.HaarDetectObjects(
         cv_im,
         faceCascade,
         cv.CreateMemStorage(0),
@@ -44,8 +44,6 @@ def detectFaces(im):
         haar_flags,
         min_size,
     )
-
-    return faces
 
 
 def face_crop_bounds(im):

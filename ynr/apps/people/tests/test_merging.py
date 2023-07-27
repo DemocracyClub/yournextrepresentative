@@ -643,12 +643,12 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         supported_fields = set(PersonMerger.SUPPORTED_FIELDS.keys())
 
-        actual_relations = set(
-            [rel.name for rel in self.source_person._meta.related_objects]
-        )
-        actual_fields = set(
-            [field.name for field in self.source_person._meta.get_fields()]
-        )
+        actual_relations = {
+            rel.name for rel in self.source_person._meta.related_objects
+        }
+        actual_fields = {
+            field.name for field in self.source_person._meta.get_fields()
+        }
         actual_fields.update(actual_relations)
         self.assertSetEqual(supported_fields, actual_fields)
 

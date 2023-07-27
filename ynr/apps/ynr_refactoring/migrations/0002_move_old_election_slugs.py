@@ -123,16 +123,20 @@ def _merge_election(Election, old_list):
 def _update_versions(person, old, new):
     versions = person.versions
     for version in versions:
-        if version["data"].get("standing_in"):
-            if old in version["data"]["standing_in"]:
-                version["data"]["standing_in"][new] = version["data"][
-                    "standing_in"
-                ].pop(old)
-        if version["data"].get("party_memberships"):
-            if old in version["data"]["party_memberships"]:
-                version["data"]["party_memberships"][new] = version["data"][
-                    "party_memberships"
-                ].pop(old)
+        if (
+            version["data"].get("standing_in")
+            and old in version["data"]["standing_in"]
+        ):
+            version["data"]["standing_in"][new] = version["data"][
+                "standing_in"
+            ].pop(old)
+        if (
+            version["data"].get("party_memberships")
+            and old in version["data"]["party_memberships"]
+        ):
+            version["data"]["party_memberships"][new] = version["data"][
+                "party_memberships"
+            ].pop(old)
     if "'{}'".format(old) in json.dumps(versions):
         raise ValueError(
             "'{}' found in versions for person {}".format(old, person.pk)

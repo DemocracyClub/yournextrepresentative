@@ -1,11 +1,9 @@
 import re
 
-from django_webtest import WebTest
-
-from people.models import Person, PersonNameSynonym
-
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django_webtest import WebTest
+from people.models import Person, PersonNameSynonym
 from people.tests.factories import PersonFactory
 from search.utils import search_person_by_name
 

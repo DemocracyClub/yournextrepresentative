@@ -1,9 +1,7 @@
-from django_webtest import WebTest
-
 import people.tests.factories
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType
-
+from django_webtest import WebTest
 
 from .auth import TestUserMixin
 

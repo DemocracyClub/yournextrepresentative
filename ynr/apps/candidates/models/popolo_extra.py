@@ -1,29 +1,22 @@
-import hashlib
 import datetime
+import hashlib
 
+from candidates.models import LoggedAction
+from candidates.models.auth import TRUSTED_TO_LOCK_GROUP_NAME
+from candidates.models.db import ActionType
+from django.conf import settings
 from django.contrib.admin.utils import NestedObjects
-from django.db.models import JSONField
 from django.db import connection, models
-from django.db.models import Max
+from django.db.models import Count, F, JSONField, Max
 from django.db.models.functions import Greatest
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.html import mark_safe
 from django.utils.functional import cached_property
+from django.utils.html import mark_safe
 from django.utils.http import urlencode
-
-from django.conf import settings
+from elections.models import Election
 from moderation_queue.models import QueuedImage
 from utils.mixins import EEModifiedMixin
-
-from django.db.models import Count, F
-
-from candidates.models.db import ActionType
-
-from candidates.models.auth import TRUSTED_TO_LOCK_GROUP_NAME
-from elections.models import Election
-from candidates.models import LoggedAction
-
 
 """Extensions to the base django-popolo classes for YourNextRepresentative
 
@@ -41,13 +34,15 @@ class UnsafeToDelete(Exception):
 
 
 def raise_if_unsafe_to_delete(model):
-    if model._meta.label == "popolo.Membership":
-        if model.ballot.candidates_locked:
-            raise UnsafeToDelete(
-                "Can't delete a membership of a locked ballot ({})".format(
-                    model.ballot.ballot_paper_id
-                )
+    if (
+        model._meta.label == "popolo.Membership"
+        and model.ballot.candidates_locked
+    ):
+        raise UnsafeToDelete(
+            "Can't delete a membership of a locked ballot ({})".format(
+                model.ballot.ballot_paper_id
             )
+        )
     related_models = model_has_related_objects(model)
     if related_models:
         msg = (
@@ -139,7 +134,7 @@ class BallotQueryset(models.QuerySet):
         nuts_codes = []
         for nation_code in nation_codes:
             assert (
-                nation_code in settings.NUTS_TO_NATION.keys()
+                nation_code in settings.NUTS_TO_NATION
             ), f"Unknown nation {nation_code}"
             nuts_codes += settings.NUTS_TO_NATION[nation_code]
 
@@ -331,6 +326,7 @@ class Ballot(EEModifiedMixin, models.Model):
     def cancelled_status_text(self):
         if self.cancelled:
             return "(❌ cancelled)"
+        return None
 
     @property
     def cancelled_status_html(self):
@@ -346,6 +342,7 @@ class Ballot(EEModifiedMixin, models.Model):
     def locked_status_text(self):
         if self.candidates_locked:
             return mark_safe("🔐")
+        return None
 
     @property
     def locked_status_html(self):

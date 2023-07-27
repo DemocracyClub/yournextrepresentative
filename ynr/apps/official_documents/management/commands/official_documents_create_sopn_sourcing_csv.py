@@ -1,7 +1,6 @@
-from django.core.management.base import BaseCommand
-
-from django.conf import settings
 from candidates.models import Ballot
+from django.conf import settings
+from django.core.management.base import BaseCommand
 from utils.dict_io import BufferDictWriter
 
 
@@ -53,9 +52,7 @@ class Command(BaseCommand):
             qs = qs.filter(election__current=True)
 
         if options["nations"]:
-            nations = set(
-                [n.strip().upper() for n in options["nations"].split(",")]
-            )
+            nations = {n.strip().upper() for n in options["nations"].split(",")}
             if not nations.issubset(set(settings.NUTS_TO_NATION.keys())):
                 raise ValueError(
                     f"Nations must be in {set(settings.NUTS_TO_NATION.keys())} ({nations} provided)"

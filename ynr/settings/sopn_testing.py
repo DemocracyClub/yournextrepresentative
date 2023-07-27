@@ -1,5 +1,5 @@
-from .base import root
 from .base import *  # noqa
+from .base import root
 
 DATABASES = {
     "default": {

@@ -6,7 +6,6 @@ import requests
 
 from .base import *  # noqa
 
-
 MEDIA_ROOT = "{{ django_media_root }}"
 
 try:

@@ -1,10 +1,9 @@
-from django.test import override_settings
 from unittest.mock import patch
-
-from django.test.testcases import TestCase
 
 from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
+from django.test import override_settings
+from django.test.testcases import TestCase
 from people.tests.factories import PersonIdentifierFactory
 from twitterbot.helpers import TwitterBot
 

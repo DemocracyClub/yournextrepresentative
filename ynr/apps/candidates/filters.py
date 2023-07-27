@@ -1,7 +1,6 @@
 from urllib.parse import urlencode
 
 import django_filters
-
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType, EditType
 from elections.filters import DSLinkWidget

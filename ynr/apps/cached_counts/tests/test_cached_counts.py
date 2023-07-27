@@ -1,10 +1,9 @@
 import json
 
-from django_webtest import WebTest
-
 import people.tests.factories
 from candidates.tests import factories
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django_webtest import WebTest
 from people.models import Person
 
 

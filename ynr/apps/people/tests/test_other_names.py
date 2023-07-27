@@ -1,9 +1,8 @@
 import pytest
-from django_webtest import WebTest
-
 from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django_webtest import WebTest
 from people.helpers import person_names_equal
 from people.tests.factories import PersonFactory
 from popolo.models import OtherName

@@ -1,9 +1,6 @@
 from os.path import dirname, join, realpath
-
-from django.urls import reverse
-from django_webtest import WebTest
-from webtest import Upload
-
+from unittest import skipIf
+from unittest.mock import patch
 
 from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
@@ -13,16 +10,16 @@ from candidates.tests.factories import (
     PartySetFactory,
     PostFactory,
 )
+from django.urls import reverse
+from django_webtest import WebTest
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from official_documents.models import OfficialDocument
 from official_documents.tests.paths import (
     EXAMPLE_DOCX_FILENAME,
     EXAMPLE_HTML_FILENAME,
 )
-from official_documents.models import OfficialDocument
-from unittest.mock import patch
-from unittest import skipIf
 from sopn_parsing.tests import should_skip_conversion_tests
-
+from webtest import Upload
 
 TEST_MEDIA_ROOT = realpath(
     join(dirname(__file__), "..", "..", "moderation_queue", "tests", "media")

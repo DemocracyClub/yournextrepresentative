@@ -27,13 +27,16 @@ def merge_popit_people(primary, secondary):
         if not primary_value:
             continue
         secondary_value = result.get(primary_key)
-        if primary_key == "name" and secondary_value:
-            if primary_value != secondary_value:
-                # Then the names conflict; add the secondary name to
-                # 'other_names' to preserve it.
-                other_names = result.get("other_names", [])
-                other_names.append({"name": secondary_value})
-                result["other_names"] = other_names
+        if (
+            primary_key == "name"
+            and secondary_value
+            and primary_value != secondary_value
+        ):
+            # Then the names conflict; add the secondary name to
+            # 'other_names' to preserve it.
+            other_names = result.get("other_names", [])
+            other_names.append({"name": secondary_value})
+            result["other_names"] = other_names
         if isinstance(primary_value, list) and isinstance(
             secondary_value, list
         ):

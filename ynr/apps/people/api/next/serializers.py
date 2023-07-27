@@ -1,12 +1,11 @@
-from drf_yasg.utils import swagger_serializer_method
-from rest_framework import serializers
-from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
-
 import people.models
 from candidates import models as candidates_models
+from drf_yasg.utils import swagger_serializer_method
 from people.models import PersonImage
 from popolo import models as popolo_models
 from popolo.api.next.serializers import CandidacyOnPersonSerializer
+from rest_framework import serializers
+from sorl_thumbnail_serializer.fields import HyperlinkedSorlImageField
 
 
 class SizeLimitedHyperlinkedSorlImageField(HyperlinkedSorlImageField):

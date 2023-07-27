@@ -1,7 +1,6 @@
-from django.test import TestCase
 from candidates.models.popolo_extra import Ballot
-
 from candidates.tests.test_models import BallotsWithResultsMixin
+from django.test import TestCase
 from elections.filters import region_choices
 from elections.uk.templatetags.home_page_tags import results_progress_by_value
 

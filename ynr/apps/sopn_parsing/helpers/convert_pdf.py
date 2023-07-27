@@ -1,6 +1,6 @@
 import tempfile
-import pypandoc
 
+import pypandoc
 from django.core.files.base import ContentFile
 from sentry_sdk import client
 

@@ -15,15 +15,15 @@ def move_tmp_ids_to_actual_ids(apps, schema_editor):
         # Return quickly if no tmp ids exist, to save iterating over the file
         # needlessly
         return
-
-    data_file = open(
+    with open(
         "ynr/apps/candidates/migrations/0056_tmp_ids_to_ballot_id.csv"
-    )
-    for line in data_file:
-        tmp_id, new_id = line.split(",")
-        PostExtraElection.objects.filter(ballot_paper_id=tmp_id).update(
-            ballot_paper_id=new_id.strip()
-        )
+    ) as f:
+        data_file = f
+        for line in data_file:
+            tmp_id, new_id = line.split(",")
+            PostExtraElection.objects.filter(ballot_paper_id=tmp_id).update(
+                ballot_paper_id=new_id.strip()
+            )
 
 
 class Migration(migrations.Migration):

@@ -1,6 +1,5 @@
+from cached_counts.report_helpers import ALL_REPORT_CLASSES, report_runner
 from django.core.management.base import BaseCommand
-
-from cached_counts.report_helpers import report_runner, ALL_REPORT_CLASSES
 
 
 class Command(BaseCommand):

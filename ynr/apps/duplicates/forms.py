@@ -1,6 +1,5 @@
 from django import forms
 from django.core.exceptions import ValidationError
-
 from duplicates.models import DuplicateSuggestion
 
 
@@ -52,6 +51,7 @@ class DuplicateSuggestionForm(forms.ModelForm):
                 f"{existing_suggestion.rejection_reasoning}"
             )
             raise ValidationError(msg)
+        return None
 
 
 class RejectionForm(forms.ModelForm):

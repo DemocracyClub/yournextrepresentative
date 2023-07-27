@@ -1,10 +1,10 @@
 import os
 
 from django.conf import settings
-from whitenoise.storage import CompressedStaticFilesStorage
 from django.core.files.storage import FileSystemStorage
 from pipeline.storage import PipelineMixin
 from storages.backends.s3boto3 import S3Boto3Storage, SpooledTemporaryFile
+from whitenoise.storage import CompressedStaticFilesStorage
 
 
 class PatchedS3Boto3Storage(S3Boto3Storage):

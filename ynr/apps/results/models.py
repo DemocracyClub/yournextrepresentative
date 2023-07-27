@@ -1,9 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
-
 from elections.models import Election
-from popolo.models import Post
 from people.models import PersonImage
+from popolo.models import Post
 
 
 class ResultEvent(models.Model):

@@ -267,13 +267,12 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
                 self.request, level, message, extra_tags="safe photo-review"
             )
             return HttpResponseRedirect(reverse("photo-review-list"))
-        else:
-            return HttpResponseRedirect(
-                reverse(
-                    "photo-review",
-                    kwargs={"queued_image_id": self.queued_image.id},
-                )
+        return HttpResponseRedirect(
+            reverse(
+                "photo-review",
+                kwargs={"queued_image_id": self.queued_image.id},
             )
+        )
 
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
@@ -296,8 +295,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
             )
         if self.form.is_valid():
             return self.form_valid(self.form)
-        else:
-            return self.form_invalid(self.form)
+        return self.form_invalid(self.form)
 
 
 class SuggestLockView(LoginRequiredMixin, CreateView):
@@ -430,7 +428,7 @@ class SOPNReviewRequiredView(ListView):
         """
         Ballot objects with a document but no lock suggestion
         """
-        qs = (
+        return (
             Ballot.objects.filter(
                 suggestedpostlock__isnull=True,
                 candidates_locked=False,
@@ -441,7 +439,6 @@ class SOPNReviewRequiredView(ListView):
             .prefetch_related("officialdocument_set")
             .order_by("officialdocument__source_url", "election", "post__label")
         )
-        return qs
 
 
 class PersonNameCleanupView(TemplateView):

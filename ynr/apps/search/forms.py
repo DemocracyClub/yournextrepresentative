@@ -1,6 +1,5 @@
 from django.forms import forms
 from django.utils.html import escape
-
 from search.utils import search_person_by_name
 
 

@@ -1,10 +1,9 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import ListView
-
-from search.utils import search_person_by_name
-from search.forms import PersonSearchForm
 from elections.uk.lib import is_valid_postcode
+from search.forms import PersonSearchForm
+from search.utils import search_person_by_name
 
 
 class PersonSearch(ListView):
@@ -16,14 +15,13 @@ class PersonSearch(ListView):
         ret = super().get(request, *args, **kwargs)
         context = ret.context_data
 
-        if context["looks_like_postcode"]:
-            if not context.get("results"):
-                # This looks like a postcode, and we've found nothing else
-                # so redirect to a postcode view.
-                home_page = reverse("lookup-postcode")
-                return HttpResponseRedirect(
-                    "{}?q={}".format(home_page, context["query"])
-                )
+        if context["looks_like_postcode"] and not context.get("results"):
+            # This looks like a postcode, and we've found nothing else
+            # so redirect to a postcode view.
+            home_page = reverse("lookup-postcode")
+            return HttpResponseRedirect(
+                "{}?q={}".format(home_page, context["query"])
+            )
 
         return ret
 

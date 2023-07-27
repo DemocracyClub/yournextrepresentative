@@ -22,6 +22,7 @@ class CandidateMatcher(object):
         import sys
 
         sys.exit()
+        return None
 
     def get_parties(self):
         parties = [self.candidate.party]
@@ -55,63 +56,63 @@ class CandidateMatcher(object):
         value = self.membership_map.get(key, None)
         if value:
             return self.ballot_paper.local_area.membership_set.get(pk=value)
+        return None
 
     def match_party_and_name(self, qs=None):
-        if not qs:
-            candidates_for_party = self.get_memberships()
-        else:
-            candidates_for_party = qs
+        candidates_for_party = qs if qs else self.get_memberships()
         if candidates_for_party.count() == 1:
             # Only one person it can be, init?
             return candidates_for_party.first()
-        else:
-            for membership in candidates_for_party:
 
-                def _clean_name(name):
-                    name = name
-                    name = name.lower()
-                    name = name.replace("  ", " ")
-                    name = name.replace(",", "")
-                    name = name.replace("councillor", "")
-                    return name
+        for membership in candidates_for_party:
 
-                person_name = _clean_name(membership.person.name.lower())
-                candidate_name = _clean_name(self.candidate.name.lower())
+            def _clean_name(name):
+                name = name
+                name = name.lower()
+                name = name.replace("  ", " ")
+                name = name.replace(",", "")
+                return name.replace("councillor", "")
 
-                if person_name == candidate_name:
-                    return membership
+            person_name = _clean_name(membership.person.name.lower())
+            candidate_name = _clean_name(self.candidate.name.lower())
 
-                def _name_to_parts(name):
-                    name = name.split(" ")
-                    name = [
-                        n.strip().encode("utf8").decode() for n in name if name
-                    ]
-                    return name
+            if person_name == candidate_name:
+                return membership
 
-                split_person_name = _name_to_parts(person_name)
-                split_candidate_name = _name_to_parts(candidate_name)
+            def _name_to_parts(name):
+                name = name.split(" ")
+                return [n.strip().encode("utf8").decode() for n in name if name]
 
-                # Ignore middle names
-                if split_person_name[0] == split_candidate_name[0]:
-                    if split_person_name[-1] == split_candidate_name[-1]:
-                        return membership
+            split_person_name = _name_to_parts(person_name)
+            split_candidate_name = _name_to_parts(candidate_name)
 
-                # LAST, First
-                if split_person_name[-1] == split_candidate_name[0]:
-                    if split_person_name[0] == split_candidate_name[-1]:
-                        return membership
+            # Ignore middle names
+            if (
+                split_person_name[0] == split_candidate_name[0]
+                and split_person_name[-1] == split_candidate_name[-1]
+            ):
+                return membership
 
-                # Sorted lists
-                sorted_person_name = sorted(split_person_name)
-                sorted_candidate_name = sorted(split_candidate_name)
-                if sorted_candidate_name == sorted_person_name:
-                    return membership
+            # LAST, First
+            if (
+                split_person_name[-1] == split_candidate_name[0]
+                and split_person_name[0] == split_candidate_name[-1]
+            ):
+                return membership
 
-                print(
-                    "person name {} didn't match to candidate {}".format(
-                        split_person_name, split_candidate_name
-                    )
+            # Sorted lists
+            sorted_person_name = sorted(split_person_name)
+            sorted_candidate_name = sorted(split_candidate_name)
+            if sorted_candidate_name == sorted_person_name:
+                return membership
+
+            print(
+                "person name {} didn't match to candidate {}".format(
+                    split_person_name, split_candidate_name
                 )
+            )
+            return None
+        return None
 
     def _manual_matcher(self, qs):
         print(
@@ -123,7 +124,7 @@ class CandidateMatcher(object):
             print("\t{}\t{}".format(i, membership.person.name.encode("utf8")))
         match = input("Enter selection: ")
         if match == "s":
-            return
+            return None
         match = int(match)
         key = "{}--{}".format(
             self.ballot_paper.local_area.ballot_paper_id,
@@ -137,7 +138,7 @@ class CandidateMatcher(object):
     def match_manually(self):
         candidates_for_party = self.get_memberships()
         if not candidates_for_party.exists():
-            return
+            return None
         return self._manual_matcher(candidates_for_party)
 
     def match_from_all_manually(self):

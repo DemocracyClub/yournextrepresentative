@@ -4,10 +4,9 @@ from __future__ import unicode_literals
 from django.db import models
 from django.db.models import Q
 from django.urls.base import reverse
-
 from django_extensions.db.models import TimeStampedModel
-from model_utils.models import StatusModel
 from model_utils import Choices
+from model_utils.models import StatusModel
 
 
 def sort_people(person_a, person_b):
@@ -25,8 +24,7 @@ class DuplicateSuggestionQuerySet(models.QuerySet):
 
     def for_both_people(self, person, other_person):
         person, other_person = sort_people(person, other_person)
-        qs = self.filter(person=person, other_person=other_person)
-        return qs
+        return self.filter(person=person, other_person=other_person)
 
     def marked_as_not_duplicate(self, person, other_person):
         qs = self.filter(status=self.model.STATUS.not_duplicate)

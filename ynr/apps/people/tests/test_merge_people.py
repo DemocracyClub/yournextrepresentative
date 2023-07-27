@@ -1,6 +1,5 @@
-from django.test import TestCase
-
 from candidates.models import merge_popit_people
+from django.test import TestCase
 
 
 class TestMergePeople(TestCase):

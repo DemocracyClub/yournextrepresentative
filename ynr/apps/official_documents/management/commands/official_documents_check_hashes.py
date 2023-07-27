@@ -2,9 +2,8 @@ import hashlib
 
 import requests
 from django.core.management.base import BaseCommand
-
-from utils.dict_io import BufferDictWriter
 from official_documents.models import OfficialDocument
+from utils.dict_io import BufferDictWriter
 
 
 class Command(BaseCommand):
@@ -66,7 +65,7 @@ class Command(BaseCommand):
                     cache["local_hash"] = self.get_hash(
                         doc.uploaded_file.file.read()
                     )
-                    if not cache["remote_hash"] == cache["local_hash"]:
+                    if cache["remote_hash"] != cache["local_hash"]:
                         cache["notes"] = "File hash mismatch!"
 
             line.update(cache)

@@ -1,9 +1,8 @@
-from django.test.client import RequestFactory
-from django_webtest import WebTest
-
 from bulk_adding import helpers
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.test.client import RequestFactory
+from django_webtest import WebTest
 from parties.tests.factories import PartyDescriptionFactory
 from people.tests.factories import PersonFactory
 from popolo.models import Membership

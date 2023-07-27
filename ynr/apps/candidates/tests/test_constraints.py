@@ -1,6 +1,5 @@
-from django.test import TestCase
-
 from candidates.models.constraints import check_no_candidancy_for_election
+from django.test import TestCase
 from people.tests.factories import PersonFactory
 from popolo.models import Post
 

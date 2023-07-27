@@ -1,6 +1,6 @@
 from dateutil.parser import parse
-from django.db.models import JSONField
 from django.db import models
+from django.db.models import JSONField
 
 
 def advert_image_path(instance, filename):

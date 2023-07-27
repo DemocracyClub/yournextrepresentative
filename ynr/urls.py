@@ -1,12 +1,10 @@
+from allauth.account.views import SignupView
 from django.conf import settings
-from django.urls import include, re_path, path
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.urls import include, path, re_path
 from django.views.generic import TemplateView
-
-
-from allauth.account.views import SignupView
 
 
 class CustomSignupView(SignupView):
@@ -22,8 +20,7 @@ class CustomSignupView(SignupView):
 
 
 def trigger_error(request):
-    division_by_zero = 1 / 0
-    return division_by_zero
+    return 1 / 0
 
 
 urlpatterns = [

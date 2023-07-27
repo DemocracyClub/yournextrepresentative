@@ -4,13 +4,12 @@ Foo Bar
 """
 import json
 import sys
-
 from argparse import ArgumentParser
-from django.core.management import BaseCommand
-from django.db import transaction
 
 from candidates.models import Ballot, LoggedAction
 from candidates.models.popolo_extra import model_has_related_objects
+from django.core.management import BaseCommand
+from django.db import transaction
 from official_documents.models import OfficialDocument
 from popolo.models import Membership
 from uk_results.models import ResultSet

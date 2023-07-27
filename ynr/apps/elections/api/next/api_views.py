@@ -1,23 +1,22 @@
+import elections.api.next.serializers
+from api.next.views import ResultsSetPagination
+from candidates import models as extra_models
+from candidates.api.next.serializers import LoggedActionSerializer
 from django.db.models import Prefetch
 from django.db.models.functions import Coalesce
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import viewsets
-from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
-
-import elections.api.next.serializers
-from api.next.views import ResultsSetPagination
-from candidates import models as extra_models
-from candidates.api.next.serializers import LoggedActionSerializer
 from elections.filters import BallotFilter
 from elections.models import Election
 from elections.uk.geo_helpers import BadPostcodeException
 from official_documents.models import OfficialDocument
 from popolo.models import Membership
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
 from utils.db import LastWord, NullIfBlank
 
 
@@ -199,3 +198,4 @@ class ElectionTypesList(viewsets.ReadOnlyModelViewSet):
                 qs, many=True
             )
             return self.get_paginated_response(serializer.data)
+        return None

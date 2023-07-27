@@ -3,7 +3,6 @@ from datetime import datetime
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Coalesce
-
 from utils.db import LastWord, NullIfBlank
 
 __author__ = "guglielmo"

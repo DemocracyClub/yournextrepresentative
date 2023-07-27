@@ -1,7 +1,6 @@
 import mock
 from django.urls import reverse
 from django_webtest import WebTest
-
 from people.models import Person
 from people.tests.factories import PersonFactory
 from results.models import ResultEvent

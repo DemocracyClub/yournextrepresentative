@@ -18,14 +18,13 @@ class ChangesMixin(object):
                 logged_action.person_id,
                 logged_action.action_type,
             )
-        elif logged_action.post:
+        if logged_action.post:
             return "{} ({}) - {}".format(
                 logged_action.post.label,
                 logged_action.post.slug,
                 logged_action.action_type,
             )
-        else:
-            return logged_action.action_type
+        return logged_action.action_type
 
     def get_guid(self, logged_action):
         return self.id_format(logged_action.id)
@@ -41,8 +40,7 @@ class ChangesMixin(object):
     def get_author(self, logged_action):
         if logged_action.user:
             return logged_action.user.username
-        else:
-            return "Automated change"
+        return "Automated change"
 
 
 class RecentChangesFeed(ChangesMixin, Feed):
@@ -63,9 +61,7 @@ class RecentChangesFeed(ChangesMixin, Feed):
 
     def item_description(self, item):
         updated = "Updated at {0}".format(str(item.updated))
-        description = "{}\n\n{}\n".format(item.source, updated)
-
-        return description
+        return "{}\n\n{}\n".format(item.source, updated)
 
     def item_guid(self, item):
         return self.id_format.format(item.id)
@@ -81,8 +77,7 @@ class RecentChangesFeed(ChangesMixin, Feed):
         # in the source message:
         if item.person_id:
             return reverse("person-view", args=[item.person_id])
-        else:
-            return "/"
+        return "/"
 
 
 class NeedsReviewFeed(ChangesMixin, Feed):

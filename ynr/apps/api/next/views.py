@@ -1,13 +1,12 @@
 from datetime import date, datetime
 
-from rest_framework import pagination, viewsets
-
-import candidates.api.next.serializers
 import api.next.serializers
+import candidates.api.next.serializers
 from candidates import models as extra_models
-from popolo.models import Organization
 from candidates.filters import LoggedActionAPIFilter
 from popolo.api.next.filters import OrganizationFilter
+from popolo.models import Organization
+from rest_framework import pagination, viewsets
 
 
 def parse_date(date_text):

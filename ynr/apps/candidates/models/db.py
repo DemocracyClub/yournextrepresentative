@@ -3,15 +3,14 @@ from datetime import datetime, timedelta
 from enum import Enum, unique
 
 from django.contrib.auth.models import User
-from django.db.models import JSONField
 from django.contrib.postgres.fields import ArrayField
 from django.db import models, transaction
+from django.db.models import JSONField
 from django.urls import reverse
 from django.utils.html import escape
-
 from moderation_queue.review_required_helper import (
-    REVIEW_TYPES,
     POST_DECISION_REVIEW_TYPES,
+    REVIEW_TYPES,
 )
 from moderation_queue.slack import post_action_to_slack
 
@@ -174,7 +173,7 @@ class LoggedAction(models.Model):
         ballot = self.ballot
         if ballot:
             return ballot.get_absolute_url()
-        elif self.person:
+        if self.person:
             return reverse("person-view", kwargs={"person_id": self.person.id})
         return "/"
 
@@ -187,7 +186,7 @@ class LoggedAction(models.Model):
                 text=ballot.post.short_label,
                 post_slug=ballot.post.slug,
             )
-        elif self.person:
+        if self.person:
             return '<a href="{url}">{text} ({person_id})</a>'.format(
                 url=self.subject_url,
                 text=self.person.name,
@@ -219,6 +218,7 @@ class LoggedAction(models.Model):
     def candidacy_edit(self):
         if self.version_fields and "candidacies" in self.diff_html:
             return True
+        return None
 
     def set_review_required(self):
         """
@@ -250,9 +250,13 @@ class LoggedAction(models.Model):
             self.version_fields = self.person.version_fields(version_id)
         super().save(**kwargs)
 
-        if not has_initial_pk and self.flagged_type and self.person:
-            if self.edit_type == "USER":
-                transaction.on_commit(post_action_to_slack.s(self.pk).delay)
+        if (
+            not has_initial_pk
+            and self.flagged_type
+            and self.person
+            and self.edit_type == "USER"
+        ):
+            transaction.on_commit(post_action_to_slack.s(self.pk).delay)
 
 
 class PersonRedirect(models.Model):

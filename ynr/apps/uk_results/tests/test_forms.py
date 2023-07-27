@@ -1,11 +1,10 @@
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.factories import MembershipFactory
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django import forms
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django_webtest import WebTest
-
-from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import MembershipFactory
-from candidates.tests.uk_examples import UK2015ExamplesMixin
 from people.tests.factories import PersonFactory
 from uk_results.forms import ResultSetForm
 

@@ -49,14 +49,12 @@ def verify_mastodon_account(mastodon_domain_name, mastodon_screen_name):
                         screen_name=mastodon_screen_name
                     )
                 )
-            else:
-                raise Exception(
-                    "The Mastodon API returned an error: {error}".format(
-                        error=all_errors
-                    )
+            raise Exception(
+                "The Mastodon API returned an error: {error}".format(
+                    error=all_errors
                 )
-        else:
-            result = str(data["id"])
+            )
+        result = str(data["id"])
     else:
         result = ""
 

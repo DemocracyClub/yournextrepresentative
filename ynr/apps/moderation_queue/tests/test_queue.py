@@ -15,10 +15,9 @@ from candidates.tests.factories import (
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.contrib.auth.models import Group, User
 from django.core.files.storage import FileSystemStorage
-from django.utils import timezone
-
 from django.test.utils import override_settings
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.formats import date_format
 from django_webtest import WebTest
 from mock import patch

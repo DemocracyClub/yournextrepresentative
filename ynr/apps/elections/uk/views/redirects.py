@@ -1,8 +1,7 @@
 import random
 
-from django.views.generic import RedirectView
-
 from candidates.models import Ballot
+from django.views.generic import RedirectView
 from elections.uk.lib import is_valid_postcode
 
 
@@ -77,8 +76,7 @@ class WhoPostcodeRedirect(RedirectView):
         postcode = self.request.GET.get("postcode", "")
         if is_valid_postcode(postcode):
             return "https://whocanivotefor.co.uk/elections/{}".format(postcode)
-        else:
-            return "/?who_postcode={}&postcode_invalid=1".format(postcode)
+        return "/?who_postcode={}&postcode_invalid=1".format(postcode)
 
 
 class HelpOutCTAView(RedirectView):

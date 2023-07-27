@@ -1,19 +1,19 @@
-from django_webtest import WebTest
-from sorl.thumbnail import get_thumbnail
 from unittest.mock import patch
 
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import faker_factory
-from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.tests.helpers import TmpMediaRootMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.contrib.auth import get_user_model
+from django_webtest import WebTest
+from moderation_queue.models import QueuedImage
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from people.models import Person, PersonImage
 from people.tests.factories import PersonFactory
 from popolo.models import Membership
-from django.contrib.auth import get_user_model
-from moderation_queue.models import QueuedImage
+from sorl.thumbnail import get_thumbnail
 
 
 class TestPersonModels(

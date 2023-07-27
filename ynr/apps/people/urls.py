@@ -1,6 +1,5 @@
-from django.urls import re_path
-
 import candidates.views as views
+from django.urls import re_path
 
 urlpatterns = [
     re_path(

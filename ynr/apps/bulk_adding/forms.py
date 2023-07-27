@@ -2,22 +2,21 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
 from django.utils.safestring import SafeText, mark_safe
-
 from elections.models import Election
+from official_documents.models import OfficialDocument
 from parties.forms import (
     PartyIdentifierField,
     PopulatePartiesMixin,
     PreviousPartyAffiliationsField,
 )
+from parties.models import Party, PartyDescription
 from people.forms.fields import (
     BallotInputWidget,
     StrippedCharField,
     ValidBallotField,
 )
-from search.utils import search_person_by_name
-from official_documents.models import OfficialDocument
-from parties.models import PartyDescription, Party
 from popolo.models import Membership
+from search.utils import search_person_by_name
 
 
 class BaseBulkAddFormSet(forms.BaseFormSet):
@@ -48,12 +47,12 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
         ):
             # No extra forms exist, meaning no new people were added
             return super().clean()
-        if hasattr(self, "cleaned_data"):
-            if not any(self.cleaned_data):
-                if not self.ballot.membership_set.exists():
-                    raise ValidationError(
-                        "At least one person required on this ballot"
-                    )
+        if (
+            hasattr(self, "cleaned_data")
+            and not any(self.cleaned_data)
+            and not self.ballot.membership_set.exists()
+        ):
+            raise ValidationError("At least one person required on this ballot")
 
         return super().clean()
 
@@ -117,6 +116,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
                 ),
             )
             return qs[:5]
+        return None
 
     def format_value(
         self,
@@ -273,8 +273,7 @@ class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
     def has_changed(self, *args, **kwargs):
         if "name" not in self.changed_data:
             return False
-        else:
-            return super().has_changed(*args, **kwargs)
+        return super().has_changed(*args, **kwargs)
 
     def clean(self):
         if (
@@ -410,7 +409,7 @@ class SelectPartyForm(forms.Form):
             .values_list("post__party_set__slug", flat=True)
         )
 
-        registers = set([p.upper() for p in party_set_qs])
+        registers = {p.upper() for p in party_set_qs}
         for register in registers:
             choices = Party.objects.register(register).party_choices(
                 include_description_ids=True
@@ -426,7 +425,7 @@ class SelectPartyForm(forms.Form):
 
     def clean(self):
         form_data = self.cleaned_data
-        if not len([v for v in form_data.values() if v]) == 1:
+        if len([v for v in form_data.values() if v]) != 1:
             self.cleaned_data = {}
             raise forms.ValidationError("Select one and only one party")
 

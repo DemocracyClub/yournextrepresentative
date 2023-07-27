@@ -1,7 +1,7 @@
 from datetime import date
-from django.template.defaultfilters import date as date_tag
 
 from django import template
+from django.template.defaultfilters import date as date_tag
 
 register = template.Library()
 

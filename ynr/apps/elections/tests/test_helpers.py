@@ -1,8 +1,8 @@
 import datetime
-from django.utils import timezone
 
-from elections.models import Election
+from django.utils import timezone
 from elections import helpers
+from elections.models import Election
 
 
 class TestHelpers:

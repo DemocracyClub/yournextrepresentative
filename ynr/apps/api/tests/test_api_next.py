@@ -1,10 +1,9 @@
-from django.core.files.storage import DefaultStorage
-from django_webtest import WebTest
-
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.helpers import TmpMediaRootMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.core.files.storage import DefaultStorage
+from django_webtest import WebTest
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from official_documents.models import OfficialDocument
 from parties.models import Party

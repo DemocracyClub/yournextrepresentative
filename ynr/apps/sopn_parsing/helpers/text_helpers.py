@@ -6,8 +6,7 @@ def clean_text(text, recheck=True):
     """
     Simple interface for cleaning text in a generic way
     """
-    text = _clean_text(text, recheck=True)
-    return text
+    return _clean_text(text, recheck=True)
 
 
 def clean_page_text(text):

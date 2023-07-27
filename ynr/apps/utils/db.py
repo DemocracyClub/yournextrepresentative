@@ -1,4 +1,4 @@
-from django.db.models import Transform, Func
+from django.db.models import Func, Transform
 
 
 class LastWord(Transform):

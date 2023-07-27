@@ -1,12 +1,11 @@
 from django import forms
-
+from django.core.validators import FileExtensionValidator
 from sopn_parsing.helpers.convert_pdf import (
     PandocConversionError,
     convert_sopn_to_pdf,
 )
 
 from .models import OfficialDocument
-from django.core.validators import FileExtensionValidator
 
 
 class UploadDocumentForm(forms.ModelForm):

@@ -74,10 +74,7 @@ def copy_org_to_party(apps, schema_editor):
         # assigned in the past (ynmp-party:2), or a slug (joint-party:1-2)
         # preferred in that order.
 
-        if org_party.pk in ORG_PK_TO_EC_IDS:
-            party_id = ORG_PK_TO_EC_IDS[org_party.pk]
-        else:
-            party_id = org_party.extra.slug
+        party_id = ORG_PK_TO_EC_IDS.get(org_party.pk, org_party.extra.slug)
 
         start_date = org_party.start_date
         if not start_date:

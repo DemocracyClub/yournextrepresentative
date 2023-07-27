@@ -1,10 +1,9 @@
 from abc import ABCMeta
 from datetime import date
 
+import people.tests.factories
 from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command
-
-import people.tests.factories
 from parties.tests.factories import PartyFactory
 from people.models import Person
 

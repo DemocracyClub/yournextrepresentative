@@ -1,8 +1,8 @@
 import sys
-from django.utils.safestring import mark_safe
 
 from django import template
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from drf_yasg.openapi import SchemaRef
 
 register = template.Library()
@@ -31,8 +31,7 @@ def link_to_definition(value, version_and_label="next"):
                 ref_id=ref_id, label=label, url=url
             )
         )
-    else:
-        return value
+    return value
 
 
 @register.filter

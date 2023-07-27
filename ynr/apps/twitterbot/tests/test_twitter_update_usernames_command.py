@@ -1,9 +1,8 @@
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.output import capture_output, split_output
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 from mock import Mock, patch
-
-from candidates.tests.auth import TestUserMixin
-from candidates.tests.output import capture_output, split_output
 from people.tests.factories import PersonFactory
 from twitterbot.helpers import TwitterBot
 from twitterbot.management.twitter import TwitterAPIData
@@ -12,34 +11,32 @@ from twitterbot.management.twitter import TwitterAPIData
 def fake_post_for_username_updater(*args, **kwargs):
     data = kwargs["data"]
     mock_result = Mock()
-    if "screen_name" in data:
-        if (
-            data["screen_name"]
-            == "notatwitteraccounteither,notreallyatwitteraccount"
-        ):
-            mock_result.json.return_value = [
-                {
-                    "id": 321,
-                    "screen_name": "notreallyatwitteraccount",
-                    "profile_image_url_https": "https://example.com/a.jpg",
-                },
-                {
-                    "id": 765,
-                    "screen_name": "notatwitteraccounteither",
-                    "profile_image_url_https": "https://example.com/b.jpg",
-                },
-            ]
-            return mock_result
-    if "user_id" in data:
-        if data["user_id"] == "987":
-            mock_result.json.return_value = [
-                {
-                    "id": 987,
-                    "screen_name": "ascreennamewewereunawareof",
-                    "profile_image_url_https": "https://example.com/c.jpg",
-                }
-            ]
-            return mock_result
+    if "screen_name" in data and (
+        data["screen_name"]
+        == "notatwitteraccounteither,notreallyatwitteraccount"
+    ):
+        mock_result.json.return_value = [
+            {
+                "id": 321,
+                "screen_name": "notreallyatwitteraccount",
+                "profile_image_url_https": "https://example.com/a.jpg",
+            },
+            {
+                "id": 765,
+                "screen_name": "notatwitteraccounteither",
+                "profile_image_url_https": "https://example.com/b.jpg",
+            },
+        ]
+        return mock_result
+    if "user_id" in data and data["user_id"] == "987":
+        mock_result.json.return_value = [
+            {
+                "id": 987,
+                "screen_name": "ascreennamewewereunawareof",
+                "profile_image_url_https": "https://example.com/c.jpg",
+            }
+        ]
+        return mock_result
     raise Exception("No Twitter API stub for {} {}".format(args, kwargs))
 
 
@@ -147,34 +144,32 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         def fake_post_screen_name_wrong(*args, **kwargs):
             data = kwargs["data"]
             mock_result = Mock()
-            if "screen_name" in data:
-                if (
-                    data["screen_name"]
-                    == "notatwitteraccounteither,notreallyatwitteraccount"
-                ):
-                    mock_result.json.return_value = [
-                        {
-                            "id": 321,
-                            "screen_name": "notreallyatwitteraccount",
-                            "profile_image_url_https": "https://example.com/a.jpg",
-                        }
-                    ]
-                    return mock_result
-            if "user_id" in data:
-                if data["user_id"] == "765,987":
-                    mock_result.json.return_value = [
-                        {
-                            "id": 987,
-                            "screen_name": "ascreennamewewereunawareof",
-                            "profile_image_url_https": "https://example.com/c.jpg",
-                        },
-                        {
-                            "id": 765,
-                            "screen_name": "changedscreenname",
-                            "profile_image_url_https": "https://example.com/b.jpg",
-                        },
-                    ]
-                    return mock_result
+            if "screen_name" in data and (
+                data["screen_name"]
+                == "notatwitteraccounteither,notreallyatwitteraccount"
+            ):
+                mock_result.json.return_value = [
+                    {
+                        "id": 321,
+                        "screen_name": "notreallyatwitteraccount",
+                        "profile_image_url_https": "https://example.com/a.jpg",
+                    }
+                ]
+                return mock_result
+            if "user_id" in data and data["user_id"] == "765,987":
+                mock_result.json.return_value = [
+                    {
+                        "id": 987,
+                        "screen_name": "ascreennamewewereunawareof",
+                        "profile_image_url_https": "https://example.com/c.jpg",
+                    },
+                    {
+                        "id": 765,
+                        "screen_name": "changedscreenname",
+                        "profile_image_url_https": "https://example.com/b.jpg",
+                    },
+                ]
+                return mock_result
             raise Exception(
                 "No Twitter API stub for {} {}".format(args, kwargs)
             )
@@ -205,29 +200,27 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         def fake_post_screen_name_disappeared(*args, **kwargs):
             data = kwargs["data"]
             mock_result = Mock()
-            if "screen_name" in data:
-                if (
-                    data["screen_name"]
-                    == "notatwitteraccounteither,notreallyatwitteraccount"
-                ):
-                    mock_result.json.return_value = [
-                        {
-                            "id": 765,
-                            "screen_name": "notatwitteraccounteither",
-                            "profile_image_url_https": "https://example.com/b.jpg",
-                        }
-                    ]
-                    return mock_result
-            if "user_id" in data:
-                if data["user_id"] == "987":
-                    mock_result.json.return_value = [
-                        {
-                            "id": 987,
-                            "screen_name": "ascreennamewewereunawareof",
-                            "profile_image_url_https": "https://example.com/c.jpg",
-                        }
-                    ]
-                    return mock_result
+            if "screen_name" in data and (
+                data["screen_name"]
+                == "notatwitteraccounteither,notreallyatwitteraccount"
+            ):
+                mock_result.json.return_value = [
+                    {
+                        "id": 765,
+                        "screen_name": "notatwitteraccounteither",
+                        "profile_image_url_https": "https://example.com/b.jpg",
+                    }
+                ]
+                return mock_result
+            if "user_id" in data and data["user_id"] == "987":
+                mock_result.json.return_value = [
+                    {
+                        "id": 987,
+                        "screen_name": "ascreennamewewereunawareof",
+                        "profile_image_url_https": "https://example.com/c.jpg",
+                    }
+                ]
+                return mock_result
             raise Exception(
                 "No Twitter API stub for {} {}".format(args, kwargs)
             )
@@ -258,30 +251,28 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         def fake_post_user_id_disappeared(*args, **kwargs):
             data = kwargs["data"]
             mock_result = Mock()
-            if "screen_name" in data:
-                if (
-                    data["screen_name"]
-                    == "notatwitteraccounteither,notreallyatwitteraccount"
-                ):
-                    mock_result.json.return_value = [
+            if "screen_name" in data and (
+                data["screen_name"]
+                == "notatwitteraccounteither,notreallyatwitteraccount"
+            ):
+                mock_result.json.return_value = [
+                    {
+                        "id": 321,
+                        "screen_name": "notreallyatwitteraccount",
+                        "profile_image_url_https": "https://example.com/a.jpg",
+                    }
+                ]
+                return mock_result
+            if "user_id" in data and data["user_id"] == "765,987":
+                mock_result.json.return_value = {
+                    "errors": [
                         {
-                            "id": 321,
-                            "screen_name": "notreallyatwitteraccount",
-                            "profile_image_url_https": "https://example.com/a.jpg",
+                            "code": 17,
+                            "message": "No user matches for specified terms.",
                         }
                     ]
-                    return mock_result
-            if "user_id" in data:
-                if data["user_id"] == "765,987":
-                    mock_result.json.return_value = {
-                        "errors": [
-                            {
-                                "code": 17,
-                                "message": "No user matches for specified terms.",
-                            }
-                        ]
-                    }
-                    return mock_result
+                }
+                return mock_result
             raise Exception(
                 "No Twitter API stub for {} {}".format(args, kwargs)
             )

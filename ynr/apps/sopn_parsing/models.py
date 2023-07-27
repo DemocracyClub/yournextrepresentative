@@ -35,3 +35,4 @@ class ParsedSOPN(TimeStampedModel):
             return data.to_html(index=False, escape=False).replace(
                 "\\n", "<br>"
             )
+        return None

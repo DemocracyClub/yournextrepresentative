@@ -86,10 +86,7 @@ class QueryStringNode(Node):
             (smart_str(k, "ascii"), op, v.resolve(context))
             for k, op, v in self.mods
         ]
-        if self.qdict:
-            qdict = self.qdict.resolve(context)
-        else:
-            qdict = None
+        qdict = self.qdict.resolve(context) if self.qdict else None
         # Internally work only with QueryDict
         qdict = self._get_initial_query_dict(qdict)
         # assert isinstance(qdict, QueryDict)
@@ -101,8 +98,7 @@ class QueryStringNode(Node):
         if self.asvar:
             context[self.asvar] = qstring
             return ""
-        else:
-            return qstring
+        return qstring
 
     def _get_initial_query_dict(self, qdict):
         if not qdict:
@@ -117,7 +113,7 @@ class QueryStringNode(Node):
             # Accept any old dict or list of pairs.
             try:
                 pairs = qdict.items()
-            except:
+            except Exception:
                 pairs = qdict
             qdict = QueryDict(None, mutable=True)
             # Enter each pair into QueryDict object:
@@ -130,7 +126,7 @@ class QueryStringNode(Node):
                             qdict.appendlist(k, str(e))
                     else:
                         qdict.appendlist(k, str(v))
-            except:
+            except Exception:
                 # Wrong data structure, qdict remains empty.
                 pass
         return qdict
@@ -139,8 +135,7 @@ class QueryStringNode(Node):
         if not val:
             if op == "=":
                 return []
-            else:
-                return current_list
+            return current_list
         # Deal with lists only.
         if not isinstance(val, (list, tuple)):
             val = [val]

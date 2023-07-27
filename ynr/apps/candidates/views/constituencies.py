@@ -1,3 +1,4 @@
+from candidates.forms import ConstituencyRecordWinnerForm
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
@@ -6,8 +7,6 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView, View
-
-from candidates.forms import ConstituencyRecordWinnerForm
 from elections.mixins import ElectionMixin
 from people.models import Person
 from uk_results.helpers import RecordBallotResultsHelper

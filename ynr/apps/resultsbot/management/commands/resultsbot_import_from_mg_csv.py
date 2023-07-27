@@ -1,9 +1,8 @@
 import csv
 import os
 
-from django.core.management.base import BaseCommand
-
 import resultsbot
+from django.core.management.base import BaseCommand
 from elections.models import Election
 from resultsbot.helpers import ResultsBot
 from resultsbot.importers.modgov import ModGovImporter
@@ -73,7 +72,7 @@ class Command(BaseCommand):
                     continue
 
                 # avoids storing a partial result
-                has_all_votes = all([c.votes for c in candidates])
+                has_all_votes = all(c.votes for c in candidates)
                 if not has_all_votes:
                     print(
                         f"Couldn't find a vote count for every candidate, skipping {div.local_area.ballot_paper_id}"

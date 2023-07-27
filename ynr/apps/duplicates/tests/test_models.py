@@ -1,7 +1,6 @@
+from candidates.tests.auth import TestUserMixin
 from django.db import IntegrityError
 from django.test import TestCase
-
-from candidates.tests.auth import TestUserMixin
 from duplicates.models import DuplicateSuggestion
 from people.tests.factories import PersonFactory
 

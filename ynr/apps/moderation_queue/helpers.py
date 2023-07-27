@@ -1,14 +1,16 @@
-import requests
 from io import BytesIO
 from tempfile import NamedTemporaryFile
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+
+import requests
 from candidates.models.db import ActionType, LoggedAction
 from candidates.views.version_data import get_client_ip
-from .models import QueuedImage
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from PIL import Image as PillowImage
+from django.urls import reverse
 from PIL import ExifTags, ImageOps
+from PIL import Image as PillowImage
+
+from .models import QueuedImage
 
 
 def upload_photo_response(request, person, image_form, url_form):
@@ -59,7 +61,7 @@ def rotate_photo(original_image):
     # in the review process.
     pil_image = PillowImage.open(original_image)
 
-    for orientation in ExifTags.TAGS.keys():
+    for orientation in ExifTags.TAGS:
         if ExifTags.TAGS[orientation] == "Orientation":
             break
         exif = pil_image.getexif()

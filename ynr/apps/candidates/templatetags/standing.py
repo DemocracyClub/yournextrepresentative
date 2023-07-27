@@ -1,10 +1,10 @@
 from django import template
 from django.conf import settings
+from django.contrib.humanize.templatetags.humanize import ordinal
 from django.db.models import Prefetch
 from django.utils.safestring import mark_safe
 from popolo.models import Membership
 from uk_results.models import CandidateResult
-from django.contrib.humanize.templatetags.humanize import ordinal
 
 register = template.Library()
 

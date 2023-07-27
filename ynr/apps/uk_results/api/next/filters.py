@@ -1,5 +1,4 @@
-from django_filters import filterset, filters
-
+from django_filters import filters, filterset
 from popolo.models import Membership
 from uk_results.models import ResultSet
 

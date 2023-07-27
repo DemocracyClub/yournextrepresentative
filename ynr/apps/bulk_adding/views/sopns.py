@@ -1,4 +1,10 @@
 from braces.views import LoginRequiredMixin
+from bulk_adding import forms, helpers
+from bulk_adding.forms import QuickAddSinglePersonForm
+from bulk_adding.models import RawPeople
+from candidates.models import Ballot, LoggedAction
+from candidates.models.db import ActionType, EditType
+from candidates.views.version_data import get_client_ip
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import F
@@ -6,14 +12,7 @@ from django.db.models.query import Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.views.generic import RedirectView, TemplateView, FormView
-
-from bulk_adding import forms, helpers
-from bulk_adding.forms import QuickAddSinglePersonForm
-from bulk_adding.models import RawPeople
-from candidates.models import Ballot, LoggedAction
-from candidates.models.db import EditType, ActionType
-from candidates.views.version_data import get_client_ip
+from django.views.generic import FormView, RedirectView, TemplateView
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import OfficialDocument
 from official_documents.views import get_add_from_document_cta_flash_message
@@ -106,8 +105,7 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         context = self.get_context_data(**kwargs)
         if context["formset"].is_valid():
             return self.form_valid(context)
-        else:
-            return self.form_invalid(context)
+        return self.form_invalid(context)
 
 
 class BulkAddSOPNView(BaseSOPNBulkAddView):
@@ -116,11 +114,13 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
     def get(self, request, *args, **kwargs):
         if not request.GET.get("edit"):
             self.ballot = self.get_ballot()
-            if hasattr(self.ballot, "rawpeople"):
-                if self.ballot.rawpeople.is_trusted:
-                    return HttpResponseRedirect(
-                        self.ballot.get_bulk_add_review_url()
-                    )
+            if (
+                hasattr(self.ballot, "rawpeople")
+                and self.ballot.rawpeople.is_trusted
+            ):
+                return HttpResponseRedirect(
+                    self.ballot.get_bulk_add_review_url()
+                )
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

@@ -1,9 +1,4 @@
-from django.test import TestCase
-from django.urls import reverse
-from django_webtest import WebTest
-from freezegun import freeze_time
 from candidates.models.popolo_extra import Ballot
-
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import (
     BallotPaperFactory,
@@ -11,6 +6,10 @@ from candidates.tests.factories import (
     MembershipFactory,
 )
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.test import TestCase
+from django.urls import reverse
+from django_webtest import WebTest
+from freezegun import freeze_time
 from people.tests.factories import PersonFactory
 from popolo.models import Membership
 from uk_results.models import CandidateResult, ResultSet

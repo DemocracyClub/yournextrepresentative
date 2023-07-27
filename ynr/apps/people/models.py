@@ -1,8 +1,7 @@
+import contextlib
 from datetime import date
 from enum import Enum, unique
 from urllib.parse import quote_plus, urljoin
-
-from django.utils.safestring import SafeString
 
 from auth_helpers.views import user_in_group
 from candidates.diffs import get_version_diffs
@@ -25,8 +24,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.html import format_html
+from django.utils.safestring import SafeString
 from django_extensions.db.models import TimeStampedModel
-
 from people.helpers import person_names_equal
 from people.managers import (
     PersonIdentifierQuerySet,
@@ -37,7 +36,6 @@ from popolo.models import Membership, VersionNotFound
 from slugify import slugify
 from sorl.thumbnail import delete as sorl_delete
 from sorl.thumbnail import get_thumbnail
-
 
 TRUSTED_TO_EDIT_NAME = "Trusted to edit person name"
 
@@ -323,12 +321,10 @@ class Person(TimeStampedModel, models.Model):
 
     @property
     def has_locked_and_current_ballots(self):
-        return (
-            True
-            if self.memberships.filter(
+        return bool(
+            self.memberships.filter(
                 ballot__election__current=True, ballot__candidates_locked=True
             )
-            else False
         )
 
     def edit_name(self, suggested_name, initial_name, user):
@@ -427,7 +423,7 @@ class Person(TimeStampedModel, models.Model):
             field_list.remove("extra_fields/favourite_biscuits")
             field_list.append("favourite_biscuits")
 
-        return list(set(field.split("/")[0] for field in field_list))
+        return list({field.split("/")[0] for field in field_list})
 
     def get_slug(self):
         return slugify(self.name)
@@ -441,7 +437,7 @@ class Person(TimeStampedModel, models.Model):
     def last_name_guess(self):
         try:
             return self.name.strip().split(" ")[-1]
-        except:
+        except IndexError:
             return self.name
 
     def get_absolute_url(self, request=None):
@@ -488,6 +484,7 @@ class Person(TimeStampedModel, models.Model):
         identifier = self.get_single_identifier_of_type(value_type)
         if identifier:
             return identifier.value
+        return None
 
     @property
     def get_email(self):
@@ -516,10 +513,8 @@ class Person(TimeStampedModel, models.Model):
         attrs = ["_prefetched_objects_cache", "get_all_idenfitiers"]
 
         for attr in attrs:
-            try:
+            with contextlib.suppress(AttributeError):
                 delattr(self, attr)
-            except AttributeError:
-                pass
 
     @property
     def last_candidacy(self):
@@ -763,7 +758,7 @@ class Person(TimeStampedModel, models.Model):
             parlparse_id = twfy_id.internal_identifier
             theyworkforyou_url = twfy_id.value
 
-        row = {
+        return {
             "id": self.id,
             "name": self.name,
             "honorific_prefix": self.honorific_prefix,
@@ -802,7 +797,6 @@ class Person(TimeStampedModel, models.Model):
                 "youtube_profile"
             ),
         }
-        return row
 
     @cached_property
     def person_image_model(self):
@@ -875,9 +869,10 @@ class Person(TimeStampedModel, models.Model):
                 election__current=True
             ).get_next_ballot_for_post(elected_ballot)
 
-            if next_ballot:
-                if self.not_standing.filter(slug=next_ballot.election.slug):
-                    standing_down_elections.append(next_ballot.election)
+            if next_ballot and self.not_standing.filter(
+                slug=next_ballot.election.slug
+            ):
+                standing_down_elections.append(next_ballot.election)
         return standing_down_elections
 
     @transaction.atomic
@@ -895,10 +890,8 @@ class Person(TimeStampedModel, models.Model):
 
     def create_person_image(self, queued_image, copyright):
         cropped_image = queued_image.crop_image()
-        try:
+        with contextlib.suppress(PersonImage.DoesNotExist):
             self.image.delete()
-        except PersonImage.DoesNotExist:
-            pass
 
         source = f"Uploaded by {queued_image.uploaded_by}: Approved from photo moderation queue"
         PersonImage.objects.create_from_file(

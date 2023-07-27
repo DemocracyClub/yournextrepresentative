@@ -1,5 +1,5 @@
-from parties.models import Party
 from api.next.filters import LastUpdatedMixin
+from parties.models import Party
 
 
 class PartyFilter(LastUpdatedMixin):
