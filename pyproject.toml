@@ -1,5 +1,7 @@
 [tool.black]
 line-length = 80
+extend-exclude = ["ynr/settings/local.py"]
+
 
 [tool.ruff]
 line-length = 80
@@ -22,11 +24,20 @@ exclude_lines = [
 [tool.pytest.ini_options]
 norecursedirs =[
     "ynr/static",
+    "ynr/media",
     "deploy",
     ".aws-sam",
     ".ruff-cache",
+    "locale",
+    ".git",
+    "data",
+    "docs",
+    "templates",
+    ".download-cache",
+    "__pycache__",
+
 ]
-DJANGO_SETTINGS_MODULE = "democracy_club.settings.testing"
+DJANGO_SETTINGS_MODULE = "ynr.settings.testing"
 addopts =[
     "--ignore=*/__pycache__",
     "--ignore=.*",
@@ -36,3 +47,6 @@ addopts =[
     "--ruff",
     "--black",
 ]
+FAIL_INVALID_TEMPLATE_VARS = 1
+
+env = "RUN_ENV=test"
