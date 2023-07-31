@@ -12,7 +12,7 @@ jobs:
           CIRCLECI: true
           PGHOST: 127.0.0.1
           RUN_ENV: test
-      - image: cimg/postgres:11.17
+      - image: cimg/postgres:12.15
         environment:
           POSTGRES_USER: ynr
           POSTGRES_DB: ynr
