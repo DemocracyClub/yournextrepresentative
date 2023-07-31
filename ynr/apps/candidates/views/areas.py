@@ -5,7 +5,6 @@ NOTE: Both views in this file are deprecated and redirects should be found
 """
 
 from django.views.generic import TemplateView
-
 from popolo.models import Post
 
 

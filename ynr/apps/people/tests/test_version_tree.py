@@ -1,6 +1,5 @@
-from django.test import TestCase
-
 from candidates.models.versions import get_versions_parent_map
+from django.test import TestCase
 
 
 class TestVersionTree(TestCase):

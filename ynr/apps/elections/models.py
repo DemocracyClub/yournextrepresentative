@@ -6,10 +6,9 @@ from django.db import connection, models
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.http import urlencode
 from django.utils.functional import cached_property
+from django.utils.http import urlencode
 from moderation_queue.models import QueuedImage
-
 from utils.mixins import EEModifiedMixin
 
 

@@ -1,29 +1,26 @@
 import datetime
+
 import faker
-from django.test import TestCase, RequestFactory
-from django.contrib.auth.models import User
-
-from django.utils import timezone
-from django.db import IntegrityError
-from django.db.models import Max
-from django.db.models.functions import Greatest
-from mock import patch
+from candidates.models import Ballot, LoggedAction
 from candidates.models.db import ActionType
-
 from candidates.tests.factories import (
     BallotPaperFactory,
     ElectionFactory,
+    MembershipFactory,
     OrganizationFactory,
     PostFactory,
 )
+from django.contrib.auth.models import User
+from django.db import IntegrityError
+from django.db.models import Max
+from django.db.models.functions import Greatest
+from django.test import RequestFactory, TestCase
+from django.utils import timezone
 from elections.tests.test_ballot_view import SingleBallotStatesMixin
+from mock import patch
 from moderation_queue.tests.factories import QueuedImageFactory
-from uk_results.models import ResultSet
-
-from candidates.models import Ballot
-from candidates.tests.factories import MembershipFactory
 from people.tests.factories import PersonFactory
-from candidates.models import LoggedAction
+from uk_results.models import ResultSet
 
 fake = faker.Faker()
 

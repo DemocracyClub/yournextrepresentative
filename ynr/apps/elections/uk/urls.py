@@ -1,5 +1,4 @@
 from django.urls import include, re_path
-
 from elections.uk.views import frontpage, redirects
 
 post_ignored_slug_re = r"(?!record-winner$|retract-winner$|.*\.csv$).*"

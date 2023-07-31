@@ -1,11 +1,10 @@
 import re
 
+from candidates.tests.auth import TestUserMixin
+from candidates.tests.output import capture_output, split_output
 from django.core.management import call_command
 from django.test import TestCase
 from mock import Mock, call, patch
-
-from candidates.tests.auth import TestUserMixin
-from candidates.tests.output import capture_output, split_output
 from moderation_queue.models import QueuedImage
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from people.models import PersonImage
@@ -214,10 +213,7 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
                 return Mock(
                     content=self.example_image_binary_data, status_code=404
                 )
-            else:
-                return Mock(
-                    content=self.example_image_binary_data, status_code=200
-                )
+            return Mock(content=self.example_image_binary_data, status_code=200)
 
         mock_requests.get.side_effect = fake_get
 
@@ -263,10 +259,7 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         def fake_get(url, *args, **kwargs):
             if url == "https://pbs.twimg.com/profile_images/abc/foo.jpg":
                 return Mock(content=b"I am not an image.", status_code=200)
-            else:
-                return Mock(
-                    content=self.example_image_binary_data, status_code=200
-                )
+            return Mock(content=self.example_image_binary_data, status_code=200)
 
         mock_requests.get.side_effect = fake_get
 

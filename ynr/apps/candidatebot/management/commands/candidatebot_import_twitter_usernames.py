@@ -1,6 +1,6 @@
+from candidatebot.helpers import CandidateBot
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
-from candidatebot.helpers import CandidateBot
 from people.models import Person
 from uk_results.helpers import read_csv_from_url
 

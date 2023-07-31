@@ -1,8 +1,7 @@
-from rest_framework import serializers
-
 from candidates import models as candidates_models
-from people.api.next.serializers import MinimalPersonSerializer
 from elections.api.next.serializers import MinimalBallotSerializer
+from people.api.next.serializers import MinimalPersonSerializer
+from rest_framework import serializers
 
 
 class LoggedActionSerializer(serializers.HyperlinkedModelSerializer):

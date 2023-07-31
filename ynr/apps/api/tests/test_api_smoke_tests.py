@@ -1,7 +1,6 @@
-from django_webtest import WebTest
-
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django_webtest import WebTest
 
 
 class TestAPI(TestUserMixin, UK2015ExamplesMixin, WebTest):
@@ -9,6 +8,11 @@ class TestAPI(TestUserMixin, UK2015ExamplesMixin, WebTest):
         super().setUp()
 
     def test_each_endpoint(self):
+        """
+        TODO: Convert to use pytest-subtest
+
+        :return:
+        """
         endpoints_to_ignore = ["candidates_for_postcode"]
         for version in ("v0.9", "next"):
             response = self.app.get("/api/{}/".format(version))
@@ -28,7 +32,7 @@ class TestAPI(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     response = self.app.get(url, expect_errors=True)
                     try:
                         self.assertEqual(response.status_code, 200)
-                    except:
+                    except AssertionError:
                         raise self.failureException(
                             "Error with '{}' {} endpoint".format(version, name)
                         )

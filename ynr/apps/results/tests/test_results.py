@@ -1,12 +1,11 @@
 from io import BytesIO
 
-from django.utils.feedgenerator import rfc3339_date
-from django_webtest import WebTest
-from lxml import etree
-
 import people.tests.factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.utils.feedgenerator import rfc3339_date
+from django_webtest import WebTest
+from lxml import etree
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from people.models import PersonImage
 from results.models import ResultEvent

@@ -1,6 +1,5 @@
-from mock import MagicMock
-
 from elections.filters import BallotFilter
+from mock import MagicMock
 
 
 class TestBallotFilter:

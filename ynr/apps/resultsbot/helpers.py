@@ -1,10 +1,9 @@
+from candidates.models import LoggedAction
+from candidates.models.db import ActionType, EditType
+from candidates.views.version_data import get_change_metadata
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import transaction
-
-from candidates.models import LoggedAction
-from candidates.models.db import EditType, ActionType
-from candidates.views.version_data import get_change_metadata
 from results.models import ResultEvent
 from uk_results.models import ResultSet
 

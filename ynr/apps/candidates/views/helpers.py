@@ -44,13 +44,12 @@ class ProcessInlineFormsMixin:
             kwargs["instance"] = self.object
         if self.request.method == "POST":
             return formset(self.request.POST, self.request.FILES, **kwargs)
-        else:
-            return formset(**kwargs)
+        return formset(**kwargs)
 
     def get_all_initialized_inline_formsets(self):
         return {
             fs_name: self.get_inline_formset(fs_name)
-            for fs_name in self.get_inline_formsets().keys()
+            for fs_name in self.get_inline_formsets()
         }
 
     def post(self, request, *args, **kwargs):
@@ -66,12 +65,11 @@ class ProcessInlineFormsMixin:
         form = self.get_form()
         all_forms = self.get_all_initialized_inline_formsets()
         all_forms["form"] = form
-        all_valid = all([f.is_valid() for f in all_forms.values()])
+        all_valid = all(f.is_valid() for f in all_forms.values())
 
         if all_valid:
             return self.form_valid(all_forms)
-        else:
-            return self.form_invalid(all_forms)
+        return self.form_invalid(all_forms)
 
     def form_invalid(self, all_forms):
         """

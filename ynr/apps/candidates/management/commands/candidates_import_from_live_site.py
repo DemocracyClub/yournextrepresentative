@@ -1,23 +1,22 @@
 import json
 from contextlib import contextmanager
 
+import people.models
 import requests
-from django.contrib.auth.models import User
+from api.next.serializers import OrganizationSerializer
+from candidates.models import Ballot
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
-from parties.importer import YNRPartyDescriptionImporter
-
-import people.models
-from candidates.models import Ballot
 from parties.api.next.serializers import PartySerializer
+from parties.importer import YNRPartyDescriptionImporter
 from parties.models import Party
 from people.api.next.serializers import (
-    PersonSerializer,
     PersonIdentifierSerializer,
+    PersonSerializer,
 )
-from api.next.serializers import OrganizationSerializer
 from people.models import PersonIdentifier
 from popolo import models as pmodels
 from popolo.api.next.serializers import CandidacyOnPersonSerializer
@@ -247,8 +246,7 @@ class Command(BaseCommand):
         serializer = PartySerializer(data=party_json)
         if serializer.is_valid():
             return serializer.save()
-        else:
-            raise ValueError(serializer.errors)
+        raise ValueError(serializer.errors)
 
     def warm_cache(self):
         ballots = Ballot.objects.all()

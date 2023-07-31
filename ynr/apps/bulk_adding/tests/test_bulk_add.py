@@ -1,13 +1,13 @@
 from unittest.mock import patch
-from django_webtest import WebTest
-from bulk_adding.forms import BulkAddFormSet
 
+from bulk_adding.forms import BulkAddFormSet
 from bulk_adding.models import RawPeople
 from candidates.models.db import ActionType, EditType, LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.test_update_view import membership_id_set
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django_webtest import WebTest
 from official_documents.models import OfficialDocument
 from parties.models import Party
 from parties.tests.factories import PartyDescriptionFactory, PartyFactory
@@ -284,7 +284,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(membership.party_name, self.ld_party.name)
         self.assertEqual(
             set(membership.previous_party_affiliations.all()),
-            set([self.labour_party, self.conservative_party]),
+            {self.labour_party, self.conservative_party},
         )
 
     def test_submitting_form_with_previous_party_affiliations_invalid(self):

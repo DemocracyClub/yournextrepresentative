@@ -1,10 +1,9 @@
-from django.test import TestCase
-
 from candidates.models.popolo_extra import (
     UnsafeToDelete,
     model_has_related_objects,
     raise_if_unsafe_to_delete,
 )
+from django.test import TestCase
 from people.tests.factories import PersonFactory
 
 

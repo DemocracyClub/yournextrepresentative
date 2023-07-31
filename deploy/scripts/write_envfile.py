@@ -3,7 +3,6 @@ from typing import Dict, List
 
 import boto3
 
-
 client = boto3.client("ssm", region_name="eu-west-2")
 
 

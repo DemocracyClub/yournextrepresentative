@@ -1,25 +1,24 @@
 import json
+from unittest import skipIf
 from unittest.mock import patch
-
-from django.core.management import call_command
-from django.test import TestCase
 
 from bulk_adding.models import RawPeople
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.core.management import call_command
+from django.test import TestCase
 from official_documents.models import OfficialDocument
+from pandas import Index, Series
 from parties.models import Party
 from parties.tests.factories import PartyFactory
 from parties.tests.fixtures import DefaultPartyFixtures
-from sopn_parsing.models import ParsedSOPN
 from sopn_parsing.helpers import parse_tables
+from sopn_parsing.models import ParsedSOPN
+from sopn_parsing.tests import should_skip_pdf_tests
+from sopn_parsing.tests.data.welsh_sopn_data import welsh_sopn_data
+
 from ynr.apps.sopn_parsing.management.commands.sopn_parsing_parse_tables import (
     Command as ParseTablesCommand,
 )
-from unittest import skipIf
-from pandas import Index, Series
-
-from sopn_parsing.tests import should_skip_pdf_tests
-from sopn_parsing.tests.data.welsh_sopn_data import welsh_sopn_data
 
 
 class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
@@ -404,18 +403,17 @@ class TestParseTablesUnitTests(UK2015ExamplesMixin, TestCase):
             },
         ]
         for case in cases:
-            with self.subTest(msg=case["party_str"]):
-                with patch.object(
-                    parse_tables, "get_party", return_value=case["party"]
-                ):
-                    raw_data = {}
-                    sopn = ParsedSOPN()
-                    result = parse_tables.add_previous_party_affiliations(
-                        party_str=case["party_str"],
-                        raw_data=raw_data,
-                        sopn=sopn,
-                    )
-                    assert result == case["expected"]
+            with self.subTest(msg=case["party_str"]), patch.object(
+                parse_tables, "get_party", return_value=case["party"]
+            ):
+                raw_data = {}
+                sopn = ParsedSOPN()
+                result = parse_tables.add_previous_party_affiliations(
+                    party_str=case["party_str"],
+                    raw_data=raw_data,
+                    sopn=sopn,
+                )
+                assert result == case["expected"]
 
 
 class TestParseTablesFilterKwargs(TestCase):

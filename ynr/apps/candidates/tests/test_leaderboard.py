@@ -1,9 +1,7 @@
-from django.contrib.auth.models import User
-from django_webtest import WebTest
-
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType
-
+from django.contrib.auth.models import User
+from django_webtest import WebTest
 from people.tests.factories import PersonFactory
 
 from .auth import TestUserMixin

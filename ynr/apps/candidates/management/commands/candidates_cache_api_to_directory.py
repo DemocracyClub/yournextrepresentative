@@ -2,7 +2,7 @@ import json
 import re
 from datetime import datetime
 from os.path import join
-from urllib.parse import urlsplit, parse_qs
+from urllib.parse import parse_qs, urlsplit
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
@@ -98,10 +98,7 @@ class Command(BaseCommand):
         if not url_prefix:
             url_prefix = self.storage.base_url
 
-        if self.secure:
-            match = "https://"
-        else:
-            match = "http://"
+        match = "https://" if self.secure else "http://"
 
         if not url_prefix.startswith(match):
             raise ValueError(
@@ -116,8 +113,7 @@ class Command(BaseCommand):
             return None
         page = page_from_url(url)
         filename = page_filename(endpoint, page)
-        url = "/".join([self.url_prefix, self.timestamp, filename])
-        return url
+        return "/".join([self.url_prefix, self.timestamp, filename])
 
     def get(self, url):
         kwargs = {"SERVER_NAME": self.hostname}

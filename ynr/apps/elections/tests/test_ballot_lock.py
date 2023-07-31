@@ -1,11 +1,10 @@
-from django.urls import reverse
-from django_webtest import WebTest
-
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.urls import reverse
+from django_webtest import WebTest
 from parties.tests.factories import PartyFactory
 from people.forms.forms import PersonMembershipForm
 from people.models import Person

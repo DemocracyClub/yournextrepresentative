@@ -1,6 +1,5 @@
 import mock
 from django_webtest import WebTest
-
 from people.tests.factories import PersonFactory
 
 from .auth import TestUserMixin

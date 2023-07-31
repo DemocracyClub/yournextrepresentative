@@ -1,9 +1,7 @@
-from django.test import TestCase
-
 import people.tests.factories
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType
-
+from django.test import TestCase
 
 from .auth import TestUserMixin
 from .uk_examples import UK2015ExamplesMixin

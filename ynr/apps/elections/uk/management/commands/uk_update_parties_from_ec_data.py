@@ -6,11 +6,10 @@ from urllib.parse import urlencode
 import dateutil.parser
 import magic
 import requests
+from candidates.models import PartySet
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
-
-from candidates.models import PartySet
 from popolo.models import Organization
 
 emblem_directory = join(settings.BASE_DIR, "data", "party-emblems")

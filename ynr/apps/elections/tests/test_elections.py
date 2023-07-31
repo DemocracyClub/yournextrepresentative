@@ -1,13 +1,13 @@
-import pytest
 from datetime import date, timedelta
-from django.test import TestCase
 
+import pytest
 from candidates.tests.factories import (
     ElectionFactory,
     ParliamentaryChamberFactory,
 )
-from elections.models import Election
 from django.template.defaultfilters import date as date_filter
+from django.test import TestCase
+from elections.models import Election
 
 from ynr.settings.constants.formats.en.formats import (
     DATE_FORMAT,

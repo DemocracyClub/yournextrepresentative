@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.RemoveField(model_name="area", name="content_type"),
         migrations.RemoveField(model_name="area", name="parent"),
         migrations.AlterUniqueTogether(
-            name="areai18name", unique_together=set([])
+            name="areai18name", unique_together=set()
         ),
         migrations.RemoveField(model_name="areai18name", name="area"),
         migrations.RemoveField(model_name="areai18name", name="language"),

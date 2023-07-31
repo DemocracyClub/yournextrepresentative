@@ -1,7 +1,7 @@
 from django.urls import re_path
+from uk_results.views import Parl19ResultsCSVView
 
 from .feeds import BasicResultEventsFeed, ResultEventsFeed
-from uk_results.views import Parl19ResultsCSVView
 
 urlpatterns = [
     re_path(r"^all\.atom$", ResultEventsFeed(), name="atom-results"),

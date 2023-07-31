@@ -1,14 +1,13 @@
-from django.contrib import messages
-from django.db.models import Prefetch
-from django.views.generic import ListView, UpdateView
-from django.urls import reverse_lazy
-
 from auth_helpers.views import GroupRequiredMixin
 from candidates.models.auth import TRUSTED_TO_MERGE_GROUP_NAME
+from django.contrib import messages
+from django.db.models import Prefetch
+from django.urls import reverse_lazy
+from django.views.generic import ListView, UpdateView
 from popolo.models import Membership
 
-from .models import DuplicateSuggestion
 from .forms import RejectionForm
+from .models import DuplicateSuggestion
 
 
 class DuplicateSuggestionListView(GroupRequiredMixin, ListView):

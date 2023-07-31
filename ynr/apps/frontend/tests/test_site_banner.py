@@ -2,7 +2,6 @@ from datetime import timedelta
 
 from django.test import TestCase
 from django.utils.timezone import now
-
 from frontend.models import SiteBanner
 
 

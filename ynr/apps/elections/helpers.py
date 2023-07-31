@@ -1,8 +1,8 @@
 import datetime
 from functools import update_wrapper
-from django.utils import timezone
 
 from candidates.models import Ballot
+from django.utils import timezone
 
 
 class ElectionIDSwitcher:

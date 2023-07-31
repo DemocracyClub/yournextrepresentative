@@ -2,7 +2,6 @@ import csv
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
-
 from people.models import Person, PersonIdentifier
 
 
@@ -30,28 +29,28 @@ class Command(BaseCommand):
                     options["id_type"], ", ".join(id_types)
                 )
             )
+        with open(options["file"]) as f:
+            in_file = csv.reader(f)
+            for line in in_file:
+                person_id = line[0]
+                person = Person.objects.get_by_id_with_redirects(person_id)
+                if not person:
+                    self.stderr.write(
+                        "No person with ID {} exists".format(person_id)
+                    )
+                    continue
 
-        in_file = csv.reader(open(options["file"]))
-        for line in in_file:
-            person_id = line[0]
-            person = Person.objects.get_by_id_with_redirects(person_id)
-            if not person:
-                self.stderr.write(
-                    "No person with ID {} exists".format(person_id)
-                )
-                continue
+                exists = False
+                try:
+                    pi = PersonIdentifier.objects.get(
+                        person_id=person.pk, value_type=options["id_type"]
+                    )
+                    exists = True
+                except PersonIdentifier.DoesNotExist:
+                    pi = PersonIdentifier(
+                        person_id=person.pk, value_type=options["id_type"]
+                    )
 
-            exists = False
-            try:
-                pi = PersonIdentifier.objects.get(
-                    person_id=person.pk, value_type=options["id_type"]
-                )
-                exists = True
-            except PersonIdentifier.DoesNotExist:
-                pi = PersonIdentifier(
-                    person_id=person.pk, value_type=options["id_type"]
-                )
-
-            if not exists or exists and options["replace"]:
-                pi.value = line[1]
-                pi.save()
+                if not exists or exists and options["replace"]:
+                    pi.value = line[1]
+                    pi.save()

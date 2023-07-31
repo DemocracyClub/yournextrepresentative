@@ -1,9 +1,8 @@
 from collections import defaultdict
 
+from candidates.csv_helpers import list_to_csv, memberships_dicts_for_csv
 from django.core.files.storage import DefaultStorage
 from django.core.management.base import BaseCommand, CommandError
-
-from candidates.csv_helpers import list_to_csv, memberships_dicts_for_csv
 from elections.models import Election
 
 
@@ -79,7 +78,7 @@ class Command(BaseCommand):
 
         # Make a CSV file per election date
         slugs_by_date = defaultdict(list)
-        for slug in membership_by_election.keys():
+        for slug in membership_by_election:
             slugs_by_date[slug.split(".")[-1]].append(slug)
         for date, slugs in slugs_by_date.items():
             memberships_for_date = []

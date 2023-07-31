@@ -1,13 +1,11 @@
+from api.helpers import DefaultPageNumberPagination
+from popolo.models import Membership
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
-from api.helpers import DefaultPageNumberPagination
-from popolo.models import Membership
-from uk_results.api.next.filters import ResultSetFilter, ElectedSetFilter
+from uk_results.api.next.filters import ElectedSetFilter, ResultSetFilter
+from uk_results.api.next.serializers import ElectedSerializer, ResultSerializer
 from uk_results.models import ResultSet
-
-from uk_results.api.next.serializers import ResultSerializer, ElectedSerializer
 
 
 class ResultViewSet(viewsets.ReadOnlyModelViewSet):

@@ -1,13 +1,12 @@
 from collections import OrderedDict
 
+from candidates.models import LoggedAction
+from candidates.models.db import ActionType
+from candidates.views.version_data import get_client_ip
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models.functions import Coalesce
-
-from candidates.models import LoggedAction
-from candidates.models.db import ActionType
-from candidates.views.version_data import get_client_ip
 from uk_results.helpers import RecordBallotResultsHelper
 from utils.db import LastWord, NullIfBlank
 from utils.widgets import DCNumberInput

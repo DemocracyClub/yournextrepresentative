@@ -1,13 +1,12 @@
 from braces.views import LoginRequiredMixin
+from candidates.models import LoggedAction
+from candidates.models.db import ActionType
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.http import JsonResponse
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
-
-from candidates.models import LoggedAction
-from candidates.models.db import ActionType
 from people.forms.forms import OtherNameForm
 from people.models import Person
 from popolo.models import OtherName
@@ -57,8 +56,7 @@ class PersonOtherNameCreateView(LoginRequiredMixin, PersonMixin, CreateView):
         form.instance.content_object = self.person
         if form.is_valid():
             return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
+        return self.form_invalid(form)
 
     def form_valid(self, form):
         with transaction.atomic():

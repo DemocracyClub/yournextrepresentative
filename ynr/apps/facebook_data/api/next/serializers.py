@@ -1,8 +1,9 @@
-from drf_yasg.utils import swagger_serializer_method
-from rest_framework import serializers
+import contextlib
 
+from drf_yasg.utils import swagger_serializer_method
 from facebook_data.models import FacebookAdvert
 from popolo.api.next.serializers import PersonOnBallotSerializer
+from rest_framework import serializers
 
 
 class FacebookAdvertSerializer(serializers.HyperlinkedModelSerializer):
@@ -23,8 +24,7 @@ class FacebookAdvertSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_ad_json(self, obj):
         data = obj.ad_json
-        try:
+        with contextlib.suppress(KeyError):
             del data["ad_snapshot_url"]
-        except KeyError:
-            pass
+
         return data

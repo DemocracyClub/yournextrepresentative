@@ -1,6 +1,6 @@
-from django.test import RequestFactory, TestCase
-
 from unittest.mock import MagicMock, patch
+
+from django.test import RequestFactory, TestCase
 from moderation_queue.forms import PhotoReviewForm
 from moderation_queue.models import CopyrightOptions, QueuedImage
 from people.tests.factories import PersonFactory
@@ -23,12 +23,13 @@ class TestPhotoReviewForm(TestCase):
             QueuedImage.UNDECIDED,
         ]
         for decision in decisions:
-            with self.subTest(msg=decision):
-                with patch.object(self.form, "approved"):
-                    self.form.cleaned_data = {"decision": QueuedImage.APPROVED}
+            with self.subTest(msg=decision) and patch.object(
+                self.form, "approved"
+            ):
+                self.form.cleaned_data = {"decision": QueuedImage.APPROVED}
 
-                    self.form.process()
-                    self.form.approved.assert_called_once()
+                self.form.process()
+                self.form.approved.assert_called_once()
 
     @patch("moderation_queue.forms.PhotoReviewForm.create_logged_action")
     @patch("moderation_queue.forms.PhotoReviewForm.send_mail")

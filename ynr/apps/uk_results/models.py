@@ -1,6 +1,6 @@
-from django.db.models import JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import JSONField
 from django_extensions.db.models import TimeStampedModel
 
 
@@ -45,7 +45,7 @@ class ResultSet(TimeStampedModel):
         Return turnout as a percentage, rounded to two decimal places
         """
         if not all([self.num_turnout_reported, self.total_electorate]):
-            return None
+            return
 
         percentage = (self.num_turnout_reported / self.total_electorate) * 100
         self.turnout_percentage = min(round(percentage, 2), 100)

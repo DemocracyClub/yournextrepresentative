@@ -1,16 +1,13 @@
 import ast
+import uuid
 from datetime import date
 from os.path import join, splitext
 from tempfile import NamedTemporaryFile
-import uuid
 
 from django.contrib.auth.models import User
-
 from django.db import models
 from django.urls import reverse
-
 from PIL import Image as PillowImage
-
 
 PHOTO_REVIEWERS_GROUP_NAME = "Photo Reviewers"
 VERY_TRUSTED_USER_GROUP_NAME = "Very Trusted User"

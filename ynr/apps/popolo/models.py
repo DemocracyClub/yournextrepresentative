@@ -7,13 +7,12 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
+from django_extensions.db.models import ModificationDateTimeField
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from slugify import slugify
-from django_extensions.db.models import ModificationDateTimeField
-
-from ynr_refactoring.settings import PersonIdentifierFields
 from utils.mixins import EEModifiedMixin
+from ynr_refactoring.settings import PersonIdentifierFields
 
 from .behaviors.models import Dateframeable, GenericRelatable
 from .querysets import (
@@ -144,7 +143,7 @@ class Organization(Dateframeable, TimeStampedModel, models.Model):
                 scheme="electoral-commission"
             ).first()
             return party_id.identifier
-        except:
+        except Identifier.DoesNotExist:
             return "ynmp-party:2"
 
     def add_member(self, person):
@@ -249,8 +248,7 @@ class Post(EEModifiedMixin, Dateframeable, models.Model):
         label = re.sub(r"^Member of Parliament for ", "", self.label)
         label = re.sub(r"^Member of the Scottish Parliament for ", "", label)
         label = re.sub(r"^Assembly Member for ", "", label)
-        label = re.sub(r"^Member of the Legislative Assembly for ", "", label)
-        return label
+        return re.sub(r"^Member of the Legislative Assembly for ", "", label)
 
     def __str__(self):
         return self.label
@@ -361,10 +359,13 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
     objects = MembershipQuerySet.as_manager()
 
     def save(self, *args, **kwargs):
-        if self.ballot and getattr(self, "check_for_broken", True):
-            if self.ballot.election in self.person.not_standing.all():
-                # remove not_standing status
-                self.person.not_standing.remove(self.ballot.election)
+        if (
+            self.ballot
+            and getattr(self, "check_for_broken", True)
+            and self.ballot.election in self.person.not_standing.all()
+        ):
+            # remove not_standing status
+            self.person.not_standing.remove(self.ballot.election)
         if not self.party_name:
             self.party_name = self.party.name
 

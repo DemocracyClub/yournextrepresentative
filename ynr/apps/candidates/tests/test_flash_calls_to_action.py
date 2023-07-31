@@ -1,9 +1,8 @@
 import re
 
-from django.test import TestCase
-
 import people.tests.factories
 from candidates.views.people import get_call_to_action_flash_message
+from django.test import TestCase
 
 from . import factories
 from .uk_examples import UK2015ExamplesMixin

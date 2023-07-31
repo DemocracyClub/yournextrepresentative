@@ -1,9 +1,9 @@
 from unittest.mock import PropertyMock, patch
-from django.test import TestCase
+
 from candidates.models.popolo_extra import Ballot
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-
+from django.test import TestCase
 from parties.tests.fixtures import DefaultPartyFixtures
 from people.forms.forms import PersonMembershipForm
 from people.tests.factories import PersonFactory

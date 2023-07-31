@@ -1,6 +1,6 @@
 import csv
-import requests
 
+import requests
 from candidates.models import LoggedAction
 from candidates.views import get_change_metadata
 from results.models import ResultEvent
@@ -71,7 +71,7 @@ class RecordBallotResultsHelper:
     def mark_person_as_elected(self, person, source):
         candidacy = self.ballot.membership_set.get(person=person)
         if candidacy.elected:
-            return None
+            return
         assert self.can_mark_elected
         candidacy.elected = True
         candidacy.save()
@@ -118,11 +118,11 @@ class RecordBallotResultsHelper:
 
         """
         if not self.max_winners >= 0:
-            return None
+            return
 
         max_reached = self.max_winners == (self.existing_winners.count() + 1)
         if not max_reached:
-            return None
+            return
 
         losing_candidacies = self.ballot.membership_set.exclude(elected=True)
         for candidacy in losing_candidacies:

@@ -1,15 +1,13 @@
+from candidates.models.popolo_extra import Ballot
+from candidates.tests.test_models import BallotsWithResultsMixin
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.contrib.auth.models import User
 from django.http import QueryDict
 from django.test import RequestFactory, TestCase
 from django_webtest import WebTest
-from candidates.models.popolo_extra import Ballot
-from candidates.tests.test_models import BallotsWithResultsMixin
-
-from candidates.tests.uk_examples import UK2015ExamplesMixin
 from elections.views import ElectionListView
-from moderation_queue.models import SuggestedPostLock
-
 from mock import patch
+from moderation_queue.models import SuggestedPostLock
 
 
 class TestPostsView(UK2015ExamplesMixin, WebTest):

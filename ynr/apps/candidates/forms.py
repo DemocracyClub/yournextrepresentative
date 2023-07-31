@@ -1,7 +1,6 @@
+from candidates.models import Ballot
 from django import forms
 from django.core.exceptions import ValidationError
-
-from candidates.models import Ballot
 from people.forms.forms import AddElectionFieldsMixin, StrippedCharField
 
 

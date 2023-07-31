@@ -70,16 +70,19 @@ class OfficialDocument(TimeStampedModel):
         return self.ballot.suggestedpostlock_set.exists()
 
     def get_pages(self):
-        if self.relevant_pages and not self.relevant_pages == "all":
+        if self.relevant_pages and self.relevant_pages != "all":
             pages = self.relevant_pages.split(",")
             return sorted(int(p) for p in pages)
+        return None
 
     @property
     def first_page_number(self):
         if self.get_pages():
             return self.get_pages()[0]
+        return None
 
     @property
     def last_page_number(self):
         if self.get_pages():
             return self.get_pages()[-1]
+        return None

@@ -11,11 +11,10 @@ class PartyQuerySet(models.QuerySet):
         if not date:
             date = timezone.now()
         qs = self.filter(date_registered__lte=date)
-        qs = qs.filter(
+        return qs.filter(
             models.Q(date_deregistered__gte=date)
             | models.Q(date_deregistered=None)
         )
-        return qs
 
     def active_in_last_year(self, date=None):
         """
@@ -99,9 +98,12 @@ class PartyQuerySet(models.QuerySet):
         result = [("", {"label": ""})]
 
         for party in parties_current_qs:
-            if party.date_deregistered:
-                if party.is_deregistered and exclude_deregistered:
-                    continue
+            if (
+                party.date_deregistered
+                and party.is_deregistered
+                and exclude_deregistered
+            ):
+                continue
             if include_descriptions and party.descriptions.exists():
                 names = [
                     (
@@ -146,11 +148,10 @@ class PartyQuerySet(models.QuerySet):
         qs = self
         if register:
             qs = qs.register(register)
-        choices = qs.party_choices(
+        return qs.party_choices(
             include_descriptions=True,
             include_non_current=False,
             exclude_deregistered=True,
             include_description_ids=True,
             extra_party_ids=extra_party_ids,
         )
-        return choices

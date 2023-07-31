@@ -1,13 +1,13 @@
+import contextlib
 import csv
 from datetime import date
 
 from braces.views import LoginRequiredMixin
+from candidates.models import Ballot
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import FormView, TemplateView
-
-from candidates.models import Ballot
 from popolo.models import Membership
 from results.models import ResultEvent
 from uk_results.forms import ResultSetForm
@@ -48,10 +48,9 @@ class BallotPaperResultsUpdateView(LoginRequiredMixin, FormView):
                 f"Polls are still open for {self.ballot.ballot_paper_id}. Please check back after polls close at 10pm."
             )
 
-        try:
+        with contextlib.suppress(Exception):
             kwargs["instance"] = self.ballot.resultset
-        except:
-            pass
+
         kwargs["ballot"] = self.ballot
         return kwargs
 
@@ -67,8 +66,7 @@ class BallotPaperResultsUpdateView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        url = self.ballot.get_absolute_url()
-        return url
+        return self.ballot.get_absolute_url()
 
 
 class CurrentElectionsWithNoResuts(TemplateView):
@@ -150,10 +148,7 @@ class Parl19ResultsCSVView(TemplateView):
                 post=membership.ballot.post,
                 winner=membership.person,
             )
-            if result.exists():
-                created = result.first().created
-            else:
-                created = None
+            created = result.first().created if result.exists() else None
 
             previous_ballot = Ballot.objects.get_previous_ballot_for_post(
                 membership.ballot

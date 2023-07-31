@@ -1,16 +1,15 @@
 import re
 from urllib.parse import urljoin, urlsplit
 
-from django.conf import settings
-from django_webtest import WebTest
-from mock import Mock, patch
-
 from candidates.tests.factories import (
     ElectionFactory,
     ParliamentaryChamberFactory,
     PartySetFactory,
     PostFactory,
 )
+from django.conf import settings
+from django_webtest import WebTest
+from mock import Mock, patch
 
 from .ee_postcode_results import ee_se240ag_result, ee_sw1a1aa_result
 

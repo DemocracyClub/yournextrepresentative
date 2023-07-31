@@ -1,9 +1,5 @@
 from random import randrange
 
-from django.utils.html import escape
-from django_webtest import WebTest
-from sorl.thumbnail import get_thumbnail
-
 from candidates.models import PartySet
 from candidates.models.popolo_extra import Ballot
 from candidates.tests.auth import TestUserMixin
@@ -15,19 +11,22 @@ from candidates.tests.factories import (
     OrganizationFactory,
     PostFactory,
 )
+from django.utils.html import escape
+from django_webtest import WebTest
 from elections.filters import (
     BaseBallotFilter,
     CurrentOrFutureBallotFilter,
     region_choices,
 )
-from utils.dict_io import BufferDictReader
 from elections.tests.data_timeline_helper import DataTimelineHTMLAssertions
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from parties.tests.factories import PartyFactory
 from people.models import Person, PersonImage
 from people.tests.factories import PersonFactory
 from popolo.models import Membership
+from sorl.thumbnail import get_thumbnail
 from uk_results.models import CandidateResult, ResultSet
+from utils.dict_io import BufferDictReader
 from utils.testing_utils import FuzzyInt
 
 
@@ -216,7 +215,7 @@ class TestBallotView(
         url = "{}.csv".format(self.ballot.get_absolute_url().rstrip("/"))
         response = self.app.get(url)
         self.assertEqual(response.status_code, 200)
-        row_dicts = [row for row in BufferDictReader(response.content)]
+        row_dicts = list(BufferDictReader(response.content))
         self.assertEqual(9, len(row_dicts))
         membership = self.ballot.membership_set.order_by("person__pk").first()
         self.maxDiff = None

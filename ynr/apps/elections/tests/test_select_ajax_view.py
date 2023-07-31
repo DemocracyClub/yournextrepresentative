@@ -1,7 +1,6 @@
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.urls import reverse
 from django_webtest import WebTest
-
-from candidates.tests.uk_examples import UK2015ExamplesMixin
 
 
 class TestPostsView(UK2015ExamplesMixin, WebTest):

@@ -1,6 +1,5 @@
-from rest_framework import serializers
-
 from popolo import models as popolo_models
+from rest_framework import serializers
 
 # These are serializer classes from the Django-REST-framework API
 #

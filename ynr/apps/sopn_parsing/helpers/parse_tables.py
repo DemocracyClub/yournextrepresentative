@@ -2,19 +2,17 @@ import json
 import re
 from os.path import join
 
-from django.db.models.functions import Replace
-from django.db.models import Value
+from bulk_adding.models import RawPeople
+from django.contrib.postgres.search import TrigramSimilarity
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
-from django.contrib.postgres.search import TrigramSimilarity
+from django.db.models import Value
+from django.db.models.functions import Replace
 from nameparser import HumanName
-
-from bulk_adding.models import RawPeople
 from parties.models import Party, PartyDescription
 from sopn_parsing.helpers.text_helpers import clean_text
 from sopn_parsing.models import ParsedSOPN
 from utils.db import Levenshtein
-
 
 FIRST_NAME_FIELDS = [
     "other name",
@@ -91,9 +89,10 @@ def contains_header_like_strings(row):
 
 def looks_like_header(row, avg_row):
     avg_row = avg_row - 3
-    if len(merge_row_cells(row)) >= avg_row:
-        if contains_header_like_strings(row):
-            return True
+    if len(merge_row_cells(row)) >= avg_row and contains_header_like_strings(
+        row
+    ):
+        return True
     return False
 
 
@@ -169,8 +168,7 @@ def clean_name(name):
     names = list(filter(None, name.split(" ")))
     last_names = clean_last_names(names)
     first_names = " ".join([name for name in names if not name.isupper()])
-    full_name = f"{first_names} {last_names}".strip()
-    return full_name
+    return f"{first_names} {last_names}".strip()
 
 
 ## Handles Mc and Mac and other mixed titlecase names
@@ -313,8 +311,7 @@ def get_name(row, name_fields):
     the name fields in the row
     """
     name = " ".join([row[field] for field in name_fields])
-    name = clean_name(name)
-    return name
+    return clean_name(name)
 
 
 def add_previous_party_affiliations(party_str, raw_data, sopn):
@@ -422,7 +419,7 @@ def parse_raw_data_for_ballot(ballot):
     if not header_found:
         # Don't try to parse if we don't think we know the header
         print(f"We couldnt find a header for {ballot.ballot_paper_id}")
-        return None
+        return
     # We're now in a position where we think we have the table we want
     # with the columns set and other header rows removed.
     # Time to parse it in to names and parties
@@ -432,7 +429,7 @@ def parse_raw_data_for_ballot(ballot):
         # Something went wrong. This will happen a lot. let's move on
         print(f"Error attempting to parse a table for {ballot.ballot_paper_id}")
         print(e.args[0])
-        return None
+        return
 
     if ballot_data:
         # Check there isn't a rawpeople object from another (better) source

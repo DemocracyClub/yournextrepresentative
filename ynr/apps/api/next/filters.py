@@ -1,4 +1,4 @@
-from django_filters import filterset, filters
+from django_filters import filters, filterset
 
 
 class LastUpdatedMixin(filterset.FilterSet):

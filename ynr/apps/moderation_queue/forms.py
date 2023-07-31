@@ -3,7 +3,6 @@ from io import BytesIO
 
 import requests
 import sorl
-
 from candidates.models.db import ActionType, LoggedAction
 from candidates.views.version_data import get_change_metadata, get_client_ip
 from django import forms
@@ -273,7 +272,7 @@ class PhotoReviewForm(forms.Form):
     ):
         if not self.queued_image.user:
             # We can't send emails to bots…yet.
-            return
+            return None
 
         message = render_to_string(template_name=template_name, context=context)
         recipients = [self.queued_image.user.email]

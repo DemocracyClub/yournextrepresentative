@@ -4,15 +4,15 @@ Run with "manage.py test popolo, or with python".
 """
 
 from unittest.mock import PropertyMock, patch
-from django.test import TestCase
-from faker import Factory
-from slugify import slugify
+
 from candidates.models.popolo_extra import Ballot
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-
+from django.test import TestCase
+from faker import Factory
 from people.models import Person
 from popolo.behaviors.tests.test_behaviors import DateframeableTests
 from popolo.models import Membership, Organization
+from slugify import slugify
 
 faker = Factory.create("it_IT")  # a factory to create fake names for tests
 
@@ -74,14 +74,13 @@ class TestMembership(TestCase):
         Membership.is_welsh_run_ballot returns the same
         """
         for case in [True, False]:
-            with self.subTest(msg=case):
-                with patch.object(
-                    Ballot, "is_welsh_run", new_callable=PropertyMock
-                ) as mock:
-                    mock.return_value = case
-                    membership = Membership(ballot=Ballot())
-                    assert membership.is_welsh_run_ballot is case
-                    mock.assert_called_once()
+            with self.subTest(msg=case), patch.object(
+                Ballot, "is_welsh_run", new_callable=PropertyMock
+            ) as mock:
+                mock.return_value = case
+                membership = Membership(ballot=Ballot())
+                assert membership.is_welsh_run_ballot is case
+                mock.assert_called_once()
 
 
 class TestMembershipQueryset(UK2015ExamplesMixin, TestCase):

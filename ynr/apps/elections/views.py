@@ -1,14 +1,3 @@
-from django.contrib import messages
-from django.db import transaction
-from django.db.models import Count, Prefetch, Q
-from django.db.models.functions import Coalesce
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404
-from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.decorators.cache import cache_control, cache_page
-from django.views.generic import DetailView, TemplateView, UpdateView
-
 from auth_helpers.views import GroupRequiredMixin
 from candidates.csv_helpers import list_to_csv, memberships_dicts_for_csv
 from candidates.forms import ToggleLockForm
@@ -19,8 +8,17 @@ from candidates.models import (
     PartySet,
 )
 from candidates.models.db import ActionType
-
 from candidates.views.version_data import get_client_ip
+from django.contrib import messages
+from django.db import transaction
+from django.db.models import Count, Prefetch, Q
+from django.db.models.functions import Coalesce
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.cache import cache_control, cache_page
+from django.views.generic import DetailView, TemplateView, UpdateView
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from moderation_queue.forms import SuggestedPostLockForm
@@ -29,7 +27,7 @@ from parties.models import Party
 from people.forms.forms import NewPersonForm
 from people.forms.formsets import PersonIdentifierFormsetFactory
 from popolo.models import Membership
-from utils.db import NullIfBlank, LastWord
+from utils.db import LastWord, NullIfBlank
 
 
 class ElectionView(DetailView):
@@ -289,8 +287,7 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
             )
         if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"locked": ballot.candidates_locked})
-        else:
-            return HttpResponseRedirect(ballot.get_absolute_url())
+        return HttpResponseRedirect(ballot.get_absolute_url())
 
 
 class BallotPaperCSVView(DetailView):
@@ -360,10 +357,7 @@ class BallotsForSelectAjaxView(View):
                 "election__election_date", "election__name", "post__label"
             )
         )
-        partyset_ids = {
-            partyset_id: slug
-            for partyset_id, slug in PartySet.objects.values_list("pk", "slug")
-        }
+        partyset_ids = dict(PartySet.objects.values_list("pk", "slug"))
         data = []
         election_name = None
         for ballot in qs:

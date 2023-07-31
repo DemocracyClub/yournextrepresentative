@@ -3,13 +3,12 @@ Basic smoke tests for OfficialDocument model
 """
 
 
-from django.test import TestCase
-
 from candidates.tests.factories import (
     ElectionFactory,
     ParliamentaryChamberFactory,
     PostFactory,
 )
+from django.test import TestCase
 from official_documents.models import OfficialDocument
 
 

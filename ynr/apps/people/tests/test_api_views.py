@@ -1,13 +1,12 @@
-from rest_framework.test import APIClient, APIRequestFactory
+from candidates.tests.factories import MembershipFactory
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.test import TestCase
 from django.utils import timezone
 from django.utils.http import urlencode
-from candidates.tests.factories import MembershipFactory
-from candidates.tests.uk_examples import UK2015ExamplesMixin
-
+from people.api.next.api_views import PersonViewSet
 from people.models import Person
 from people.tests.factories import PersonFactory
-from people.api.next.api_views import PersonViewSet
+from rest_framework.test import APIClient, APIRequestFactory
 
 
 class TestPersonViewSet(UK2015ExamplesMixin, TestCase):

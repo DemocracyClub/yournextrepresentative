@@ -1,15 +1,14 @@
 from datetime import timedelta
 
+import people.tests.factories
+from candidates.csv_helpers import list_to_csv, memberships_dicts_for_csv
+from candidates.models import PersonRedirect
+from candidates.tests.helpers import TmpMediaRootMixin
 from django.conf import settings
 from django.core.files.storage import DefaultStorage
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import TestCase
-
-import people.tests.factories
-from candidates.csv_helpers import list_to_csv, memberships_dicts_for_csv
-from candidates.models import PersonRedirect
-from candidates.tests.helpers import TmpMediaRootMixin
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from people.models import PersonImage
 from popolo.models import Membership
@@ -113,7 +112,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
             membership_dict = membership.dict_for_csv()
 
         self.assertEqual(
-            sorted(list(membership_dict.keys())),
+            sorted(membership_dict.keys()),
             sorted(settings.CSV_ROW_FIELDS),
         )
         self.assertEqual(len(membership_dict.keys()), 49)
@@ -169,19 +168,17 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         # We expect a CSV file per election, and one for all elections
         call_command("candidates_create_csv")
         self.assertEqual(
-            set(sorted(self.storage.listdir(".")[1])),
-            set(
-                [
-                    "candidates-parl.2010-05-06.csv",
-                    "candidates-parl.2015-05-07.csv",
-                    "candidates-all.csv",
-                    "candidates-elected-all.csv",
-                    "candidates-local.maidstone.2016-05-05.csv",
-                    "candidates-2015-05-07.csv",
-                    "candidates-2010-05-06.csv",
-                    "candidates-senedd.c.2021-05-06.csv",
-                ]
-            ),
+            set(self.storage.listdir(".")[1]),
+            {
+                "candidates-parl.2010-05-06.csv",
+                "candidates-parl.2015-05-07.csv",
+                "candidates-all.csv",
+                "candidates-elected-all.csv",
+                "candidates-local.maidstone.2016-05-05.csv",
+                "candidates-2015-05-07.csv",
+                "candidates-2010-05-06.csv",
+                "candidates-senedd.c.2021-05-06.csv",
+            },
         )
 
     def test_create_csv_management_command_single_election(self):
@@ -194,9 +191,7 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         call_command("candidates_create_csv", "--election", "parl.2015-05-07")
         self.assertSetEqual(
             set(self.storage.listdir(".")[1]),
-            set(
-                ["candidates-parl.2015-05-07.csv", "candidates-2015-05-07.csv"]
-            ),
+            {"candidates-parl.2015-05-07.csv", "candidates-2015-05-07.csv"},
         )
 
     def test_create_csv_management_command_single_election_doesnt_exist(self):
@@ -221,19 +216,17 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         call_command("candidates_create_csv")
         self.assertSetEqual(
             set(self.storage.listdir(".")[1]),
-            set(
-                [
-                    "candidates-parl.2010-05-06.csv",
-                    "candidates-parl.2015-05-07.csv",
-                    "candidates-2018.csv",
-                    "candidates-all.csv",
-                    "candidates-elected-all.csv",
-                    "candidates-local.maidstone.2016-05-05.csv",
-                    "candidates-2015-05-07.csv",
-                    "candidates-2010-05-06.csv",
-                    "candidates-senedd.c.2021-05-06.csv",
-                ]
-            ),
+            {
+                "candidates-parl.2010-05-06.csv",
+                "candidates-parl.2015-05-07.csv",
+                "candidates-2018.csv",
+                "candidates-all.csv",
+                "candidates-elected-all.csv",
+                "candidates-local.maidstone.2016-05-05.csv",
+                "candidates-2015-05-07.csv",
+                "candidates-2010-05-06.csv",
+                "candidates-senedd.c.2021-05-06.csv",
+            },
         )
         empty_file = self.storage.open("candidates-2018.csv").read()
         self.assertEqual(len(empty_file.splitlines()), 1)

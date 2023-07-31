@@ -1,2 +1,52 @@
 [tool.black]
 line-length = 80
+extend-exclude = ["ynr/settings/local.py"]
+
+
+[tool.ruff]
+line-length = 80
+ignore = ["E501"]
+extend-select = [
+    "I",
+    "C4",
+    "SIM",
+    "Q003",
+    "RET",
+]
+extend-exclude = ["ynr/settings/local.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "if __name__ == .__main__.:",
+    "@abstractmethod"
+]
+
+[tool.pytest.ini_options]
+norecursedirs =[
+    "ynr/static",
+    "ynr/media",
+    "deploy",
+    ".aws-sam",
+    ".ruff-cache",
+    "locale",
+    ".git",
+    "data",
+    "docs",
+    "templates",
+    ".download-cache",
+    "__pycache__",
+
+]
+DJANGO_SETTINGS_MODULE = "ynr.settings.testing"
+addopts =[
+    "--ignore=*/__pycache__",
+    "--ignore=.*",
+    "--ignore=.download-cache",
+    "--ignore=democracy_club/settings/local.py",
+    "--ignore=lib",
+    "--ruff",
+    "--black",
+]
+FAIL_INVALID_TEMPLATE_VARS = 1
+
+env = "RUN_ENV=test"

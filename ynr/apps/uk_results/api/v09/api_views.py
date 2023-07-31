@@ -1,13 +1,12 @@
+from api.v09.views import DefaultPageNumberPagination
 from django.db.models import Prefetch
 from django_filters import filters, filterset
 from rest_framework import viewsets
-
-from api.v09.views import DefaultPageNumberPagination
-from uk_results.models import CandidateResult, ResultSet
 from uk_results.api.v09.serializers import (
     CandidateResultSerializer,
     ResultSetSerializer,
 )
+from uk_results.models import CandidateResult, ResultSet
 
 
 class CandidateResultViewSet(viewsets.ModelViewSet):

@@ -20,11 +20,11 @@ def get_migration_group_create(group_name, permission_codenames):
                 return add_group_and_permissions(
                     apps, schema_editor, create_if_missing=False
                 )
-            else:
-                raise
+            raise
         new_group = Group.objects.create(name=group_name)
         for permission in permissions:
             new_group.permissions.add(permission)
+        return None
 
     return add_group_and_permissions
 

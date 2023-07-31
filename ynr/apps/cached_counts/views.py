@@ -1,10 +1,9 @@
 import json
 
+from candidates.models import Ballot
 from django.db.models import Count
 from django.http import HttpResponse
 from django.views.generic import TemplateView
-
-from candidates.models import Ballot
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from parties.models import Party

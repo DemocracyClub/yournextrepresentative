@@ -1,6 +1,5 @@
 from django.db.models import OuterRef, Subquery
 from official_documents.models import OfficialDocument
-
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 from sopn_parsing.helpers.extract_tables import extract_ballot_table
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError

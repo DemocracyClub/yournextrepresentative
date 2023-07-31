@@ -1,6 +1,5 @@
 from django.test import TestCase, override_settings
 from mock import Mock, PropertyMock, call, patch
-
 from people.tests.factories import PersonFactory
 from twitterbot.management.twitter import TwitterAPIData
 
@@ -15,12 +14,12 @@ def fake_twitter_api_post(*args, **kwargs):
                 {"id": 5678, "screen_name": "struan"},
             ]
             return mock_result
-        elif data["screen_name"] == "symroe":
+        if data["screen_name"] == "symroe":
             mock_result.json.return_value = [
                 {"id": 9012, "screen_name": "symroe"}
             ]
             return mock_result
-        elif data["screen_name"] == "onlynonexistent":
+        if data["screen_name"] == "onlynonexistent":
             mock_result.json.return_value = {
                 "errors": [
                     {

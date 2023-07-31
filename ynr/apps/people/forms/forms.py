@@ -1,32 +1,31 @@
+from candidates.models import PartySet
+from candidates.models.popolo_extra import Ballot
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, validate_email
 from django.utils.functional import cached_property
-from candidates.models import PartySet
-from candidates.models.popolo_extra import Ballot
 from facebook_data.tasks import extract_fb_page_id
 from official_documents.models import OfficialDocument
-from parties.models import Party
-from people.forms.fields import (
-    CurrentUnlockedBallotsField,
-    StrippedCharField,
-    PastOnlyBlankApproximateDateFormField,
-)
 from parties.forms import (
     PartyIdentifierField,
     PopulatePartiesMixin,
     PreviousPartyAffiliationsField,
 )
-from people.models import Person, PersonIdentifier
-from popolo.models import OtherName, Membership
-
+from parties.models import Party
+from people.forms.fields import (
+    CurrentUnlockedBallotsField,
+    PastOnlyBlankApproximateDateFormField,
+    StrippedCharField,
+)
 from people.helpers import (
+    clean_mastodon_username,
     clean_twitter_username,
     clean_wikidata_id,
-    clean_mastodon_username,
     person_names_equal,
 )
+from people.models import Person, PersonIdentifier
+from popolo.models import Membership, OtherName
 
 
 class BaseCandidacyForm(forms.Form):
@@ -85,8 +84,7 @@ class PersonIdentifierForm(forms.ModelForm):
             return True
         if self.changed_data == ["value_type"] and not self["value"].data:
             return False
-        else:
-            return super().has_changed(*args, **kwargs)
+        return super().has_changed(*args, **kwargs)
 
     def clean(self):
         if not self.cleaned_data.get("value", None):
@@ -336,13 +334,12 @@ class BasePersonForm(forms.ModelForm):
             self.cleaned_data["biography"] = self.cleaned_data[
                 "biography"
             ].replace("\r", "")
-        clean_biography = "\n\n".join(
+        return "\n\n".join(
             [
                 line.replace("\n", " ")
                 for line in self.cleaned_data["biography"].split("\n\n")
             ]
         )
-        return clean_biography
 
     def save(self, commit=True, user=None):
         suggested_name = self.cleaned_data["name"]

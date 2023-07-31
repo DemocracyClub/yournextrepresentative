@@ -1,5 +1,4 @@
 from django.core.management.base import BaseCommand
-
 from facebook_data.tasks import extract_fb_page_id
 from people.models import PersonIdentifier
 

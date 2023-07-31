@@ -1,9 +1,8 @@
+import candidates.views as views
 from django.conf import settings
 from django.urls import include, re_path
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
-
-import candidates.views as views
 
 from .feeds import NeedsReviewFeed, RecentChangesFeed
 

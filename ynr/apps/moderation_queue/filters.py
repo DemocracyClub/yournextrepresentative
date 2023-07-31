@@ -1,9 +1,8 @@
 import django_filters
-from django.db.models import Max, Case, Value, When, IntegerField
+from django.db.models import Case, IntegerField, Max, Value, When
 from django.forms.widgets import HiddenInput
 from django.utils.http import urlencode
 from elections.filters import DSLinkWidget
-
 from elections.models import Election
 from moderation_queue.models import QueuedImage
 

@@ -1,12 +1,13 @@
 from collections import defaultdict
-from django.core.management.base import BaseCommand
-from django.contrib.postgres.search import SearchQuery
+
 from candidates.models.popolo_extra import Ballot
+from django.contrib.postgres.search import SearchQuery
+from django.core.management.base import BaseCommand
 from django.db.models.functions import Length
 from popolo.models import Membership
 from resultsbot.helpers import ResultsBot
-from uk_results.helpers import RecordBallotResultsHelper, read_csv_from_url
 from uk_results import models
+from uk_results.helpers import RecordBallotResultsHelper, read_csv_from_url
 
 
 class Command(BaseCommand):
@@ -122,6 +123,7 @@ class Command(BaseCommand):
 
         created_or_updated = "Created" if created else "Updated"
         self.stdout.write(f"{created_or_updated} a result")
+        return None
 
     def handle(self, **options):
         self.url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSpxOSrWevLyMIugBuszezmeuhdQc_ktkObCJ4BsrOlcJfZgS6iMWWzIZ4Y8jTUTguIh3lUMhZmYqxc/pub?gid=1&single=true&output=csv"

@@ -1,9 +1,8 @@
-from django.db.models.signals import post_delete
-from django.dispatch import receiver
-
-from people.models import Person
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+from people.models import Person
 
 
 @receiver(post_delete, sender=Person)

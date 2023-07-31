@@ -1,15 +1,14 @@
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.db import transaction, IntegrityError
-
 from candidates.models import LoggedAction
 from candidates.views.version_data import get_change_metadata
-from people.models import Person, PersonIdentifier
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import IntegrityError, transaction
 from people.helpers import (
     clean_mastodon_username,
     clean_twitter_username,
     clean_wikidata_id,
 )
+from people.models import Person, PersonIdentifier
 from ynr_refactoring.settings import PersonIdentifierFields
 
 
@@ -57,6 +56,7 @@ class CandidateBot(object):
 
         if save:
             return self.save(source)
+        return None
 
     def edit_field(self, field_name, field_value, update=None):
         if update is None:
@@ -76,7 +76,7 @@ class CandidateBot(object):
                 if self.IGNORE_ERRORS:
                     # We can't edit this value, but we want to ignore errors
                     # so just turn this in to a no-op
-                    return None
+                    return
                 raise
 
         if field_name in self.SUPPORTED_PERSON_IDENTIFIER_FIELDS:

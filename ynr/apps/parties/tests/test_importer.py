@@ -5,11 +5,10 @@ Test some of the basic model use cases
 from io import StringIO
 from tempfile import NamedTemporaryFile
 
+from candidates.tests.helpers import TmpMediaRootMixin
 from django.core.files.storage import DefaultStorage
 from django.test import TestCase
 from mock import patch
-
-from candidates.tests.helpers import TmpMediaRootMixin
 from moderation_queue.tests.paths import (
     BROKEN_IMAGE_FILENAME,
     EXAMPLE_IMAGE_FILENAME,
@@ -19,7 +18,7 @@ from parties.management.commands.parties_import_from_ec import Command
 from parties.models import Party, PartyDescription, PartyEmblem
 from parties.tests.fixtures import DefaultPartyFixtures
 
-from .factories import PartyDescriptionFactory, PartyFactory, PartyEmblemFactory
+from .factories import PartyDescriptionFactory, PartyEmblemFactory, PartyFactory
 
 FAKE_PARTY_DICT = {
     "RegulatedEntityName": "Wombles Alliance",

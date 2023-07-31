@@ -1,12 +1,10 @@
-from django.urls import reverse
-from django_webtest import WebTest
-
 from candidates.models import LoggedAction
-from people.models import Person
-
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.urls import reverse
+from django_webtest import WebTest
 from parties.models import Party
+from people.models import Person
 
 
 class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):

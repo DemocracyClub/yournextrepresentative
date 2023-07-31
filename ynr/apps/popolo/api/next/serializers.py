@@ -1,10 +1,9 @@
-from drf_yasg.utils import swagger_serializer_method
-from rest_framework import serializers
-
-from popolo import models as popolo_models
 from candidates import models as candidates_models
+from drf_yasg.utils import swagger_serializer_method
 from parties.api.next.serializers import MinimalPartySerializer
 from people.models import Person
+from popolo import models as popolo_models
+from rest_framework import serializers
 from uk_results.models import CandidateResult
 
 

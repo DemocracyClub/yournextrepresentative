@@ -57,11 +57,10 @@ class ResultEventAdmin(admin.ModelAdmin):
                 },
             )
             return '<a href="{}">{}</a>'.format(url, o.post.short_label)
-        else:
-            # There is still data in the database for some posts that
-            # were deleted and never recreated, so we can't create a
-            # link for them.
-            return ""
+        # There is still data in the database for some posts that
+        # were deleted and never recreated, so we can't create a
+        # link for them.
+        return ""
 
     post_link.allow_tags = True
 

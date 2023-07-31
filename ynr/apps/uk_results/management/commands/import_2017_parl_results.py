@@ -1,6 +1,6 @@
 from collections import defaultdict
-from candidates.models.popolo_extra import Ballot
 
+from candidates.models.popolo_extra import Ballot
 from uk_results.helpers import read_csv_from_url
 from uk_results.management.commands.import_2010_parl_results import (
     Command as ResultsImporterCommand,

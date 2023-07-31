@@ -8,8 +8,8 @@ from pdfminer.layout import LAParams
 from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
 from pdfminer.pdfpage import PDFPage
 from sopn_parsing.helpers.text_helpers import (
-    NoTextInDocumentError,
     MatchedPagesError,
+    NoTextInDocumentError,
     clean_page_text,
     clean_text,
 )
@@ -174,11 +174,10 @@ class SOPNDocument:
                 raise MatchedPagesError(
                     f"Page numbers are not consecutive for {self.source_url}. Pages: {matched_page_str}. Post: {post_label}"
                 )
-            else:
-                print(
-                    f"Page numbers are not consecutive for {self.source_url}. Pages: {matched_page_str}. Post: {post_label}. Skipping."
-                )
-                return ""
+            print(
+                f"Page numbers are not consecutive for {self.source_url}. Pages: {matched_page_str}. Post: {post_label}. Skipping."
+            )
+            return ""
 
         return ",".join(str(number) for number in self.matched_page_numbers)
 
@@ -218,9 +217,9 @@ class SOPNDocument:
             print(document.ballot.ballot_paper_id, document.relevant_pages)
             if self.strict:
                 raise e
-            else:
-                document.relevant_pages = ""
-                return document.save()
+
+            document.relevant_pages = ""
+            return document.save()
 
     def match_all_pages(self) -> None:
         """
@@ -241,6 +240,7 @@ class SOPNDocument:
             raise MatchedPagesError(
                 f"Some OfficialDocument objects were unmatched for {self.source_url}"
             )
+        return None
 
     def parse_pages(self):
         """
@@ -298,17 +298,13 @@ class SOPNPageText:
         """
         words = clean_page_text(self.text).split(" ")
         threshold = int(len(words) * HEADING_SIZE)
-        search_text = " ".join(words[0:threshold])
-        return search_text
+        return " ".join(words[0:threshold])
 
     def contains_post_label(self, post_label=None):
         ward_name = post_label or self.post_label_to_match
         search_text = self.get_page_heading()
         wards = ward_name.split("/")
-        for ward in wards:
-            if ward in search_text:
-                return True
-        return False
+        return any(ward in search_text for ward in wards)
 
     @property
     def is_page_heading_very_different_to_document_heading(self):

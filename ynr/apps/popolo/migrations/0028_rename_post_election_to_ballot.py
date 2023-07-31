@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
             model_name="membership", old_name="post_election", new_name="ballot"
         ),
         migrations.AlterUniqueTogether(
-            name="membership", unique_together=set([("person", "ballot")])
+            name="membership", unique_together={("person", "ballot")}
         ),
     ]

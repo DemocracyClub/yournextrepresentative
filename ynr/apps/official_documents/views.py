@@ -1,12 +1,11 @@
-from django.http.response import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.template.loader import render_to_string
-from django.views.generic import CreateView, DetailView, TemplateView
-
 from auth_helpers.views import GroupRequiredMixin
 from candidates.models import Ballot, LoggedAction
 from candidates.models.db import ActionType
 from candidates.views.version_data import get_client_ip
+from django.http.response import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+from django.views.generic import CreateView, DetailView, TemplateView
 from moderation_queue.models import SuggestedPostLock
 from sopn_parsing.helpers.extract_pages import extract_pages_for_ballot
 from sopn_parsing.helpers.extract_tables import extract_ballot_table

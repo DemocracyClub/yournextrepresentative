@@ -1,11 +1,10 @@
 from unittest.mock import patch
-from django.core.exceptions import ValidationError
-from django.test import TestCase
-
-from django import forms
 
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django import forms
+from django.core.exceptions import ValidationError
+from django.test import TestCase
 from parties.forms import (
     PartyIdentifierField,
     PopulatePartiesMixin,

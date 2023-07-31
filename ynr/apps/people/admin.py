@@ -112,15 +112,13 @@ class PersonAdmin(admin.ModelAdmin):
         )
         if person.image:
             return image_url
-        else:
-            return "No Image Found"
+        return "No Image Found"
 
     def image_filetype(self, obj):
         person = Person.objects.get(pk=obj.pk)
         if person.image:
             return person.image.image.name.split(".")[-1]
-        else:
-            return "No Image Found"
+        return "No Image Found"
 
     def get_urls(self):
         urls = super().get_urls()

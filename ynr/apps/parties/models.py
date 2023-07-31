@@ -1,7 +1,7 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 from django_extensions.db.models import TimeStampedModel
-from django.contrib.postgres.fields import ArrayField
 
 from .managers import PartyQuerySet
 

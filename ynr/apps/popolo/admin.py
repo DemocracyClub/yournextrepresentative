@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from popolo import models
 
 from .behaviors import admin as generics

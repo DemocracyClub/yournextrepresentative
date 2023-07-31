@@ -1,10 +1,9 @@
-from django.contrib.auth.models import User, Group
-from django.urls import reverse
-from django_webtest import WebTest
-
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.contrib.auth.models import Group, User
+from django.urls import reverse
+from django_webtest import WebTest
 from people.models import TRUSTED_TO_EDIT_NAME
 from people.tests.factories import PersonFactory
 from popolo.models import OtherName

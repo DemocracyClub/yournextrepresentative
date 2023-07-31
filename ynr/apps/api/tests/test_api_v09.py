@@ -2,20 +2,19 @@ import json
 from datetime import datetime
 from os.path import join
 
-from django.conf import settings
-from django.core.files.base import ContentFile
-from django.core.files.storage import DefaultStorage
-from django.core.management import call_command
-from django_webtest import WebTest
-from mock import patch
 from api.v09.serializers import ImageSerializer
-
 from candidates.models import LoggedAction, PersonRedirect
 from candidates.models.db import ActionType
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.helpers import TmpMediaRootMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.files.storage import DefaultStorage
+from django.core.management import call_command
+from django_webtest import WebTest
+from mock import patch
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from parties.models import Party
 from parties.tests.fixtures import DefaultPartyFixtures

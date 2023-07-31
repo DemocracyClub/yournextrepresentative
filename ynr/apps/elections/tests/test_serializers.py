@@ -1,7 +1,7 @@
 from unittest.mock import PropertyMock, patch
-from django.test import TestCase
-from candidates.tests.factories import BallotPaperFactory
 
+from candidates.tests.factories import BallotPaperFactory
+from django.test import TestCase
 from elections.api.next.serializers import BallotSerializer
 
 

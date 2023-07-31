@@ -4,11 +4,9 @@ from pathlib import Path
 from typing import Type, TypeVar
 
 import requests
-from django.core.management.base import BaseCommand
-
 from candidatebot.helpers import CandidateBot
+from django.core.management.base import BaseCommand
 from people.models import Person
-
 
 T_WikiDataPerson = TypeVar("T_WikiDataPerson", bound="WikiDataPerson")
 
@@ -37,6 +35,7 @@ class WikiDataPerson:
         bot.save(source="Wikidata")
         if bot.edits_made:
             return f"Updated person {person.pk} with MNIS ID {self.mnis_id}"
+        return None
 
 
 class WikidataHelper:

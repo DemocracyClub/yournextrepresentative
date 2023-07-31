@@ -1,6 +1,5 @@
-from django.test import TestCase
-
 from candidates.tests.auth import TestUserMixin
+from django.test import TestCase
 from duplicates import merge_helpers
 from duplicates.models import DuplicateSuggestion
 from people.tests.factories import PersonFactory

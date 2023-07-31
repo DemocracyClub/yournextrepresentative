@@ -1,5 +1,4 @@
 from django.test import TestCase
-
 from people.models import PersonIdentifier
 from people.tests.factories import PersonFactory
 

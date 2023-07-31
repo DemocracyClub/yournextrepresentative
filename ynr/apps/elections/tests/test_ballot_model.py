@@ -1,11 +1,10 @@
 import datetime
 
 import mock
-from django.test import TestCase
-from django.utils import timezone
-
 from candidates.models import Ballot
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.test import TestCase
+from django.utils import timezone
 
 
 class ElectionTests(UK2015ExamplesMixin, TestCase):

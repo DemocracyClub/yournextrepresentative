@@ -1,22 +1,19 @@
 import json
 
+from api.helpers import DefaultPageNumberPagination
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from django.views import View
+from django.views.decorators.cache import cache_page
+from parties.api.next.filters import PartyFilter
+from parties.api.next.serializers import (
+    CSVPartySerializer,
+    PartyRegisterSerializer,
+    PartySerializer,
+)
+from parties.models import Party
 from rest_framework import viewsets
 from rest_framework_csv.renderers import PaginatedCSVRenderer
-
-from parties.api.next.filters import PartyFilter
-
-from api.helpers import DefaultPageNumberPagination
-
-from parties.models import Party
-from parties.api.next.serializers import (
-    PartySerializer,
-    PartyRegisterSerializer,
-    CSVPartySerializer,
-)
 
 
 class PartyViewSet(viewsets.ReadOnlyModelViewSet):
@@ -57,6 +54,7 @@ class PartyRegisterList(viewsets.ReadOnlyModelViewSet):
         if page is not None:
             serializer = PartyRegisterSerializer(qs, many=True)
             return self.get_paginated_response(serializer.data)
+        return None
 
 
 class AllPartiesJSONView(View):

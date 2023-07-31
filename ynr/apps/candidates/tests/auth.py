@@ -1,10 +1,9 @@
-from django.contrib.auth.models import Group, User
-
 from candidates.models import (
     RESULT_RECORDERS_GROUP_NAME,
     TRUSTED_TO_LOCK_GROUP_NAME,
     TRUSTED_TO_MERGE_GROUP_NAME,
 )
+from django.contrib.auth.models import Group, User
 from moderation_queue.models import VERY_TRUSTED_USER_GROUP_NAME
 from official_documents.models import DOCUMENT_UPLOADERS_GROUP_NAME
 from people.models import TRUSTED_TO_EDIT_NAME

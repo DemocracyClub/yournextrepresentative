@@ -1,21 +1,21 @@
 from os.path import dirname, join, realpath
 from shutil import rmtree
 
-from django.test.utils import override_settings
-from django_webtest import WebTest
-from mock import patch
-from duplicates.models import DuplicateSuggestion
-
 import people.tests.factories
 from candidates.models import LoggedAction, PersonRedirect
 from candidates.models.versions import revert_person_from_version_data
-from candidates.views.people import MERGE_FORM_ID, SUGGESTION_FORM_ID
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from candidates.views.people import MERGE_FORM_ID, SUGGESTION_FORM_ID
+from django.test.utils import override_settings
+from django_webtest import WebTest
+from duplicates.models import DuplicateSuggestion
+from mock import patch
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from people.models import Person, PersonImage
 from popolo.models import Membership
+
 from ynr.helpers import mkdir_p
 
 example_timestamp = "2014-09-29T10:11:59.216159"

@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
-
-from facebook_data.tasks import save_advert_image
 from facebook_data.models import FacebookAdvert
+from facebook_data.tasks import save_advert_image
 
 
 class Command(BaseCommand):

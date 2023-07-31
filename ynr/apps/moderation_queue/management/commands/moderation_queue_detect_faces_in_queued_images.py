@@ -2,7 +2,6 @@ import json
 
 import boto3
 from django.core.management.base import BaseCommand, CommandError
-
 from moderation_queue.models import QueuedImage
 
 # These magic values are because the AWS API crops faces quite tightly by

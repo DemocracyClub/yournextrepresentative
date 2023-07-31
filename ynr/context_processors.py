@@ -1,14 +1,13 @@
 from datetime import date
 
-from django.conf import settings
-from django.contrib.sites.models import Site
-
 from bulk_adding.models import TRUSTED_TO_BULK_ADD_GROUP_NAME
 from candidates.models import (
     RESULT_RECORDERS_GROUP_NAME,
     TRUSTED_TO_LOCK_GROUP_NAME,
     TRUSTED_TO_MERGE_GROUP_NAME,
 )
+from django.conf import settings
+from django.contrib.sites.models import Site
 from duplicates.models import DuplicateSuggestion
 from moderation_queue.models import (
     PHOTO_REVIEWERS_GROUP_NAME,

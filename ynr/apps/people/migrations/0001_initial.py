@@ -3,10 +3,9 @@
 from __future__ import unicode_literals
 
 import django.db.models.deletion
+import people.models
 from django.conf import settings
 from django.db import migrations, models
-
-import people.models
 
 
 class Migration(migrations.Migration):

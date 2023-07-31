@@ -3,10 +3,9 @@ from datetime import date, timedelta
 from urllib.parse import urlencode
 
 import requests
+from candidates.models import Ballot, PartySet
 from django.conf import settings
 from django.utils.dateparse import parse_datetime
-
-from candidates.models import Ballot, PartySet
 from elections.models import Election as YNRElection
 from popolo.models import Organization, Post
 

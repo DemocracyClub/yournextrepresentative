@@ -1,5 +1,4 @@
 from django.urls import re_path
-
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .views import (

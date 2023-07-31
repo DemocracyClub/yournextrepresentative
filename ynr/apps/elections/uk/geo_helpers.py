@@ -3,14 +3,12 @@
 
 import logging
 import re
-from urllib.parse import urljoin
+from urllib.parse import quote, urljoin
 
 import requests
+from candidates.models import Ballot
 from django.conf import settings
 from django.core.cache import cache
-from urllib.parse import quote
-
-from candidates.models import Ballot
 
 
 class BaseMapItException(Exception):
@@ -47,13 +45,12 @@ def ballot_paper_ids_from_ee(url, cache_key, exception):
         ]
         cache.set(cache_key, ballot_paper_ids, settings.EE_CACHE_SECONDS)
         return ballot_paper_ids
-    elif r.status_code == 400:
+    if r.status_code == 400:
         ee_result = r.json()
         raise exception(ee_result["detail"])
-    elif r.status_code == 404:
+    if r.status_code == 404:
         raise exception(f'The url "{url}" couldn’t be found')
-    else:
-        raise UnknownGeoException(f'Unknown error for "{url}"')
+    raise UnknownGeoException(f'Unknown error for "{url}"')
 
 
 def get_ballots(url, cache_key, exception):
@@ -86,8 +83,7 @@ def get_ballots_from_postcode(
             return ballot_paper_ids_from_ee(
                 url, cache_key, BadPostcodeException
             )
-        else:
-            return get_ballots(url, cache_key, BadPostcodeException)
+        return get_ballots(url, cache_key, BadPostcodeException)
     except BadPostcodeException:
         # Give a nicer error message, as this is used on the frontend
         raise BadPostcodeException(

@@ -1,3 +1,4 @@
+import contextlib
 from collections import OrderedDict
 
 from candidates.models import (
@@ -231,10 +232,8 @@ class PersonMerger:
             return
         # There's an existing image on source, so replace the dest
         # person's image (assume the source image is better)
-        try:
+        with contextlib.suppress(PersonImage.DoesNotExist):
             self.dest_person.image.delete()
-        except PersonImage.DoesNotExist:
-            pass
 
         new_image.person = self.dest_person
         new_image.save()
@@ -304,12 +303,11 @@ class PersonMerger:
                 raise InvalidMergeError(
                     "Trying to merge two Memberships with results"
                 )
-            else:
-                msource.result.membership = mdest
-                mdest.result.save()
-                # if we have a result we also update if they were elected
-                mdest.elected = msource.elected
-                mdest.save()
+            msource.result.membership = mdest
+            mdest.result.save()
+            # if we have a result we also update if they were elected
+            mdest.elected = msource.elected
+            mdest.save()
 
         # copy any previous party allifiations if this is for a welsh run ballot
         if msource.ballot.is_welsh_run:

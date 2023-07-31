@@ -1,8 +1,7 @@
 import csv
 
-from django.core.management.base import BaseCommand
-
 from candidatebot.helpers import CandidateBot
+from django.core.management.base import BaseCommand
 from people.models import Person
 
 

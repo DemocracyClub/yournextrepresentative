@@ -1,16 +1,15 @@
+from candidates.tests.auth import TestUserMixin
+from candidates.views.people import (
+    MERGE_FORM_ID,
+    SUGGESTION_FORM_ID,
+    DuplicatePersonView,
+)
 from django.test.client import RequestFactory
 from django.test.testcases import TestCase
 from django.urls.base import reverse
 from django_webtest import WebTest
-from mock import patch, MagicMock
-
-from candidates.tests.auth import TestUserMixin
-from candidates.views.people import (
-    DuplicatePersonView,
-    MERGE_FORM_ID,
-    SUGGESTION_FORM_ID,
-)
 from duplicates.models import DuplicateSuggestion
+from mock import MagicMock, patch
 from people.models import Person
 from people.tests.factories import PersonFactory
 

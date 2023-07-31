@@ -1,19 +1,18 @@
 from os.path import abspath, dirname, join
 from unittest import skipIf
 
+from candidates.models import Ballot
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase
-
-from candidates.models import Ballot
-from candidates.tests.uk_examples import UK2015ExamplesMixin
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from official_documents.models import OfficialDocument
-from popolo.models import Post
 from official_documents.tests.paths import (
     EXAMPLE_DOCX_FILENAME,
     EXAMPLE_HTML_FILENAME,
 )
-from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from popolo.models import Post
 from sopn_parsing.tests import should_skip_pdf_tests
 
 
@@ -31,13 +30,12 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
                 "data/parl.dulwich-and-west-norwood.2015-05-07.pdf",
             )
         )
-
+        with open(example_doc_path, "rb") as f:
+            sopn_file = f.read()
         doc = OfficialDocument.objects.create(
             ballot=self.dulwich_post_ballot,
             document_type=OfficialDocument.NOMINATION_PAPER,
-            uploaded_file=SimpleUploadedFile(
-                "sopn.pdf", open(example_doc_path, "rb").read()
-            ),
+            uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file),
             source_url="example.com",
         )
         self.assertEqual(doc.first_page_number, None)
@@ -101,12 +99,12 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
                 post=post,
                 election=self.local_election,
             )
+            with open(example_doc_path, "rb") as f:
+                sopn_file = f.read()
             OfficialDocument.objects.create(
                 ballot=ballot,
                 document_type=OfficialDocument.NOMINATION_PAPER,
-                uploaded_file=SimpleUploadedFile(
-                    "sopn.pdf", open(example_doc_path, "rb").read()
-                ),
+                uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file),
                 source_url="example.com",
             )
 
@@ -139,12 +137,12 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
                 post=post,
                 election=self.local_election,
             )
+            with open(example_doc_path, "rb") as f:
+                sopn_file = f.read()
             OfficialDocument.objects.create(
                 ballot=ballot,
                 document_type=OfficialDocument.NOMINATION_PAPER,
-                uploaded_file=SimpleUploadedFile(
-                    "sopn.pdf", open(example_doc_path, "rb").read()
-                ),
+                uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file),
                 source_url="example.com",
             )
 

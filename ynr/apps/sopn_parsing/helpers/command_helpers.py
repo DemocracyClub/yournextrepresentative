@@ -1,6 +1,5 @@
-from django.core.management.base import BaseCommand, CommandError
-
 from candidates.models import Ballot
+from django.core.management.base import BaseCommand, CommandError
 
 
 class BaseSOPNParsingCommand(BaseCommand):
@@ -45,5 +44,4 @@ class BaseSOPNParsingCommand(BaseCommand):
             filter_kwargs["election__current"] = True
         qs = Ballot.objects.all()
         qs = qs.filter(**filter_kwargs)
-        qs = qs.exclude(officialdocument=None)
-        return qs
+        return qs.exclude(officialdocument=None)

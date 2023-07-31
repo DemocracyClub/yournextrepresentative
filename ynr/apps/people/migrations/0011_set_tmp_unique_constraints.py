@@ -26,12 +26,10 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name="personidentifier",
-            unique_together=set(
-                [
-                    ("person", "internal_identifier", "value_type"),
-                    ("person", "value"),
-                    ("person", "value_type"),
-                ]
-            ),
+            unique_together={
+                ("person", "internal_identifier", "value_type"),
+                ("person", "value"),
+                ("person", "value_type"),
+            },
         ),
     ]

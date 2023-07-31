@@ -7,8 +7,8 @@ set up a `local.py` file by following `local.example.py`.
 """
 
 import os
-from os.path import join, abspath, dirname
 import sys
+from os.path import abspath, dirname, join
 
 import sentry_sdk
 from sentry_sdk.integrations import django

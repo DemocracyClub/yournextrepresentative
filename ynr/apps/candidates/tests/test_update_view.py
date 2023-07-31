@@ -2,12 +2,11 @@ from unittest import skip
 from urllib.parse import urlsplit
 
 from django_webtest import WebTest
-from webtest.forms import Text
 from official_documents.models import OfficialDocument
-
 from people.models import Person
 from people.tests.factories import PersonFactory
 from popolo.models import Membership
+from webtest.forms import Text
 
 from .auth import TestUserMixin
 from .factories import MembershipFactory

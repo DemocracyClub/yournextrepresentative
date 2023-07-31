@@ -1,8 +1,7 @@
+import mock
+from api.next.filters import LastUpdatedMixin
 from django_webtest import WebTest
 from mock import MagicMock
-import mock
-
-from api.next.filters import LastUpdatedMixin
 
 
 class TestLastUpdatedMixin(WebTest):

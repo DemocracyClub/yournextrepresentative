@@ -1,12 +1,11 @@
-from os.path import dirname, join, abspath
+from os.path import abspath, dirname, join
 from unittest import skipIf
-
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.management import call_command
-from django.test import TestCase
 
 from candidates.tests.helpers import TmpMediaRootMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
+from django.test import TestCase
 from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.extract_tables import extract_ballot_table
 from sopn_parsing.models import ParsedSOPN
@@ -21,13 +20,12 @@ class TestSOPNHelpers(TmpMediaRootMixin, UK2015ExamplesMixin, TestCase):
                 "data/parl.dulwich-and-west-norwood.2015-05-07.pdf",
             )
         )
-
+        with open(example_doc_path, "rb") as f:
+            sopn_file = f.read()
         self.doc = OfficialDocument.objects.create(
             ballot=self.dulwich_post_ballot,
             document_type=OfficialDocument.NOMINATION_PAPER,
-            uploaded_file=SimpleUploadedFile(
-                "sopn.pdf", open(example_doc_path, "rb").read()
-            ),
+            uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file),
             source_url="example.com",
             relevant_pages="all",
         )

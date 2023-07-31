@@ -1,10 +1,9 @@
 from datetime import date, timedelta
 
+from candidates.models import Ballot
+from dateutil.parser import parse
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from dateutil.parser import parse
-
-from candidates.models import Ballot
 from elections.models import Election
 from elections.uk.every_election import EveryElectionImporter
 

@@ -26,6 +26,6 @@ class Migration(migrations.Migration):
             field=models.CharField(blank=True, max_length=256),
         ),
         migrations.AlterUniqueTogether(
-            name="post", unique_together=set([("slug", "organization")])
+            name="post", unique_together={("slug", "organization")}
         ),
     ]

@@ -20,7 +20,7 @@ def add_party_colours(apps, schema_editor):
             PartyWithColour.objects.get_or_create(
                 party=party, defaults={"hex_value": party_info["hex"]}
             )
-        except:
+        except Exception:
             pass
 
 

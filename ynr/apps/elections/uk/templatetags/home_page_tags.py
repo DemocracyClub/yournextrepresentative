@@ -1,9 +1,9 @@
 from datetime import datetime
-from django import template
-from django.conf import settings
-from django.db.models import Sum, Count, Func, F, Value, TextField, Q
 
 from candidates.models import Ballot
+from django import template
+from django.conf import settings
+from django.db.models import Count, F, Func, Q, Sum, TextField, Value
 from elections.filters import filter_shortcuts
 from elections.models import Election
 from popolo.models import Membership

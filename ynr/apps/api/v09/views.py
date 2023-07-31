@@ -6,19 +6,14 @@ from datetime import date, datetime, timedelta
 from os.path import dirname
 
 import django
-from dateutil import parser
-from django.contrib.auth.models import User
-from django.db.models import Count, Prefetch, Q
-from django.http import HttpResponse, HttpResponsePermanentRedirect, Http404
-from django.views.generic import View
-from rest_framework import viewsets
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
-from rest_framework.viewsets import ViewSet
-
 from api.helpers import DefaultPageNumberPagination
 from api.v09 import serializers
 from candidates import models as extra_models
+from dateutil import parser
+from django.contrib.auth.models import User
+from django.db.models import Count, Prefetch, Q
+from django.http import Http404, HttpResponse, HttpResponsePermanentRedirect
+from django.views.generic import View
 from elections.models import Election
 from elections.uk.geo_helpers import (
     get_ballots_from_coords,
@@ -26,6 +21,10 @@ from elections.uk.geo_helpers import (
 )
 from people.models import Person
 from popolo.models import Membership, Organization, Post
+from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+from rest_framework.viewsets import ViewSet
 from ynr_refactoring.views import get_changed_election_slug
 
 

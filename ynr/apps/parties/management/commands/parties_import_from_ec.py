@@ -1,7 +1,6 @@
 from io import StringIO
 
 from django.core.management.base import BaseCommand
-
 from parties.importer import ECPartyImporter
 from parties.models import PartyEmblem
 from utils.slack import SlackHelper

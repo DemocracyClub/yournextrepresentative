@@ -1,5 +1,5 @@
-from popolo.models import Organization
 from api.next.filters import LastUpdatedMixin
+from popolo.models import Organization
 
 
 class OrganizationFilter(LastUpdatedMixin):

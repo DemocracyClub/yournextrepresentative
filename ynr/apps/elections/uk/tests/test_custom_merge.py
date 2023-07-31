@@ -1,10 +1,9 @@
-from django_webtest import WebTest
-from candidates.views.people import MERGE_FORM_ID, SUGGESTION_FORM_ID
-
 import people.tests.factories
 from candidates.tests import factories
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from candidates.views.people import MERGE_FORM_ID, SUGGESTION_FORM_ID
+from django_webtest import WebTest
 from people.models import Person
 from uk_results.models import CandidateResult, ResultSet
 

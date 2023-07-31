@@ -2,7 +2,6 @@ from os.path import exists, join
 
 from django.conf import settings
 from django.views.generic import TemplateView
-
 from elections.models import Election
 
 
@@ -14,10 +13,7 @@ class HelpResultsView(TemplateView):
     template_name = "candidates/results.html"
 
     def results_file_exists(self, election_slug):
-        if election_slug is None:
-            suffix = "all"
-        else:
-            suffix = election_slug
+        suffix = "all" if election_slug is None else election_slug
         expected_file_location = join(
             settings.MEDIA_ROOT, "candidates-elected-{}.csv".format(suffix)
         )

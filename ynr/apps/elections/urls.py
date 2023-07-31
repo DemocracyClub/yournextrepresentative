@@ -1,5 +1,4 @@
 from django.urls import re_path
-
 from elections import views
 from elections.helpers import ElectionIDSwitcher
 

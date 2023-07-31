@@ -1,11 +1,11 @@
+import contextlib
 import datetime
 
+from candidates.models.db import ActionType
 from django.core.management.base import BaseCommand
 from django.db.models import Count
 from django.utils import timezone
-
 from wombles.models import WombleProfile, WombleTags
-from candidates.models.db import ActionType
 
 
 class Command(BaseCommand):
@@ -17,10 +17,9 @@ class Command(BaseCommand):
         self.add_photo_editor()
 
     def add_tag(self, tag_label, qs):
-        try:
+        with contextlib.suppress(WombleTags.DoesNotExist):
             WombleTags.objects.get(label=tag_label).delete()
-        except WombleTags.DoesNotExist:
-            pass
+
         tag = WombleTags.objects.create(label=tag_label)
         tag.wombleprofile_set.add(*qs)
 

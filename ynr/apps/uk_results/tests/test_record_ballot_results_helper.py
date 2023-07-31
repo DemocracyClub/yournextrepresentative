@@ -1,10 +1,9 @@
-from django.test import TestCase
-
 from candidates.tests.auth import TestUserMixin
+from candidates.tests.dates import date_in_near_future, date_in_near_past
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.test import TestCase
 from people.tests.factories import PersonFactory
 from results.models import ResultEvent
-from candidates.tests.dates import date_in_near_past, date_in_near_future
 from uk_results.helpers import RecordBallotResultsHelper
 
 

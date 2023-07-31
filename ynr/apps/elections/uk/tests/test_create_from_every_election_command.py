@@ -1,25 +1,24 @@
 import datetime
 from unittest import mock
-import pytest
 from urllib.parse import urlencode, urljoin
 
+import pytest
+from candidates.models import Ballot
+from candidates.tests.factories import (
+    BallotPaperFactory,
+    ElectionFactory,
+    MembershipFactory,
+    OrganizationFactory,
+    PostFactory,
+)
 from django.conf import settings
 from django.core.management import call_command
 from django.utils import timezone
 from django_webtest import WebTest
-from freezegun import freeze_time
-from mock import Mock, patch
-
-from candidates.models import Ballot
-from candidates.tests.factories import (
-    BallotPaperFactory,
-    MembershipFactory,
-    PostFactory,
-    ElectionFactory,
-    OrganizationFactory,
-)
 from elections.models import Election
 from elections.uk import every_election
+from freezegun import freeze_time
+from mock import Mock, patch
 from parties.tests.factories import PartyFactory
 from people.tests.factories import PersonFactory
 from popolo.models import Post
@@ -27,14 +26,14 @@ from popolo.models import Post
 from .ee_import_results import (
     current_elections,
     current_elections_page_2,
+    duplicate_post_and_election,
     duplicate_post_names,
     each_type_of_election_on_one_day,
     local_highland,
     no_results,
-    pre_gss_result,
     post_gss_result,
+    pre_gss_result,
     replaced_election,
-    duplicate_post_and_election,
 )
 
 EE_BASE_URL = getattr(

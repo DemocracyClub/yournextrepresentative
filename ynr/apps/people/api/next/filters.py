@@ -1,7 +1,6 @@
 import django_filters
-
-from people.models import Person
 from api.next.filters import LastUpdatedMixin
+from people.models import Person
 
 
 class PersonFilter(LastUpdatedMixin):

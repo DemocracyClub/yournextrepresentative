@@ -1,7 +1,6 @@
+from candidates.models import Ballot
 from django.core.management.base import BaseCommand
 from django.db import transaction
-
-from candidates.models import Ballot
 from parties.models import Party
 from people.models import Person
 from popolo.models import Membership

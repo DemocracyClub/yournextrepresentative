@@ -15,9 +15,10 @@ start and end dates, etc.
 
 """
 
-from django.db import migrations
 import csv
 import re
+
+from django.db import migrations
 
 
 def update_or_create_post_identifier(post):
@@ -54,9 +55,10 @@ def populate_from_ee_divisions(apps, schema_editor):
 
     Ballot = apps.get_model("candidates", "Ballot")
     Post = apps.get_model("popolo", "Post")
-    data_file = open("data/ee_post_identifiers_2020-01.csv")
+    with open("data/ee_post_identifiers_2020-01.csv") as f:
+        data_file = f.readlines()
 
-    for line in csv.DictReader(data_file.readlines()):
+    for line in csv.DictReader(data_file):
         try:
             ballot = Ballot.objects.get(ballot_paper_id=line["election_id"])
         except Ballot.DoesNotExist:
@@ -92,9 +94,10 @@ def populate_from_ee_no_divisions(apps, schema_editor):
 
     Ballot = apps.get_model("candidates", "Ballot")
     Post = apps.get_model("popolo", "Post")
-    data_file = open("data/ee_post_identifiers_no_divisions_2020-01.csv")
+    with open("data/ee_post_identifiers_no_divisions_2020-01.csv") as f:
+        data_file = f.readlines()
 
-    for line in csv.DictReader(data_file.readlines()):
+    for line in csv.DictReader(data_file):
         try:
             ballot = Ballot.objects.get(ballot_paper_id=line["election_id"])
         except Ballot.DoesNotExist:

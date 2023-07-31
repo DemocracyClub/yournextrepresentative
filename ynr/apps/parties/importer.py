@@ -3,16 +3,16 @@ import os
 import re
 from datetime import datetime
 from tempfile import NamedTemporaryFile
+from typing import Dict
 from urllib.parse import urlencode
-from django.db import connection
-from django.contrib.admin.utils import NestedObjects
 
 import dateutil.parser
 import magic
 import requests
-from typing import Dict
-
 from candidates.models.popolo_extra import UnsafeToDelete
+from django.contrib.admin.utils import NestedObjects
+from django.db import connection
+
 from .constants import (
     CORRECTED_DESCRIPTION_DATES,
     CORRECTED_PARTY_NAMES_IN_DESC,
@@ -27,10 +27,7 @@ from .models import Party, PartyDescription, PartyEmblem
 def make_slug(party_id):
     if "-party:" in party_id:
         return party_id
-    if "PPm" in party_id:
-        prefix = "minor-party"
-    else:
-        prefix = "party"
+    prefix = "minor-party" if "PPm" in party_id else "party"
 
     party_id = re.sub(r"^PPm?\s*", "", party_id).strip()
     return "{}:{}".format(prefix, party_id)
@@ -40,6 +37,7 @@ def extract_number_from_id(party_id):
     m = re.search(r"\d+", party_id)
     if m:
         return int(m.group(0), 10)
+    return None
 
 
 def make_joint_party_id(id1, id2):
@@ -195,9 +193,8 @@ class ECPartyImporter:
                     message = "Can't find: {}".format(other_party_name)
                     if raise_on_error:
                         raise ValueError(message)
-                    else:
-                        self.error_collector.append(message)
-                        continue
+                    self.error_collector.append(message)
+                    continue
                 joint_id = make_joint_party_id(
                     description.party.ec_id, other_party.ec_id
                 )
@@ -294,12 +291,11 @@ class ECParty(dict):
         # Do some general cleaning
         name = re.sub(r"\s+", " ", name)
         # replace dash with hyphen
-        name = name.replace("\u2013", "\u002d")
-        return name
+        return name.replace("\u2013", "\u002d")
 
     @property
     def date_deregistered(self):
-        if not self.registration_status == "Deregistered":
+        if self.registration_status != "Deregistered":
             return None
 
         matcher = re.compile(r"([0-9]+/[0-9]+/[0-9]+)\]")
@@ -308,12 +304,11 @@ class ECParty(dict):
             return dateutil.parser.parse(
                 deregistered_date.group(1), dayfirst=True
             )
-        else:
-            raise ValueError(
-                "Unknown deregistrtion date for '{}'".format(
-                    self["RegulatedEntityName"]
-                )
+        raise ValueError(
+            "Unknown deregistrtion date for '{}'".format(
+                self["RegulatedEntityName"]
             )
+        )
 
     @property
     def register(self):
@@ -330,8 +325,7 @@ class ECParty(dict):
             )
         if self["RegisterName"] == "Northern Ireland":
             return "NI"
-        else:
-            return "GB"
+        return "GB"
 
     @property
     def registration_status(self):
@@ -405,9 +399,7 @@ class ECParty(dict):
             .all()
         )
 
-        all_descriptions = PartyDescription.objects.filter(
-            party_id=self.model.id
-        ).all()
+        PartyDescription.objects.filter(party_id=self.model.id).all()
 
         for description in inactive_descriptions:
             if description.active is not False:
@@ -447,7 +439,7 @@ class ECEmblem:
         mime_type = magic.Magic(mime=True).from_file(image_file_name)
         if not mime_type.startswith("image/"):
             # This isn't an image, so let's not try to save it
-            return
+            return None
         extension = mimetypes.guess_extension(mime_type)
         filename = "Emblem_{}{}".format(self.emblem_dict["Id"], extension)
 
@@ -460,7 +452,8 @@ class ECEmblem:
             },
         )
 
-        emblem.image.save(filename, open(image_file_name, "rb"))
+        with open(image_file_name, "rb") as f:
+            emblem.image.save(filename, f)
         os.remove(image_file_name)
         return (emblem, True)
 
@@ -511,3 +504,4 @@ class YNRPartyDescriptionImporter:
                 print(
                     f"Created PartyDescription {party_description_obj.pk}: {party_description_obj.description}"
                 )
+        return None
