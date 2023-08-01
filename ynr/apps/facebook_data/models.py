@@ -83,7 +83,7 @@ class FacebookAdvert(models.Model):
         ages = {}
         for dd in demographic_distribution:
             age = dd["age"]
-            if age not in ages.keys():
+            if age not in ages:
                 ages[age] = 0.0
             ages[age] += float(dd["percentage"])
         age_list = list(ages.keys())
