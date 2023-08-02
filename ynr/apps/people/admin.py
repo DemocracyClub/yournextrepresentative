@@ -133,7 +133,6 @@ class PersonAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         if form.initial["edit_limitations"] != form["edit_limitations"].value():
-
             try:
                 limitation = EditLimitationStatuses[
                     form["edit_limitations"].value()

@@ -18,7 +18,6 @@ from sopn_parsing.tests import should_skip_pdf_tests
 
 @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
 class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
-
     example_docx_filename = EXAMPLE_DOCX_FILENAME
     example_html_filename = EXAMPLE_HTML_FILENAME
     example_image_filename = EXAMPLE_IMAGE_FILENAME

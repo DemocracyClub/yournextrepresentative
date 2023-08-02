@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("parties", "0015_replace_dash_with_hyphen")]
 
     operations = [CreateExtension(name="fuzzystrmatch")]

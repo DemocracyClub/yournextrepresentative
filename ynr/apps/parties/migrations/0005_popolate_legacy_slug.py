@@ -17,7 +17,6 @@ def add_legacy_slug(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("parties", "0004_party_legacy_slug"),
         ("popolo", "0015_move_organization_to_parties"),

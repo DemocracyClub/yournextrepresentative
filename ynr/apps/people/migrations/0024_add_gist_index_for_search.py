@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0023_add_search_vector_field")]
 
     operations = [

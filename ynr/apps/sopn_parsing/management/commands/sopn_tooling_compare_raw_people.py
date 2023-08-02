@@ -12,7 +12,6 @@ from sopn_parsing.models import ParsedSOPN
 
 
 class Command(BaseSOPNParsingCommand):
-
     CORRECT_EXACTLY = "correct_exactly"
     NUM_CORRECT_MISSING_PARTIES = "num_correct_some_parties_missing"
     NUM_INCORRECT = "num_incorrect"
@@ -107,7 +106,6 @@ class Command(BaseSOPNParsingCommand):
             )
 
     def compare_raw_people(self, ballot, ballot_data):
-
         try:
             raw_people = ballot.rawpeople.data
         except RawPeople.DoesNotExist:

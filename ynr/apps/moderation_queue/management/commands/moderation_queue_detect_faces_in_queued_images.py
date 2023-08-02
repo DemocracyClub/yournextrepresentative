@@ -13,7 +13,6 @@ MAX_SCALING_FACTOR = 1.3
 
 class Command(BaseCommand):
     def handle(self, **options):
-
         rekognition = boto3.client("rekognition", "eu-west-1")
         attributes = ["ALL"]
 
@@ -23,7 +22,6 @@ class Command(BaseCommand):
         )
 
         for qi in qs:
-
             try:
                 detected = rekognition.detect_faces(
                     Image={"Bytes": qi.image.file.read()}, Attributes=attributes

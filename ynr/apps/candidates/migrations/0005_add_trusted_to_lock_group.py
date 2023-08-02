@@ -7,7 +7,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0004_add_trusted_to_merge_group")]
 
     operations = [

@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("moderation_queue", "0023_python_3_changes"),
         ("people", "0004_move_person_data"),

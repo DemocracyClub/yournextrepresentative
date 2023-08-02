@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("popolo", "0002_update_models_from_upstream"),
         ("moderation_queue", "0013_auto_20150916_1753"),

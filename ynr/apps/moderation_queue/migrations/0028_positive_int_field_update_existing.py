@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("moderation_queue", "0027_positive_int_field_update_existing")
     ]

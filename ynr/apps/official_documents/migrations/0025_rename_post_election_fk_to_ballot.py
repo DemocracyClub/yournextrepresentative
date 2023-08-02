@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("official_documents", "0024_add_relevant_pages")]
 
     operations = [

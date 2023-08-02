@@ -10,7 +10,6 @@ def delete_rejected_results(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk_results", "0036_auto_20180424_1926")]
 
     operations = [

@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0015_move_organization_to_parties")]
 
     operations = [

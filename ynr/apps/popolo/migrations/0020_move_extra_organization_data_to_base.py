@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0019_move_organization_extra_fields_to_base")]
 
     operations = [

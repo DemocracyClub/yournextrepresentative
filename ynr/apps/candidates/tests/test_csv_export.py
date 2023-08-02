@@ -241,7 +241,6 @@ class CSVTests(TmpMediaRootMixin, TestUserMixin, UK2015ExamplesMixin, TestCase):
         self.assertEqual(len(non_empty_file.splitlines()), 3)
 
     def test_previous_party_affiliations_string(self):
-
         for membership in Membership.objects.all():
             with self.subTest(msg=membership):
                 self.assertEqual(

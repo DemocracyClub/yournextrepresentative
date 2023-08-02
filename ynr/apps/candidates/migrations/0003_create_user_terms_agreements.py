@@ -9,7 +9,6 @@ def create_user_terms_agreements(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0002_usertermsagreement")]
 
     operations = [migrations.RunPython(create_user_terms_agreements)]

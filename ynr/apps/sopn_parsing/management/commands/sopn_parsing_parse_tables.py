@@ -44,7 +44,6 @@ class Command(BaseSOPNParsingCommand):
         return filter_kwargs
 
     def handle(self, *args, **options):
-
         # filters that we never change with args. These two would raise
         # ValueErrors in the parse_raw_data_for_ballot function
         base_qs = self.get_queryset(options)

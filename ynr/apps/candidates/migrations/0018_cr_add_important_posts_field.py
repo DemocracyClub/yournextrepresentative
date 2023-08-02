@@ -19,7 +19,6 @@ def remove_extra_field(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0017_remove_cv_and_program_fields")]
 
     operations = [migrations.RunPython(add_extra_field, remove_extra_field)]

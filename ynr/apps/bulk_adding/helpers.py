@@ -172,7 +172,6 @@ class CSVImporter:
         raise ValueError("No party description header matched")
 
     def clean_area_name(self, name):
-
         name = name.replace(" Ward", "").strip().lower()
         name = name.replace("`", "'")
         return name.replace(" & ", " and ")

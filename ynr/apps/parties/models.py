@@ -134,7 +134,6 @@ class Party(TimeStampedModel):
                 self.default_emblem.ec_emblem_id
             )
         if self.descriptions.exists():
-
             attachment["fields"] = [
                 {
                     "title": "Descriptions",

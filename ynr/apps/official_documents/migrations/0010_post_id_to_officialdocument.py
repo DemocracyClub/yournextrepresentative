@@ -17,7 +17,6 @@ def post_to_post_id(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("official_documents", "0009_officialdocument_document_post"),
         ("candidates", "0009_migrate_to_django_popolo"),

@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0017_remove_membership_on_behalf_of")]
 
     operations = [

@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0075_use_jsonfield_from_django")]
 
     operations = [

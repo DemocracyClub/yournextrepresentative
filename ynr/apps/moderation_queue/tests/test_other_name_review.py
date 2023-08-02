@@ -66,7 +66,6 @@ class OtherNameReviewTests(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertFalse(OtherName.objects.exists())
 
     def test_approve_name_keeps_previous_name(self):
-
         self.person.name = "Foo Bar"
         self.person.save()
 

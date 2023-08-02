@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("results", "0024_rename_tmp_field")]
 
     operations = [

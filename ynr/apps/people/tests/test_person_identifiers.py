@@ -8,7 +8,6 @@ class TestPersonIdentifiers(TestCase):
         self.person = PersonFactory(pk=1)
 
     def test_str(self):
-
         pi = PersonIdentifier.objects.create(
             person=self.person,
             value="democlub",

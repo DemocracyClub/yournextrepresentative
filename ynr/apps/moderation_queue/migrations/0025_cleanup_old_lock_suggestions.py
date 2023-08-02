@@ -13,7 +13,6 @@ def clean_up_lock_suggestions(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("moderation_queue", "0024_move_person_fk_to_people_app")]
 
     operations = [

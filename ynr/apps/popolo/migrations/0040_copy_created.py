@@ -22,7 +22,6 @@ def copy_created(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0039_auto_20210616_1642")]
 
     operations = [

@@ -14,7 +14,6 @@ def add_election_and_post_name(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("results", "0004_resultevent_election")]
 
     operations = [

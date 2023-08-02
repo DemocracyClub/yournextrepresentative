@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("bulk_adding", "0004_move_to_jsonfield")]
 
     operations = [

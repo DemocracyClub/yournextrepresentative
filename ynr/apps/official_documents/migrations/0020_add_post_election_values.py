@@ -21,7 +21,6 @@ def do_nothing(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("official_documents", "0019_officialdocument_post_election")
     ]

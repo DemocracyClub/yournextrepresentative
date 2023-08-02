@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0031_other_names_unique_constraint")]
 
     operations = [

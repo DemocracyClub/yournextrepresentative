@@ -12,7 +12,6 @@ def get_birth_year(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0033_auto_20210928_1007")]
 
     operations = [

@@ -49,7 +49,6 @@ class Command(BaseCommand):
             data.append((election_id, url))
 
         for election_id, url in data:
-
             if election_id in id_to_url:
                 continue
             print(election_id)

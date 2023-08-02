@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("moderation_queue", "0003_auto_20150301_2035")]
 
     operations = [

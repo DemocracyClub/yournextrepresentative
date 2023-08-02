@@ -204,7 +204,6 @@ def set_liable_to_vandalism(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0016_add_edit_limitations")]
 
     operations = [

@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("popolo", "0002_update_models_from_upstream"),
         ("official_documents", "0008_set_default_election"),

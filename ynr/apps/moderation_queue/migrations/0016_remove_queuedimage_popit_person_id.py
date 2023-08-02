@@ -2,7 +2,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("moderation_queue", "0015_migrate_queuedimage_person")]
 
     operations = [

@@ -28,7 +28,6 @@ def safely_write(output_filename, memberships_list):
 
 
 class Command(BaseCommand):
-
     help = "Output CSV files for all elections"
 
     def add_arguments(self, parser):

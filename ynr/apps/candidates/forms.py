@@ -5,7 +5,6 @@ from people.forms.forms import AddElectionFieldsMixin, StrippedCharField
 
 
 class ToggleLockForm(forms.ModelForm):
-
     hashed_memberships = forms.CharField(
         widget=forms.HiddenInput, required=False
     )

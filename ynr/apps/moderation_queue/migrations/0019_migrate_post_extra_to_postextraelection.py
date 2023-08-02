@@ -71,7 +71,6 @@ def migrate_postextraelection_to_post_extra(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("moderation_queue", "0018_suggestedpostlock_postextraelection")
     ]

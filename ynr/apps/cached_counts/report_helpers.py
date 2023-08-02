@@ -162,7 +162,6 @@ def report_runner(name, date, **kwargs):
 
 
 class NumberOfCandidates(BaseReport):
-
     name = "Number of candidates standing"
 
     def get_qs(self):
@@ -312,7 +311,6 @@ class UncontestedBallots(BaseReport):
 
         report_list.append("\n")
         for ballot in qs:
-
             for membership in ballot.membership_set.all():
                 report_list.append(
                     [
@@ -859,7 +857,6 @@ class SmallPartiesCandidatesCouncilAreas(BaseReport):
 
 
 class NumCandidatesStandingInMultipleSeats(BaseReport):
-
     name = "Candidates standing in multiple seats"
 
     def get_qs(self):
@@ -952,11 +949,9 @@ class PeopleWithMultipleCandidaciesDetailed(
 class NumCandidatesStandingInMultipleSeatsPerGender(
     NumCandidatesStandingInMultipleSeats
 ):
-
     name = "Num candidates standing in multiple per seats, per gender"
 
     def report(self):
-
         genders = (
             self.membership_qs.values_list(
                 "person__gender_guess__gender", flat=True
@@ -986,7 +981,6 @@ class NumCandidatesStandingInMultipleSeatsPerGender(
 
 
 class CommonFirstNames(BaseReport):
-
     name = "Common first names"
 
     def get_qs(self):
@@ -1041,7 +1035,6 @@ class CommonFirstNames(BaseReport):
 
 
 class CommonLastNames(CommonFirstNames):
-
     name = "Common last names"
 
     def collect_names(self, label, qs):
@@ -1053,7 +1046,6 @@ class CommonLastNames(CommonFirstNames):
 
 
 class CandidatesWithWithoutStatement(BaseReport):
-
     name = "Candidates with or without statement"
 
     def get_qs(self):

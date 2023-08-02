@@ -2,7 +2,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("uk_results", "0019_councilelection_confirming_result_set")
     ]

@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("official_documents", "0006_rename_mapit_id_to_post_id")]
 
     operations = [

@@ -3,7 +3,6 @@ from django.test import TestCase
 
 
 class TestMergePeople(TestCase):
-
     maxDiff = None
 
     def test_merge_basic_unknown_details(self):

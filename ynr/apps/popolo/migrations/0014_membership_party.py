@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("parties", "0003_party_ordering"),
         ("popolo", "0013_clean_up_after_postextra_move"),

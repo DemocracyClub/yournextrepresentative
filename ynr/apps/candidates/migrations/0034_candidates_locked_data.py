@@ -42,7 +42,6 @@ def move_candidates_locked_to_postextra(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0033_postextraelection_candidates_locked")]
 
     operations = [

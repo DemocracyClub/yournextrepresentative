@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0060_add_flagged_type")]
 
     operations = [

@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0027_create_standard_complex_fields")]
 
     operations = [

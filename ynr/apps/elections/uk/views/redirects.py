@@ -6,7 +6,6 @@ from elections.uk.lib import is_valid_postcode
 
 
 class ConstituenciesRedirect(RedirectView):
-
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
@@ -14,7 +13,6 @@ class ConstituenciesRedirect(RedirectView):
 
 
 class ConstituencyRedirect(RedirectView):
-
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
@@ -22,7 +20,6 @@ class ConstituencyRedirect(RedirectView):
 
 
 class PartyRedirect(RedirectView):
-
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
@@ -30,7 +27,6 @@ class PartyRedirect(RedirectView):
 
 
 class CandidacyRedirect(RedirectView):
-
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
@@ -38,7 +34,6 @@ class CandidacyRedirect(RedirectView):
 
 
 class PersonCreateRedirect(RedirectView):
-
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
@@ -46,7 +41,6 @@ class PersonCreateRedirect(RedirectView):
 
 
 class CachedCountsRedirect(RedirectView):
-
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
@@ -58,7 +52,6 @@ class CachedCountsRedirect(RedirectView):
 
 
 class OfficialDocumentsRedirect(RedirectView):
-
     permanent = True
 
     def get_redirect_url(self, *args, **kwargs):
@@ -69,7 +62,6 @@ class OfficialDocumentsRedirect(RedirectView):
 
 
 class WhoPostcodeRedirect(RedirectView):
-
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
@@ -80,7 +72,6 @@ class WhoPostcodeRedirect(RedirectView):
 
 
 class HelpOutCTAView(RedirectView):
-
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):

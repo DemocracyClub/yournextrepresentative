@@ -12,7 +12,6 @@ def attach_memberships_to_posts(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0034_populate_from_ee_divisions")]
 
     operations = [

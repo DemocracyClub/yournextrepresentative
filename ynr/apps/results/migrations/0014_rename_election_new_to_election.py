@@ -2,7 +2,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("results", "0013_remove_old_fields")]
 
     operations = [

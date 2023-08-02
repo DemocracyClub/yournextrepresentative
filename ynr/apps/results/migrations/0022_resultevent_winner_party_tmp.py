@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("results", "0021_resultevent_retraction"),
         ("parties", "0008_unique_ec_id"),

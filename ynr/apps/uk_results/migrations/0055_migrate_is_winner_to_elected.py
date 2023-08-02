@@ -34,7 +34,6 @@ def backwards(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk_results", "0054_update_is_winner_to_elected")]
 
     operations = [migrations.RunPython(code=forwards, reverse_code=backwards)]

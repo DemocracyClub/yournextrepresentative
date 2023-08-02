@@ -225,7 +225,6 @@ class BallotQueryset(models.QuerySet):
 
 
 class Ballot(EEModifiedMixin, models.Model):
-
     VOTING_SYSTEM_FPTP = "FPTP"
 
     post = models.ForeignKey("popolo.Post", on_delete=models.CASCADE)

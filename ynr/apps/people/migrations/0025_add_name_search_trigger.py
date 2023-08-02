@@ -5,7 +5,6 @@ from people.managers import NAME_SEARCH_TRIGGER_SQL
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0024_add_gist_index_for_search")]
 
     operations = [migrations.RunSQL(NAME_SEARCH_TRIGGER_SQL)]

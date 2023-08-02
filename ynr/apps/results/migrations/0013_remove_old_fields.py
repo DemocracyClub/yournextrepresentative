@@ -2,7 +2,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("results", "0012_migrate_resultevent_data")]
 
     operations = [

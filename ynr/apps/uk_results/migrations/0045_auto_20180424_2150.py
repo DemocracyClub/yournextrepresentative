@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk_results", "0044_auto_20180424_2149")]
 
     operations = [

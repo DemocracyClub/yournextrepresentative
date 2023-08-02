@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("candidates", "0049_cleanup_post_extra"),
         ("popolo", "0022_populate_person_image_from_image"),

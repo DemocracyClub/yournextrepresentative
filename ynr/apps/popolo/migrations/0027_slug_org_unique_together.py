@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0026_remove_stale_models")]
 
     operations = [

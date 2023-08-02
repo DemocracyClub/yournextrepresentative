@@ -2,7 +2,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk_results", "0025_minus-1-to-null-on-num-fields")]
 
     operations = [

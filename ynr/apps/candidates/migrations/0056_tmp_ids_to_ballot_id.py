@@ -27,7 +27,6 @@ def move_tmp_ids_to_actual_ids(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0055_delete_complexpopolofield")]
 
     operations = [

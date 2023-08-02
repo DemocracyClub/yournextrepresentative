@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("results", "0026_move_person_fk_to_people_app")]
 
     operations = [

@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("candidates", "0042_loggedaction_post_election"),
         ("uk", "0004_add_biography"),

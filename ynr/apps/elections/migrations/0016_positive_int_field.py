@@ -11,7 +11,6 @@ def set_people_elected_per_post_to_zero(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("elections", "0015_election_date_index")]
 
     operations = [

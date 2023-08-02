@@ -21,7 +21,7 @@ def extract_pages_for_ballot(ballot):
             election_date=ballot.election.election_date,
         )
         return sopn.match_all_pages()
-    except (NoTextInDocumentError):
+    except NoTextInDocumentError:
         raise NoTextInDocumentError(
             f"Failed to extract pages for {ballot.sopn.uploaded_file.path} as a NoTextInDocumentError was raised"
         )

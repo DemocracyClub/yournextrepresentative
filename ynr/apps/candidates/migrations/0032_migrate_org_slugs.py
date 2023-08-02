@@ -52,7 +52,6 @@ def remove_classification_from_slugs(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0031_loggedaction_post")]
 
     operations = [

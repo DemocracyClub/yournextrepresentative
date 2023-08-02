@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("candidates", "0056_tmp_ids_to_ballot_id"),
         ("people", "0014_remove_person_email"),

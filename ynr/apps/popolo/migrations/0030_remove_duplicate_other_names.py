@@ -24,7 +24,6 @@ def deduplicate_other_names(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0029_positive_int_field")]
 
     operations = [

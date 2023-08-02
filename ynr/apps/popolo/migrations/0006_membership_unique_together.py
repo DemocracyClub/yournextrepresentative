@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0005_set_post_election_not_null_")]
 
     operations = [

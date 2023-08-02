@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0026_add_person_name_synonym")]
 
     operations = [

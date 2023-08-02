@@ -12,7 +12,6 @@ def forwards(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0077_loggedaction_person_pk")]
 
     operations = [

@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0032_add_post_identifiers")]
 
     operations = [

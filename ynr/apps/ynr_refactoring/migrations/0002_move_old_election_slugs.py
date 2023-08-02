@@ -192,7 +192,6 @@ def update_election_slug(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("ynr_refactoring", "0001_initial")]
 
     operations = [

@@ -17,7 +17,6 @@ def populate_initial_candidate_counts(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("parties", "0010_add_candidate_totals")]
 
     operations = [

@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0032_migrate_org_slugs")]
 
     operations = [

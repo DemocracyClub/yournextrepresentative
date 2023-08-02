@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0081_alter_loggedaction_action_type")]
 
     operations = [

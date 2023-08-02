@@ -248,7 +248,6 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
         return context
 
     def form_valid(self, context):
-
         with transaction.atomic():
             for person_form in context["formset"]:
                 data = person_form.cleaned_data

@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0010_rename_not_standing_related_name")]
 
     operations = [

@@ -38,7 +38,6 @@ def get_version_fields():
 
 
 class LoggedActionAPIFilter(django_filters.FilterSet):
-
     created = django_filters.DateFilter(lookup_expr="gte")
 
     class Meta:

@@ -628,7 +628,6 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_merging_with_gender_guess(self):
-
         GenderGuess.objects.create(gender="M", person=self.source_person)
         merger = PersonMerger(self.dest_person, self.source_person)
         merger.merge()

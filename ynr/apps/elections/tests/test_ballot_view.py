@@ -125,7 +125,6 @@ class TestBallotView(
         )
 
     def test_ballot_with_candidates_no_sopn(self):
-
         self.create_memberships(self.ballot, self.parties)
         response = self.app.get(self.ballot.get_absolute_url())
 

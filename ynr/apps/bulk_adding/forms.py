@@ -21,7 +21,6 @@ from search.utils import search_person_by_name
 
 class BaseBulkAddFormSet(forms.BaseFormSet):
     def __init__(self, *args, **kwargs):
-
         if "source" in kwargs:
             self.source = kwargs["source"]
             del kwargs["source"]
@@ -216,7 +215,6 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             )
 
         for form_data in self.cleaned_data:
-
             if (
                 "select_person" in form_data
                 and form_data["select_person"] == "_new"
@@ -398,7 +396,6 @@ PartyBulkAddReviewNameOnlyFormSet = forms.formset_factory(
 
 class SelectPartyForm(forms.Form):
     def __init__(self, *args, **kwargs):
-
         election = kwargs.pop("election")
         super().__init__(*args, **kwargs)
 
@@ -433,10 +430,8 @@ class SelectPartyForm(forms.Form):
 
 
 class AddByPartyForm(forms.Form):
-
     source = forms.CharField(required=True)
 
 
 class DeleteRawPeopleForm(forms.Form):
-
     ballot_paper_id = forms.CharField(required=True, widget=forms.HiddenInput)

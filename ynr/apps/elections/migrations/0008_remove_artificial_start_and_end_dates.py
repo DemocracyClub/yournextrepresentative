@@ -2,7 +2,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("elections", "0007_rename_new_organization_to_organization")
     ]

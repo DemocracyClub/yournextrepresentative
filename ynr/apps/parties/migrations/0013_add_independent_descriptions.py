@@ -11,7 +11,6 @@ def add_independent_party_descriptions(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("parties", "0012_add_party_docs")]
 
     operations = [

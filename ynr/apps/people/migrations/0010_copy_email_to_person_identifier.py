@@ -21,7 +21,6 @@ def populate_person_identifier_from_person_email(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0009_copy_popolo_fields_to_person_identifiers")]
 
     operations = [

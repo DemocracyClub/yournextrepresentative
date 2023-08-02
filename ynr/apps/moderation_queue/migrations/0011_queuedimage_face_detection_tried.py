@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("moderation_queue", "0010_auto_add_crop_bounds")]
 
     operations = [

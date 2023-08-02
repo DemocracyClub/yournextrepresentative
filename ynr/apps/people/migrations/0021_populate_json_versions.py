@@ -15,7 +15,6 @@ def populate_json_versions(apps, schema):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0020_add_json_versions")]
 
     operations = [

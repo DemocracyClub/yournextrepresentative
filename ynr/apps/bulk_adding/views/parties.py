@@ -200,7 +200,6 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
         return self.form_invalid()
 
     def form_valid(self, formsets):
-
         source = self.request.session["bulk_add_by_party_data"].get("source")
         assert len(formsets) >= 1
 

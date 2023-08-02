@@ -23,7 +23,6 @@ class TestPersonMembershipForm(
             mock.assert_called_once()
 
     def test_show_previous_party_affiliations(self):
-
         # test without a membership instance
         form = PersonMembershipForm()
         self.assertFalse(form.show_previous_party_affiliations)

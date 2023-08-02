@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("facebook_data", "0002_facebookadvert_image")]
 
     operations = [

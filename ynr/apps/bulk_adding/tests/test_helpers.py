@@ -14,7 +14,6 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.factory = RequestFactory()
 
     def test_add_person(self):
-
         request = self.factory.get("/")
         request.user = self.user
 
@@ -37,7 +36,6 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         person = PersonFactory()
         for description in [None, party_description]:
             with self.subTest(description=description):
-
                 helpers.update_person(
                     request=request,
                     person=person,

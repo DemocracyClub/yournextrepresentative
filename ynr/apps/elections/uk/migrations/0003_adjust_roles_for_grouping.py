@@ -18,7 +18,6 @@ def adjust_roles_for_grouping(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk", "0002_remove-gb-prefix")]
 
     operations = [migrations.RunPython(adjust_roles_for_grouping)]

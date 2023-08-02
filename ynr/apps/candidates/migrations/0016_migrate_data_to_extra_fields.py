@@ -50,7 +50,6 @@ def from_generic_fields_to_person_extra(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0015_add_configurable_extra_fields")]
 
     operations = [

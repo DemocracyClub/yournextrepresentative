@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0066_drop_unique_on_election_post")]
 
     operations = [

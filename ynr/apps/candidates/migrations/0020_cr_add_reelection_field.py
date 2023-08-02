@@ -19,7 +19,6 @@ def remove_extra_field(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0019_add_yesno_to_extra_field_types")]
 
     operations = [migrations.RunPython(add_extra_field, remove_extra_field)]

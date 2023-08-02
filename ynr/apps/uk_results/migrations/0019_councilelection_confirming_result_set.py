@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk_results", "0018_electionarea_noc")]
 
     operations = [

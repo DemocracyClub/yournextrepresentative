@@ -11,7 +11,6 @@ from uk_results.helpers import RecordBallotResultsHelper, read_csv_from_url
 
 
 class Command(BaseCommand):
-
     EDGECASES = {
         "ynys mon": "ynys môn",
         "down south": "south down",
@@ -83,7 +82,6 @@ class Command(BaseCommand):
         return None
 
     def create_results(self, ballot, candidates):
-
         if ballot.membership_set.count() != len(candidates):
             return self.stdout.write(
                 "Incorrect number of candidates for ballot, skipping"

@@ -19,7 +19,6 @@ def tidy_html_whitespace(html):
 
 
 class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
-
     maxDiff = None
 
     def setUp(self):
@@ -964,7 +963,6 @@ class TestVersionDiffs(UK2015ExamplesMixin, TestCase):
 
 
 class TestSingleVersionRendering(UK2015ExamplesMixin, TestCase):
-
     maxDiff = None
 
     def setUp(self):

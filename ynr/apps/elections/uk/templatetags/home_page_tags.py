@@ -35,7 +35,6 @@ def results_progress_by_value(base_qs, lookup_value, label_field=None):
     values_dict = {}
 
     for row in ballot_qs:
-
         if label_field:
             row["label"] = row.get(label_field)
             if not row["label"]:
@@ -100,7 +99,6 @@ def sopn_progress_by_value(base_qs, lookup_value, label_field=None):
     "includes/sopn_import_progress.html", takes_context=True
 )
 def sopn_import_progress(context):
-
     context["SHOW_SOPN_TRACKER"] = (
         getattr(settings, "FRONT_PAGE_CTA", False) == "SOPN_TRACKER"
     )

@@ -18,7 +18,6 @@ def add_extra_fields_to_base(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0003_move-extra-fields-to-base")]
 
     operations = [

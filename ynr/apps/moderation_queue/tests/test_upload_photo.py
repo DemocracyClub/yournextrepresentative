@@ -34,7 +34,6 @@ TEST_MEDIA_ROOT = realpath(join(dirname(__file__), "media"))
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
-
     example_image_filename = EXAMPLE_IMAGE_FILENAME
     rotated_image_filename = ROTATED_IMAGE_FILENAME
     xl_image_filename = XL_IMAGE_FILENAME
@@ -213,7 +212,6 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
 @patch("moderation_queue.helpers.requests")
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
-
     example_image_filename = EXAMPLE_IMAGE_FILENAME
 
     @classmethod

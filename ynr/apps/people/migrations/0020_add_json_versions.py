@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0019_move_to_ballot_in_version_history")]
 
     operations = [

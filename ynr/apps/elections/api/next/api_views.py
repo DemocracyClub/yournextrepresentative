@@ -74,7 +74,6 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_class = BallotFilter
 
     def filter_queryset(self, queryset):
-
         try:
             queryset = super().filter_queryset(queryset)
         except BadPostcodeException as e:

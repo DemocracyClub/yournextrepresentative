@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("parties", "0002_add_independent_party")]
 
     operations = [

@@ -74,7 +74,6 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
 
     @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN="madeuptoken")
     def test_commmand_verbose_output(self, mock_requests):
-
         mock_requests.post.side_effect = fake_post_for_username_updater
 
         with capture_output() as (out, err):
@@ -95,7 +94,6 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
 
     @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN="madeuptoken")
     def test_commmand_adds_screen_name(self, mock_requests):
-
         mock_requests.post.side_effect = fake_post_for_username_updater
 
         with capture_output() as (out, err):
@@ -118,7 +116,6 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
 
     @override_settings(TWITTER_APP_ONLY_BEARER_TOKEN="madeuptoken")
     def test_commmand_adds_user_id(self, mock_requests):
-
         mock_requests.post.side_effect = fake_post_for_username_updater
 
         with capture_output() as (out, err):

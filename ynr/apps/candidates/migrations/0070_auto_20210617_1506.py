@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0069_ballot_voting_system")]
 
     operations = [

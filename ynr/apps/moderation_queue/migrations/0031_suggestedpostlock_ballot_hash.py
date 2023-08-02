@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("moderation_queue", "0030_add_very_trusted_user_group")]
 
     operations = [

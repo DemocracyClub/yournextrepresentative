@@ -38,7 +38,6 @@ def move_person_from_popolo(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0003_add_person_model")]
 
     operations = [

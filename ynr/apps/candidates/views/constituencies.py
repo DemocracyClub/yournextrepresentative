@@ -33,12 +33,10 @@ class CanRecordResultsMixin:
 class ConstituencyRecordWinnerView(
     ElectionMixin, CanRecordResultsMixin, FormView
 ):
-
     form_class = ConstituencyRecordWinnerForm
     template_name = "candidates/record-winner.html"
 
     def dispatch(self, request, *args, **kwargs):
-
         person_id = self.request.POST.get("person_id")
         self.ballot = self.get_ballot()
         self.person = get_object_or_404(Person, id=person_id)
@@ -82,7 +80,6 @@ class ConstituencyRecordWinnerView(
 
 
 class ConstituencyRetractWinnerView(ElectionMixin, CanRecordResultsMixin, View):
-
     required_group_name = RESULT_RECORDERS_GROUP_NAME
     http_method_names = ["post"]
 

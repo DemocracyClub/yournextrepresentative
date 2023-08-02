@@ -15,7 +15,6 @@ def set_uk_2015_election(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("cached_counts", "0002_cachedcount_election")]
 
     operations = [

@@ -23,7 +23,6 @@ def db_to_popit(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("results", "0006_resultevent_winner")]
 
     operations = [migrations.RunPython(popit_to_db, db_to_popit)]

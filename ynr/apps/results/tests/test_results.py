@@ -12,7 +12,6 @@ from results.models import ResultEvent
 
 
 class XMLEqualityMixin(object):
-
     maxDiff = None
 
     def compare_xml(self, xml_a, xml_b):

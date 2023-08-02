@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk_results", "0051_resultset_total_electorate")]
 
     operations = [

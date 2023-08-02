@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("parties", "0013_add_independent_descriptions")]
 
     operations = [

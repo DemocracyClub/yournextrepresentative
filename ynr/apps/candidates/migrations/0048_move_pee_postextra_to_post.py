@@ -16,7 +16,6 @@ def add_extra_fields_to_base(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0047_add_post_to_pee")]
 
     operations = [

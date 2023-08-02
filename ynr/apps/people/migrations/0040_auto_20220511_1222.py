@@ -16,7 +16,6 @@ def populate_version_fields(apps, schema):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0039_auto_20220428_1635")]
 
     operations = []

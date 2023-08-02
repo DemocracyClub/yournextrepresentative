@@ -12,7 +12,6 @@ def move_minus_one_to_null(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk_results", "0024_auto_20160505_2334")]
 
     operations = [migrations.RunPython(move_minus_one_to_null)]

@@ -52,7 +52,6 @@ def update_or_create_post_identifier(post):
 
 
 def populate_from_ee_divisions(apps, schema_editor):
-
     Ballot = apps.get_model("candidates", "Ballot")
     Post = apps.get_model("popolo", "Post")
     with open("data/ee_post_identifiers_2020-01.csv") as f:
@@ -91,7 +90,6 @@ def populate_from_ee_divisions(apps, schema_editor):
 
 
 def populate_from_ee_no_divisions(apps, schema_editor):
-
     Ballot = apps.get_model("candidates", "Ballot")
     Post = apps.get_model("popolo", "Post")
     with open("data/ee_post_identifiers_no_divisions_2020-01.csv") as f:
@@ -136,7 +134,6 @@ def clean_up_tmp_ids(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0033_unique_on_start_date")]
 
     operations = [

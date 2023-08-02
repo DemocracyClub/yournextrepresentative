@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("candidates", "0044_remove_membership_fk_to_election"),
         ("popolo", "0002_update_models_from_upstream"),

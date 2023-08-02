@@ -7,7 +7,6 @@ from utils.dict_io import BufferDictWriter
 
 
 def list_to_csv(membership_list):
-
     csv_fields = settings.CSV_ROW_FIELDS
     writer = BufferDictWriter(fieldnames=csv_fields)
     writer.writeheader()

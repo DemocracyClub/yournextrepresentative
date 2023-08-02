@@ -45,7 +45,6 @@ class LeaderboardView(ContributorsMixin, TemplateView):
 
 
 class UserContributions(View):
-
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):

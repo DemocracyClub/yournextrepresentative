@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0023_remove_area_model")]
 
     operations = [migrations.RemoveField(model_name="person", name="image")]

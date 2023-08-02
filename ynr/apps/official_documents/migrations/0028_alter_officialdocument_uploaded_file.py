@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("official_documents", "0027_alter_officialdocument_source_url")
     ]

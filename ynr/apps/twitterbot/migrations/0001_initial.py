@@ -11,7 +11,6 @@ def create_user(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = []
 
     operations = [migrations.RunPython(create_user, migrations.RunPython.noop)]

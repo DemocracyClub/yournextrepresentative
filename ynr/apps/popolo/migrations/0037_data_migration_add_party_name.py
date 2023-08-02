@@ -8,7 +8,6 @@ CHANGE_DATE = timezone.datetime(2021, 1, 6).date()
 
 
 def add_party_names(apps, schema_editor):
-
     Membership = apps.get_model("popolo", "Membership")
     for membership in Membership.objects.all().select_related(
         "party", "ballot__election"
@@ -33,7 +32,6 @@ def remove_party_names(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0036_add_party_name_and_description")]
 
     operations = [

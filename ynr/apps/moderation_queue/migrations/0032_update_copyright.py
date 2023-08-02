@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("moderation_queue", "0031_suggestedpostlock_ballot_hash")]
 
     operations = [

@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0029_default_versions_to_list")]
 
     operations = [

@@ -636,7 +636,6 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(Person.objects.all().count(), 2)
 
     def test_merging_people(self):
-
         source, dest = Person.objects.all().values_list("pk", flat=True)
 
         response = self.app.get(

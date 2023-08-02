@@ -42,7 +42,6 @@ class RedirectConstituencyListView(PermanentRedirectView):
     """
 
     def get_redirect_url(self, *args, **kwargs):
-
         election = get_object_or_404(Election, slug=self.kwargs["election"])
         url = election.get_absolute_url()
 
@@ -77,7 +76,6 @@ class RedirectConstituenciesUnlockedView(PermanentRedirectView):
 
 class RedirectConstituencyDetailView(PermanentRedirectView):
     def get_redirect_url(self, *args, **kwargs):
-
         ballot = get_object_or_404(
             Ballot,
             election__slug=self.kwargs["election"],
@@ -93,7 +91,6 @@ class RedirectConstituencyDetailView(PermanentRedirectView):
 
 class RedirectConstituencyDetailCSVView(PermanentRedirectView):
     def get_redirect_url(self, *args, **kwargs):
-
         ballot = get_object_or_404(
             Ballot,
             election__slug=self.kwargs["election"],

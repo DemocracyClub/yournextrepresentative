@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk_results", "0055_migrate_is_winner_to_elected")]
 
     operations = [

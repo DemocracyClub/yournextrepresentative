@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("elections", "0012_election_people_elected_per_post"),
         ("uk_results", "0014_auto_20160427_1429"),

@@ -7,7 +7,6 @@ from utils.dict_io import BufferDictWriter
 
 
 class Command(BaseCommand):
-
     help = "Check the hash of a document against the source"
     fieldnames = [
         "ballot_paper_id",

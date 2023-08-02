@@ -7,7 +7,6 @@ from official_documents.models import OfficialDocument
 
 
 class Command(BaseCommand):
-
     help = "Create a ZIP file containing all SOPN PDFs"
 
     def handle(self, *args, **options):

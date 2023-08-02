@@ -20,7 +20,6 @@ def new_post_election_m2m_to_old(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("candidates", "0023_create_post_to_elections_m2m_with_extra_fields")
     ]

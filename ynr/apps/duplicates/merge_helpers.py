@@ -6,7 +6,6 @@ from .models import DuplicateSuggestion
 
 
 def alter_duplicate_suggestion_post_merge(source_person, dest_person):
-
     # Case 1, the primary and secondary people are the same as the DS
     # Because the secondary person is about to get deleted, we need to delete
     # this DuplicateSuggestion too.

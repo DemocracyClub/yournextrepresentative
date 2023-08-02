@@ -13,7 +13,6 @@ def get_election_extra(post, election):
 
 
 class TestElectionGrouping(UK2015ExamplesMixin, TestCase):
-
     maxDiff = None
 
     def setUp(self):

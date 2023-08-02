@@ -5,7 +5,6 @@ from utils.dict_io import BufferDictWriter
 
 
 class Command(BaseCommand):
-
     help = """
     Create a CSV file that can be populated and imported by
     candidates_import_statements_of_persons_nominated
@@ -36,7 +35,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-
         out_csv = BufferDictWriter(self.fieldnames)
         out_csv.writeheader()
 

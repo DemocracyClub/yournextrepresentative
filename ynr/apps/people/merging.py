@@ -195,7 +195,6 @@ class PersonMerger:
         attributes should be kept, replacing dest's.
         """
         for field_name in self.person_attrs_to_merge:
-
             source_value = getattr(self.source_person, field_name, None)
 
             # Assume we want to keep the value from source
