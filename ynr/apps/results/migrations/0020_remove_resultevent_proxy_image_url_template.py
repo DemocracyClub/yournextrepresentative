@@ -2,7 +2,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("results", "0019_rename_post_new_to_post")]
 
     operations = [

@@ -128,7 +128,6 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
         )
 
     def test_change_name_of_locked_ballot_candidate(self):
-
         example_person = people.tests.factories.PersonFactory.create(
             id="2009", name="Tessa Jowell"
         )
@@ -307,7 +306,6 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
 @patch.object(Person, "diff_for_version", fake_diff_html)
 @patch("candidates.models.db.datetime")
 class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
-
     maxDiff = None
     csrf_checks = False
 

@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("elections", "0012_election_people_elected_per_post"),
         ("candidates", "0022_create_standard_simple_fields"),

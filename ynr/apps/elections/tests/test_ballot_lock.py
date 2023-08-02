@@ -274,7 +274,6 @@ class TestCancelledBallots(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.person = PersonFactory.create(id=4170, name="Naomi Newstead")
 
     def test_cancelled_ballot_no_add_button_on_ballot_page(self):
-
         """
         When a ballot is cancelled, we expect it to act like a locked ballot
         for most users. Staff users can still edit candidates

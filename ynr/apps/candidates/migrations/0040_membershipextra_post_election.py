@@ -25,7 +25,6 @@ def do_nothing(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("candidates", "0039_create_ballot_paper_ids_and_set_unique")
     ]

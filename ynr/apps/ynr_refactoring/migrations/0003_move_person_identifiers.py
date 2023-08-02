@@ -28,7 +28,6 @@ def move_person_identifiers(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("ynr_refactoring", "0002_move_old_election_slugs")]
 
     operations = [

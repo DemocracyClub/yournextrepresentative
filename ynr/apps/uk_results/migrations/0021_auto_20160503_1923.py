@@ -2,7 +2,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk_results", "0020_auto_20160503_1920")]
 
     operations = [

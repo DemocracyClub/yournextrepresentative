@@ -7,7 +7,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0006_auto_add_trusted_to_rename_group")]
 
     operations = [

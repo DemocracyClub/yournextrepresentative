@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("popolo", "0047_membership_previous_party_affiliations"),
     ]

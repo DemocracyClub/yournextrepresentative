@@ -60,7 +60,6 @@ def gss_to_old_mapit_ids(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("popolo", "0002_update_models_from_upstream"),
         ("candidates", "0009_migrate_to_django_popolo"),

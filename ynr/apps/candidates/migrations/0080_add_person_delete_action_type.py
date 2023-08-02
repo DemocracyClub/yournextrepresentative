@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("candidates", "0079_change_logged_action_person_on_delete")
     ]

@@ -35,7 +35,6 @@ class Command(BaseCommand):
             }
 
             for membership in document_memberships:
-
                 other_names = "|".join(
                     [o.name for o in membership.base.person.other_names.all()]
                 )

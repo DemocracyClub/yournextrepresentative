@@ -19,7 +19,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-
         url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRZgJoqxpSSTs5hD5X-x4jt9i88Iv6amoJUwRokNS2G4EUkA368OQS7HTwJiJxrKhQKvKBfjIkXbNHz/pub?gid=0&single=true&output=csv"
         if options["url"]:
             url = options["url"]

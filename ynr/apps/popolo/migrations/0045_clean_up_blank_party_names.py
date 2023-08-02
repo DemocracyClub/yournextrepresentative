@@ -12,7 +12,6 @@ def forwards(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0044_add_indexes_to_modified")]
 
     operations = [

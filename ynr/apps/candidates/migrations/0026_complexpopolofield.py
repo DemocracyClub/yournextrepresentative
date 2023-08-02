@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("candidates", "0025_remove_old_post_to_election_m2m_and_rename_new")
     ]

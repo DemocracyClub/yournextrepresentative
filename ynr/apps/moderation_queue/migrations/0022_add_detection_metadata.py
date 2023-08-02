@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("moderation_queue", "0021_remove_suggestedpostlock_post_extra")
     ]

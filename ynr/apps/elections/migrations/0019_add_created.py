@@ -12,7 +12,6 @@ def add_created_date(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("elections", "0018_add_timestamps_to_election")]
 
     operations = [

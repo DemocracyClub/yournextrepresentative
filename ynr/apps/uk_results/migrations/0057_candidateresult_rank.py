@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("uk_results", "0056_remove_candidateresult_is_winner"),
     ]

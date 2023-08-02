@@ -34,7 +34,6 @@ TEST_MEDIA_ROOT = realpath(
 
 
 class TestModels(TestUserMixin, WebTest):
-
     example_image_filename = EXAMPLE_IMAGE_FILENAME
     example_docx_filename = EXAMPLE_DOCX_FILENAME
     example_html_filename = EXAMPLE_HTML_FILENAME

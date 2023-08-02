@@ -16,7 +16,6 @@ from people.tests.factories import PersonFactory
     "twitterbot.management.commands.twitterbot_add_images_to_queue.TwitterAPIData"
 )
 class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
-
     maxDiff = None
 
     def setUp(self):
@@ -102,7 +101,6 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
         )
 
     def test_command(self, mock_twitter_data, mock_requests):
-
         mock_twitter_data.return_value.user_id_to_photo_url = {
             "1001": "https://pbs.twimg.com/profile_images/abc/foo.jpg",
             "1002": "https://pbs.twimg.com/profile_images/def/bar.jpg",
@@ -199,7 +197,6 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
     def test_only_enqueue_from_200_status_code(
         self, mock_twitter_data, mock_requests
     ):
-
         mock_twitter_data.return_value.user_id_to_photo_url = {
             "1001": "https://pbs.twimg.com/profile_images/abc/foo.jpg",
             "1002": "https://pbs.twimg.com/profile_images/def/bar.jpg",
@@ -247,7 +244,6 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
     def test_only_enqueue_files_that_seem_to_be_images(
         self, mock_twitter_data, mock_requests
     ):
-
         mock_twitter_data.return_value.user_id_to_photo_url = {
             "1001": "https://pbs.twimg.com/profile_images/abc/foo.jpg",
             "1002": "https://pbs.twimg.com/profile_images/def/bar.jpg",

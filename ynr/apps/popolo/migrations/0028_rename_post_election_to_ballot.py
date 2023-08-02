@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("people", "0014_remove_person_email"),
         ("candidates", "0058_pee_to_ballot"),

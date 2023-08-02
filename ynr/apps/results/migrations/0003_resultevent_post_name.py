@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("results", "0002_resultevent_parlparse_id")]
 
     operations = [

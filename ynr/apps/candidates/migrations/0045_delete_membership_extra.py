@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("candidates", "0044_remove_membership_fk_to_election"),
         ("popolo", "0004_move-extra-data-to-base"),

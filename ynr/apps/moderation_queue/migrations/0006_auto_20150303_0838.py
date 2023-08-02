@@ -2,7 +2,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("moderation_queue", "0005_migrate_data_to_why_allowed")]
 
     operations = [

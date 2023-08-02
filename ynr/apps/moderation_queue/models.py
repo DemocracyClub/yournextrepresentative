@@ -55,7 +55,6 @@ def queued_image_filename(queued_image_instance, filename):
 
 
 class QueuedImage(models.Model):
-
     APPROVED = "approved"
     REJECTED = "rejected"
     UNDECIDED = "undecided"

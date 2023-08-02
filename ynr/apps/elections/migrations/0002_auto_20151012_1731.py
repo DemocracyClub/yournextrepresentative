@@ -312,7 +312,6 @@ def load_election_data(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("elections", "0001_initial")]
 
     operations = [migrations.RunPython(load_election_data)]

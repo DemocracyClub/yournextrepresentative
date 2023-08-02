@@ -14,7 +14,6 @@ def verbose(*args, **kwargs):
 
 
 class Command(BaseCommand):
-
     help = (
         "Use the Twitter API to check / fix Twitter screen names and user IDs"
     )
@@ -43,7 +42,6 @@ class Command(BaseCommand):
                 )
 
                 if user_id not in self.twitter_data.user_id_to_screen_name:
-
                     # user ID not in our list our prefertched twitter_data but
                     # before we delete them do a check to see if they were
                     # suspended
@@ -111,7 +109,6 @@ class Command(BaseCommand):
                     screen_name.lower()
                     not in self.twitter_data.screen_name_to_user_id
                 ):
-
                     # at this point we have a screen name stored but it is not
                     # in the `twitter_data` with valid names and ID's so we do a
                     # final check to see if the user is currently suspended

@@ -28,7 +28,6 @@ def move_popolo_person_gfks_to_people_person(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0005_move_person_image_fk_to_person_app")]
 
     operations = [

@@ -31,7 +31,6 @@ class PersonMixin(object):
 
 
 class PersonOtherNamesView(PersonMixin, ListView):
-
     model = OtherName
     template_name = "candidates/othername_list.html"
 
@@ -44,7 +43,6 @@ class PersonOtherNamesView(PersonMixin, ListView):
 
 
 class PersonOtherNameCreateView(LoginRequiredMixin, PersonMixin, CreateView):
-
     model = OtherName
     form_class = OtherNameForm
     template_name = "candidates/othername_new.html"
@@ -106,7 +104,6 @@ class PersonOtherNameCreateView(LoginRequiredMixin, PersonMixin, CreateView):
 
 
 class PersonOtherNameDeleteView(LoginRequiredMixin, PersonMixin, DeleteView):
-
     model = OtherName
     raise_exception = True
 
@@ -130,7 +127,6 @@ class PersonOtherNameDeleteView(LoginRequiredMixin, PersonMixin, DeleteView):
 
 
 class PersonOtherNameUpdateView(LoginRequiredMixin, PersonMixin, UpdateView):
-
     model = OtherName
     form_class = OtherNameForm
     template_name = "candidates/othername_edit.html"

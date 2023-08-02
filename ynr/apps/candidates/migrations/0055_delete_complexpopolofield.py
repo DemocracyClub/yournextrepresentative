@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("candidates", "0054_postextraelection_cancelled"),
         ("people", "0009_copy_popolo_fields_to_person_identifiers"),

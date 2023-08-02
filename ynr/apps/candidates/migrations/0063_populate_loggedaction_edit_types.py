@@ -13,7 +13,6 @@ def populate_edit_types(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0062_loggedaction_edit_type")]
 
     operations = [

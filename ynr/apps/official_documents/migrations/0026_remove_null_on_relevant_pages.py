@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("official_documents", "0025_rename_post_election_fk_to_ballot")
     ]

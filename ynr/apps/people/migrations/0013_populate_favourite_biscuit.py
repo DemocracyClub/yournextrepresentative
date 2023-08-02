@@ -40,7 +40,6 @@ def populate_favourite_biscuit_from_extrafieldvalue(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0012_add_person_favourite_biscuit")]
 
     operations = [

@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("parties", "0008_unique_ec_id")]
 
     operations = [

@@ -18,7 +18,6 @@ def add_speaker(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("parties", "0006_legacy_slug_unique")]
 
     operations = [migrations.RunPython(add_speaker, migrations.RunPython.noop)]

@@ -72,7 +72,6 @@ def set_post_election_from_post(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk_results", "0029_add_postresult_post_election")]
 
     operations = [migrations.RunPython(set_post_election_from_post)]

@@ -31,7 +31,6 @@ def is_timestamped_dir(directory):
 
 
 class Command(BaseCommand):
-
     help = "Cache the output of the persons and posts endpoints to a directory"
 
     endpoints = ("people", "ballots")

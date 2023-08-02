@@ -34,7 +34,6 @@ def add_gb_prefix(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk", "0001_migrate_area_ids")]
 
     operations = [migrations.RunPython(remove_gb_prefix, add_gb_prefix)]

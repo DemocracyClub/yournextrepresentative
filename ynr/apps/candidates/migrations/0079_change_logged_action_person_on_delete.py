@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("people", "0033_auto_20210928_1007"),
         ("candidates", "0078_populate_person_pk_on_loggedaction"),

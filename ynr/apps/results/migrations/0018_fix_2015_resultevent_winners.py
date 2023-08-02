@@ -19,7 +19,6 @@ def fix_2015_winners(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("results", "0017_rename_post_name_to_old_post_name")]
 
     operations = [migrations.RunPython(fix_2015_winners)]

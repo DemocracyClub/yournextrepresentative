@@ -12,7 +12,6 @@ def clean_up_action_types(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0073_alter_loggedaction_action_type")]
 
     operations = [

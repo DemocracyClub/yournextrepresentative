@@ -76,7 +76,6 @@ def populate_person_identifier_from_popolo_models(apps, schema_editor):
     )
     contact_detail_to_move = []
     for contact_detail in qs:
-
         contact_detail_to_move.append(
             PersonIdentifier(
                 value=contact_detail.value,
@@ -106,7 +105,6 @@ def populate_person_identifier_from_popolo_models(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0008_person_identifier_model")]
 
     operations = [

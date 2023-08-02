@@ -16,7 +16,6 @@ def add_initial_profiles(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("wombles", "0001_initial")]
 
     operations = [

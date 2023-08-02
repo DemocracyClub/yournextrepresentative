@@ -114,7 +114,6 @@ def get_person_as_version_data(person, new_person=False):
 
 
 def revert_person_from_version_data(person, version_data):
-
     from candidates.models import raise_if_unsafe_to_delete
     from elections.models import Election
     from popolo.models import Membership

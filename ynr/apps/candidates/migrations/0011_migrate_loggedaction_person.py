@@ -28,7 +28,6 @@ def db_to_popit(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0010_loggedaction_person")]
 
     operations = [migrations.RunPython(popit_to_db, db_to_popit)]

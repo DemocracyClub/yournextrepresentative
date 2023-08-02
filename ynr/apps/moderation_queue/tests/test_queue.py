@@ -55,7 +55,6 @@ def get_image_type_and_dimensions(image_data):
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
-
     example_image_filename = EXAMPLE_IMAGE_FILENAME
 
     @classmethod

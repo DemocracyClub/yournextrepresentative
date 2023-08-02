@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("popolo", "0009_move_extra_person_data_to_base"),
         ("candidates", "0045_delete_membership_extra"),

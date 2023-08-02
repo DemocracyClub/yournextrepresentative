@@ -32,7 +32,6 @@ def remove_duplicate_resultsets(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk_results", "0039_resultset_post_election")]
 
     operations = [

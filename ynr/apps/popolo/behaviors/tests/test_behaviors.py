@@ -19,7 +19,8 @@ class DateframeableTests(BehaviorTestCaseMixin):
 
     def test_new_instance_has_valid_dates(self):
         """Test complete or incomplete dates,
-        according to the "^[0-9]{4}(-[0-9]{2}){0,2}$" pattern (incomplete dates)"""
+        according to the "^[0-9]{4}(-[0-9]{2}){0,2}$" pattern (incomplete dates)
+        """
         obj = self.create_instance(start_date="2012-01")
         self.assertRegex(
             obj.start_date,

@@ -7,7 +7,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("bulk_adding", "0003_rawpeople_source_type")]
 
     operations = [

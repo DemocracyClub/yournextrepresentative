@@ -197,7 +197,6 @@ class CandidateCurrentNameDecider(BaseReviewRequiredDecider):
         return "Edit of name of current candidate"
 
     def needs_review(self):
-
         if self.logged_action.user and self.logged_action.person:
             la = self.logged_action
             qs = la.person.memberships.filter(
@@ -212,7 +211,6 @@ class CandidateCurrentNameDecider(BaseReviewRequiredDecider):
                     ):
                         this_diff = version_diff["diffs"][0]["parent_diff"]
                         for op in this_diff:
-
                             if op["path"] == "name" and op["op"] == "replace":
                                 # this is an edit to a name
                                 return self.Status.NEEDS_REVIEW

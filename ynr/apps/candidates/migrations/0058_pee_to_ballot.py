@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("candidates", "0057_remove_extra_field"),
         ("official_documents", "0024_add_relevant_pages"),

@@ -102,7 +102,6 @@ with the source: \n> {source}
         for diff in self.logged_action.person.version_diffs[0]["diffs"][0][
             "parent_diff"
         ]:
-
             fields_category = None
             section_category = None
             text_data = self.format_text(diff)

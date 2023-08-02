@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("official_documents", "0020_add_post_election_values")]
 
     operations = [

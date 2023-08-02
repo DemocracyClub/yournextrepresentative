@@ -3,7 +3,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("official_documents", "0016_election_not_null")]
 
     operations = [

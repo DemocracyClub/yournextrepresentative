@@ -6,7 +6,6 @@ from django.db.models.functions import Replace
 
 
 def replace_dash_with_hyphen(apps, schema_editor):
-
     Party = apps.get_model("parties", "Party")
     PartyDescription = apps.get_model("parties", "PartyDescription")
     Party.objects.update(name=Replace("name", Value("\u2013"), Value("\u002d")))
@@ -16,7 +15,6 @@ def replace_dash_with_hyphen(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("parties", "0014_alter_partydescription_options")]
 
     operations = [

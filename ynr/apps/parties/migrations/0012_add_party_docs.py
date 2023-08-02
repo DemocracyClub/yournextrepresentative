@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("parties", "0011_add_initial_candidates_counts")]
 
     operations = [

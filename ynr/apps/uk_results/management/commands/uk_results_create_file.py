@@ -55,7 +55,6 @@ class Command(BaseCommand):
         )
         out_data = []
         for result in qs:
-
             for membership in result.ballot.membership_set.all():
                 if not hasattr(membership, "result"):
                     continue

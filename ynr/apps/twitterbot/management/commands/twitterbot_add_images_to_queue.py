@@ -17,7 +17,6 @@ def verbose(*args, **kwargs):
 
 
 class Command(BaseCommand):
-
     help = "Add Twitter avatars for candidates without images to the moderation queue"
 
     def add_twitter_image_to_queue(self, person, image_url, user_id):

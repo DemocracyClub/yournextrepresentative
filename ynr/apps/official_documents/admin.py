@@ -4,7 +4,6 @@ from .models import OfficialDocument
 
 
 class OfficialDocumentAdmin(admin.ModelAdmin):
-
     list_display = ("document_type", "created", "ballot", "source_url")
     search_fields = ("ballot__ballot_paper_id", "source_url")
     list_filter = ("document_type",)

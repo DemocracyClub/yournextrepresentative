@@ -65,7 +65,6 @@ class Command(BaseCommand):
         parser.add_argument("url")
 
     def handle(self, *args, **options):  # noqa
-
         csv_url = options["url"]
 
         mime_type_magic = magic.Magic(mime=True)
@@ -129,7 +128,6 @@ class Command(BaseCommand):
                 ignore_urls = ["drive.google.com"]
                 if not any(x in document_url for x in ignore_urls):
                     try:
-
                         req = requests.get(
                             document_url, headers=headers, verify=False
                         )

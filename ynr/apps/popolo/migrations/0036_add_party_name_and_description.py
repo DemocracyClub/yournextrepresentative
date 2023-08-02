@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("parties", "0012_add_party_docs"),
         ("popolo", "0035_attach_memberships_to_posts"),

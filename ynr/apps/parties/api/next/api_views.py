@@ -58,7 +58,6 @@ class PartyRegisterList(viewsets.ReadOnlyModelViewSet):
 
 
 class AllPartiesJSONView(View):
-
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):

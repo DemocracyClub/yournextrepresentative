@@ -65,7 +65,6 @@ class Command(BaseCommand):
         # )
 
     def handle(self, **options):
-
         self.image_storage = FileSystemStorage()
         self.ynr_url = options["site_url"]
         self.party_cache = {}
@@ -193,7 +192,6 @@ class Command(BaseCommand):
                             name=other_name["name"], note=other_name["note"]
                         )
                 if person_data["identifiers"]:
-
                     for identifier in person_data["identifiers"]:
                         if not identifier["value"]:
                             continue

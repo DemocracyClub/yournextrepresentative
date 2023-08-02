@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("popolo", "0025_move_person_fk_to_people_app"),
         ("uk_results", "0047_auto_20180501_1359"),

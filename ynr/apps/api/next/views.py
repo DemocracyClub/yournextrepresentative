@@ -26,7 +26,6 @@ class ResultsSetPagination(pagination.PageNumberPagination):
 
 
 class OrganizationViewSet(viewsets.ReadOnlyModelViewSet):
-
     queryset = (
         Organization.objects.all()
         .order_by("slug")

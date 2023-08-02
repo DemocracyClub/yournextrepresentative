@@ -7,7 +7,6 @@ from moderation_queue.models import PHOTO_REVIEWERS_GROUP_NAME
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("moderation_queue", "0007_auto_20150303_1420")]
 
     operations = [

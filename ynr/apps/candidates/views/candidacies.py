@@ -27,7 +27,6 @@ def raise_if_locked(request, post, election):
 
 
 class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
-
     form_class = CandidacyCreateForm
     template_name = "candidates/candidacy-create.html"
 
@@ -73,7 +72,6 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
 
 
 class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
-
     form_class = CandidacyDeleteForm
     template_name = "candidates/candidacy-delete.html"
 

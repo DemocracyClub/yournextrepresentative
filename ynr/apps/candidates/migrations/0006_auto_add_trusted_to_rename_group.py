@@ -8,7 +8,6 @@ TRUSTED_TO_RENAME_GROUP_NAME = "Trusted To Rename"
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0005_add_trusted_to_lock_group")]
 
     operations = [

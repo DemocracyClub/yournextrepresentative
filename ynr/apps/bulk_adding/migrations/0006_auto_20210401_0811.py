@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("bulk_adding", "0005_source_max_length")]
 
     operations = [

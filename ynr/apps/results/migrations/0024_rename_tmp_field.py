@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("results", "0023_migrate_winner_party_to_party_model")]
 
     operations = [

@@ -15,7 +15,6 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
         return super().setUp()
 
     def test_single_election_posts_page(self):
-
         response = self.app.get("/elections/")
 
         self.assertContains(response, "2015 General Election")
@@ -27,7 +26,6 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
         )
 
     def test_elections_link_to_constituencies_page(self):
-
         response = self.app.get("/elections/")
         self.assertEqual(response.context["filter"].qs.count(), 6)
         self.assertContains(response, "2015 General Election")
@@ -35,7 +33,6 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
         self.assertFalse(response.context["filter"].data)
 
     def test_two_elections_posts_page(self):
-
         self.earlier_election.current = True
         self.earlier_election.save()
 
@@ -91,7 +88,6 @@ class TestResultsAnnotated(BallotsWithResultsMixin, TestCase):
         return super().setUp()
 
     def test_elections_annotated_correctly(self):
-
         # create 10 ballots matching out filter above
         self.create_ballots_with_results(
             num=10,

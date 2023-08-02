@@ -12,7 +12,6 @@ def set_ints_to_zero(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("moderation_queue", "0026_rename_pee_to_ballot")]
 
     operations = [

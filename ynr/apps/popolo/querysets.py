@@ -66,7 +66,6 @@ class PostQuerySet(DateframeableQuerySet):
 
 class MembershipQuerySet(DateframeableQuerySet):
     def for_csv(self):
-
         return (
             self.select_related(
                 "ballot",

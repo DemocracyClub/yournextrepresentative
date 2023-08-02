@@ -24,7 +24,6 @@ def backwards_from_why_allowed(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("moderation_queue", "0004_queuedimage_why_allowed")]
 
     operations = [

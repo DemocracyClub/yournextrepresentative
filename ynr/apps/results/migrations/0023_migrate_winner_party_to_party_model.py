@@ -33,7 +33,6 @@ def add_tmp_party(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("results", "0022_resultevent_winner_party_tmp"),
         ("parties", "0008_unique_ec_id"),

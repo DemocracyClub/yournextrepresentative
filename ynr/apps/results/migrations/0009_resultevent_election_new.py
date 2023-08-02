@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("elections", "0012_election_people_elected_per_post"),
         ("results", "0008_remove_resultevent_winner_popit_person_id"),

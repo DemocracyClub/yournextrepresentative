@@ -22,7 +22,6 @@ def delete_non_primary_images(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0035_alter_person_birth_date")]
 
     operations = [

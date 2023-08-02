@@ -15,7 +15,6 @@ except ImportError:
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("uk_results", "0005_auto_20160426_1058")]
 
     operations = [

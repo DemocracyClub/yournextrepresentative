@@ -15,7 +15,6 @@ def do_nothing(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0038_postextraelection_ballot_paper_id")]
 
     operations = [

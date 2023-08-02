@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0013_populate_favourite_biscuit")]
 
     operations = [migrations.RemoveField(model_name="person", name="email")]

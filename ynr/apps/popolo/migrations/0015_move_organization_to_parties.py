@@ -113,7 +113,6 @@ def copy_org_to_party(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("popolo", "0014_membership_party")]
 
     operations = [

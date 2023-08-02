@@ -34,7 +34,6 @@ def migrate_remaining_fields_to_popolo_models(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("results", "0011_resultevent_post_new")]
 
     operations = [

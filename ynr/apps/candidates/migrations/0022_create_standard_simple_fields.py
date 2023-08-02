@@ -54,7 +54,6 @@ def create_simple_fields(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0021_simplepopolofield")]
 
     operations = [migrations.RunPython(create_simple_fields)]

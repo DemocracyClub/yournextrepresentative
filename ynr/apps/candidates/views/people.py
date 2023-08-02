@@ -153,7 +153,6 @@ class PersonView(TemplateView):
 
 
 class RevertPersonView(LoginRequiredMixin, View):
-
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
@@ -281,7 +280,6 @@ class DuplicatePersonView(LoginRequiredMixin, FormView, DetailView):
 
 
 class MergePeopleView(GroupRequiredMixin, TemplateView, MergePeopleMixin):
-
     http_method_names = ["get", "post"]
     required_group_name = TRUSTED_TO_MERGE_GROUP_NAME
     template_name = "candidates/generic-merge-error.html"
@@ -430,7 +428,6 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
         return kwargs
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
 
         person = self.object
@@ -447,7 +444,6 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
         return context
 
     def form_valid(self, all_forms):
-
         form = all_forms["form"]
 
         if not (settings.EDITS_ALLOWED or self.request.user.is_staff):
@@ -461,7 +457,6 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
         membership_formset = all_forms["memberships_formset"]
 
         with transaction.atomic():
-
             person = context["person"]
             identifiers_formset.instance = person
             identifiers_formset.save()
@@ -550,7 +545,6 @@ class NewPersonView(
         form = all_forms["form"]
         identifiers_formset = all_forms["identifiers_formset"]
         with transaction.atomic():
-
             person = form.save()
 
             identifiers_formset.instance = person

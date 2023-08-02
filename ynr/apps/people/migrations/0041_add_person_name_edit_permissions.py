@@ -7,7 +7,6 @@ from people.models import TRUSTED_TO_EDIT_NAME
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("people", "0040_auto_20220511_1222")]
 
     operations = [

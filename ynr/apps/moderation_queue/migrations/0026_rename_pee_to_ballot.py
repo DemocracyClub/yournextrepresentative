@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("moderation_queue", "0025_cleanup_old_lock_suggestions")]
 
     operations = [

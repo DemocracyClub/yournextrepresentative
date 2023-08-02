@@ -17,7 +17,6 @@ def election_model_to_election(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("official_documents", "0012_officialdocument_election_model")
     ]

@@ -38,7 +38,6 @@ def parse_date(date_text):
 
 
 class UpcomingElectionsView(View):
-
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):
@@ -175,7 +174,6 @@ class CurrentElectionsView(View):
 
 
 class VersionView(View):
-
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):

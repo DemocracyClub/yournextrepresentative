@@ -3,7 +3,6 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-
     help = """
     Find and mark any uncontested ballots not already marked after ballot lock
     """

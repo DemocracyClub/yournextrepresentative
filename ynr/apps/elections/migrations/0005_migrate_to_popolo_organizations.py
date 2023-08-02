@@ -26,7 +26,6 @@ def migrate_to_popolo_organizations(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("elections", "0004_election_new_organization"),
         ("candidates", "0009_migrate_to_django_popolo"),

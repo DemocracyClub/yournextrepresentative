@@ -13,7 +13,6 @@ def normalize_whitespace(s):
 
 
 class TestGetFlashMessage(UK2015ExamplesMixin, TestCase):
-
     maxDiff = None
 
     def setUp(self):

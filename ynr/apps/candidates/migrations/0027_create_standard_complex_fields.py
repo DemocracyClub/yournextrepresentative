@@ -89,7 +89,6 @@ def create_complex_fields(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("candidates", "0026_complexpopolofield")]
 
     operations = [

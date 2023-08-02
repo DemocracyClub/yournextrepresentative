@@ -17,7 +17,6 @@ def none_found_error(parsed_result):
 
 
 class TwitterAPIData(object):
-
     MAX_IN_A_REQUEST = 100
 
     def __init__(self):
