@@ -16,6 +16,13 @@ def alter_duplicate_suggestion_post_merge(source_person, dest_person):
     # Case 2: The secondary person has a DS but we are merging it in to someone
     # else in this case we need to update the ID
 
+    # Remove and suggestions that would be the same after we've merged and
+    # updated the IDs below
+    for suggestion in DuplicateSuggestion.objects.filter(person=dest_person):
+        DuplicateSuggestion.objects.filter(
+            person_id=dest_person, other_person=suggestion.other_person
+        ).delete()
+
     # Any suggestions where the 'person' (the destination of a suggestion) is the
     # source of this merge (the object we area bout to delete), update to change
     # the 'person' to the destination of this merge
