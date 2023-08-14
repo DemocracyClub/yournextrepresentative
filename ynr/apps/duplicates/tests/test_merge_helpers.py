@@ -2,6 +2,7 @@ from candidates.tests.auth import TestUserMixin
 from django.test import TestCase
 from duplicates import merge_helpers
 from duplicates.models import DuplicateSuggestion
+from people.merging import PersonMerger
 from people.tests.factories import PersonFactory
 
 
@@ -151,3 +152,49 @@ class TestMergeHelper(TestUserMixin, TestCase):
         )
         # This should close all open duplicate suggestions
         assert DuplicateSuggestion.objects.count() == 0
+
+    def test_three_way_duplicate_all_orders(self):
+        """
+        `test_regresson_test_three_way_suggestion_merging` above
+        catches some of this bug, but not all of it.
+
+        Turns out the _order_ of the merging matters.
+
+        We need to set up:
+
+        A -> B
+        A -> C
+        B -> C
+
+        And then merge A -> B
+
+        """
+        person_a_id = 35348
+        person_b_id = 75618
+        person_c_id = 108860
+        PersonA = PersonFactory(pk=person_a_id, name="A")
+        PersonB = PersonFactory(pk=person_b_id, name="B")
+        PersonC = PersonFactory(pk=person_c_id, name="C")
+
+        DuplicateSuggestion.objects.create(
+            person=PersonA,
+            other_person=PersonB,
+            user=self.user,
+        )
+        DuplicateSuggestion.objects.create(
+            person=PersonA,
+            other_person=PersonC,
+            user=self.user,
+        )
+        DuplicateSuggestion.objects.create(
+            person=PersonB,
+            other_person=PersonC,
+            user=self.user,
+        )
+
+        self.assertEqual(DuplicateSuggestion.objects.count(), 3)
+        PersonMerger(PersonA, PersonB).merge()
+        qs = DuplicateSuggestion.objects.all()
+        self.assertEqual(qs.count(), 1)
+        self.assertEqual(qs.get().person_id, person_a_id)
+        self.assertEqual(qs.get().other_person_id, person_c_id)
