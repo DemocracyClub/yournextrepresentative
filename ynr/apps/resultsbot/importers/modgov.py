@@ -17,7 +17,7 @@ class ModGovCandidate(BaseCandidate):
     def __init__(self, candidate_xml, division):
         self.division = division
         self.xml = candidate_xml
-        if type(candidate_xml) == str:
+        if isinstance(candidate_xml, str):
             self.soup = BeautifulSoup(self.xml, "xml")
         else:
             self.soup = candidate_xml
