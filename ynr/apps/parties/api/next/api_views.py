@@ -74,7 +74,7 @@ class AllPartiesJSONView(View):
         for party in qs:
             item = {}
 
-            if type(party[1]) == list:
+            if isinstance(party[1], list):
                 # This is a party with descriptions
                 item["text"] = party[0]
                 item["children"] = []

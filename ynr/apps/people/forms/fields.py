@@ -117,7 +117,7 @@ class BlankApproximateDateFormField(ApproximateDateFormField):
     """
 
     def clean(self, value):
-        if type(value) == str:
+        if isinstance(value, str):
             value = value.replace("-00", "-01")
         value = super().clean(value)
         if not value:

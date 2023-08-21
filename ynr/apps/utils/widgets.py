@@ -16,7 +16,7 @@ class SelectWithAttrs(Select):
     def create_option(
         self, name, value, label, selected, index, subindex=None, attrs=None
     ):
-        if type(label) == dict:
+        if isinstance(label, dict):
             label = dict(label)
             label_text = label.pop("label")
         else:
