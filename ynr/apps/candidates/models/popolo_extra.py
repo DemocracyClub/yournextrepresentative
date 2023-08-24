@@ -283,6 +283,9 @@ class Ballot(EEModifiedMixin, models.Model):
             return self.get_absolute_url(viewname="ballot_paper_results_form")
         return self.get_absolute_url()
 
+    def num_candidates(self):
+        return self.membership_set.count()
+
     @property
     def results_button_text(self):
         """

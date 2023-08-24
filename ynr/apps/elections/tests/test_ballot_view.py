@@ -134,7 +134,7 @@ class TestBallotView(
         self.assertInHTML(
             """
             <p>
-                These candidates haven't been confirmed by the official
+                These 9 candidates haven't been confirmed by the official
                 "nomination papers" from the council yet. This means they might
                 not all end up on the ballot paper.
             </p>
@@ -175,7 +175,7 @@ class TestBallotView(
         )
 
         self.assertEqual(ballot.is_welsh_run, True)
-        with self.assertNumQueries(10):
+        with self.assertNumQueries(11):
             response = self.app.get(ballot.get_absolute_url())
         self.assertNotContains(response, self.old_party.name)
 
