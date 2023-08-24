@@ -2,9 +2,9 @@
 
 {% block title %}
 {% if ballot.candidates_locked %}
-  Candidates for each ballot in the {{ object.name }}
+  Candidates for each ballot in the {{ object.name }} on {{ object.election_date|date:"j F Y" }}
 {% else %}
-  Known candidates for each ballot in the {{ object.name }}
+  Known candidates for each ballot in the {{ object.name }} on {{ object.election_date|date:"j F Y" }}
 {% endif %}
 {% endblock %}
 
@@ -33,7 +33,7 @@
 
   {% for ballot in ballots %}
   <h3>
-    <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
+    <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }} on {{ object.election_date|date:"j F Y" }}</a>
     {{ ballot.cancelled_status_html }}
     {{ ballot.locked_status_html }}
   </h3>
