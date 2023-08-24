@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block body_class %}constituency{% endblock %}
-{% block title %}Candidates for {{ object.post.label }} in the {{ object.election.name }}{% endblock %}
+{% block title %}Candidates for {{ object.post.label }} in the {{ object.election.name }} on {{ ballot.election.election_date|date:"j F Y" }}{% endblock %}
 
 {% block hero %}
   <h1>

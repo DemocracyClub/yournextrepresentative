@@ -31,10 +31,10 @@
 
 {% block body_class %}constituency{% endblock %}
 
-{% block title %}Candidates for {{ ballot.post.label }} in the {{ ballot.election.name }}{% endblock %}
+{% block title %}Candidates for {{ ballot.post.label }} in the {{ ballot.election.name }} on {{ ballot.election.election_date|date:"j F Y" }}{% endblock %}
 
 {% block hero %}
-  <h1>Candidates for {{ ballot.post.label }}</h1>
+  <h1>Candidates for {{ ballot.post.label }} on <br>{{ ballot.election.election_date|date:"j F Y" }}</h1>
 {% endblock %}
 
 
