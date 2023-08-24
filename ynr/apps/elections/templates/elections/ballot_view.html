@@ -57,9 +57,16 @@
 
     {% if not ballot.candidates_locked and candidates.exists %}
     <div class="panel">
-        <p>These candidates haven't been confirmed by the official "nomination papers"
+        <p>These {{ ballot.num_candidates }} candidates haven't been confirmed by the official "nomination papers"
             from the council yet. This means they might not all end up on the ballot paper.</p>
         <p>We will manually verify each candidate when the nomination papers are published.</p>
+    </div>
+    {% endif %}
+
+    {% if ballot.candidates_locked and candidates.exists %}
+    <div class="panel">
+        <p>These {{ ballot.num_candidates }} candidates have been confirmed by the official "nomination papers"
+            from the council. </p>
     </div>
     {% endif %}
 
