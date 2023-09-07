@@ -11,6 +11,7 @@ from parties.tests.factories import PartyDescriptionFactory, PartyEmblemFactory
 from parties.tests.fixtures import DefaultPartyFixtures
 from people.models import PersonImage
 from people.tests.factories import PersonFactory
+from uk_results.models import ResultSet
 
 
 class TestAPI(
@@ -285,5 +286,44 @@ class TestAPI(
                 "document_type": "Nomination paper",
                 "uploaded_file": None,
                 "source_url": "",
+            },
+        )
+
+    def test_no_results_on_ballot(self):
+        response = self.app.get(
+            "/api/next/ballots/{}/".format(
+                self.edinburgh_east_post_ballot.ballot_paper_id
+            )
+        )
+        result = response.json
+        self.assertEqual(
+            result["results"],
+            None,
+        )
+
+    def test_results_on_ballot(self):
+        ResultSet.objects.create(
+            ballot=self.edinburgh_east_post_ballot,
+            created="2015-05-08T00:00:00Z",
+            modified="2015-05-08T00:00:00Z",
+            source="Example ResultSet for testing",
+            num_spoilt_ballots=100,
+            num_turnout_reported=900,
+            total_electorate=1000,
+        )
+        response = self.app.get(
+            "/api/next/ballots/{}/".format(
+                self.edinburgh_east_post_ballot.ballot_paper_id
+            )
+        )
+        result = response.json
+        self.assertEqual(
+            result["results"],
+            {
+                "num_turnout_reported": 900,
+                "turnout_percentage": 90.0,
+                "num_spoilt_ballots": 100,
+                "source": "Example ResultSet for testing",
+                "total_electorate": 1000,
             },
         )

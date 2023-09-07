@@ -68,6 +68,18 @@ class ResultSerializer(serializers.ModelSerializer):
     candidate_results = CandidateResultSerializer(many=True)
 
 
+class MinimalResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResultSet
+        fields = (
+            "num_turnout_reported",
+            "turnout_percentage",
+            "num_spoilt_ballots",
+            "source",
+            "total_electorate",
+        )
+
+
 class ElectedSerializer(CandidacyOnBallotSerializer):
     class Meta:
         model = Membership

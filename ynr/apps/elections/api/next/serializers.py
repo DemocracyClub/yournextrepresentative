@@ -9,6 +9,7 @@ from popolo.api.next.serializers import (
     MinimalPostSerializer,
 )
 from rest_framework import serializers
+from uk_results.api.next.serializers import MinimalResultSerializer
 
 
 class MinimalElectionSerializer(serializers.HyperlinkedModelSerializer):
@@ -102,6 +103,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
             "replaces",
             "replaced_by",
             "uncontested",
+            "results",
         )
 
     replaces = serializers.SlugRelatedField(
@@ -126,6 +128,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
     post = MinimalPostSerializer(read_only=True)
     sopn = serializers.SerializerMethodField()
     candidacies = serializers.SerializerMethodField()
+    results = MinimalResultSerializer(read_only=True, source="resultset")
 
     results_url = serializers.HyperlinkedIdentityField(
         view_name="resultset-detail",
