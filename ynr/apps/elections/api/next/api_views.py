@@ -39,7 +39,7 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_value_regex = r"(?!\.json$)[^/]+"
     queryset = (
         extra_models.Ballot.objects.select_related(
-            "election", "post", "replaces", "replaced_by"
+            "election", "post", "replaces", "replaced_by", "resultset"
         )
         .prefetch_related(
             Prefetch(
