@@ -131,7 +131,7 @@ class TestBallotView(
         self.assertEqual(response.context["candidates"].count(), 9)
         self.assertDataTimelineCandidateAddingInProgress(response)
         self.assertInHTML(
-            "<h1>Candidates for Bar Ward on <br>7 September 2023</h1>",
+            f"<h1>Candidates for Bar Ward on <br>{ self.election.election_date.strftime('%d %B %Y') }</h1>",
             response.text,
         )
         self.assertInHTML(
