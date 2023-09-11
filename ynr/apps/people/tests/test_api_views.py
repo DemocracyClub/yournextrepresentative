@@ -104,3 +104,17 @@ class TestPersonViewSet(UK2015ExamplesMixin, TestCase):
             response.json(),
             {"count": 0, "next": None, "previous": None, "results": []},
         )
+
+    def test_delisted_in_api(self):
+        person = self.people[0]
+        response = self.client.get(f"/api/next/people/{person.pk}/")
+        data = response.json()
+        self.assertTrue("delisted" in data)
+        self.assertFalse(data["delisted"])
+
+        person.delisted = True
+        person.save()
+        response = self.client.get(f"/api/next/people/{person.pk}/")
+        data = response.json()
+        self.assertTrue("delisted" in data)
+        self.assertTrue(data["delisted"])

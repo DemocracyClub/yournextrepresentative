@@ -307,6 +307,11 @@ class Person(TimeStampedModel, models.Model):
         ],
     )
 
+    delisted = models.BooleanField(
+        default=False,
+        help_text="Mark this person as de-listed in search engines. Might take some days to come in to effect",
+    )
+
     name_search_vector = SearchVectorField(null=True)
 
     class Meta:

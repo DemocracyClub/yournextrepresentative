@@ -79,6 +79,7 @@ class PersonMerger:
             ("given_name", "merge_person_attrs"),
             ("patronymic_name", "merge_person_attrs"),
             ("summary", "merge_person_attrs"),
+            ("delisted", "merge_person_attrs"),
             ("name_search_vector", "discard_data"),
             # Relations
             ("versions", "merge_versions_json"),
