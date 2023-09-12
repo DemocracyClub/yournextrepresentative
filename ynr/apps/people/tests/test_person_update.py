@@ -349,6 +349,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
                 "death_date",
                 "biography",
                 "favourite_biscuit",
+                "delisted",
                 # "standing_parl.2015-05-07",
                 # "constituency_parl.2015-05-07",
                 # "party_GB_parl.2015-05-07",

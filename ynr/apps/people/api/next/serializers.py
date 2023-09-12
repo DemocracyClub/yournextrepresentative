@@ -100,6 +100,7 @@ class PersonSerializer(MinimalPersonSerializer):
             "thumbnail",
             "statement_to_voters",
             "favourite_biscuit",
+            "delisted",
         )
 
     versions_url = serializers.HyperlinkedIdentityField(

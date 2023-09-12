@@ -90,8 +90,11 @@ class PersonAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "Edit limitations",
-            {"classes": ("collapse",), "fields": ("edit_limitations",)},
+            "Restrictions",
+            {
+                "classes": ("collapse",),
+                "fields": ("edit_limitations", "delisted"),
+            },
         ),
     )
 
