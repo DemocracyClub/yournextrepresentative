@@ -6,3 +6,4 @@ class OfficialDocumentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = OfficialDocument
         fields = ("document_type", "uploaded_file", "source_url")
+        ref_name = None  # Tells swagger that this is always embedded

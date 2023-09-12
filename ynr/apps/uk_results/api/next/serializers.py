@@ -78,6 +78,7 @@ class MinimalResultSerializer(serializers.ModelSerializer):
             "source",
             "total_electorate",
         )
+        ref_name = None  # Tells swagger that this is always embedded
 
 
 class ElectedSerializer(CandidacyOnBallotSerializer):
