@@ -1,3 +1,4 @@
+import datetime
 from random import randrange
 
 from candidates.models import PartySet
@@ -124,35 +125,58 @@ class TestBallotView(
             ),
         )
 
-    def test_ballot_with_candidates_no_sopn(self):
-        self.create_memberships(self.ballot, self.parties)
-        response = self.app.get(self.ballot.get_absolute_url())
+    def test_pre_sopn_ballot_text_with_candidates(self):
+        future_election = self.create_election(
+            "London Local election",
+            date=datetime.date(2024, 10, 6),
+        )
+        future_ballot = self.create_ballot(
+            election=future_election,
+            post=self.post,
+            ballot_paper_id="local.foo.bar.{}".format(
+                future_election.election_date.isoformat()
+            ),
+            winner_count=2,
+        )
+        future_ballot.post.territory_code = "ENG"
+        future_ballot.post.save()
+        self.create_memberships(future_ballot, self.parties)
 
+        response = self.app.get(future_ballot.get_absolute_url())
+
+        self.assertEqual(
+            future_ballot.expected_sopn_date, datetime.date(2024, 9, 11)
+        )
+        self.assertFalse(future_ballot.candidates_locked)
         self.assertEqual(response.context["candidates"].count(), 9)
-        self.assertDataTimelineCandidateAddingInProgress(response)
+        expected_header = """
+        <h1>Candidates for Bar Ward on <br>6 October 2024</h1>
+        """
         self.assertInHTML(
-            f"<h1>Candidates for Bar Ward on <br>{ self.election.election_date.strftime('%d %B %Y') }</h1>",
+            expected_header,
             response.text,
         )
-        self.assertInHTML(
-            """
+
+        expected_notice = """
             <p>
-                These 9 candidates haven't been confirmed by the official
-                "nomination papers" from the council yet. This means they might
-                not all end up on the ballot paper.
+                These candidates will not be confirmed until the council publishes the official candidate list on 11 September 2024. 
+                Once nomination papers are published, we will manually verify each candidate.
             </p>
-            """,
+            """
+        self.assertInHTML(
+            expected_notice,
             response.text,
         )
-        self.assertInHTML(
-            """
+        expected_table = """
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Party</th>
               </tr>
             </thead>
-        """,
+        """
+        self.assertInHTML(
+            expected_table,
             response.text,
         )
 
@@ -178,7 +202,7 @@ class TestBallotView(
         )
 
         self.assertEqual(ballot.is_welsh_run, True)
-        with self.assertNumQueries(11):
+        with self.assertNumQueries(10):
             response = self.app.get(ballot.get_absolute_url())
         self.assertNotContains(response, self.old_party.name)
 
