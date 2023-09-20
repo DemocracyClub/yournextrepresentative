@@ -1,6 +1,7 @@
 import datetime
 import hashlib
 
+from candidates.helpers.helpers import get_election_timetable
 from candidates.models import LoggedAction
 from candidates.models.auth import TRUSTED_TO_LOCK_GROUP_NAME
 from candidates.models.db import ActionType
@@ -557,6 +558,16 @@ class Ballot(EEModifiedMixin, models.Model):
             return False
 
         return self.tags.get("NUTS1", {}).get("key") == "UKL"
+
+    @property
+    def expected_sopn_date(self):
+        try:
+            return get_election_timetable(
+                self.ballot_paper_id, self.post.territory_code
+            ).sopn_publish_date
+
+        except AttributeError:
+            return None
 
 
 class PartySet(models.Model):
