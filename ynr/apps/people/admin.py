@@ -44,7 +44,17 @@ class RemovePersonalDataView(TemplateView):
 
 class MembershipInline(admin.StackedInline):
     extra = 0
+    can_delete = False
     model = Membership
+    fields = ("party", "get_ballot", "deselected", "deselected_source")
+    readonly_fields = ("party", "get_ballot")
+
+    @admin.display(description="Ballot")
+    def get_ballot(self, obj):
+        return obj.ballot.ballot_paper_id
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 class PersonImageInlineForm(forms.ModelForm):
@@ -104,7 +114,7 @@ class PersonAdmin(admin.ModelAdmin):
         "image_preview",
         "image_filetype",
     )
-    inlines = [PersonImageInline]
+    inlines = [PersonImageInline, MembershipInline]
 
     def image_preview(self, obj):
         person = Person.objects.get(pk=obj.pk)

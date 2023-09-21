@@ -142,7 +142,15 @@
         {% else %}
            Contesting the {{ election_data.name }} ({{ election_data.election_date }})
         {% endif %}</dt>
+       
       <dd>{{ person|post_in_election:election_data }}</dd>
+      {% for membership in person.memberships.all %}
+      {% if membership.ballot.election == election_data %}
+          {% if membership.deselected %}
+            <dd>This candidate has been deselected by their party, but will remain on the ballot paper. <a href="{{ membership.deselected_source }}" target="_blank">Learn more<a>.</dd>
+          {% endif %}
+      {% endif %}
+      {% endfor %}
 
     {% empty %}
       <p>No candidacies known at the moment.</p>

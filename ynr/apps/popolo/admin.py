@@ -40,5 +40,18 @@ class OrganizationAdmin(admin.ModelAdmin):
     inlines = generics.BASE_INLINES
 
 
+class MembershipAdmin(admin.ModelAdmin):
+    model = models.Membership
+    list_display = ("person", "party", "get_ballot", "deselected")
+    fields = ("person", "party", "ballot", "deselected", "deselected_source")
+    readonly_fields = ("person", "party", "ballot")
+    list_filter = ("deselected",)
+
+    @admin.display(description="Ballot")
+    def get_ballot(self, obj):
+        return obj.ballot.ballot_paper_id
+
+
+admin.site.register(models.Membership, MembershipAdmin)
 admin.site.register(models.Post, PostAdmin)
 admin.site.register(models.Organization, OrganizationAdmin)
