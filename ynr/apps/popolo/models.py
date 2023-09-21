@@ -356,6 +356,16 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
         to="parties.Party", related_name="alliated_memberships", blank=True
     )
 
+    deselected = models.BooleanField(
+        default=False,
+        help_text="Whether this candidate was deselected by their party, but remains on the ballot",
+    )
+
+    deselected_source = models.URLField(
+        blank=True,
+        help_text="A URL to a source document about the deselection",
+    )
+
     objects = MembershipQuerySet.as_manager()
 
     def save(self, *args, **kwargs):

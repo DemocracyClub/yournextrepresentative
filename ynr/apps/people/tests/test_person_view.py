@@ -4,6 +4,7 @@ from candidates.tests.auth import TestUserMixin
 from candidates.tests.dates import templates_after, templates_before
 from candidates.tests.factories import (
     BallotPaperFactory,
+    ElectionFactory,
     MembershipFactory,
     PostFactory,
 )
@@ -151,3 +152,39 @@ class TestPersonView(PersonViewSharedTestsMixin):
         self.assertContains(
             response, self.membership.previous_party_affiliations.all()[0].name
         )
+
+    def test_deselected_membership(self):
+        membership = self.person.memberships.first()
+        membership.deselected = True
+        membership.deselected_source = "https://www.electoralcommission.org.uk/"
+        membership.save()
+        # create another membership that is not deselected
+        election = ElectionFactory.create(
+            slug="senned.2022-05-05", name="Cardiff Council Election"
+        )
+        post = PostFactory.create(label="Counsellor for Cardiff")
+        ballot = BallotPaperFactory.create(
+            election=election,
+            post=post,
+            ballot_paper_id="senedd.foo.bar.2022-05-05",
+            winner_count=2,
+        )
+        party = PartyFactory()
+        new_membership = Membership.objects.create(
+            person=self.person, party=party, post=ballot.post, ballot=ballot
+        )
+        self.assertFalse(new_membership.deselected)
+
+        response = self.app.get(self.person.get_absolute_url())
+
+        deselected_text = "This candidate has been deselected by their party, but will remain on the ballot paper."
+        deselected_source = """<a href="https://www.electoralcommission.org.uk/" target="_blank">Learn more<a>."""
+
+        self.assertContains(response, deselected_text)
+        self.assertContains(response, deselected_source)
+
+        self.assertEqual(response.text.count(deselected_text), 1)
+        self.assertEqual(response.text.count(deselected_source), 1)
+
+
+#

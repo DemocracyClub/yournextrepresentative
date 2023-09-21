@@ -58,6 +58,7 @@ BASE_CANDIDACY_FIELDS = [
     "party",
     "party_name",
     "party_description_text",
+    "deselected",
     "created",
     "modified",
 ]
@@ -92,6 +93,7 @@ class CandidacySerializer(serializers.HyperlinkedModelSerializer):
     previous_party_affiliations = MinimalPartySerializer(
         read_only=True, many=True
     )
+    deselected = serializers.ReadOnlyField()
 
     @swagger_serializer_method(serializer_or_field=BallotOnCandidacySerializer)
     def get_ballot(self, obj):
