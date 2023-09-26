@@ -4,6 +4,7 @@ from candidates.tests.factories import BallotPaperFactory, ElectionFactory
 from candidates.views.version_data import get_change_metadata
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.utils import timezone
 from people.models import EditLimitationStatuses
 from people.tests.test_person_view import PersonViewSharedTestsMixin
 from webtest import Text
@@ -348,6 +349,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
                 "birth_date",
                 "death_date",
                 "biography",
+                "biography_last_updated",
                 "favourite_biscuit",
                 "delisted",
                 # "standing_parl.2015-05-07",
@@ -517,3 +519,31 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         form.submit()
         self.person.refresh_from_db()
         self.assertEqual(self.person.name, "Tessa Jowell")
+
+    def test_biography_last_updated_timestamp(self):
+        """Test that the biography (aka statement to voters)
+        shows the last updated timestamp and it
+        is updated when the biography is updated"""
+        response = self.app.get(
+            "/person/{}/update".format(self.person.pk), user=self.user
+        )
+        # make an update to the biography
+        form = response.forms[1]
+        form["biography"] = "This is a new test biography"
+        form["source"] = "Mumsnet"
+        form.submit()
+        self.person.refresh_from_db()
+
+        self.assertEqual(len(self.person.versions), 1)
+
+        response = self.app.get(
+            "/person/{}/".format(self.person.pk), user=self.user
+        )
+        self.assertContains(response, "This is a new test biography")
+        last_updated = timezone.localtime(
+            self.person.biography_last_updated
+        ).strftime("%-d %B %Y %H:%M")
+        self.assertContains(
+            response,
+            "This statement was last updated on {}.".format(last_updated),
+        )

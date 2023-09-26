@@ -273,6 +273,9 @@ class Person(TimeStampedModel, models.Model):
         blank=True,
         help_text="An extended account of a person's life",
     )
+    biography_last_updated = models.DateTimeField(
+        "biography last updated", null=True, blank=True
+    )
     national_identity = models.CharField(
         "national identity",
         max_length=128,

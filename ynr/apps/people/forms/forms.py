@@ -1,3 +1,5 @@
+import datetime
+
 from candidates.models import PartySet
 from candidates.models.popolo_extra import Ballot
 from django import forms
@@ -357,6 +359,13 @@ class BasePersonForm(forms.ModelForm):
                 user=user,
             )
 
+        if "biography" in self.changed_data:
+            self.cleaned_data[
+                "biography_last_updated"
+            ] = datetime.datetime.now()
+            self.instance.biography_last_updated = self.cleaned_data[
+                "biography_last_updated"
+            ]
         return super().save(commit)
 
 

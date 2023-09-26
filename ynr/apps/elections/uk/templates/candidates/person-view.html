@@ -127,6 +127,7 @@
     {% if person.biography %}
       <dt>Statement to voters</dt>
       <dd class="person_biography">{{ person.biography|linebreaks }}</dd>
+      {% if person.biography_last_updated %}<dd>This statement was last updated on {{ person.biography_last_updated }}.</dd>{% endif %}
     {% endif %}
   </dl>
   <h2>Candidacies:</h2>
