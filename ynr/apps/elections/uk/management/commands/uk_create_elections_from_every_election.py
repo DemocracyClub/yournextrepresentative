@@ -29,6 +29,12 @@ class Command(BaseCommand):
             action="store_true",
             help="Only import elections that have been updated since last ee_modified date",
         )
+        parser.add_argument(
+            "--check-current",
+            dest="check_current",
+            action="store_true",
+            help="Check that current elections are still marked as such in EE",
+        )
 
     def valid_date(self, value):
         return parse(value).date()
@@ -74,6 +80,23 @@ class Command(BaseCommand):
 
             election_dict.get_or_create_ballot(parent=parent)
 
+    def check_local_current_against_remote(self):
+        """
+        Don't rely on EE's modified date, as the sliding 'current'
+        window in EE doesn't update election objects.
+
+        Rather, grab elections we think might no longer be current
+        and check with EE
+        """
+        might_not_be_current = Election.objects.past().current()
+        for election in might_not_be_current:
+            importer = EveryElectionImporter(election_id=election.slug)
+            importer.build_election_tree()
+            current = importer.election_tree[election.slug].get("current")
+            if not current:
+                election.current = False
+                election.save()
+
     def delete_deleted_elections(self, recently_updated_timestamp):
         # Get all deleted elections from EE
         params = {
@@ -110,6 +133,9 @@ class Command(BaseCommand):
             )
 
         with transaction.atomic():
+            if options["check_current"]:
+                return self.check_local_current_against_remote()
+
             if current_only:
                 # Mark all elections as not current, any that are current will
                 # be (re)set later
@@ -123,3 +149,4 @@ class Command(BaseCommand):
             self.delete_deleted_elections(
                 recently_updated_timestamp=recently_updated_timestamp
             )
+            return None
