@@ -333,7 +333,8 @@ def is_mayor_or_pcc_ballot(election):
 
 
 class EveryElectionImporter(object):
-    def __init__(self, query_args=None):
+    def __init__(self, query_args=None, election_id=None):
+        self.election_id = election_id
         self.EE_BASE_URL = getattr(
             settings, "EE_BASE_URL", "https://elections.democracyclub.org.uk/"
         )
@@ -356,16 +357,24 @@ class EveryElectionImporter(object):
         """
 
         url = f"{self.EE_BASE_URL}api/elections/"
-        params = urlencode(OrderedDict(sorted(self.query_args.items())))
-        url = f"{url}?{params}"
-        while url:
+        if self.election_id:
+            url = f"{url}{self.election_id}"
             req = requests.get(url)
             req.raise_for_status()
             data = req.json()
-            for result in data["results"]:
-                election_id = result["election_id"]
-                self.election_tree[election_id] = EEElection(result)
-            url = data.get("next")
+            election_id = data["election_id"]
+            self.election_tree[election_id] = EEElection(data)
+        else:
+            params = urlencode(OrderedDict(sorted(self.query_args.items())))
+            url = f"{url}?{params}"
+            while url:
+                req = requests.get(url)
+                req.raise_for_status()
+                data = req.json()
+                for result in data["results"]:
+                    election_id = result["election_id"]
+                    self.election_tree[election_id] = EEElection(result)
+                url = data.get("next")
 
     @property
     def ballot_ids(self):
