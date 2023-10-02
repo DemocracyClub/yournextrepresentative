@@ -96,3 +96,5 @@
       command: service ynr_gunicorn status
       args:
         warn: false
+
+- import_playbook: crontab.yml

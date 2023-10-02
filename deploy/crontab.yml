@@ -1,0 +1,81 @@
+---
+- hosts: prod_cron
+  vars_files:
+    - vars.yml
+    # - @vault.yml
+  gather_facts: true
+  become: true
+  become_user: "{{ project_name }}"
+  roles:
+    - common
+  tasks:
+
+  - name: Set up the mailto
+    cronvar:
+      name: MAILTO
+      value: "{{ cron_email }}"
+      user: "{{ project_name }}"
+
+  - cron:
+      name: "Create CSVs"
+      minute: "15"
+      job: "output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py candidates_create_csv --site-base-url https://candidates.democracyclub.org.uk"
+      disabled: no
+
+  - cron:
+      name: "Detect faces"
+      minute: "30,04,19"
+      job: "nice -n 19 ionice -c 3 output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py moderation_queue_detect_faces_in_queued_images"
+      disabled: no
+
+  # - cron:
+  #     name: "Import elections from EE"
+  #     minute: "06"
+  #     job: "output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py uk_create_elections_from_every_election"
+  #     disabled: yes
+
+  # - cron:
+  #     name: "Update Twitter usernames"
+  #     minute: "06"
+  #     hour: "01"
+  #     job: "output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py twitterbot_update_usernames"
+
+  - cron:
+      name: "Update parties from EC"
+      minute: "06"
+      hour: "02"
+      job: "output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py parties_import_from_ec --post-to-slack"
+
+  # - cron:
+  #     name: "Add Twitter images to image queue"
+  #     minute: "06"
+  #     hour: "03"
+  #     job: "output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py twitterbot_add_images_to_queue"
+
+  # - cron:
+  #     name: "Build static person pages"
+  #     minute: "10"
+  #     hour: "1" # For non-election times
+  #     job: "output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py candidates_cache_api_to_directory --url-prefix https://static-candidates.democracyclub.org.uk/media/cached-api --prune"
+
+  # - cron:
+  #     name: "Update current candidates for party"
+  #     minute: "10"
+  #     hour: "2" # For non-election times
+  #     job: "output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py parties_update_current_candidates"
+
+  # - cron:
+  #     name: "Update 2022 results CSV"
+  #     minute: "*/15"
+  #     job: "output-on-error /var/www/ynr/env/bin/python /var/www/ynr/code/manage.py uk_results_create_file --election-date=2022-05-05 --format=csv"
+  
+  - cron:
+      name: "Look for recent changes in EE"
+      minute: "*/5"
+      job: "output-on-error /var/www/ynr/env/bin/python /var/www/ynr/code/manage.py uk_create_elections_from_every_election --recently-updated"
+  
+  - cron:
+      name: "Check for current elections" 
+      minute: "23"
+      hour: "23"
+      job: "output-on-error /var/www/ynr/env/bin/python /var/www/ynr/code/manage.py uk_create_elections_from_every_election --check-current"
