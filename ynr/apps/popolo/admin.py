@@ -1,4 +1,6 @@
+from django import forms
 from django.contrib import admin
+from django.forms import ValidationError
 from popolo import models
 
 from .behaviors import admin as generics
@@ -40,7 +42,31 @@ class OrganizationAdmin(admin.ModelAdmin):
     inlines = generics.BASE_INLINES
 
 
+class MembershipAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.Membership
+        fields = "__all__"
+
+    def clean(self):
+        if (
+            self.cleaned_data["deselected"]
+            and not self.cleaned_data["deselected_source"]
+        ):
+            raise ValidationError(
+                "A deselected membership must have a deselected source. Please add one. "
+            )
+        if (
+            not self.cleaned_data["deselected"]
+            and self.cleaned_data["deselected_source"]
+        ):
+            raise ValidationError(
+                "A membership with a deselected source must be deselected. "
+            )
+        return super().clean()
+
+
 class MembershipAdmin(admin.ModelAdmin):
+    form = MembershipAdminForm
     model = models.Membership
     list_display = ("person", "party", "get_ballot", "deselected")
     fields = ("person", "party", "ballot", "deselected", "deselected_source")

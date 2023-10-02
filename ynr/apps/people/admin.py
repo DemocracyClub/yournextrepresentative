@@ -14,6 +14,7 @@ from people.models import (
     PersonImage,
     PersonNameSynonym,
 )
+from popolo.admin import MembershipAdminForm
 from popolo.models import Membership
 from sorl.thumbnail.admin.current import AdminImageWidget
 
@@ -43,6 +44,7 @@ class RemovePersonalDataView(TemplateView):
 
 
 class MembershipInline(admin.StackedInline):
+    form = MembershipAdminForm
     extra = 0
     can_delete = False
     model = Membership
