@@ -357,11 +357,12 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
     )
 
     deselected = models.BooleanField(
+        null=True,
         default=False,
         help_text="Whether this candidate was deselected by their party, but remains on the ballot",
     )
-
     deselected_source = models.URLField(
+        null=True,
         blank=True,
         help_text="A URL to a source document about the deselection",
     )
