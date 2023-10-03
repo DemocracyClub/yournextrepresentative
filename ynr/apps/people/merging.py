@@ -70,6 +70,7 @@ class PersonMerger:
             ("birth_date", "merge_person_attrs"),
             ("death_date", "merge_person_attrs"),
             ("biography", "merge_person_attrs"),
+            ("biography_last_updated", "merge_person_attrs"),
             ("other_names", "merge_name_and_other_names"),
             ("family_name", "merge_person_attrs"),
             ("national_identity", "merge_person_attrs"),
