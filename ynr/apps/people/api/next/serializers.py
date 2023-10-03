@@ -99,6 +99,7 @@ class PersonSerializer(MinimalPersonSerializer):
             "image",
             "thumbnail",
             "statement_to_voters",
+            "statement_to_voters_last_updated",
             "favourite_biscuit",
             "delisted",
         )
@@ -119,6 +120,9 @@ class PersonSerializer(MinimalPersonSerializer):
     candidacies = serializers.SerializerMethodField()
     statement_to_voters = serializers.CharField(
         source="biography", allow_blank=True
+    )
+    statement_to_voters_last_updated = serializers.DateTimeField(
+        source="biography_last_updated", read_only=True
     )
     favourite_biscuit = serializers.CharField(allow_null=True, allow_blank=True)
     thumbnail = serializers.SerializerMethodField()
