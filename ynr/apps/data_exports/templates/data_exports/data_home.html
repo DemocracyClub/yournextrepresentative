@@ -11,30 +11,36 @@
             <details {% if filter_set.data %}open=""{% endif %}>
                 <summary>Filters</summary>
                 <div class="ds-advanced-filters">
-                        <div class="ds-filter-cluster">
+                    <div class="ds-filter-cluster">
 
-                    {% for field in filter_set.form %}
-                        <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
-                            <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">
-                                {{ field.label }}:
-                                {{ field }}
-                            </li>
+                        {% for field in filter_set.form %}
+                            <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+                                <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">
+                                    {{ field.label }}:
+                                    {{ field }}
+                                </li>
 
-                        </ul>
-                    {% endfor %}
-                        </div>
+                            </ul>
+                        {% endfor %}
+                    </div>
                 </div>
             </details>
 
             <details>
                 <summary>Additional fields</summary>
+
                 {% for group_name, fields in csv_fields.items %}
                     <h3>{{ group_name|title }}</h3>
+                    <label>
+                        <input type="checkbox" name="field_group" id="id_{{ group_name }}" value="{{ group_name }}" {% if group_name in request.GET.field_group %}checked{% endif %} class="group_checkbox">
+                        All {{ group_name }} fields
+
+                    </label>
                     <ul>
                         {% for field_name, field in fields %}
                             <li>
                                 <label for="id_{{ field_name }}">
-                                    <input type="checkbox" name="extra_fields" id="id_{{ field_name }}" value="{{ field_name }}" {% if field_name in headers %}checked{% endif %}>
+                                    <input type="checkbox" name="extra_fields" id="id_{{ field_name }}" value="{{ field_name }}" {% if field_name in headers %}checked{% endif %} data-group="{{ field.value_group }}">
                                     {{ field.label }}
                                 </label>
                             </li>
@@ -44,6 +50,32 @@
 
 
                 {% endfor %}
+                <script>
+                    function disable_for_group(element) {
+                        let checked = element.checked;
+                        var group_sub_options = document.querySelectorAll(`input[data-group=${element.value}]`);
+                        if (checked) {
+                            group_sub_options.forEach(function(el) {
+                                el.disabled = true;
+                            })
+                        } else {
+                            group_sub_options.forEach(function(el) {
+                                el.disabled = false;
+                                el.checked = false;
+                            })
+                        }
+                    }
+
+                    let group_checkboxes = document.querySelectorAll("input[type=checkbox][class=group_checkbox]");
+                    group_checkboxes.forEach(function(el) {
+                        el.addEventListener("click", function(event) {
+                            disable_for_group(event.target);
+                        })
+                        disable_for_group(el);
+                    })
+
+
+                </script>
             </details>
         </aside>
 
@@ -54,25 +86,25 @@
     <div style="overflow-x: scroll; max-width: 100%">
 
 
-    <table >
-        <thead>
-        <tr>
-            {% for header in headers %}
-                <th>{{ header }}</th>
-            {% endfor %}
-        </tr>
-        </thead>
-
-        <tbody>
-        {% for obj in page_obj %}
+        <table >
+            <thead>
             <tr>
                 {% for header in headers %}
-                    <td>{% data_cell header obj %}</td>
+                    <th>{{ header }}</th>
                 {% endfor %}
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+
+            <tbody>
+            {% for obj in page_obj %}
+                <tr>
+                    {% for header in headers %}
+                        <td>{% data_cell header obj %}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
     <div class="pagination">
         <p class="step-links">

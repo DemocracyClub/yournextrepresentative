@@ -22,6 +22,13 @@ def grouped_choices():
 
 
 class AdditionalFieldsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for group in grouped_choices():
+            self.fields[group] = forms.BooleanField(
+                widget=forms.CheckboxInput, required=False
+            )
+
     extra_fields = forms.MultipleChoiceField(
         choices=extra_field_choices,
         widget=forms.CheckboxSelectMultiple(),

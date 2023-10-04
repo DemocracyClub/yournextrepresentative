@@ -7,7 +7,7 @@ from django.utils.text import slugify
 from django.views import View
 from django.views.generic import TemplateView
 
-from .csv_fields import get_core_fieldnames
+from .csv_fields import csv_fields, get_core_fieldnames
 from .filters import MaterializedMembershipFilter
 from .forms import AdditionalFieldsForm, grouped_choices
 from .models import MaterializedMemberships, MaterializedMembershipsQuerySet
@@ -30,6 +30,10 @@ class DataFilterMixin:
                 "extra_fields"
             ]
         context["additional_fields_form"] = additional_fields_form
+
+        for field_name, field in csv_fields.items():
+            if field.value_group in self.request.GET.getlist("field_group"):
+                context["extra_fields"].append(field_name)
 
         context["headers"] = get_core_fieldnames() + context["extra_fields"]
 

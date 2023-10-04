@@ -108,3 +108,57 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
             data_cell("person_id", value), '<a href="/person/12345">12345</a>'
         )
         self.assertEqual(data_cell("party_name", value), "")
+
+    def test_select_whole_group(self):
+        self.create_lots_of_candidates(
+            self.earlier_election, ((self.labour_party, 16), (self.ld_party, 8))
+        )
+        MaterializedMemberships.refresh_view()
+
+        req = self.client.get(reverse("data_export"))
+        csv_data = csv_to_dicts(req.content)
+        headers = list(next(csv_data).keys())
+        self.assertListEqual(
+            headers,
+            [
+                "person_id",
+                "person_name",
+                "election_id",
+                "ballot_paper_id",
+                "election_date",
+                "election_current",
+                "party_name",
+                "party_id",
+                "post_label",
+                "cancelled_poll",
+                "seats_contested",
+            ],
+        )
+
+        req = self.client.get(reverse("data_export") + "?field_group=results")
+        csv_data = csv_to_dicts(req.content)
+        headers = list(next(csv_data).keys())
+        self.assertListEqual(
+            headers,
+            [
+                "person_id",
+                "person_name",
+                "election_id",
+                "ballot_paper_id",
+                "election_date",
+                "election_current",
+                "party_name",
+                "party_id",
+                "post_label",
+                "cancelled_poll",
+                "seats_contested",
+                "votes_cast",
+                "tied_vote_winner",
+                "rank",
+                "turnout_reported",
+                "spoilt_ballots",
+                "total_electorate",
+                "turnout_percentage",
+                "results_source",
+            ],
+        )
