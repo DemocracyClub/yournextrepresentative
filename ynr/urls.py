@@ -39,6 +39,7 @@ urlpatterns = [
     re_path(r"^results/", include("results.urls")),
     re_path(r"^duplicates/", include("duplicates.urls")),
     re_path(r"^wombles/", include("wombles.urls")),
+    re_path(r"^data/", include("data_exports.urls")),
     path(
         "volunteer/",
         TemplateView.as_view(template_name="volunteer.html"),

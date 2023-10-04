@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load get_query %}
+{% load data_field_value %}
+{% block content %}
+
+    <form action="" method="get">
+
+
+
+        <aside class="ds-filter">
+            <details {% if filter_set.data %}open=""{% endif %}>
+                <summary>Filters</summary>
+                <div class="ds-advanced-filters">
+                        <div class="ds-filter-cluster">
+
+                    {% for field in filter_set.form %}
+                        <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+                            <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">
+                                {{ field.label }}:
+                                {{ field }}
+                            </li>
+
+                        </ul>
+                    {% endfor %}
+                        </div>
+                </div>
+            </details>
+
+            <details>
+                <summary>Additional fields</summary>
+                {% for group_name, fields in csv_fields.items %}
+                    <h3>{{ group_name|title }}</h3>
+                    <ul>
+                        {% for field_name, field in fields %}
+                            <li>
+                                <label for="id_{{ field_name }}">
+                                    <input type="checkbox" name="extra_fields" id="id_{{ field_name }}" value="{{ field_name }}" {% if field_name in headers %}checked{% endif %}>
+                                    {{ field.label }}
+                                </label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+
+
+                {% endfor %}
+            </details>
+        </aside>
+
+
+
+        <input type="submit" class="button">
+    </form>
+    <div style="overflow-x: scroll; max-width: 100%">
+
+
+    <table >
+        <thead>
+        <tr>
+            {% for header in headers %}
+                <th>{{ header }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for obj in page_obj %}
+            <tr>
+                {% for header in headers %}
+                    <td>{% data_cell header obj %}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <div class="pagination">
+        <p class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </p>
+    </div>
+
+    <p>
+        <a class="button" href="{% url "data_export" %}{% query_string request.GET format='csv' %}">Download CSV</a>
+    </p>
+
+{% endblock %}
