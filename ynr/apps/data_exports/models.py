@@ -1,5 +1,10 @@
+from typing import List, Optional, TextIO
+
+from data_exports.csv_fields import csv_fields, get_core_fieldnames
 from django.db import connection, models, transaction
 from django.db.models import JSONField
+from django.db.models.functions import Coalesce
+from utils.db import LastWord, NullIfBlank
 
 
 class MaterializedModelMixin:
@@ -13,11 +18,81 @@ class MaterializedModelMixin:
 
 
 class MaterializedMembershipsQuerySet(models.QuerySet):
-    def for_csv(self):
+    def _fieldnames(self, extra_fields: Optional[List] = None):
+        fieldnames = get_core_fieldnames()
+        if extra_fields:
+            fieldnames += extra_fields
+        return fieldnames
+
+    def _with_fields(self, extra_fields: Optional[List] = None):
+        fieldnames = self._fieldnames(extra_fields)
         qs = self.select_related(
             "ballot_paper", "party", "person", "ballot_paper__election"
         )
-        return qs.order_by("election_date", "ballot_paper_id", "last_name")
+
+        for name in fieldnames:
+            field = csv_fields[name]
+            if field.type == "expr":
+                qs = qs.annotate(**{name: field.value})
+        qs = qs.values().values(*fieldnames)
+        return qs.order_by(
+            "election_date",
+            "ballot_paper_id",
+            Coalesce(
+                NullIfBlank("person__sort_name"),
+                LastWord("person__name"),
+            ),
+        )
+
+    def for_data_table(self, extra_fields: Optional[List] = None):
+        self._fieldnames(extra_fields)
+        return self._with_fields(extra_fields)
+
+    def write_csv(self, file_like: TextIO, extra_fields: Optional[List] = None):
+        """
+        Asks Postgres to make a CSV for us, rather than using Django/Python to do it.
+
+        The simple way to make a CSV from a QuerySet would be to use the builtin
+        `csv` library and iterate over a Django QuerySet.
+
+        This works, but each row in the CSV is turned into a Django Model object first
+        and then a Python dict object before being converted to a CSV line.
+
+        This is memory expensive, and that matters when we have a large number of rows.
+
+        Rather, we use PostgreSQL's ability to SELECT AS CSV. This means Postgres does almost
+        the exact same amount of work as just selecting the rows for Django, but Django and Python
+        have nothing to do.
+
+        To do this we need to break out of the ORM and use `copy_expert`. This
+        comes with a couple of tricky elements:
+
+        1. We use `qs.query.sql_with_params()` to get underlying the ORM query. This means we
+           don't have to manage the main SQL manually.
+        2. Django's ORM doesn't really care about the order of SELECTed fields, as it's intended
+           to always convert them to models. `values_list` is the closest, but even that
+           does the ordering when converting to a Python list, not in the SQL.
+           Because we use SELECT...AS CSV, the column ordering converts into the CSV column
+           order. To ensure the orders can be controlled we wrap the ORM query in an outer
+           query that selects the fields in the same order as the selected fields.
+
+        :param file_like: a file-like object that copy_expert can write to
+        :param extra_fields: exrta headers defined in `csv_fields` to add to the CSV
+            (core headers always included)
+
+
+        """
+        fieldnames = self._fieldnames(extra_fields)
+        qs = self._with_fields(extra_fields)
+        sql, params = qs.query.sql_with_params()
+        fields = [f"QS.{field}" for field in fieldnames]
+
+        outer_query = f"""select {", ".join(fields)} FROM ({sql}) as QS"""
+        sql = f"COPY ({outer_query}) TO STDOUT WITH (FORMAT CSV, HEADER)"
+
+        with connection.cursor() as cur:
+            sql = cur.mogrify(sql, params)
+            cur.copy_expert(sql, file_like)
 
 
 class MaterializedMemberships(MaterializedModelMixin, models.Model):
