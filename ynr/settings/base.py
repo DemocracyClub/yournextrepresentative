@@ -143,6 +143,7 @@ INSTALLED_APPS = (
     "facebook_data",
     "search",
     "duplicates",
+    "data_exports",
 )
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

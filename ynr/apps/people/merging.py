@@ -10,6 +10,7 @@ from candidates.models import (
 from candidates.models.db import ActionType
 from candidates.models.versions import get_person_as_version_data
 from candidates.views.version_data import get_change_metadata, get_client_ip
+from data_exports.models import MaterializedMemberships
 from django.conf import settings
 from django.contrib.admin.utils import NestedObjects
 from django.db import connection, transaction
@@ -60,6 +61,7 @@ class PersonMerger:
     """
 
     # Map between field names and the method that merges them
+
     SUPPORTED_FIELDS = OrderedDict(
         (
             # Person attrs
@@ -94,6 +96,7 @@ class PersonMerger:
             ("facebookadvert", "merge_facebookadvert"),
             ("duplicate_suggestion", "merge_duplicate_suggestion"),
             ("duplicate_suggestion_other_person", "merge_duplicate_suggestion"),
+            ("materializedmemberships", "merge_materialized_memberships"),
             # Discarded
             ("id", "discard_data"),
             ("created", "discard_data"),
@@ -367,7 +370,7 @@ class PersonMerger:
     def merge_gender_guess(self):
         """
         Just delete the source guess – this is data we generate from the
-        name so it's not important
+        name, so it's not important
         """
         if hasattr(self.source_person, "gender_guess"):
             self.source_person.gender_guess.delete()
@@ -376,6 +379,20 @@ class PersonMerger:
         alter_duplicate_suggestion_post_merge(
             self.source_person, self.dest_person
         )
+
+    def merge_materialized_memberships(self):
+        """
+        Rebuild the materialized view when merging.
+
+        This is expensive, but there's not a lot of other choices.
+
+        We can't modify the view's data at all (e.g we can't UPDATE...WHERE)
+        as we do for other operations, but if we leave old data hanging
+        around in there then JOIN operations will fail on the missing rows.
+
+        :return:
+        """
+        MaterializedMemberships.refresh_view()
 
     def setup_redirect(self):
         # Create a redirect from the old person to the new person:
