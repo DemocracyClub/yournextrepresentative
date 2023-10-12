@@ -3,6 +3,7 @@ from datetime import date
 
 from django.contrib.admin.utils import NestedObjects
 from django.db import connection, models
+from django.http import QueryDict
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
@@ -258,3 +259,9 @@ class Election(EEModifiedMixin, models.Model):
         querystring = urlencode({"election_slug": self.slug})
         url = reverse("photo-review-list")
         return f"{url}?{querystring}"
+
+    def get_csv_url(self):
+        params = QueryDict("", mutable=True)
+        params["election_id"] = self.slug
+        url = reverse("data_export")
+        return f"{url}?{params.urlencode()}"
