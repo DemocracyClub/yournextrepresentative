@@ -17,12 +17,6 @@
       user: "{{ project_name }}"
 
   - cron:
-      name: "Create CSVs"
-      minute: "15"
-      job: "output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py candidates_create_csv --site-base-url https://candidates.democracyclub.org.uk"
-      disabled: no
-
-  - cron:
       name: "Detect faces"
       minute: "30,04,19"
       job: "nice -n 19 ionice -c 3 output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py moderation_queue_detect_faces_in_queued_images"
@@ -64,11 +58,7 @@
   #     hour: "2" # For non-election times
   #     job: "output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py parties_update_current_candidates"
 
-  # - cron:
-  #     name: "Update 2022 results CSV"
-  #     minute: "*/15"
-  #     job: "output-on-error /var/www/ynr/env/bin/python /var/www/ynr/code/manage.py uk_results_create_file --election-date=2022-05-05 --format=csv"
-  
+
   - cron:
       name: "Look for recent changes in EE"
       minute: "*/5"
