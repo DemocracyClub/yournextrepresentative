@@ -20,6 +20,7 @@ from parties.models import Party
 from parties.tests.fixtures import DefaultPartyFixtures
 from people.models import PersonIdentifier, PersonImage
 from people.tests.factories import PersonFactory
+from rest_framework.authtoken.models import Token
 
 
 class TestAPI(
@@ -142,8 +143,11 @@ class TestAPI(
         response = self.app.get("/api/v0.9/persons/4000/", expect_errors=True)
         self.assertEqual(response.status_code, 404)
 
+        token, _ = Token.objects.get_or_create(user=self.user)
         response = self.app.post(
-            "/api/v0.9/persons/", params={}, expect_errors=True
+            f"/api/v0.9/persons/?auth_token={token.key}",
+            params={},
+            expect_errors=True,
         )
         self.assertEqual(response.status_code, 403)
 

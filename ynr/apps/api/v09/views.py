@@ -203,7 +203,7 @@ class VersionView(View):
 
 
 # Now the django-rest-framework based API views:
-class PersonViewSet(viewsets.ModelViewSet):
+class PersonViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset = Person.objects.prefetch_related(
             Prefetch(
@@ -225,7 +225,7 @@ class PersonViewSet(viewsets.ModelViewSet):
     pagination_class = DefaultPageNumberPagination
 
 
-class OrganizationViewSet(viewsets.ModelViewSet):
+class OrganizationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Organization.objects.prefetch_related(
         "contact_details",
         "other_names",
@@ -239,7 +239,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     pagination_class = DefaultPageNumberPagination
 
 
-class PostViewSet(viewsets.ModelViewSet):
+class PostViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = (
         Post.objects.select_related("organization", "party_set")
         .prefetch_related(
@@ -298,13 +298,13 @@ class ElectionViewSet(viewsets.ModelViewSet):
         return super().dispatch(request, *args, **kwargs)
 
 
-class PartySetViewSet(viewsets.ModelViewSet):
+class PartySetViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = extra_models.PartySet.objects.order_by("id")
     serializer_class = serializers.PartySetSerializer
     pagination_class = DefaultPageNumberPagination
 
 
-class PostExtraElectionViewSet(viewsets.ModelViewSet):
+class PostExtraElectionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = extra_models.Ballot.objects.select_related(
         "election", "post"
     ).order_by("id")
@@ -312,13 +312,13 @@ class PostExtraElectionViewSet(viewsets.ModelViewSet):
     pagination_class = DefaultPageNumberPagination
 
 
-class MembershipViewSet(viewsets.ModelViewSet):
+class MembershipViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Membership.objects.order_by("id")
     serializer_class = serializers.MembershipSerializer
     pagination_class = DefaultPageNumberPagination
 
 
-class LoggedActionViewSet(viewsets.ModelViewSet):
+class LoggedActionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = extra_models.LoggedAction.objects.order_by("id")
     serializer_class = serializers.LoggedActionSerializer
     pagination_class = DefaultPageNumberPagination
