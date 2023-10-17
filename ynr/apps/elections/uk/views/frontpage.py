@@ -56,7 +56,6 @@ class HomePageView(ContributorsMixin, FormView):
             :8
         ]
         context["recent_actions"] = self.get_recent_changes_queryset()[:5]
-
         return context
 
 

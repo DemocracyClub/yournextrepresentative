@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>My profile</h1>
+    <p>Your username is {{ user.username }} and your contact email is {{ user.email }}.</p>
+    <p>When you create an account we create an API key for you, this lets you use <a href="{% url "api-home" %}">our API</a>.</p>
+    <p>Your API key is <code>{{ user.auth_token.key }}</code>.</p>
+
+    {% if recent_edits %}
+        <h2>Recent edits</h2>
+        <table>
+            <thead>
+            <tr>
+                <td>Action Type</td>
+                <td>Edited</td>
+                <td>Time</td>
+                <td>Diff</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for recent_edit in recent_edits %}
+                <tr>
+                    <td>{{ recent_edit.action_type }}</td>
+                    <td>
+                        {% if recent_edit.person %}
+                            <a href="{{ recent_edit.person.get_absolute_url }}">{{ recent_edit.person.name }}</a>
+                        {% elif recent_edit.ballot %}
+                            <a href="{{ recent_edit.ballot.get_absolute_url }}">{{ recent_edit.ballot.ballot_paper_id }}</a>
+                        {% else %}
+                            Unknown
+                        {% endif %}
+
+                    </td>
+                    <td>{{ recent_edit.created }}</td>
+                    <td>{{ recent_edit.diff_html|safe }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

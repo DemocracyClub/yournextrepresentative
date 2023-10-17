@@ -22,6 +22,7 @@ MIGRATION_MODULES = DisableMigrations()
 
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
 
+REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {"anon": "1000/minute"}  # noqa
 
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 

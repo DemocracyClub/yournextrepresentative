@@ -2,8 +2,23 @@ from candidates.models import LoggedAction
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Count
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 from wombles.models import WombleTags
+
+
+class MyProfile(LoginRequiredMixin, TemplateView):
+    template_name = "wombles/my_profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user"] = self.request.user
+        context["recent_edits"] = (
+            LoggedAction.objects.filter(user=context["user"])
+            .select_related("person", "ballot")
+            .order_by("-created")[:50]
+        )
+
+        return context
 
 
 class SingleWombleView(LoginRequiredMixin, DetailView):

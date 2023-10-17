@@ -1,5 +1,6 @@
 import json
 from contextlib import contextmanager
+from time import sleep
 
 import people.models
 import requests
@@ -65,6 +66,13 @@ class Command(BaseCommand):
         # )
 
     def handle(self, **options):
+        self.api_key = getattr(settings, "YNR_API_KEY", None)
+        if not self.api_key:
+            print(
+                """WARNING: NOT USING AN API KEY. 
+            THIS WILL BE SLOWER TO IMPORT. GET A KEY FROM THE LIVE SITE 
+            AND ADD `YNR_API_KEY=[KEY]` TO `local.py`"""
+            )
         self.image_storage = FileSystemStorage()
         self.ynr_url = options["site_url"]
         self.party_cache = {}
@@ -96,6 +104,8 @@ class Command(BaseCommand):
         )
 
     def get_api_results(self, endpoint, api_version="next"):
+        params = {}
+        sleep_time = 0
         if "ballots" in endpoint:
             url = (
                 "{base_url}/media/cached-api/latest/ballots-000001.json".format(
@@ -109,18 +119,25 @@ class Command(BaseCommand):
                 )
             )
         else:
-            url = "{base_url}api/{api_version}/{endpoint}/?format=json&page_size=200".format(
+            params["auth_token"] = self.api_key
+            sleep_time = 4 if params["auth_token"] else 10
+
+            params["format"] = "json"
+            params["page_size"] = 100
+            url = "{base_url}api/{api_version}/{endpoint}/?".format(
                 base_url=self.ynr_url,
                 api_version=api_version,
                 endpoint=endpoint,
             )
 
         while url:
+            print(url)
             self.stdout.write("Fetching " + url)
-            r = requests.get(url)
+            r = requests.get(url, params=params)
             data = r.json()
             for result in data["results"]:
-                yield (result)
+                yield result
+            sleep(sleep_time)
             url = data.get("next")
 
     def get_user_from_username(self, username):
