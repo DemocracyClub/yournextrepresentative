@@ -43,7 +43,7 @@
         <a href="/" class="header__masthead__logo">{{ site.name }}</a>
         <ul class="nav-links">
           {% if user.is_authenticated %}
-            <li class="nav-links__item">Signed in as <strong>{{ user.username }}</strong></li>
+              <li class="nav-links__item">Signed in as <strong><a href="{% url "my_profile" %}">{{ user.username }}</a></strong></li>
             {% if user_can_lock and suggestions_to_lock > 0 %}
               <li class="nav-links__item">
                 <a href="{% url 'suggestions-to-lock-review-list' %}">
