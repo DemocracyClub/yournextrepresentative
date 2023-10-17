@@ -13,6 +13,22 @@ Found our data useful and want to support our work? Please consider contributing
 * Please give credit to Democracy Club when reusing this data.
 * Please [read the full terms]({% url "api-terms" %}).
 
+### Authentication
+
+The API has a rate limit of 10 requests per minute for unauthenticated users.
+{% if request.user.is_authenticated %}
+To authenticate, pass your token in with `auth_token={{ request.user.auth_token.key }}`.
+
+Alternatively pass in the authorization header:
+
+`curl https://candidates.democracyclub.org.uk/api/next/ -H 'Authorization: Token {{ user.auth_token.key }}'`
+
+{% else %}
+To authenticate, simply create and account, and you will be given a token on your profile page.
+
+Pass this token in with `auth_token=[token]`.
+
+{% endif %}
 
 
 ### Formats
