@@ -10,7 +10,7 @@ STATICFILES_DIRS = ()
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": "{{project_name}}",
         "USER": "{{project_name}}",
         "PASSWORD": "",

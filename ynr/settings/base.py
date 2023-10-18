@@ -340,7 +340,7 @@ SOURCE_HINTS = """
 EE_CACHE_SECONDS = 86400
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ.get("DATABASE_NAME", "ynr"),
         "USER": os.environ.get("POSTGRES_USERNAME", ""),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
