@@ -349,7 +349,6 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
                 "birth_date",
                 "death_date",
                 "biography",
-                "biography_last_updated",
                 "favourite_biscuit",
                 "delisted",
                 # "standing_parl.2015-05-07",
@@ -524,26 +523,42 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         """Test that the biography (aka statement to voters)
         shows the last updated timestamp and it
         is updated when the biography is updated"""
-        response = self.app.get(
+        person_update_response = self.app.get(
             "/person/{}/update".format(self.person.pk), user=self.user
         )
-        # make an update to the biography
-        form = response.forms[1]
+        form = person_update_response.forms[1]
         form["biography"] = "This is a new test biography"
         form["source"] = "Mumsnet"
         form.submit()
         self.person.refresh_from_db()
 
         self.assertEqual(len(self.person.versions), 1)
-
-        response = self.app.get(
+        person_response_one = self.app.get(
             "/person/{}/".format(self.person.pk), user=self.user
         )
-        self.assertContains(response, "This is a new test biography")
+        self.assertContains(person_response_one, "This is a new test biography")
         last_updated = timezone.localtime(
             self.person.biography_last_updated
         ).strftime("%-d %B %Y %H:%M")
         self.assertContains(
-            response,
+            person_response_one,
+            "This statement was last updated on {}.".format(last_updated),
+        )
+
+        # make a second edit to the same person and ensure
+        # the biography timestamp from the previous edit is still shown
+        form["name"] = "Bess Palmer"
+        form["source"] = "Mumsnet"
+        form.submit()
+        self.person.refresh_from_db()
+
+        person_response_two = self.app.get(
+            "/person/{}/".format(self.person.pk), user=self.user
+        )
+        self.assertEqual(len(self.person.versions), 2)
+        self.assertEqual(self.person.name, "Bess Palmer")
+        self.assertNotEqual(self.person.biography_last_updated, None)
+        self.assertContains(
+            person_response_two,
             "This statement was last updated on {}.".format(last_updated),
         )

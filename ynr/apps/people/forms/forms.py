@@ -265,6 +265,7 @@ class BasePersonForm(forms.ModelForm):
             "summary",
             "national_identity",
             "name_search_vector",
+            "biography_last_updated",
         )
 
     honorific_prefix = StrippedCharField(
@@ -366,6 +367,7 @@ class BasePersonForm(forms.ModelForm):
             self.instance.biography_last_updated = self.cleaned_data[
                 "biography_last_updated"
             ]
+
         return super().save(commit)
 
 
