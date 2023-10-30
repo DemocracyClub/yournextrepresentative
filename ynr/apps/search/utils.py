@@ -87,7 +87,7 @@ def search_person_by_name(name: str, synonym: bool = False) -> PersonQuerySet:
                 F("vector"),
                 query,
                 cover_density=True,
-                weights=[0.1, 0.3, 0.4, 1],
+                weights=[0.1, 0.3, 0.4, 1.0],
             )
         )
         .select_related("image")
