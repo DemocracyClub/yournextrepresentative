@@ -92,7 +92,9 @@ class MaterializedMembershipsQuerySet(models.QuerySet):
 
         with connection.cursor() as cur:
             sql = cur.mogrify(sql, params)
-            cur.copy_expert(sql, file_like)
+            with cur.copy(sql) as copy:
+                for row in copy:
+                    file_like.write(row)
 
 
 class MaterializedMemberships(MaterializedModelMixin, models.Model):
