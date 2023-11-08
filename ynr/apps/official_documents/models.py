@@ -86,3 +86,14 @@ class OfficialDocument(TimeStampedModel):
         if self.get_pages():
             return self.get_pages()[-1]
         return None
+
+
+class TextractResult(TimeStampedModel):
+    official_document = models.OneToOneField(
+        OfficialDocument,
+        on_delete=models.CASCADE,
+        related_name="textract_result",
+        null=True,
+    )
+    job_id = models.CharField(max_length=100)
+    json_response = models.JSONField()
