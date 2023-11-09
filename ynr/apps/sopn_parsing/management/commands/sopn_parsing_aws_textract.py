@@ -7,7 +7,9 @@ from official_documents.models import TextractResult
 
 # this is an html saved as a pdf
 # test_sopn = "https://www.bury.gov.uk/council-and-democracy/elections-and-voting/statement-of-persons-nominated/"
-test_sopn = "ynr/apps/sopn_parsing/management/commands/test_sopns/BurySOPN.pdf"
+test_sopn = (
+    "ynr/apps/sopn_parsing/management/commands/test_sopns/HackneySOPN.pdf"
+)
 
 accepted_file_types = [
     ".pdf",
@@ -62,11 +64,10 @@ class Command(BaseCommand):
                 "S3Prefix": "test",
             },
         )
-
-        try:
+        if response["JobId"]:
             job_id = response["JobId"]
             self.get_job_results(job_id)
-        except KeyError:
+        else:
             print("Job failed to start")
             raise Exception("Job failed to start")
 
@@ -92,36 +93,46 @@ class Command(BaseCommand):
             textract_result.save()
             print(f"Job succeeded:{job_id}")
             print(
-                "The number of result_pages in this document is:",
-                {response["DocumentMetadata"]["Pages"]},
+                "The number of pages in this document is:",
+                response["DocumentMetadata"]["Pages"],
             )
-            self.parse_pages(textract_result)
+            self.parse_aws_textract_response(response)
         elif response["JobStatus"] == "FAILED":
             print(f"Job failed:{job_id}")
             print(response["StatusMessage"])
         else:
             print(f"Job {job_id} still running")
 
-    def parse_pages(self, textract_result):
-        """This is Step 3 of the SOPN parsing process using AWS Textract."""
-        results = textract_result.json_response
-        pages = []
-        # this step can be improved by using the BlockType to determine
-        # what type of block we are dealing with and then parsing the
-        # text accordingly
-        for result_page in results["Blocks"]:
-            if result_page["BlockType"] == "TABLE":
-                print("I am a Table")
-                print(result_page["Text"])
-            if result_page["BlockType"] == "CELL":
-                print("I am a Cell")
-                print(result_page["Text"])
-            if result_page["BlockType"] == "LINE":
-                print("I am a Line")
-                print(result_page["Text"])
-            if result_page["BlockType"] == "WORD":
-                print("I am a Word")
-                print(result_page["Text"])
-            if result_page["BlockType"] == "PAGE":
-                print("I am a Page")
-                pages.append(result_page)
+    def parse_aws_textract_response(self, response):
+        """This method takes a response from AWS Textract
+        and parses the data into a table. The alternative
+        to this aproach would be the use of SNS to send
+        the response to a lambda function which would then
+        parse the data into a table."""
+        from trp import Document
+
+        doc = Document(response)
+
+        for page in doc.pages:
+            for page in doc.pages:
+                for table in page.tables:
+                    for r, row in enumerate(table.rows):
+                        for c, cell in enumerate(row.cells):
+                            if "Candidate" in cell.text:
+                                candidate_column = c
+                            if "Description" in cell.text:
+                                description_column = c
+                                for r, row in enumerate(table.rows):
+                                    for c, cell in enumerate(row.cells):
+                                        if c == candidate_column:
+                                            candidates = []
+                                            candidates.append(cell.text)
+                                        if c == description_column:
+                                            descriptions = []
+                                            descriptions.append(cell.text)
+                                            for candidate, description in zip(
+                                                candidates, descriptions
+                                            ):
+                                                print(
+                                                    f"{candidate}: {description}"
+                                                )
