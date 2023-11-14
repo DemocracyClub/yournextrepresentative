@@ -11,7 +11,7 @@ from django.db.models.functions import Replace
 from nameparser import HumanName
 from parties.models import Party, PartyDescription
 from sopn_parsing.helpers.text_helpers import clean_text
-from sopn_parsing.models import ParsedSOPN
+from sopn_parsing.models import CamelotParsedSOPN
 from utils.db import Levenshtein
 
 FIRST_NAME_FIELDS = [
@@ -396,9 +396,32 @@ def parse_raw_data_for_ballot(ballot):
         )
 
     try:
-        parsed_sopn_model = ballot.sopn.parsedsopn
-    except ParsedSOPN.DoesNotExist:
-        raise ValueError(f"No ParsedSOPN for {ballot.ballot_paper_id}")
+        parsed_sopn_model = ballot.sopn.camelotparsedsopn
+    except CamelotParsedSOPN.DoesNotExist:
+        raise ValueError(f"No CamelotParsedSOPN for {ballot.ballot_paper_id}")
+    data_sets = []
+    try:
+        # does the official document have an associated AWSTextractParsedSOPN?
+        aws_textract_parsed_sopn = AWSTextractParsedSOPN.objects.get(
+            sopn=parsed_sopn_model.sopn
+        )
+        # if so, has it been parsed?
+        if aws_textract_parsed_sopn.status == "unparsed":
+            aws_textract_raw_data = aws_textract_parsed_sopn.raw_data
+            data_sets.append(aws_textract_raw_data)
+
+            RawPeople.objects.update_or_create(
+                ballot=parsed_sopn_model.sopn.ballot,
+                defaults={
+                    "ballot": parsed_sopn_model.sopn.ballot,
+                    "aws_textract_parsed_sopn": aws_textract_parsed_sopn,
+                },
+            )
+    except AWSTextractParsedSOPN.DoesNotExist:
+        # if there is no AWSTextractParsedSOPN, we can use the data
+        # from the RawPeople model or just parse the data from the
+        # CamelotParsedSOPN
+        pass
 
     data = parsed_sopn_model.as_pandas
     cell_counts = [len(merge_row_cells(c)) for c in iter_rows(data)]

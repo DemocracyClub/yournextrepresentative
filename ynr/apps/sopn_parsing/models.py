@@ -4,9 +4,10 @@ from django.db import models
 from model_utils.models import TimeStampedModel
 
 
-class ParsedSOPN(TimeStampedModel):
+class CamelotParsedSOPN(TimeStampedModel):
     """
     A model for storing the parsed data out of a PDF
+    where data has been extracted using Camelot.
 
     """
 

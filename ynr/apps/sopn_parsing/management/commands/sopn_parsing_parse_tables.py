@@ -5,7 +5,7 @@ from sopn_parsing.helpers.parse_tables import parse_raw_data_for_ballot
 
 class Command(BaseSOPNParsingCommand):
     help = """
-    Convert the raw extracted tables on the ParsedSOPN model to a parsed
+    Convert the raw extracted tables on the CamelotParsedSOPN model to a parsed
     RawPeople model, and set the status as parsed.
 
     """
@@ -13,17 +13,17 @@ class Command(BaseSOPNParsingCommand):
     def build_filter_kwargs(self, options):
         """
         Build kwargs used to filter the BallotQuerySet that is parsed
-        - Always skip any ballots where we do not have a ParsedSOPN to try to
+        - Always skip any ballots where we do not have a CamelotParsedSOPN to try to
         extract candidates from
         - When test flag is used, dont make any changes
         - When parsing a single ballot, dont make any changes
         - When reparsing, only use ballots where we have previously created a
-          RawPeople object from a ParsedSOPN
-        - Otherwise filter by unparsed ParsedSOPN objects
+          RawPeople object from a CamelotParsedSOPN
+        - Otherwise filter by unparsed CamelotParsedSOPN objects
         """
-        # Always skip any ballots where we do not have a ParsedSOPN to try to
+        # Always skip any ballots where we do not have a CamelotParsedSOPN to try to
         # extract candidates from
-        filter_kwargs = {"officialdocument__parsedsopn__isnull": False}
+        filter_kwargs = {"officialdocument__camelotparsedsopn__isnull": False}
         if options.get("testing"):
             return filter_kwargs
 
@@ -36,10 +36,12 @@ class Command(BaseSOPNParsingCommand):
             ] = RawPeople.SOURCE_PARSED_PDF
             return filter_kwargs
 
-        filter_kwargs["officialdocument__parsedsopn__parsed_data"] = None
+        filter_kwargs["officialdocument__camelotparsedsopn__parsed_data"] = None
 
         # Where the status is unparsed
-        filter_kwargs["officialdocument__parsedsopn__status"] = "unparsed"
+        filter_kwargs[
+            "officialdocument__camelotparsedsopn__status"
+        ] = "unparsed"
 
         return filter_kwargs
 

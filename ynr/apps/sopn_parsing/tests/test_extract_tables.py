@@ -8,7 +8,7 @@ from django.core.management import call_command
 from django.test import TestCase
 from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.extract_tables import extract_ballot_table
-from sopn_parsing.models import ParsedSOPN
+from sopn_parsing.models import CamelotParsedSOPN
 from sopn_parsing.tests import should_skip_pdf_tests
 
 
@@ -34,7 +34,7 @@ class TestSOPNHelpers(TmpMediaRootMixin, UK2015ExamplesMixin, TestCase):
     def test_extract_tables(self):
         extract_ballot_table(self.dulwich_post_ballot)
         self.assertEqual(
-            ParsedSOPN.objects.get().as_pandas.to_dict(),
+            CamelotParsedSOPN.objects.get().as_pandas.to_dict(),
             {
                 "0": {
                     "0": "Name of \nCandidate",
@@ -168,13 +168,13 @@ class TestSOPNHelpers(TmpMediaRootMixin, UK2015ExamplesMixin, TestCase):
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_extract_command_current(self):
-        self.assertEqual(ParsedSOPN.objects.count(), 0)
+        self.assertEqual(CamelotParsedSOPN.objects.count(), 0)
         call_command("sopn_parsing_extract_tables", current=True)
-        self.assertEqual(ParsedSOPN.objects.count(), 1)
+        self.assertEqual(CamelotParsedSOPN.objects.count(), 1)
 
     def test_extract_command_current_no_current_elections(self):
         self.election.current = False
         self.election.save()
-        self.assertEqual(ParsedSOPN.objects.count(), 0)
+        self.assertEqual(CamelotParsedSOPN.objects.count(), 0)
         call_command("sopn_parsing_extract_tables", current=True)
-        self.assertEqual(ParsedSOPN.objects.count(), 0)
+        self.assertEqual(CamelotParsedSOPN.objects.count(), 0)
