@@ -37,3 +37,19 @@ class CamelotParsedSOPN(TimeStampedModel):
                 "\\n", "<br>"
             )
         return None
+
+
+class AWSTextractParsedSOPN(TimeStampedModel):
+    """
+    A model for storing the parsed data out of a PDF
+    where data has been extracted using AWS Textract.
+
+    """
+
+    sopn = models.OneToOneField(
+        "official_documents.OfficialDocument", on_delete=models.CASCADE
+    )
+    raw_data = models.TextField()
+    raw_data_type = models.CharField(max_length=255, default="pandas")
+    parsed_data = models.TextField(null=True)
+    status = models.CharField(max_length=255, default="unparsed")
