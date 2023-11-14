@@ -10,15 +10,27 @@
     </ul>
     <br/>
     <h3>Table Data</h3>
-    {% if object.sopn.parsedsopn.data_as_html %}
-      {{ object.sopn.parsedsopn.data_as_html|safe }}
+    {% if object.sopn.camelotparsedsopn.data_as_html %}
+      {{ object.sopn.camelotparsedsopn.data_as_html|safe }}
     {% else %}
       N/A
     {% endif %}
     <br/>
     <h3>Raw Data</h3>
-    {% if object.sopn.parsedsopn.raw_data %}
-      <pre>{{ object.sopn.parsedsopn.as_pandas.to_dict|pprint }}</pre>
+    {% if object.sopn.camelotparsedsopn.raw_data %}
+      <pre>{{ object.sopn.camelotparsedsopn.as_pandas.to_dict|pprint }}</pre>
+    {% else %}
+      N/A
+    {% endif %}
+    <h3>AWS Raw Data</h3>
+    {% if object.sopn.get_textract_result %}
+      <pre>{{ object.sopn.get_textract_result.json_response|pprint }}</pre>
+    {% else %}
+      N/A
+    {% endif %}
+    <h3>AWS Parsed SOPN</h3>
+    {% if object.sopn.get_aws_parsed_sopn %}
+      <pre>{{ object.sopn.get_aws_parsed_sopn.raw_data }}</pre>
     {% else %}
       N/A
     {% endif %}

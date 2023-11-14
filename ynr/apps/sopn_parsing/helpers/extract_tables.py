@@ -1,12 +1,12 @@
 import json
 
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
-from sopn_parsing.models import ParsedSOPN
+from sopn_parsing.models import CamelotParsedSOPN
 
 
 def extract_ballot_table(ballot, parse_flavor="lattice"):
     """
-    Given a OfficialDocument model, update or create a ParsedSOPN model with the
+    Given a OfficialDocument model, update or create a CamelotParsedSOPN model with the
     contents of the table as a JSON string.
 
     :type ballot: candidates.models.Ballot
@@ -56,7 +56,7 @@ def extract_ballot_table(ballot, parse_flavor="lattice"):
         table_data = table_data.append(table.df, ignore_index=True)
 
     if not table_data.empty:
-        parsed, _ = ParsedSOPN.objects.update_or_create(
+        parsed, _ = CamelotParsedSOPN.objects.update_or_create(
             sopn=document,
             defaults={"raw_data": json.dumps(table_data.to_dict())},
         )

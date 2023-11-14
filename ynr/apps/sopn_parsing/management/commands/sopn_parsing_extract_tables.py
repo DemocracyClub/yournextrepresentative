@@ -7,7 +7,7 @@ from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
 class Command(BaseSOPNParsingCommand):
     help = """
-    Parse tables out of PDFs in to ParsedSOPN models for later parsing.
+    Parse tables out of PDFs in to CamelotParsedSOPN models for later parsing.
     """
 
     def handle(self, *args, **options):
@@ -15,7 +15,7 @@ class Command(BaseSOPNParsingCommand):
         filter_kwargs = {}
         if not options["ballot"] and not options["testing"]:
             if not options["reparse"]:
-                filter_kwargs["officialdocument__parsedsopn"] = None
+                filter_kwargs["officialdocument__camelotparsedsopn"] = None
 
             qs = qs.filter(**filter_kwargs)
 

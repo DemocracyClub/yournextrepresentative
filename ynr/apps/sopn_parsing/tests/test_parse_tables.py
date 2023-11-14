@@ -12,7 +12,7 @@ from parties.models import Party
 from parties.tests.factories import PartyFactory
 from parties.tests.fixtures import DefaultPartyFixtures
 from sopn_parsing.helpers import parse_tables
-from sopn_parsing.models import ParsedSOPN
+from sopn_parsing.models import CamelotParsedSOPN
 from sopn_parsing.tests import should_skip_pdf_tests
 from sopn_parsing.tests.data.welsh_sopn_data import welsh_sopn_data
 
@@ -73,7 +73,7 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
                 },
             }
         )
-        ParsedSOPN.objects.create(
+        CamelotParsedSOPN.objects.create(
             sopn=doc, raw_data=dataframe, status="unparsed"
         )
         call_command("sopn_parsing_parse_tables")
@@ -113,7 +113,7 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
         )
 
         dataframe = json.dumps(welsh_sopn_data)
-        ParsedSOPN.objects.create(
+        CamelotParsedSOPN.objects.create(
             sopn=doc, raw_data=dataframe, status="unparsed"
         )
         call_command("sopn_parsing_parse_tables")
@@ -374,7 +374,7 @@ class TestParseTablesUnitTests(UK2015ExamplesMixin, TestCase):
         assert cleaned_description == "All People's Party"
 
     def test_guess_previous_party_affiliations_field(self):
-        sopn = ParsedSOPN(raw_data=json.dumps(welsh_sopn_data))
+        sopn = CamelotParsedSOPN(raw_data=json.dumps(welsh_sopn_data))
         data = sopn.as_pandas
         data.columns = data.iloc[0]
 
@@ -407,7 +407,7 @@ class TestParseTablesUnitTests(UK2015ExamplesMixin, TestCase):
                 parse_tables, "get_party", return_value=case["party"]
             ):
                 raw_data = {}
-                sopn = ParsedSOPN()
+                sopn = CamelotParsedSOPN()
                 result = parse_tables.add_previous_party_affiliations(
                     party_str=case["party_str"],
                     raw_data=raw_data,
@@ -420,7 +420,7 @@ class TestParseTablesFilterKwargs(TestCase):
     def setUp(self):
         self.command = ParseTablesCommand()
         self.default_filter_kwargs = {
-            "officialdocument__parsedsopn__isnull": False
+            "officialdocument__camelotparsedsopn__isnull": False
         }
 
     def test_when_testing(self):
@@ -444,6 +444,6 @@ class TestParseTablesFilterKwargs(TestCase):
         options = {}
         result = self.command.build_filter_kwargs(options)
         expected = self.default_filter_kwargs.copy()
-        expected["officialdocument__parsedsopn__parsed_data"] = None
-        expected["officialdocument__parsedsopn__status"] = "unparsed"
+        expected["officialdocument__camelotparsedsopn__parsed_data"] = None
+        expected["officialdocument__camelotparsedsopn__status"] = "unparsed"
         self.assertEqual(result, expected)
