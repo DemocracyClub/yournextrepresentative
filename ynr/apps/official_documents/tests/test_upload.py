@@ -150,6 +150,7 @@ class TestModels(TestUserMixin, WebTest):
         )
 
         self.assertInHTML("Upload SOPN", response.text)
+        self.assertEqual(OfficialDocument.objects.count(), 0)
 
         response = self.app.get(
             reverse(
@@ -163,10 +164,21 @@ class TestModels(TestUserMixin, WebTest):
         form["source_url"] = "http://example.org/foo"
         with open(self.example_docx_filename, "rb") as f:
             form["uploaded_file"] = Upload("pilot.docx", f.read())
-        response = form.submit()
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(OfficialDocument.objects.count(), 1)
-        self.assertEqual(response.location, self.ballot.get_sopn_url())
+
+        with patch(
+            "official_documents.views.extract_pages_for_ballot"
+        ) as extract_pages, patch(
+            "official_documents.views.extract_ballot_table"
+        ) as extract_tables, patch(
+            "official_documents.views.parse_raw_data_for_ballot"
+        ) as parse_tables:
+            response = form.submit()
+            self.assertEqual(response.status_code, 302)
+            extract_pages.assert_called_once()
+            extract_tables.assert_called_once()
+            parse_tables.assert_called_once()
+            self.assertEqual(OfficialDocument.objects.count(), 1)
+            self.assertEqual(response.location, self.ballot.get_sopn_url())
 
     @skipIf(
         should_skip_conversion_tests(), "Required conversion libs not installed"
