@@ -26,6 +26,7 @@ def extract_pages_for_ballot(ballot):
             source_url=ballot.sopn.source_url,
             election_date=ballot.election.election_date,
         )
+        start_detection(ballot=ballot)
         return sopn.match_all_pages()
     except NoTextInDocumentError:
         raise NoTextInDocumentError(
@@ -48,7 +49,8 @@ def start_detection(ballot):
     https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/textract/client/get_document_analysis.html#
     """
 
-    with open(test_sopn, "rb") as file:
+    file_path = ballot.sopn.uploaded_file.path
+    with open(file_path, "rb") as file:
         file_bytes = bytearray(file.read())
     region = "eu-west-2"
     bucket_name = "public-sopns"
@@ -60,6 +62,9 @@ def start_detection(ballot):
         Key=object_key,
         Body=file_bytes,
     )
+    import pdb
+
+    pdb.set_trace()
     print(f"Uploaded bytes to s3://{bucket_name}/{object_key}")
     response = textract_client.start_document_analysis(
         DocumentLocation={
@@ -76,7 +81,7 @@ def start_detection(ballot):
     )
     if response["JobId"]:
         job_id = response["JobId"]
-        self.get_job_results(job_id)
+        get_job_results(job_id, ballot)
     else:
         print("Job failed to start")
         raise Exception("Job failed to start")
@@ -86,6 +91,8 @@ def get_job_results(job_id, ballot):
     """This is Step 2 of the SOPN parsing process using AWS Textract.
     https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/textract/client/get_document_analysis.html#
     """
+    official_document = ballot.sopn
+
     textract_result = textract_client.get_document_analysis(JobId=job_id)
     while textract_result["JobStatus"] not in ["SUCCEEDED", "FAILED"]:
         sleep(5)
