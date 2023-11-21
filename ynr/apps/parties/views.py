@@ -29,8 +29,8 @@ class CandidatesByElectionForPartyView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        party = Party.objects.get(ec_id=kwargs["party_id"])
+        party_id = kwargs["party_id"].upper()
+        party = Party.objects.get(ec_id=party_id)
 
         candidates_qs = party.membership_set.select_related(
             "ballot", "person", "ballot__post"
