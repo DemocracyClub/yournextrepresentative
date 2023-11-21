@@ -410,17 +410,7 @@ def parse_raw_data_for_ballot(ballot):
             aws_textract_raw_data = aws_textract_parsed_sopn.raw_data
             data_sets.append(aws_textract_raw_data)
 
-            RawPeople.objects.update_or_create(
-                ballot=parsed_sopn_model.sopn.ballot,
-                defaults={
-                    "ballot": parsed_sopn_model.sopn.ballot,
-                    "aws_textract_parsed_sopn": aws_textract_parsed_sopn,
-                },
-            )
     except AWSTextractParsedSOPN.DoesNotExist:
-        # if there is no AWSTextractParsedSOPN, we can use the data
-        # from the RawPeople model or just parse the data from the
-        # CamelotParsedSOPN
         pass
 
     data = parsed_sopn_model.as_pandas
@@ -468,7 +458,25 @@ def parse_raw_data_for_ballot(ballot):
                         parsed_sopn_model.sopn.source_url
                     ),
                     "source_type": RawPeople.SOURCE_PARSED_PDF,
-                },
+                }
+                if aws_textract_parsed_sopn:
+                    # add the AWS textract parsed data if it exists
+                    defaults[
+                        "aws_textract_parsed_data"
+                    ] = aws_textract_parsed_sopn
+                RawPeople.objects.update_or_create(
+                    ballot=parsed_sopn_model.sopn.ballot,
+                    defaults=defaults,
+                )
+            # We've done the parsing, so let's still save the result
+            storage = DefaultStorage()
+            desired_storage_path = join(
+                "raw_people",
+                "{}.json".format(parsed_sopn_model.sopn.ballot.ballot_paper_id),
+            )
+            storage.save(
+                desired_storage_path,
+                ContentFile(json.dumps(ballot_data, indent=4).encode("utf8")),
             )
         # We've done the parsing, so let's still save the result
         storage = DefaultStorage()
