@@ -5,8 +5,10 @@
     <h3>Parsing Status</h3>
     <ul>
       <li>Pages matched: {% if object.sopn.get_pages %}Yes (matched pages: {{ object.sopn.get_pages|join:", " }}){% else %}No{% endif %}</li>
-      <li>Tables extracted: {% if object.sopn.parsedsopn %}Yes{% else %}No{% endif %}</li>
-      <li>Raw Person Data: {% if object.sopn.ballot.raw_people %}Yes{% else %}No{% endif %}</li>
+      <li>Tables extracted: {% if object.sopn.camelotparsedsopn %}Yes{% else %}No{% endif %}</li>
+      <li>Raw Person Data: {% if object.rawpeople %}Yes{% else %}No{% endif %}</li>
+      <li>AWS Textract Data: {% if object.sopn.get_textract_result %}Yes{% else %}No{% endif %}</li>
+      <li>AWS Parsed SOPN: {% if object.sopn.get_aws_parsed_sopn %}Yes{% else %}No{% endif %}</li>  
     </ul>
     <br/>
     <h3>Table Data</h3>
@@ -19,6 +21,18 @@
     <h3>Raw Data</h3>
     {% if object.sopn.camelotparsedsopn.raw_data %}
       <pre>{{ object.sopn.camelotparsedsopn.as_pandas.to_dict|pprint }}</pre>
+    {% else %}
+      N/A
+    {% endif %}
+    <h3>AWS Raw Data</h3>
+    {% if object.sopn.get_textract_result %}
+      <pre>{{ object.sopn.get_textract_result.json_response|pprint }}</pre>
+    {% else %}
+      N/A
+    {% endif %}
+    <h3>AWS Parsed SOPN</h3>
+    {% if object.sopn.get_aws_parsed_sopn %}
+      <pre>{{ object.sopn.get_aws_parsed_sopn.raw_data }}</pre>
     {% else %}
       N/A
     {% endif %}
