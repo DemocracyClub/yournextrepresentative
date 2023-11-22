@@ -11,7 +11,7 @@ from django.db.models.functions import Replace
 from nameparser import HumanName
 from parties.models import Party, PartyDescription
 from sopn_parsing.helpers.text_helpers import clean_text
-from sopn_parsing.models import CamelotParsedSOPN
+from sopn_parsing.models import AWSTextractParsedSOPN, CamelotParsedSOPN
 from utils.db import Levenshtein
 
 FIRST_NAME_FIELDS = [
@@ -409,64 +409,71 @@ def parse_raw_data_for_ballot(ballot):
         if aws_textract_parsed_sopn.status == "unparsed":
             aws_textract_raw_data = aws_textract_parsed_sopn.raw_data
             data_sets.append(aws_textract_raw_data)
-
+            # if not, parse it
+            # TO DO: save parsed from AWSTextractParsedSOPN to the RawPeople model
+            # then update the status of the AWSTextractParsedSOPN
+            # to "parsed'
     except AWSTextractParsedSOPN.DoesNotExist:
+        # if there is no AWSTextractParsedSOPN, we can use the data
+        # from the RawPeople model or just parse the data from the
+        # CamelotParsedSOPN
         pass
 
+    # at this point, we may have two sets of data that need to both follow the same
+    # parsing process. We need parse both.
     data = parsed_sopn_model.as_pandas
-    cell_counts = [len(merge_row_cells(c)) for c in iter_rows(data)]
 
-    header_found = False
-    avg_row = sum(cell_counts) / float(len(cell_counts))
-    for row in iter_rows(data):
-        if not header_found:
-            if looks_like_header(row, avg_row):
-                data.columns = row
-                data = data.drop(row.name)
-                header_found = True
-            else:
-                try:
+    if parsed_sopn_model.raw_data_type == "pandas":
+        data_sets.append(data)
+
+    for data_set in data_sets:
+        cell_counts = [len(merge_row_cells(c)) for c in iter_rows(data)]
+
+        header_found = False
+        avg_row = sum(cell_counts) / float(len(cell_counts))
+        for row in iter_rows(data):
+            if not header_found:
+                if looks_like_header(row, avg_row):
+                    data.columns = row
                     data = data.drop(row.name)
-                except IndexError:
-                    break
-    if not header_found:
-        # Don't try to parse if we don't think we know the header
-        print(f"We couldnt find a header for {ballot.ballot_paper_id}")
-        return
-    # We're now in a position where we think we have the table we want
-    # with the columns set and other header rows removed.
-    # Time to parse it in to names and parties
-    try:
-        ballot_data = parse_table(parsed_sopn_model, data)
-    except ValueError as e:
-        # Something went wrong. This will happen a lot. let's move on
-        print(f"Error attempting to parse a table for {ballot.ballot_paper_id}")
-        print(e.args[0])
-        return
+                    header_found = True
+                else:
+                    try:
+                        data = data.drop(row.name)
+                    except IndexError:
+                        break
+        if not header_found:
+            # Don't try to parse if we don't think we know the header
+            print(f"We couldnt find a header for {ballot.ballot_paper_id}")
+            return
+        # We're now in a position where we think we have the table we want
+        # with the columns set and other header rows removed.
+        # Time to parse it in to names and parties
+        try:
+            ballot_data = parse_table(parsed_sopn_model, data)
+        except ValueError as e:
+            # Something went wrong. This will happen a lot. let's move on
+            print(
+                f"Error attempting to parse a table for {ballot.ballot_paper_id}"
+            )
+            print(e.args[0])
+            return
 
-    if ballot_data:
-        # Check there isn't a rawpeople object from another (better) source
-        rawpeople_qs = RawPeople.objects.filter(
-            ballot=parsed_sopn_model.sopn.ballot
-        ).exclude(source_type=RawPeople.SOURCE_PARSED_PDF)
-        if not rawpeople_qs.exists():
-            RawPeople.objects.update_or_create(
-                ballot=parsed_sopn_model.sopn.ballot,
-                defaults={
-                    "data": ballot_data,
-                    "source": "Parsed from {}".format(
-                        parsed_sopn_model.sopn.source_url
-                    ),
-                    "source_type": RawPeople.SOURCE_PARSED_PDF,
-                }
-                if aws_textract_parsed_sopn:
-                    # add the AWS textract parsed data if it exists
-                    defaults[
-                        "aws_textract_parsed_data"
-                    ] = aws_textract_parsed_sopn
+        if ballot_data:
+            # Check there isn't a rawpeople object from another (better) source
+            rawpeople_qs = RawPeople.objects.filter(
+                ballot=parsed_sopn_model.sopn.ballot
+            ).exclude(source_type=RawPeople.SOURCE_PARSED_PDF)
+            if not rawpeople_qs.exists():
                 RawPeople.objects.update_or_create(
                     ballot=parsed_sopn_model.sopn.ballot,
-                    defaults=defaults,
+                    defaults={
+                        "data": ballot_data,
+                        "source": "Parsed from {}".format(
+                            parsed_sopn_model.sopn.source_url
+                        ),
+                        "source_type": RawPeople.SOURCE_PARSED_PDF,
+                    },
                 )
             # We've done the parsing, so let's still save the result
             storage = DefaultStorage()
@@ -478,16 +485,6 @@ def parse_raw_data_for_ballot(ballot):
                 desired_storage_path,
                 ContentFile(json.dumps(ballot_data, indent=4).encode("utf8")),
             )
-        # We've done the parsing, so let's still save the result
-        storage = DefaultStorage()
-        desired_storage_path = join(
-            "raw_people",
-            "{}.json".format(parsed_sopn_model.sopn.ballot.ballot_paper_id),
-        )
-        storage.save(
-            desired_storage_path,
-            ContentFile(json.dumps(ballot_data, indent=4).encode("utf8")),
-        )
 
-        parsed_sopn_model.status = "parsed"
-        parsed_sopn_model.save()
+            parsed_sopn_model.status = "parsed"
+            parsed_sopn_model.save()
