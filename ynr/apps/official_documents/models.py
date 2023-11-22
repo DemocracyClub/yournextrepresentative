@@ -4,6 +4,7 @@ from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.urls import reverse
 from django_extensions.db.models import TimeStampedModel
+from sopn_parsing.models import AWSTextractParsedSOPN
 
 DOCUMENT_UPLOADERS_GROUP_NAME = "Document Uploaders"
 
@@ -74,6 +75,16 @@ class OfficialDocument(TimeStampedModel):
             pages = self.relevant_pages.split(",")
             return sorted(int(p) for p in pages)
         return None
+
+    @property
+    def get_textract_result(self):
+        """given an instance of an official document, return the associated textract result"""
+        return TextractResult.objects.get(official_document=self)
+
+    @property
+    def get_aws_parsed_sopn(self):
+        """given an instance of an official document, return the associated aws parsed sopn"""
+        return AWSTextractParsedSOPN.objects.get(sopn=self)
 
     @property
     def first_page_number(self):
