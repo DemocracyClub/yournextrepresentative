@@ -230,7 +230,11 @@ def get_description(description, sopn):
         return party_description_qs.get(
             search_text=description, party__register=register
         )
-    except PartyDescription.DoesNotExist:
+    except (
+        PartyDescription.DoesNotExist,
+        PartyDescription.MultipleObjectsReturned,
+    ) as e:
+        print(e)
         pass
 
     # try to find any that start with parsed description

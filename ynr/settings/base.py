@@ -59,6 +59,15 @@ sentry_sdk.init(
     traces_sample_rate=0,
 )
 
+
+# aws
+TEXTRACT_S3_BUCKET_NAME = "public-sopns"
+TEXTRACT_S3_BUCKET_REGION = "eu-west-2"
+TEXTRACT_S3_BUCKET_URL = f"https://{TEXTRACT_S3_BUCKET_NAME}.s3.{TEXTRACT_S3_BUCKET_REGION}.amazonaws.com"
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", None)
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", None)
+AWS_SESSION_TOKEN = os.environ.get("AWS_SESSION_TOKEN", None)
+
 # The From: address for error emails
 SERVER_EMAIL = "candidates@democracyclub.org.uk"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

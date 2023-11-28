@@ -50,6 +50,7 @@ libsass==0.22.0
 lxml==4.9.2
 Markdown==3.4.3
 mock==5.0.1
+moto[s3]==2.2.0
 nameparser==1.1.2
 ndg-httpsclient==0.5.1
 numpy==1.24.2
