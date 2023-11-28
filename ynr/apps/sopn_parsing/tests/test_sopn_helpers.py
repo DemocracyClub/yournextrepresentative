@@ -1,7 +1,11 @@
 import contextlib
+import os
 from os.path import abspath, dirname, join
+from tempfile import NamedTemporaryFile
 from unittest import skipIf
 
+import boto3
+import pytest
 from candidates.tests.factories import (
     BallotPaperFactory,
     ElectionFactory,
@@ -9,7 +13,10 @@ from candidates.tests.factories import (
 )
 from django.core.files import File
 from django.test import TestCase
+from mock import patch
+from moto import mock_s3
 from official_documents.models import OfficialDocument
+from sopn_parsing.helpers.extract_pages import TextractSOPNHelper
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
 from sopn_parsing.tests import should_skip_pdf_tests
 
@@ -233,3 +240,199 @@ class TestSOPNHelpers(TestCase):
 
         document_obj.match_all_pages()
         self.assertEqual(strensall.sopn.relevant_pages, "all")
+
+
+@pytest.fixture
+def aws_credentials():
+    """Mocked AWS Credentials for moto."""
+    os.environ["AWS_ACCESS_KEY_ID"] = "testing"
+    os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
+    os.environ["AWS_SECURITY_TOKEN"] = "testing"
+    os.environ["AWS_SESSION_TOKEN"] = "testing"
+
+
+@pytest.fixture
+def s3_client(aws_credentials):
+    with mock_s3():
+        conn = boto3.client("s3", region_name="eu-west-2")
+        yield conn
+
+
+@pytest.fixture
+def bucket_name(settings):
+    settings.TEXTRACT_S3_BUCKET_NAME = "my-test-bucket"
+    yield settings.TEXTRACT_S3_BUCKET_NAME
+
+
+@pytest.fixture
+def s3_bucket(s3_client, bucket_name):
+    s3_client.create_bucket(
+        ACL="public-read-write",
+        Bucket=bucket_name,
+        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+    )
+    yield
+
+
+@pytest.fixture
+def textract_sopn_helper(db, s3_client, s3_bucket):
+    official_document = OfficialDocument.objects.create(
+        ballot=BallotPaperFactory(),
+        document_type=OfficialDocument.NOMINATION_PAPER,
+    )
+    yield TextractSOPNHelper(official_document=official_document)
+
+
+def test_list_buckets(s3_client, s3_bucket):
+    my_client = MyS3Client()
+    buckets = my_client.list_buckets()
+    assert ["my-test-bucket"] == buckets
+
+
+def list_objects(self, bucket_name, prefix):
+    """Returns a list all objects with specified prefix."""
+    response = self.client.list_objects(
+        Bucket=bucket_name,
+        Prefix=prefix,
+    )
+    return [object["Key"] for object in response["Contents"]]
+
+
+def test_list_objects(s3_client, s3_bucket):
+    file_text = "test"
+    with NamedTemporaryFile(delete=True, suffix=".txt") as tmp:
+        with open(tmp.name, "w", encoding="UTF-8") as f:
+            f.write(file_text)
+
+        s3_client.upload_file(tmp.name, "my-test-bucket", "file12")
+        s3_client.upload_file(tmp.name, "my-test-bucket", "file22")
+
+    my_client = MyS3Client()
+    objects = my_client.list_objects(
+        bucket_name="my-test-bucket", prefix="file1"
+    )
+    assert objects == ["file12"]
+
+
+def test_upload_to_s3(textract_sopn_helper):
+    assert textract_sopn_helper.s3_key == (
+        "test/test_sopn.pdf",
+        "my-test-bucket",
+    )
+    response = textract_sopn_helper.upload_to_s3()
+    assert response["ResponseMetadata"]["HTTPStatusCode"] == 200
+
+
+def test_start_detection(textract_sopn_helper):
+    with patch(
+        "sopn_parsing.helpers.extract_pages.TextractSOPNHelper.textract_start_document_analysis"
+    ) as mock_textract_start_document_analysis:
+        mock_textract_start_document_analysis.return_value = {"JobId": "1234"}
+        textract_result = textract_sopn_helper.start_detection()
+    assert textract_result.job_id == "1234"
+    # I haven't been able to get this test to work on it's own,
+    # but it works when run with the other tests
+    assert textract_result.analysis_status == "NOT_STARTED"
+    with patch(
+        "sopn_parsing.helpers.extract_pages.TextractSOPNHelper.textract_get_document_analysis"
+    ) as mock_textract_get_document_analysis:
+        mock_textract_get_document_analysis.return_value = (
+            get_document_analysis_json
+        )
+        textract_sopn_helper.update_job_status()
+    assert official_document.textract_result.analysis_status == "SUCCEEDED"
+
+
+def test_update_job_status_failed(textract_sopn_helper, failed_analysis):
+    official_document = textract_sopn_helper.official_document
+    TextractResult.objects.create(
+        official_document=official_document,
+        job_id="1234",
+        json_response="",
+        analysis_status="NOT_STARTED",
+    )
+
+    with patch(
+        "sopn_parsing.helpers.extract_pages.TextractSOPNHelper.textract_get_document_analysis"
+    ) as mock_textract_get_document_analysis:
+        mock_textract_get_document_analysis.return_value = failed_analysis
+        textract_sopn_helper.update_job_status()
+    assert official_document.textract_result.analysis_status == "FAILED"
+
+
+def analysis_with_next_token_side_effect(job_id, next_token=None):
+    if next_token == "token":
+        return {"JobStatus": "SUCCEEDED", "Blocks": ["foo", "Bar"]}
+    return {"JobStatus": "SUCCEEDED", "NextToken": "token", "Blocks": ["baz"]}
+
+
+def test_update_job_status_with_token(textract_sopn_helper):
+    official_document = textract_sopn_helper.official_document
+    TextractResult.objects.create(
+        official_document=official_document,
+        job_id="1234",
+        json_response="",
+        analysis_status="NOT_STARTED",
+    )
+
+    with patch(
+        "sopn_parsing.helpers.extract_pages.TextractSOPNHelper.textract_get_document_analysis",
+        side_effect=analysis_with_next_token_side_effect,
+    ) as mock_textract_get_document_analysis:
+        mock_textract_get_document_analysis.return_value = Mock(
+            side_effect=analysis_with_next_token_side_effect
+        )
+        textract_sopn_helper.update_job_status()
+    assert official_document.textract_result.analysis_status == "SUCCEEDED"
+    assert (
+        official_document.textract_result.json_response
+        == '{"JobStatus": "SUCCEEDED", "Blocks": ["baz", "foo", "Bar"]}'
+    )
+
+
+@pytest.fixture
+def textract_sopn_parsing_helper(
+    db, s3_client, s3_bucket, get_document_analysis_json
+):
+    official_document = OfficialDocument.objects.create(
+        ballot=BallotPaperFactory(),
+        document_type=OfficialDocument.NOMINATION_PAPER,
+    )
+    textract_result = TextractResult.objects.create(
+        official_document=official_document,
+        job_id="1234",
+        json_response=get_document_analysis_json,
+        analysis_status="SUCCEEDED",
+    )
+    yield TextractSOPNParsingHelper(
+        official_document=official_document, textract_result=textract_result
+    )
+
+
+def test_create_df_from_textract_result(textract_sopn_parsing_helper):
+    # assert that get_rows_columns_map is called once
+    df = textract_sopn_parsing_helper.create_df_from_textract_result(
+        official_document=textract_sopn_parsing_helper.official_document,
+        textract_result=textract_sopn_parsing_helper.textract_result,
+    )
+
+    sopn_text = "STATEMENT OF PERSONS"
+    assert sopn_text in df.values
+
+
+class MyS3Client:
+    def __init__(self, region_name="eu-west-2"):
+        self.client = boto3.client("s3", region_name=region_name)
+
+    def list_buckets(self):
+        """Returns a list of bucket names."""
+        response = self.client.list_buckets()
+        return [bucket["Name"] for bucket in response["Buckets"]]
+
+    def list_objects(self, bucket_name, prefix):
+        """Returns a list all objects with specified prefix."""
+        response = self.client.list_objects(
+            Bucket=bucket_name,
+            Prefix=prefix,
+        )
+        return [object["Key"] for object in response["Contents"]]

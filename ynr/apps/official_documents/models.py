@@ -99,6 +99,14 @@ class OfficialDocument(TimeStampedModel):
         return None
 
 
+class ReviewStatus(models.TextChoices):
+    NOT_STARTED = "NOT_STARTED", "Not Started"
+    SUCCEEDED = "SUCCEEDED", "Succeeded"
+    IN_PROGRESS = "IN_PROGRESS", "In Progress"
+    FAILED = "FAILED", "Failed"
+    PARTIAL_SUCCESS = "PARTIAL_SUCCESS", "Partial Success"
+
+
 class TextractResult(TimeStampedModel):
     official_document = models.OneToOneField(
         OfficialDocument,
@@ -108,3 +116,6 @@ class TextractResult(TimeStampedModel):
     )
     job_id = models.CharField(max_length=100)
     json_response = models.JSONField()
+    analysis_status = models.CharField(
+        choices=ReviewStatus.choices, default=ReviewStatus.NOT_STARTED
+    )

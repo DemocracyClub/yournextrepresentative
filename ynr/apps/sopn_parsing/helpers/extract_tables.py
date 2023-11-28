@@ -1,5 +1,6 @@
 import json
 
+import pandas as pd
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
 from sopn_parsing.models import CamelotParsedSOPN
 
@@ -44,16 +45,19 @@ def extract_ballot_table(ballot, parse_flavor="lattice"):
         return None
 
     table_data = table_list.pop(0).df
+
     for table in table_list:
         # It's possible to have the "situation of poll" document on the SOPN
         # Ignore any table that contains "polling station" (SOPNs tables don't)
-        first_row = table.df.iloc[0].to_string()
+        table = table.df
+        first_row = table.iloc[0].to_string()
+
         if "polling station" in clean_text(first_row):
             break
         # Append the continuation table to the first one in the document.
         # ignore_index is needed so the e.g table 2 row 1 doesn't replace
         # table 1 row 1
-        table_data = table_data.append(table.df, ignore_index=True)
+        table_data = pd.concat([table_data, table], ignore_index=True)
 
     if not table_data.empty:
         parsed, _ = CamelotParsedSOPN.objects.update_or_create(
