@@ -50,6 +50,8 @@ textract_client = boto3.client(
     "textract", region_name=settings.TEXTRACT_S3_BUCKET_REGION
 )
 
+# TO DO: Refactor methods to handle textract result containing tables as well as lines
+
 
 class TextractSOPNHelper:
     """Get the AWS Textract results for a given SOPN."""
@@ -154,23 +156,16 @@ class TextractSOPNHelper:
         return textract_result
 
 
+# TO DO: refactor methods to extract into csv regardless of block types
 class TextractSOPNParsingHelper:
-    """Helper class to parse the AWS Textract blocks for a given SOPN
+    """Helper class to extract the AWS Textract blocks for a given SOPN
     and return the results as a dataframe. This is not to be confused with
     the SOPN parsing functionality that matches fields including
     candidates to parties."""
 
-    def map_blocks(self, blocks, block_type):
-        return {
-            block["Id"]: block
-            for block in blocks
-            if block["BlockType"] == block_type
-        }
-
-    def get_children_ids(self, block):
-        for rels in block.get("Relationships", []):
-            if rels["Type"] == "CHILD":
-                yield from rels["Ids"]
+    def __init__(self, official_document: OfficialDocument, textract_result):
+        self.official_document = official_document
+        self.textract_result = textract_result
 
     def get_rows_columns_map(self, table_result, blocks_map):
         rows = {}
@@ -188,11 +183,11 @@ class TextractSOPNParsingHelper:
 
                         # get confidence score
                         scores.append(str(cell["Confidence"]))
-
                         # get the text value
                         rows[row_index][col_index] = self.get_text(
                             cell, blocks_map
                         )
+
         return rows, scores
 
     def get_text(self, result, blocks_map):
@@ -203,13 +198,7 @@ class TextractSOPNParsingHelper:
                     for child_id in relationship["Ids"]:
                         word = blocks_map[child_id]
                         if word["BlockType"] == "WORD":
-                            if (
-                                "," in word["Text"]
-                                and word["Text"].replace(",", "").isnumeric()
-                            ):
-                                text += '"' + word["Text"] + '"' + " "
-                            else:
-                                text += word["Text"] + " "
+                            text += word["Text"] + " "
                         if (
                             word["BlockType"] == "SELECTION_ELEMENT"
                             and word["SelectionStatus"] == "SELECTED"
@@ -217,28 +206,42 @@ class TextractSOPNParsingHelper:
                             text += "X "
         return text
 
-    def get_table_csv_results(self, textract_result, official_document):
-        blocks = textract_result["Blocks"]
-        csv = ""
+    def create_df_from_textract_result(
+        self, official_document, textract_result
+    ):
+        textract_result = self.textract_result
+        response = textract_result.json_response
+        response = json.loads(response)
+        blocks = response["Blocks"]
         blocks_map = {}
         table_blocks = []
+        text = []
         for block in blocks:
             blocks_map[block["Id"]] = block
             if block["BlockType"] == "TABLE":
                 table_blocks.append(block)
+            if block["BlockType"] == "LINE" or block["BlockType"] == "WORD":
+                text.append(block["Text"])
 
-        if len(table_blocks) <= 0:
-            return "<b> NO Table FOUND </b>"
+        df = {}
+        # if there are tables, the text could be mapped with column headers into a csv
+        # before saving in a dataframe which may improve the quality of the parsed data
+        # later on.
+        if len(table_blocks) > 0:
+            for index, table in enumerate(table_blocks):
+                df += self.prepare_df_from_table_results(
+                    table, blocks_map, index + 1, official_document
+                )
+        # if there are no tables, we can extract the text as a list and save as a dataframe.
+        elif len(text) > 0:
+            df = pd.DataFrame(text)
+            self.save_dataframe_to_aws_sopn(df, official_document)
 
-        csv = ""
-        for index, table in enumerate(table_blocks):
-            csv += self.generate_table_csv(
-                table, blocks_map, index + 1, official_document
-            )
+        else:
+            return "No data found"
+        return df
 
-        return csv
-
-    def generate_table_csv(
+    def prepare_df_from_table_results(
         self, table_result, blocks_map, table_index, official_document
     ):
         rows, scores = self.get_rows_columns_map(table_result, blocks_map)
@@ -246,35 +249,24 @@ class TextractSOPNParsingHelper:
         table_id = "Table_" + str(table_index)
 
         # get cells.
-        csv = "Table: {0}\n\n".format(table_id)
-
+        csv = "Table: {0}".format(table_id)
         for row_index, cols in rows.items():
             for col_index, text in cols.items():
-                col_indices = len(cols.items())
-                csv += "{}".format(text) + ","
-            csv += "\n"
+                csv += "{}".format(text)
 
-        csv += "\n\n Confidence Scores % (Table Cell) \n"
-        cols_count = 0
-        for score in scores:
-            cols_count += 1
-            csv += score + ","
-            if cols_count == col_indices:
-                csv += "\n"
-                cols_count = 0
-
-        csv += "\n\n\n"
-        # convert csv to pandas dataframe
         df = pd.read_csv(StringIO(csv))
+        self.save_dataframe_to_aws_sopn(df, official_document)
+        return df
 
-        if df.empty:
-            raise Exception(
-                f"Failed to parse {official_document} as a pandas dataframe"
+    def save_dataframe_to_aws_sopn(self, df, official_document):
+        aws_textract_parsed_sopn = (
+            AWSTextractParsedSOPN.objects.update_or_create(
+                sopn=official_document
             )
-        aws_textract_parsed_sopn = AWSTextractParsedSOPN.objects.filter(
-            sopn=official_document
         )
+
         if aws_textract_parsed_sopn:
             aws_textract_parsed_sopn[0].raw_data = df.to_json()
             aws_textract_parsed_sopn[0].save()
-        return csv
+
+        return aws_textract_parsed_sopn
