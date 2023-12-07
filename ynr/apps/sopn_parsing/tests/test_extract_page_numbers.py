@@ -1,5 +1,6 @@
 from os.path import abspath, dirname, join
 from unittest import skipIf
+from unittest.mock import patch
 
 from candidates.models import Ballot
 from candidates.tests.uk_examples import UK2015ExamplesMixin
@@ -38,9 +39,11 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             source_url="example.com",
         )
         self.assertEqual(doc.first_page_number, None)
-        call_command("sopn_parsing_extract_page_numbers")
-        doc.refresh_from_db()
-        self.assertEqual(doc.relevant_pages, "all")
+        with patch(
+            "sopn_parsing.management.commands.sopn_parsing_extract_page_numbers.extract_pages_for_ballot"
+        ) as mock_extract_pages_for_ballot:
+            call_command("sopn_parsing_extract_page_numbers")
+            mock_extract_pages_for_ballot.assert_called_with(doc.ballot)
 
     def test_multi_page_sopn_correct_ward_assigning(self):
         """

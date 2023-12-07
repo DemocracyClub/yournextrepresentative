@@ -1,28 +1,8 @@
-import os
-from io import StringIO
-from time import sleep
-
-import boto3
-from django.core.management.base import BaseCommand
-from official_documents.models import OfficialDocument, TextractResult
-from sopn_parsing.models import AWSTextractParsedSOPN
-
-# # this is a single page pdf SoPN for testing
-# test_sopn = (
-#     "ynr/apps/sopn_parsing/management/commands/test_sopns/HackneySOPN.pdf"
-# )
-
-# # this is a multipage page html saved as pdf SoPN for testing
-test_sopn = "ynr/apps/sopn_parsing/management/commands/test_sopns/BurySOPN.pdf"
-
-accepted_file_types = [
-    ".pdf",
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".tif",
-    ".tiff",
-]
+from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
+from sopn_parsing.helpers.extract_pages import (
+    TextractSOPNHelper,
+    TextractSOPNParsingHelper,
+)
 
 
 s3 = boto3.client("s3")
@@ -47,4 +27,12 @@ class Command(BaseCommand):
         if options["get_results"]:
             for official_document in queryset:
                 textract_helper = TextractSOPNHelper(official_document)
-                textract_helper.update_job_status(options["blocking"])
+                textract_result = textract_helper.update_job_status(
+                    options["blocking"]
+                )
+                textract_sopn_parsing_helper = TextractSOPNParsingHelper(
+                    official_document, textract_result=textract_result
+                )
+                textract_sopn_parsing_helper.get_table_csv_results(
+                    official_document, textract_result
+                )
