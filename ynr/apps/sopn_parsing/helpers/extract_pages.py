@@ -1,3 +1,5 @@
+import copy
+import json
 from io import StringIO
 from time import sleep
 
@@ -55,8 +57,6 @@ def extract_pages_for_ballot(ballot):
 textract_client = boto3.client(
     "textract", region_name=settings.TEXTRACT_S3_BUCKET_REGION
 )
-
-# TO DO: Refactor methods to handle textract result containing tables as well as lines
 
 
 class TextractSOPNHelper:
@@ -126,19 +126,24 @@ class TextractSOPNHelper:
             },
             FeatureTypes=["TABLES", "FORMS"],
             OutputConfig={
-                "S3Bucket": "public-sopns",
-                "S3Prefix": "test",
+                "S3Bucket": settings.TEXTRACT_S3_BUCKET_NAME,
+                "S3Prefix": "raw_textract_responses/",
             },
         )
 
-    def textract_get_document_analysis(self, job_id):
+    def textract_get_document_analysis(self, job_id, next_token=None):
+        if next_token:
+            return textract_client.get_document_analysis(
+                JobId=job_id, NextToken=next_token
+            )
         return textract_client.get_document_analysis(JobId=job_id)
 
     def update_job_status(self, blocking=False):
         COMPLETED_STATES = ("SUCCEEDED", "FAILED", "PARTIAL_SUCCESS")
         status = self.official_document.textract_result.analysis_status
         if status in COMPLETED_STATES:
-            return None
+            # TODO: should we delete the instance of the textract result?
+            return
         textract_result = self.official_document.textract_result
         job_id = textract_result.job_id
 
@@ -149,12 +154,26 @@ class TextractSOPNHelper:
             "PARTIAL_SUCCESS",
         ]:
             sleep(5)
-            self.textract_get_document_analysis(job_id)
-
+            response = self.textract_get_document_analysis(job_id)
         if response["JobStatus"] == "SUCCEEDED":
-            # update_or_create method returned error
+            # It's possible that the returned result will be truncated.
+            # In this case you need to use the next token to get
+            # subsequent parts of the response.
+            analysis = copy.deepcopy(response)
+            blocks = []
+            while True:
+                for block in response["Blocks"]:
+                    blocks.append(block)
+                if "NextToken" not in response:
+                    break
+                response = self.textract_get_document_analysis(
+                    job_id, next_token=response["NextToken"]
+                )
+            analysis.pop("NextToken", None)
+            analysis["Blocks"] = blocks
+
             textract_result.analysis_status = "SUCCEEDED"
-            textract_result.json_response = response
+            textract_result.json_response = json.dumps(analysis)
             textract_result.save()
         else:
             textract_result.analysis_status = "FAILED"
@@ -162,7 +181,6 @@ class TextractSOPNHelper:
         return textract_result
 
 
-# TO DO: refactor methods to extract into csv regardless of block types
 class TextractSOPNParsingHelper:
     """Helper class to extract the AWS Textract blocks for a given SOPN
     and return the results as a dataframe. This is not to be confused with
