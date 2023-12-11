@@ -1,0 +1,39 @@
+{
+	"AnalyzeDocumentModelVersion": "string",
+	"Blocks": [
+		{
+			"BlockType": "string",
+			"ColumnIndex": 1,
+			"ColumnSpan": 1,
+			"Confidence": 99,
+			"EntityTypes": ["string"],
+			"Geometry": {
+				"BoundingBox": {
+					"Height": 1,
+					"Left": 1,
+					"Top": 1,
+					"Width": 1
+				},
+				"Polygon": [{"X": 1, "Y": 1}]
+			},
+			"Id": "string",
+			"Page": 1,
+			"Query": {
+				"Alias": "string",
+				"Pages": ["string"],
+				"Text": "string"
+			},
+			"Relationships": [{"Ids": ["string"], "Type": "string"}],
+			"RowIndex": 1,
+			"RowSpan": 1,
+			"SelectionStatus": "string",
+			"Text": "string",
+			"TextType": "string"
+		}
+	],
+	"DocumentMetadata": {"Pages": 1},
+	"JobStatus": "SUCCEEDED",
+
+	"StatusMessage": "string",
+	"Warnings": [{"ErrorCode": "string", "Pages": [1]}]
+}
