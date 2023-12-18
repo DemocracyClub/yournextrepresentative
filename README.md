@@ -60,7 +60,6 @@ Sentry is used to report errors in production. We have added a url for `sentry-d
 ```
 
 # Pre-election Tasks
- <!-- TO DO -->
 
 # Enable Candidate Leaderboard
 
@@ -71,3 +70,5 @@ We take a slice of edits in YNR and assign them to a election leaderboard.
 This is defined here: https://github.com/DemocracyClub/yournextrepresentative/blob/master/ynr/apps/candidates/views/mixins.py#L20
 
 We can modify the old value to reflect the current election. Change, PR, merge, [currently Sym needs to deploy]
+
+If this is a General Election, the parliamentary candidates can be imported using a google sheet csv url with `python manage candidatebot_import_next_ppcs --sheet-url SHEET_URL`
