@@ -101,7 +101,13 @@ class Command(BaseCommand):
         party_id = line["Party ID"]
         if party_id not in self.party_cache:
             try:
-                self.party_cache[party_id] = Party.objects.get(ec_id=party_id)
+                if "ynmp-party:2" in party_id:
+                    ec_id = party_id
+                elif "-" in party_id and party_id != "ynmp-party:2":
+                    ec_id = "joint-party:" + party_id
+                else:
+                    ec_id = "PP" + party_id
+                self.party_cache[party_id] = Party.objects.get(ec_id=ec_id)
             except Party.DoesNotExist:
                 print(line)
                 raise ValueError("Party not found in line")
