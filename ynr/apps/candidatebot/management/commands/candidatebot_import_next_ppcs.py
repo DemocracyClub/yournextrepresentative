@@ -118,9 +118,8 @@ class Command(BaseCommand):
         Some lines exist that only have a ballot ID and no actual membership
         info
         """
-        return any(
-            (line["Candidate Name"], line["Existing Candidate Profile URL"])
-        )
+
+        return any((line["Candidate Name"], line["Existing Candidate Profile"]))
 
     def add_contact_details(self, bot, person, line):
         if not person.get_email and line["Email"]:
