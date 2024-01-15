@@ -346,7 +346,8 @@ class BasePersonForm(forms.ModelForm):
     def save(self, commit=True, user=None):
         suggested_name = self.cleaned_data["name"]
         initial_name = self.initial["name"]
-        # If the user is creating a new person, or the name has changed and doesn't match the existing name
+        # If the user is creating a new person,
+        # or the name has changed and doesn't match the existing name
         if (
             initial_name
             and "name" in self.changed_data
@@ -360,7 +361,15 @@ class BasePersonForm(forms.ModelForm):
                 user=user,
             )
 
-        if "biography" in self.changed_data:
+        suggested_biography = self.cleaned_data["biography"]
+        initial_biography = self.initial["name"]
+        biographies_match = initial_biography == suggested_biography
+
+        if (
+            initial_biography
+            and "biography" in self.changed_data
+            and not biographies_match
+        ):
             self.cleaned_data[
                 "biography_last_updated"
             ] = datetime.datetime.now()
