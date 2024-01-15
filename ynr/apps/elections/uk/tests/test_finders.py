@@ -192,7 +192,7 @@ class TestHomePageView(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Search candidates", response)
         a = response.html.find(
-            "a", text=re.compile('Add "foo bar" as a new candidate')
+            "a", string=re.compile('Add "foo bar" as a new candidate')
         )
         self.assertEqual(
             a["href"], "/person/create/select_election?name=foo bar"
@@ -211,7 +211,7 @@ class TestHomePageView(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Search candidates", response)
         a = response.html.find(
-            "a", text=re.compile('Add "SW1A 1ӔA" as a new candidate')
+            "a", string=re.compile('Add "SW1A 1ӔA" as a new candidate')
         )
         self.assertEqual(
             a["href"], "/person/create/select_election?name=SW1A 1\u04d4A"

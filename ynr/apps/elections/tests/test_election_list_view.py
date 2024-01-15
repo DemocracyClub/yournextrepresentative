@@ -21,7 +21,7 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
 
         self.assertTrue(
             response.html.find(
-                "a", text="Member of Parliament for Camberwell and Peckham"
+                "a", string="Member of Parliament for Camberwell and Peckham"
             )
         )
 
