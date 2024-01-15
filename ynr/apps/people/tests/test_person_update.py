@@ -4,6 +4,7 @@ from candidates.tests.factories import BallotPaperFactory, ElectionFactory
 from candidates.views.version_data import get_change_metadata
 from django.contrib.auth.models import User
 from django.urls import reverse
+from freezegun import freeze_time
 from people.models import EditLimitationStatuses
 from people.tests.test_person_view import PersonViewSharedTestsMixin
 from webtest import Text
@@ -517,3 +518,98 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         form.submit()
         self.person.refresh_from_db()
         self.assertEqual(self.person.name, "Tessa Jowell")
+
+    def test_add_candidacy_does_not_update_biography_timestamp(self):
+        """Test that the biography (aka statement to voters)
+        shows the last updated timestamp and it
+        is updated ONLY when the biography is updated
+        (it can include other edits). This test
+        tries to catch a bug where the timestamp was being updated
+        when a candidacy was added to a person."""
+        from datetime import datetime, timedelta
+
+        timestamp = datetime.now()
+        later_timestamp = timestamp + timedelta(hours=8)
+        timestamp = timestamp.isoformat()
+        later_timestamp = later_timestamp.isoformat()
+
+        with freeze_time(timestamp):
+            # first, edit an existing person's biography
+            biography_update_response = self.app.get(
+                "/person/{}/update".format(self.person.pk), user=self.user
+            )
+            form = biography_update_response.forms[1]
+            form["biography"] = "This is a new test biography"
+            form["source"] = "Mumsnet"
+            form.submit()
+
+            self.person.refresh_from_db()
+
+            self.assertEqual(len(self.person.versions), 1)
+            person_response_one = self.app.get(
+                "/person/{}/".format(self.person.pk), user=self.user
+            )
+
+            biography_update_timestamp = self.person.biography_last_updated
+            # format into a string to compare with the response
+            biography_update_timestamp = biography_update_timestamp.strftime(
+                "%d %B %Y %H:%M"
+            )
+            self.assertContains(
+                person_response_one, "This is a new test biography"
+            )
+            self.assertContains(
+                person_response_one,
+                "This statement was last updated on {}".format(
+                    biography_update_timestamp
+                ),
+            )
+            # make a second edit adding a candidacy to the same person and assert
+            # the biography timestamp has not changed
+        with freeze_time(later_timestamp):
+            candidacy_update_response = self.app.get(
+                "/person/{}/update".format(self.person.pk), user=self.user
+            )
+            form = candidacy_update_response.forms[1]
+            form["memberships-0-party_identifier_0"].select(
+                self.green_party.ec_id
+            )
+            form[
+                "memberships-0-party_identifier_1"
+            ].value = self.green_party.ec_id
+            form[
+                "memberships-0-ballot_paper_id"
+            ].value = self.dulwich_post_ballot.ballot_paper_id
+            form["memberships-0-party_list_position"] = 1
+            form["source"] = "http://example.com"
+
+            form.submit()
+            self.person.refresh_from_db()
+
+            candidacy = self.person.memberships.first()
+            self.assertEqual(candidacy.party, self.green_party)
+            self.assertEqual(candidacy.party_name, self.green_party.name)
+
+            candidacy_update_timestamp = self.person.biography_last_updated
+            candidacy_update_timestamp = candidacy_update_timestamp.strftime(
+                "%d %B %Y %H:%M"
+            )
+
+            person_response_one = self.app.get(
+                "/person/{}/".format(self.person.pk), user=self.user
+            )
+
+            self.assertEqual(len(self.person.versions), 2)
+            self.assertNotEqual(self.person.biography_last_updated, None)
+            # assert that timestamp in the first update and second update are the same
+            # because the biography should not have been updated in the second update
+            self.assertEqual(
+                biography_update_timestamp, candidacy_update_timestamp
+            )
+
+            self.assertContains(
+                person_response_one,
+                "This statement was last updated on {}.".format(
+                    biography_update_timestamp
+                ),
+            )

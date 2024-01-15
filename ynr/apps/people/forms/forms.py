@@ -361,13 +361,13 @@ class BasePersonForm(forms.ModelForm):
                 user=user,
             )
 
-        if "biography" in self.changed_data:
-            self.cleaned_data[
-                "biography_last_updated"
-            ] = datetime.datetime.now()
-            self.instance.biography_last_updated = self.cleaned_data[
-                "biography_last_updated"
-            ]
+        initial_biography = self.initial.get("biography", None)
+        biography_updated = (
+            "biography" in self.changed_data
+            and initial_biography != self.cleaned_data["biography"]
+        )
+        if biography_updated:
+            self.instance.biography_last_updated = datetime.datetime.now()
 
         return super().save(commit)
 
