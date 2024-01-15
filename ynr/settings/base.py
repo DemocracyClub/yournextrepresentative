@@ -224,7 +224,6 @@ LANGUAGES = [("en-gb", "British English")]
 LANGUAGE_CODE = "en-gb"
 TIME_ZONE = "Europe/London"
 USE_I18N = False
-USE_L10N = True
 USE_TZ = True
 DD_MM_DATE_FORMAT_PREFERRED = True
 
