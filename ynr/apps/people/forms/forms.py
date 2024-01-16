@@ -361,15 +361,7 @@ class BasePersonForm(forms.ModelForm):
                 user=user,
             )
 
-        suggested_biography = self.cleaned_data["biography"]
-        initial_biography = self.initial["name"]
-        biographies_match = initial_biography == suggested_biography
-
-        if (
-            initial_biography
-            and "biography" in self.changed_data
-            and not biographies_match
-        ):
+        if "biography" in self.changed_data:
             self.cleaned_data[
                 "biography_last_updated"
             ] = datetime.datetime.now()
