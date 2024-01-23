@@ -350,7 +350,7 @@ class EveryElectionImporter(object):
         query_args["exclude_election_id_regex"] = r"^ref\..*"
         self.query_args = query_args
 
-    def build_election_tree(self):
+    def build_election_tree(self, deleted=False):
         """
         Get all current elections from Every Election and build them in to
         a tree of IDs
@@ -390,9 +390,11 @@ class EveryElectionImporter(object):
                 for child in election["children"]:
                     parts = child.split(".")
                     date = parts.pop(-1)
-                    parent_prefix = ".".join(parts)
+                    parent_prefix = ".".join(parts[:2])
 
                     url = f"{self.EE_BASE_URL}api/elections/?poll_open_date={date}&election_id_regex={parent_prefix}"
+                    if deleted:
+                        url = f"{url}&deleted=1"
                     while url:
                         print(url)
                         req = requests.get(url)
