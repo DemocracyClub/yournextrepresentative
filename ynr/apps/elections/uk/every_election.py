@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from datetime import date, timedelta
+from time import sleep
 from urllib.parse import urlencode
 
 import requests
@@ -339,7 +340,7 @@ class EveryElectionImporter(object):
             settings, "EE_BASE_URL", "https://elections.democracyclub.org.uk/"
         )
 
-        self.election_tree = {}
+        self.election_tree: dict[str:EEElection] = {}
         if query_args is None:
             query_args = {
                 "poll_open_date__gte": str(date.today() - timedelta(days=30))
@@ -350,7 +351,7 @@ class EveryElectionImporter(object):
         query_args["exclude_election_id_regex"] = r"^ref\..*"
         self.query_args = query_args
 
-    def build_election_tree(self):
+    def build_election_tree(self, deleted=False):
         """
         Get all current elections from Every Election and build them in to
         a tree of IDs
@@ -365,16 +366,46 @@ class EveryElectionImporter(object):
             election_id = data["election_id"]
             self.election_tree[election_id] = EEElection(data)
         else:
+            # First pass: just get elections
+            self.query_args["identifier_type"] = "election"
             params = urlencode(OrderedDict(sorted(self.query_args.items())))
             url = f"{url}?{params}"
+            total = None
+            seen = 0
+            print("Importing elections")
             while url:
                 req = requests.get(url)
                 req.raise_for_status()
                 data = req.json()
+                total = data["count"]
+
                 for result in data["results"]:
                     election_id = result["election_id"]
                     self.election_tree[election_id] = EEElection(result)
+                    seen += 1
+                print(f"Added {seen} of {total}")
                 url = data.get("next")
+            # Second pass: get the children
+            print("Importing ballots")
+            for election_id, election in self.election_tree.copy().items():
+                if not settings.RUNNING_TESTS:
+                    sleep(1)
+                for child in election["children"]:
+                    parts = child.split(".")
+                    date = parts.pop(-1)
+                    parent_prefix = ".".join(parts[:2])
+
+                    url = f"{self.EE_BASE_URL}api/elections/?poll_open_date={date}&election_id_regex={parent_prefix}"
+                    if deleted:
+                        url = f"{url}&deleted=1"
+                    while url:
+                        req = requests.get(url)
+                        req.raise_for_status()
+                        data = req.json()
+                        for result in data["results"]:
+                            election_id = result["election_id"]
+                            self.election_tree[election_id] = EEElection(result)
+                        url = data.get("next")
 
     @property
     def ballot_ids(self):
@@ -407,4 +438,7 @@ class EveryElectionImporter(object):
         child = self.election_tree[election_id]
         if election_id[:-10] == "gla.a.":
             return child
-        return self.election_tree[child.parent]
+        try:
+            return self.election_tree[child.parent]
+        except KeyError:
+            EveryElectionImporter(election_id=child.parent)

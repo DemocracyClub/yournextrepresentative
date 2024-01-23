@@ -1,5 +1,48 @@
 import json
 
+current_elections_parents = json.loads(
+    """{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "election_id": "local.2018-02-22",
+      "tmp_election_id": null,
+      "election_title": "Local elections",
+      "poll_open_date": "2018-02-22",
+      "election_type": {
+        "name": "Local elections",
+        "election_type": "local"
+      },
+      "election_subtype": null,
+      "organisation": null,
+      "group": null,
+      "group_type": "election",
+      "children": [
+        "local.aberdeen-city.2018-02-22",
+        "local.aberdeenshire.2018-02-22",
+        "local.adur.2018-02-22",
+        "local.angus.2018-02-22",
+        "local.bedford.2018-02-22",
+        "local.brent.2018-02-22",
+        "local.bromley.2018-02-22",
+        "local.daventry.2018-02-22",
+        "local.denbighshire.2018-02-22",
+        "local.eden.2018-02-22"
+      ],
+      "elected_role": null,
+      "seats_contested": null,
+      "division": null,
+      "voting_system": null,
+      "current": true,
+      "explanation": null,
+      "cancelled": false
+    }
+  ]
+}
+"""
+)
 current_elections = json.loads(
     """
 {
@@ -41,7 +84,6 @@ current_elections = json.loads(
         "local.daventry.2018-02-22",
         "local.denbighshire.2018-02-22",
         "local.eden.2018-02-22",
-        "local.elmbridge.2018-02-22",
         "local.epsom-and-ewell.2018-02-22",
         "local.hertfordshire.2018-02-22",
         "local.high-peak.2018-02-22",
@@ -10664,6 +10706,237 @@ current_elections_page_2 = json.loads(
 }
 """
 )  # noqa
+
+each_type_of_election_on_one_day_parents = json.loads(
+    """{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "election_id": "local.2019-01-17",
+      "tmp_election_id": null,
+      "election_title": "Local elections",
+      "poll_open_date": "2019-01-17",
+      "election_type": {
+        "name": "Local elections",
+        "election_type": "local"
+      },
+      "election_subtype": null,
+      "organisation": null,
+      "group": null,
+      "group_type": "election",
+      "children": [
+        "local.adur.2019-01-17"
+      ],
+      "elected_role": null,
+      "seats_contested": null,
+      "division": null,
+      "voting_system": null,
+      "current": true,
+      "explanation": null,
+      "cancelled": false
+    },
+    {
+      "election_id": "mayor.2019-01-17",
+      "tmp_election_id": null,
+      "election_title": "Greater Manchester",
+      "poll_open_date": "2019-01-17",
+      "election_type": {
+        "name": "Directly elected Mayor",
+        "election_type": "mayor"
+      },
+      "election_subtype": null,
+      "organisation": null,
+      "group": null,
+      "group_type": "election",
+      "children": [
+        "mayor.greater-manchester-ca.2019-01-17",
+        "mayor.hackney.2019-01-17"
+      ],
+      "elected_role": "Mayor",
+      "seats_contested": null,
+      "division": null,
+      "voting_system": null,
+      "current": true,
+      "explanation": null,
+      "cancelled": false
+    },
+    {
+      "election_id": "naw.2019-01-17",
+      "tmp_election_id": null,
+      "election_title": "",
+      "poll_open_date": "2019-01-17",
+      "election_type": {
+        "name": "Welsh assembly",
+        "election_type": "naw"
+      },
+      "election_subtype": null,
+      "organisation": {
+        "official_identifier": "naw",
+        "organisation_type": "naw",
+        "organisation_subtype": "",
+        "official_name": "Welsh assembly",
+        "common_name": "Welsh assembly",
+        "gss": "W08000001",
+        "slug": "naw",
+        "territory_code": "WLS",
+        "election_name": "National Assembly for Wales election",
+        "start_date": "2011-04-01",
+        "end_date": null
+      },
+      "group": null,
+      "group_type": "election",
+      "children": [
+        "naw.c.2019-01-17",
+        "naw.r.2019-01-17"
+      ],
+      "elected_role": "Assembly Member",
+      "seats_contested": null,
+      "division": null,
+      "voting_system": null,
+      "current": true,
+      "explanation": null,
+      "cancelled": false
+    },
+    {
+      "election_id": "nia.2019-01-17",
+      "tmp_election_id": null,
+      "election_title": "",
+      "poll_open_date": "2019-01-17",
+      "election_type": {
+        "name": "Northern Ireland assembly",
+        "election_type": "nia"
+      },
+      "election_subtype": null,
+      "organisation": {
+        "official_identifier": "nia",
+        "organisation_type": "nia",
+        "organisation_subtype": "",
+        "official_name": "Northern Ireland assembly",
+        "common_name": "Northern Ireland assembly",
+        "gss": "N07000001",
+        "slug": "nia",
+        "territory_code": "NIR",
+        "election_name": "Northern Ireland assembly election",
+        "start_date": "2011-04-01",
+        "end_date": null
+      },
+      "group": null,
+      "group_type": "election",
+      "children": [
+        "nia.lagan-valley.2019-01-17"
+      ],
+      "elected_role": "Assembly Member",
+      "seats_contested": null,
+      "division": null,
+      "voting_system": null,
+      "current": true,
+      "explanation": null,
+      "cancelled": false
+    },
+    {
+      "election_id": "parl.2019-01-17",
+      "tmp_election_id": null,
+      "election_title": "",
+      "poll_open_date": "2019-01-17",
+      "election_type": {
+        "name": "UK Parliament",
+        "election_type": "parl"
+      },
+      "election_subtype": null,
+      "organisation": {
+        "official_identifier": "parl-hoc",
+        "organisation_type": "parl",
+        "organisation_subtype": "",
+        "official_name": "House of Commons of the United Kingdom",
+        "common_name": "House of Commons",
+        "gss": "",
+        "slug": "parl",
+        "territory_code": "GBN",
+        "election_name": "UK general election",
+        "start_date": "2011-04-01",
+        "end_date": null
+      },
+      "group": null,
+      "group_type": "election",
+      "children": [
+        "parl.aberavon.2019-01-17",
+        "parl.ynys-mon.2019-01-17"
+      ],
+      "elected_role": "Member of Parliament",
+      "seats_contested": null,
+      "division": null,
+      "voting_system": null,
+      "current": true,
+      "explanation": null,
+      "cancelled": false
+    },
+    {
+      "election_id": "pcc.2019-01-17",
+      "tmp_election_id": null,
+      "election_title": "Police and Crime Commissioner for Avon and Somerset Constabulary",
+      "poll_open_date": "2019-01-17",
+      "election_type": {
+        "name": "Police and crime commissioner",
+        "election_type": "pcc"
+      },
+      "election_subtype": null,
+      "organisation": null,
+      "group": null,
+      "group_type": "election",
+      "children": [
+        "pcc.avon-and-somerset.2019-01-17"
+      ],
+      "elected_role": "Police and Crime Commissioner",
+      "seats_contested": null,
+      "division": null,
+      "voting_system": null,
+      "current": true,
+      "explanation": null,
+      "cancelled": false
+    },
+    {
+      "election_id": "sp.2019-01-17",
+      "tmp_election_id": null,
+      "election_title": "",
+      "poll_open_date": "2019-01-17",
+      "election_type": {
+        "name": "Scottish parliament",
+        "election_type": "sp"
+      },
+      "election_subtype": null,
+      "organisation": {
+        "official_identifier": "sp",
+        "organisation_type": "sp",
+        "organisation_subtype": "",
+        "official_name": "Scottish Parliament",
+        "common_name": "Scottish Parliament",
+        "gss": "S15000001",
+        "slug": "sp",
+        "territory_code": "SCT",
+        "election_name": "Scottish parliament election",
+        "start_date": "2011-04-01",
+        "end_date": null
+      },
+      "group": null,
+      "group_type": "election",
+      "children": [
+        "sp.c.2019-01-17",
+        "sp.r.2019-01-17"
+      ],
+      "elected_role": "Member of the Scottish Parliament",
+      "seats_contested": null,
+      "division": null,
+      "voting_system": null,
+      "current": true,
+      "explanation": null,
+      "cancelled": false
+    }
+  ]
+}
+    """
+)
 each_type_of_election_on_one_day = json.loads(
     """
 {
@@ -11917,6 +12190,43 @@ each_type_of_election_on_one_day = json.loads(
 )
 no_results = {"count": 0, "next": None, "previous": None, "results": []}
 
+local_highland_parent = json.loads(
+    """{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "election_id": "local.2018-12-06",
+      "tmp_election_id": null,
+      "election_title": "Local elections",
+      "poll_open_date": "2018-12-06",
+      "election_type": {
+        "name": "Local elections",
+        "election_type": "local"
+      },
+      "election_subtype": null,
+      "organisation": null,
+      "group": "local.2018-12-06",
+      "group_type": "organisation",
+      "children": [
+        "local.highland.2018-12-06"
+      ],
+      "elected_role": "Local Councillor",
+      "seats_contested": null,
+      "division": null,
+      "voting_system": null,
+      "current": true,
+      "explanation": null,
+      "metadata": null,
+      "deleted": true,
+      "cancelled": false
+    }
+  ]
+}
+    """
+)
+
 local_highland = json.loads(
     """
 {
@@ -12025,6 +12335,45 @@ local_highland = json.loads(
     }
   ]
 }"""
+)
+duplicate_post_names_parent = json.loads(
+    """{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "election_id": "local.2019-05-02",
+      "tmp_election_id": null,
+      "election_title": "Local elections",
+      "poll_open_date": "2019-05-02",
+      "election_type": {
+        "name": "Local elections",
+        "election_type": "local"
+      },
+      "election_subtype": null,
+      "organisation": null,
+      "group": "local.2019-05-02",
+      "group_type": "organisation",
+      "children": [
+        "local.surrey-heath.2019-05-02",
+        "local.allerdale.2019-05-02"
+      ],
+      "elected_role": "Local Councillor",
+      "seats_contested": null,
+      "division": null,
+      "voting_system": null,
+      "current": true,
+      "explanation": null,
+      "metadata": null,
+      "deleted": false,
+      "cancelled": false,
+      "replaces": null,
+      "replaced_by": null
+    }
+  ]
+}
+    """
 )
 duplicate_post_names = json.loads(
     """{
@@ -12242,6 +12591,45 @@ duplicate_post_names = json.loads(
 """
 )
 
+get_changing_identifier_code_result_parent = json.loads(
+    """
+{
+    "count": 1,
+    "next": null,
+    "previous": null,
+    "results": [{
+            "election_id": "local.2019-05-02",
+            "tmp_election_id": null,
+            "election_title": "Local elections",
+            "poll_open_date": "2019-05-02",
+            "election_type": {
+                "name": "Local elections",
+                "election_type": "local"
+            },
+            "election_subtype": null,
+            "organisation": null,
+            "group": "local.2019-05-02",
+            "group_type": "organisation",
+            "children": [
+                "local.surrey-heath.2019-05-02"
+            ],
+            "elected_role": "Local Councillor",
+            "seats_contested": null,
+            "division": null,
+            "voting_system": null,
+            "current": true,
+            "explanation": null,
+            "metadata": null,
+            "deleted": false,
+            "cancelled": false,
+            "replaces": null,
+            "replaced_by": null
+        }
+    ]
+}
+"""
+)
+
 
 def get_changing_identifier_code_result(identifier):
     string = """{
@@ -12362,6 +12750,44 @@ def get_changing_identifier_code_result(identifier):
 pre_gss_result = get_changing_identifier_code_result("SUR:st-michaels")
 post_gss_result = get_changing_identifier_code_result("gss:E05010885")
 
+replaced_election_parents = json.loads(
+    """
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "election_id": "local.2018-12-06",
+      "tmp_election_id": null,
+      "election_title": "Local elections",
+      "poll_open_date": "2018-12-06",
+      "election_type": {
+        "name": "Local elections",
+        "election_type": "local"
+      },
+      "election_subtype": null,
+      "organisation": null,
+      "group": "local.2018-12-06",
+      "group_type": "organisation",
+      "children": [
+        "local.highland.2018-12-06"
+      ],
+      "elected_role": "Local Councillor",
+      "seats_contested": null,
+      "division": null,
+      "voting_system": null,
+      "current": true,
+      "explanation": null,
+      "metadata": null,
+      "deleted": true,
+      "cancelled": false
+    }
+    ]
+
+}
+"""
+)
 
 replaced_election = json.loads(
     """
@@ -12474,6 +12900,44 @@ replaced_election = json.loads(
 }"""
 )
 
+duplicate_post_and_election_parents = json.loads(
+    """
+{
+  "count": 3,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "election_id": "local.2018-12-06",
+      "tmp_election_id": null,
+      "election_title": "Local elections",
+      "poll_open_date": "2018-12-06",
+      "election_type": {
+        "name": "Local elections",
+        "election_type": "local"
+      },
+      "election_subtype": null,
+      "organisation": null,
+      "group": "local.2018-12-06",
+      "group_type": "organisation",
+      "children": [
+        "local.highland.2018-12-06"
+      ],
+      "elected_role": null,
+      "seats_contested": null,
+      "division": null,
+      "voting_system": null,
+      "current": true,
+      "explanation": null,
+      "metadata": null,
+      "deleted": true,
+      "cancelled": false
+    }
+    ]}
+
+
+"""
+)
 
 duplicate_post_and_election = json.loads(
     """
