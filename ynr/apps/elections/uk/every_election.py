@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from datetime import date, timedelta
+from time import sleep
 from urllib.parse import urlencode
 
 import requests
@@ -387,6 +388,8 @@ class EveryElectionImporter(object):
             # Second pass: get the children
             print("Importing ballots")
             for election_id, election in self.election_tree.copy().items():
+                if not settings.RUNNING_TESTS:
+                    sleep(1)
                 for child in election["children"]:
                     parts = child.split(".")
                     date = parts.pop(-1)
@@ -396,7 +399,6 @@ class EveryElectionImporter(object):
                     if deleted:
                         url = f"{url}&deleted=1"
                     while url:
-                        print(url)
                         req = requests.get(url)
                         req.raise_for_status()
                         data = req.json()
