@@ -1,6 +1,7 @@
 import datetime
+from typing import Dict, List
 from unittest import mock
-from urllib.parse import urlencode, urljoin
+from urllib.parse import parse_qs, urlencode, urljoin, urlparse
 
 import pytest
 from candidates.models import Ballot
@@ -26,14 +27,21 @@ from popolo.models import Post
 from .ee_import_results import (
     current_elections,
     current_elections_page_2,
+    current_elections_parents,
     duplicate_post_and_election,
+    duplicate_post_and_election_parents,
     duplicate_post_names,
+    duplicate_post_names_parent,
     each_type_of_election_on_one_day,
+    each_type_of_election_on_one_day_parents,
+    get_changing_identifier_code_result_parent,
     local_highland,
+    local_highland_parent,
     no_results,
     post_gss_result,
     pre_gss_result,
     replaced_election,
+    replaced_election_parents,
 )
 
 EE_BASE_URL = getattr(
@@ -41,48 +49,93 @@ EE_BASE_URL = getattr(
 )
 
 
-def create_mock_with_fixtures(fixtures):
+def make_elections_url_with_params(params):
+    base_url = urljoin(
+        EE_BASE_URL,
+        "/api/elections/",
+    )
+    return f"{base_url}?{urlencode(params)}"
+
+
+def make_per_election_fixtures_from_pages(pages: List[Dict], deleted=False):
+    fixtures = {}
+    for page in pages:
+        for election in page["results"]:
+            id_parts = election["election_id"].split(".")
+            parent_id = ".".join(id_parts[:2])
+            poll_open_date = id_parts[-1]
+            params = {
+                "poll_open_date": poll_open_date,
+                "election_id_regex": parent_id,
+            }
+            if deleted:
+                params["deleted"] = "1"
+            url = make_elections_url_with_params(params)
+            if url not in fixtures:
+                fixtures[url] = {
+                    "count": 0,
+                    "next": None,
+                    "previous": None,
+                    "results": [],
+                }
+            fixtures[url]["results"].append(election)
+            fixtures[url]["count"] = len(fixtures[url]["results"])
+    return fixtures
+
+
+def create_mock_with_fixtures(
+    params: dict, parents, ballot_pages, deleted=None
+):
+    fixtures = {}
+    if not deleted:
+        deleted = no_results
+    params.update(exclude_ref_regex_param)
+    params["identifier_type"] = "election"
+    parent_url = make_elections_url_with_params(params)
+
+    fixtures[parent_url] = parents
+    fixtures.update(
+        make_per_election_fixtures_from_pages(
+            ballot_pages,
+        )
+    )
+
+    deleted_params = {"deleted": 1}
+
+    deleted_parent_params = params.copy()
+    deleted_parent_params.update(deleted_params)
+    deleted_parent_url = make_elections_url_with_params(deleted_parent_params)
+    fixtures[deleted_parent_url] = deleted
+
+    fixtures.update(
+        make_per_election_fixtures_from_pages([deleted], deleted=True)
+    )
+
     def mock(url):
-        try:
-            return Mock(
-                **{"json.return_value": fixtures[url], "status_code": 200}
-            )
-        except KeyError:
-            raise Exception("URL that hasn't been mocked yet: " + url)
+        url_params = parse_qs(urlparse(url).query)
+        for fixture_url, fixture in fixtures.items():
+            params = parse_qs(urlparse(fixture_url).query)
+            if params == url_params:
+                return Mock(
+                    **{"json.return_value": fixture, "status_code": 200}
+                )
+        raise ValueError(f"Can't find {url_params} in {fixtures.keys()}")
 
     return mock
 
 
-exclude_ref_regex_param = urlencode({"exclude_election_id_regex": r"^ref\..*"})
+exclude_ref_regex_param = {"exclude_election_id_regex": r"^ref\..*"}
 
 fake_requests_current_elections = create_mock_with_fixtures(
-    {
-        urljoin(
-            EE_BASE_URL,
-            f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-        ): current_elections,
-        urljoin(
-            EE_BASE_URL,
-            f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=fakedate&limit=100&offset=100",
-        ): current_elections_page_2,
-        urljoin(
-            EE_BASE_URL,
-            f"/api/elections/?current=True&{exclude_ref_regex_param}&poll_open_date=2019-01-17",
-        ): each_type_of_election_on_one_day,
-    }
+    {"poll_open_date__gte": "2018-01-03"},
+    current_elections_parents,
+    [current_elections, current_elections_page_2],
 )
 
 fake_requests_each_type_of_election_on_one_day = create_mock_with_fixtures(
-    {
-        urljoin(
-            EE_BASE_URL,
-            f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-        ): each_type_of_election_on_one_day,
-        urljoin(
-            EE_BASE_URL,
-            f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-        ): no_results,
-    }
+    {"poll_open_date__gte": "2018-01-03"},
+    parents=each_type_of_election_on_one_day_parents,
+    ballot_pages=[each_type_of_election_on_one_day],
 )
 
 
@@ -206,15 +259,19 @@ class EE_ImporterTest(WebTest):
 
     @patch("elections.uk.every_election.requests")
     def test_create_from_all_elections(self, mock_requests):
-        mock_requests.get.side_effect = fake_requests_current_elections
         query_args = {"poll_open_date": "2019-01-17", "current": "True"}
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            query_args,
+            current_elections_parents,
+            [current_elections, current_elections_page_2],
+        )
         self.ee_importer = every_election.EveryElectionImporter(query_args)
         self.ee_importer.build_election_tree()
 
         for ballot_id, election_dict in self.ee_importer.ballot_ids.items():
             parent = self.ee_importer.get_parent(ballot_id)
             election_dict.get_or_create_ballot(parent=parent)
-        self.assertEqual(every_election.Post.objects.all().count(), 11)
+        self.assertEqual(every_election.Post.objects.all().count(), 189)
         self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
 
     @patch("elections.uk.every_election.requests")
@@ -276,16 +333,10 @@ class EE_ImporterTest(WebTest):
         # local_highland fixture
         # match anything we just imported
         mock_requests.get.side_effect = create_mock_with_fixtures(
-            {
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): no_results,
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): local_highland,
-            }
+            {"poll_open_date__gte": "2018-01-03"},
+            no_results,
+            ballot_pages=[],
+            deleted=local_highland,
         )
         # this should finish cleanly without complaining
         call_command("uk_create_elections_from_every_election")
@@ -299,16 +350,9 @@ class EE_ImporterTest(WebTest):
     def test_delete_elections_with_matches(self, mock_requests):
         # import some data
         mock_requests.get.side_effect = create_mock_with_fixtures(
-            {
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): local_highland,
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): no_results,
-            }
+            {"poll_open_date__gte": "2018-01-03"},
+            local_highland_parent,
+            [local_highland],
         )
         call_command("uk_create_elections_from_every_election")
         self.assertEqual(every_election.Ballot.objects.all().count(), 1)
@@ -317,16 +361,11 @@ class EE_ImporterTest(WebTest):
         # now we've switched the fixtures round
         # so the records we just imported are deleted in EE
         mock_requests.get.side_effect = create_mock_with_fixtures(
-            {
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): no_results,
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): local_highland,
-            }
+            {"poll_open_date__gte": "2018-01-03"},
+            no_results,
+            [no_results],
+            # TODO: mock all URLS for deleted results
+            deleted=local_highland,
         )
         call_command("uk_create_elections_from_every_election")
 
@@ -353,16 +392,10 @@ class EE_ImporterTest(WebTest):
         # this makes no sense and shouldn't happen but
         # if it does we should not delete anything
         mock_requests.get.side_effect = create_mock_with_fixtures(
-            {
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): local_highland,
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): local_highland,
-            }
+            {"poll_open_date__gte": "2018-01-03"},
+            local_highland_parent,
+            [local_highland],
+            deleted=local_highland,
         )
 
         # make sure we throw an exception
@@ -381,16 +414,9 @@ class EE_ImporterTest(WebTest):
     ):
         # import some data
         mock_requests.get.side_effect = create_mock_with_fixtures(
-            {
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): local_highland,
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): no_results,
-            }
+            {"poll_open_date__gte": "2018-01-03"},
+            parents=local_highland_parent,
+            ballot_pages=[local_highland],
         )
         call_command("uk_create_elections_from_every_election")
         self.assertEqual(every_election.Ballot.objects.all().count(), 1)
@@ -413,16 +439,10 @@ class EE_ImporterTest(WebTest):
             "results": [local_highland["results"][0]],
         }
         mock_requests.get.side_effect = create_mock_with_fixtures(
-            {
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): current_elections,
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): deleted_elections,
-            }
+            {"poll_open_date__gte": "2018-01-03"},
+            parents=local_highland_parent,
+            ballot_pages=[current_elections],
+            deleted=deleted_elections,
         )
 
         # make sure we throw an exception
@@ -439,16 +459,9 @@ class EE_ImporterTest(WebTest):
     def test_delete_elections_with_related_membership(self, mock_requests):
         # import some data
         mock_requests.get.side_effect = create_mock_with_fixtures(
-            {
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): local_highland,
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): no_results,
-            }
+            {"poll_open_date__gte": "2018-01-03"},
+            local_highland_parent,
+            [local_highland],
         )
         call_command("uk_create_elections_from_every_election")
         self.assertEqual(every_election.Ballot.objects.all().count(), 1)
@@ -464,16 +477,10 @@ class EE_ImporterTest(WebTest):
         # now we've switched the fixtures round
         # so the records we just imported are deleted in EE
         mock_requests.get.side_effect = create_mock_with_fixtures(
-            {
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): no_results,
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): local_highland,
-            }
+            {"poll_open_date__gte": "2018-01-03"},
+            no_results,
+            [no_results],
+            deleted=local_highland,
         )
         # make sure we throw an exception
         with self.assertRaises(Exception):
@@ -493,16 +500,10 @@ class EE_ImporterTest(WebTest):
         :return:
         """
         mock_requests.get.side_effect = create_mock_with_fixtures(
-            {
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): duplicate_post_names,
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2018-01-03",
-                ): local_highland,
-            }
+            {"poll_open_date__gte": "2018-01-03"},
+            duplicate_post_names_parent,
+            [duplicate_post_names],
+            deleted=no_results,
         )
         call_command("uk_create_elections_from_every_election")
         post_a, post_b = Post.objects.all().order_by(
@@ -528,35 +529,21 @@ class EE_ImporterTest(WebTest):
         Test that posts imported before GSS codes aren't duplicated
         at the point we have GSS codes for them in EE
         """
-
         mock_requests.get.side_effect = create_mock_with_fixtures(
-            {
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
-                ): pre_gss_result,
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
-                ): local_highland,
-            }
+            {"poll_open_date__gte": "2019-04-02"},
+            get_changing_identifier_code_result_parent,
+            [pre_gss_result],
+            deleted=no_results,
         )
-
         self.assertEqual(Post.objects.count(), 0)
         call_command("uk_create_elections_from_every_election")
         self.assertEqual(Post.objects.count(), 1)
 
         mock_requests.get.side_effect = create_mock_with_fixtures(
-            {
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
-                ): post_gss_result,
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
-                ): local_highland,
-            }
+            {"poll_open_date__gte": "2019-04-02"},
+            get_changing_identifier_code_result_parent,
+            [post_gss_result],
+            deleted=no_results,
         )
 
         call_command("uk_create_elections_from_every_election")
@@ -584,16 +571,9 @@ class EE_ImporterTest(WebTest):
         old_ballot = Ballot.objects.get()
 
         mock_requests.get.side_effect = create_mock_with_fixtures(
-            {
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
-                ): replaced_election,
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
-                ): no_results,
-            }
+            {"poll_open_date__gte": "2019-04-02"},
+            parents=replaced_election_parents,
+            ballot_pages=[replaced_election],
         )
 
         call_command("uk_create_elections_from_every_election")
@@ -607,16 +587,9 @@ class EE_ImporterTest(WebTest):
         self.assertEqual(Ballot.objects.all().count(), 0)
 
         mock_requests.get.side_effect = create_mock_with_fixtures(
-            {
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
-                ): duplicate_post_and_election,
-                urljoin(
-                    EE_BASE_URL,
-                    f"/api/elections/?deleted=1&{exclude_ref_regex_param}&poll_open_date__gte=2019-04-02",
-                ): no_results,
-            }
+            {"poll_open_date__gte": "2019-04-02"},
+            duplicate_post_and_election_parents,
+            [duplicate_post_and_election],
         )
 
         call_command("uk_create_elections_from_every_election")
