@@ -34,9 +34,6 @@ def extract_pages_for_ballot(ballot):
 
         sopn.match_all_pages()
         if len(sopn.pages) == 1:
-            # this is where we would call the AWS Textract API and build the AWSTextractParsedSOPN object
-            # the result of this would be a dataframe that we can then use to parse the SOPN. It may be returned
-            # as a dataframe containing structured data, or as a dataframe containing the raw text string.
             call_command(
                 "sopn_parsing_aws_textract", "--start-analysis", "--get-results"
             )

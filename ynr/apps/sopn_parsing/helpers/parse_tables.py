@@ -8,6 +8,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
 from django.db.models import Value
 from django.db.models.functions import Replace
+from django.db.utils import DataError
 from nameparser import HumanName
 from parties.models import Party, PartyDescription
 from sopn_parsing.helpers.text_helpers import clean_text
@@ -245,21 +246,29 @@ def get_description(description, sopn):
         return description_obj
 
     # Levenshtein
-    qs = party_description_qs.annotate(
-        lev_dist=Levenshtein("search_text", Value(description))
-    ).order_by("lev_dist")
-    description_obj = qs.filter(lev_dist__lte=5).first()
-    if description_obj:
-        print(
-            f"{description} matched with {description_obj.description} with a distance of {description_obj.lev_dist}"
-        )
-        return description_obj
+    try:
+        qs = party_description_qs.annotate(
+            lev_dist=Levenshtein("search_text", Value(description))
+        ).order_by("lev_dist")
+        description_obj = qs.filter(lev_dist__lte=5).first()
+        if description_obj:
+            print(
+                f"{description} matched with {description_obj.description} with a distance of {description_obj.lev_dist}"
+            )
+            return description_obj
+    except ValueError:
+        print("Levenshtein failed")
+        pass
 
     # final check - if this is a Welsh version of a description, it will be at
     # the end of the description
-    return party_description_qs.filter(
-        search_text__endswith=f"| {description}", party__register=register
-    ).first()
+    try:
+        return party_description_qs.filter(
+            search_text__endswith=f"| {description}", party__register=register
+        ).first()
+    except PartyDescription.DoesNotExist:
+        print(f"Couldn't find description for {description}")
+        pass
 
 
 def get_party(description_model, description_str, sopn):
@@ -398,35 +407,34 @@ def parse_raw_data_for_ballot(ballot):
         raise ValueError(
             f"Can't parse a ballot with lock suggestions {ballot.ballot_paper_id}"
         )
+    # at this point, we may have two sets of data that need to both follow the same
+    # parsing process. We need parse both but do we only save one to the RawPeople model?
+    # or do we save both? If we save both, we need to make sure that the data is
+    # consistent between the two sets of data. If we only save one, which one do we save?
+    # do we save the one that has the most data? or do we save the one that has the most
+    # data that matches the data in the RawPeople model? We should let the user choose
+    # which one to save. In this case, we need to present the user with the two sets of
+    # data and let them choose which one to save.
 
     try:
-        parsed_sopn_model = ballot.sopn.camelotparsedsopn
+        camelot_parsed_sopn_model = ballot.sopn.camelotparsedsopn
+        parse_raw_data(camelot_parsed_sopn_model, ballot)
     except CamelotParsedSOPN.DoesNotExist:
-        raise ValueError(f"No CamelotParsedSOPN for {ballot.ballot_paper_id}")
-    data_sets = []
-    try:
-        # does the official document have an associated AWSTextractParsedSOPN?
-        aws_textract_parsed_sopn = AWSTextractParsedSOPN.objects.get(
-            sopn=parsed_sopn_model.sopn
-        )
-        # if so, has it been parsed?
-        if aws_textract_parsed_sopn.status == "unparsed":
-            aws_textract_raw_data = aws_textract_parsed_sopn.raw_data
-            data_sets.append(aws_textract_raw_data)
-            # if not, parse it
-            # TO DO: save parsed from AWSTextractParsedSOPN to the RawPeople model
-            # then update the status of the AWSTextractParsedSOPN
-            # to "parsed'
-    except AWSTextractParsedSOPN.DoesNotExist:
-        # if there is no AWSTextractParsedSOPN, we can use the data
-        # from the RawPeople model or just parse the data from the
-        # CamelotParsedSOPN
+        print(f"No CamelotParsedSOPN for {ballot.ballot_paper_id}")
         pass
 
-    # at this point, we may have two sets of data that need to both follow the same
-    # parsing process. We need parse both.
-    data = parsed_sopn_model.as_pandas
+    try:
+        aws_textract_parsed_sopn_model = ballot.sopn.awstextractparsedsopn
+        parse_raw_data(aws_textract_parsed_sopn_model, ballot)
+    except AWSTextractParsedSOPN.DoesNotExist:
+        print(f"No AWSTextractParsedSOPN for {ballot.ballot_paper_id}")
+        pass
+    # at this point we could compare the two sets of RawPeople data for the user to choose
 
+
+def parse_raw_data(parsed_sopn_model, ballot):
+    data = parsed_sopn_model.as_pandas
+    data_sets = []
     if parsed_sopn_model.raw_data_type == "pandas":
         data_sets.append(data)
 
@@ -469,16 +477,22 @@ def parse_raw_data_for_ballot(ballot):
                 ballot=parsed_sopn_model.sopn.ballot
             ).exclude(source_type=RawPeople.SOURCE_PARSED_PDF)
             if not rawpeople_qs.exists():
-                RawPeople.objects.update_or_create(
-                    ballot=parsed_sopn_model.sopn.ballot,
-                    defaults={
-                        "data": ballot_data,
-                        "source": "Parsed from {}".format(
-                            parsed_sopn_model.sopn.source_url
-                        ),
-                        "source_type": RawPeople.SOURCE_PARSED_PDF,
-                    },
-                )
+                try:
+                    RawPeople.objects.update_or_create(
+                        ballot=parsed_sopn_model.sopn.ballot,
+                        defaults={
+                            "data": ballot_data,
+                            "source": "Parsed from {}".format(
+                                parsed_sopn_model.sopn.source_url
+                            ),
+                            "source_type": RawPeople.SOURCE_PARSED_PDF,
+                        },
+                    )
+                except DataError:
+                    print(
+                        f"DataError attempting to save RawPeople for {ballot.ballot_paper_id}"
+                    )
+                    return
             # We've done the parsing, so let's still save the result
             storage = DefaultStorage()
             desired_storage_path = join(
@@ -490,5 +504,10 @@ def parse_raw_data_for_ballot(ballot):
                 ContentFile(json.dumps(ballot_data, indent=4).encode("utf8")),
             )
 
+            if type(parsed_sopn_model) != CamelotParsedSOPN:
+                import pdb
+
+                pdb.set_trace()
+            print("I'm here")
             parsed_sopn_model.status = "parsed"
             parsed_sopn_model.save()
