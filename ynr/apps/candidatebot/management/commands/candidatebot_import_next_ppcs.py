@@ -133,9 +133,6 @@ class Command(BaseCommand):
     def add_contact_details(self, bot, person, line):
         if not person.get_email and line["Email"]:
             bot.add_email(line["Email"])
-            if line["Email Source"] and line["Source"] != line["Email Source"]:
-                # The source for the email is different, save now
-                bot.save(line["Email Source"])
 
         if line["Twitter"] and not person.tmp_person_identifiers.filter(
             value=line["Twitter"]
