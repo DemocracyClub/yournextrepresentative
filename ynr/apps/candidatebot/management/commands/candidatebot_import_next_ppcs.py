@@ -17,10 +17,12 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--sheet-url", action="store", required=True)
+        parser.add_argument("--election-date", action="store", required=True)
 
     def get_next_parl_election(self):
         election = (
             Election.objects.filter(slug__contains="parl.")
+            .filter(election_date=self.election_date)
             .future()
             .order_by("election_date")
             .first()
@@ -33,6 +35,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.ballot_cache = {}
         self.party_cache = {}
+        self.election_date = options["election_date"]
         self.election = self.get_next_parl_election()
         req = requests.get(options["sheet_url"])
         req.raise_for_status()
