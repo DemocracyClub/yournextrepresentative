@@ -57,58 +57,64 @@ class Command(BaseCommand):
 
     def create_official_documents(self, url):
         data = requests.get(url=url).json()
-        next_page = data["next"]
-        for ballot_data in data["results"]:
-            ballot = Ballot.objects.get(
-                ballot_paper_id=ballot_data["ballot_paper_id"]
-            )
-            sopn_data = ballot_data["sopn"]
-
-            # if we already have the SOPN no need to recreate
-            if ballot.officialdocument_set.filter(
-                source_url=sopn_data["source_url"]
-            ).exists():
-                self.stdout.write(
-                    f"SOPN already exists for {ballot.ballot_paper_id}"
+        try:
+            next_page = data["next"]
+        except KeyError:
+            next_page = None
+        if "results" in data:
+            for ballot_data in data["results"]:
+                ballot = Ballot.objects.get(
+                    ballot_paper_id=ballot_data["ballot_paper_id"]
                 )
-                continue
+                sopn_data = ballot_data["sopn"]
 
-            # check if we already have an OfficialDocument with this source
-            # downloaded
-            official_document = OfficialDocument.objects.filter(
-                source_url=sopn_data["source_url"]
-            ).first()
-            if official_document:
-                # if so we dont need to redownload the file, we can create a new
-                # object for this ballot with the same file
+                # if we already have the SOPN no need to recreate
+                if ballot.officialdocument_set.filter(
+                    source_url=sopn_data["source_url"]
+                ).exists():
+                    self.stdout.write(
+                        f"SOPN already exists for {ballot.ballot_paper_id}"
+                    )
+                    continue
+
+                # check if we already have an OfficialDocument with this source
+                # downloaded
+                official_document = OfficialDocument.objects.filter(
+                    source_url=sopn_data["source_url"]
+                ).first()
+                if official_document:
+                    # if so we dont need to redownload the file, we can create a new
+                    # object for this ballot with the same file
+                    self.stdout.write(
+                        f"Found SOPN for source {sopn_data['source_url']}"
+                    )
+                    OfficialDocument.objects.create(
+                        ballot=ballot,
+                        source_url=sopn_data["source_url"],
+                        uploaded_file=official_document.uploaded_file,
+                        document_type=OfficialDocument.NOMINATION_PAPER,
+                    )
+                    continue
+
+                # otherwise we dont have this file stored already, so download it as
+                # part of creating the OfficialDocument
                 self.stdout.write(
-                    f"Found SOPN for source {sopn_data['source_url']}"
+                    f"Downloading SOPN from {sopn_data['uploaded_file']}"
                 )
-                OfficialDocument.objects.create(
+                file_response = requests.get(sopn_data["uploaded_file"])
+                file_object = ContentFile(content=file_response.content)
+                official_document = OfficialDocument(
                     ballot=ballot,
                     source_url=sopn_data["source_url"],
-                    uploaded_file=official_document.uploaded_file,
                     document_type=OfficialDocument.NOMINATION_PAPER,
                 )
-                continue
-
-            # otherwise we dont have this file stored already, so download it as
-            # part of creating the OfficialDocument
-            self.stdout.write(
-                f"Downloading SOPN from {sopn_data['uploaded_file']}"
-            )
-            file_response = requests.get(sopn_data["uploaded_file"])
-            file_object = ContentFile(content=file_response.content)
-            official_document = OfficialDocument(
-                ballot=ballot,
-                source_url=sopn_data["source_url"],
-                document_type=OfficialDocument.NOMINATION_PAPER,
-            )
-            file_extension = sopn_data["uploaded_file"].split(".")[-1]
-            filename = f"{ballot.ballot_paper_id}.{file_extension}"
-            official_document.uploaded_file.save(
-                name=filename, content=file_object
-            )
+                file_extension = sopn_data["uploaded_file"].split(".")[-1]
+                filename = f"{ballot.ballot_paper_id}.{file_extension}"
+                official_document.uploaded_file.save(
+                    name=filename, content=file_object
+                )
+        else:
+            self.stdout.write("No results found")
 
         # this should only be the case where the election object has > 200
         # ballots e.g. parliamentary elections
