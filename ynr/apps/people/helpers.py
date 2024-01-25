@@ -109,9 +109,9 @@ def clean_mastodon_username(username):
 def clean_twitter_username(username):
     # Remove any URL bits around it:
     username = username.strip()
-    m = re.search(r"^.*twitter.com/(\w+)", username)
+    m = re.search(r"^.*(twitter.com|x.com)/(\@?)(\w+)", username)
     if m:
-        username = m.group(1)
+        username = m.group(3)
     # If there's a leading '@', strip that off:
     username = re.sub(r"^@", "", username)
     if not re.search(r"^\w*$", username):
