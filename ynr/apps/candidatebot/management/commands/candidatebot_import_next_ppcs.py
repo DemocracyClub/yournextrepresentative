@@ -39,8 +39,8 @@ class Command(BaseCommand):
         self.election = self.get_next_parl_election()
         req = requests.get(options["sheet_url"])
         req.raise_for_status()
-        raise ValueError("Still testing")
         self.parse_csv(req.content.decode("utf8").splitlines())
+        # raise ValueError("Still testing")
 
     def parse_csv(self, in_file):
         csv_data = csv.DictReader(in_file)
