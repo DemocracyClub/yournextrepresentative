@@ -2,12 +2,14 @@ import csv
 
 import requests
 from candidatebot.helpers import CandidateBot
+from candidates.models import Ballot
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from elections.models import Election
 from parties.models import Party
 from people.models import Person
 from popolo.models import Membership, NotStandingValidationError
+from slugify import slugify
 
 
 class Command(BaseCommand):
@@ -86,16 +88,20 @@ class Command(BaseCommand):
         return line.get("Source", "PPC sheet importer")
 
     def get_ballot_from_line(self, line):
-        ballot_paper_start = (
-            ".".join(line["Ballot paper ID"].split(".")[0:-1]) + "."
-        )
-        if ballot_paper_start not in self.ballot_cache:
-            self.ballot_cache[
-                ballot_paper_start
-            ] = self.election.ballot_set.get(
-                ballot_paper_id__startswith=ballot_paper_start
-            )
-        return self.ballot_cache[ballot_paper_start]
+        constituency = line["Constituency"].strip()
+
+        if constituency not in self.ballot_cache:
+            try:
+                ballot = Ballot.objects.get(
+                    election=self.election, post__label=constituency
+                )
+            except Ballot.DoesNotExist:
+                print(slugify(constituency))
+                ballot = Ballot.objects.get(
+                    election=self.election, post__slug=slugify(constituency)
+                )
+            self.ballot_cache[constituency] = ballot
+        return self.ballot_cache[constituency]
 
     def get_party_from_line(self, line):
         party_id = line["Party ID"]
