@@ -1,3 +1,4 @@
+import json
 from os.path import dirname, join, realpath
 from unittest import skipIf
 from unittest.mock import patch
@@ -17,8 +18,11 @@ from official_documents.models import OfficialDocument
 from official_documents.tests.paths import (
     EXAMPLE_DOCX_FILENAME,
     EXAMPLE_HTML_FILENAME,
+    EXAMPLE_PDF_FILENAME,
 )
+from sopn_parsing.models import ParsedSOPN
 from sopn_parsing.tests import should_skip_conversion_tests
+from sopn_parsing.tests.data.welsh_sopn_data import welsh_sopn_data
 from webtest import Upload
 
 TEST_MEDIA_ROOT = realpath(
@@ -37,6 +41,7 @@ class TestModels(TestUserMixin, WebTest):
     example_image_filename = EXAMPLE_IMAGE_FILENAME
     example_docx_filename = EXAMPLE_DOCX_FILENAME
     example_html_filename = EXAMPLE_HTML_FILENAME
+    example_pdf_filename = EXAMPLE_PDF_FILENAME
 
     def setUp(self):
         gb_parties = PartySetFactory.create(slug="gb", name="Great Britain")
@@ -199,17 +204,37 @@ class TestModels(TestUserMixin, WebTest):
             response.text,
         )
 
+    def upload_sopn(self, filename=None):
+        response = self.app.get(
+            reverse(
+                "upload_document_view",
+                kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
+            ),
+            user=self.user_who_can_upload_documents,
+        )
+        form = response.forms["document-upload-form"]
+        form["source_url"] = "http://example.org/foo"
+        with open(self.example_pdf_filename, "rb") as f:
+            form["uploaded_file"] = Upload(filename, f.read())
+
+        with patch(
+            "official_documents.views.extract_pages_for_ballot"
+        ) as extract_pages, patch(
+            "official_documents.views.extract_ballot_table"
+        ) as extract_tables, patch(
+            "official_documents.views.parse_raw_data_for_ballot"
+        ) as parse_tables:
+            response = form.submit()
+            self.assertEqual(response.status_code, 302)
+            extract_pages.assert_called_once()
+            extract_tables.assert_called_once()
+            parse_tables.assert_called_once()
+
     @skipIf(
         should_skip_conversion_tests(), "Required conversion libs not installed"
     )
     def test_jpg_form_validation(self):
         self.assertFalse(LoggedAction.objects.exists())
-        response = self.app.get(
-            self.ballot.get_absolute_url(),
-            user=self.user_who_can_upload_documents,
-        )
-
-        self.assertInHTML("Upload SOPN", response.text)
 
         response = self.app.get(
             reverse(
@@ -229,3 +254,130 @@ class TestModels(TestUserMixin, WebTest):
             "File extension “jpg” is not allowed. Allowed extensions are: pdf, docx.",
             response.text,
         )
+
+    def test_filename_updated(self):
+        """When a SoPN has already been uploaded, test the filename
+        is updated when a new SoPN is uploaded."""
+
+        self.assertFalse(LoggedAction.objects.exists())
+
+        response = self.app.get(
+            self.ballot.get_absolute_url(),
+            user=self.user_who_can_upload_documents,
+        )
+        self.assertInHTML("Upload SOPN", response.text)
+
+        self.upload_sopn(filename="initial.pdf")
+
+        ods = OfficialDocument.objects.all()
+        self.assertEqual(ods.count(), 1)
+        od = ods[0]
+        self.assertEqual(od.source_url, "http://example.org/foo")
+        self.assertEqual(
+            od.uploaded_file.name,
+            "official_documents/parl.dulwich-and-west-norwood.2015-05-07/initial.pdf",
+        )
+        self.assertEqual(
+            od.ballot.ballot_paper_id,
+            "parl.dulwich-and-west-norwood.2015-05-07",
+        )
+        dataframe = json.dumps(welsh_sopn_data)
+        ParsedSOPN.objects.create(
+            sopn=self.ballot.sopn, raw_data=dataframe, status="unparsed"
+        )
+
+        # repeat the above with another file and check the filename is updated
+        # again
+        request = self.app.get(
+            self.ballot.get_absolute_url(),
+            user=self.user_who_can_upload_documents,
+        )
+
+        self.assertInHTML('"SOPN" uploaded.', request.text)
+        # at this stage we know the sopn has been uploaded. Now we need to
+        # check the filename is updated when a new SoPN is uploaded.
+
+        response = self.app.get(
+            reverse(
+                "ballot_paper_sopn",
+                kwargs={"ballot_id": self.ballot.ballot_paper_id},
+            ),
+            user=self.user_who_can_upload_documents,
+        )
+
+        self.assertInHTML("Update SOPN", response.text)
+
+        self.upload_sopn(filename="replacement.pdf")
+
+        dataframe = json.dumps(
+            {
+                "0": {
+                    "0": "Name of \nCandidate",
+                    "1": "BRADBURY \nAndrew John",
+                    "2": "COLLINS \nDave",
+                    "3": "HARVEY \nPeter John",
+                    "4": "JENNER \nMelanie",
+                },
+                "1": {
+                    "0": "Home Address",
+                    "1": "10 Fowey Close, \nShoreham by Sea, \nWest Sussex, \nBN43 5HE",
+                    "2": "51 Old Fort Road, \nShoreham by Sea, \nBN43 5RL",
+                    "3": "76 Harbour Way, \nShoreham by Sea, \nSussex, \nBN43 5HH",
+                    "4": "9 Flag Square, \nShoreham by Sea, \nWest Sussex, \nBN43 5RZ",
+                },
+                "2": {
+                    "0": "Description (if \nany)",
+                    "1": "Green Party",
+                    "2": "Independent",
+                    "3": "UK Independence \nParty (UKIP)",
+                    "4": "Labour Party",
+                },
+                "3": {
+                    "0": "Name of \nProposer",
+                    "1": "Tiffin Susan J",
+                    "2": "Loader Jocelyn C",
+                    "3": "Hearne James H",
+                    "4": "O`Connor Lavinia",
+                },
+                "4": {
+                    "0": "Reason \nwhy no \nlonger \nnominated\n*",
+                    "1": "",
+                    "2": "",
+                    "3": "",
+                    "4": "",
+                },
+            }
+        )
+        ParsedSOPN.objects.create(
+            sopn=self.ballot.sopn, raw_data=dataframe, status="unparsed"
+        )
+
+        ods = OfficialDocument.objects.all()
+        self.assertEqual(ods.count(), 2)
+        od = ods[1]
+        self.assertEqual(od.source_url, "http://example.org/foo")
+        self.assertEqual(
+            od.uploaded_file.name,
+            "official_documents/parl.dulwich-and-west-norwood.2015-05-07/replacement.pdf",
+        )
+
+        self.assertEqual(
+            od.ballot.ballot_paper_id,
+            "parl.dulwich-and-west-norwood.2015-05-07",
+        )
+        response = self.app.get(
+            reverse(
+                "ballot_paper_sopn",
+                kwargs={"ballot_id": self.ballot.ballot_paper_id},
+            ),
+            user=self.user_who_can_upload_documents,
+        )
+        self.assertInHTML(
+            '<div class="pdf_container" id="sopn-parl.dulwich-and-west-norwood.2015-05-07">',
+            response.text,
+        )
+
+        # assert the table data contains the new data from the
+        # replacement upload and not the initial dataframe
+        self.assertIn("10 Fowey Close", response.text)
+        self.assertNotIn("1 Example Road", response.text)
