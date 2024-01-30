@@ -83,9 +83,16 @@ SOPN_DATES = [
 
 SCHEDULED_ELECTION_DATES = ["2023-05-04", "2023-05-18"]
 
+STORAGES = {
+    "default": {
+        "BACKEND": "ynr.storages.MediaStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "ynr.storages.StaticStorage",
+    },
+}
 
-STATICFILES_STORAGE = "ynr.storages.StaticStorage"
-DEFAULT_FILE_STORAGE = "ynr.storages.MediaStorage"
+
 AWS_STORAGE_BUCKET_NAME = "static-candidates.democracyclub.org.uk"
 AWS_S3_REGION_NAME = "eu-west-2"
 STATICFILES_LOCATION = "static"

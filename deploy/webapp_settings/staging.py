@@ -37,7 +37,11 @@ INTERNAL_IPS = [
 
 # **** Settings that might be useful in production
 
-STATICFILES_STORAGE = "pipeline.storage.PipelineCachedStorage"
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "pipeline.storage.PipelineCachedStorage",
+    },
+}
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 # RAVEN_CONFIG = {
