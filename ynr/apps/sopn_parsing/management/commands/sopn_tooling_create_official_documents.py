@@ -1,5 +1,6 @@
 import requests
 from candidates.models import Ballot
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 from elections.models import Election
@@ -52,7 +53,7 @@ class Command(BaseCommand):
             ).values_list("slug", flat=True)[:election_count]
 
         for slug in election_slugs:
-            url = f"{site_url}api/next/ballots/?has_sopn=1&page_size=200&election_id={slug}"
+            url = f"{site_url}api/next/ballots/?has_sopn=1&page_size=200&election_id={slug}&auth_token={settings.YNR_API_KEY}"
             self.create_official_documents(url=url)
 
     def create_official_documents(self, url):
