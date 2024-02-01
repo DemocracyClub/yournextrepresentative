@@ -5,8 +5,10 @@ from time import sleep
 
 import boto3
 import pandas as pd
+from botocore.client import Config
 from django.conf import settings
 from django.core.management import call_command
+from django.db import IntegrityError
 from official_documents.models import OfficialDocument, TextractResult
 from pdfminer.pdftypes import PDFException
 from sopn_parsing.helpers.pdf_helpers import SOPNDocument
@@ -51,8 +53,10 @@ def extract_pages_for_ballot(ballot):
         )
 
 
+config = Config(retries={"max_attempts": 5})
+
 textract_client = boto3.client(
-    "textract", region_name=settings.TEXTRACT_S3_BUCKET_REGION
+    "textract", region_name=settings.TEXTRACT_S3_BUCKET_REGION, config=config
 )
 
 
@@ -106,12 +110,16 @@ class TextractSOPNHelper:
             return None
         self.upload_to_s3()
         response = self.textract_start_document_analysis()
-        textract_result, _ = TextractResult.objects.update_or_create(
-            official_document=self.official_document,
-            json_response="",
-            job_id=response["JobId"],
-        )
-        return textract_result
+        try:
+            textract_result, _ = TextractResult.objects.update_or_create(
+                official_document=self.official_document,
+                defaults={"json_response": "", "job_id": response["JobId"]},
+            )
+            return textract_result
+        except IntegrityError as e:
+            raise IntegrityError(
+                f"Failed to create TextractResult for {self.official_document.ballot.ballot_paper_id}: error {e}"
+            )
 
     def textract_start_document_analysis(self):
         return textract_client.start_document_analysis(
