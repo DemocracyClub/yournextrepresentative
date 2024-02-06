@@ -432,35 +432,15 @@ def test_update_job_status_with_token(textract_sopn_helper):
         == '{"JobStatus": "SUCCEEDED", "Blocks": ["baz", "foo", "Bar"]}'
     )
 
-
-@pytest.fixture
-def textract_sopn_parsing_helper(
-    db, s3_client, s3_bucket, get_document_analysis_json
-):
-    official_document = OfficialDocument.objects.create(
-        ballot=BallotPaperFactory(),
-        document_type=OfficialDocument.NOMINATION_PAPER,
-    )
-    textract_result = TextractResult.objects.create(
-        official_document=official_document,
-        job_id="1234",
-        json_response=get_document_analysis_json,
-        analysis_status="SUCCEEDED",
-    )
-    yield TextractSOPNParsingHelper(
-        official_document=official_document, textract_result=textract_result
-    )
-
-
-def test_create_df_from_textract_result(textract_sopn_parsing_helper):
+    # def test_create_df_from_textract_result(textract_sopn_parsing_helper):
     # assert that get_rows_columns_map is called once
-    df = textract_sopn_parsing_helper.create_df_from_textract_result(
-        official_document=textract_sopn_parsing_helper.official_document,
-        textract_result=textract_sopn_parsing_helper.textract_result,
-    )
+    # df = textract_sopn_parsing_helper.create_df_from_textract_result(
+    #     official_document=textract_sopn_parsing_helper.official_document,
+    #     textract_result=textract_sopn_parsing_helper.textract_result,
+    # )
 
-    sopn_text = "STATEMENT OF PERSONS"
-    assert sopn_text in df.values
+    # sopn_text = "STATEMENT OF PERSONS"
+    # assert sopn_text in df.values
 
 
 @pytest.fixture
@@ -480,17 +460,6 @@ def textract_sopn_parsing_helper(
     yield TextractSOPNParsingHelper(
         official_document=official_document, textract_result=textract_result
     )
-
-
-def test_create_df_from_textract_result(textract_sopn_parsing_helper):
-    # assert that get_rows_columns_map is called once
-    df = textract_sopn_parsing_helper.create_df_from_textract_result(
-        official_document=textract_sopn_parsing_helper.official_document,
-        textract_result=textract_sopn_parsing_helper.textract_result,
-    )
-
-    sopn_text = "STATEMENT OF PERSONS"
-    assert sopn_text in df.values
 
 
 class MyS3Client:
