@@ -37,7 +37,11 @@ def extract_pages_for_ballot(ballot):
         sopn.match_all_pages()
         if len(sopn.pages) == 1:
             call_command(
-                "sopn_parsing_aws_textract", "--start-analysis", "--get-results"
+                "sopn_parsing_aws_textract",
+                "--start-analysis",
+                "--get-results",
+                "--ballot",
+                ballot.ballot_paper_id,
             )
 
     except NoTextInDocumentError:
