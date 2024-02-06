@@ -15,12 +15,12 @@ migrate-db:
 
 .PHONY: test-sopns
 test-sopns: migrate-db
-	python manage.py sopn_tooling_compare_raw_people --election-slugs= --ballot=
+	python manage.py sopn_tooling_compare_raw_people --election-slugs= --ballot= --date 2021-05-06
 
 .PHONY: download-sopns
 download-sopns:
 	python manage.py migrate --no-input
-	python manage.py sopn_tooling_create_official_documents --election-slugs=
+	python manage.py sopn_tooling_create_official_documents --election-slugs= --date 2021-05-06
 
 .PHONY: populate-sopn-testing-database
 populate-sopn-testing-database: migrate-db
