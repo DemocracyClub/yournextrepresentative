@@ -6,8 +6,11 @@ from official_documents.models import OfficialDocument, TextractResult
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 from sopn_parsing.helpers.extract_pages import (
     TextractSOPNHelper,
-    TextractSOPNParsingHelper,
 )
+
+TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA = 0.5  # TODO: move to settings
+TEXTRACT_BACKOFF_TIME = 60
+TEXTRACT_CONCURRENT_QUOTA = 80  # move to settings
 
 
 class Command(BaseSOPNParsingCommand):
@@ -29,45 +32,54 @@ class Command(BaseSOPNParsingCommand):
             help="Get AWS Textract results for each SOPN",
         )
 
-    def check_queue_length(self):
-        TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA = 0.5
-        sleep(TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA)
+    def queue_full(self):
 
         time_window = timezone.now() - timedelta(hours=1)
         processing = TextractResult.objects.filter(
-            created__gt=time_window, analysis_status="NOT_STARTED"
+            created__gt=time_window,
+            analysis_status__in=["NOT_STARTED", "IN_PROGRESS"],
         )
-        print(f"Processing: {processing.count()}")
-        TEXTRACT_CONCURRENT_QUOTA = 90  # move to settings
-        if processing.count() > TEXTRACT_CONCURRENT_QUOTA:
-            sleep(60)
+
+        if count := processing.count() > TEXTRACT_CONCURRENT_QUOTA:
+            print(f"Processing: {count}")
+            return True
+        return False
+
+    def check_all_documents(self):
+        # Clean out the queue of any documents that aren't processed
+        # TODO: this should be a method on the queryset ("incomplete")
+        for document in OfficialDocument.objects.filter(
+            textract_result__analysis_status__in=["NOT_STARTED", "IN_PROGRESS"]
+        ):
+            textract_helper = TextractSOPNHelper(document)
+            textract_helper.update_job_status(blocking=False)
+
+    def get_queryset(self, options):
+        qs = super().get_queryset(options)
+
+        return qs.filter(officialdocument__textract_result__id=None)
 
     def handle(self, *args, **options):
+        self.check_all_documents()
         queryset = self.get_queryset(options)
-        if options["start_analysis"]:
-            for ballot in queryset:
-                self.check_queue_length()
-                official_documents = OfficialDocument.objects.filter(
-                    ballot=ballot
-                )
-                official_document = official_documents.last()
+        for ballot in queryset:
+            print(ballot)
+            official_document: OfficialDocument = ballot.sopn
+            if options["start_analysis"]:
+                if self.queue_full():
+                    self.check_all_documents()
+                    sleep(TEXTRACT_BACKOFF_TIME)
                 textract_helper = TextractSOPNHelper(official_document)
                 # TO DO: add logging here
-                sleep(0.3)
+                if getattr(official_document, "textract_result", None):
+                    continue
+                sleep(TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA)
                 textract_helper.start_detection(official_document)
-        if options["get_results"]:
-            for ballot in queryset:
-                official_documents = OfficialDocument.objects.filter(
-                    ballot=ballot
-                )
-                official_document = official_documents.last()
+            if options["get_results"]:
                 textract_helper = TextractSOPNHelper(official_document)
-                textract_result = textract_helper.update_job_status(
-                    options["blocking"]
-                )
-                textract_sopn_parsing_helper = TextractSOPNParsingHelper(
-                    official_document, textract_result=textract_result
-                )
-                textract_sopn_parsing_helper.create_df_from_textract_result(
-                    official_document, textract_result=textract_result
-                )
+                textract_helper.update_job_status(blocking=options["blocking"])
+
+                # Commented out for the time being
+                # textract_sopn_parsing_helper = TextractSOPNParsingHelper(official_document)
+                # textract_sopn_parsing_helper.create_df_from_textract_result()
+        self.check_all_documents()
