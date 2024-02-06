@@ -153,13 +153,17 @@ class TextractSOPNHelper:
         job_id = textract_result.job_id
 
         response = self.textract_get_document_analysis(job_id)
-        while response["JobStatus"] not in [
-            "SUCCEEDED",
-            "FAILED",
-            "PARTIAL_SUCCESS",
-        ]:
-            sleep(5)
-            response = self.textract_get_document_analysis(job_id)
+        textract_result.analysis_status = response["JobStatus"]
+
+        if blocking:
+            while response["JobStatus"] not in [
+                "SUCCEEDED",
+                "FAILED",
+                "PARTIAL_SUCCESS",
+            ]:
+                sleep(5)
+                response = self.textract_get_document_analysis(job_id)
+
         if response["JobStatus"] == "SUCCEEDED":
             # It's possible that the returned result will be truncated.
             # In this case you need to use the next token to get
@@ -177,12 +181,9 @@ class TextractSOPNHelper:
             analysis.pop("NextToken", None)
             analysis["Blocks"] = blocks
 
-            textract_result.analysis_status = "SUCCEEDED"
             textract_result.json_response = json.dumps(analysis)
-            textract_result.save()
-        else:
-            textract_result.analysis_status = "FAILED"
-            textract_result.save()
+
+        textract_result.save()
         return textract_result
 
 
@@ -192,9 +193,8 @@ class TextractSOPNParsingHelper:
     the SOPN parsing functionality that matches fields including
     candidates to parties."""
 
-    def __init__(self, official_document: OfficialDocument, textract_result):
+    def __init__(self, official_document: OfficialDocument):
         self.official_document = official_document
-        self.textract_result = textract_result
 
     def get_rows_columns_map(self, table_result, blocks_map):
         rows = {}
@@ -235,10 +235,8 @@ class TextractSOPNParsingHelper:
                             text += "X "
         return text
 
-    def create_df_from_textract_result(
-        self, official_document, textract_result
-    ):
-        textract_result = self.textract_result
+    def create_df_from_textract_result(self):
+        textract_result = self.official_document.textract_result
         response = textract_result.json_response
         response = json.loads(response)
         blocks = response["Blocks"]
@@ -259,12 +257,12 @@ class TextractSOPNParsingHelper:
         if len(table_blocks) > 0:
             for index, table in enumerate(table_blocks):
                 df += self.prepare_df_from_table_results(
-                    table, blocks_map, index + 1, official_document
+                    table, blocks_map, index + 1, self.official_document
                 )
         # if there are no tables, we can extract the text as a list and save as a dataframe.
         elif len(text) > 0:
             df = pd.DataFrame(text)
-            self.save_dataframe_to_aws_sopn(df, official_document)
+            self.save_dataframe_to_aws_sopn(df, self.official_document)
 
         else:
             return "No data found"
