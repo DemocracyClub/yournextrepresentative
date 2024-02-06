@@ -26,9 +26,16 @@ class BaseSOPNParsingCommand(BaseCommand):
             "--election-slugs", "-s", action="store", required=False
         )
 
+        parser.add_argument(
+            "--date",
+            "-d",
+            action="store",
+            help="Election date in ISO format, defaults to 2021-05-06",
+            type=str,
+        )
+
     def get_queryset(self, options):
         filter_kwargs = {}
-
         if options.get("ballot") and options.get("election-slugs"):
             raise CommandError("Cant use ballot id and election slugs together")
 
@@ -42,6 +49,10 @@ class BaseSOPNParsingCommand(BaseCommand):
 
         if options["current"]:
             filter_kwargs["election__current"] = True
+
+        if options["date"]:
+            filter_kwargs["election__election_date"] = options["date"]
+
         qs = Ballot.objects.all()
         qs = qs.filter(**filter_kwargs)
         return qs.exclude(officialdocument=None)
