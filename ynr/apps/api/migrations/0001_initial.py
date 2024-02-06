@@ -17,7 +17,7 @@ def add_auth_tokens(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = []
+    dependencies = [("authtoken", "0003_tokenproxy")]
 
     operations = [
         (migrations.RunPython(add_auth_tokens, migrations.RunPython.noop))
