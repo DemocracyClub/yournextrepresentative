@@ -429,7 +429,7 @@ def parse_raw_data_for_ballot(ballot):
     except AWSTextractParsedSOPN.DoesNotExist:
         print(f"No AWSTextractParsedSOPN for {ballot.ballot_paper_id}")
         pass
-    # at this point we could compare the two sets of RawPeople data for the user to choose
+    # TODO: at this point we could compare the two sets of RawPeople data for the user to choose
 
 
 def parse_raw_data(parsed_sopn_model, ballot):
@@ -503,11 +503,5 @@ def parse_raw_data(parsed_sopn_model, ballot):
                 desired_storage_path,
                 ContentFile(json.dumps(ballot_data, indent=4).encode("utf8")),
             )
-
-            if type(parsed_sopn_model) != CamelotParsedSOPN:
-                import pdb
-
-                pdb.set_trace()
-            print("I'm here")
             parsed_sopn_model.status = "parsed"
             parsed_sopn_model.save()

@@ -533,6 +533,9 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         timestamp = timestamp.isoformat()
         later_timestamp = later_timestamp.isoformat()
 
+        import pandas  # noqa: F401
+
+        # freezegun issue with pandas https://github.com/spulec/freezegun/issues/464
         with freeze_time(timestamp):
             # first, edit an existing person's biography
             biography_update_response = self.app.get(
@@ -555,12 +558,14 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             biography_update_timestamp = biography_update_timestamp.strftime(
                 "%-d %B %Y %H:%M"
             )
+            print(biography_update_timestamp)
             self.assertContains(
                 person_response_one, "This is a new test biography"
             )
+
             self.assertContains(
                 person_response_one,
-                "This statement was last updated on {}".format(
+                "This statement was last updated on {}.".format(
                     biography_update_timestamp
                 ),
             )
