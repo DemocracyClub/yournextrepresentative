@@ -1,5 +1,6 @@
 import copy
 import json
+import os
 from io import StringIO
 from time import sleep
 
@@ -71,7 +72,7 @@ class TextractSOPNHelper:
         self, official_document: OfficialDocument, bucket_name: str = None
     ):
         self.official_document = official_document
-        # TO DO: set a policy to delete the files from S3 after a certain period
+        # We have set a lifecycle configuration set to delete these files from s3 after 30 days
         self.bucket_name = bucket_name or settings.TEXTRACT_S3_BUCKET_NAME
 
     @property
@@ -88,13 +89,15 @@ class TextractSOPNHelper:
     def upload_to_s3(self):
         object_key, bucket_name = self.s3_key
 
-        # TO DO: for dev env, we need a local file_path to upload to S3
-        try:
-            file_path = self.official_document.uploaded_file.path
-        except ValueError:
-            raise ValueError(
-                f"File path for {self.official_document.ballot.ballot_paper_id} not found"
-            )
+        if os.environ.get("RUN_ENV") == "test":
+            file_path = "ynr/apps/sopn_parsing/tests/data/halton-2019-statement-of-persons-nominated.pdf"
+        else:
+            try:
+                file_path = self.official_document.uploaded_file.path
+            except ValueError:
+                raise ValueError(
+                    f"File path for {self.official_document.ballot.ballot_paper_id} not found"
+                )
         with open(file_path, "rb") as file:
             file_bytes = bytearray(file.read())
 

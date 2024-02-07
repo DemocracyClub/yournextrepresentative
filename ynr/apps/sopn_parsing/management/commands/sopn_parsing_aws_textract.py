@@ -33,7 +33,6 @@ class Command(BaseSOPNParsingCommand):
         )
 
     def queue_full(self):
-
         time_window = timezone.now() - timedelta(hours=1)
         processing = TextractResult.objects.filter(
             created__gt=time_window,
