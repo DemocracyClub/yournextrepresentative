@@ -45,29 +45,32 @@ class Command(BaseSOPNParsingCommand):
             return True
         return False
 
-    def check_all_documents(self):
-        # Clean out the queue of any documents that aren't processed
-        # TODO: this should be a method on the queryset ("incomplete")
-        for document in OfficialDocument.objects.filter(
-            textract_result__analysis_status__in=["NOT_STARTED", "IN_PROGRESS"]
-        ):
-            textract_helper = TextractSOPNHelper(document)
-            textract_helper.update_job_status(blocking=False)
-
     def get_queryset(self, options):
         qs = super().get_queryset(options)
-
         return qs.filter(officialdocument__textract_result__id=None)
 
+    def check_all_documents(self, options, **kwargs):
+        qs = self.get_queryset(options).filter(
+            officialdocument__textract_result__analysis_status__in=[
+                "NOT_STARTED",
+                "IN_PROGRESS",
+            ]
+        )
+        if qs:
+            print(f"Checking {qs.count()} documents")
+            for document in qs:
+                textract_helper = TextractSOPNHelper(document)
+                textract_helper.update_job_status(blocking=False)
+
     def handle(self, *args, **options):
-        self.check_all_documents()
         queryset = self.get_queryset(options)
+
         for ballot in queryset:
             print(ballot)
             official_document: OfficialDocument = ballot.sopn
             if options["start_analysis"]:
                 if self.queue_full():
-                    self.check_all_documents()
+                    self.check_all_documents(options)
                     sleep(TEXTRACT_BACKOFF_TIME)
                 textract_helper = TextractSOPNHelper(official_document)
                 # TO DO: add logging here
