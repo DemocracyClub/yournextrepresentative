@@ -26,5 +26,13 @@ class Command(BaseSOPNParsingCommand):
         for ballot in qs:
             try:
                 extract_pages_for_ballot(ballot)
-            except (ValueError, NoTextInDocumentError, PDFException) as e:
-                self.stderr.write(e.args[0])
+            except (
+                ValueError,
+                NoTextInDocumentError,
+                PDFException,
+                FileNotFoundError,
+            ) as e:
+                try:
+                    self.stderr.write(e.args[0])
+                except AttributeError:
+                    self.stderr.write(str(e))
