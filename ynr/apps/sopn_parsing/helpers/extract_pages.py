@@ -83,12 +83,11 @@ class TextractSOPNHelper:
         region = settings.TEXTRACT_S3_BUCKET_REGION
         bucket_name = settings.TEXTRACT_S3_BUCKET_NAME
         self.s3_client = boto3.client("s3", region_name=region)
-        object_key = str(self.official_document.ballot_id)
+        object_key = f"{self.official_document.ballot.ballot_paper_id}/official_document/{self.official_document.uploaded_file.name}"
         return object_key, bucket_name
 
     def upload_to_s3(self):
         object_key, bucket_name = self.s3_key
-
         if os.environ.get("RUN_ENV") == "test":
             file_path = "ynr/apps/sopn_parsing/tests/data/halton-2019-statement-of-persons-nominated.pdf"
         else:
@@ -155,7 +154,7 @@ class TextractSOPNHelper:
         status = self.official_document.textract_result.analysis_status
         if status in COMPLETED_STATES:
             # TODO: should we delete the instance of the textract result?
-            return
+            return None
         textract_result = self.official_document.textract_result
         job_id = textract_result.job_id
 
@@ -189,7 +188,6 @@ class TextractSOPNHelper:
             analysis["Blocks"] = blocks
 
             textract_result.json_response = json.dumps(analysis)
-
         textract_result.save()
         return textract_result
 
