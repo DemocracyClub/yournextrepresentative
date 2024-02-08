@@ -553,7 +553,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             biography_update_timestamp = self.person.biography_last_updated
             # format into a string to compare with the response
             biography_update_timestamp = biography_update_timestamp.strftime(
-                "%d %B %Y %H:%M"
+                "%-d %B %Y %H:%M"
             )
             self.assertContains(
                 person_response_one, "This is a new test biography"
@@ -592,7 +592,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
 
             candidacy_update_timestamp = self.person.biography_last_updated
             candidacy_update_timestamp = candidacy_update_timestamp.strftime(
-                "%d %B %Y %H:%M"
+                "%-d %B %Y %H:%M"
             )
 
             person_response_one = self.app.get(
