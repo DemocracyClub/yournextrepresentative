@@ -55,7 +55,7 @@ def make_description_text(ec_description: Dict) -> str:
             d
             for d in (
                 ec_description["Description"],
-                ec_description.get("Translation", None),
+                ec_description.get("Translation"),
             )
             if d
         ]
