@@ -281,8 +281,11 @@ def s3_bucket(s3_client, bucket_name):
 @pytest.fixture
 def textract_sopn_helper(db, s3_client, s3_bucket):
     official_document = OfficialDocument.objects.create(
-        ballot=BallotPaperFactory(),
+        ballot=BallotPaperFactory(
+            ballot_paper_id="local.york.strensall.2019-05-02"
+        ),
         document_type=OfficialDocument.NOMINATION_PAPER,
+        uploaded_file="sopn.pdf",
     )
     yield TextractSOPNHelper(official_document=official_document)
 
@@ -346,7 +349,7 @@ def test_list_objects(s3_client, s3_bucket):
 
 def test_upload_to_s3(textract_sopn_helper):
     assert textract_sopn_helper.s3_key == (
-        "test/test_sopn.pdf",
+        "local.york.strensall.2019-05-02/official_document/sopn.pdf",
         "my-test-bucket",
     )
     response = textract_sopn_helper.upload_to_s3()
@@ -400,7 +403,8 @@ def test_update_job_status_failed(textract_sopn_helper, failed_analysis):
     ) as mock_textract_get_document_analysis:
         mock_textract_get_document_analysis.return_value = failed_analysis
         textract_sopn_helper.update_job_status()
-    assert official_document.textract_result.analysis_status == "NOT_STARTED"
+    official_document.textract_result.refresh_from_db()
+    assert official_document.textract_result.analysis_status == "FAILED"
 
 
 def analysis_with_next_token_side_effect(job_id, next_token=None):
