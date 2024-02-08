@@ -201,7 +201,7 @@ class PartyEmblem(TimeStampedModel):
         Party, on_delete=models.CASCADE, related_name="emblems"
     )
     ec_emblem_id = models.PositiveIntegerField(primary_key=True)
-    image = models.ImageField(upload_to=emblem_upload_path)
+    image = models.ImageField(upload_to=emblem_upload_path, max_length=255)
     description = models.CharField(max_length=255)
     date_approved = models.DateField(null=True)
     default = models.BooleanField(default=False)
