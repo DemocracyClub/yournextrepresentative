@@ -7,6 +7,7 @@
         <thead>
             <th>Party Name</th>
             <th>Number of Candidates</th>
+            <th>Election Date</th>
         </thead>
         <tbody>
         {% for pc in party_counts %}
@@ -17,6 +18,7 @@
                 <td><a href="{% url 'candidates_by_election_for_party' election=election party_id=pc.ec_id %}">{{ pc.name }}</a></td>
               {% endif %}
               <td>{{ pc.count}}</td>
+              <td>{{ election_data.election_date }}
             </tr>
         {% endfor %}
         </tbody>

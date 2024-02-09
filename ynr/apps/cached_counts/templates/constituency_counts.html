@@ -9,12 +9,14 @@
         <thead>
             <th>Post Name</th>
             <th>Number of Candidates</th>
+            <th>Election Date</th>
         </thead>
         <tbody>
         {% for ballot in post_counts %}
             <tr {% if ballot.count == 0 %}class="no_known"{% endif%}>
                 <td><a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a></td>
                 <td>{{ ballot.count }}</td>
+                <td>{{ election_data.election_date }}</td>
             </tr>
         {% endfor %}
         </tbody>

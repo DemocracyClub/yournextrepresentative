@@ -1,4 +1,5 @@
 import json
+import re
 
 import people.tests.factories
 from candidates.tests import factories
@@ -148,45 +149,52 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             tuple(td.decode() for td in row.find_all("td"))
             for row in response.html.find_all("tr")
         ]
-        self.assertEqual(
-            rows,
-            [
-                (
-                    "<td>2015 General Election</td>",
-                    '<td><a href="/elections/parl.65913.2015-05-07/">Camberwell and Peckham</a></td>',
-                    "<td>0</td>",
-                ),
-                (
-                    "<td>Maidstone local election</td>",
-                    '<td><a href="/elections/local.maidstone.DIW:E05005004.2016-05-05/">Shepway South Ward</a></td>',
-                    "<td>0</td>",
-                ),
-                (
-                    "<td>Senedd Cymru elections (Constituencies)</td>",
-                    '<td><a href="/elections/senedd.c.aberavon.2021-05-06/">Aberavon</a></td>',
-                    "<td>0</td>",
-                ),
-                (
-                    "<td>2015 General Election</td>",
-                    '<td><a href="/elections/parl.14420.2015-05-07/">Edinburgh North and Leith</a></td>',
-                    "<td>3</td>",
-                ),
-                (
-                    "<td>2015 General Election</td>",
-                    '<td><a href="/elections/parl.65808.2015-05-07/">Dulwich and West Norwood</a></td>',
-                    "<td>5</td>",
-                ),
-                (
-                    "<td>2015 General Election</td>",
-                    '<td><a href="/elections/parl.14419.2015-05-07/">Edinburgh East</a></td>',
-                    "<td>10</td>",
-                ),
-            ],
-        )
+
+        expected_response = [
+            (
+                "<td>2015 General Election</td>",
+                '<td><a href="/elections/parl.65913.2015-05-07/">Camberwell and Peckham</a></td>',
+                "<td>0</td>",
+                f"<td>{self.election.election_date.strftime('%-d %B %Y')}</td>",
+            ),
+            (
+                "<td>Maidstone local election</td>",
+                '<td><a href="/elections/local.maidstone.DIW:E05005004.2016-05-05/">Shepway South Ward</a></td>',
+                "<td>0</td>",
+                "<td>5 May 2016</td>",
+            ),
+            (
+                "<td>Senedd Cymru elections (Constituencies)</td>",
+                '<td><a href="/elections/senedd.c.aberavon.2021-05-06/">Aberavon</a></td>',
+                "<td>0</td>",
+                "<td>6 May 2021</td>",
+            ),
+            (
+                "<td>2015 General Election</td>",
+                '<td><a href="/elections/parl.14420.2015-05-07/">Edinburgh North and Leith</a></td>',
+                "<td>3</td>",
+                f"<td>{self.election.election_date.strftime('%-d %B %Y')}</td>",
+            ),
+            (
+                "<td>2015 General Election</td>",
+                '<td><a href="/elections/parl.65808.2015-05-07/">Dulwich and West Norwood</a></td>',
+                "<td>5</td>",
+                f"<td>{self.election.election_date.strftime('%-d %B %Y')}</td>",
+            ),
+            (
+                "<td>2015 General Election</td>",
+                '<td><a href="/elections/parl.14419.2015-05-07/">Edinburgh East</a></td>',
+                "<td>10</td>",
+                f"<td>{self.election.election_date.strftime('%-d %B %Y')}</td>",
+            ),
+        ]
+
+        self.assertEqual(rows, expected_response)
 
     def test_post_counts_page(self):
         response = self.app.get("/numbers/election/parl.2015-05-07/posts")
         self.assertEqual(response.status_code, 200)
+
         rows = [
             tuple(td.decode() for td in row.find_all("td"))
             for row in response.html.find_all("tr")
@@ -197,18 +205,22 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
                 (
                     '<td><a href="/elections/parl.14419.2015-05-07/">Member of Parliament for Edinburgh East</a></td>',
                     "<td>10</td>",
+                    f"<td>{self.election.election_date.strftime('%-d %B %Y')}</td>",
                 ),
                 (
                     '<td><a href="/elections/parl.65808.2015-05-07/">Member of Parliament for Dulwich and West Norwood</a></td>',
                     "<td>5</td>",
+                    f"<td>{self.election.election_date.strftime('%-d %B %Y')}</td>",
                 ),
                 (
                     '<td><a href="/elections/parl.14420.2015-05-07/">Member of Parliament for Edinburgh North and Leith</a></td>',
                     "<td>3</td>",
+                    f"<td>{self.election.election_date.strftime('%-d %B %Y')}</td>",
                 ),
                 (
                     '<td><a href="/elections/parl.65913.2015-05-07/">Member of Parliament for Camberwell and Peckham</a></td>',
                     "<td>0</td>",
+                    f"<td>{self.election.election_date.strftime('%-d %B %Y')}</td>",
                 ),
             ],
         )
@@ -216,32 +228,43 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
     def test_party_counts_page(self):
         response = self.app.get("/numbers/election/parl.2015-05-07/parties")
         self.assertEqual(response.status_code, 200)
+
         rows = [
             tuple(td.decode() for td in row.find_all("td"))
             for row in response.html.find_all("tr")
         ]
+
+        rows = [
+            tuple(re.sub(r"\s*\n\s*", "", cell) for cell in row) for row in rows
+        ]
+
         self.assertEqual(
             rows,
             [
                 (
                     '<td><a href="/parties/PP63/elections/parl.2015-05-07/">Green Party</a></td>',
                     "<td>4</td>",
+                    f"<td>{self.election.election_date.strftime('%-d %B %Y')}</td>",
                 ),
                 (
                     '<td><a href="/parties/PP53/elections/parl.2015-05-07/">Labour Party</a></td>',
                     "<td>4</td>",
+                    f"<td>{self.election.election_date.strftime('%-d %B %Y')}</td>",
                 ),
                 (
                     '<td><a href="/parties/PP90/elections/parl.2015-05-07/">Liberal Democrats</a></td>',
                     "<td>4</td>",
+                    f"<td>{self.election.election_date.strftime('%-d %B %Y')}</td>",
                 ),
                 (
                     '<td><a href="/parties/PP52/elections/parl.2015-05-07/">Conservative Party</a></td>',
                     "<td>3</td>",
+                    f"<td>{self.election.election_date.strftime('%-d %B %Y')}</td>",
                 ),
                 (
                     '<td><a href="/parties/PP39/elections/parl.2015-05-07/">Sinn F\xe9in</a></td>',
                     "<td>3</td>",
+                    f"<td>{self.election.election_date.strftime('%-d %B %Y')}</td>",
                 ),
             ],
         )
