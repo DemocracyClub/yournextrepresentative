@@ -178,7 +178,7 @@ class TestPersonView(PersonViewSharedTestsMixin):
         response = self.app.get(self.person.get_absolute_url())
 
         deselected_text = "This candidate has been deselected by their party, but will remain on the ballot paper."
-        deselected_source = """<a href="https://www.electoralcommission.org.uk/" target="_blank">Learn more<a>."""
+        deselected_source = """<a href="https://www.electoralcommission.org.uk/" target="_blank">Learn more</a>."""
 
         self.assertContains(response, deselected_text)
         self.assertContains(response, deselected_source)
