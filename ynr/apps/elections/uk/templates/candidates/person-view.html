@@ -148,7 +148,7 @@
       {% for membership in person.memberships.all %}
       {% if membership.ballot.election == election_data %}
           {% if membership.deselected %}
-            <dd>This candidate has been deselected by their party, but will remain on the ballot paper. <a href="{{ membership.deselected_source }}" target="_blank">Learn more<a>.</dd>
+            <dd>This candidate has been deselected by their party, but will remain on the ballot paper. <a href="{{ membership.deselected_source }}" target="_blank">Learn more</a>.</dd>
           {% endif %}
       {% endif %}
       {% endfor %}
