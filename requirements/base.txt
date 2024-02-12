@@ -54,7 +54,7 @@ mock==5.0.1
 moto[s3]==4.2.11
 nameparser==1.1.2
 ndg-httpsclient==0.5.1
-numpy==1.24.2
+numpy==1.24.4
 oauthlib==3.2.2
 path.py==12.5.0
 pexpect==4.8.0
