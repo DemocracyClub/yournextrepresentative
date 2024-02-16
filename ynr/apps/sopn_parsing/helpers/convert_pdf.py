@@ -1,8 +1,8 @@
 import tempfile
 
 import pypandoc
+import sentry_sdk
 from django.core.files.base import ContentFile
-from sentry_sdk import client
 
 ACCEPTED_FILE_TYPES = ["docx", "pdf"]
 
@@ -37,7 +37,7 @@ def convert_sopn_to_pdf(uploaded_file):
                 outputfile=temp_file.name,
             )
         except RuntimeError:
-            client.captureException()
+            sentry_sdk.capture_exception()
             raise PandocConversionError()
 
         # return with converted file object and updated name
