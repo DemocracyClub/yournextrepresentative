@@ -87,19 +87,11 @@ class TextractSOPNHelper:
 
     def upload_to_s3(self):
         object_key, bucket_name = self.s3_key
-        try:
-            file_path = self.official_document.uploaded_file.path
-        except ValueError:
-            raise ValueError(
-                f"File path for {self.official_document.ballot.ballot_paper_id} not found"
-            )
-        with open(file_path, "rb") as file:
-            file_bytes = bytearray(file.read())
 
         response = self.s3_client.put_object(
             Bucket=bucket_name,
             Key=object_key,
-            Body=file_bytes,
+            Body=self.official_document.uploaded_file.read(),
         )
         print(f"Uploaded bytes to s3://{bucket_name}/{object_key}")
         return response
