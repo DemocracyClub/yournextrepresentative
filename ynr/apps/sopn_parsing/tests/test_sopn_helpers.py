@@ -2,6 +2,7 @@ import contextlib
 import json
 import os
 from os.path import abspath, dirname, join
+from pathlib import Path
 from tempfile import NamedTemporaryFile
 from unittest import skipIf
 
@@ -13,6 +14,7 @@ from candidates.tests.factories import (
     OrganizationFactory,
 )
 from django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from mock import Mock, patch
 from moto import mock_s3
@@ -280,13 +282,17 @@ def s3_bucket(s3_client, bucket_name):
 
 @pytest.fixture
 def textract_sopn_helper(db, s3_client, s3_bucket):
-    official_document = OfficialDocument.objects.create(
-        ballot=BallotPaperFactory(
-            ballot_paper_id="local.york.strensall.2019-05-02"
-        ),
-        document_type=OfficialDocument.NOMINATION_PAPER,
-        uploaded_file="sopn.pdf",
+    sopn_pdf_path = (
+        Path(__file__).parent / "data/local.york.strensall.2019-05-02.pdf"
     )
+    with sopn_pdf_path.open("rb") as sopn_file:
+        official_document = OfficialDocument.objects.create(
+            ballot=BallotPaperFactory(
+                ballot_paper_id="local.york.strensall.2019-05-02"
+            ),
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file.read()),
+        )
     yield TextractSOPNHelper(official_document=official_document)
 
 
@@ -349,7 +355,7 @@ def test_list_objects(s3_client, s3_bucket):
 
 def test_upload_to_s3(textract_sopn_helper):
     assert textract_sopn_helper.s3_key == (
-        "local.york.strensall.2019-05-02/official_document/sopn.pdf",
+        textract_sopn_helper.official_document.uploaded_file.name,
         "my-test-bucket",
     )
     response = textract_sopn_helper.upload_to_s3()

@@ -1,6 +1,5 @@
 import copy
 import json
-import os
 from io import StringIO
 from time import sleep
 
@@ -83,20 +82,17 @@ class TextractSOPNHelper:
         region = settings.TEXTRACT_S3_BUCKET_REGION
         bucket_name = settings.TEXTRACT_S3_BUCKET_NAME
         self.s3_client = boto3.client("s3", region_name=region)
-        object_key = f"{self.official_document.ballot.ballot_paper_id}/official_document/{self.official_document.uploaded_file.name}"
+        object_key = f"{self.official_document.uploaded_file.name}"
         return object_key, bucket_name
 
     def upload_to_s3(self):
         object_key, bucket_name = self.s3_key
-        if os.environ.get("RUN_ENV") == "test":
-            file_path = "ynr/apps/sopn_parsing/tests/data/halton-2019-statement-of-persons-nominated.pdf"
-        else:
-            try:
-                file_path = self.official_document.uploaded_file.path
-            except ValueError:
-                raise ValueError(
-                    f"File path for {self.official_document.ballot.ballot_paper_id} not found"
-                )
+        try:
+            file_path = self.official_document.uploaded_file.path
+        except ValueError:
+            raise ValueError(
+                f"File path for {self.official_document.ballot.ballot_paper_id} not found"
+            )
         with open(file_path, "rb") as file:
             file_bytes = bytearray(file.read())
 
