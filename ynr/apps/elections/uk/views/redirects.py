@@ -79,7 +79,7 @@ class HelpOutCTAView(RedirectView):
             Ballot.objects.filter(
                 election__current=True,
                 suggestedpostlock=None,
-                post__officialdocument__isnull=False,
+                officialdocument__isnull=False,
             )
             .exclude(candidates_locked=True)
             .distinct()
