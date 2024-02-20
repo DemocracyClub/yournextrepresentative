@@ -1,16 +1,13 @@
 from datetime import timedelta
 from time import sleep
 
+from django.conf import settings
 from django.utils import timezone
 from official_documents.models import OfficialDocument, TextractResult
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 from sopn_parsing.helpers.extract_pages import (
     TextractSOPNHelper,
 )
-
-TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA = 0.5  # TODO: move to settings
-TEXTRACT_BACKOFF_TIME = 60
-TEXTRACT_CONCURRENT_QUOTA = 80  # move to settings
 
 
 class Command(BaseSOPNParsingCommand):
@@ -39,7 +36,7 @@ class Command(BaseSOPNParsingCommand):
             analysis_status__in=["NOT_STARTED", "IN_PROGRESS"],
         )
 
-        if count := processing.count() > TEXTRACT_CONCURRENT_QUOTA:
+        if count := processing.count() > settings.TEXTRACT_CONCURRENT_QUOTA:
             print(f"Processing: {count}")
             return True
         return False
@@ -70,12 +67,12 @@ class Command(BaseSOPNParsingCommand):
             if options["start_analysis"]:
                 if self.queue_full():
                     self.check_all_documents(options)
-                    sleep(TEXTRACT_BACKOFF_TIME)
+                    sleep(settings.TEXTRACT_BACKOFF_TIME)
                 textract_helper = TextractSOPNHelper(official_document)
                 # TO DO: add logging here
                 if getattr(official_document, "textract_result", None):
                     continue
-                sleep(TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA)
+                sleep(settings.TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA)
                 textract_helper.start_detection(official_document)
             if options["get_results"]:
                 textract_helper = TextractSOPNHelper(official_document)
