@@ -71,7 +71,7 @@ class TextractSOPNHelper:
         self, official_document: OfficialDocument, bucket_name: str = None
     ):
         self.official_document = official_document
-        # We have set a lifecycle configuration set to delete these files from s3 after 30 days
+
         self.bucket_name = bucket_name or settings.TEXTRACT_S3_BUCKET_NAME
 
     @property

@@ -40,6 +40,8 @@ There are some management commands designed to help us check that
 changes we make to how SOPN's are parsed do not make things *worse* than
 before. In order to easily run these easily there is a Makefile.
 
+First, ensure you have the Textract related settings up to date in order to successfully run the following commands. These can be found in `local.py.example` and should be added to your `local.py` file. If you receive an invalid token error from AWS, it's likely that you have not updated these settings. 
+
 The main command to use is `make test-sopns` (although see pre-requisites below before running for the first time). This will parse existing
 `OfficialDocument` objects and print out results of how many were
 successfully parsed.
