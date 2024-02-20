@@ -120,7 +120,7 @@ class TextractSOPNHelper:
             DocumentLocation={
                 "S3Object": {
                     "Bucket": settings.TEXTRACT_S3_BUCKET_NAME,
-                    "Name": str(self.official_document.ballot_id),
+                    "Name": f"{self.official_document.uploaded_file.name}",
                 }
             },
             FeatureTypes=["TABLES", "FORMS"],
