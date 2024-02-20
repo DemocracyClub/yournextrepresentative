@@ -7,6 +7,7 @@ from official_documents.models import OfficialDocument, TextractResult
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 from sopn_parsing.helpers.extract_pages import (
     TextractSOPNHelper,
+    TextractSOPNParsingHelper,
 )
 
 
@@ -42,8 +43,7 @@ class Command(BaseSOPNParsingCommand):
         return False
 
     def get_queryset(self, options):
-        qs = super().get_queryset(options)
-        return qs.filter(officialdocument__textract_result__id=None)
+        return super().get_queryset(options)
 
     def check_all_documents(self, options, **kwargs):
         qs = self.get_queryset(options).filter(
@@ -60,11 +60,15 @@ class Command(BaseSOPNParsingCommand):
 
     def handle(self, *args, **options):
         queryset = self.get_queryset(options)
-
-        for ballot in queryset:
-            print(ballot)
-            official_document: OfficialDocument = ballot.sopn
-            if options["start_analysis"]:
+        # in start-analysis, we want the qs to be all documents
+        # that don't have a textract result on the sopn
+        # in get-results, we want the qs to be all documents
+        # that have a textract result on the sopn
+        # the following is repetitive but addresses both options
+        if options["start_analysis"]:
+            qs = queryset.exclude(officialdocument__textract_result__id=None)
+            for ballot in qs:
+                official_document: OfficialDocument = ballot.sopn
                 if self.queue_full():
                     self.check_all_documents(options)
                     sleep(settings.TEXTRACT_BACKOFF_TIME)
@@ -74,11 +78,18 @@ class Command(BaseSOPNParsingCommand):
                     continue
                 sleep(settings.TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA)
                 textract_helper.start_detection(official_document)
-            if options["get_results"]:
+        if options["get_results"]:
+            qs = queryset.filter(
+                officialdocument__textract_result__isnull=False
+            )
+            for ballot in qs:
+                official_document: OfficialDocument = ballot.sopn
+
                 textract_helper = TextractSOPNHelper(official_document)
                 textract_helper.update_job_status(blocking=options["blocking"])
 
-                # Commented out for the time being
-                # textract_sopn_parsing_helper = TextractSOPNParsingHelper(official_document)
-                # textract_sopn_parsing_helper.create_df_from_textract_result()
-        self.check_all_documents()
+                textract_sopn_parsing_helper = TextractSOPNParsingHelper(
+                    official_document
+                )
+                textract_sopn_parsing_helper.create_df_from_textract_result()
+        self.check_all_documents(options)

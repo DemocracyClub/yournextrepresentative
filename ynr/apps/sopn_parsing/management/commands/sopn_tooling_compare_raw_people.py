@@ -8,7 +8,7 @@ from django.core.management import call_command
 from official_documents.models import OfficialDocument
 from popolo.models import Membership
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
-from sopn_parsing.models import AWSTextractParsedSOPN, CamelotParsedSOPN
+from sopn_parsing.models import CamelotParsedSOPN
 
 
 class Command(BaseSOPNParsingCommand):
@@ -50,7 +50,6 @@ class Command(BaseSOPNParsingCommand):
         OfficialDocument.objects.update(relevant_pages="")
         call_command("sopn_parsing_extract_page_numbers", *args, **options)
         CamelotParsedSOPN.objects.all().delete()
-        AWSTextractParsedSOPN.objects.all().delete()
         call_command("sopn_parsing_extract_tables", *args, **options)
         RawPeople.objects.all().delete()
         call_command("sopn_parsing_parse_tables", *args, **options)

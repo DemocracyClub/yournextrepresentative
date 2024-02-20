@@ -433,8 +433,8 @@ def parse_raw_data_for_ballot(ballot):
 
 
 def parse_raw_data(parsed_sopn_model, ballot):
-    data = parsed_sopn_model.as_pandas
     data_sets = []
+    data = parsed_sopn_model.as_pandas
     if parsed_sopn_model.raw_data_type == "pandas":
         data_sets.append(data)
 
@@ -442,7 +442,7 @@ def parse_raw_data(parsed_sopn_model, ballot):
         cell_counts = [len(merge_row_cells(c)) for c in iter_rows(data)]
 
         header_found = False
-        avg_row = sum(cell_counts) / float(len(cell_counts))
+        avg_row = sum(cell_counts) / float(len(cell_counts) or 1)
         for row in iter_rows(data):
             if not header_found:
                 if looks_like_header(row, avg_row):

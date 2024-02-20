@@ -274,7 +274,12 @@ class TextractSOPNParsingHelper:
             for col_index, text in cols.items():
                 csv += "{}".format(text)
 
-        df = pd.read_csv(StringIO(csv))
+        try:
+            df = pd.read_csv(StringIO(csv))
+            print(df.shape)
+        except Exception as e:
+            print(f"Error: {e}")
+            df = pd.DataFrame()
         self.save_dataframe_to_aws_sopn(df, official_document)
         return df
 

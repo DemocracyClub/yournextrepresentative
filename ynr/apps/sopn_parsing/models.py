@@ -53,3 +53,10 @@ class AWSTextractParsedSOPN(TimeStampedModel):
     raw_data_type = models.CharField(max_length=255, default="pandas")
     parsed_data = models.TextField(null=True)
     status = models.CharField(max_length=255, default="unparsed")
+
+    @property
+    def as_pandas(self):
+        import pandas
+
+        pandas.set_option("display.max_colwidth", None)
+        return pandas.DataFrame.from_dict(json.loads(self.raw_data))
