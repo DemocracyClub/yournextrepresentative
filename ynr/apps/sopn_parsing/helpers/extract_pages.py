@@ -190,6 +190,10 @@ class TextractSOPNParsingHelper:
         self.official_document = official_document
 
     def get_rows_columns_map(self, table_result, blocks_map):
+        # This method and the get_text method are adapted from the AWS Textract
+        # https://docs.aws.amazon.com/textract/latest/dg/examples-export-table-csv.html
+        # the first two rows are generally headers but this needs to be refactored to be
+        # to be useful in the context of the SOPN parsing.
         rows = {}
         scores = []
         for relationship in table_result["Relationships"]:
