@@ -4,7 +4,7 @@ from candidates import models as extra_models
 from candidates.api.next.serializers import LoggedActionSerializer
 from django.db.models import Prefetch
 from django.http import Http404, HttpResponsePermanentRedirect
-from people.api.next.filters import PersonFilter
+from people.api.next.filters import PersonFilter, PersonRedirectFilter
 from people.models import Person
 from popolo.models import Membership
 from rest_framework import viewsets
@@ -104,3 +104,4 @@ class PersonRedirectViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "old_person_id"
     serializer_class = people.api.next.serializers.PersonRedirectSerializer
     pagination_class = ResultsSetPagination
+    filterset_class = PersonRedirectFilter
