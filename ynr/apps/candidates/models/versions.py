@@ -41,7 +41,7 @@ def get_person_as_version_data(person, new_person=False):
         new_id = person.get_single_identifier_of_type(
             "theyworkforyou"
         ).internal_identifier
-        if "publicwhip" not in new_id:
+        if not new_id or "publicwhip" not in new_id:
             new_id = "uk.org.publicwhip/person/{}".format(new_id)
 
         result["identifiers"].append(

@@ -26,6 +26,7 @@ class CandidateBot(object):
         f.name for f in PersonIdentifierFields
     ]
     SUPPORTED_PERSON_IDENTIFIER_FIELDS.append("mnis_id")
+    SUPPORTED_PERSON_IDENTIFIER_FIELDS.append("theyworkforyou")
     SUPPORTED_EDIT_FIELDS = [
         "other_names",
         "name",
@@ -58,7 +59,9 @@ class CandidateBot(object):
             return self.save(source)
         return None
 
-    def edit_field(self, field_name, field_value, update=None):
+    def edit_field(
+        self, field_name, field_value, internal_id=None, update=None
+    ):
         if update is None:
             update = self.update
         ignore_edit = False
@@ -104,6 +107,7 @@ class CandidateBot(object):
                         person=self.person,
                         value_type=field_name,
                         value=field_value,
+                        internal_identifier=internal_id,
                     )
                     self.edits_made = True
 
@@ -168,3 +172,8 @@ class CandidateBot(object):
 
     def add_facebook_page_url(self, username):
         self.edit_field("facebook_page_url", username)
+
+    def add_theyworkforyou_id(self, twfy_id):
+        value = f"https://www.theyworkforyou.com/mp/{twfy_id}/"
+        internal_id = f"uk.org.publicwhip/person/{twfy_id}"
+        self.edit_field("theyworkforyou", value, internal_id=internal_id)
