@@ -63,5 +63,3 @@ if settings.DEBUG:
 if settings.DEBUG or getattr(settings, "RUNNING_TESTS", False):
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-handler404 = "ynr_refactoring.views.logged_page_not_found_wrapper"

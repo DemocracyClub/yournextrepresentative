@@ -1,20 +1,12 @@
 from candidates.models import Ballot
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.views.defaults import page_not_found
 from django.views.generic import RedirectView
 from elections.models import Election
 from official_documents.models import OfficialDocument
 from parties.models import Party
 
 from .constants import UPDATED_SLUGS
-from .models import PageNotFoundLog
-
-
-def logged_page_not_found_wrapper(request, *args, **kwargs):
-    # Log stuff
-    PageNotFoundLog(url=request.path).save()
-    return page_not_found(request, *args, **kwargs)
 
 
 # Redirect views
