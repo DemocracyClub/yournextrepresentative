@@ -8,6 +8,7 @@ from django.db import models, transaction
 from django.db.models import JSONField
 from django.urls import reverse
 from django.utils.html import escape
+from django_extensions.db.models import TimeStampedModel
 from moderation_queue.review_required_helper import (
     POST_DECISION_REVIEW_TYPES,
     REVIEW_TYPES,
@@ -259,7 +260,7 @@ class LoggedAction(models.Model):
             transaction.on_commit(post_action_to_slack.s(self.pk).delay)
 
 
-class PersonRedirect(models.Model):
+class PersonRedirect(TimeStampedModel):
     """This represents a redirection from one person ID to another
 
     This is typically used to redirect from the person that is deleted
