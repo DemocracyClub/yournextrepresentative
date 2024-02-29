@@ -73,9 +73,10 @@ jobs:
           command: |
             . .venv/bin/activate
             pip check
+            ruff .
+            ruff format .
             python manage.py check
             python manage.py makemigrations --check
-            black --check .
       - run:
           name: run tests
           environment:

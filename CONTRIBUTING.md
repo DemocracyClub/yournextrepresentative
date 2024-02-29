@@ -21,6 +21,5 @@ If you are interested in helping out, feel free to
 * Reference the #issue number in your pull request.
 * Keep pull requests limited to a single issue.
 * Test any front-end changes (HTML, CSS, javascript) in multiple browsers.
-* We use the [black](https://github.com/ambv/black) coding standard. Please run `black` before submitting a pull request
-
-
+* We use [Ruff](https://docs.astral.sh/ruff/) coding standard. Please 
+  run `ruff` and `ruff format` before submitting a pull request

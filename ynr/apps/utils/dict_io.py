@@ -18,7 +18,7 @@ class BufferDictReader(csv.DictReader):
         restval=None,
         dialect="excel",
         *_,
-        **kwargs
+        **kwargs,
     ):
         s = io.StringIO(s.decode("utf-8"))
         return csv.DictReader(
@@ -43,7 +43,7 @@ class BufferDictWriter(csv.DictWriter):
         extrasaction="raise",
         dialect="excel",
         *_,
-        **kwargs
+        **kwargs,
     ):
         self.f = io.StringIO()
         super().__init__(

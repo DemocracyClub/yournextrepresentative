@@ -175,11 +175,9 @@ class BallotPaperView(TemplateView):
             context["identifiers_formset"] = PersonIdentifierFormsetFactory()
 
             # Previous candidate suggestions
-            context[
-                "previous_ballot"
-            ] = previous_ballot = Ballot.objects.get_previous_ballot_for_post(
-                ballot
-            )
+            context["previous_ballot"] = (
+                previous_ballot
+            ) = Ballot.objects.get_previous_ballot_for_post(ballot)
             if previous_ballot and not ballot.polls_closed:
                 context[
                     "people_not_standing"

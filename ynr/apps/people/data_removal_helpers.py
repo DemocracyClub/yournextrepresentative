@@ -39,9 +39,7 @@ class PhotoCheck(BaseCheck):
             "title": "image",
             "description": """Source: {source}
             User: {user}
-            """.format(
-                source=item.source or None, user=item.uploading_user
-            ),
+            """.format(source=item.source or None, user=item.uploading_user),
             "image": item.image.url,
         }
 
