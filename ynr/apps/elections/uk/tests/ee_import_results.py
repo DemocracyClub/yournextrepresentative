@@ -12741,9 +12741,7 @@ def get_changing_identifier_code_result(identifier):
         }
         ]
 }
-    """.replace(
-        "##########", identifier
-    )
+    """.replace("##########", identifier)
     return json.loads(string)
 
 

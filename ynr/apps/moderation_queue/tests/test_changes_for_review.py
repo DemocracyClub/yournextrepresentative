@@ -469,9 +469,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         )
         form = response.forms[1]
 
-        form[
-            "biography"
-        ] = """
+        form["biography"] = """
                 Now, this is a story all about how
                 my life got flipped-turned upside down"""
         form["source"] = "just a test"

@@ -1,7 +1,7 @@
 [tool.ruff]
 line-length = 80
-ignore = ["E501"]
-extend-select = [
+lint.ignore = ["E501"]
+lint.extend-select = [
     "I",
     "C4",
     "SIM",
