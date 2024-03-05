@@ -83,17 +83,21 @@ class Command(BaseSOPNParsingCommand):
                 sleep(settings.TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA)
                 textract_helper.start_detection(official_document)
         if options["get_results"]:
-            qs = queryset.filter(
-                officialdocument__textract_result__isnull=False
+            qs = qs.filter(
+                officialdocument__awstextractparsedsopn__isnull=False
             )
             for ballot in qs:
                 official_document: OfficialDocument = ballot.sopn
+                print(official_document)
 
                 textract_helper = TextractSOPNHelper(official_document)
-                textract_helper.update_job_status(blocking=options["blocking"])
+                textract_helper.update_job_status(
+                    blocking=options["blocking"], reparse=options["reparse"]
+                )
 
                 textract_sopn_parsing_helper = TextractSOPNParsingHelper(
                     official_document
                 )
-                textract_sopn_parsing_helper.create_df_from_textract_result()
+                parsed = textract_sopn_parsing_helper.parse()
+                print(parsed.as_pandas)
         self.check_all_documents(options)

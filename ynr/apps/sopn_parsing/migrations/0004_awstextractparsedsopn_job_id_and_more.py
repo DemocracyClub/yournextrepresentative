@@ -6,6 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     dependencies = [
         ("sopn_parsing", "0003_rename_parsedsopn_camelotparsedsopn"),
+        ("sopn_parsing", "0003_rename_parsedsopn_camelotparsedsopn"),
     ]
 
     operations = [

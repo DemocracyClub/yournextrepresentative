@@ -2,6 +2,8 @@ import json
 
 from django.db import models
 from model_utils.models import TimeStampedModel
+from pandas import concat
+from textractor.parsers.response_parser import parse
 
 
 class CamelotParsedSOPN(TimeStampedModel):
@@ -72,4 +74,33 @@ class AWSTextractParsedSOPN(TimeStampedModel):
         import pandas
 
         pandas.set_option("display.max_colwidth", None)
-        return pandas.DataFrame.from_dict(json.loads(self.raw_data))
+        return pandas.DataFrame.from_dict(json.loads(self.parsed_data))
+
+    def parse_raw_data(self):
+        """
+        Use AWS Textractor to convert the raw JSON response
+        to a Pandas dataframe (and then to JSON for storing
+        on the model).
+
+        It's possible for Textract to detect more than one
+        table per document. Default to merging them all
+        into one table.
+        :return:
+        """
+        # User Textractor to parse the raw JSON
+        parsed = parse(json.loads(self.raw_data))
+        # Store all data frames in a list
+        frames = []
+
+        # Table headers that we've seen
+        for table in parsed.tables:
+            # Get the pandas version of the table
+            df = table.to_pandas()
+            frames.append(df)
+
+        # Merge all the dataframes
+        df = concat(
+            frames,
+            ignore_index=True,
+        )
+        self.parsed_data = df.to_json()
