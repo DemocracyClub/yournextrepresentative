@@ -69,33 +69,13 @@ class TextractSOPNHelper:
     """Get the AWS Textract results for a given SOPN."""
 
     def __init__(
-        self, official_document: OfficialDocument, bucket_name: str = None
+        self,
+        official_document: OfficialDocument,
+        bucket_name: str = None,
     ):
         self.official_document = official_document
 
-        self.bucket_name = bucket_name or settings.TEXTRACT_S3_BUCKET_NAME
-
-    @property
-    def s3_key(self) -> Tuple[str, Any]:
-        """
-        Return the S3 key for this file (made up of ballot ID?)
-        """
-        region = settings.TEXTRACT_S3_BUCKET_REGION
-        bucket_name = settings.TEXTRACT_S3_BUCKET_NAME
-        self.s3_client = boto3.client("s3", region_name=region)
-        object_key = f"{self.official_document.uploaded_file.name}"
-        return object_key, bucket_name
-
-    def upload_to_s3(self):
-        object_key, bucket_name = self.s3_key
-
-        response = self.s3_client.put_object(
-            Bucket=bucket_name,
-            Key=object_key,
-            Body=self.official_document.uploaded_file.read(),
-        )
-        print(f"Uploaded bytes to s3://{bucket_name}/{object_key}")
-        return response
+        self.bucket_name = bucket_name or settings.AWS_STORAGE_BUCKET_NAME
 
     def start_detection(self, replace=False) -> Optional[AWSTextractParsedSOPN]:
         parsed_sopn = getattr(
@@ -103,7 +83,6 @@ class TextractSOPNHelper:
         )
         if parsed_sopn and not replace:
             return None
-        self.upload_to_s3()
         response = self.textract_start_document_analysis()
         try:
             textract_result, _ = AWSTextractParsedSOPN.objects.update_or_create(
@@ -120,14 +99,16 @@ class TextractSOPNHelper:
         return textract_client.start_document_analysis(
             DocumentLocation={
                 "S3Object": {
-                    "Bucket": settings.TEXTRACT_S3_BUCKET_NAME,
-                    "Name": f"{self.official_document.uploaded_file.name}",
+                    "Bucket": self.bucket_name,
+                    "Name": f"{settings.MEDIA_URL}/{self.official_document.uploaded_file.name}".lstrip(
+                        "/"
+                    ),
                 }
             },
             FeatureTypes=["TABLES", "FORMS"],
             OutputConfig={
                 "S3Bucket": settings.TEXTRACT_S3_BUCKET_NAME,
-                "S3Prefix": "raw_textract_responses/",
+                "S3Prefix": "raw_textract_responses",
             },
         )
 

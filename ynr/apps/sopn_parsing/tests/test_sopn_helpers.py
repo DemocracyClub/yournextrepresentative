@@ -3,10 +3,8 @@ import json
 import os
 from os.path import abspath, dirname, join
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 from unittest import skipIf
 
-import boto3
 import pytest
 from candidates.tests.factories import (
     BallotPaperFactory,
@@ -17,7 +15,6 @@ from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from mock import Mock, patch
-from moto import mock_s3
 from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.extract_pages import (
     TextractSOPNHelper,
@@ -259,30 +256,7 @@ def aws_credentials():
 
 
 @pytest.fixture
-def s3_client(aws_credentials):
-    with mock_s3():
-        conn = boto3.client("s3", region_name="eu-west-2")
-        yield conn
-
-
-@pytest.fixture
-def bucket_name(settings):
-    settings.TEXTRACT_S3_BUCKET_NAME = "my-test-bucket"
-    yield settings.TEXTRACT_S3_BUCKET_NAME
-
-
-@pytest.fixture
-def s3_bucket(s3_client, bucket_name):
-    s3_client.create_bucket(
-        ACL="public-read-write",
-        Bucket=bucket_name,
-        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
-    )
-    yield
-
-
-@pytest.fixture
-def textract_sopn_helper(db, s3_client, s3_bucket):
+def textract_sopn_helper(db):
     sopn_pdf_path = (
         Path(__file__).parent / "data/local.york.strensall.2019-05-02.pdf"
     )
@@ -321,46 +295,6 @@ def failed_analysis():
     return load_json_fixture(
         "ynr/apps/sopn_parsing/tests/data/sample_textract_token_test_failure.json"
     )
-
-
-def test_list_buckets(s3_client, s3_bucket):
-    my_client = MyS3Client()
-    buckets = my_client.list_buckets()
-    assert ["my-test-bucket"] == buckets
-
-
-def list_objects(self, bucket_name, prefix):
-    """Returns a list all objects with specified prefix."""
-    response = self.client.list_objects(
-        Bucket=bucket_name,
-        Prefix=prefix,
-    )
-    return [object["Key"] for object in response["Contents"]]
-
-
-def test_list_objects(s3_client, s3_bucket):
-    file_text = "test"
-    with NamedTemporaryFile(delete=True, suffix=".txt") as tmp:
-        with open(tmp.name, "w", encoding="UTF-8") as f:
-            f.write(file_text)
-
-        s3_client.upload_file(tmp.name, "my-test-bucket", "file12")
-        s3_client.upload_file(tmp.name, "my-test-bucket", "file22")
-
-    my_client = MyS3Client()
-    objects = my_client.list_objects(
-        bucket_name="my-test-bucket", prefix="file1"
-    )
-    assert objects == ["file12"]
-
-
-def test_upload_to_s3(textract_sopn_helper):
-    assert textract_sopn_helper.s3_key == (
-        textract_sopn_helper.official_document.uploaded_file.name,
-        "my-test-bucket",
-    )
-    response = textract_sopn_helper.upload_to_s3()
-    assert response["ResponseMetadata"]["HTTPStatusCode"] == 200
 
 
 def test_start_detection(textract_sopn_helper, get_document_analysis_json):
@@ -443,41 +377,11 @@ def test_update_job_status_with_token(textract_sopn_helper):
         == '{"JobStatus": "SUCCEEDED", "Blocks": ["baz", "foo", "Bar"]}'
     )
 
-    # def test_create_df_from_textract_result(textract_sopn_parsing_helper):
-    # assert that get_rows_columns_map is called once
-    # df = textract_sopn_parsing_helper.create_df_from_textract_result(
-    #     official_document=textract_sopn_parsing_helper.official_document,
-    #     textract_result=textract_sopn_parsing_helper.textract_result,
-    # )
-
-    # sopn_text = "STATEMENT OF PERSONS"
-    # assert sopn_text in df.values
-
 
 @pytest.fixture
-def textract_sopn_parsing_helper(
-    db, s3_client, s3_bucket, get_document_analysis_json
-):
+def textract_sopn_parsing_helper(db, get_document_analysis_json):
     official_document = OfficialDocument.objects.create(
         ballot=BallotPaperFactory(),
         document_type=OfficialDocument.NOMINATION_PAPER,
     )
     yield TextractSOPNParsingHelper(official_document=official_document)
-
-
-class MyS3Client:
-    def __init__(self, region_name="eu-west-2"):
-        self.client = boto3.client("s3", region_name=region_name)
-
-    def list_buckets(self):
-        """Returns a list of bucket names."""
-        response = self.client.list_buckets()
-        return [bucket["Name"] for bucket in response["Buckets"]]
-
-    def list_objects(self, bucket_name, prefix):
-        """Returns a list all objects with specified prefix."""
-        response = self.client.list_objects(
-            Bucket=bucket_name,
-            Prefix=prefix,
-        )
-        return [s3_object["Key"] for s3_object in response["Contents"]]
