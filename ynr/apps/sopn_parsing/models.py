@@ -39,6 +39,14 @@ class CamelotParsedSOPN(TimeStampedModel):
         return None
 
 
+class AWSTextractParsedSOPNStatus(models.TextChoices):
+    NOT_STARTED = "NOT_STARTED", "Not Started"
+    SUCCEEDED = "SUCCEEDED", "Succeeded"
+    IN_PROGRESS = "IN_PROGRESS", "In Progress"
+    FAILED = "FAILED", "Failed"
+    PARTIAL_SUCCESS = "PARTIAL_SUCCESS", "Partial Success"
+
+
 class AWSTextractParsedSOPN(TimeStampedModel):
     """
     A model for storing the parsed data out of a PDF
@@ -49,10 +57,15 @@ class AWSTextractParsedSOPN(TimeStampedModel):
     sopn = models.OneToOneField(
         "official_documents.OfficialDocument", on_delete=models.CASCADE
     )
+    job_id = models.CharField(max_length=100)
     raw_data = models.TextField()
     raw_data_type = models.CharField(max_length=255, default="pandas")
     parsed_data = models.TextField(null=True)
-    status = models.CharField(max_length=255, default="unparsed")
+    status = models.CharField(
+        max_length=255,
+        choices=AWSTextractParsedSOPNStatus.choices,
+        default=AWSTextractParsedSOPNStatus.NOT_STARTED,
+    )
 
     @property
     def as_pandas(self):

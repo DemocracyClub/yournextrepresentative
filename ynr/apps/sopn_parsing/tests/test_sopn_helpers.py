@@ -18,12 +18,13 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from mock import Mock, patch
 from moto import mock_s3
-from official_documents.models import OfficialDocument, TextractResult
+from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.extract_pages import (
     TextractSOPNHelper,
     TextractSOPNParsingHelper,
 )
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
+from sopn_parsing.models import AWSTextractParsedSOPN
 from sopn_parsing.tests import should_skip_pdf_tests
 
 with contextlib.suppress(ImportError):
@@ -371,18 +372,18 @@ def test_start_detection(textract_sopn_helper, get_document_analysis_json):
     # start_detection should return a job id and the default status of a textract response
     # because it hasn't been updated yet.
     assert textract_result.job_id == "1234"
-    assert textract_result.analysis_status == "NOT_STARTED"
+    assert textract_result.status == "NOT_STARTED"
 
 
 def test_update_job_status_succeeded(
     textract_sopn_helper, get_document_analysis_json
 ):
     official_document = textract_sopn_helper.official_document
-    TextractResult.objects.create(
-        official_document=official_document,
+    AWSTextractParsedSOPN.objects.create(
+        sopn=official_document,
         job_id="1234",
-        json_response="",
-        analysis_status="NOT_STARTED",
+        raw_data="",
+        status="NOT_STARTED",
     )
 
     with patch(
@@ -392,16 +393,16 @@ def test_update_job_status_succeeded(
             get_document_analysis_json
         )
         textract_sopn_helper.update_job_status()
-    assert official_document.textract_result.analysis_status == "SUCCEEDED"
+    assert official_document.awstextractparsedsopn.status == "SUCCEEDED"
 
 
 def test_update_job_status_failed(textract_sopn_helper, failed_analysis):
     official_document = textract_sopn_helper.official_document
-    TextractResult.objects.create(
-        official_document=official_document,
+    AWSTextractParsedSOPN.objects.create(
+        sopn=official_document,
         job_id="1234",
-        json_response="",
-        analysis_status="NOT_STARTED",
+        raw_data="",
+        status="NOT_STARTED",
     )
 
     with patch(
@@ -409,8 +410,8 @@ def test_update_job_status_failed(textract_sopn_helper, failed_analysis):
     ) as mock_textract_get_document_analysis:
         mock_textract_get_document_analysis.return_value = failed_analysis
         textract_sopn_helper.update_job_status()
-    official_document.textract_result.refresh_from_db()
-    assert official_document.textract_result.analysis_status == "FAILED"
+    official_document.awstextractparsedsopn.refresh_from_db()
+    assert official_document.awstextractparsedsopn.status == "FAILED"
 
 
 def analysis_with_next_token_side_effect(job_id, next_token=None):
@@ -421,11 +422,11 @@ def analysis_with_next_token_side_effect(job_id, next_token=None):
 
 def test_update_job_status_with_token(textract_sopn_helper):
     official_document = textract_sopn_helper.official_document
-    TextractResult.objects.create(
-        official_document=official_document,
+    AWSTextractParsedSOPN.objects.create(
+        sopn=official_document,
         job_id="1234",
-        json_response="",
-        analysis_status="NOT_STARTED",
+        raw_data="",
+        status="NOT_STARTED",
     )
 
     with patch(
@@ -436,9 +437,9 @@ def test_update_job_status_with_token(textract_sopn_helper):
             side_effect=analysis_with_next_token_side_effect
         )
         textract_sopn_helper.update_job_status()
-    assert official_document.textract_result.analysis_status == "SUCCEEDED"
+    assert official_document.awstextractparsedsopn.status == "SUCCEEDED"
     assert (
-        official_document.textract_result.json_response
+        official_document.awstextractparsedsopn.raw_data
         == '{"JobStatus": "SUCCEEDED", "Blocks": ["baz", "foo", "Bar"]}'
     )
 
@@ -461,15 +462,7 @@ def textract_sopn_parsing_helper(
         ballot=BallotPaperFactory(),
         document_type=OfficialDocument.NOMINATION_PAPER,
     )
-    textract_result = TextractResult.objects.create(
-        official_document=official_document,
-        job_id="1234",
-        json_response=get_document_analysis_json,
-        analysis_status="SUCCEEDED",
-    )
-    yield TextractSOPNParsingHelper(
-        official_document=official_document, textract_result=textract_result
-    )
+    yield TextractSOPNParsingHelper(official_document=official_document)
 
 
 class MyS3Client:
@@ -487,4 +480,4 @@ class MyS3Client:
             Bucket=bucket_name,
             Prefix=prefix,
         )
-        return [object["Key"] for object in response["Contents"]]
+        return [s3_object["Key"] for s3_object in response["Contents"]]

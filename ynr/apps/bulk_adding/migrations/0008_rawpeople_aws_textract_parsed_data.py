@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("sopn_parsing", "0002_awstextractparsedsopn"),
+        ("sopn_parsing", "0004_awstextractparsedsopn_job_id_and_more"),
         ("bulk_adding", "0007_alter_rawpeople_data"),
     ]
 

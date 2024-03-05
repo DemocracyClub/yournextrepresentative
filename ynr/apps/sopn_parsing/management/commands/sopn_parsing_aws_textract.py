@@ -3,12 +3,13 @@ from time import sleep
 
 from django.conf import settings
 from django.utils import timezone
-from official_documents.models import OfficialDocument, TextractResult
+from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 from sopn_parsing.helpers.extract_pages import (
     TextractSOPNHelper,
     TextractSOPNParsingHelper,
 )
+from sopn_parsing.models import AWSTextractParsedSOPN
 
 
 class Command(BaseSOPNParsingCommand):
@@ -32,9 +33,9 @@ class Command(BaseSOPNParsingCommand):
 
     def queue_full(self):
         time_window = timezone.now() - timedelta(hours=1)
-        processing = TextractResult.objects.filter(
+        processing = AWSTextractParsedSOPN.objects.filter(
             created__gt=time_window,
-            analysis_status__in=["NOT_STARTED", "IN_PROGRESS"],
+            status__in=["NOT_STARTED", "IN_PROGRESS"],
         )
 
         if count := processing.count() > settings.TEXTRACT_CONCURRENT_QUOTA:
@@ -47,7 +48,7 @@ class Command(BaseSOPNParsingCommand):
 
     def check_all_documents(self, options, **kwargs):
         qs = self.get_queryset(options).filter(
-            officialdocument__textract_result__analysis_status__in=[
+            officialdocument__awstextractparsedsopn__status__in=[
                 "NOT_STARTED",
                 "IN_PROGRESS",
             ]
@@ -55,18 +56,21 @@ class Command(BaseSOPNParsingCommand):
         if qs:
             print(f"Checking {qs.count()} documents")
             for document in qs:
-                textract_helper = TextractSOPNHelper(document)
+                textract_helper = TextractSOPNHelper(document.sopn)
                 textract_helper.update_job_status(blocking=False)
 
     def handle(self, *args, **options):
-        queryset = self.get_queryset(options)
+        qs = self.get_queryset(options)
         # in start-analysis, we want the qs to be all documents
         # that don't have a textract result on the sopn
         # in get-results, we want the qs to be all documents
         # that have a textract result on the sopn
         # the following is repetitive but addresses both options
         if options["start_analysis"]:
-            qs = queryset.exclude(officialdocument__textract_result__id=None)
+            if not options["reparse"]:
+                qs = qs.exclude(
+                    officialdocument__awstextractparsedsopn__id=None
+                )
             for ballot in qs:
                 official_document: OfficialDocument = ballot.sopn
                 if self.queue_full():

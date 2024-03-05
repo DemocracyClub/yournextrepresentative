@@ -2,6 +2,7 @@ import copy
 import json
 from io import StringIO
 from time import sleep
+from typing import Any, Optional, Tuple
 
 import boto3
 import pandas as pd
@@ -9,7 +10,7 @@ from botocore.client import Config
 from django.conf import settings
 from django.core.management import call_command
 from django.db import IntegrityError
-from official_documents.models import OfficialDocument, TextractResult
+from official_documents.models import OfficialDocument
 from pdfminer.pdftypes import PDFException
 from sopn_parsing.helpers.pdf_helpers import SOPNDocument
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
@@ -75,7 +76,7 @@ class TextractSOPNHelper:
         self.bucket_name = bucket_name or settings.TEXTRACT_S3_BUCKET_NAME
 
     @property
-    def s3_key(self) -> str:
+    def s3_key(self) -> Tuple[str, Any]:
         """
         Return the S3 key for this file (made up of ballot ID?)
         """
@@ -96,23 +97,23 @@ class TextractSOPNHelper:
         print(f"Uploaded bytes to s3://{bucket_name}/{object_key}")
         return response
 
-    def start_detection(self, replace=False):
-        qs = TextractResult.objects.filter(
-            official_document=self.official_document
-        ).exclude(json_response="")
-        if not replace and qs.exists():
+    def start_detection(self, replace=False) -> Optional[AWSTextractParsedSOPN]:
+        parsed_sopn = getattr(
+            self.official_document, "awstextractparsedsopn", None
+        )
+        if parsed_sopn and not replace:
             return None
         self.upload_to_s3()
         response = self.textract_start_document_analysis()
         try:
-            textract_result, _ = TextractResult.objects.update_or_create(
-                official_document=self.official_document,
-                defaults={"json_response": "", "job_id": response["JobId"]},
+            textract_result, _ = AWSTextractParsedSOPN.objects.update_or_create(
+                sopn=self.official_document,
+                defaults={"raw_data": "", "job_id": response["JobId"]},
             )
             return textract_result
         except IntegrityError as e:
             raise IntegrityError(
-                f"Failed to create TextractResult for {self.official_document.ballot.ballot_paper_id}: error {e}"
+                f"Failed to create AWSTextractParsedSOPN for {self.official_document.ballot.ballot_paper_id}: error {e}"
             )
 
     def textract_start_document_analysis(self):
@@ -139,15 +140,15 @@ class TextractSOPNHelper:
 
     def update_job_status(self, blocking=False):
         COMPLETED_STATES = ("SUCCEEDED", "FAILED", "PARTIAL_SUCCESS")
-        status = self.official_document.textract_result.analysis_status
+        status = self.official_document.awstextractparsedsopn.status
         if status in COMPLETED_STATES:
             # TODO: should we delete the instance of the textract result?
             return None
-        textract_result = self.official_document.textract_result
+        textract_result = self.official_document.awstextractparsedsopn
         job_id = textract_result.job_id
 
         response = self.textract_get_document_analysis(job_id)
-        textract_result.analysis_status = response["JobStatus"]
+        textract_result.status = response["JobStatus"]
 
         if blocking:
             while response["JobStatus"] not in [
@@ -162,7 +163,6 @@ class TextractSOPNHelper:
             # It's possible that the returned result will be truncated.
             # In this case you need to use the next token to get
             # subsequent parts of the response.
-            analysis = copy.deepcopy(response)
             blocks = []
             while True:
                 for block in response["Blocks"]:
@@ -172,10 +172,9 @@ class TextractSOPNHelper:
                 response = self.textract_get_document_analysis(
                     job_id, next_token=response["NextToken"]
                 )
-            analysis.pop("NextToken", None)
-            analysis["Blocks"] = blocks
+            response["Blocks"] = blocks
 
-            textract_result.json_response = json.dumps(analysis)
+        textract_result.raw_data = json.dumps(response)
         textract_result.save()
         return textract_result
 
@@ -233,8 +232,8 @@ class TextractSOPNParsingHelper:
         return text
 
     def create_df_from_textract_result(self):
-        textract_result = self.official_document.textract_result
-        response = textract_result.json_response
+        textract_result = self.official_document.awstextractparsedsopn
+        response = textract_result.raw_data
         response = json.loads(response)
         blocks = response["Blocks"]
         blocks_map = {}
