@@ -1,5 +1,7 @@
 import json
+from io import BytesIO
 
+from django.core.files.images import ImageFile
 from django.db import models
 from model_utils.models import TimeStampedModel
 from pandas import concat
@@ -47,6 +49,26 @@ class AWSTextractParsedSOPNStatus(models.TextChoices):
     IN_PROGRESS = "IN_PROGRESS", "In Progress"
     FAILED = "FAILED", "Failed"
     PARTIAL_SUCCESS = "PARTIAL_SUCCESS", "Partial Success"
+
+
+def AWSTextractParsedSOPNImage_upload_path(instance, filename):
+    return f"AWSTextractParsedSOPNImages/{instance.pk}/{filename}"
+
+
+class AWSTextractParsedSOPNImage(models.Model):
+    image = models.ImageField(upload_to=AWSTextractParsedSOPNImage_upload_path)
+    parsed_sopn = models.ForeignKey(
+        "AWSTextractParsedSOPN", on_delete=models.CASCADE, related_name="images"
+    )
+
+    @staticmethod
+    def pil_to_content_image(pil_image, filename):
+        """
+        Takes a PIL image and returns an ImageFile
+        """
+        image_io = BytesIO()
+        pil_image.save(image_io, format="PNG")
+        return ImageFile(image_io, name=filename)
 
 
 class AWSTextractParsedSOPN(TimeStampedModel):

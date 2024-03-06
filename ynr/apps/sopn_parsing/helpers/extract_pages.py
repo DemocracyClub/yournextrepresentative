@@ -8,11 +8,16 @@ from django.core.management import call_command
 from django.db import IntegrityError
 from official_documents.models import OfficialDocument
 from pdfminer.pdftypes import PDFException
+from PIL import Image
 from sopn_parsing.helpers.pdf_helpers import SOPNDocument
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
-from sopn_parsing.models import AWSTextractParsedSOPN
+from sopn_parsing.models import (
+    AWSTextractParsedSOPN,
+    AWSTextractParsedSOPNImage,
+)
 from textractor import Textractor
 from textractor.data.constants import TextractAPI, TextractFeatures
+from textractor.entities.lazy_document import LazyDocument
 
 
 def extract_pages_for_ballot(ballot):
@@ -81,25 +86,36 @@ class TextractSOPNHelper:
         )
         if parsed_sopn and not replace:
             return None
-        job_id = self.textract_start_document_analysis()
+        document = self.textract_start_document_analysis()
         try:
             textract_result, _ = AWSTextractParsedSOPN.objects.update_or_create(
                 sopn=self.official_document,
-                defaults={"raw_data": "", "job_id": job_id},
+                defaults={"raw_data": "", "job_id": document.job_id},
             )
+            textract_result.save()
+            textract_result.refresh_from_db()
+            # Delete any old images that might exist for this SOPN
+            textract_result.images.all().delete()
+            for i, image in enumerate(document.images):
+                AWSTextractParsedSOPNImage.objects.create(
+                    image=AWSTextractParsedSOPNImage.pil_to_content_image(
+                        image, f"page_{i}.png"
+                    ),
+                    parsed_sopn=textract_result,
+                )
             return textract_result
         except IntegrityError as e:
             raise IntegrityError(
                 f"Failed to create AWSTextractParsedSOPN for {self.official_document.ballot.ballot_paper_id}: error {e}"
             )
 
-    def textract_start_document_analysis(self):
-        response = self.extractor.start_document_analysis(
+    def textract_start_document_analysis(self) -> LazyDocument:
+        document: LazyDocument = self.extractor.start_document_analysis(
             file_source=f"s3://{self.bucket_name}{settings.MEDIA_URL}{self.official_document.uploaded_file.name}",
             features=[TextractFeatures.TABLES],
             s3_output_path=f"s3://{settings.TEXTRACT_S3_BUCKET_NAME}/raw_textract_responses",
         )
-        return response.job_id
+        return document
 
     def update_job_status(self, blocking=False, reparse=False):
         COMPLETED_STATES = ("SUCCEEDED", "FAILED", "PARTIAL_SUCCESS")
@@ -127,6 +143,16 @@ class TextractSOPNHelper:
         textract_document = self.extractor.get_result(
             textract_result.job_id, TextractAPI.ANALYZE
         )
+        # Add the images back in manually
+        images = list(textract_result.images.all())
+        for i, page in enumerate(textract_document._pages):
+            page.image = Image.open(images[i].image)
+        for i, page in enumerate(textract_document.pages):
+            images[i].image = AWSTextractParsedSOPNImage.pil_to_content_image(
+                page.visualize(), f"page_{i}_annotated.png"
+            )
+            images[i].save()
+
         textract_result.status = textract_document.response["JobStatus"]
         textract_result.raw_data = json.dumps(textract_document.response)
         textract_result.save()
