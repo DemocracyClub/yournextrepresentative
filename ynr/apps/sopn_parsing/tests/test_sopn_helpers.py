@@ -4,6 +4,7 @@ import os
 from os.path import abspath, dirname, join
 from pathlib import Path
 from unittest import skipIf
+from unittest.mock import PropertyMock
 
 import pytest
 from candidates.tests.factories import (
@@ -14,7 +15,7 @@ from candidates.tests.factories import (
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
-from mock import Mock, patch
+from mock import Mock
 from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.extract_pages import (
     TextractSOPNHelper,
@@ -23,6 +24,7 @@ from sopn_parsing.helpers.extract_pages import (
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
 from sopn_parsing.models import AWSTextractParsedSOPN
 from sopn_parsing.tests import should_skip_pdf_tests
+from textractor.entities.lazy_document import LazyDocument
 
 with contextlib.suppress(ImportError):
     from sopn_parsing.helpers.pdf_helpers import SOPNDocument
@@ -297,12 +299,32 @@ def failed_analysis():
     )
 
 
-def test_start_detection(textract_sopn_helper, get_document_analysis_json):
-    with patch(
-        "sopn_parsing.helpers.extract_pages.TextractSOPNHelper.textract_start_document_analysis"
-    ) as mock_textract_start_document_analysis:
-        mock_textract_start_document_analysis.return_value = {"JobId": "1234"}
-        textract_result = textract_sopn_helper.start_detection()
+@pytest.fixture
+def get_mock_document():
+    def _get_doc(json_response):
+        doc = LazyDocument
+        doc.response = PropertyMock(return_value=json_response)
+        doc._response = json_response
+        doc.job_id = "1234"
+        doc.images = []
+        doc._pages = PropertyMock(return_value=[])
+        doc.pages = PropertyMock(return_value=[])
+        return doc
+
+    return _get_doc
+
+
+def test_start_detection(
+    textract_sopn_helper, get_mock_document, get_document_analysis_json
+):
+    mock_document = get_mock_document(get_document_analysis_json)
+    mock_document_analysis = Mock()
+    mock_document_analysis.return_value = mock_document
+    textract_sopn_helper.textract_start_document_analysis = (
+        mock_document_analysis
+    )
+
+    textract_result = textract_sopn_helper.start_detection()
     # start_detection should return a job id and the default status of a textract response
     # because it hasn't been updated yet.
     assert textract_result.job_id == "1234"
@@ -310,7 +332,7 @@ def test_start_detection(textract_sopn_helper, get_document_analysis_json):
 
 
 def test_update_job_status_succeeded(
-    textract_sopn_helper, get_document_analysis_json
+    textract_sopn_helper, get_document_analysis_json, get_mock_document
 ):
     official_document = textract_sopn_helper.official_document
     AWSTextractParsedSOPN.objects.create(
@@ -320,17 +342,18 @@ def test_update_job_status_succeeded(
         status="NOT_STARTED",
     )
 
-    with patch(
-        "sopn_parsing.helpers.extract_pages.TextractSOPNHelper.textract_get_document_analysis"
-    ) as mock_textract_get_document_analysis:
-        mock_textract_get_document_analysis.return_value = (
-            get_document_analysis_json
-        )
-        textract_sopn_helper.update_job_status()
+    mock_document = get_mock_document(get_document_analysis_json)
+    mock_get_result = Mock()
+    mock_get_result.return_value = mock_document
+    textract_sopn_helper.extractor.get_result = mock_get_result
+
+    textract_sopn_helper.update_job_status(blocking=True)
     assert official_document.awstextractparsedsopn.status == "SUCCEEDED"
 
 
-def test_update_job_status_failed(textract_sopn_helper, failed_analysis):
+def test_update_job_status_failed(
+    textract_sopn_helper, failed_analysis, get_mock_document
+):
     official_document = textract_sopn_helper.official_document
     AWSTextractParsedSOPN.objects.create(
         sopn=official_document,
@@ -339,43 +362,14 @@ def test_update_job_status_failed(textract_sopn_helper, failed_analysis):
         status="NOT_STARTED",
     )
 
-    with patch(
-        "sopn_parsing.helpers.extract_pages.TextractSOPNHelper.textract_get_document_analysis"
-    ) as mock_textract_get_document_analysis:
-        mock_textract_get_document_analysis.return_value = failed_analysis
-        textract_sopn_helper.update_job_status()
+    mock_document = get_mock_document(failed_analysis)
+    mock_get_result = Mock()
+    mock_get_result.return_value = mock_document
+    textract_sopn_helper.extractor.get_result = mock_get_result
+
+    textract_sopn_helper.update_job_status(blocking=True)
     official_document.awstextractparsedsopn.refresh_from_db()
     assert official_document.awstextractparsedsopn.status == "FAILED"
-
-
-def analysis_with_next_token_side_effect(job_id, next_token=None):
-    if next_token == "token":
-        return {"JobStatus": "SUCCEEDED", "Blocks": ["foo", "Bar"]}
-    return {"JobStatus": "SUCCEEDED", "NextToken": "token", "Blocks": ["baz"]}
-
-
-def test_update_job_status_with_token(textract_sopn_helper):
-    official_document = textract_sopn_helper.official_document
-    AWSTextractParsedSOPN.objects.create(
-        sopn=official_document,
-        job_id="1234",
-        raw_data="",
-        status="NOT_STARTED",
-    )
-
-    with patch(
-        "sopn_parsing.helpers.extract_pages.TextractSOPNHelper.textract_get_document_analysis",
-        side_effect=analysis_with_next_token_side_effect,
-    ) as mock_textract_get_document_analysis:
-        mock_textract_get_document_analysis.return_value = Mock(
-            side_effect=analysis_with_next_token_side_effect
-        )
-        textract_sopn_helper.update_job_status()
-    assert official_document.awstextractparsedsopn.status == "SUCCEEDED"
-    assert (
-        official_document.awstextractparsedsopn.raw_data
-        == '{"JobStatus": "SUCCEEDED", "Blocks": ["baz", "foo", "Bar"]}'
-    )
 
 
 @pytest.fixture

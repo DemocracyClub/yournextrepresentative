@@ -1,5 +1,4 @@
 import json
-from time import sleep
 from typing import Optional
 
 import boto3
@@ -12,6 +11,8 @@ from pdfminer.pdftypes import PDFException
 from sopn_parsing.helpers.pdf_helpers import SOPNDocument
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 from sopn_parsing.models import AWSTextractParsedSOPN
+from textractor import Textractor
+from textractor.data.constants import TextractAPI, TextractFeatures
 
 
 def extract_pages_for_ballot(ballot):
@@ -71,8 +72,8 @@ class TextractSOPNHelper:
         bucket_name: str = None,
     ):
         self.official_document = official_document
-
         self.bucket_name = bucket_name or settings.AWS_STORAGE_BUCKET_NAME
+        self.extractor = Textractor(region_name="eu-west-2")
 
     def start_detection(self, replace=False) -> Optional[AWSTextractParsedSOPN]:
         parsed_sopn = getattr(
@@ -80,11 +81,11 @@ class TextractSOPNHelper:
         )
         if parsed_sopn and not replace:
             return None
-        response = self.textract_start_document_analysis()
+        job_id = self.textract_start_document_analysis()
         try:
             textract_result, _ = AWSTextractParsedSOPN.objects.update_or_create(
                 sopn=self.official_document,
-                defaults={"raw_data": "", "job_id": response["JobId"]},
+                defaults={"raw_data": "", "job_id": job_id},
             )
             return textract_result
         except IntegrityError as e:
@@ -93,66 +94,41 @@ class TextractSOPNHelper:
             )
 
     def textract_start_document_analysis(self):
-        return textract_client.start_document_analysis(
-            DocumentLocation={
-                "S3Object": {
-                    "Bucket": self.bucket_name,
-                    "Name": f"{settings.MEDIA_URL}/{self.official_document.uploaded_file.name}".lstrip(
-                        "/"
-                    ),
-                }
-            },
-            FeatureTypes=["TABLES", "FORMS"],
-            OutputConfig={
-                "S3Bucket": settings.TEXTRACT_S3_BUCKET_NAME,
-                "S3Prefix": "raw_textract_responses",
-            },
+        response = self.extractor.start_document_analysis(
+            file_source=f"s3://{self.bucket_name}{settings.MEDIA_URL}{self.official_document.uploaded_file.name}",
+            features=[TextractFeatures.TABLES],
+            s3_output_path=f"s3://{settings.TEXTRACT_S3_BUCKET_NAME}/raw_textract_responses",
         )
-
-    def textract_get_document_analysis(self, job_id, next_token=None):
-        if next_token:
-            return textract_client.get_document_analysis(
-                JobId=job_id, NextToken=next_token
-            )
-        return textract_client.get_document_analysis(JobId=job_id)
+        return response.job_id
 
     def update_job_status(self, blocking=False, reparse=False):
         COMPLETED_STATES = ("SUCCEEDED", "FAILED", "PARTIAL_SUCCESS")
-        status = self.official_document.awstextractparsedsopn.status
-        if status in COMPLETED_STATES and not reparse:
-            # TODO: should we delete the instance of the textract result?
-            return None
         textract_result = self.official_document.awstextractparsedsopn
-        job_id = textract_result.job_id
+        if textract_result.status in COMPLETED_STATES and not reparse:
+            return textract_result
 
-        response = self.textract_get_document_analysis(job_id)
-        textract_result.status = response["JobStatus"]
+        if not blocking:
+            # If we're not blocking, simply check the status and save it
+            # In the case that it's not finished, just save the status and return
+            response = self.extractor.textract_client.get_document_analysis(
+                JobId=textract_result.job_id
+            )
+            textract_result.status = response["JobStatus"]
+            if response["JobStatus"] not in COMPLETED_STATES:
+                textract_result.save()
+                return textract_result
 
-        if blocking:
-            while response["JobStatus"] not in [
-                "SUCCEEDED",
-                "FAILED",
-                "PARTIAL_SUCCESS",
-            ]:
-                sleep(5)
-                response = self.textract_get_document_analysis(job_id)
-
-        if response["JobStatus"] == "SUCCEEDED":
-            # It's possible that the returned result will be truncated.
-            # In this case you need to use the next token to get
-            # subsequent parts of the response.
-            blocks = []
-            while True:
-                for block in response["Blocks"]:
-                    blocks.append(block)
-                if "NextToken" not in response:
-                    break
-                response = self.textract_get_document_analysis(
-                    job_id, next_token=response["NextToken"]
-                )
-            response["Blocks"] = blocks
-
-        textract_result.raw_data = json.dumps(response)
+        # extractor.get_result is blocking by default (e.g, it will poll
+        # for the job finishing see
+        # https://github.com/aws-samples/amazon-textract-textractor/issues/326)
+        # because the above check for `if not blocking` should have returned
+        # by now if we didn't want to block (or the job is finished)
+        # it's safe to call this and have it 'block' on noting.
+        textract_document = self.extractor.get_result(
+            textract_result.job_id, TextractAPI.ANALYZE
+        )
+        textract_result.status = textract_document.response["JobStatus"]
+        textract_result.raw_data = json.dumps(textract_document.response)
         textract_result.save()
         return textract_result
 
