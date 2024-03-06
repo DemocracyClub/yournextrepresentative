@@ -367,12 +367,16 @@ class Ballot(EEModifiedMixin, models.Model):
             '<abbr title="Someone suggested locking this post">🔓</abbr>'
         )
 
-    @property
-    def sopn(self):
+    @cached_property
+    def sopn(self) -> Optional[OfficialDocument]:
         try:
-            return self.officialdocument_set.filter(
-                document_type=self.officialdocument_set.model.NOMINATION_PAPER
-            ).latest()
+            return (
+                self.officialdocument_set.filter(
+                    document_type=self.officialdocument_set.model.NOMINATION_PAPER
+                )
+                .select_related("awstextractparsedsopn", "camelotparsedsopn")
+                .latest()
+            )
         except self.officialdocument_set.model.DoesNotExist:
             return None
 

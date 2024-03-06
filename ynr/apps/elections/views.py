@@ -313,7 +313,14 @@ class SOPNForBallotView(DetailView):
     A view to show a single SOPN for a ballot paper
     """
 
-    model = Ballot
+    queryset = Ballot.objects.all().prefetch_related(
+        Prefetch(
+            "officialdocument_set",
+            OfficialDocument.objects.all().select_related(
+                "awstextractparsedsopn", "camelotparsedsopn"
+            ),
+        )
+    )
     slug_url_kwarg = "ballot_id"
     slug_field = "ballot_paper_id"
     template_name = "elections/sopn_for_ballot.html"
