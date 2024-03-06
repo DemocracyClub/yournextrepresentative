@@ -1,59 +1,54 @@
 <div class="container">
-  <details class="panel">
-  <summary><strong>Debug Info (click to expand)</strong></summary>
-    <br/>
-    <h3>Parsing Status</h3>
-    <ul>
-      <li>Pages matched: {% if object.sopn.get_pages %}Yes (matched pages: {{ object.sopn.get_pages|join:", " }}){% else %}No{% endif %}</li>
-      <li>Tables extracted: {% if object.sopn.camelotparsedsopn %}Yes{% else %}No{% endif %}</li>
-      <li>Raw Person Data: {% if object.rawpeople %}Yes{% else %}No{% endif %}</li>
-      <li>AWS Textract Data: {% if object.sopn.get_textract_result %}Yes{% else %}No{% endif %}</li>
-      <li>AWS Parsed SOPN: {% if object.sopn.get_aws_parsed_sopn %}Yes{% else %}No{% endif %}</li>  
-    </ul>
-    <br/>
-    <h3>Table Data</h3>
-    {% if object.sopn.camelotparsedsopn.data_as_html %}
-      {{ object.sopn.camelotparsedsopn.data_as_html|safe }}
-    {% else %}
-      N/A
-    {% endif %}
-    <br/>
-    <h3>Raw Data</h3>
-    {% if object.sopn.camelotparsedsopn.raw_data %}
-      <pre>{{ object.sopn.camelotparsedsopn.as_pandas.to_dict|pprint }}</pre>
-    {% else %}
-      N/A
-    {% endif %}
-    <h3>AWS Raw Data</h3>
-    {% if object.sopn.get_textract_result %}
-      <pre>{{ object.sopn.get_textract_result.json_response|pprint }}</pre>
-    {% else %}
-      N/A
-    {% endif %}
-    <h3>AWS Parsed SOPN</h3>
-    {% if object.sopn.get_aws_parsed_sopn %}
-      <pre>{{ object.sopn.get_aws_parsed_sopn.raw_data }}</pre>
-    {% else %}
-      N/A
-    {% endif %}
-    <h3>AWS Raw Data</h3>
-    {% if object.sopn.get_textract_result %}
-      <pre>{{ object.sopn.get_textract_result.json_response|pprint }}</pre>
-    {% else %}
-      N/A
-    {% endif %}
-    <h3>AWS Parsed SOPN</h3>
-    {% if object.sopn.get_aws_parsed_sopn %}
-      <pre>{{ object.sopn.get_aws_parsed_sopn.raw_data }}</pre>
-    {% else %}
-      N/A
-    {% endif %}
-    <br/>
-    <h3>Parsed SOPN form</h3>
-    {% if object.rawpeople %}
-      <pre>{{ object.rawpeople.data|pprint }}</pre>
-    {% else %}
-      N/A
-    {% endif %}
-  </details>
+
+    <details class="panel">
+        <summary><strong>Debug Info (click to expand)</strong></summary>
+        <br/>
+        <h3>Parsing Status</h3>
+        <ul>
+            <li>Pages matched: {% if object.sopn.get_pages %}Yes (matched pages: {{ object.sopn.get_pages|join:", " }}
+                ){% else %}No{% endif %}</li>
+            <li>Camelot tables extracted: {% if object.sopn.camelotparsedsopn %}Yes{% else %}No{% endif %}</li>
+            <li>Raw Person Data: {% if object.rawpeople %}Yes{% else %}No{% endif %}</li>
+            <li>AWS Textract Data: {% if textract_parsed.raw_data %}Yes{% else %}No{% endif %}</li>
+            <li>AWS Textract Parsed? {% if textract_parsed.parsed_data %}Yes{% else %}
+                No{% endif %}</li>
+        </ul>
+
+        <h3>Camelot raw Data</h3>
+        {% if object.sopn.camelotparsedsopn.raw_data %}
+            <pre>{{ object.sopn.camelotparsedsopn.as_pandas.to_dict|pprint }}</pre>
+        {% else %}
+            N/A
+        {% endif %}
+
+        <h3>Camelot table Data</h3>
+        {% if object.sopn.camelotparsedsopn.data_as_html %}
+            {{ object.sopn.camelotparsedsopn.data_as_html|safe }}
+        {% else %}
+            N/A
+        {% endif %}
+        <br/>
+
+
+        {% if textract_parsed and textract_parsed.as_textractor_document %}
+            <h3>AWS extracted table{{ textract_parsed.as_textractor_document.tables|pluralize }}</h3>
+            {% for table in textract_parsed.as_textractor_document.tables %}
+                <h5>{{ table.title.text }}</h5>
+                {{ table.to_html|safe }}
+            {% endfor %}
+        {% endif %}
+
+        {% if textract_parsed.parsed_data %}
+            <h3>AWS document markdown</h3>
+            <pre style="border:1px solid black">{{ textract_parsed.as_textractor_document.to_markdown }}</pre>
+        {% endif %}
+
+        {% if textract_parsed.images.exists %}
+            <h3>AWS document annotated</h3>
+            {% for image in textract_parsed.images %}
+                <img src="{{ image.image.url }}">
+            {% endfor %}
+        {% endif %}
+
+    </details>
 </div>

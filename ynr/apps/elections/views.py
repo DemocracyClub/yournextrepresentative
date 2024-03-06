@@ -323,6 +323,9 @@ class SOPNForBallotView(DetailView):
         context["documents_with_same_source"] = OfficialDocument.objects.filter(
             source_url=self.object.sopn.source_url
         )
+        context["textract_parsed"] = getattr(
+            self.object.sopn, "awstextractparsedsopn", None
+        )
 
         return context
 

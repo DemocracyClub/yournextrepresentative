@@ -5,6 +5,7 @@ from django.core.files.images import ImageFile
 from django.db import models
 from model_utils.models import TimeStampedModel
 from pandas import concat
+from textractor.parsers import response_parser
 from textractor.parsers.response_parser import parse
 
 
@@ -126,3 +127,6 @@ class AWSTextractParsedSOPN(TimeStampedModel):
             ignore_index=True,
         )
         self.parsed_data = df.to_json()
+
+    def as_textractor_document(self):
+        return response_parser.parse(json.loads(self.raw_data))
