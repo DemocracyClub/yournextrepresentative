@@ -44,16 +44,11 @@ class RawPeople(TimeStampedModel):
     TRUSTED_SOURCES = (SOURCE_COUNCIL_CSV, SOURCE_BULK_ADD_FORM)
 
     ballot = models.OneToOneField("candidates.Ballot", on_delete=models.CASCADE)
-    data = JSONField()
+    data = JSONField(default=dict)
+    textract_data = JSONField(default=dict)
     source = models.CharField(max_length=512)
     source_type = models.CharField(
         choices=SOURCE_TYPES, default=SOURCE_BULK_ADD_FORM, max_length=255
-    )
-    aws_textract_parsed_data = models.OneToOneField(
-        "sopn_parsing.AWSTextractParsedSOPN",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
     )
 
     def __str__(self):
