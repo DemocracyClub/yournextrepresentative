@@ -4,7 +4,6 @@ from typing import Optional
 import boto3
 from botocore.client import Config
 from django.conf import settings
-from django.core.management import call_command
 from django.db import IntegrityError
 from official_documents.models import OfficialDocument
 from pdfminer.pdftypes import PDFException
@@ -39,14 +38,9 @@ def extract_pages_for_ballot(ballot):
         )
 
         sopn.match_all_pages()
-        if len(sopn.pages) == 1:
-            call_command(
-                "sopn_parsing_aws_textract",
-                "--start-analysis",
-                "--get-results",
-                "--ballot",
-                ballot.ballot_paper_id,
-            )
+        if len(sopn.pages) == 1 or sopn.matched_page_numbers == "all":
+            textract_helper = TextractSOPNHelper(ballot.sopn)
+            textract_helper.start_detection()
 
     except NoTextInDocumentError:
         raise NoTextInDocumentError(
