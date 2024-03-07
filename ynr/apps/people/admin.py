@@ -122,6 +122,9 @@ class PersonAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         return qs.select_related("image")
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
     def image_preview(self, obj):
         image_url = mark_safe(
             '<img src="/media/{}" width="50" height="50" />'.format(
