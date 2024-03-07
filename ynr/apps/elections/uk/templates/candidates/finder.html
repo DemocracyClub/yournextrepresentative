@@ -114,75 +114,7 @@
       <h2><a href="{% url 'recent-changes' %}">Recent changes</a></h2>
       <ol>
         {% for action in recent_actions %}
-          <li>User <strong>{{ action.user.username }}</strong>
-            {% if action.action_type == 'person-create' %}
-              {% if action.person.id %}
-                created <a href="{% url 'person-view' person_id=action.person.id %}">a new candidate</a>
-              {% else %}
-                is creating a new candidate
-              {% endif %}
-            {% elif action.action_type == 'person-delete' %}
-              deleted person with ID {{ action.person_pk }}
-            {% elif action.action_type == 'person-merge' %}
-              merged another candidate into
-              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-            {% elif action.action_type == 'photo-upload' %}
-              uploaded a photo of
-              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a> for
-              moderation
-            {% elif action.action_type == 'photo-approve' %}
-              approved an uploaded photo of
-              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-            {% elif action.action_type == 'photo-reject' %}
-              rejected an uploaded photo of
-              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-            {% elif action.action_type == 'person-revert' %}
-              reverted to an earlier version of
-              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-            {% elif action.action_type == 'candidacy-create' %}
-              confirmed candidacy for
-              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-            {% elif action.action_type == 'candidacy-delete' %}
-              removed candidacy for
-              <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-            {% elif action.action_type == 'constituency-lock' %}
-              locked <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.ballot_paper_id }}</a>
-            {% elif action.action_type == 'duplicate-suggest' %}
-              Suggested a duplicate of <a href="{{ action.person.get_absolute_url }}">{{ action.person.name }}</a>
-            {% elif action.action_type == 'constituency-unlock' %}
-              unlocked <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.ballot_paper_id }}</a>
-            {% elif action.action_type == 'record-council-control' %}
-              recorded overall control for a council
-            {% elif action.action_type == 'confirm-council-control' %}
-              reviewed overall control for a council
-            {% elif action.action_type == 'set-candidate-elected' and action.person %}
-              marked <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-              as the winner
-            {% elif action.action_type == 'entered-results-data' %}
-              entered results data for
-              <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.post.label }}</a>
-            {% elif action.action_type == 'sopn-upload' %}
-              uploaded <a href="{{ action.ballot.sopn.get_absolute_url }}">a SOPN</a> for
-              <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.ballot_paper_id }}</a>
-            {% elif action.action_type == 'suggest-ballot-lock' %}
-              Suggested locking ballot
-              <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.ballot_paper_id }}</a>
-            {% elif action.action_type == 'person-other-name-create' %}
-              added an alternate name for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-            {% elif action.action_type == 'person-other-name-delete' %}
-              removed an alternate name for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-            {% elif action.action_type == 'person-other-name-update' %}
-              changed an alternate name for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-            {% elif action.action_type == 'suspended-twitter-account' %}
-              updated twitter account status for <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-            {% else %}
-              {% if action.person %}
-                updated <a href="{% url 'person-view' person_id=action.person.id %}">candidate #{{ action.person.id }}</a>
-              {% elif action.ballot %}
-                updated <a href="{{ action.ballot.get_absolute_url }}">ballot {{ action.ballot.ballot_paper_id }}</a>
-              {% endif %}
-
-            {% endif %}
+            <li>{{ action.friendly_description }}</li>
             <span class="when">{{ action.created|timesince }} ago</span></li>
         {% endfor %}
       </ol>
