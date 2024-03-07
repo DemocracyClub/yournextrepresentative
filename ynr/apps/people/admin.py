@@ -118,21 +118,23 @@ class PersonAdmin(admin.ModelAdmin):
     )
     inlines = [PersonImageInline, MembershipInline]
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related("image")
+
     def image_preview(self, obj):
-        person = Person.objects.get(pk=obj.pk)
         image_url = mark_safe(
             '<img src="/media/{}" width="50" height="50" />'.format(
                 obj.image.image.name
             )
         )
-        if person.image:
+        if obj.image:
             return image_url
         return "No Image Found"
 
     def image_filetype(self, obj):
-        person = Person.objects.get(pk=obj.pk)
-        if person.image:
-            return person.image.image.name.split(".")[-1]
+        if obj.image:
+            return obj.image.image.name.split(".")[-1]
         return "No Image Found"
 
     def get_urls(self):
