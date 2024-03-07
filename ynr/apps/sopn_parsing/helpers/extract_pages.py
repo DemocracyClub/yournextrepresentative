@@ -62,6 +62,13 @@ textract_client = boto3.client(
 )
 
 
+class NotUsingAWSException(ValueError):
+    """
+    Used to indicate that we're not in an environment that's not
+    using AWS S3 storages
+    """
+
+
 class TextractSOPNHelper:
     """Get the AWS Textract results for a given SOPN."""
 
@@ -69,9 +76,15 @@ class TextractSOPNHelper:
         self,
         official_document: OfficialDocument,
         bucket_name: str = None,
+        upload_path: str = None,
     ):
         self.official_document = official_document
-        self.bucket_name = bucket_name or settings.AWS_STORAGE_BUCKET_NAME
+        self.bucket_name = bucket_name or getattr(
+            settings, "AWS_STORAGE_BUCKET_NAME", None
+        )
+        self.upload_path = upload_path
+        if not any((self.bucket_name, self.upload_path)):
+            raise NotUsingAWSException()
         self.extractor = Textractor(region_name="eu-west-2")
 
     def start_detection(self, replace=False) -> Optional[AWSTextractParsedSOPN]:
@@ -108,6 +121,7 @@ class TextractSOPNHelper:
             file_source=f"s3://{self.bucket_name}{settings.MEDIA_URL}{self.official_document.uploaded_file.name}",
             features=[TextractFeatures.TABLES],
             s3_output_path=f"s3://{settings.TEXTRACT_S3_BUCKET_NAME}/raw_textract_responses",
+            s3_upload_path=self.upload_path,
         )
         return document
 

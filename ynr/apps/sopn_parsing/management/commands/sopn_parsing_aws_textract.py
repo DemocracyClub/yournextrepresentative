@@ -30,6 +30,11 @@ class Command(BaseSOPNParsingCommand):
             action="store_true",
             help="Get AWS Textract results for each SOPN",
         )
+        parser.add_argument(
+            "--upload-path",
+            action="store",
+            help="For texting only: the S3 bucket path to upload local SOPNs to, in the form of s3://[bucket]/[prefix]/",
+        )
 
     def queue_full(self):
         time_window = timezone.now() - timedelta(hours=1)
@@ -76,7 +81,9 @@ class Command(BaseSOPNParsingCommand):
                 if self.queue_full():
                     self.check_all_documents(options)
                     sleep(settings.TEXTRACT_BACKOFF_TIME)
-                textract_helper = TextractSOPNHelper(official_document)
+                textract_helper = TextractSOPNHelper(
+                    official_document, upload_path=options["upload_path"]
+                )
                 # TO DO: add logging here
                 if getattr(official_document, "textract_result", None):
                     continue

@@ -270,7 +270,9 @@ def textract_sopn_helper(db):
             document_type=OfficialDocument.NOMINATION_PAPER,
             uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file.read()),
         )
-    yield TextractSOPNHelper(official_document=official_document)
+    yield TextractSOPNHelper(
+        official_document=official_document, upload_path="s3://fake_bucket/"
+    )
 
 
 def load_json_fixture(path):
