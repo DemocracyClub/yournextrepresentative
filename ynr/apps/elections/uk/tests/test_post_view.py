@@ -92,7 +92,7 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "I liked totally reviewed the SOPN",
         )
         response = self.app.get("/")
-        self.assertContains(response, """Suggested locking ballot""")
+        self.assertContains(response, """suggested locking ballot""")
 
     def test_post_lock_disabled_not_shown_when_no_suggested_lock(self):
         group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)

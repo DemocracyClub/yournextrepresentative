@@ -1,4 +1,8 @@
+import people.tests.factories
+from candidates.models import LoggedAction
+from candidates.models.db import ActionType
 from candidates.models.popolo_extra import Ballot
+from candidates.tests.auth import TestUserMixin
 from candidates.tests.test_models import BallotsWithResultsMixin
 from django.test import TestCase
 from elections.filters import region_choices
@@ -43,3 +47,37 @@ class TestResultsProgress(BallotsWithResultsMixin, TestCase):
                 "has_results_percent": 33,
             }
         self.assertEqual(result, expected)
+
+
+class TestRecentChangesHomePageBlock(TestUserMixin, TestCase):
+    def test_deleted_person_doesnt_break_homepage(self):
+        """
+        Regression test to ensure that deleting a person
+        with recent LoggedActions doesn't break anything
+        """
+
+        test_person_1 = people.tests.factories.PersonFactory.create(
+            id=9876, name="Test Candidate for Recent Changes"
+        )
+        LoggedAction.objects.create(
+            user=self.user,
+            action_type=ActionType.PERSON_CREATE,
+            ip_address="127.0.0.1",
+            person=test_person_1,
+            popit_person_new_version="1234567890abcdef",
+            source="Just for tests...",
+        )
+        self.action2 = LoggedAction.objects.create(
+            user=self.user,
+            action_type=ActionType.CANDIDACY_DELETE,
+            ip_address="127.0.0.1",
+            person=test_person_1,
+            popit_person_new_version="987654321",
+            source="Also just for testing",
+        )
+
+        # Deleting a person should null out the person ID on the
+        # LoggedActions, not delete them.
+        test_person_1.delete()
+        resp = self.client.get("/")
+        self.assertEqual(resp.status_code, 200)

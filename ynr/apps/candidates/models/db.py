@@ -8,6 +8,7 @@ from django.db import models, transaction
 from django.db.models import JSONField
 from django.urls import reverse
 from django.utils.html import escape
+from django.utils.safestring import mark_safe
 from django_extensions.db.models import TimeStampedModel
 from moderation_queue.review_required_helper import (
     POST_DECISION_REVIEW_TYPES,
@@ -194,6 +195,67 @@ class LoggedAction(models.Model):
                 person_id=self.person.id,
             )
         return ""
+
+    def friendly_description(self):
+        url = self.subject_url
+        prefix = ""
+        desc = ""
+        output = f"""{prefix} {self.action_type} TODO"""
+        if self.user:
+            prefix = f"User <strong>{self.user.username}</strong>"
+        if self.ballot:
+            desc = (
+                f"""updated <a href="{url}">{self.ballot.ballot_paper_id}</a>"""
+            )
+            if self.action_type == ActionType.CONSTITUENCY_LOCK:
+                desc = f"""locked <a href="{url}">{self.ballot.ballot_paper_id}</a>"""
+            if self.action_type == ActionType.CONSTITUENCY_UNLOCK:
+                desc = f"""unlocked <a href="{url}">{self.ballot.ballot_paper_id}</a>"""
+            if self.action_type == ActionType.ENTERED_RESULTS_DATA:
+                desc = f"""entered results data for <a href="{url}">{self.ballot.ballot_paper_id}</a>"""
+            if self.action_type == ActionType.SUGGEST_BALLOT_LOCK:
+                desc = f"""suggested locking ballot <a href="{url}">{self.ballot.ballot_paper_id}</a>"""
+            if self.action_type == ActionType.SOPN_UPLOAD:
+                desc = f"""uploaded <a href="{self.ballot.sopn.get_absolute_url}">a SOPN</a> for <a href="{url}">{self.ballot.ballot_paper_id}</a>"""
+        if self.person:
+            if self.action_type == ActionType.PERSON_CREATE:
+                desc = f"""created <a href="{url}">a new candidate</a>"""
+            if self.action_type == ActionType.PERSON_UPDATE:
+                desc = f"""updated <a href="{url}">a new candidate</a>"""
+            if self.action_type == ActionType.PERSON_DELETE:
+                desc = f"""deleted person with ID {self.person_pk}"""
+            if self.action_type == ActionType.PERSON_MERGE:
+                desc = f"""merged another candidate into <a href="{url}">candidate #{self.person.id}</a>"""
+            if self.action_type == ActionType.PHOTO_UPLOAD:
+                desc = f"""uploaded a photo of <a href="{url}">candidate #{self.person.id}</a> for moderation"""
+            if self.action_type == ActionType.PHOTO_APPROVE:
+                desc = f"""approved an uploaded photo of <a href="{url}">candidate #{self.person.id}</a>"""
+            if self.action_type == ActionType.PHOTO_REJECT:
+                desc = f"""rejected an uploaded photo of <a href="{url}">candidate #{self.person.id}</a>"""
+            if self.action_type == ActionType.PERSON_REVERT:
+                desc = f"""reverted to an earlier version of <a href="{url}">candidate #{self.person.id}</a>"""
+            if self.action_type == ActionType.CANDIDACY_CREATE:
+                desc = f"""confirmed candidacy for <a href="{url}">candidate #{self.person.id}</a>"""
+            if self.action_type == ActionType.CANDIDACY_CREATE:
+                desc = f"""removed candidacy for <a href="{url}">candidate #{self.person.id}</a>"""
+            if self.action_type == ActionType.DUPLICATE_SUGGEST:
+                desc = f"""Suggested a duplicate of <a href="{url}">{self.person.name}</a>"""
+            if self.action_type == ActionType.DUPLICATE_SUGGEST:
+                desc = f"""Suggested a duplicate of <a href="{url}">{self.person.name}</a>"""
+            if self.action_type == ActionType.SET_CANDIDATE_ELECTED:
+                desc = f"""marked <a href="{url}">candidate #{self.person.id}</a> as elected"""
+            if self.action_type == ActionType.PERSON_OTHER_NAME_CREATE:
+                desc = f"""added an alternate name for <a href="{url}">candidate #{self.person.id}</a>"""
+            if self.action_type == ActionType.PERSON_OTHER_NAME_DELETE:
+                desc = f"""removed an alternate name for <a href="{url}">candidate #{self.person.id}</a>"""
+            if self.action_type == ActionType.PERSON_OTHER_NAME_UPDATE:
+                desc = f"""changed an alternate name for <a href="{url}">candidate #{self.person.id}</a>"""
+            if self.action_type == ActionType.SUSPENDED_TWITTER_ACCOUNT:
+                desc = f"""updated twitter account status for <a href="{url}">candidate #{self.person.id}</a>"""
+
+        if desc:
+            output = f"{prefix} {desc}"
+        return mark_safe(output)
 
     @property
     def diff_html(self):
