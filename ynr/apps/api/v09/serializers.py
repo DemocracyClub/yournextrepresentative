@@ -347,7 +347,6 @@ class PersonSerializer(MinimalPersonSerializer):
             "homepage": "homepage_url",
             "facebook personal": "facebook_personal_url",
             "party candidate page": "party_ppc_page_url",
-            "party PPC page": "party_ppc_page_url",
             "linkedin": "linkedin_url",
             "facebook page": "facebook_page_url",
             "wikipedia": "wikipedia_url",
