@@ -26,7 +26,7 @@ def get_version_fields():
         ("linkedin_url", "LinkedIn URL"),
         ("other_name", "Other Name"),
         ("biography", "Statement to Voters"),
-        ("party_ppc_page_url", "Party PPC Page URL"),
+        ("party_ppc_page_url", "Party Candidate Page URL"),
         ("wikipedia_url", "Wikipedia URL"),
         ("homepage_url", "Homepage URL"),
         ("image_url", "Image URL"),
