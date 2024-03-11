@@ -271,6 +271,10 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     "wikidata_id": "",
                     "wikipedia_url": "",
                     "youtube_profile": "",
+                    "blue_sky_url": "",
+                    "threads_url": "",
+                    "tiktok_url": "",
+                    "other_url": "",
                 },
             }
         ]

@@ -27,6 +27,7 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
         self.assertEqual(self.person.versions, [])
         person = bot.edit_fields(edit, "a source", save=True)
         expected = {
+            "blue_sky_url": "",
             "biography": "",
             "birth_date": "",
             "blog_url": "",
@@ -44,8 +45,11 @@ class TestCandidateBot(UK2015ExamplesMixin, TestCase):
             "linkedin_url": "",
             "name": "Tessa Jowell",
             "other_names": [],
+            "other_url": "",
             "party_ppc_page_url": "",
             "candidacies": {},
+            "threads_url": "",
+            "tiktok_url": "",
             "twitter_username": "",
             "mastodon_username": "",
             "wikidata_id": "",

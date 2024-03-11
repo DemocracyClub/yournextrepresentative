@@ -141,6 +141,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         expected_new_version = {
             "data": {
                 "blog_url": "",
+                "blue_sky_url": "",
                 "facebook_page_url": "",
                 "facebook_personal_url": "",
                 "name": "Tessa Jowell",
@@ -159,11 +160,14 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
                         "start_date": None,
                     }
                 ],
+                "other_url": "",
                 "honorific_prefix": "",
                 "candidacies": {
                     "parl.65808.2010-05-06": {"party": self.labour_party.ec_id}
                 },
                 "homepage_url": "http://example.org/tessajowell",
+                "threads_url": "",
+                "tiktok_url": "",
                 "twitter_username": "",
                 "wikipedia_url": "",
                 "youtube_profile": "",
