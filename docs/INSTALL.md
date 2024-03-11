@@ -81,6 +81,16 @@ pip install -r requirements/sopn_parsing.txt
 
 File conversion relies on `pandoc` to turn non-pdf SOPN files into pdf files.
 To install `pandoc`, visit https://pandoc.org/installing.html and follow instructions
-for Mac OS and Ubuntu. 
+for Mac OS and Ubuntu.
+
+AWS Textract relies on the following packages for viewing image results: 
+
+https://pypi.org/project/pdf2image/
+
+To install these packages run:
+
+```
+brew install poppler
+```
 
 _If you have omitted SOPN and are having problems getting the project to run, you may need to follow the SOPN steps._
