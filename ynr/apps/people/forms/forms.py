@@ -60,6 +60,10 @@ class PersonIdentifierForm(forms.ModelForm):
         "linkedin_url",
         "facebook_page_url",
         "wikipedia_url",
+        "blue_sky_url",
+        "threads_url",
+        "other_url",
+        "tiktok_url",
     ]
 
     class Meta:

@@ -34,6 +34,10 @@ def get_version_fields():
         ("blog_url", "Blog URL"),
         ("instagram_url", "Instagram URL"),
         ("youtube_profile", "YouTube Profile"),
+        ("threads_url", "Threads URL"),
+        ("blue_sky_url", "Bluesky URL"),
+        ("other_url", "Other URL"),
+        ("tiktok_url", "TikTok URL"),
     ]
 
 

@@ -804,6 +804,10 @@ class Person(TimeStampedModel, models.Model):
             "youtube_profile": self.get_single_identifier_value(
                 "youtube_profile"
             ),
+            "blue_sky_url": self.get_single_identifier_value("blue_sky_url"),
+            "tiktok_url": self.get_single_identifier_value("tiktok_url"),
+            "threads_url": self.get_single_identifier_value("threads_url"),
+            "other_url": self.get_single_identifier_value("other_url"),
         }
 
     @cached_property

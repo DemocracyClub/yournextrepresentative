@@ -48,4 +48,8 @@ CSV_ROW_FIELDS = [
     "blog_url",
     "instagram_url",
     "youtube_profile",
+    "tiktok_url",
+    "threads_url",
+    "blue_sky_url",
+    "other_url",
 ]

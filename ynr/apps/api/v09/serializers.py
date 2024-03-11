@@ -350,6 +350,10 @@ class PersonSerializer(MinimalPersonSerializer):
             "linkedin": "linkedin_url",
             "facebook page": "facebook_page_url",
             "wikipedia": "wikipedia_url",
+            "blue_sky_url": "blue_sky_url",
+            "threads_url": "threads_url",
+            "tiktok_url": "tiktok_url",
+            "other_url": "other_url",
         }
         pi_types_to_notes = {v: k for k, v in notes_tp_pi_types.items()}
         qs = obj.tmp_person_identifiers.filter(
