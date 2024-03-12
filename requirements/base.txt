@@ -44,7 +44,7 @@ ipaddress==1.0.23
 ipdb==0.13.13
 ipython-genutils==0.2.0
 ipython==8.12.3
-jsonpatch==1.32
+jsonpatch==1.33
 jsonpointer==2.3
 libsass==0.22.0
 lxml==4.9.2
