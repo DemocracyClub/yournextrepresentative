@@ -477,6 +477,7 @@ TWITTER_BOT_USERNAME = "TwitterBot"
 
 TEXTRACT_CONCURRENT_QUOTA = 30
 TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA = 1
+TEXTRACT_BACKOFF_TIME = 10
 
 # import application constants
 from .constants.needs_review import *  # noqa

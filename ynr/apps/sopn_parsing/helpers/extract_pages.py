@@ -93,7 +93,9 @@ class TextractSOPNHelper:
         )
         if parsed_sopn and not replace:
             return None
+        print("Starting analysis")
         document = self.textract_start_document_analysis()
+        print("Saving results")
         try:
             textract_result, _ = AWSTextractParsedSOPN.objects.update_or_create(
                 sopn=self.official_document,
@@ -103,13 +105,20 @@ class TextractSOPNHelper:
             textract_result.refresh_from_db()
             # Delete any old images that might exist for this SOPN
             textract_result.images.all().delete()
+            print("Saving images")
             for i, image in enumerate(document.images):
-                AWSTextractParsedSOPNImage.objects.create(
-                    image=AWSTextractParsedSOPNImage.pil_to_content_image(
-                        image, f"page_{i}.png"
-                    ),
+                image_model = AWSTextractParsedSOPNImage.objects.create(
                     parsed_sopn=textract_result,
                 )
+                image_model.image = (
+                    AWSTextractParsedSOPNImage.pil_to_content_image(
+                        image, f"page_{i}.png"
+                    )
+                )
+                image_model.save()
+            print(
+                f"Finished saving images for {self.official_document.ballot.ballot_paper_id}"
+            )
             return textract_result
         except IntegrityError as e:
             raise IntegrityError(

@@ -77,8 +77,14 @@ class Command(BaseSOPNParsingCommand):
                     officialdocument__awstextractparsedsopn__id=None
                 )
             for ballot in qs:
+                self.stdout.write(
+                    f"Starting analysis for {ballot.ballot_paper_id}"
+                )
                 official_document: OfficialDocument = ballot.sopn
                 if self.queue_full():
+                    self.stdout.write(
+                        f"Queue full, sleeping {settings.TEXTRACT_BACKOFF_TIME}"
+                    )
                     self.check_all_documents(options)
                     sleep(settings.TEXTRACT_BACKOFF_TIME)
                 textract_helper = TextractSOPNHelper(
