@@ -58,3 +58,9 @@ SOPN_DATES = [
 
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
+
+# update these settings from the aws management console
+TEXTRACT_S3_BUCKET_NAME = "test-sopns"
+AWS_ACCESS_KEY_ID="string"
+AWS_SECRET_ACCESS_KEY="string"
+AWS_SESSION_TOKEN="string"

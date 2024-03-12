@@ -1,4 +1,7 @@
+from typing import List, Union
+
 from candidates.models import Ballot
+from candidates.models.popolo_extra import BallotQueryset
 from django.core.management.base import BaseCommand, CommandError
 
 
@@ -34,7 +37,7 @@ class BaseSOPNParsingCommand(BaseCommand):
             type=str,
         )
 
-    def get_queryset(self, options):
+    def get_queryset(self, options) -> Union[BallotQueryset, List[Ballot]]:
         filter_kwargs = {}
         if options.get("ballot") and options.get("election-slugs"):
             raise CommandError("Cant use ballot id and election slugs together")

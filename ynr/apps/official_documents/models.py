@@ -77,11 +77,6 @@ class OfficialDocument(TimeStampedModel):
         return None
 
     @property
-    def get_textract_result(self):
-        """given an instance of an official document, return the associated textract result"""
-        return TextractResult.objects.get(official_document=self)
-
-    @property
     def get_aws_parsed_sopn(self):
         """given an instance of an official document, return the associated aws parsed sopn"""
         return AWSTextractParsedSOPN.objects.get(sopn=self)
@@ -97,25 +92,3 @@ class OfficialDocument(TimeStampedModel):
         if self.get_pages():
             return self.get_pages()[-1]
         return None
-
-
-class ReviewStatus(models.TextChoices):
-    NOT_STARTED = "NOT_STARTED", "Not Started"
-    SUCCEEDED = "SUCCEEDED", "Succeeded"
-    IN_PROGRESS = "IN_PROGRESS", "In Progress"
-    FAILED = "FAILED", "Failed"
-    PARTIAL_SUCCESS = "PARTIAL_SUCCESS", "Partial Success"
-
-
-class TextractResult(TimeStampedModel):
-    official_document = models.OneToOneField(
-        OfficialDocument,
-        on_delete=models.CASCADE,
-        related_name="textract_result",
-        null=True,
-    )
-    job_id = models.CharField(max_length=100)
-    json_response = models.JSONField()
-    analysis_status = models.CharField(
-        choices=ReviewStatus.choices, default=ReviewStatus.NOT_STARTED
-    )

@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+from typing import Optional
 
 from candidates.helpers.helpers import get_election_timetable
 from candidates.models import LoggedAction
@@ -17,6 +18,7 @@ from django.utils.html import mark_safe
 from django.utils.http import urlencode
 from elections.models import Election
 from moderation_queue.models import QueuedImage
+from official_documents.models import OfficialDocument
 from utils.mixins import EEModifiedMixin
 
 """Extensions to the base django-popolo classes for YourNextRepresentative
@@ -365,12 +367,16 @@ class Ballot(EEModifiedMixin, models.Model):
             '<abbr title="Someone suggested locking this post">🔓</abbr>'
         )
 
-    @property
-    def sopn(self):
+    @cached_property
+    def sopn(self) -> Optional[OfficialDocument]:
         try:
-            return self.officialdocument_set.filter(
-                document_type=self.officialdocument_set.model.NOMINATION_PAPER
-            ).latest()
+            return (
+                self.officialdocument_set.filter(
+                    document_type=self.officialdocument_set.model.NOMINATION_PAPER
+                )
+                .select_related("awstextractparsedsopn", "camelotparsedsopn")
+                .latest()
+            )
         except self.officialdocument_set.model.DoesNotExist:
             return None
 

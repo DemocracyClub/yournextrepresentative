@@ -1,8 +1,8 @@
 import json
 import re
-from os.path import join
 
 from bulk_adding.models import RawPeople
+from candidates.models import Ballot
 from django.contrib.postgres.search import TrigramSimilarity
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
@@ -10,9 +10,9 @@ from django.db.models import Value
 from django.db.models.functions import Replace
 from django.db.utils import DataError
 from nameparser import HumanName
+from pandas import DataFrame
 from parties.models import Party, PartyDescription
 from sopn_parsing.helpers.text_helpers import clean_text
-from sopn_parsing.models import AWSTextractParsedSOPN, CamelotParsedSOPN
 from utils.db import Levenshtein
 
 FIRST_NAME_FIELDS = [
@@ -47,7 +47,6 @@ NAME_FIELDS = (
     ]
     + WELSH_NAME_FIELDS
 )
-
 
 INDEPENDENT_VALUES = ["Independent", "", "Annibynnol"]
 
@@ -415,93 +414,92 @@ def parse_raw_data_for_ballot(ballot):
     # data that matches the data in the RawPeople model? We should let the user choose
     # which one to save. In this case, we need to present the user with the two sets of
     # data and let them choose which one to save.
-
-    try:
-        camelot_parsed_sopn_model = ballot.sopn.camelotparsedsopn
-        parse_raw_data(camelot_parsed_sopn_model, ballot)
-    except CamelotParsedSOPN.DoesNotExist:
-        print(f"No CamelotParsedSOPN for {ballot.ballot_paper_id}")
-        pass
-
-    try:
-        aws_textract_parsed_sopn_model = ballot.sopn.awstextractparsedsopn
-        parse_raw_data(aws_textract_parsed_sopn_model, ballot)
-    except AWSTextractParsedSOPN.DoesNotExist:
-        print(f"No AWSTextractParsedSOPN for {ballot.ballot_paper_id}")
-        pass
-    # TODO: at this point we could compare the two sets of RawPeople data for the user to choose
+    parse_raw_data(ballot)
 
 
-def parse_raw_data(parsed_sopn_model, ballot):
-    data = parsed_sopn_model.as_pandas
-    data_sets = []
-    if parsed_sopn_model.raw_data_type == "pandas":
-        data_sets.append(data)
+def parse_dataframe(ballot: Ballot, df: DataFrame):
+    cell_counts = [len(merge_row_cells(c)) for c in iter_rows(df)]
 
-    for data_set in data_sets:
-        cell_counts = [len(merge_row_cells(c)) for c in iter_rows(data)]
-
-        header_found = False
-        avg_row = sum(cell_counts) / float(len(cell_counts))
-        for row in iter_rows(data):
-            if not header_found:
-                if looks_like_header(row, avg_row):
-                    data.columns = row
-                    data = data.drop(row.name)
-                    header_found = True
-                else:
-                    try:
-                        data = data.drop(row.name)
-                    except IndexError:
-                        break
+    header_found = False
+    avg_row = sum(cell_counts) / float(len(cell_counts) or 1)
+    for row in iter_rows(df):
         if not header_found:
-            # Don't try to parse if we don't think we know the header
-            print(f"We couldnt find a header for {ballot.ballot_paper_id}")
-            return
-        # We're now in a position where we think we have the table we want
-        # with the columns set and other header rows removed.
-        # Time to parse it in to names and parties
-        try:
-            ballot_data = parse_table(parsed_sopn_model, data)
-        except ValueError as e:
-            # Something went wrong. This will happen a lot. let's move on
-            print(
-                f"Error attempting to parse a table for {ballot.ballot_paper_id}"
-            )
-            print(e.args[0])
-            return
-
-        if ballot_data:
-            # Check there isn't a rawpeople object from another (better) source
-            rawpeople_qs = RawPeople.objects.filter(
-                ballot=parsed_sopn_model.sopn.ballot
-            ).exclude(source_type=RawPeople.SOURCE_PARSED_PDF)
-            if not rawpeople_qs.exists():
+            if looks_like_header(row, avg_row):
+                df.columns = row
+                df = df.drop(row.name)
+                header_found = True
+            else:
                 try:
-                    RawPeople.objects.update_or_create(
-                        ballot=parsed_sopn_model.sopn.ballot,
-                        defaults={
-                            "data": ballot_data,
-                            "source": "Parsed from {}".format(
-                                parsed_sopn_model.sopn.source_url
-                            ),
-                            "source_type": RawPeople.SOURCE_PARSED_PDF,
-                        },
-                    )
-                except DataError:
-                    print(
-                        f"DataError attempting to save RawPeople for {ballot.ballot_paper_id}"
-                    )
-                    return
-            # We've done the parsing, so let's still save the result
-            storage = DefaultStorage()
-            desired_storage_path = join(
-                "raw_people",
-                "{}.json".format(parsed_sopn_model.sopn.ballot.ballot_paper_id),
-            )
-            storage.save(
-                desired_storage_path,
-                ContentFile(json.dumps(ballot_data, indent=4).encode("utf8")),
-            )
-            parsed_sopn_model.status = "parsed"
-            parsed_sopn_model.save()
+                    df = df.drop(row.name)
+                except IndexError:
+                    break
+    if not header_found:
+        # Don't try to parse if we don't think we know the header
+        print(f"We couldn't find a header for {ballot.ballot_paper_id}")
+        return None
+    # We're now in a position where we think we have the table we want
+    # with the columns set and other header rows removed.
+    # Time to parse it in to names and parties
+    try:
+        return parse_table(ballot, df)
+    except ValueError as e:
+        # Something went wrong. This will happen a lot. let's move on
+        print(f"Error attempting to parse a table for {ballot.ballot_paper_id}")
+        print(e.args[0])
+        return None
+
+
+def parse_raw_data(ballot: Ballot):
+    """
+    Given a Ballot, go and get the Camelot and the AWS Textract dataframes
+    and process them
+    """
+
+    camelot_model = getattr(ballot.sopn, "camelotparsedsopn", None)
+    camelot_data = {}
+    textract_model = getattr(ballot.sopn, "awstextractparsedsopn", None)
+    textract_data = {}
+    if camelot_model and camelot_model.raw_data_type == "pandas":
+        camelot_data = parse_dataframe(ballot, camelot_model.as_pandas)
+    if textract_model and textract_model.raw_data_type == "pandas":
+        textract_data = parse_dataframe(ballot, textract_model.as_pandas)
+
+    if camelot_data or textract_data:
+        # Check there isn't a rawpeople object from another (better) source
+        rawpeople_qs = RawPeople.objects.filter(ballot=ballot).exclude(
+            source_type=RawPeople.SOURCE_PARSED_PDF
+        )
+        if not rawpeople_qs.exists():
+            try:
+                RawPeople.objects.update_or_create(
+                    ballot=ballot,
+                    defaults={
+                        "data": camelot_data,
+                        "textract_data": textract_data,
+                        "source": "Parsed from {}".format(
+                            ballot.sopn.source_url
+                        ),
+                        "source_type": RawPeople.SOURCE_PARSED_PDF,
+                    },
+                )
+            except DataError:
+                print(
+                    f"DataError attempting to save RawPeople for {ballot.ballot_paper_id}"
+                )
+                return
+        # We've done the parsing, so let's still save the result
+        storage = DefaultStorage()
+        storage.save(
+            f"raw_people/camelot_{ballot.ballot_paper_id}.json",
+            ContentFile(json.dumps(camelot_data, indent=4).encode("utf8")),
+        )
+        storage.save(
+            f"raw_people/textract_{ballot.ballot_paper_id}.json",
+            ContentFile(json.dumps(textract_data, indent=4).encode("utf8")),
+        )
+        if camelot_model:
+            ballot.sopn.camelotparsedsopn.status = "parsed"
+            ballot.sopn.camelotparsedsopn.save()
+        if textract_model:
+            ballot.sopn.awstextractparsedsopn.status = "parsed"
+            ballot.sopn.awstextractparsedsopn.save()

@@ -1,19 +1,22 @@
-import copy
 import json
-from io import StringIO
-from time import sleep
+from typing import Optional
 
 import boto3
-import pandas as pd
 from botocore.client import Config
 from django.conf import settings
-from django.core.management import call_command
 from django.db import IntegrityError
-from official_documents.models import OfficialDocument, TextractResult
+from official_documents.models import OfficialDocument
 from pdfminer.pdftypes import PDFException
+from PIL import Image
 from sopn_parsing.helpers.pdf_helpers import SOPNDocument
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
-from sopn_parsing.models import AWSTextractParsedSOPN
+from sopn_parsing.models import (
+    AWSTextractParsedSOPN,
+    AWSTextractParsedSOPNImage,
+)
+from textractor import Textractor
+from textractor.data.constants import TextractAPI, TextractFeatures
+from textractor.entities.lazy_document import LazyDocument
 
 
 def extract_pages_for_ballot(ballot):
@@ -35,14 +38,9 @@ def extract_pages_for_ballot(ballot):
         )
 
         sopn.match_all_pages()
-        if len(sopn.pages) == 1:
-            call_command(
-                "sopn_parsing_aws_textract",
-                "--start-analysis",
-                "--get-results",
-                "--ballot",
-                ballot.ballot_paper_id,
-            )
+        if len(sopn.pages) == 1 or sopn.matched_page_numbers == "all":
+            textract_helper = TextractSOPNHelper(ballot.sopn)
+            textract_helper.start_detection()
 
     except NoTextInDocumentError:
         raise NoTextInDocumentError(
@@ -64,118 +62,107 @@ textract_client = boto3.client(
 )
 
 
+class NotUsingAWSException(ValueError):
+    """
+    Used to indicate that we're not in an environment that's not
+    using AWS S3 storages
+    """
+
+
 class TextractSOPNHelper:
     """Get the AWS Textract results for a given SOPN."""
 
     def __init__(
-        self, official_document: OfficialDocument, bucket_name: str = None
+        self,
+        official_document: OfficialDocument,
+        bucket_name: str = None,
+        upload_path: str = None,
     ):
         self.official_document = official_document
-        # We have set a lifecycle configuration set to delete these files from s3 after 30 days
-        self.bucket_name = bucket_name or settings.TEXTRACT_S3_BUCKET_NAME
-
-    @property
-    def s3_key(self) -> str:
-        """
-        Return the S3 key for this file (made up of ballot ID?)
-        """
-        region = settings.TEXTRACT_S3_BUCKET_REGION
-        bucket_name = settings.TEXTRACT_S3_BUCKET_NAME
-        self.s3_client = boto3.client("s3", region_name=region)
-        object_key = f"{self.official_document.uploaded_file.name}"
-        return object_key, bucket_name
-
-    def upload_to_s3(self):
-        object_key, bucket_name = self.s3_key
-
-        response = self.s3_client.put_object(
-            Bucket=bucket_name,
-            Key=object_key,
-            Body=self.official_document.uploaded_file.read(),
+        self.bucket_name = bucket_name or getattr(
+            settings, "AWS_STORAGE_BUCKET_NAME", None
         )
-        print(f"Uploaded bytes to s3://{bucket_name}/{object_key}")
-        return response
+        self.upload_path = upload_path
+        if not any((self.bucket_name, self.upload_path)):
+            raise NotUsingAWSException()
+        self.extractor = Textractor(region_name="eu-west-2")
 
-    def start_detection(self, replace=False):
-        qs = TextractResult.objects.filter(
-            official_document=self.official_document
-        ).exclude(json_response="")
-        if not replace and qs.exists():
+    def start_detection(self, replace=False) -> Optional[AWSTextractParsedSOPN]:
+        parsed_sopn = getattr(
+            self.official_document, "awstextractparsedsopn", None
+        )
+        if parsed_sopn and not replace:
             return None
-        self.upload_to_s3()
-        response = self.textract_start_document_analysis()
+        document = self.textract_start_document_analysis()
         try:
-            textract_result, _ = TextractResult.objects.update_or_create(
-                official_document=self.official_document,
-                defaults={"json_response": "", "job_id": response["JobId"]},
+            textract_result, _ = AWSTextractParsedSOPN.objects.update_or_create(
+                sopn=self.official_document,
+                defaults={"raw_data": "", "job_id": document.job_id},
             )
+            textract_result.save()
+            textract_result.refresh_from_db()
+            # Delete any old images that might exist for this SOPN
+            textract_result.images.all().delete()
+            for i, image in enumerate(document.images):
+                AWSTextractParsedSOPNImage.objects.create(
+                    image=AWSTextractParsedSOPNImage.pil_to_content_image(
+                        image, f"page_{i}.png"
+                    ),
+                    parsed_sopn=textract_result,
+                )
             return textract_result
         except IntegrityError as e:
             raise IntegrityError(
-                f"Failed to create TextractResult for {self.official_document.ballot.ballot_paper_id}: error {e}"
+                f"Failed to create AWSTextractParsedSOPN for {self.official_document.ballot.ballot_paper_id}: error {e}"
             )
 
-    def textract_start_document_analysis(self):
-        return textract_client.start_document_analysis(
-            DocumentLocation={
-                "S3Object": {
-                    "Bucket": settings.TEXTRACT_S3_BUCKET_NAME,
-                    "Name": str(self.official_document.ballot_id),
-                }
-            },
-            FeatureTypes=["TABLES", "FORMS"],
-            OutputConfig={
-                "S3Bucket": settings.TEXTRACT_S3_BUCKET_NAME,
-                "S3Prefix": "raw_textract_responses/",
-            },
+    def textract_start_document_analysis(self) -> LazyDocument:
+        document: LazyDocument = self.extractor.start_document_analysis(
+            file_source=f"s3://{self.bucket_name}{settings.MEDIA_URL}{self.official_document.uploaded_file.name}",
+            features=[TextractFeatures.TABLES],
+            s3_output_path=f"s3://{settings.TEXTRACT_S3_BUCKET_NAME}/raw_textract_responses",
+            s3_upload_path=self.upload_path,
         )
+        return document
 
-    def textract_get_document_analysis(self, job_id, next_token=None):
-        if next_token:
-            return textract_client.get_document_analysis(
-                JobId=job_id, NextToken=next_token
-            )
-        return textract_client.get_document_analysis(JobId=job_id)
-
-    def update_job_status(self, blocking=False):
+    def update_job_status(self, blocking=False, reparse=False):
         COMPLETED_STATES = ("SUCCEEDED", "FAILED", "PARTIAL_SUCCESS")
-        status = self.official_document.textract_result.analysis_status
-        if status in COMPLETED_STATES:
-            # TODO: should we delete the instance of the textract result?
-            return None
-        textract_result = self.official_document.textract_result
-        job_id = textract_result.job_id
+        textract_result = self.official_document.awstextractparsedsopn
+        if textract_result.status in COMPLETED_STATES and not reparse:
+            return textract_result
 
-        response = self.textract_get_document_analysis(job_id)
-        textract_result.analysis_status = response["JobStatus"]
+        if not blocking:
+            # If we're not blocking, simply check the status and save it
+            # In the case that it's not finished, just save the status and return
+            response = self.extractor.textract_client.get_document_analysis(
+                JobId=textract_result.job_id
+            )
+            textract_result.status = response["JobStatus"]
+            if response["JobStatus"] not in COMPLETED_STATES:
+                textract_result.save()
+                return textract_result
 
-        if blocking:
-            while response["JobStatus"] not in [
-                "SUCCEEDED",
-                "FAILED",
-                "PARTIAL_SUCCESS",
-            ]:
-                sleep(5)
-                response = self.textract_get_document_analysis(job_id)
+        # extractor.get_result is blocking by default (e.g, it will poll
+        # for the job finishing see
+        # https://github.com/aws-samples/amazon-textract-textractor/issues/326)
+        # because the above check for `if not blocking` should have returned
+        # by now if we didn't want to block (or the job is finished)
+        # it's safe to call this and have it 'block' on noting.
+        textract_document = self.extractor.get_result(
+            textract_result.job_id, TextractAPI.ANALYZE
+        )
+        # Add the images back in manually
+        images = list(textract_result.images.all())
+        for i, page in enumerate(textract_document._pages):
+            page.image = Image.open(images[i].image)
+        for i, page in enumerate(textract_document.pages):
+            images[i].image = AWSTextractParsedSOPNImage.pil_to_content_image(
+                page.visualize(), f"page_{i}_annotated.png"
+            )
+            images[i].save()
 
-        if response["JobStatus"] == "SUCCEEDED":
-            # It's possible that the returned result will be truncated.
-            # In this case you need to use the next token to get
-            # subsequent parts of the response.
-            analysis = copy.deepcopy(response)
-            blocks = []
-            while True:
-                for block in response["Blocks"]:
-                    blocks.append(block)
-                if "NextToken" not in response:
-                    break
-                response = self.textract_get_document_analysis(
-                    job_id, next_token=response["NextToken"]
-                )
-            analysis.pop("NextToken", None)
-            analysis["Blocks"] = blocks
-
-            textract_result.json_response = json.dumps(analysis)
+        textract_result.status = textract_document.response["JobStatus"]
+        textract_result.raw_data = json.dumps(textract_document.response)
         textract_result.save()
         return textract_result
 
@@ -188,105 +175,9 @@ class TextractSOPNParsingHelper:
 
     def __init__(self, official_document: OfficialDocument):
         self.official_document = official_document
+        self.parsed_sopn = self.official_document.awstextractparsedsopn
 
-    def get_rows_columns_map(self, table_result, blocks_map):
-        rows = {}
-        scores = []
-        for relationship in table_result["Relationships"]:
-            if relationship["Type"] == "CHILD":
-                for child_id in relationship["Ids"]:
-                    cell = blocks_map[child_id]
-                    if cell["BlockType"] == "CELL":
-                        row_index = cell["RowIndex"]
-                        col_index = cell["ColumnIndex"]
-                        if row_index not in rows:
-                            # create new row
-                            rows[row_index] = {}
-
-                        # get confidence score
-                        scores.append(str(cell["Confidence"]))
-                        # get the text value
-                        rows[row_index][col_index] = self.get_text(
-                            cell, blocks_map
-                        )
-
-        return rows, scores
-
-    def get_text(self, result, blocks_map):
-        text = ""
-        if "Relationships" in result:
-            for relationship in result["Relationships"]:
-                if relationship["Type"] == "CHILD":
-                    for child_id in relationship["Ids"]:
-                        word = blocks_map[child_id]
-                        if word["BlockType"] == "WORD":
-                            text += word["Text"] + " "
-                        if (
-                            word["BlockType"] == "SELECTION_ELEMENT"
-                            and word["SelectionStatus"] == "SELECTED"
-                        ):
-                            text += "X "
-        return text
-
-    def create_df_from_textract_result(self):
-        textract_result = self.official_document.textract_result
-        response = textract_result.json_response
-        response = json.loads(response)
-        blocks = response["Blocks"]
-        blocks_map = {}
-        table_blocks = []
-        text = []
-        for block in blocks:
-            blocks_map[block["Id"]] = block
-            if block["BlockType"] == "TABLE":
-                table_blocks.append(block)
-            if block["BlockType"] == "LINE" or block["BlockType"] == "WORD":
-                text.append(block["Text"])
-
-        df = {}
-        # if there are tables, the text could be mapped with column headers into a csv
-        # before saving in a dataframe which may improve the quality of the parsed data
-        # later on.
-        if len(table_blocks) > 0:
-            for index, table in enumerate(table_blocks):
-                df += self.prepare_df_from_table_results(
-                    table, blocks_map, index + 1, self.official_document
-                )
-        # if there are no tables, we can extract the text as a list and save as a dataframe.
-        elif len(text) > 0:
-            df = pd.DataFrame(text)
-            self.save_dataframe_to_aws_sopn(df, self.official_document)
-
-        else:
-            return "No data found"
-        return df
-
-    def prepare_df_from_table_results(
-        self, table_result, blocks_map, table_index, official_document
-    ):
-        rows, scores = self.get_rows_columns_map(table_result, blocks_map)
-
-        table_id = "Table_" + str(table_index)
-
-        # get cells.
-        csv = "Table: {0}".format(table_id)
-        for row_index, cols in rows.items():
-            for col_index, text in cols.items():
-                csv += "{}".format(text)
-
-        df = pd.read_csv(StringIO(csv))
-        self.save_dataframe_to_aws_sopn(df, official_document)
-        return df
-
-    def save_dataframe_to_aws_sopn(self, df, official_document):
-        aws_textract_parsed_sopn = (
-            AWSTextractParsedSOPN.objects.update_or_create(
-                sopn=official_document
-            )
-        )
-
-        if aws_textract_parsed_sopn:
-            aws_textract_parsed_sopn[0].raw_data = df.to_json()
-            aws_textract_parsed_sopn[0].save()
-
-        return aws_textract_parsed_sopn
+    def parse(self):
+        self.parsed_sopn.parse_raw_data()
+        self.parsed_sopn.save()
+        return self.parsed_sopn

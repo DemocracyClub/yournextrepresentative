@@ -1,16 +1,15 @@
 from datetime import timedelta
 from time import sleep
 
+from django.conf import settings
 from django.utils import timezone
-from official_documents.models import OfficialDocument, TextractResult
+from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 from sopn_parsing.helpers.extract_pages import (
     TextractSOPNHelper,
+    TextractSOPNParsingHelper,
 )
-
-TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA = 0.5  # TODO: move to settings
-TEXTRACT_BACKOFF_TIME = 60
-TEXTRACT_CONCURRENT_QUOTA = 80  # move to settings
+from sopn_parsing.models import AWSTextractParsedSOPN
 
 
 class Command(BaseSOPNParsingCommand):
@@ -31,26 +30,30 @@ class Command(BaseSOPNParsingCommand):
             action="store_true",
             help="Get AWS Textract results for each SOPN",
         )
+        parser.add_argument(
+            "--upload-path",
+            action="store",
+            help="For texting only: the S3 bucket path to upload local SOPNs to, in the form of s3://[bucket]/[prefix]/",
+        )
 
     def queue_full(self):
         time_window = timezone.now() - timedelta(hours=1)
-        processing = TextractResult.objects.filter(
+        processing = AWSTextractParsedSOPN.objects.filter(
             created__gt=time_window,
-            analysis_status__in=["NOT_STARTED", "IN_PROGRESS"],
+            status__in=["NOT_STARTED", "IN_PROGRESS"],
         )
 
-        if count := processing.count() > TEXTRACT_CONCURRENT_QUOTA:
+        if count := processing.count() > settings.TEXTRACT_CONCURRENT_QUOTA:
             print(f"Processing: {count}")
             return True
         return False
 
     def get_queryset(self, options):
-        qs = super().get_queryset(options)
-        return qs.filter(officialdocument__textract_result__id=None)
+        return super().get_queryset(options)
 
     def check_all_documents(self, options, **kwargs):
         qs = self.get_queryset(options).filter(
-            officialdocument__textract_result__analysis_status__in=[
+            officialdocument__awstextractparsedsopn__status__in=[
                 "NOT_STARTED",
                 "IN_PROGRESS",
             ]
@@ -58,30 +61,50 @@ class Command(BaseSOPNParsingCommand):
         if qs:
             print(f"Checking {qs.count()} documents")
             for document in qs:
-                textract_helper = TextractSOPNHelper(document)
+                textract_helper = TextractSOPNHelper(document.sopn)
                 textract_helper.update_job_status(blocking=False)
 
     def handle(self, *args, **options):
-        queryset = self.get_queryset(options)
-
-        for ballot in queryset:
-            print(ballot)
-            official_document: OfficialDocument = ballot.sopn
-            if options["start_analysis"]:
+        qs = self.get_queryset(options)
+        # in start-analysis, we want the qs to be all documents
+        # that don't have a textract result on the sopn
+        # in get-results, we want the qs to be all documents
+        # that have a textract result on the sopn
+        # the following is repetitive but addresses both options
+        if options["start_analysis"]:
+            if not options["reparse"]:
+                qs = qs.exclude(
+                    officialdocument__awstextractparsedsopn__id=None
+                )
+            for ballot in qs:
+                official_document: OfficialDocument = ballot.sopn
                 if self.queue_full():
                     self.check_all_documents(options)
-                    sleep(TEXTRACT_BACKOFF_TIME)
-                textract_helper = TextractSOPNHelper(official_document)
+                    sleep(settings.TEXTRACT_BACKOFF_TIME)
+                textract_helper = TextractSOPNHelper(
+                    official_document, upload_path=options["upload_path"]
+                )
                 # TO DO: add logging here
                 if getattr(official_document, "textract_result", None):
                     continue
-                sleep(TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA)
+                sleep(settings.TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA)
                 textract_helper.start_detection(official_document)
-            if options["get_results"]:
-                textract_helper = TextractSOPNHelper(official_document)
-                textract_helper.update_job_status(blocking=options["blocking"])
+        if options["get_results"]:
+            qs = qs.filter(
+                officialdocument__awstextractparsedsopn__isnull=False
+            )
+            for ballot in qs:
+                official_document: OfficialDocument = ballot.sopn
+                print(official_document)
 
-                # Commented out for the time being
-                # textract_sopn_parsing_helper = TextractSOPNParsingHelper(official_document)
-                # textract_sopn_parsing_helper.create_df_from_textract_result()
-        self.check_all_documents()
+                textract_helper = TextractSOPNHelper(official_document)
+                textract_helper.update_job_status(
+                    blocking=options["blocking"], reparse=options["reparse"]
+                )
+
+                textract_sopn_parsing_helper = TextractSOPNParsingHelper(
+                    official_document
+                )
+                parsed = textract_sopn_parsing_helper.parse()
+                print(parsed.as_pandas)
+        self.check_all_documents(options)
