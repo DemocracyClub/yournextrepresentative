@@ -475,6 +475,9 @@ CANDIDATE_BOT_USERNAME = "CandidateBot"
 RESULTS_BOT_USERNAME = "ResultsBot"
 TWITTER_BOT_USERNAME = "TwitterBot"
 
+TEXTRACT_CONCURRENT_QUOTA = 30
+TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA = 1
+
 # import application constants
 from .constants.needs_review import *  # noqa
 from .constants.csv_fields import *  # noqa
