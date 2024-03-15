@@ -3,73 +3,85 @@
 {% load static %}
 
 {% block extra_css %}
-  {% stylesheet 'official_documents' %}
+    {% stylesheet 'official_documents' %}
 {% endblock %}
 
 {% block hero %}
-<h1>Statement of Persons Nominated</h1>
+    <h1>Statement of Persons Nominated</h1>
 {% endblock %}
 
 {% block content %}
-  <h2>
-    <a href="{{ object.get_absolute_url }}">
-      {{ object.election.name }}: <br>
-      {{ object.post.label }}
-    </a>
-  </h2>
-  <p>{{ object.election.election_date }}</p>
-  {% if object.sopn %}
-    <p>This document was first published at {{ object.sopn.source_url|urlize }}. Showing the archived copy.</p>
+    <h2>
+        <a href="{{ object.get_absolute_url }}">
+            {{ object.election.name }}: <br>
+            {{ object.post.label }}
+        </a>
+    </h2>
 
-    <p>To help us resolve bugs quicker, please report SOPN page extraction errors in 
-    <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1726">github</a>.
-    </p>
+    <p>{{ object.election.election_date }}</p>
+    {% if object.sopn %}
 
-    <p><a href="{{ object.sopn.uploaded_file.url }}" class="button small">Download PDF</a></p>
-  {% if user_can_upload_documents %}
-    {% url 'upload_document_view' ballot_paper_id=ballot.ballot_paper_id as url %}
-    <a href="{{ url }}" class="button">Update SOPN</a>
-  {% endif %}
 
-    {% if documents_with_same_source.exists and documents_with_same_source.count > 1 %}
-      <p>
-        <strong>
-        Watch out! The original document contains candidate info for {{ documents_with_same_source.count }}
-        area{{ documents_with_same_source.count|pluralize }}</strong>.
-        Make sure you're looking at the right area.
-      </p>
+        <p>This document was first published at {{ object.sopn.source_url|urlize }}. Showing the archived copy.</p>
+
+        <p>To help us resolve bugs quicker, please report SOPN page extraction errors in
+            <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1726">github</a>.
+        </p>
+
+        <p><a href="{{ object.sopn.uploaded_file.url }}" class="button small">Download PDF</a></p>
+        {% if user_can_upload_documents %}
+            {% url 'upload_document_view' ballot_paper_id=ballot.ballot_paper_id as url %}
+            <a href="{{ url }}" class="button">Update SOPN</a>
+        {% endif %}
+
+        {% if documents_with_same_source.exists and documents_with_same_source.count > 1 %}
+            <p>
+                <strong>
+                    Watch out! The original document contains candidate info for {{ documents_with_same_source.count }}
+                    area{{ documents_with_same_source.count|pluralize }}</strong>.
+                Make sure you're looking at the right area.
+            </p>
+        {% endif %}
+
+        {% if not object.candidates_locked %}
+            {% if object.sopn.awstextractparsedsopn.status == "IN_PROGRESS" %}
+                <p class="status_in_progress">We are currently parsing this document to extract the candidate data.</p>
+
+            {% elif object.sopn.awstextractparsedsopn.status == "COMPLETE" %}
+                <p class="status_done">We have parsed the candidates table out of this document.</p>
+            {% endif %}
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+            {% include "elections/includes/_sopn_debug.html" %}
+        {% endif %}
+
+        <div id="sopn-{{ object.ballot_paper_id }}" class="pdf_container"></div>
+
+    {% else %}
+        No SOPN uploaded for this ballot paper yet.
     {% endif %}
 
-    {% if request.user.is_authenticated %}
-        {% include "elections/includes/_sopn_debug.html" %}
+
+    {% if user.is_staff and user_can_upload_documents %}
+        {% url 'admin:official_documents_officialdocument_change' object.sopn.id as url %}
+        You can <a href="{{ url }}">edit this in the admin interface</a> (e.g. to delete it)
     {% endif %}
 
-    <div id="sopn-{{ object.ballot_paper_id }}" class="pdf_container"></div>
+    <script src="{% static "official_documents/js/pdf.worker.min.js" %}"></script>
+    <script src="{% static "official_documents/js/pdf.min.js" %}"></script>
+    {% javascript 'sopn_viewer' %}
+    <script>
+        SOPN_VIEWER.ShowSOPNInline(
+            '{{ object.sopn.uploaded_file.url }}',
+            '{{ object.ballot_paper_id }}',
+            {
+                {% if object.sopn.relevant_pages and object.sopn.relevant_pages != "all"%}
+                    'start_page': {{ object.sopn.first_page_number }},
+                    'end_page': {{ object.sopn.last_page_number }}
+                {% endif %}
+            }
+        )
 
-  {% else %}
-    No SOPN uploaded for this ballot paper yet.
-  {% endif %}
-
-
-  {% if user.is_staff and user_can_upload_documents %}
-  {% url 'admin:official_documents_officialdocument_change' object.sopn.id as url %}
-  You can <a href="{{ url }}">edit this in the admin interface</a> (e.g. to delete it)
-  {% endif %}
-
-  <script src="{% static "official_documents/js/pdf.worker.min.js" %}"></script>
-  <script src="{% static "official_documents/js/pdf.min.js" %}"></script>
-  {% javascript 'sopn_viewer' %}
-  <script>
-  SOPN_VIEWER.ShowSOPNInline(
-    '{{ object.sopn.uploaded_file.url }}',
-    '{{ object.ballot_paper_id }}',
-    {
-    {% if object.sopn.relevant_pages and object.sopn.relevant_pages != "all"%}
-      'start_page': {{ object.sopn.first_page_number }},
-      'end_page': {{ object.sopn.last_page_number }}
-    {% endif %}
-    }
-  )
-
-  </script>
+    </script>
 {% endblock %}
