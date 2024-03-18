@@ -43,6 +43,7 @@
             </details>
         {% endif %}
 
+
         {% if ballot.rawpeople and ballot.rawpeople.is_parsed_from_pdf %}
             <div class="panel callout">
                 <details
@@ -90,7 +91,7 @@
                         {% else %}
                             <a href="{{ ballot.get_bulk_add_url }}">switch to the new parser</a>.
                         {% endif %}
-                    <strong>This will remove any changes you've made to the form</strong>.
+                        <strong>This will remove any changes you've made to the form</strong>.
                     </p>
                 </details>
             </div>
