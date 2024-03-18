@@ -95,6 +95,7 @@ TEMPLATES = [
                 "ynr.context_processors.add_site",
                 "ynr.context_processors.election_date",
                 "frontend.context_processors.site_wide_banner",
+                "wombles.context_processors.action_counts_processor",
             ]
         },
     }
