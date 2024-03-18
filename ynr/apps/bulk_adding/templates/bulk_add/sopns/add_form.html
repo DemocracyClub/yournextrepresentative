@@ -43,13 +43,12 @@
             </details>
         {% endif %}
 
-
         {% if ballot.rawpeople and ballot.rawpeople.is_parsed_from_pdf %}
             <div class="panel callout">
                 <details
                         {% if action_counts.last_months_actions <= 3 and action_counts.candidacy_create < 30 %}open{% else %}closed{% endif %}>
                     <summary>
-                        🤖 This SoPN has been parsed by a bot 🤖 ({% if active_parser.name == "TEXTRACT" %}V2{% else %}
+                        🤖 This SoPN has been parsed by a bot 🤖 ({% if ballot.rawpeople.textract_data %}V2{% else %}
                         V1{% endif %})
                     </summary>
                     <p>
