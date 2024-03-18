@@ -483,6 +483,7 @@ TEXTRACT_BACKOFF_TIME = 10
 from .constants.needs_review import *  # noqa
 from .constants.csv_fields import *  # noqa
 from .constants.nuts import *  # noqa
+from .constants.sopn_parsing import *  # noqa
 
 from ynr_refactoring.settings import *  # noqa
 

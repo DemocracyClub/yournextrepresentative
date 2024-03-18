@@ -636,7 +636,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         raw_people = RawPeople.objects.create(
             ballot=self.dulwich_post_ballot,
-            data=[
+            textract_data=[
                 {"name": "Bart", "party_id": "PP52"},
                 {"name": "List", "party_id": "joint-party:53-119"},
             ],
@@ -771,3 +771,49 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(resp, "Review candidates")
         resp = form.submit()
         self.assertContains(resp, "Bart Simpson")
+
+    def test_fall_back_to_camelot_if_no_textract(self):
+        data = {"name": "Bart", "party_id": "PP52"}
+
+        raw_people = RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            data=[data],
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+
+        self.assertEqual(
+            raw_people.as_form_kwargs(),
+            {
+                "initial": [
+                    {
+                        "name": "Bart",
+                        "party": ["PP52", "PP52"],
+                        "previous_party_affiliations": [],
+                        "source": "",
+                    }
+                ]
+            },
+        )
+        raw_people.delete()
+
+        textract_data = {"name": "Lisa", "party_id": "PP53"}
+        raw_people = RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            data=[data],
+            textract_data=[textract_data],
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+
+        self.assertEqual(
+            raw_people.as_form_kwargs(),
+            {
+                "initial": [
+                    {
+                        "name": "Lisa",
+                        "party": ["PP53", "PP53"],
+                        "previous_party_affiliations": [],
+                        "source": "",
+                    }
+                ]
+            },
+        )
