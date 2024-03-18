@@ -16,7 +16,8 @@
 {% block content %}
     <h2>Add candidates to {{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h2>
     {% if official_document %}
-        <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button tiny">Nomination paper (SoPN)</a>
+        <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button tiny">Nomination paper
+            (SoPN)</a>
         <details open class="panel">
             <summary>How to add or check candidates</summary>
 
@@ -26,12 +27,14 @@
                 <li>Either
                     <ol type="a">
                         <li>Add new candidates in the form below,</li>
-                        <li>Or check that any list below is correct. </li>
+                        <li>Or check that any list below is correct.</li>
                     </ol>
                 </li>
                 <li>Press review.
                     <ol type="a">
-                        <li>If you have added candidates, this will check for duplicates. Press ‘Add new person’ if you’re happy that we don’t already have that person.</li>
+                        <li>If you have added candidates, this will check for duplicates. Press ‘Add new person’ if
+                            you’re happy that we don’t already have that person.
+                        </li>
                     </ol>
                 </li>
                 <li>If you think this is the complete list, check the box.</li>
@@ -50,20 +53,33 @@
                         This is a new feature that might not work perfectly. The form fields below
                         should be populated with the candidates on the nomination paper, but
                         they still need checking against the document. If it has been parsed incorrectly
-                        you can <a href="#delete-parsed-people">clear the form using the button at the bottom of the page</a>.
+                        you can <a href="#delete-parsed-people">clear the form using the button at the bottom of the
+                        page</a>.
                     </p>
                     <p>
-                        To help us resolve bugs quicker, please report SOPN related errors in github:
+                        To help us resolve bugs quicker, please report SOPN related errors in GitHub:
                     <ul>
                         <li>
-                            <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1727">Table extraction errors</a>
+                            <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1727">Table
+                                extraction errors</a>
                         </li>
                         <li>
-                            <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1728">Table parsing errors</a>
+                            <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1728">Table parsing
+                                errors</a>
                         </li>
                     </ul>
-                    If you're unsure how to classify the error or for any other errors, please post a message on our <a href="https://slack.democracyclub.org.uk">Slack</a>
-                    or over <a href="mailto:hello@democracyclub.org.uk">email</a>.
+                    <p>
+                        If you're unsure how to classify the error or for any other errors, please post a message on our
+                        <a href="https://slack.democracyclub.org.uk">Slack</a>
+                        or over <a href="mailto:hello@democracyclub.org.uk">email</a>.
+                    </p>
+                    <p>Note: This SOPN was parsed using
+                        {% if ballot.rawpeople.textract_data %}
+                            our <strong>new</strong> parser (v2).
+                        {% else %}
+                            our <strong>old</strong> parser (v1).
+                        {% endif %}
+                        Please mention this when reporting issues.
                     </p>
                 </details>
             </div>
@@ -73,7 +89,8 @@
 
         <form method=POST id="bulk_add_form">
             <button type=submit>Review</button>
-            <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button">Nomination paper (SoPN)</a>
+            <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button">Nomination paper
+                (SoPN)</a>
             {% csrf_token %}
             {{ formset.management_form }}
             {% if formset.non_form_errors %}
@@ -85,7 +102,7 @@
             {% for table in sorted_with_type %}
                 {% include table.template_name with data=table.data %}
             {% endfor %}
-        <button type=submit>Review</button>
+            <button type=submit>Review</button>
         </form>
 
         {% include "bulk_add/sopns/_delete_parsed_people.html" %}
