@@ -95,6 +95,7 @@ TEMPLATES = [
                 "ynr.context_processors.add_site",
                 "ynr.context_processors.election_date",
                 "frontend.context_processors.site_wide_banner",
+                "wombles.context_processors.action_counts_processor",
             ]
         },
     }
@@ -483,6 +484,7 @@ TEXTRACT_BACKOFF_TIME = 10
 from .constants.needs_review import *  # noqa
 from .constants.csv_fields import *  # noqa
 from .constants.nuts import *  # noqa
+from .constants.sopn_parsing import *  # noqa
 
 from ynr_refactoring.settings import *  # noqa
 

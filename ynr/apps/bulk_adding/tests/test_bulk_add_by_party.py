@@ -115,7 +115,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms[1]
         # Now submit the valid form
-        with self.assertNumQueries(FuzzyInt(49, 52)):
+        with self.assertNumQueries(FuzzyInt(49, 53)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
             response = form.submit().follow()
 
