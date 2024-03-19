@@ -48,7 +48,7 @@
                 <details
                         {% if action_counts.last_months_actions <= 3 and action_counts.candidacy_create < 30 %}open{% else %}closed{% endif %}>
                     <summary>
-                        🤖 This SoPN has been parsed by a bot 🤖 ({% if ballot.rawpeople.textract_data %}V2{% else %}
+                        🤖 This SoPN has been parsed by a bot 🤖 ({% if active_parser.name == "TEXTRACT" %}V2{% else %}
                         V1{% endif %})
                     </summary>
                     <p>
@@ -76,7 +76,7 @@
                         or over <a href="mailto:hello@democracyclub.org.uk">email</a>.
                     </p>
                     <p>Note: This SOPN was parsed using
-                        {% if ballot.rawpeople.textract_data %}
+                        {% if active_parser.name == "TEXTRACT" %}
                             our <strong>new</strong> parser (v2).
                         {% else %}
                             our <strong>old</strong> parser (v1).
