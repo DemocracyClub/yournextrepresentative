@@ -144,6 +144,11 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
         if hasattr(context["ballot"], "rawpeople"):
             context["active_parser"] = self.get_active_parser()
 
+            form_kwargs.update(
+                context["ballot"].rawpeople.as_form_kwargs(
+                    parser=self.get_active_parser()
+                )
+            )
             context["has_parsed_people"] = (
                 context["ballot"].rawpeople.source_type == "parsed_pdf"
             )

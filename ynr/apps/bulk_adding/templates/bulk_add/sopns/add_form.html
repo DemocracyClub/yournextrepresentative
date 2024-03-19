@@ -83,6 +83,15 @@
                         {% endif %}
                         Please mention this when reporting issues.
                     </p>
+                    <p>
+                        If this parser hasn't worked, you can
+                        {% if active_parser.name == "TEXTRACT" %}
+                            <a href="{{ ballot.get_bulk_add_url }}?v1_parser=1">switch to the old parser</a>.
+                        {% else %}
+                            <a href="{{ ballot.get_bulk_add_url }}">switch to the new parser</a>.
+                        {% endif %}
+                    <strong>This will remove any changes you've made to the form</strong>.
+                    </p>
                 </details>
             </div>
         {% endif %}

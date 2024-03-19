@@ -817,3 +817,34 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 ]
             },
         )
+
+    def test_can_change_parser_in_frontend(self):
+        """
+        Check that a query param can change the parser we use
+        """
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            data=[{"name": "Bart", "party_id": "PP52"}],
+            textract_data=[{"name": "Lisa", "party_id": "PP53"}],
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
+        )
+        form = response.forms["bulk_add_form"]
+        # This should be the Textract data
+        self.assertEqual(form.fields["form-0-name"][0].value, "Lisa")
+
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/?v1_parser=1",
+            user=self.user,
+        )
+        form = response.forms["bulk_add_form"]
+        # This should be the Textract data
+        self.assertEqual(form.fields["form-0-name"][0].value, "Bart")
