@@ -15,7 +15,7 @@ from sopn_parsing.helpers.parse_tables import parse_raw_data_for_ballot
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
 from .forms import UploadDocumentForm
-from .models import DOCUMENT_UPLOADERS_GROUP_NAME, OfficialDocument
+from .models import DOCUMENT_UPLOADERS_GROUP_NAME, BallotSOPN
 
 
 class CreateDocumentView(GroupRequiredMixin, CreateView):
@@ -29,7 +29,6 @@ class CreateDocumentView(GroupRequiredMixin, CreateView):
             "ballot": Ballot.objects.get(
                 ballot_paper_id=self.kwargs["ballot_paper_id"]
             ),
-            "document_type": OfficialDocument.NOMINATION_PAPER,
         }
 
     def get_context_data(self, **kwargs):
@@ -71,13 +70,13 @@ class CreateDocumentView(GroupRequiredMixin, CreateView):
 
 
 class PostsForDocumentView(DetailView):
-    model = OfficialDocument
+    model = BallotSOPN
     template_name = "official_documents/posts_for_document.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         documents = (
-            OfficialDocument.objects.filter(source_url=self.object.source_url)
+            BallotSOPN.objects.filter(source_url=self.object.source_url)
             .distinct("ballot__ballot_paper_id")
             .filter(ballot__election=self.object.ballot.election)
             .select_related("ballot__post", "ballot__election")
@@ -103,7 +102,7 @@ class UnlockedWithDocumentsView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        SOPNs_qs = OfficialDocument.objects.filter(
+        SOPNs_qs = BallotSOPN.objects.filter(
             ballot__election__current=True
         ).select_related("ballot__election", "ballot__post")
 

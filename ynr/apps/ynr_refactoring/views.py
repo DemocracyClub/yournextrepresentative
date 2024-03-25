@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import RedirectView
 from elections.models import Election
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from parties.models import Party
 
 from .constants import UPDATED_SLUGS
@@ -102,9 +102,8 @@ class RedirectPartyDetailView(PermanentRedirectView):
         )
 
 
+# TODO: delete this?
 class RedirectSOPNView(PermanentRedirectView):
     def get_redirect_url(self, *args, **kwargs):
-        document = get_object_or_404(
-            OfficialDocument, pk=self.kwargs["document_id"]
-        )
+        document = get_object_or_404(BallotSOPN, pk=self.kwargs["document_id"])
         return document.get_absolute_url()

@@ -4,7 +4,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from official_documents.tests.paths import (
     EXAMPLE_DOCX_FILENAME,
     EXAMPLE_HTML_FILENAME,
@@ -28,9 +28,8 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
         # test converting docx to pdf
         with open(self.example_docx_filename, "rb") as f:
             sopn_file = f.read()
-        doc = OfficialDocument.objects.create(
+        doc = BallotSOPN.objects.create(
             ballot=self.dulwich_post_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
             uploaded_file=SimpleUploadedFile(
                 "example-file.docx",
                 sopn_file,
@@ -44,9 +43,8 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
         # test converting html to pdf
         with open(self.example_html_filename, "rb") as f:
             sopn_file = f.read()
-        doc = OfficialDocument.objects.create(
+        doc = BallotSOPN.objects.create(
             ballot=self.dulwich_post_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
             uploaded_file=SimpleUploadedFile(
                 "example-file.html",
                 sopn_file,
@@ -60,9 +58,8 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
         # when file types are not accepted, raise an error
         with open(self.example_image_filename, "rb") as f:
             sopn_file = f.read()
-        doc = OfficialDocument.objects.create(
+        doc = BallotSOPN.objects.create(
             ballot=self.dulwich_post_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
             uploaded_file=SimpleUploadedFile(
                 "example-file.jpg",
                 sopn_file,

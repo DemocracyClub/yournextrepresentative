@@ -22,7 +22,7 @@ from django.views.generic import DetailView, TemplateView, UpdateView
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from moderation_queue.forms import SuggestedPostLockForm
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from parties.models import Party
 from people.forms.forms import NewPersonForm
 from people.forms.formsets import PersonIdentifierFormsetFactory
@@ -209,7 +209,7 @@ class BallotPaperView(TemplateView):
 
         try:
             context["sopn"] = ballot.sopn
-        except OfficialDocument.DoesNotExist:
+        except BallotSOPN.DoesNotExist:
             context["sopn"] = None
 
         if ballot.polls_closed:
@@ -313,23 +313,17 @@ class SOPNForBallotView(DetailView):
     A view to show a single SOPN for a ballot paper
     """
 
-    queryset = Ballot.objects.all().prefetch_related(
-        Prefetch(
-            "officialdocument_set",
-            OfficialDocument.objects.all().select_related(
-                "awstextractparsedsopn", "camelotparsedsopn"
-            ),
-        )
-    )
+    queryset = Ballot.objects.all().select_related("sopn")
     slug_url_kwarg = "ballot_id"
     slug_field = "ballot_paper_id"
     template_name = "elections/sopn_for_ballot.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["documents_with_same_source"] = OfficialDocument.objects.filter(
-            source_url=self.object.sopn.source_url
-        )
+        # TODO FK between BallotSOPN and ElectionSOPN
+        # context["documents_with_same_source"] = OfficialDocument.objects.filter(
+        #     source_url=self.object.sopn.source_url
+        # )
         context["textract_parsed"] = getattr(
             self.object.sopn, "awstextractparsedsopn", None
         )

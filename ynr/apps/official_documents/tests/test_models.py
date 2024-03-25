@@ -9,7 +9,7 @@ from candidates.tests.factories import (
     PostFactory,
 )
 from django.test import TestCase
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 
 
 class TestModels(TestCase):
@@ -27,9 +27,7 @@ class TestModels(TestCase):
         self.ballot = self.post.ballot_set.get()
 
     def test_unicode(self):
-        doc = OfficialDocument(
-            ballot=self.ballot, source_url="http://example.com/"
-        )
+        doc = BallotSOPN(ballot=self.ballot, source_url="http://example.com/")
 
         self.assertEqual(
             str(doc),
@@ -37,9 +35,7 @@ class TestModels(TestCase):
         )
 
     def test_relevant_pages(self):
-        doc = OfficialDocument(
-            ballot=self.ballot, source_url="http://example.com/"
-        )
+        doc = BallotSOPN(ballot=self.ballot, source_url="http://example.com/")
         self.assertIsNone(doc.first_page_number)
         self.assertIsNone(doc.last_page_number)
 

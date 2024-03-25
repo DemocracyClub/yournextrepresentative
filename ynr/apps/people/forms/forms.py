@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, validate_email
 from django.utils.functional import cached_property
 from facebook_data.tasks import extract_fb_page_id
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from parties.forms import (
     PartyIdentifierField,
     PopulatePartiesMixin,
@@ -204,7 +204,7 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
 
         try:
             return bool(ballot.sopn)
-        except OfficialDocument.DoesNotExist:
+        except BallotSOPN.DoesNotExist:
             return False
 
     class Meta:

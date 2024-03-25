@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
 from django.utils.safestring import SafeText, mark_safe
 from elections.models import Election
-from official_documents.models import OfficialDocument
 from parties.forms import (
     PartyIdentifierField,
     PopulatePartiesMixin,
@@ -136,14 +135,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             suggestion.memberships.select_related(
                 "ballot__post", "ballot__election", "party"
             )
-            .prefetch_related(
-                Prefetch(
-                    "ballot__officialdocument_set",
-                    queryset=OfficialDocument.objects.filter(
-                        document_type=OfficialDocument.NOMINATION_PAPER
-                    ).order_by("-modified"),
-                ),
-            )
+            .select_related("ballot__sopn")
             .order_by("-ballot__election__election_date")[:3]
         )
 

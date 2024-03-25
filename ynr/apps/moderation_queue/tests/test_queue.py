@@ -27,7 +27,7 @@ from moderation_queue.models import (
     SuggestedPostLock,
 )
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from parties.tests.factories import PartyFactory
 from people.models import Person
 from people.tests.factories import PersonFactory
@@ -508,8 +508,7 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
         SuggestedPostLock.objects.create(
             ballot=ballot, user=self.user, justification="test data"
         )
-        OfficialDocument.objects.create(
-            document_type=OfficialDocument.NOMINATION_PAPER,
+        BallotSOPN.objects.create(
             ballot=ballot,
             source_url="http://example.com",
         )
@@ -527,8 +526,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertNotContains(response, "Add candidates")
 
     def test_sopn_review_view_with_reviews(self):
-        OfficialDocument.objects.create(
-            document_type=OfficialDocument.NOMINATION_PAPER,
+        BallotSOPN.objects.create(
             ballot=self.dulwich_post_ballot,
             source_url="http://example.com",
         )
@@ -542,8 +540,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         SuggestedPostLock.objects.create(
             ballot=ballot, user=self.user, justification="test data"
         )
-        OfficialDocument.objects.create(
-            document_type=OfficialDocument.NOMINATION_PAPER,
+        BallotSOPN.objects.create(
             ballot=self.dulwich_post_ballot,
             source_url="http://example.com",
         )
@@ -556,8 +553,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         ballot = self.dulwich_post.ballot_set.get(election=self.election)
         ballot.candidates_locked = True
         ballot.save()
-        OfficialDocument.objects.create(
-            document_type=OfficialDocument.NOMINATION_PAPER,
+        BallotSOPN.objects.create(
             ballot=self.dulwich_post_ballot,
             source_url="http://example.com",
         )

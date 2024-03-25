@@ -16,7 +16,7 @@ from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from mock import Mock
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from sopn_parsing.helpers.extract_pages import (
     TextractSOPNHelper,
     TextractSOPNParsingHelper,
@@ -136,10 +136,9 @@ class TestSOPNHelpers(TestCase):
         )
         with open(example_doc_path, "rb") as f:
             sopn_file = File(f)
-            official_document = OfficialDocument(
+            official_document = BallotSOPN(
                 ballot=ballot,
                 source_url="http://example.com/strensall",
-                document_type=OfficialDocument.NOMINATION_PAPER,
             )
             official_document.uploaded_file.save(
                 name="sopn.pdf", content=sopn_file
@@ -189,10 +188,9 @@ class TestSOPNHelpers(TestCase):
             sopn_file = File(f)
             # assign the same PDF to both ballots with the same source URL
             for ballot in [north_antrim, mid_ulster]:
-                official_document = OfficialDocument(
+                official_document = BallotSOPN(
                     ballot=ballot,
                     source_url="http://example.com",
-                    document_type=OfficialDocument.NOMINATION_PAPER,
                 )
                 official_document.uploaded_file.save(
                     name="sopn.pdf", content=sopn_file
@@ -226,10 +224,9 @@ class TestSOPNHelpers(TestCase):
         )
         with open(sopn_pdf, "rb") as f:
             sopn_file = File(f)
-            official_document = OfficialDocument(
+            official_document = BallotSOPN(
                 ballot=strensall,
                 source_url="http://example.com/strensall",
-                document_type=OfficialDocument.NOMINATION_PAPER,
             )
             official_document.uploaded_file.save(
                 name="sopn.pdf", content=sopn_file
@@ -263,15 +260,14 @@ def textract_sopn_helper(db):
         Path(__file__).parent / "data/local.york.strensall.2019-05-02.pdf"
     )
     with sopn_pdf_path.open("rb") as sopn_file:
-        official_document = OfficialDocument.objects.create(
+        official_document = BallotSOPN.objects.create(
             ballot=BallotPaperFactory(
                 ballot_paper_id="local.york.strensall.2019-05-02"
             ),
-            document_type=OfficialDocument.NOMINATION_PAPER,
             uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file.read()),
         )
     yield TextractSOPNHelper(
-        official_document=official_document, upload_path="s3://fake_bucket/"
+        ballot_sopn=official_document, upload_path="s3://fake_bucket/"
     )
 
 
@@ -378,8 +374,7 @@ def test_update_job_status_failed(
 
 @pytest.fixture
 def textract_sopn_parsing_helper(db, get_document_analysis_json):
-    official_document = OfficialDocument.objects.create(
+    official_document = BallotSOPN.objects.create(
         ballot=BallotPaperFactory(),
-        document_type=OfficialDocument.NOMINATION_PAPER,
     )
     yield TextractSOPNParsingHelper(official_document=official_document)

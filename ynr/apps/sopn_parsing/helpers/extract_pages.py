@@ -5,7 +5,7 @@ import boto3
 from botocore.client import Config
 from django.conf import settings
 from django.db import IntegrityError
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from pdfminer.pdftypes import PDFException
 from PIL import Image
 from sopn_parsing.helpers.pdf_helpers import SOPNDocument
@@ -74,11 +74,11 @@ class TextractSOPNHelper:
 
     def __init__(
         self,
-        official_document: OfficialDocument,
+        ballot_sopn: BallotSOPN,
         bucket_name: str = None,
         upload_path: str = None,
     ):
-        self.official_document = official_document
+        self.official_document = ballot_sopn
         self.bucket_name = bucket_name or getattr(
             settings, "AWS_STORAGE_BUCKET_NAME", None
         )
@@ -187,8 +187,8 @@ class TextractSOPNParsingHelper:
     the SOPN parsing functionality that matches fields including
     candidates to parties."""
 
-    def __init__(self, official_document: OfficialDocument):
-        self.official_document = official_document
+    def __init__(self, ballot_sopn: BallotSOPN):
+        self.official_document = ballot_sopn
         self.parsed_sopn = self.official_document.awstextractparsedsopn
 
     def parse(self):

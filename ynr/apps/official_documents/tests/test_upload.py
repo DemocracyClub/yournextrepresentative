@@ -13,7 +13,7 @@ from candidates.tests.factories import (
 from django.urls import reverse
 from django_webtest import WebTest
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from official_documents.tests.paths import (
     EXAMPLE_DOCX_FILENAME,
     EXAMPLE_HTML_FILENAME,
@@ -66,7 +66,6 @@ class TestModels(TestUserMixin, WebTest):
                 params={
                     "csrfmiddlewaretoken": csrftoken,
                     "post_id": self.post.slug,
-                    "document_type": OfficialDocument.NOMINATION_PAPER,
                     "source_url": "http://example.org/foo",
                     "": Upload("pilot.jpg", f.read()),
                 },
@@ -113,12 +112,12 @@ class TestModels(TestUserMixin, WebTest):
             extract_tables.assert_called_once()
             parse_tables.assert_called_once()
 
-        ods = OfficialDocument.objects.all()
-        self.assertEqual(ods.count(), 1)
-        od = ods[0]
-        self.assertEqual(od.source_url, "http://example.org/foo")
+        ballot_sopns = BallotSOPN.objects.all()
+        self.assertEqual(ballot_sopns.count(), 1)
+        ballot_sopn = ballot_sopns[0]
+        self.assertEqual(ballot_sopn.source_url, "http://example.org/foo")
         self.assertEqual(
-            od.ballot.ballot_paper_id,
+            ballot_sopn.ballot.ballot_paper_id,
             "parl.dulwich-and-west-norwood.2015-05-07",
         )
 
@@ -150,7 +149,7 @@ class TestModels(TestUserMixin, WebTest):
         )
 
         self.assertInHTML("Upload SOPN", response.text)
-        self.assertEqual(OfficialDocument.objects.count(), 0)
+        self.assertEqual(BallotSOPN.objects.count(), 0)
 
         response = self.app.get(
             reverse(
@@ -177,7 +176,7 @@ class TestModels(TestUserMixin, WebTest):
             extract_pages.assert_called_once()
             extract_tables.assert_called_once()
             parse_tables.assert_called_once()
-            self.assertEqual(OfficialDocument.objects.count(), 1)
+            self.assertEqual(BallotSOPN.objects.count(), 1)
             self.assertEqual(response.location, self.ballot.get_sopn_url())
 
     @skipIf(
@@ -205,7 +204,7 @@ class TestModels(TestUserMixin, WebTest):
             form["uploaded_file"] = Upload("pilot.html", f.read())
         response = form.submit()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(OfficialDocument.objects.count(), 0)
+        self.assertEqual(BallotSOPN.objects.count(), 0)
         self.assertInHTML(
             "File extension “html” is not allowed. Allowed extensions are: pdf, docx.",
             response.text,
@@ -236,7 +235,7 @@ class TestModels(TestUserMixin, WebTest):
             form["uploaded_file"] = Upload("pilot.jpg", f.read())
         response = form.submit()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(OfficialDocument.objects.count(), 0)
+        self.assertEqual(BallotSOPN.objects.count(), 0)
         self.assertInHTML(
             "File extension “jpg” is not allowed. Allowed extensions are: pdf, docx.",
             response.text,

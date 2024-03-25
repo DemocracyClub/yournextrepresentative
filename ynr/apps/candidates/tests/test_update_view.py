@@ -2,7 +2,7 @@ from unittest import skip
 from urllib.parse import urlsplit
 
 from django_webtest import WebTest
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from people.models import Person
 from people.tests.factories import PersonFactory
 from popolo.models import Membership
@@ -194,9 +194,8 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         ballot previous party affiliations can be added
         """
         person = Person.objects.get(pk=2009)
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             ballot=self.senedd_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
         )
         membership = MembershipFactory(
             person=person, party=self.labour_party, ballot=self.senedd_ballot
@@ -222,9 +221,8 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         ballot previous party affiliations can be removed
         """
         person = Person.objects.get(pk=2009)
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             ballot=self.senedd_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
         )
         membership = MembershipFactory(
             person=person, party=self.labour_party, ballot=self.senedd_ballot
@@ -250,9 +248,8 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         updated
         """
         person = Person.objects.get(pk=2009)
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             ballot=self.senedd_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
         )
         membership = MembershipFactory(
             person=person, party=self.labour_party, ballot=self.senedd_ballot

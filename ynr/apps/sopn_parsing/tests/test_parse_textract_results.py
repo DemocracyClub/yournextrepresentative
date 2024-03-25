@@ -5,7 +5,7 @@ from pathlib import Path
 
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.test import TestCase
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from sopn_parsing.models import AWSTextractParsedSOPN
 
 
@@ -16,7 +16,7 @@ class TestTextractResposeToDataFrame(UK2015ExamplesMixin, TestCase):
             / "data/textract_responses"
             / f"{ballot_id}.json"
         )
-        sopn = OfficialDocument.objects.create(ballot=self.dulwich_post_ballot)
+        sopn = BallotSOPN.objects.create(ballot=self.dulwich_post_ballot)
         return AWSTextractParsedSOPN.objects.create(
             sopn=sopn, raw_data=textract_response_path.open().read()
         )

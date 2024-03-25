@@ -1,17 +1,17 @@
 from django import forms
 from django.core.validators import FileExtensionValidator
+from official_documents.models import BallotSOPN
 from sopn_parsing.helpers.convert_pdf import (
     PandocConversionError,
     convert_sopn_to_pdf,
 )
 
-from .models import OfficialDocument
 
-
+# TODO: Rename to BallotSOPNUploadForm
 class UploadDocumentForm(forms.ModelForm):
     class Meta:
-        model = OfficialDocument
-        fields = ("uploaded_file", "source_url", "ballot", "document_type")
+        model = BallotSOPN
+        fields = ("uploaded_file", "source_url", "ballot")
 
         widgets = {"ballot": forms.HiddenInput()}
 

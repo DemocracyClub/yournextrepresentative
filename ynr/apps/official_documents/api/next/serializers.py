@@ -1,9 +1,9 @@
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from rest_framework import serializers
 
 
-class OfficialDocumentSerializer(serializers.HyperlinkedModelSerializer):
+class BallotSOPNSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = OfficialDocument
-        fields = ("document_type", "uploaded_file", "source_url")
+        model = BallotSOPN
+        fields = ("uploaded_file", "source_url")
         ref_name = None  # Tells swagger that this is always embedded

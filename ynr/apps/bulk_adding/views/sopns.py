@@ -10,13 +10,12 @@ from candidates.views.version_data import get_client_ip
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import F
-from django.db.models.query import Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import FormView, RedirectView, TemplateView
 from moderation_queue.models import SuggestedPostLock
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from official_documents.views import get_add_from_document_cta_flash_message
 from parties.models import Party
 from people.models import Person
@@ -48,19 +47,13 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         help performance.
         """
         queryset = Ballot.objects.select_related(
-            "post", "election", "rawpeople", "post__party_set"
+            "post", "election", "rawpeople", "post__party_set", "sopn"
         ).prefetch_related(
             "membership_set",
             "membership_set__person",
             "membership_set__person__other_names",
             "membership_set__party",
             "membership_set__party__descriptions",
-            Prefetch(
-                "officialdocument_set",
-                queryset=OfficialDocument.objects.filter(
-                    document_type=OfficialDocument.NOMINATION_PAPER
-                ),
-            ),
         )
         return get_object_or_404(
             queryset, ballot_paper_id=self.kwargs["ballot_paper_id"]
@@ -73,10 +66,10 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         context["post"] = self.ballot.post
         context["election_obj"] = self.ballot.election
         try:
-            context["official_document"] = self.ballot.sopn
-        except OfficialDocument.DoesNotExist:
-            context["official_document"] = None
-        self.official_document = context["official_document"]
+            context["ballot_sopn"] = self.ballot.sopn
+        except BallotSOPN.DoesNotExist:
+            context["ballot_sopn"] = None
+        self.official_document = context["ballot_sopn"]
         return context
 
     def get_context_data(self, **kwargs):
@@ -99,7 +92,8 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         return context
 
     def remaining_posts_for_sopn(self):
-        return OfficialDocument.objects.filter(
+        # TODO: Use ElectionSOPN?
+        return BallotSOPN.objects.filter(
             source_url=self.official_document.source_url,
             ballot__election=F("ballot__election"),
             ballot__suggestedpostlock=None,

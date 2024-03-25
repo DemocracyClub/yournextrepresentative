@@ -1,8 +1,7 @@
 from io import StringIO
 from typing import List
 
-from django.db.models.functions import Length
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
@@ -94,14 +93,16 @@ class SOPNDocument:
         logic would incorrectly match with "Foo Ward" because it contains the
         ward name "Foo"
         """
-        return (
-            OfficialDocument.objects.filter(
-                source_url=self.source_url,
-                ballot__election__election_date=self.election_date,
-            )
-            .select_related("ballot", "ballot__post")
-            .order_by(-Length("ballot__post__label"), "ballot__post__label")
-        )
+        return
+        # TODO: Use ElectionSOPN here
+        # return (
+        #     OfficialDocument.objects.filter(
+        #         source_url=self.source_url,
+        #         ballot__election__election_date=self.election_date,
+        #     )
+        #     .select_related("ballot", "ballot__post")
+        #     .order_by(-Length("ballot__post__label"), "ballot__post__label")
+        # )
 
     def is_matched_page_numbers_valid(self):
         """
@@ -181,7 +182,7 @@ class SOPNDocument:
 
         return ",".join(str(number) for number in self.matched_page_numbers)
 
-    def save_matched_pages(self, document: OfficialDocument):
+    def save_matched_pages(self, document: BallotSOPN):
         """
         Attemps to find matched pages and save them against the OfficialDocument
         If none are found, do nothing, unless we are in "strict" mode where we

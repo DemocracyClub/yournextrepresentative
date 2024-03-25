@@ -11,7 +11,6 @@ from drf_yasg.utils import swagger_auto_schema
 from elections.filters import BallotFilter
 from elections.models import Election
 from elections.uk.geo_helpers import BadPostcodeException
-from official_documents.models import OfficialDocument
 from popolo.models import Membership
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -39,7 +38,7 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_value_regex = r"(?!\.json$)[^/]+"
     queryset = (
         extra_models.Ballot.objects.select_related(
-            "election", "post", "replaces", "replaced_by", "resultset"
+            "election", "post", "replaces", "replaced_by", "resultset", "sopn"
         )
         .prefetch_related(
             Prefetch(
@@ -58,12 +57,6 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
                     "party_list_position",
                     "name_for_ordering",
                 ),
-            ),
-            Prefetch(
-                "officialdocument_set",
-                queryset=OfficialDocument.objects.filter(
-                    document_type=OfficialDocument.NOMINATION_PAPER
-                ).order_by("modified"),
             ),
         )
         .order_by("-election__election_date", "ballot_paper_id")
