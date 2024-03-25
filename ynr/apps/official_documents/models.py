@@ -181,7 +181,11 @@ class BaseBallotSOPN(TimeStampedModel):
 
 
 class BallotSOPN(BaseBallotSOPN):
-    ...
+    def get_absolute_url(self):
+        return reverse(
+            "ballot_paper_sopn",
+            kwargs={"ballot_id": self.ballot.ballot_paper_id},
+        )
 
 
 class BallotSOPNHistory(BaseBallotSOPN):
