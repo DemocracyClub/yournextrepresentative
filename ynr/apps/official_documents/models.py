@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -92,3 +93,45 @@ class OfficialDocument(TimeStampedModel):
         if self.get_pages():
             return self.get_pages()[-1]
         return None
+
+
+def election_sopn_file_name(instance: "ElectionSOPN", filename):
+    if not instance.pk:
+        raise ValueError(
+            "ElectionSOPN.pk required. Save the instance before saving the uploaded_file."
+        )
+    return (
+        Path("official_documents")
+        / instance.election.slug
+        / instance.pk
+        / filename
+    )
+
+
+class ElectionSOPN(TimeStampedModel):
+    """
+    Stores SOPNs that contain candidate information for each ballot in an election.
+
+    We don't use this directly, rather we use this as a donor document for populating BallotSOPN instances.
+
+    """
+
+    election = models.OneToOneField(
+        "elections.Election", on_delete=models.CASCADE, blank=True
+    )
+
+    uploaded_file = models.FileField(
+        upload_to=election_sopn_file_name,
+        max_length=1200,
+        validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
+    )
+
+    source_url = models.URLField(
+        help_text="The URL of this document", max_length=1200
+    )
+
+    class Meta:
+        get_latest_by = "modified"
+
+    def __str__(self):
+        return "{} ({})".format(self.election.slug, self.source_url)
