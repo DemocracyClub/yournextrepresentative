@@ -135,3 +135,58 @@ class ElectionSOPN(TimeStampedModel):
 
     def __str__(self):
         return "{} ({})".format(self.election.slug, self.source_url)
+
+
+def ballot_sopn_file_name(instance: "BaseBallotSOPN", filename):
+    if not instance.pk:
+        raise ValueError(
+            "BaseBallotSOPN.pk required. Save the instance before saving the uploaded_file."
+        )
+    return (
+        Path("official_documents")
+        / instance.ballot.ballot_paper_id
+        / "sopn"
+        / instance.pk
+        / filename
+    )
+
+
+class BaseBallotSOPN(TimeStampedModel):
+    """
+    An abstract class used by BallotSOPN and BallotSOPNHistory. Used to keep both models in sync.
+
+    """
+
+    ballot = models.OneToOneField(
+        "candidates.Ballot", on_delete=models.CASCADE, related_name="sopn"
+    )
+
+    # Don't add `ballot` here as we want different related names for each model
+    uploaded_file = models.FileField(
+        upload_to=ballot_sopn_file_name,
+        max_length=1200,
+        validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
+    )
+
+    source_url = models.URLField(
+        help_text="The URL of this document", max_length=1200
+    )
+
+    class Meta:
+        get_latest_by = "modified"
+        abstract = True
+
+    def __str__(self):
+        return "{} ({})".format(self.ballot.ballot_paper_id, self.source_url)
+
+
+class BallotSOPN(BaseBallotSOPN):
+    ...
+
+
+class BallotSOPNHistory(BaseBallotSOPN):
+    ballot = models.ForeignKey(
+        "candidates.Ballot",
+        on_delete=models.CASCADE,
+        related_name="sopn_history",
+    )
