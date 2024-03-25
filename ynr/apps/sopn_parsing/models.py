@@ -16,8 +16,11 @@ class CamelotParsedSOPN(TimeStampedModel):
 
     """
 
-    sopn = models.OneToOneField(
+    official_document = models.OneToOneField(
         "official_documents.OfficialDocument", on_delete=models.CASCADE
+    )
+    sopn = models.OneToOneField(
+        "official_documents.BallotSOPN", on_delete=models.CASCADE, null=True
     )
     raw_data = models.TextField()
     raw_data_type = models.CharField(max_length=255, default="pandas")
@@ -79,8 +82,11 @@ class AWSTextractParsedSOPN(TimeStampedModel):
 
     """
 
-    sopn = models.OneToOneField(
+    official_document = models.OneToOneField(
         "official_documents.OfficialDocument", on_delete=models.CASCADE
+    )
+    sopn = models.OneToOneField(
+        "official_documents.BallotSOPN", on_delete=models.CASCADE, null=True
     )
     job_id = models.CharField(max_length=100)
     raw_data = models.TextField()
