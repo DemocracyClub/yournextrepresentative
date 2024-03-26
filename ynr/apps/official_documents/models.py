@@ -97,10 +97,6 @@ class OfficialDocument(TimeStampedModel):
 
 
 def election_sopn_file_name(instance: "ElectionSOPN", filename):
-    if not instance.pk:
-        raise ValueError(
-            "ElectionSOPN.pk required. Save the instance before saving the uploaded_file."
-        )
     return (
         Path("official_documents")
         / instance.election.slug
@@ -167,6 +163,12 @@ class BaseBallotSOPN(TimeStampedModel):
 
     source_url = models.URLField(
         help_text="The URL of this document", max_length=1200
+    )
+
+    relevant_pages = models.CharField(
+        max_length=20,
+        help_text="The pages in the ElectionSOPN that relate to this Ballot",
+        default="all",
     )
 
     class Meta:

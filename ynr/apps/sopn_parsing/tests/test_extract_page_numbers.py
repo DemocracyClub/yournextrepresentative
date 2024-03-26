@@ -1,6 +1,5 @@
 from os.path import abspath, dirname, join
-from unittest import skip, skipIf
-from unittest.mock import patch
+from unittest import skipIf
 
 from candidates.models import Ballot
 from candidates.tests.uk_examples import UK2015ExamplesMixin
@@ -8,6 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
+from official_documents.models import ElectionSOPN
 from official_documents.tests.paths import (
     EXAMPLE_DOCX_FILENAME,
     EXAMPLE_HTML_FILENAME,
@@ -22,29 +22,6 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
     example_html_filename = EXAMPLE_HTML_FILENAME
     example_image_filename = EXAMPLE_IMAGE_FILENAME
 
-    @skip("Until we've implemented page splitting")
-    def test_extract_pages_management_command(self):
-        example_doc_path = abspath(
-            join(
-                dirname(__file__),
-                "data/parl.dulwich-and-west-norwood.2015-05-07.pdf",
-            )
-        )
-        with open(example_doc_path, "rb") as f:
-            sopn_file = f.read()
-        doc = OfficialDocument.objects.create(  # noqa: F821
-            ballot=self.dulwich_post_ballot,
-            uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file),
-            source_url="example.com",
-        )
-        self.assertEqual(doc.first_page_number, None)
-        with patch(
-            "sopn_parsing.management.commands.sopn_parsing_extract_page_numbers.extract_pages_for_ballot"
-        ) as mock_extract_pages_for_ballot:
-            call_command("sopn_parsing_extract_page_numbers")
-            mock_extract_pages_for_ballot.assert_called_with(doc.ballot)
-
-    @skip("Until we've implemented page splitting")
     def test_multi_page_sopn_correct_ward_assigning(self):
         """
         In the case where:
@@ -90,24 +67,25 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             "Norton South": "18",
             "Riverside": "19",
         }
+        self.local_election.ballot_set.all().delete()
         for post_name in posts:
             post = Post.objects.create(
                 label=post_name,
                 organization=self.local_council,
                 identifier=post_name,
             )
-            ballot = Ballot.objects.create(
+            Ballot.objects.create(
                 ballot_paper_id="local.{}.2019-05-02".format(post_name.lower()),
                 post=post,
                 election=self.local_election,
             )
-            with open(example_doc_path, "rb") as f:
-                sopn_file = f.read()
-            OfficialDocument.objects.create(  # noqa: F821
-                ballot=ballot,
-                uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file),
-                source_url="example.com",
-            )
+        with open(example_doc_path, "rb") as f:
+            sopn_file = f.read()
+        ElectionSOPN.objects.create(
+            election=self.local_election,
+            uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file),
+            source_url="example.com",
+        )
 
         call_command("sopn_parsing_extract_page_numbers")
         for post_name, expected_page in posts.items():
@@ -115,7 +93,6 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
                 ballot = Ballot.objects.get(post__label=post_name)
                 self.assertEqual(ballot.sopn.relevant_pages, expected_page)
 
-    @skip("Until we've implemented page splitting")
     def test_post_names_same_length(self):
         """
         Test an edge case where SOPN covers wards with similar post names and
@@ -128,23 +105,24 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             )
         )
         posts = {"Chalfont St Peter": "7,8", "Chalfont St Giles": "5,6"}
+        self.local_election.ballot_set.all().delete()
+        with open(example_doc_path, "rb") as f:
+            sopn_file = f.read()
+            ElectionSOPN.objects.create(
+                election=self.local_election,
+                uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file),
+                source_url="example.com",
+            )
         for post_name in posts:
             post = Post.objects.create(
                 label=post_name,
                 organization=self.local_council,
                 identifier=post_name,
             )
-            ballot = Ballot.objects.create(
+            Ballot.objects.create(
                 ballot_paper_id="local.{}.2019-05-02".format(post_name.lower()),
                 post=post,
                 election=self.local_election,
-            )
-            with open(example_doc_path, "rb") as f:
-                sopn_file = f.read()
-            OfficialDocument.objects.create(  # noqa: F821
-                ballot=ballot,
-                uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file),
-                source_url="example.com",
             )
 
         call_command("sopn_parsing_extract_page_numbers")

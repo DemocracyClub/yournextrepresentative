@@ -1,6 +1,7 @@
 import re
 from io import BytesIO
 from os.path import dirname, join, realpath
+from pathlib import Path
 from shutil import rmtree
 from unittest import skip
 from urllib.parse import urlsplit
@@ -16,6 +17,7 @@ from candidates.tests.factories import (
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.contrib.auth.models import Group, User
 from django.core.files.storage import FileSystemStorage
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.utils import override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -509,9 +511,16 @@ class SuggestedLockReviewTests(UK2015ExamplesMixin, TestUserMixin, WebTest):
         SuggestedPostLock.objects.create(
             ballot=ballot, user=self.user, justification="test data"
         )
+        example_doc_path = (
+            Path(__file__).parent.parent.parent
+            / "sopn_parsing/tests/data/sopn-berkeley-vale.pdf"
+        )
         BallotSOPN.objects.create(
             ballot=ballot,
             source_url="http://example.com",
+            uploaded_file=SimpleUploadedFile(
+                "sopn.pdf", example_doc_path.open("rb").read()
+            ),
         )
         url = reverse("suggestions-to-lock-review-list")
         response = self.app.get(url, user=self.user_who_can_lock)

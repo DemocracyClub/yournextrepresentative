@@ -3,7 +3,7 @@ import json
 import os
 from os.path import abspath, dirname, join
 from pathlib import Path
-from unittest import skip, skipIf
+from unittest import skipIf
 from unittest.mock import PropertyMock
 
 import pytest
@@ -12,11 +12,12 @@ from candidates.tests.factories import (
     ElectionFactory,
     OrganizationFactory,
 )
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from mock import Mock
-from official_documents.models import BallotSOPN
+from official_documents.models import BallotSOPN, ElectionSOPN
 from sopn_parsing.helpers.extract_pages import (
     TextractSOPNHelper,
     TextractSOPNParsingHelper,
@@ -27,11 +28,10 @@ from sopn_parsing.tests import should_skip_pdf_tests
 from textractor.entities.lazy_document import LazyDocument
 
 with contextlib.suppress(ImportError):
-    from sopn_parsing.helpers.pdf_helpers import SOPNDocument
+    from sopn_parsing.helpers.pdf_helpers import ElectionSOPNDocument
 
 
-@skip("Until we've refactored to use ElectionSOPN")
-class TestSOPNHelpers(TestCase):
+class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
     def test_clean_text(self):
         text = "\n C andidates (Namés)"
         self.assertEqual(clean_text(text), "candidates")
@@ -52,11 +52,12 @@ class TestSOPNHelpers(TestCase):
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
         )
         with open(example_doc_path, "rb") as f:
-            sopn_file = File(f)
-            doc = SOPNDocument(
-                file=sopn_file,
-                source_url="http://example.com",
-                election_date="2019-02-28",
+            election_sopn = ElectionSOPN.objects.create(
+                election=self.local_election,
+                uploaded_file=SimpleUploadedFile("sopn.pdf", f.read()),
+            )
+            doc = ElectionSOPNDocument(
+                election_sopn=election_sopn,
             )
         doc.heading = {"reason", "2019", "a", "election", "the", "labour"}
         self.assertEqual(len(doc.pages), 1)
@@ -69,12 +70,11 @@ class TestSOPNHelpers(TestCase):
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
         )
         with open(example_doc_path, "rb") as f:
-            sopn_file = File(f)
-            doc = SOPNDocument(
-                sopn_file,
-                source_url="http://example.com",
-                election_date="2022-02-28",
+            election_sopn = ElectionSOPN.objects.create(
+                election=self.local_election,
+                uploaded_file=SimpleUploadedFile("sopn.pdf", f.read()),
             )
+            doc = ElectionSOPNDocument(election_sopn=election_sopn)
         self.assertSetEqual(
             doc.document_heading_set,
             {
@@ -136,25 +136,18 @@ class TestSOPNHelpers(TestCase):
             ballot_paper_id="local.stroud.berkeley-vale.by.2019-02-28"
         )
         with open(example_doc_path, "rb") as f:
-            sopn_file = File(f)
-            official_document = BallotSOPN(
-                ballot=ballot,
+            election_sopn = ElectionSOPN(
+                election=ballot.election,
                 source_url="http://example.com/strensall",
             )
-            official_document.uploaded_file.save(
-                name="sopn.pdf", content=sopn_file
-            )
-            official_document.save()
-            self.assertEqual(official_document.relevant_pages, "")
+            election_sopn.uploaded_file.save(name="sopn.pdf", content=f)
+            election_sopn.save()
 
-            document_obj = SOPNDocument(
-                file=sopn_file,
-                source_url="http://example.com/strensall",
-                election_date=ballot.election.election_date,
-            )
+            document_obj = ElectionSOPNDocument(election_sopn=election_sopn)
             self.assertEqual(len(document_obj.pages), 1)
 
             document_obj.match_all_pages()
+            ballot.refresh_from_db()
             self.assertEqual(ballot.sopn.relevant_pages, "all")
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
@@ -163,7 +156,7 @@ class TestSOPNHelpers(TestCase):
         Uses the example of a multipage PDF which contains SOPN's for two
         ballots.
         Creates the ballots, then parses the document, and checks that the
-        correct pages have been assigned to the OfficialDocument object
+        correct pages have been assigned to the BallotSOPN object
         related to the ballot.
         """
         example_doc_path = abspath(
@@ -186,24 +179,14 @@ class TestSOPNHelpers(TestCase):
             post__organization=organization,
         )
         with open(example_doc_path, "rb") as f:
-            sopn_file = File(f)
-            # assign the same PDF to both ballots with the same source URL
-            for ballot in [north_antrim, mid_ulster]:
-                official_document = BallotSOPN(
-                    ballot=ballot,
-                    source_url="http://example.com",
-                )
-                official_document.uploaded_file.save(
-                    name="sopn.pdf", content=sopn_file
-                )
-                official_document.save()
-                self.assertEqual(official_document.relevant_pages, "")
-
-            document_obj = SOPNDocument(
-                file=sopn_file,
+            election_sopn = ElectionSOPN(
+                election=election,
                 source_url="http://example.com",
-                election_date=election.election_date,
             )
+            election_sopn.uploaded_file.save(name="sopn.pdf", content=f)
+            election_sopn.save()
+
+            document_obj = ElectionSOPNDocument(election_sopn=election_sopn)
         self.assertEqual(len(document_obj.pages), 9)
         document_obj.match_all_pages()
 
@@ -211,7 +194,6 @@ class TestSOPNHelpers(TestCase):
         self.assertEqual(north_antrim.sopn.relevant_pages, "5,6,7,8,9")
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
-    @skip("Until we split pages from ElectionSOPN")
     def test_document_with_identical_headers(self):
         """
         Uses an example PDF where the two headers are identical to check that
@@ -226,21 +208,14 @@ class TestSOPNHelpers(TestCase):
         )
         with open(sopn_pdf, "rb") as f:
             sopn_file = File(f)
-            official_document = BallotSOPN(
-                ballot=strensall,
+            election_sopn = ElectionSOPN(
+                election=strensall.election,
                 source_url="http://example.com/strensall",
             )
-            official_document.uploaded_file.save(
-                name="sopn.pdf", content=sopn_file
-            )
-            official_document.save()
-            self.assertEqual(official_document.relevant_pages, "")
+            election_sopn.uploaded_file.save(name="sopn.pdf", content=sopn_file)
+            election_sopn.save()
 
-            document_obj = SOPNDocument(
-                file=sopn_file,
-                source_url="http://example.com/strensall",
-                election_date=strensall.election.election_date,
-            )
+            document_obj = ElectionSOPNDocument(election_sopn=election_sopn)
         self.assertEqual(len(document_obj.pages), 2)
 
         document_obj.match_all_pages()
