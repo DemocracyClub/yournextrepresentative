@@ -23,7 +23,7 @@ class Command(BaseSOPNParsingCommand):
         """
         # Always skip any ballots where we do not have a CamelotParsedSOPN to try to
         # extract candidates from
-        filter_kwargs = {"officialdocument__camelotparsedsopn__isnull": False}
+        filter_kwargs = {"sopn__camelotparsedsopn__isnull": False}
         if options.get("testing"):
             return filter_kwargs
 
@@ -36,12 +36,10 @@ class Command(BaseSOPNParsingCommand):
             ] = RawPeople.SOURCE_PARSED_PDF
             return filter_kwargs
 
-        filter_kwargs["officialdocument__camelotparsedsopn__parsed_data"] = None
+        filter_kwargs["sopn__camelotparsedsopn__parsed_data"] = None
 
         # Where the status is unparsed
-        filter_kwargs[
-            "officialdocument__camelotparsedsopn__status"
-        ] = "unparsed"
+        filter_kwargs["sopn__camelotparsedsopn__status"] = "unparsed"
 
         return filter_kwargs
 

@@ -1,4 +1,5 @@
 from django_webtest import WebTest
+from official_documents.models import BallotSOPN
 from people.tests.factories import PersonFactory
 
 from ..models import Ballot
@@ -62,10 +63,7 @@ class TestEditButtonsShown(TestUserMixin, UK2015ExamplesMixin, WebTest):
             user=self.user,
         )
         self.assertContains(response, "Add a new candidate")
-        ballot.officialdocument_set.create(
-            document_type=ballot.officialdocument_set.model.NOMINATION_PAPER
-        )
-        ballot.refresh_from_db()
+        BallotSOPN.objects.create(ballot=ballot)
         response = self.app.get(
             ballot.get_absolute_url(),
             user=self.user,

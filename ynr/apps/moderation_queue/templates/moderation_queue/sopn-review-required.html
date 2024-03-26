@@ -6,7 +6,7 @@
 <p>One you're happy that our list is correct, please 'suggest locking', and someone else will double check it.</p>
 
 
-{% regroup object_list by officialdocument_set.first.source_url as ballot_list %}
+{% regroup object_list by sopn.source_url as ballot_list %}
 
 {% for nomination_paper_with_ballots in ballot_list %}
 

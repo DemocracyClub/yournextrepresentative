@@ -31,7 +31,6 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
         doc = BallotSOPN.objects.create(
             ballot=self.dulwich_post_ballot,
             source_url="example.com",
-            relevant_pages="all",
         )
         dataframe = json.dumps(
             {
@@ -98,7 +97,6 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
         doc = BallotSOPN.objects.create(
             ballot=self.senedd_ballot,
             source_url="example.com",
-            relevant_pages="all",
         )
 
         plaid_cymru, _ = Party.objects.update_or_create(
@@ -417,9 +415,7 @@ class TestParseTablesUnitTests(UK2015ExamplesMixin, TestCase):
 class TestParseTablesFilterKwargs(TestCase):
     def setUp(self):
         self.command = ParseTablesCommand()
-        self.default_filter_kwargs = {
-            "officialdocument__camelotparsedsopn__isnull": False
-        }
+        self.default_filter_kwargs = {"sopn__camelotparsedsopn__isnull": False}
 
     def test_when_testing(self):
         options = {"testing": True}
@@ -442,6 +438,6 @@ class TestParseTablesFilterKwargs(TestCase):
         options = {}
         result = self.command.build_filter_kwargs(options)
         expected = self.default_filter_kwargs.copy()
-        expected["officialdocument__camelotparsedsopn__parsed_data"] = None
-        expected["officialdocument__camelotparsedsopn__status"] = "unparsed"
+        expected["sopn__camelotparsedsopn__parsed_data"] = None
+        expected["sopn__camelotparsedsopn__status"] = "unparsed"
         self.assertEqual(result, expected)

@@ -282,7 +282,6 @@ class TestAPI(
         self.assertEqual(
             result["sopn"],
             {
-                "document_type": "Nomination paper",
                 "uploaded_file": None,
                 "source_url": "",
             },

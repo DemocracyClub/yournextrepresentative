@@ -4,6 +4,7 @@ from pathlib import Path
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django_extensions.db.models import TimeStampedModel
 from sopn_parsing.models import AWSTextractParsedSOPN
 
@@ -103,7 +104,7 @@ def election_sopn_file_name(instance: "ElectionSOPN", filename):
     return (
         Path("official_documents")
         / instance.election.slug
-        / instance.pk
+        / timezone.now().isoformat()
         / filename
     )
 
@@ -138,15 +139,11 @@ class ElectionSOPN(TimeStampedModel):
 
 
 def ballot_sopn_file_name(instance: "BaseBallotSOPN", filename):
-    if not instance.pk:
-        raise ValueError(
-            "BaseBallotSOPN.pk required. Save the instance before saving the uploaded_file."
-        )
     return (
         Path("official_documents")
         / instance.ballot.ballot_paper_id
         / "sopn"
-        / instance.pk
+        / timezone.now().isoformat()
         / filename
     )
 

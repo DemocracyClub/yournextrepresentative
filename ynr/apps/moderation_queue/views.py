@@ -434,9 +434,8 @@ class SOPNReviewRequiredView(ListView):
                 candidates_locked=False,
                 election__current=True,
             )
-            .exclude(officialdocument=None)
-            .select_related("post", "election")
-            .prefetch_related("officialdocument_set")
+            .exclude(sopn=None)
+            .select_related("post", "election", "sopn")
             .order_by("officialdocument__source_url", "election", "post__label")
         )
 

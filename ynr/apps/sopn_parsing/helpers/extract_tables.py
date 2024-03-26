@@ -16,15 +16,10 @@ def extract_ballot_table(ballot, parse_flavor="lattice"):
     import camelot  # import here to avoid import error running tests without pdf deps installed
 
     document = ballot.sopn
-    if not document.relevant_pages:
-        raise ValueError(
-            "Pages for table not known for document, extract page numbers first"
-        )
-
     try:
         tables = camelot.read_pdf(
             document.uploaded_file.path,
-            pages=document.relevant_pages,
+            pages="all",
             flavor=parse_flavor,
         )
     except (NotImplementedError, AttributeError):

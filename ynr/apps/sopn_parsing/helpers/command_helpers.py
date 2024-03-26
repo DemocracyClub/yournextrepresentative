@@ -58,4 +58,4 @@ class BaseSOPNParsingCommand(BaseCommand):
 
         qs = Ballot.objects.all()
         qs = qs.filter(**filter_kwargs)
-        return qs.exclude(officialdocument=None)
+        return qs.exclude(sopn=None)

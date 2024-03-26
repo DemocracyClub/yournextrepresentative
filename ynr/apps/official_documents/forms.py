@@ -19,8 +19,6 @@ class UploadDocumentForm(forms.ModelForm):
         validators=[FileExtensionValidator(allowed_extensions=["pdf", "docx"])]
     )
 
-    document_type = forms.CharField(widget=forms.HiddenInput())
-
     def clean_uploaded_file(self):
         uploaded_file = self.cleaned_data["uploaded_file"]
         # try and convert

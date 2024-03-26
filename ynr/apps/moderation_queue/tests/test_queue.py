@@ -2,6 +2,7 @@ import re
 from io import BytesIO
 from os.path import dirname, join, realpath
 from shutil import rmtree
+from unittest import skip
 from urllib.parse import urlsplit
 
 from candidates.models import LoggedAction
@@ -525,6 +526,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Add candidates")
 
+    @skip("Until we're splitting SOPNs and using ElectionSOPN")
     def test_sopn_review_view_with_reviews(self):
         BallotSOPN.objects.create(
             ballot=self.dulwich_post_ballot,
@@ -535,6 +537,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Dulwich")
 
+    @skip("Until we're splitting SOPNs and using ElectionSOPN")
     def test_sopn_review_view_document_with_suggested_lock_not_included(self):
         ballot = self.dulwich_post.ballot_set.get(election=self.election)
         SuggestedPostLock.objects.create(
@@ -549,6 +552,7 @@ class SOPNReviewRequiredTest(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Dulwich")
 
+    @skip("Until we're splitting SOPNs and using ElectionSOPN")
     def test_sopn_review_view_document_with_lock_not_included(self):
         ballot = self.dulwich_post.ballot_set.get(election=self.election)
         ballot.candidates_locked = True

@@ -494,7 +494,11 @@ class Ballot(EEModifiedMixin, models.Model):
         # can edit the memberships. Also prevent adding via the ballot
         # forms when we have a SOPN for this ballot, as the bulk adding forms
         # should be used instead.
-        if not self.candidates_locked and not self.cancelled and not self.sopn:
+        if (
+            not self.candidates_locked
+            and not self.cancelled
+            and not hasattr(self, "sopn")
+        ):
             return True
 
         # Special case where elections are cancelled before they are locked

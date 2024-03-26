@@ -129,7 +129,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             description="Green Party Stop Fracking Now", party=self.green_party
         )
 
-        with self.assertNumQueries(24):
+        with self.assertNumQueries(22):
             response = self.app.get(
                 "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
             )
@@ -157,7 +157,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(FuzzyInt(53, 55)):
+        with self.assertNumQueries(FuzzyInt(51, 53)):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -240,7 +240,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ballot=self.senedd_ballot,
             uploaded_file="sopn.pdf",
         )
-        with self.assertNumQueries(25):
+        with self.assertNumQueries(23):
             response = self.app.get(
                 f"/bulk_adding/sopn/{self.senedd_ballot.ballot_paper_id}/",
                 user=self.user,
@@ -803,9 +803,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         """
         Check that a query param can change the parser we use
         """
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )

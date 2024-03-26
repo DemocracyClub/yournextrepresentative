@@ -7,11 +7,6 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.views.generic import CreateView, DetailView, TemplateView
 from moderation_queue.models import SuggestedPostLock
-from sopn_parsing.helpers.extract_pages import (
-    extract_pages_for_ballot,
-)
-from sopn_parsing.helpers.extract_tables import extract_ballot_table
-from sopn_parsing.helpers.parse_tables import parse_raw_data_for_ballot
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
 from .forms import UploadDocumentForm
@@ -50,9 +45,10 @@ class CreateDocumentView(GroupRequiredMixin, CreateView):
         try:
             if hasattr(self.object.ballot, "rawpeople"):
                 self.object.ballot.rawpeople.delete()
-            extract_pages_for_ballot(ballot=self.object.ballot)
-            extract_ballot_table(ballot=self.object.ballot)
-            parse_raw_data_for_ballot(ballot=self.object.ballot)
+            # TODO: add back in
+            # extract_pages_for_ballot(ballot=self.object.ballot)
+            # extract_ballot_table(ballot=self.object.ballot)
+            # parse_raw_data_for_ballot(ballot=self.object.ballot)
         except (ValueError, NoTextInDocumentError):
             # If PDF couldnt be parsed continue
             # TODO should be log this error?
