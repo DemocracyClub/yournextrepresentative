@@ -17,9 +17,9 @@ class ContributorsMixin(object):
                 timezone.now(),
             ),
             (
-                "May 2023 Elections",
-                timezone.make_aware(parse("2023-03-01")),
-                timezone.make_aware(parse("2023-05-31")),
+                "May 2024 Elections",
+                timezone.make_aware(parse("2024-03-01")),
+                timezone.make_aware(parse("2024-05-31")),
             ),
         ]
         if all_time:
