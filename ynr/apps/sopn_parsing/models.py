@@ -17,7 +17,9 @@ class CamelotParsedSOPN(TimeStampedModel):
     """
 
     official_document = models.OneToOneField(
-        "official_documents.OfficialDocument", on_delete=models.CASCADE
+        "official_documents.OfficialDocument",
+        on_delete=models.CASCADE,
+        null=True,
     )
     sopn = models.OneToOneField(
         "official_documents.BallotSOPN", on_delete=models.CASCADE, null=True
@@ -83,7 +85,9 @@ class AWSTextractParsedSOPN(TimeStampedModel):
     """
 
     official_document = models.OneToOneField(
-        "official_documents.OfficialDocument", on_delete=models.CASCADE
+        "official_documents.OfficialDocument",
+        on_delete=models.CASCADE,
+        null=True,
     )
     sopn = models.OneToOneField(
         "official_documents.BallotSOPN", on_delete=models.CASCADE, null=True
