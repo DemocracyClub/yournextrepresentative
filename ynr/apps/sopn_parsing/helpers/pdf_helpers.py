@@ -13,9 +13,12 @@ from official_documents.models import (
 )
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
+from pdfminer.pdfdocument import PDFEncryptionError, PDFTextExtractionNotAllowed
 from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
 from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfparser import PDFSyntaxError
 from PyPDF2 import PdfReader, PdfWriter
+from PyPDF2.errors import DependencyError, PdfReadError
 from sopn_parsing.helpers.text_helpers import (
     MatchedPagesError,
     clean_page_text,
@@ -127,6 +130,13 @@ class SOPNPageText:
         return self.is_heading_indentical_to_previous_page_heading
 
 
+class PDFProcessingError(ValueError):
+    """
+    A generic exception to raise when various other PDF parsing exceptions are raised.
+
+    """
+
+
 class ElectionSOPNDocument:
     """
     A wrapper around an ElectionSOPN that adds methods for matching and splitting up
@@ -136,7 +146,18 @@ class ElectionSOPNDocument:
 
     def __init__(self, election_sopn: ElectionSOPN, strict=True):
         self.election_sopn = election_sopn
-        self.pages = self.parse_pages()
+        try:
+            self.pages = self.parse_pages()
+        except (
+            PDFSyntaxError,
+            PDFTextExtractionNotAllowed,
+            DependencyError,
+            PDFEncryptionError,
+        ) as exception:
+            raise PDFProcessingError(
+                f"Error processing {self.election_sopn.uploaded_file.url}: {exception}"
+            )
+
         self.spliter_data = {}
         self.matched_pages = []
         self.strict = strict
@@ -298,6 +319,8 @@ class ElectionSOPNPageSplitter:
     ):
         self.election_sopn = election_sopn
         self.ballot_to_pages = ballot_to_pages
+        if not self.election_sopn.uploaded_file.name.endswith("pdf"):
+            raise PdfReadError("Not a PDF")
         self.reader = PdfReader(self.election_sopn.uploaded_file.open())
 
     @transaction.atomic()
@@ -305,8 +328,11 @@ class ElectionSOPNPageSplitter:
         for ballot_paper_id, matched_pages in self.ballot_to_pages.items():
             pdf_pages = io.BytesIO()
             writer = PdfWriter()
-            for page in matched_pages:
-                writer.add_page(self.reader.pages[page - 1])
+            try:
+                for page in matched_pages:
+                    writer.add_page(self.reader.pages[page - 1])
+            except (PDFEncryptionError, DependencyError) as exception:
+                raise PDFProcessingError(f"{exception}")
 
             writer.write(pdf_pages)
             pdf_pages.seek(0)
@@ -315,18 +341,28 @@ class ElectionSOPNPageSplitter:
                 name=f"sopn-{ballot_paper_id}.pdf",
             )
             relevant_pages = ",".join([str(num) for num in matched_pages])
+            if len(matched_pages) == len(self.reader.pages):
+                relevant_pages = "all"
             if not relevant_pages:
                 relevant_pages = "all"
+            if len(relevant_pages) >= 20:
+                # chances are this is an error, so raise
+                raise PDFProcessingError(
+                    f"Page matching error: {self.election_sopn.uploaded_file.url} matched to pages: {relevant_pages}"
+                )
 
             ballot = Ballot.objects.get(ballot_paper_id=ballot_paper_id)
             BallotSOPNHistory.objects.create(
                 ballot=ballot,
                 relevant_pages=relevant_pages,
                 uploaded_file=pdf_content,
+                source_url=self.election_sopn.source_url,
             )
+
             BallotSOPN.objects.filter(ballot=ballot).delete()
             BallotSOPN.objects.create(
                 ballot=ballot,
                 relevant_pages=relevant_pages,
                 uploaded_file=pdf_content,
+                source_url=self.election_sopn.source_url,
             )
