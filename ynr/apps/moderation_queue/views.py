@@ -436,7 +436,7 @@ class SOPNReviewRequiredView(ListView):
             )
             .exclude(sopn=None)
             .select_related("post", "election", "sopn")
-            .order_by("officialdocument__source_url", "election", "post__label")
+            .order_by("election", "post__label")
         )
 
 
