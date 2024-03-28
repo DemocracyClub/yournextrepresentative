@@ -16,54 +16,81 @@
 {% block content %}
     <h2>Add candidates to {{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h2>
     {% if official_document %}
-        <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button tiny">Nomination paper (SoPN)</a>
-        <details open class="panel">
-            <summary>How to add or check candidates</summary>
+        {% if action_counts.last_months_actions <= 3 and action_counts.candidacy_create < 30 %}
+            <details open class="panel">
+                <summary>How to add or check candidates</summary>
 
-            <ol>
-                <li>Open the nomination paper using the button above (opens in a new window)</li>
-                <li>Find the part of the document about {{ post.label }}</li>
-                <li>Either
-                    <ol type="a">
-                        <li>Add new candidates in the form below,</li>
-                        <li>Or check that any list below is correct. </li>
-                    </ol>
-                </li>
-                <li>Press review.
-                    <ol type="a">
-                        <li>If you have added candidates, this will check for duplicates. Press ‘Add new person’ if you’re happy that we don’t already have that person.</li>
-                    </ol>
-                </li>
-                <li>If you think this is the complete list, check the box.</li>
-                <li>Bask in the glow of making democracy better for everyone.</li>
-                <li>Return to the home page to do another one!</li>
-            </ol>
-        </details>
+                <ol>
+                    <li>Open the nomination paper using the button above (opens in a new window)</li>
+                    <li>Find the part of the document about {{ post.label }}</li>
+                    <li>Either
+                        <ol type="a">
+                            <li>Add new candidates in the form below,</li>
+                            <li>Or check that any list below is correct.</li>
+                        </ol>
+                    </li>
+                    <li>Press review.
+                        <ol type="a">
+                            <li>If you have added candidates, this will check for duplicates. Press ‘Add new person’ if
+                                you’re happy that we don’t already have that person.
+                            </li>
+                        </ol>
+                    </li>
+                    <li>If you think this is the complete list, check the box.</li>
+                    <li>Bask in the glow of making democracy better for everyone.</li>
+                    <li>Return to the home page to do another one!</li>
+                </ol>
+            </details>
+        {% endif %}
 
         {% if ballot.rawpeople and ballot.rawpeople.is_parsed_from_pdf %}
             <div class="panel callout">
-                <details open>
+                <details
+                        {% if action_counts.last_months_actions <= 3 and action_counts.candidacy_create < 30 %}open{% else %}closed{% endif %}>
                     <summary>
-                        🤖 This SoPN has been parsed by a bot 🤖
+                        🤖 This SoPN has been parsed by a bot 🤖 ({% if active_parser.name == "TEXTRACT" %}V2{% else %}
+                        V1{% endif %})
                     </summary>
                     <p>
                         This is a new feature that might not work perfectly. The form fields below
                         should be populated with the candidates on the nomination paper, but
                         they still need checking against the document. If it has been parsed incorrectly
-                        you can <a href="#delete-parsed-people">clear the form using the button at the bottom of the page</a>.
+                        you can <a href="#delete-parsed-people">clear the form using the button at the bottom of the
+                        page</a>.
                     </p>
                     <p>
-                        To help us resolve bugs quicker, please report SOPN related errors in github:
+                        To help us resolve bugs quicker, please report SOPN related errors in GitHub:
                     <ul>
                         <li>
-                            <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1727">Table extraction errors</a>
+                            <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1727">Table
+                                extraction errors</a>
                         </li>
                         <li>
-                            <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1728">Table parsing errors</a>
+                            <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1728">Table parsing
+                                errors</a>
                         </li>
                     </ul>
-                    If you're unsure how to classify the error or for any other errors, please post a message on our <a href="https://slack.democracyclub.org.uk">Slack</a>
-                    or over <a href="mailto:hello@democracyclub.org.uk">email</a>.
+                    <p>
+                        If you're unsure how to classify the error or for any other errors, please post a message on our
+                        <a href="https://slack.democracyclub.org.uk">Slack</a>
+                        or over <a href="mailto:hello@democracyclub.org.uk">email</a>.
+                    </p>
+                    <p>Note: This SOPN was parsed using
+                        {% if active_parser.name == "TEXTRACT" %}
+                            our <strong>new</strong> parser (v2).
+                        {% else %}
+                            our <strong>old</strong> parser (v1).
+                        {% endif %}
+                        Please mention this when reporting issues.
+                    </p>
+                    <p>
+                        If this parser hasn't worked, you can
+                        {% if active_parser.name == "TEXTRACT" %}
+                            <a href="{{ ballot.get_bulk_add_url }}?v1_parser=1">switch to the old parser</a>.
+                        {% else %}
+                            <a href="{{ ballot.get_bulk_add_url }}">switch to the new parser</a>.
+                        {% endif %}
+                    <strong>This will remove any changes you've made to the form</strong>.
                     </p>
                 </details>
             </div>
@@ -73,7 +100,8 @@
 
         <form method=POST id="bulk_add_form">
             <button type=submit>Review</button>
-            <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button">Nomination paper (SoPN)</a>
+            <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button">Nomination paper
+                (SoPN)</a>
             {% csrf_token %}
             {{ formset.management_form }}
             {% if formset.non_form_errors %}
@@ -85,7 +113,7 @@
             {% for table in sorted_with_type %}
                 {% include table.template_name with data=table.data %}
             {% endfor %}
-        <button type=submit>Review</button>
+            <button type=submit>Review</button>
         </form>
 
         {% include "bulk_add/sopns/_delete_parsed_people.html" %}

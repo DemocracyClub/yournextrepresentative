@@ -133,7 +133,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             description="Green Party Stop Fracking Now", party=self.green_party
         )
 
-        with self.assertNumQueries(21):
+        with self.assertNumQueries(24):
             response = self.app.get(
                 "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
             )
@@ -246,7 +246,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ballot=self.senedd_ballot,
             uploaded_file="sopn.pdf",
         )
-        with self.assertNumQueries(22):
+        with self.assertNumQueries(25):
             response = self.app.get(
                 f"/bulk_adding/sopn/{self.senedd_ballot.ballot_paper_id}/",
                 user=self.user,
@@ -636,7 +636,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         raw_people = RawPeople.objects.create(
             ballot=self.dulwich_post_ballot,
-            data=[
+            textract_data=[
                 {"name": "Bart", "party_id": "PP52"},
                 {"name": "List", "party_id": "joint-party:53-119"},
             ],
@@ -771,3 +771,80 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(resp, "Review candidates")
         resp = form.submit()
         self.assertContains(resp, "Bart Simpson")
+
+    def test_fall_back_to_camelot_if_no_textract(self):
+        data = {"name": "Bart", "party_id": "PP52"}
+
+        raw_people = RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            data=[data],
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+
+        self.assertEqual(
+            raw_people.as_form_kwargs(),
+            {
+                "initial": [
+                    {
+                        "name": "Bart",
+                        "party": ["PP52", "PP52"],
+                        "previous_party_affiliations": [],
+                        "source": "",
+                    }
+                ]
+            },
+        )
+        raw_people.delete()
+
+        textract_data = {"name": "Lisa", "party_id": "PP53"}
+        raw_people = RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            data=[data],
+            textract_data=[textract_data],
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+
+        self.assertEqual(
+            raw_people.as_form_kwargs(),
+            {
+                "initial": [
+                    {
+                        "name": "Lisa",
+                        "party": ["PP53", "PP53"],
+                        "previous_party_affiliations": [],
+                        "source": "",
+                    }
+                ]
+            },
+        )
+
+    def test_can_change_parser_in_frontend(self):
+        """
+        Check that a query param can change the parser we use
+        """
+        OfficialDocument.objects.create(
+            source_url="http://example.com",
+            document_type=OfficialDocument.NOMINATION_PAPER,
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            data=[{"name": "Bart", "party_id": "PP52"}],
+            textract_data=[{"name": "Lisa", "party_id": "PP53"}],
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
+        )
+        form = response.forms["bulk_add_form"]
+        # This should be the Textract data
+        self.assertEqual(form.fields["form-0-name"][0].value, "Lisa")
+
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/?v1_parser=1",
+            user=self.user,
+        )
+        form = response.forms["bulk_add_form"]
+        # This should be the Textract data
+        self.assertEqual(form.fields["form-0-name"][0].value, "Bart")

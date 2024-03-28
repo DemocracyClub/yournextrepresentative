@@ -154,7 +154,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
 
     def test_photo_review_queue_view_logged_in_privileged(self):
         queue_url = reverse("photo-review-list")
-        with self.assertNumQueries(FuzzyInt(38, 40)):
+        with self.assertNumQueries(FuzzyInt(38, 41)):
             response = self.app.get(queue_url, user=self.test_reviewer)
         self.assertEqual(response.status_code, 200)
         queue_table = response.html.find("table")

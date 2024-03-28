@@ -1,3 +1,5 @@
+from typing import Optional
+
 from braces.views import LoginRequiredMixin
 from bulk_adding import forms, helpers
 from bulk_adding.forms import QuickAddSinglePersonForm
@@ -18,6 +20,8 @@ from official_documents.models import OfficialDocument
 from official_documents.views import get_add_from_document_cta_flash_message
 from parties.models import Party
 from people.models import Person
+
+from ynr.settings import SOPNParsingBackends
 
 
 class BulkAddSOPNRedirectView(RedirectView):
@@ -123,13 +127,28 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
                 )
         return super().get(request, *args, **kwargs)
 
+    def get_active_parser(self) -> Optional[SOPNParsingBackends]:
+        if self.request.GET.get("v1_parser"):
+            return SOPNParsingBackends.CAMELOT
+        if self.ballot.rawpeople.textract_data:
+            return SOPNParsingBackends.TEXTRACT
+        if self.ballot.rawpeople.data:
+            return SOPNParsingBackends.CAMELOT
+        return None
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         form_kwargs = {"ballot": context["ballot"]}
 
         if hasattr(context["ballot"], "rawpeople"):
-            form_kwargs.update(context["ballot"].rawpeople.as_form_kwargs())
+            context["active_parser"] = self.get_active_parser()
+
+            form_kwargs.update(
+                context["ballot"].rawpeople.as_form_kwargs(
+                    parser=self.get_active_parser()
+                )
+            )
             context["has_parsed_people"] = (
                 context["ballot"].rawpeople.source_type == "parsed_pdf"
             )

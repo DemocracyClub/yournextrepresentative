@@ -105,20 +105,7 @@ class TextractSOPNHelper:
             textract_result.refresh_from_db()
             # Delete any old images that might exist for this SOPN
             textract_result.images.all().delete()
-            print("Saving images")
-            for i, image in enumerate(document.images):
-                image_model = AWSTextractParsedSOPNImage.objects.create(
-                    parsed_sopn=textract_result,
-                )
-                image_model.image = (
-                    AWSTextractParsedSOPNImage.pil_to_content_image(
-                        image, f"page_{i}.png"
-                    )
-                )
-                image_model.save()
-            print(
-                f"Finished saving images for {self.official_document.ballot.ballot_paper_id}"
-            )
+
             return textract_result
         except IntegrityError as e:
             raise IntegrityError(
@@ -160,6 +147,24 @@ class TextractSOPNHelper:
         textract_document = self.extractor.get_result(
             textract_result.job_id, TextractAPI.ANALYZE
         )
+
+        print("Saving images")
+        textract_result.images.all().delete()
+        images = self.extractor._get_document_images_from_path(
+            f"s3://{self.bucket_name}{settings.MEDIA_URL}{self.official_document.uploaded_file.name}"
+        )
+        for i, image in enumerate(images):
+            image_model = AWSTextractParsedSOPNImage.objects.create(
+                parsed_sopn=textract_result,
+            )
+            image_model.image = AWSTextractParsedSOPNImage.pil_to_content_image(
+                image, f"page_{i}.png"
+            )
+            image_model.save()
+        print(
+            f"Finished saving images for {self.official_document.ballot.ballot_paper_id}"
+        )
+
         # Add the images back in manually
         images = list(textract_result.images.all())
         for i, page in enumerate(textract_document._pages):
