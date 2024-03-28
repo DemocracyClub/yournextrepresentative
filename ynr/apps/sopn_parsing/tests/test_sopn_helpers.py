@@ -348,6 +348,7 @@ def test_update_job_status_succeeded(
     mock_get_result = Mock()
     mock_get_result.return_value = mock_document
     textract_sopn_helper.extractor.get_result = mock_get_result
+    textract_sopn_helper.extractor._get_document_images_from_path = lambda x: []
 
     textract_sopn_helper.update_job_status(blocking=True)
     assert official_document.awstextractparsedsopn.status == "SUCCEEDED"
@@ -368,6 +369,7 @@ def test_update_job_status_failed(
     mock_get_result = Mock()
     mock_get_result.return_value = mock_document
     textract_sopn_helper.extractor.get_result = mock_get_result
+    textract_sopn_helper.extractor._get_document_images_from_path = lambda x: []
 
     textract_sopn_helper.update_job_status(blocking=True)
     official_document.awstextractparsedsopn.refresh_from_db()
