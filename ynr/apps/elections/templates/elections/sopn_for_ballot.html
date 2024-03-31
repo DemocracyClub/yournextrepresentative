@@ -30,7 +30,7 @@
 
         <p><a href="{{ object.sopn.uploaded_file.url }}" class="button small">Download PDF</a></p>
         {% if user_can_upload_documents %}
-            {% url 'upload_document_view' ballot_paper_id=ballot.ballot_paper_id as url %}
+            {% url 'upload_ballot_sopn_view' ballot_paper_id=ballot.ballot_paper_id as url %}
             <a href="{{ url }}" class="button">Update SOPN</a>
         {% endif %}
 

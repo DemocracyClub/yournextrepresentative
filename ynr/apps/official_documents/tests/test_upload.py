@@ -57,7 +57,7 @@ class TestModels(TestUserMixin, WebTest):
         response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
         csrftoken = self.app.cookies["csrftoken"]
         upload_url = reverse(
-            "upload_document_view",
+            "upload_ballot_sopn_view",
             kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
         )
         with open(self.example_image_filename, "rb") as f:
@@ -89,7 +89,7 @@ class TestModels(TestUserMixin, WebTest):
 
         response = self.app.get(
             reverse(
-                "upload_document_view",
+                "upload_ballot_sopn_view",
                 kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
             ),
             user=self.user_who_can_upload_documents,
@@ -155,7 +155,7 @@ class TestModels(TestUserMixin, WebTest):
 
         response = self.app.get(
             reverse(
-                "upload_document_view",
+                "upload_ballot_sopn_view",
                 kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
             ),
             user=self.user_who_can_upload_documents,
@@ -197,7 +197,7 @@ class TestModels(TestUserMixin, WebTest):
 
         response = self.app.get(
             reverse(
-                "upload_document_view",
+                "upload_ballot_sopn_view",
                 kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
             ),
             user=self.user_who_can_upload_documents,
@@ -228,7 +228,7 @@ class TestModels(TestUserMixin, WebTest):
 
         response = self.app.get(
             reverse(
-                "upload_document_view",
+                "upload_ballot_sopn_view",
                 kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
             ),
             user=self.user_who_can_upload_documents,

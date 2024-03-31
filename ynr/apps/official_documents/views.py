@@ -9,15 +9,15 @@ from django.views.generic import CreateView, DetailView, TemplateView
 from moderation_queue.models import SuggestedPostLock
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
-from .forms import UploadDocumentForm
+from .forms import UploadBallotSOPNForm
 from .models import DOCUMENT_UPLOADERS_GROUP_NAME, BallotSOPN
 
 
-class CreateDocumentView(GroupRequiredMixin, CreateView):
+class CreateBallotSOPNView(GroupRequiredMixin, CreateView):
     required_group_name = DOCUMENT_UPLOADERS_GROUP_NAME
 
-    form_class = UploadDocumentForm
-    template_name = "official_documents/upload_document_form.html"
+    form_class = UploadBallotSOPNForm
+    template_name = "official_documents/upload_ballot_sopn_form.html"
 
     def get_initial(self):
         return {
@@ -31,6 +31,7 @@ class CreateDocumentView(GroupRequiredMixin, CreateView):
         ballot = get_object_or_404(
             Ballot, ballot_paper_id=self.kwargs["ballot_paper_id"]
         )
+        context["ballot"] = ballot
         context["post_label"] = ballot.post.label
         return context
 

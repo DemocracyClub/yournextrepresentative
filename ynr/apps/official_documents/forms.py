@@ -7,8 +7,7 @@ from sopn_parsing.helpers.convert_pdf import (
 )
 
 
-# TODO: Rename to BallotSOPNUploadForm
-class UploadDocumentForm(forms.ModelForm):
+class UploadBallotSOPNForm(forms.ModelForm):
     class Meta:
         model = BallotSOPN
         fields = ("uploaded_file", "source_url", "ballot")
