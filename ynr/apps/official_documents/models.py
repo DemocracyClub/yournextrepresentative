@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import List
 
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -148,6 +149,15 @@ class ElectionSOPN(TimeStampedModel):
             kwargs={"election_id": self.election.slug},
         )
 
+    @property
+    def pages_matched(self):
+        return (
+            bool(self.page_matching_method)
+            and not self.election.ballot_set.filter(
+                sopn__relevant_pages__isnull=True
+            ).exists()
+        )
+
 
 def ballot_sopn_file_name(instance: "BaseBallotSOPN", filename):
     return (
@@ -192,6 +202,18 @@ class BaseBallotSOPN(TimeStampedModel):
 
     def __str__(self):
         return "{} ({})".format(self.ballot.ballot_paper_id, self.source_url)
+
+    @property
+    def first_page_int(self):
+        return min(self.page_number_list)
+
+    @property
+    def page_number_list(self) -> List[int]:
+        return [int(i) for i in self.relevant_pages.split(",") if i != "all"]
+
+    @property
+    def one_based_relevant_pages(self):
+        return ", ".join([str(i + 1) for i in self.page_number_list])
 
 
 class BallotSOPN(BaseBallotSOPN):

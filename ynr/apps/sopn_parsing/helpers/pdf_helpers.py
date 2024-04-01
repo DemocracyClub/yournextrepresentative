@@ -10,6 +10,7 @@ from official_documents.models import (
     BallotSOPN,
     BallotSOPNHistory,
     ElectionSOPN,
+    PageMatchingMethods,
 )
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -324,7 +325,7 @@ class ElectionSOPNPageSplitter:
         self.reader = PdfReader(self.election_sopn.uploaded_file.open())
 
     @transaction.atomic()
-    def split(self):
+    def split(self, method=PageMatchingMethods.AUTO_MATCHED):
         for ballot_paper_id, matched_pages in self.ballot_to_pages.items():
             pdf_pages = io.BytesIO()
             writer = PdfWriter()
@@ -366,3 +367,5 @@ class ElectionSOPNPageSplitter:
                 uploaded_file=pdf_content,
                 source_url=self.election_sopn.source_url,
             )
+            self.election_sopn.page_matching_method = method
+            self.election_sopn.save()

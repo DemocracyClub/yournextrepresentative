@@ -9,6 +9,7 @@ set up a `local.py` file by following `local.example.py`.
 import os
 import sys
 from os.path import abspath, dirname, join
+from pathlib import Path
 
 import sentry_sdk
 from sentry_sdk.integrations import django
@@ -154,6 +155,7 @@ INSTALLED_APPS = (
     "search",
     "duplicates",
     "data_exports",
+    "django_svelte",
 )
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
@@ -242,9 +244,15 @@ MEDIA_ROOT = root("media")
 MEDIA_URL = "/media/"
 
 # Settings for staticfiles and Django pipeline:
+SOPN__MATCHER_PATH = (
+    Path(str(PROJECT_ROOT)) / "apps/official_documents/SOPNMatcherInterface"
+)
 STATIC_URL = "/static/"
 STATIC_ROOT = root("static")
-STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, "assets"),)
+STATICFILES_DIRS = (
+    os.path.abspath(os.path.join(PROJECT_ROOT, "assets")),
+    SOPN__MATCHER_PATH / "dist" / "assets",
+)
 
 STATICFILES_LOCATION = "static"
 MEDIAFILES_LOCATION = "media"
