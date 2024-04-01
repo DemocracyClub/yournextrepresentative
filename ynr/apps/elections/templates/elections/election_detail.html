@@ -1,95 +1,130 @@
 {% extends "base.html" %}
 
 {% block title %}
-{% if ballot.candidates_locked %}
-  Candidates for each ballot in the {{ object.name }} on {{ object.election_date|date:"j F Y" }}
-{% else %}
-  Known candidates for each ballot in the {{ object.name }} on {{ object.election_date|date:"j F Y" }}
-{% endif %}
+    {% if ballot.candidates_locked %}
+        Candidates for each ballot in the {{ object.name }} on {{ object.election_date|date:"j F Y" }}
+    {% else %}
+        Known candidates for each ballot in the {{ object.name }} on {{ object.election_date|date:"j F Y" }}
+    {% endif %}
 {% endblock %}
 
 {% block hero %}
-  <h1>{{ object.name }}</h1>
+    <h1>{{ object.name }}</h1>
 {% endblock %}
 
 
 {% block content %}
-<a href="{{ MEDIA_URL }}candidates-{{ object.slug }}.csv" class="button small">
-  Download CSV of all candidates in the {{ object.name }}
-</a>
 
-<a href="{% url "bulk_add_party_select" object.slug %}" class="button small">
-  Add candidates for a single party</a>
-<a href="https://docs.google.com/forms/d/e/1FAIpQLSfvUNUTxY7lPpNVrbgagp4C5-eXG6hGSTuKpuyQAHuus8WTKw/viewform?entry.1641661784={{ object.slug }}" class="button small">
-  Tell us about a hustings event in this area</a>
+    <div class="row">
+        <div class="columns large-9">
 
-{% if user_can_review_photos and photos_for_review > 0 and object.get_absolute_queued_image_review_url %}
-  <a href="{{ object.get_absolute_queued_image_review_url }}" class="button small">
-    Review photos for candidates standing in this election</a>
-{% endif %}
+            {% for ballot in ballots %}
+                <h3>
+                    <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}
+                        on {{ object.election_date|date:"j F Y" }}</a>
+                    {{ ballot.cancelled_status_html }}
+                    {{ ballot.locked_status_html }}
+                </h3>
+                <p>
+                    {{ ballot.winner_count }} seat{{ ballot.winner_count|pluralize }} up for election.
+                    {{ ballot.membership_set.count }} candidates known.
+                </p>
 
+                {% if ballot.membership_set.exists %}
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            {% if object.party_lists_in_use %}
+                                <th>List position</th>
+                            {% endif %}
+                            <th>Party</th>
+                            {% if ballot.resultset %}
+                                <th>Votes</th>
+                                <th>Elected?</th>
+                            {% endif %}
 
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for membership in ballot.membership_set.all %}
+                            <tr>
+                                <td><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>
+                                </td>
+                                {% if object.party_lists_in_use %}
+                                    <td>{{ membership.party_list_position }}</td>
+                                {% endif %}
 
+                                <td>{{ membership.party.name }}</td>
+                                {% if ballot.resultset %}
+                                    <td>{{ membership.result.num_ballots }}</td>
+                                    <td>{{ membership.elected|yesno|title }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
 
-  {% for ballot in ballots %}
-  <h3>
-    <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }} on {{ object.election_date|date:"j F Y" }}</a>
-    {{ ballot.cancelled_status_html }}
-    {{ ballot.locked_status_html }}
-  </h3>
-  <p>
-    {{ ballot.winner_count }} seat{{ ballot.winner_count|pluralize }} up for election.
-    {{ ballot.membership_set.count }} candidates known.
-  </p>
+                {% if not ballot.cancelled %}
+                    <a class="button tiny" href="{{ ballot.get_absolute_url }}">Add candidates</a>
+                    {% if ballot.election.in_past %}
+                        {% if ballot.resultset %}
+                            <a class="button tiny" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">Edit
+                                Results</a>
+                        {% else %}
+                            <a class="button tiny" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">Add
+                                Results</a>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
 
-  {% if ballot.membership_set.exists %}
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        {% if object.party_lists_in_use %}
-        <th>List position</th>
-        {% endif %}
-        <th>Party</th>
-        {% if ballot.resultset %}
-        <th>Votes</th>
-        <th>Elected?</th>
-        {% endif %}
+        </div>
 
-      </tr>
-    </thead>
-    <tbody>
-      {% for membership in ballot.membership_set.all %}
-      <tr>
-        <td><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a></td>
-        {% if object.party_lists_in_use %}
-        <td>{{ membership.party_list_position }}</td>
-        {% endif %}
+        <div class="columns large-3">
+            <ul class="cta-list">
+                <li>
+                    <a href="{{ MEDIA_URL }}candidates-{{ object.slug }}.csv" class="button small">
+                        Download CSV
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url "bulk_add_party_select" object.slug %}" class="button small">
+                        Add candidates for a party</a>
 
-        <td>{{ membership.party.name }}</td>
-        {% if ballot.resultset %}
-        <td>{{ membership.result.num_ballots }}</td>
-        <td>{{ membership.elected|yesno|title }}</td>
-        {% endif %}
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% endif %}
+                </li>
+                <li>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvUNUTxY7lPpNVrbgagp4C5-eXG6hGSTuKpuyQAHuus8WTKw/viewform?entry.1641661784={{ object.slug }}"
+                       class="button small">
+                        Add a hustings</a>
 
-  {% if not ballot.cancelled %}
-    <a class="button tiny" href="{{ ballot.get_absolute_url }}">Add candidates</a>
-    {% if ballot.election.in_past %}
-      {% if ballot.resultset %}
-      <a class="button tiny" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">Edit Results</a>
-      {% else %}
-      <a class="button tiny" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">Add Results</a>
-      {% endif %}
-    {% endif %}
-  {% endif %}
-{% endfor %}
+                </li>
+                {% if user_can_review_photos and photos_for_review > 0 and object.get_absolute_queued_image_review_url %}
+                    <li>
+                        <a href="{{ object.get_absolute_queued_image_review_url }}" class="button small">
+                            Review photos</a>
+                    </li>
+                {% endif %}
+                {% if object.electionsopn %}
+                    <li>
+                        <a href="{{ object.electionsopn.get_absolute_url }}" class="button small">View SOPN</a>
+                    </li>
+                {% else %}
 
+                    {% if user_can_upload_documents %}
+                        <li>
+                            <a href="{% url "upload_election_sopn_view" election_id=object.slug %}"
+                               class="button small">
+                                Upload SOPN</a>
+                        </li>
+                    {% endif %}
 
+                {% endif %}
 
+            </ul>
+
+        </div>
+    </div>
 
 {% endblock %}
