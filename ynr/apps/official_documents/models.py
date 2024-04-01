@@ -105,6 +105,11 @@ def election_sopn_file_name(instance: "ElectionSOPN", filename):
     )
 
 
+class PageMatchingMethods(models.TextChoices):
+    AUTO_MATCHED = "Automatically matched"
+    MANUAL_MATCHED = "Manually matched"
+
+
 class ElectionSOPN(TimeStampedModel):
     """
     Stores SOPNs that contain candidate information for each ballot in an election.
@@ -125,6 +130,10 @@ class ElectionSOPN(TimeStampedModel):
 
     source_url = models.URLField(
         help_text="The URL of this document", max_length=1200
+    )
+
+    page_matching_method = models.CharField(
+        max_length=255, choices=PageMatchingMethods.choices, null=True
     )
 
     class Meta:
