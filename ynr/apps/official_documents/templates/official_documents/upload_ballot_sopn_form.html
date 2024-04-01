@@ -16,7 +16,7 @@
             <strong>{{ post_label }}</strong>.
             If the SOPN relates all {{ ballot.election.ballot_set.count }} ballots in the {{ ballot.election.name }}
             then please
-            <a href="TODO:">upload a SOPN for the election</a></p>
+            <a href="{% url "upload_election_sopn_view" election_id=ballot.election.slug %}">upload a SOPN for the election</a></p>
     {% endif %}
     <form id="document-upload-form" method="post" enctype="multipart/form-data">
         {% csrf_token %}

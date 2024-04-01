@@ -142,6 +142,12 @@ class ElectionSOPN(TimeStampedModel):
     def __str__(self):
         return "{} ({})".format(self.election.slug, self.source_url)
 
+    def get_absolute_url(self):
+        return reverse(
+            "election_sopn",
+            kwargs={"election_id": self.election.slug},
+        )
+
 
 def ballot_sopn_file_name(instance: "BaseBallotSOPN", filename):
     return (

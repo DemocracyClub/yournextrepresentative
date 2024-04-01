@@ -6,10 +6,11 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.views.generic import CreateView, DetailView, TemplateView
+from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
-from .forms import UploadBallotSOPNForm
+from .forms import UploadBallotSOPNForm, UploadElectionSOPNForm
 from .models import DOCUMENT_UPLOADERS_GROUP_NAME, BallotSOPN
 
 
@@ -64,6 +65,24 @@ class CreateBallotSOPNView(GroupRequiredMixin, CreateView):
         )
 
         return HttpResponseRedirect(self.get_success_url())
+
+
+class CreateElectionSOPNView(GroupRequiredMixin, CreateView):
+    required_group_name = DOCUMENT_UPLOADERS_GROUP_NAME
+
+    form_class = UploadElectionSOPNForm
+    template_name = "official_documents/upload_election_sopn_form.html"
+
+    def get_initial(self):
+        return {
+            "election": Election.objects.get(slug=self.kwargs["election_id"]),
+        }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        election = get_object_or_404(Election, slug=self.kwargs["election_id"])
+        context["election"] = election
+        return context
 
 
 class PostsForDocumentView(DetailView):

@@ -331,6 +331,13 @@ class SOPNForBallotView(DetailView):
         return context
 
 
+class SOPNForElectionView(DetailView):
+    queryset = Election.objects.all().select_related("electionsopn")
+    slug_url_kwarg = "election_id"
+    slug_field = "slug"
+    template_name = "elections/sopn_for_election.html"
+
+
 class PartyForBallotView(DetailView):
     model = Ballot
     slug_url_kwarg = "ballot_id"

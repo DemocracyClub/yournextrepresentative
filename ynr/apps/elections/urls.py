@@ -31,6 +31,11 @@ urlpatterns = [
         name="ballot_paper_sopn",
     ),
     re_path(
+        r"^elections/(?P<election_id>[^/]+)/election-sopn/",
+        views.SOPNForElectionView.as_view(),
+        name="election_sopn",
+    ),
+    re_path(
         r"^elections/(?P<ballot_id>[^/]+)/(?P<party_id>[^/]+)/",
         views.PartyForBallotView.as_view(),
         name="party-for-ballot",

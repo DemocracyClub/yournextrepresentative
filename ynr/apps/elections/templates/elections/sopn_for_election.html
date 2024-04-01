@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block hero %}
+    <h1>SOPN for {{ object.name }}</h1>
+{% endblock %}
+
+{% block content %}
+
+    <p>Statement of Persons Nominated for {{ object.name }}. This document contains information for
+        all {{ object.ballot_set.count }} ballots in the election.</p>
+
+    {% if object.page_matching_method %}
+        <p>The pages in this document have been matched to the ballots in this election:</p>
+        <ul>
+            {% for ballot in object.ballot_set.all %}
+                <li>{{ ballot.post.label }}: {{ ballot.sopn.matched_pages }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>This SOPN hasn't been matched against ballots yet.</p>
+        {% if user_can_upload_documents %}
+        	<a href="TODO:" class="button">Match pages manually</a>
+        {% endif %}
+    {% endif %}
+
+    {#    <div>#}
+    {#        {% load django_svelte %}#}
+    {#        {% display_svelte_css "sopn-matcher-index" %}#}
+    {#        {% display_svelte "sopn-matcher-index" matcher_props %}#}
+    {#    </div>#}
+{% endblock %}
