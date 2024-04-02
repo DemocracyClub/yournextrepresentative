@@ -11,7 +11,7 @@ from official_documents.tests.paths import (
 )
 from sopn_parsing.helpers.convert_pdf import (
     PandocConversionError,
-    convert_sopn_to_pdf,
+    convert_docx_to_pdf,
 )
 from sopn_parsing.tests import should_skip_conversion_tests
 
@@ -36,7 +36,7 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             ),
             source_url="example.com",
         )
-        new_file = convert_sopn_to_pdf(doc.uploaded_file)
+        new_file = convert_docx_to_pdf(doc.uploaded_file)
         self.assertTrue(new_file.name.endswith(".pdf"))
 
     def test_convert_html_SOPN(self):
@@ -52,7 +52,7 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             source_url="example.com",
         )
         with self.assertRaises(PandocConversionError):
-            convert_sopn_to_pdf(doc.uploaded_file)
+            convert_docx_to_pdf(doc.uploaded_file)
 
     def test_convert_other_file_to_SOPN(self):
         # when file types are not accepted, raise an error
@@ -67,4 +67,4 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             source_url="example.com",
         )
         with self.assertRaises(PandocConversionError):
-            convert_sopn_to_pdf(doc.uploaded_file)
+            convert_docx_to_pdf(doc.uploaded_file)

@@ -219,7 +219,7 @@ class TestModels(TestUserMixin, WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(BallotSOPN.objects.count(), 0)
         self.assertInHTML(
-            "File extension “html” is not allowed. Allowed extensions are: pdf, docx.",
+            "File extension “html” is not allowed. Allowed extensions are: pdf, docx, jpeg, jpg, png.",
             response.text,
         )
 
@@ -247,12 +247,9 @@ class TestModels(TestUserMixin, WebTest):
         with open(self.example_image_filename, "rb") as f:
             form["uploaded_file"] = Upload("pilot.jpg", f.read())
         response = form.submit()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(BallotSOPN.objects.count(), 0)
-        self.assertInHTML(
-            "File extension “jpg” is not allowed. Allowed extensions are: pdf, docx.",
-            response.text,
-        )
+        print(response.content.decode())
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(BallotSOPN.objects.count(), 1)
 
 
 class TestElectionSOPNUpload(TestUserMixin, WebTest):
@@ -298,7 +295,7 @@ class TestElectionSOPNUpload(TestUserMixin, WebTest):
 
         form = response.forms["document-upload-form"]
         form["source_url"] = "http://example.org/foo"
-        with open(EXAMPLE_IMAGE_FILENAME, "rb") as f:
+        with open(EXAMPLE_PDF_PATH, "rb") as f:
             form["uploaded_file"] = Upload("pilot.pdf", f.read())
 
         response = form.submit()

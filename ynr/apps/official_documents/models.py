@@ -185,7 +185,11 @@ class BaseBallotSOPN(TimeStampedModel):
     uploaded_file = models.FileField(
         upload_to=ballot_sopn_file_name,
         max_length=1200,
-        validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=["pdf", "jpeg", "jpg", "png"]
+            )
+        ],
     )
 
     source_url = models.URLField(
