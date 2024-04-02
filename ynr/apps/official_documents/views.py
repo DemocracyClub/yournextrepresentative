@@ -2,7 +2,7 @@ import json
 
 from auth_helpers.views import GroupRequiredMixin
 from candidates.models import Ballot, LoggedAction
-from candidates.models.db import ActionType
+from candidates.models.db import ActionType, EditType
 from candidates.views.version_data import get_client_ip
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -91,6 +91,18 @@ class CreateElectionSOPNView(GroupRequiredMixin, CreateView):
         context["election"] = election
         return context
 
+    def form_valid(self, form):
+        ret = super().form_valid(form)
+        LoggedAction.objects.create(
+            user=self.request.user,
+            election=self.object.election,
+            action_type=ActionType.SOPN_UPLOAD,
+            ip_address=get_client_ip(self.request),
+            source=self.object.source_url,
+            edit_type=EditType.USER,
+        )
+        return ret
+
 
 class ElectionSOPNMatchingView(GroupRequiredMixin, DetailView):
     required_group_name = DOCUMENT_UPLOADERS_GROUP_NAME
@@ -135,6 +147,14 @@ class ElectionSOPNMatchingView(GroupRequiredMixin, DetailView):
             election.electionsopn, json.loads(request.POST.get("matched_pages"))
         )
         splitter.split(method=PageMatchingMethods.MANUAL_MATCHED)
+        LoggedAction.objects.create(
+            user=request.user,
+            election=election,
+            action_type=ActionType.SOPN_SPLIT_BALLOTS,
+            ip_address=get_client_ip(request),
+            source="Manual matching",
+            edit_type=EditType.USER,
+        )
         return HttpResponseRedirect(election.electionsopn.get_absolute_url())
 
 

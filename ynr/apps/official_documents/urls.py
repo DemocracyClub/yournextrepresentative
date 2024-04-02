@@ -1,4 +1,5 @@
 from django.urls import re_path
+from django.views.decorators.csrf import csrf_exempt
 
 from . import views
 
@@ -20,7 +21,7 @@ urlpatterns = [
     ),
     re_path(
         r"^election/(?P<election_id>[^/]+)/match_pages/$",
-        views.ElectionSOPNMatchingView.as_view(),
+        csrf_exempt(views.ElectionSOPNMatchingView.as_view()),
         name="election_sopn_match_pages_view",
     ),
     re_path(

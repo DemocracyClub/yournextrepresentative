@@ -72,6 +72,7 @@ class ActionType(models.TextChoices):
         "Confirmed council result ",
     )
     SOPN_UPLOAD = "sopn-upload", "SOPN uploaded"
+    SOPN_SPLIT_BALLOTS = "sopn-split", "Split a SOPN in to ballots"
     RECORD_COUNCIL_CONTROL = (
         "record-council-control",
         "Recorded council control",

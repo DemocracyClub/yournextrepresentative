@@ -265,3 +265,7 @@ class Election(EEModifiedMixin, models.Model):
         params["election_id"] = self.slug
         url = reverse("data_export")
         return f"{url}?{params.urlencode()}"
+
+    @property
+    def has_electionsopn(self) -> bool:
+        return getattr(self, "electionsopn", False)

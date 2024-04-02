@@ -1,4 +1,6 @@
+import json
 from os.path import dirname, join, realpath
+from pathlib import Path
 from unittest import skipIf
 
 from candidates.models import LoggedAction
@@ -9,10 +11,12 @@ from candidates.tests.factories import (
     PartySetFactory,
     PostFactory,
 )
+from django.conf import settings
+from django.core.files.base import ContentFile
 from django.urls import reverse
 from django_webtest import WebTest
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from official_documents.models import BallotSOPN
+from official_documents.models import BallotSOPN, ElectionSOPN
 from official_documents.tests.paths import (
     EXAMPLE_DOCX_FILENAME,
     EXAMPLE_HTML_FILENAME,
@@ -22,6 +26,11 @@ from webtest import Upload
 
 TEST_MEDIA_ROOT = realpath(
     join(dirname(__file__), "..", "..", "moderation_queue", "tests", "media")
+)
+
+EXAMPLE_PDF_PATH = (
+    Path(settings.BASE_DIR)
+    / "ynr/apps/sopn_parsing/tests/data/halton-2019-statement-of-persons-nominated.pdf"
 )
 
 
@@ -244,3 +253,112 @@ class TestModels(TestUserMixin, WebTest):
             "File extension “jpg” is not allowed. Allowed extensions are: pdf, docx.",
             response.text,
         )
+
+
+class TestElectionSOPNUpload(TestUserMixin, WebTest):
+    def setUp(self):
+        gb_parties = PartySetFactory.create(slug="gb", name="Great Britain")
+        self.election = ElectionFactory.create(
+            slug="parl.2015-05-07", name="2015 General Election", current=True
+        )
+        commons = ParliamentaryChamberFactory.create()
+        self.post = PostFactory.create(
+            elections=(self.election,),
+            organization=commons,
+            slug="dulwich-and-west-norwood",
+            label="Member of Parliament for Dulwich and West Norwood",
+            party_set=gb_parties,
+        )
+        self.ballot = self.post.ballot_set.get(election=self.election)
+
+    def test_user_with_permission_can_see_upload_button(self):
+        response = self.app.get(
+            self.election.get_absolute_url(),
+            user=self.user_who_can_upload_documents,
+        )
+        self.assertContains(response, "Upload SOPN")
+
+    def test_upload_election_sopn(self):
+        PostFactory.create(
+            elections=(self.election,),
+            organization=self.ballot.post.organization,
+            slug="stroud",
+            label="Member of Parliament for Stroud",
+            party_set=self.ballot.post.party_set,
+        )
+
+        self.assertFalse(LoggedAction.objects.exists())
+        response = self.app.get(
+            reverse(
+                "upload_election_sopn_view",
+                kwargs={"election_id": self.election.slug},
+            ),
+            user=self.user_who_can_upload_documents,
+        )
+
+        form = response.forms["document-upload-form"]
+        form["source_url"] = "http://example.org/foo"
+        with open(EXAMPLE_IMAGE_FILENAME, "rb") as f:
+            form["uploaded_file"] = Upload("pilot.pdf", f.read())
+
+        response = form.submit()
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(LoggedAction.objects.exists())
+
+
+class TestElectionSOPNSplitting(TestUserMixin, WebTest):
+    def setUp(self):
+        gb_parties = PartySetFactory.create(slug="gb", name="Great Britain")
+        self.election = ElectionFactory.create(
+            slug="parl.2015-05-07", name="2015 General Election", current=True
+        )
+        commons = ParliamentaryChamberFactory.create()
+        self.post = PostFactory.create(
+            elections=(self.election,),
+            organization=commons,
+            slug="dulwich-and-west-norwood",
+            label="Member of Parliament for Dulwich and West Norwood",
+            party_set=gb_parties,
+        )
+        self.ballot = self.post.ballot_set.get(election=self.election)
+
+    def test_election_sopn_split(self):
+        """
+        Smoke test for the splitting views
+        """
+
+        self.assertFalse(LoggedAction.objects.exists())
+
+        with EXAMPLE_PDF_PATH.open("rb") as f:
+            ElectionSOPN.objects.create(
+                election=self.election,
+                source_url="https://example.com/",
+                uploaded_file=ContentFile(f.read(), "test.pdf"),
+            )
+
+        response = self.app.get(
+            reverse(
+                "election_sopn_match_pages_view",
+                kwargs={"election_id": self.election.slug},
+            ),
+            user=self.user_who_can_upload_documents,
+        )
+        self.assertContains(response, "/static/sopn-matcher-index.js")
+        self.assertContains(response, "sopn-matcher-index-props")
+
+        response = self.app.post(
+            reverse(
+                "election_sopn_match_pages_view",
+                kwargs={"election_id": self.election.slug},
+            ),
+            user=self.user_who_can_upload_documents,
+            params={
+                "matched_pages": json.dumps(
+                    {
+                        self.ballot.ballot_paper_id: [0],
+                    }
+                )
+            },
+        )
+        self.assertTrue(LoggedAction.objects.exists())
