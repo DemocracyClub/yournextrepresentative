@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from typing import List
 
+from candidates.models import Ballot
+from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.urls import reverse
@@ -229,4 +231,30 @@ class BallotSOPNHistory(BaseBallotSOPN):
         "candidates.Ballot",
         on_delete=models.CASCADE,
         related_name="sopn_history",
+    )
+
+
+def add_ballot_sopn(
+    ballot: Ballot,
+    pdf_content: ContentFile,
+    source_url: str,
+    relevant_pages: str = None,
+):
+    """
+    Manage creating BallotSOPNs with history
+    """
+
+    BallotSOPNHistory.objects.create(
+        ballot=ballot,
+        relevant_pages=relevant_pages,
+        uploaded_file=pdf_content,
+        source_url=source_url,
+    )
+
+    BallotSOPN.objects.filter(ballot=ballot).delete()
+    return BallotSOPN.objects.create(
+        ballot=ballot,
+        relevant_pages=relevant_pages,
+        uploaded_file=pdf_content,
+        source_url=source_url,
     )

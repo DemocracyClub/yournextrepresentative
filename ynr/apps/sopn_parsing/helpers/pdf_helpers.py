@@ -7,10 +7,9 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models.functions import Length
 from official_documents.models import (
-    BallotSOPN,
-    BallotSOPNHistory,
     ElectionSOPN,
     PageMatchingMethods,
+    add_ballot_sopn,
 )
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -353,19 +352,13 @@ class ElectionSOPNPageSplitter:
                 )
 
             ballot = Ballot.objects.get(ballot_paper_id=ballot_paper_id)
-            BallotSOPNHistory.objects.create(
-                ballot=ballot,
-                relevant_pages=relevant_pages,
-                uploaded_file=pdf_content,
-                source_url=self.election_sopn.source_url,
+
+            add_ballot_sopn(
+                ballot,
+                pdf_content,
+                self.election_sopn.source_url,
+                relevant_pages,
             )
 
-            BallotSOPN.objects.filter(ballot=ballot).delete()
-            BallotSOPN.objects.create(
-                ballot=ballot,
-                relevant_pages=relevant_pages,
-                uploaded_file=pdf_content,
-                source_url=self.election_sopn.source_url,
-            )
             self.election_sopn.page_matching_method = method
             self.election_sopn.save()
