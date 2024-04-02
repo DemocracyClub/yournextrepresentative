@@ -132,6 +132,9 @@ class LoggedAction(models.Model):
     ballot = models.ForeignKey(
         "candidates.Ballot", null=True, on_delete=models.CASCADE
     )
+    election = models.ForeignKey(
+        "elections.Election", null=True, on_delete=models.CASCADE
+    )
 
     flagged_type = models.CharField(
         max_length=100,
