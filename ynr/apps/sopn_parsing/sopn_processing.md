@@ -1,43 +1,50 @@
 
 ```mermaid
 graph TD
-    subgraph Start
-  A[Upload the SoPN file]
-end
+    subgraph ElectionSOPNs
+        ElectionSOPN[Create a ElectionSOPN]
+    end
 
-subgraph Check File Type
-  B[Is it a valid PDF, JPEG, or PNG?]
-  C[Is it another file type?]
-end
-
-subgraph Check File Length
-  D[Is it more than one page?]
-end
-
-subgraph Processing Steps
-  E[Convert to a PDF]
-  F[Send to Textract to extract tables]
-  G[Start internal page extraction and matching]
-  I[Ready for bot parsing]
-  J[Ready for manual parsing]
-  
-
-end
-
-A --> B
-A --> C
-B --> D
-C --> E
+    subgraph PageMatching
+        ElectionSOPN -- Attempt --> AutoPageMatching
+        ElectionSOPN --> ManualPageMatching
+    end
 
 
-D -->|Yes| G
-D -->|No| F
+    subgraph BallotSOPNs
+        AutoPageMatching[Automatic] --> BallotSOPN
+        ManualPageMatching[Manual] --> BallotSOPN
+        BallotSOPN[Create a BallotSoPN] --> ParseBallotSOPN[BallotSOPN.parse]
+    end
 
-E --> B
-F --> |Failure to extract| G
-F --> |Successfully extracted| I
-G --> |Failure to extract| J
-G --> |Successfully extracted|I
+    subgraph Processing Steps
+
+        subgraph TextractParsing
+            ParseBallotSOPN --> TextractStart[Textract start analysis]
+            TextractStart -- Save job_id --> AWSParsedSOPN
+            AWSParsedSOPN -- job_id --> TextractGetAnalysis[Textract get analysis]
+            TextractGetAnalysis --> Complete -- Save raw_data --> AWSParsedSOPN
+            TextractGetAnalysis -- Check status --> InProgress --> TextractGetAnalysis
+            TextractGetAnalysis -- Failure to extract--> TextractFailed
+        end
+
+        subgraph CamelotParsing
+            ParseBallotSOPN -- PDF only --> Camelot[Camelot extract tables]
+            Camelot -- PDF read error--> CamelotFailed
+            Camelot -- raw_data--> CamelotParsedSOPN
+
+        end
 
 
+        subgraph Table Parsing
+            CamelotParsedSOPN --> ParseTables
+            AWSParsedSOPN --> ParseTables
+            ParseTables -- Match parties--> RawData
+        end
+        
+    end
+    
+    subgraph Bulk adding
+        RawData --> BulkAdding[Bulk adding form pre-populated]
+    end
 ```
