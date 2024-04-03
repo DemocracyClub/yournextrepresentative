@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-
+{% load pipeline %}
+{% load static %}
 {% block hero %}
     <h1>SOPN for {{ object.name }}</h1>
 {% endblock %}
@@ -23,4 +24,15 @@
         	<a href="{% url "election_sopn_match_pages_view" election_id=object.slug %}" class="button">Match pages manually</a>
         {% endif %}
     {% endif %}
+    <div id="sopn-{{ object.slug }}" class="pdf_container"></div>
+
+    <script src="{% static "official_documents/js/pdf.worker.min.js" %}"></script>
+        <script src="{% static "official_documents/js/pdf.min.js" %}"></script>
+        {% javascript 'sopn_viewer' %}
+        <script>
+            SOPN_VIEWER.ShowSOPNInline(
+                '{{ object.electionsopn.uploaded_file.url }}',
+                '{{ object.slug }}',
+            )
+        </script>
 {% endblock %}
