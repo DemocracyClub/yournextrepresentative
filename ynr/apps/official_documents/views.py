@@ -7,7 +7,12 @@ from candidates.views.version_data import get_client_ip
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-from django.views.generic import CreateView, DetailView, TemplateView
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    TemplateView,
+    UpdateView,
+)
 from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
 from sopn_parsing.helpers.pdf_helpers import ElectionSOPNPageSplitter
@@ -21,18 +26,28 @@ from .models import (
 )
 
 
-class CreateBallotSOPNView(GroupRequiredMixin, CreateView):
+class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
     required_group_name = DOCUMENT_UPLOADERS_GROUP_NAME
 
     form_class = UploadBallotSOPNForm
     template_name = "official_documents/upload_ballot_sopn_form.html"
+    model = BallotSOPN
 
     def get_initial(self):
         return {
-            "ballot": Ballot.objects.get(
-                ballot_paper_id=self.kwargs["ballot_paper_id"]
-            ),
+            "ballot": self.ballot,
         }
+
+    def get_object(self, queryset=None):
+        obj = None
+        self.ballot = Ballot.objects.get(
+            ballot_paper_id=self.kwargs["ballot_paper_id"]
+        )
+        if existing_ballot_sopn := getattr(self.ballot, "sopn", None):
+            obj = existing_ballot_sopn
+        else:
+            obj = self.model()
+        return obj
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

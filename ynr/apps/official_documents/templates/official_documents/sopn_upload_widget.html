@@ -1,0 +1,107 @@
+<div class="sopn-upload-widget" id="{{ widget.attrs.id }}_upload_widget">
+    <style>
+
+        .drop_area {
+            border: 2px dashed #ccc;
+            width: auto;
+            padding: 2em;
+            margin: 2em 0;
+            color: #ccc;
+            text-align: center;
+        }
+
+        .drop_area.dragover {
+            background-color: #f0f0f0; /* Light grey background */
+            border: 2px dashed #0000ff; /* Blue dashed border */
+        }
+
+        .drop_area .preview_area {
+            color: #000;
+        }
+    </style>
+
+    {% if widget.is_initial %}
+        <a href="{{ widget.value.url }}">Existing SOPN</a>
+    {% endif %}
+
+    <input type="{{ widget.type }}" id="{{ widget.attrs.id }}" name="{{ widget.name }}" {% include "django/forms/widgets/attrs.html" %} hidden="hidden">
+    <label for="{{ widget.attrs.id }}" class="drop_area">
+        <span class="preview_area">Click, paste or drag a file to upload</span>
+    </label>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var widget = document.getElementById('{{ widget.attrs.id }}_upload_widget');
+        var dropArea = widget.querySelector('.drop_area');
+        var fileInput = widget.querySelector('#{{ widget.attrs.id }}');
+        var previewArea = widget.querySelector('.preview_area');
+
+        // Function to handle file input changes and update UI
+        function updateUIWithFile(file) {
+            // Clear previous preview
+            previewArea.innerHTML = '';
+            // Only process image files.
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    previewArea.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewArea.append(file.name)
+            }
+        }
+
+        // Click on drop area to trigger file input click
+        dropArea.addEventListener('click', function () {
+            fileInput.click();
+        });
+
+        // File input change
+        fileInput.addEventListener('change', function (e) {
+            if (fileInput.files.length > 0) {
+                updateUIWithFile(fileInput.files[0]);
+            }
+        });
+
+        // Drag and drop
+        dropArea.addEventListener('dragover', function (e) {
+            e.preventDefault(); // Prevent default behavior
+            dropArea.classList.add('dragover');
+        });
+
+        dropArea.addEventListener('dragleave', function (e) {
+            dropArea.classList.remove('dragover');
+        });
+
+
+        dropArea.addEventListener('drop', function (e) {
+            e.preventDefault(); // Prevent default behavior
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                updateUIWithFile(e.dataTransfer.files[0]);
+            }
+            dropArea.classList.remove('dragover');
+
+        });
+
+        // Pasting from clipboard
+        document.addEventListener('paste', function (e) {
+            var items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (var index in items) {
+                var item = items[index];
+                if (item.kind === 'file') {
+                    var blob = item.getAsFile();
+                    // This effectively "selects" the file, replacing any previous
+                    fileInput.file = [blob]; // This line might not work due to browser security restrictions
+                    updateUIWithFile(blob);
+                }
+            }
+        });
+    });
+
+</script>

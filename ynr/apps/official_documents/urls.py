@@ -26,7 +26,7 @@ urlpatterns = [
     ),
     re_path(
         r"^(?P<ballot_paper_id>[^/]+)/$",
-        views.CreateBallotSOPNView.as_view(),
+        views.CreateOrUpdateBallotSOPNView.as_view(),
         name="upload_ballot_sopn_view",
     ),
 ]
