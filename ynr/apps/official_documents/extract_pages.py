@@ -17,18 +17,49 @@ from pdfminer.pdfdocument import PDFEncryptionError, PDFTextExtractionNotAllowed
 from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFSyntaxError
+from pdfminer.pdftypes import PDFException
 from PyPDF2 import PdfReader, PdfWriter
 from PyPDF2.errors import DependencyError, PdfReadError
 from sopn_parsing.helpers.text_helpers import (
     MatchedPagesError,
+    NoTextInDocumentError,
     clean_page_text,
     clean_text,
 )
 
-# Used by SOPNPageText.get_page_heading
-HEADING_SIZE = 0.3
 
-# Used by SOPNPageText.detect_top_page
+def extract_pages_for_election_sopn(election_sopn: ElectionSOPN):
+    """
+    Try to extract the page numbers for an ElectionSOPN
+
+    """
+    try:
+        election_sopn_document = ElectionSOPNDocument(election_sopn)
+
+        election_sopn_document.match_all_pages()
+        if (
+            len(election_sopn_document.pages) == 1
+            or election_sopn_document.matched_page_numbers == "all"
+        ):
+            raise NotImplementedError(
+                "TODO: Convert this to a BallotSOPN model, not an ElectionSOPN model"
+            )
+
+    except NoTextInDocumentError:
+        # TODO: Flag that this ElectionSOPN needs manual matching, on the model
+        raise NoTextInDocumentError(
+            f"Failed to extract pages for {election_sopn.uploaded_file.path} as a NoTextInDocumentError was raised"
+        )
+    except PDFException:
+        print(
+            f"{election_sopn.election.slug} failed to parse as a PDFSyntaxError was raised"
+        )
+        raise PDFException(
+            f"Failed to extract pages for {election_sopn.uploaded_file.path} as a PDFSyntaxError was raised"
+        )
+
+
+HEADING_SIZE = 0.3
 CONTINUATION_THRESHOLD = 0.5
 
 

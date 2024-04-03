@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils import timezone
 from official_documents.models import OfficialDocument
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
-from sopn_parsing.helpers.extract_pages import (
+from sopn_parsing.helpers.textract_helpers import (
     TextractSOPNHelper,
     TextractSOPNParsingHelper,
 )

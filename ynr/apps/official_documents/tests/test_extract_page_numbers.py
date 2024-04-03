@@ -1,4 +1,4 @@
-from os.path import abspath, dirname, join
+from pathlib import Path
 from unittest import skipIf
 
 from candidates.models import Ballot
@@ -38,11 +38,10 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
         This test ensures the correct pages are matched.
 
         """
-        example_doc_path = abspath(
-            join(
-                dirname(__file__),
-                "data/halton-2019-statement-of-persons-nominated.pdf",
-            )
+
+        example_doc_path = (
+            Path(__file__).parent.parent.parent
+            / "sopn_parsing/tests/data/halton-2019-statement-of-persons-nominated.pdf"
         )
 
         # Create ballots
@@ -98,11 +97,9 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
         Test an edge case where SOPN covers wards with similar post names and
         have the same length
         """
-        example_doc_path = abspath(
-            join(
-                dirname(__file__),
-                "data/local.buckinghamshire.amersham-and-chesham-bois.2021-05-06.pdf",
-            )
+        example_doc_path = (
+            Path(__file__).parent.parent.parent
+            / "sopn_parsing/tests/data/local.buckinghamshire.amersham-and-chesham-bois.2021-05-06.pdf"
         )
         posts = {"Chalfont St Peter": "7,8", "Chalfont St Giles": "5,6"}
         self.local_election.ballot_set.all().delete()

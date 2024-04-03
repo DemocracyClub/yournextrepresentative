@@ -18,17 +18,17 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from mock import Mock
 from official_documents.models import BallotSOPN, ElectionSOPN
-from sopn_parsing.helpers.extract_pages import (
+from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
+from sopn_parsing.helpers.textract_helpers import (
     TextractSOPNHelper,
     TextractSOPNParsingHelper,
 )
-from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
 from sopn_parsing.models import AWSTextractParsedSOPN
 from sopn_parsing.tests import should_skip_pdf_tests
 from textractor.entities.lazy_document import LazyDocument
 
 with contextlib.suppress(ImportError):
-    from sopn_parsing.helpers.pdf_helpers import ElectionSOPNDocument
+    from official_documents.extract_pages import ElectionSOPNDocument
 
 
 class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):

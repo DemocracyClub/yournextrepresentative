@@ -2,14 +2,11 @@ import json
 from typing import Optional
 
 import boto3
-from botocore.client import Config
+from botocore.config import Config
 from django.conf import settings
 from django.db import IntegrityError
-from official_documents.models import BallotSOPN, ElectionSOPN
-from pdfminer.pdftypes import PDFException
+from official_documents.models import BallotSOPN
 from PIL import Image
-from sopn_parsing.helpers.pdf_helpers import ElectionSOPNDocument
-from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 from sopn_parsing.models import (
     AWSTextractParsedSOPN,
     AWSTextractParsedSOPNImage,
@@ -18,40 +15,7 @@ from textractor import Textractor
 from textractor.data.constants import TextractAPI, TextractFeatures
 from textractor.entities.lazy_document import LazyDocument
 
-
-def extract_pages_for_election_sopn(election_sopn: ElectionSOPN):
-    """
-    Try to extract the page numbers for an ElectionSOPN
-
-    """
-    try:
-        election_sopn_document = ElectionSOPNDocument(election_sopn)
-
-        election_sopn_document.match_all_pages()
-        if (
-            len(election_sopn_document.pages) == 1
-            or election_sopn_document.matched_page_numbers == "all"
-        ):
-            raise NotImplementedError(
-                "TODO: Convert this to a BallotSOPN model, not an ElectionSOPN model"
-            )
-
-    except NoTextInDocumentError:
-        # TODO: Flag that this ElectionSOPN needs manual matching, on the model
-        raise NoTextInDocumentError(
-            f"Failed to extract pages for {election_sopn.uploaded_file.path} as a NoTextInDocumentError was raised"
-        )
-    except PDFException:
-        print(
-            f"{election_sopn.election.slug} failed to parse as a PDFSyntaxError was raised"
-        )
-        raise PDFException(
-            f"Failed to extract pages for {election_sopn.uploaded_file.path} as a PDFSyntaxError was raised"
-        )
-
-
 config = Config(retries={"max_attempts": 5})
-
 textract_client = boto3.client(
     "textract", region_name=settings.TEXTRACT_S3_BUCKET_REGION, config=config
 )
@@ -64,7 +28,6 @@ class NotUsingAWSException(ValueError):
     """
 
 
-# TODO: move this code to a better place
 class TextractSOPNHelper:
     """Get the AWS Textract results for a given SOPN."""
 

@@ -15,9 +15,9 @@ from django.views.generic import (
 )
 from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
-from sopn_parsing.helpers.pdf_helpers import ElectionSOPNPageSplitter
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
+from .extract_pages import ElectionSOPNPageSplitter
 from .forms import UploadBallotSOPNForm, UploadElectionSOPNForm
 from .models import (
     DOCUMENT_UPLOADERS_GROUP_NAME,

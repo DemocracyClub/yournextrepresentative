@@ -1,7 +1,7 @@
 from elections.models import Election
+from official_documents.extract_pages import extract_pages_for_election_sopn
 from pdfminer.pdftypes import PDFException
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
-from sopn_parsing.helpers.extract_pages import extract_pages_for_election_sopn
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
 
