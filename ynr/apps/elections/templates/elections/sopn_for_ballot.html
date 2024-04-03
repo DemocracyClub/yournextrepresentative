@@ -22,7 +22,19 @@
     {% if object.sopn %}
 
         <p>This document was first published at {{ object.sopn.source_url|urlize }}. Showing the archived copy.</p>
+        {% if object.election.has_electionsopn %}
+            <p>This document was split from a <a href="{{ object.election.electionsopn.get_absolute_url }}">document
+                containing information for the entire election</a>.
 
+
+            </p>
+            {% if user_can_upload_documents %}
+                <p>If there are problems with the page splitting, you can <a
+                        href="{% url "election_sopn_match_pages_view" election_id=object.election.slug %}">fix them
+                    here</a>.</p>
+            {% endif %}
+        {% endif %}
+        <p></p>
         <p>To help us resolve bugs quicker, please report SOPN page extraction errors in
             <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1726">github</a>.
         </p>
@@ -78,6 +90,7 @@
             )
         </script>
     {% else %}
-        <div><img src="{{ object.sopn.uploaded_file.url }}" alt="Image of the candidate nomination data for {{ object.post.label }}"></div>
+        <div><img src="{{ object.sopn.uploaded_file.url }}"
+                  alt="Image of the candidate nomination data for {{ object.post.label }}"></div>
     {% endif %}
 {% endblock %}
