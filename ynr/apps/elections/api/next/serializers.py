@@ -2,8 +2,8 @@ from api.next.serializers import OrganizationSerializer
 from candidates import models as candidates_models
 from drf_yasg.utils import swagger_serializer_method
 from elections import models as election_models
-from official_documents.api.next.serializers import OfficialDocumentSerializer
-from official_documents.models import OfficialDocument
+from official_documents.api.next.serializers import BallotSOPNSerializer
+from official_documents.models import BallotSOPN
 from popolo.api.next.serializers import (
     CandidacyOnBallotSerializer,
     MinimalPostSerializer,
@@ -145,13 +145,13 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         """
         return getattr(instance, "last_updated", instance.modified)
 
-    @swagger_serializer_method(serializer_or_field=OfficialDocumentSerializer)
+    @swagger_serializer_method(serializer_or_field=BallotSOPNSerializer)
     def get_sopn(self, instance):
         try:
-            return OfficialDocumentSerializer(
+            return BallotSOPNSerializer(
                 instance=instance.sopn, read_only=True
             ).data
-        except OfficialDocument.DoesNotExist:
+        except BallotSOPN.DoesNotExist:
             return None
 
     @swagger_serializer_method(serializer_or_field=CandidacyOnBallotSerializer)

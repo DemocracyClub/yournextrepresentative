@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load django_svelte %}
+
+{% block hero %}
+    <h1>Match pages for {{ election.name }}</h1>
+{% endblock %}
+
+{% block content %}
+    {% display_svelte_css "sopn-matcher-index" %}
+    {% display_svelte "sopn-matcher-index" matcher_props %}
+{% endblock %}

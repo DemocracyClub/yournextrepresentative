@@ -7,7 +7,7 @@ from utils.dict_io import BufferDictWriter
 class Command(BaseCommand):
     help = """
     Create a CSV file that can be populated and imported by
-    candidates_import_statements_of_persons_nominated
+    official_documents_import_sopns
     """
 
     fieldnames = [

@@ -1,35 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Posts that have a SOPN and no lock suggestions</h1>
-<p>For each of these, we need someone to look at the document and manually add or remove candidates
-    to make our list exactly the same as the SOPN.</p>
-<p>One you're happy that our list is correct, please 'suggest locking', and someone else will double check it.</p>
+    <h1>Ballots with a SOPN and no lock suggestions</h1>
+    <p>For each of these, we need someone to look at the document and manually add or remove candidates
+        to make our list exactly the same as the SOPN.</p>
+    <p>Once you're happy that our list is correct, please 'suggest locking', and someone else will double-check it.</p>
+
+    {% regroup object_list by election as ballot_list %}
+
+    {% for group, ballots in ballot_list %}
+
+        <a href="{{ group.get_absolute_url }}">
+            <h3>{{ group.name }}</h3>
+        </a>
+
+        <ul>
+            {% for ballot in ballots %}
+                <li>
+                    <a href="{{ ballot.get_absolute_url }}">
+                        {{ ballot.post.label }}
+                    </a>
+                    <a href="{{ ballot.get_bulk_add_url }}" class="button tiny">
+                        Add candidates from nomination paper</a>
+                </li>
+            {% endfor %}
+        </ul>
 
 
-{% regroup object_list by officialdocument_set.first.source_url as ballot_list %}
-
-{% for nomination_paper_with_ballots in ballot_list %}
-
-  {% with nomination_paper_with_ballots.list.0.officialdocument_set.first as nomination_paper %}
-  <a href="{{ nomination_paper.ballot.get_absolute_url }}">
-    <p><strong>Nomination paper for {{ nomination_paper.ballot.election.name }}</strong></p>
-  </a>
-  {% endwith %}
-
-  <ul>
-  {% for ballot in nomination_paper_with_ballots.list %}
-      <li>
-
-      <a href="{{ ballot.get_absolute_url }}">
-          {{ ballot.post.label }}
-      </a>
-      <a href="{{ ballot.get_bulk_add_url }}" class="button tiny">
-          Add candidates from nomination paper</a>
-      </li>
-  {% endfor %}
-  </ul>
-
-
-{% endfor %}
+    {% endfor %}
 
 {% endblock content %}

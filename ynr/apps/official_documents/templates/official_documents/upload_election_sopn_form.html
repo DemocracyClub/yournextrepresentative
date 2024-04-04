@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+
+{% block hero %}
+    <h1>Upload SOPN for all ballots in an {{ election.name }}</h1>
+{% endblock hero %}
+
+
+{% block content %}
+
+    {% if election.ballot_set.count > 1 %}
+        <h2>Document relating to all {{ election.ballot_set.count }} ballots</h2>
+
+        <p>If the document only relates to a single ballot, pick it from the <a href="{{ election.get_absolute_url }}">list
+            of all ballots for this election</a>.</p>
+
+        <form id="document-upload-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <p><input type=submit class="button" value="Upload"></p>
+        </form>
+    {% else %}
+        <p>There is only one ballot for this election. This means the SOPN will only contain information for a
+            single ballot, meaning you need to <a
+                    href="{% url "upload_ballot_sopn_view" ballot_paper_id=election.ballot_set.first.ballot_paper_id %}">
+                upload to that ballot directly</a></p>
+    {% endif %}
+{% endblock content %}

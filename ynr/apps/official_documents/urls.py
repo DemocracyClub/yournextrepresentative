@@ -1,4 +1,5 @@
 from django.urls import re_path
+from django.views.decorators.csrf import csrf_exempt
 
 from . import views
 
@@ -14,8 +15,18 @@ urlpatterns = [
         name="unlocked_posts_with_documents",
     ),
     re_path(
+        r"^election/(?P<election_id>[^/]+)/$",
+        views.CreateElectionSOPNView.as_view(),
+        name="upload_election_sopn_view",
+    ),
+    re_path(
+        r"^election/(?P<election_id>[^/]+)/match_pages/$",
+        csrf_exempt(views.ElectionSOPNMatchingView.as_view()),
+        name="election_sopn_match_pages_view",
+    ),
+    re_path(
         r"^(?P<ballot_paper_id>[^/]+)/$",
-        views.CreateDocumentView.as_view(),
-        name="upload_document_view",
+        views.CreateOrUpdateBallotSOPNView.as_view(),
+        name="upload_ballot_sopn_view",
     ),
 ]

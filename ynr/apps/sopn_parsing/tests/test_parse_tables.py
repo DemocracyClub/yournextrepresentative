@@ -6,7 +6,7 @@ from bulk_adding.models import RawPeople
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.core.management import call_command
 from django.test import TestCase
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from pandas import Index, Series
 from parties.models import Party
 from parties.tests.factories import PartyFactory
@@ -28,11 +28,9 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_basic_parsing(self):
         self.assertFalse(RawPeople.objects.exists())
-        doc = OfficialDocument.objects.create(
+        doc = BallotSOPN.objects.create(
             ballot=self.dulwich_post_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
             source_url="example.com",
-            relevant_pages="all",
         )
         dataframe = json.dumps(
             {
@@ -96,11 +94,9 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
         are included they are parsed
         """
         self.assertFalse(RawPeople.objects.exists())
-        doc = OfficialDocument.objects.create(
+        doc = BallotSOPN.objects.create(
             ballot=self.senedd_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
             source_url="example.com",
-            relevant_pages="all",
         )
 
         plaid_cymru, _ = Party.objects.update_or_create(
@@ -384,7 +380,7 @@ class TestParseTablesUnitTests(UK2015ExamplesMixin, TestCase):
         ]
         for case in cases:
             with self.subTest(msg=case[0]):
-                sopn.sopn = OfficialDocument(ballot=case[0])
+                sopn.sopn = BallotSOPN(ballot=case[0])
                 result = parse_tables.guess_previous_party_affiliations_field(
                     data=data, sopn=sopn
                 )
@@ -419,9 +415,7 @@ class TestParseTablesUnitTests(UK2015ExamplesMixin, TestCase):
 class TestParseTablesFilterKwargs(TestCase):
     def setUp(self):
         self.command = ParseTablesCommand()
-        self.default_filter_kwargs = {
-            "officialdocument__camelotparsedsopn__isnull": False
-        }
+        self.default_filter_kwargs = {"sopn__camelotparsedsopn__isnull": False}
 
     def test_when_testing(self):
         options = {"testing": True}
@@ -444,6 +438,6 @@ class TestParseTablesFilterKwargs(TestCase):
         options = {}
         result = self.command.build_filter_kwargs(options)
         expected = self.default_filter_kwargs.copy()
-        expected["officialdocument__camelotparsedsopn__parsed_data"] = None
-        expected["officialdocument__camelotparsedsopn__status"] = "unparsed"
+        expected["sopn__camelotparsedsopn__parsed_data"] = None
+        expected["sopn__camelotparsedsopn__status"] = "unparsed"
         self.assertEqual(result, expected)

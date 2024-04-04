@@ -34,9 +34,4 @@ urlpatterns = [
         views.RedirectPartyDetailView.as_view(),
         name="party_redirect",
     ),
-    re_path(
-        r"^upload_document/(?P<document_id>[^/]+)/$",
-        views.RedirectSOPNView.as_view(),
-        name="sopn_redirect",
-    ),
 ]

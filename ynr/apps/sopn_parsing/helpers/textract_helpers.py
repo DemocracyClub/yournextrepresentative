@@ -2,14 +2,11 @@ import json
 from typing import Optional
 
 import boto3
-from botocore.client import Config
+from botocore.config import Config
 from django.conf import settings
 from django.db import IntegrityError
-from official_documents.models import OfficialDocument
-from pdfminer.pdftypes import PDFException
+from official_documents.models import BallotSOPN
 from PIL import Image
-from sopn_parsing.helpers.pdf_helpers import SOPNDocument
-from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 from sopn_parsing.models import (
     AWSTextractParsedSOPN,
     AWSTextractParsedSOPNImage,
@@ -18,45 +15,7 @@ from textractor import Textractor
 from textractor.data.constants import TextractAPI, TextractFeatures
 from textractor.entities.lazy_document import LazyDocument
 
-
-def extract_pages_for_ballot(ballot):
-    """
-    Try to extract the page numbers for the latest SOPN document related to this
-    ballot.
-
-    Because documents can apply to more than one ballot, we also perform
-    "drive by" parsing of other ballots contained in a given document.
-
-    :type ballot: candidates.models.Ballot
-
-    """
-    try:
-        sopn = SOPNDocument(
-            file=ballot.sopn.uploaded_file,
-            source_url=ballot.sopn.source_url,
-            election_date=ballot.election.election_date,
-        )
-
-        sopn.match_all_pages()
-        if len(sopn.pages) == 1 or sopn.matched_page_numbers == "all":
-            textract_helper = TextractSOPNHelper(ballot.sopn)
-            textract_helper.start_detection()
-
-    except NoTextInDocumentError:
-        raise NoTextInDocumentError(
-            f"Failed to extract pages for {ballot.sopn.uploaded_file.path} as a NoTextInDocumentError was raised"
-        )
-    except PDFException:
-        print(
-            f"{ballot.ballot_paper_id} failed to parse as a PDFSyntaxError was raised"
-        )
-        raise PDFException(
-            f"Failed to extract pages for {ballot.sopn.uploaded_file.path} as a PDFSyntaxError was raised"
-        )
-
-
 config = Config(retries={"max_attempts": 5})
-
 textract_client = boto3.client(
     "textract", region_name=settings.TEXTRACT_S3_BUCKET_REGION, config=config
 )
@@ -74,11 +33,11 @@ class TextractSOPNHelper:
 
     def __init__(
         self,
-        official_document: OfficialDocument,
+        ballot_sopn: BallotSOPN,
         bucket_name: str = None,
         upload_path: str = None,
     ):
-        self.official_document = official_document
+        self.ballot_sopn = ballot_sopn
         self.bucket_name = bucket_name or getattr(
             settings, "AWS_STORAGE_BUCKET_NAME", None
         )
@@ -88,9 +47,7 @@ class TextractSOPNHelper:
         self.extractor = Textractor(region_name="eu-west-2")
 
     def start_detection(self, replace=False) -> Optional[AWSTextractParsedSOPN]:
-        parsed_sopn = getattr(
-            self.official_document, "awstextractparsedsopn", None
-        )
+        parsed_sopn = getattr(self.ballot_sopn, "awstextractparsedsopn", None)
         if parsed_sopn and not replace:
             return None
         print("Starting analysis")
@@ -98,7 +55,7 @@ class TextractSOPNHelper:
         print("Saving results")
         try:
             textract_result, _ = AWSTextractParsedSOPN.objects.update_or_create(
-                sopn=self.official_document,
+                sopn=self.ballot_sopn,
                 defaults={"raw_data": "", "job_id": document.job_id},
             )
             textract_result.save()
@@ -109,12 +66,12 @@ class TextractSOPNHelper:
             return textract_result
         except IntegrityError as e:
             raise IntegrityError(
-                f"Failed to create AWSTextractParsedSOPN for {self.official_document.ballot.ballot_paper_id}: error {e}"
+                f"Failed to create AWSTextractParsedSOPN for {self.ballot_sopn.ballot.ballot_paper_id}: error {e}"
             )
 
     def textract_start_document_analysis(self) -> LazyDocument:
         document: LazyDocument = self.extractor.start_document_analysis(
-            file_source=f"s3://{self.bucket_name}{settings.MEDIA_URL}{self.official_document.uploaded_file.name}",
+            file_source=f"s3://{self.bucket_name}{settings.MEDIA_URL}{self.ballot_sopn.uploaded_file.name}",
             features=[TextractFeatures.TABLES],
             s3_output_path=f"s3://{settings.TEXTRACT_S3_BUCKET_NAME}/raw_textract_responses",
             s3_upload_path=self.upload_path,
@@ -123,7 +80,7 @@ class TextractSOPNHelper:
 
     def update_job_status(self, blocking=False, reparse=False):
         COMPLETED_STATES = ("SUCCEEDED", "FAILED", "PARTIAL_SUCCESS")
-        textract_result = self.official_document.awstextractparsedsopn
+        textract_result = self.ballot_sopn.awstextractparsedsopn
         if textract_result.status in COMPLETED_STATES and not reparse:
             return textract_result
 
@@ -151,7 +108,7 @@ class TextractSOPNHelper:
         print("Saving images")
         textract_result.images.all().delete()
         images = self.extractor._get_document_images_from_path(
-            f"s3://{self.bucket_name}{settings.MEDIA_URL}{self.official_document.uploaded_file.name}"
+            f"s3://{self.bucket_name}{settings.MEDIA_URL}{self.ballot_sopn.uploaded_file.name}"
         )
         for i, image in enumerate(images):
             image_model = AWSTextractParsedSOPNImage.objects.create(
@@ -162,7 +119,7 @@ class TextractSOPNHelper:
             )
             image_model.save()
         print(
-            f"Finished saving images for {self.official_document.ballot.ballot_paper_id}"
+            f"Finished saving images for {self.ballot_sopn.ballot.ballot_paper_id}"
         )
 
         # Add the images back in manually
@@ -187,9 +144,9 @@ class TextractSOPNParsingHelper:
     the SOPN parsing functionality that matches fields including
     candidates to parties."""
 
-    def __init__(self, official_document: OfficialDocument):
-        self.official_document = official_document
-        self.parsed_sopn = self.official_document.awstextractparsedsopn
+    def __init__(self, ballot_sopn: BallotSOPN):
+        self.ballot_sopn = ballot_sopn
+        self.parsed_sopn = self.ballot_sopn.awstextractparsedsopn
 
     def parse(self):
         self.parsed_sopn.parse_raw_data()

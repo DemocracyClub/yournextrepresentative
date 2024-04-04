@@ -21,16 +21,27 @@
     <p>{{ object.election.election_date }}</p>
     {% if object.sopn %}
 
-
         <p>This document was first published at {{ object.sopn.source_url|urlize }}. Showing the archived copy.</p>
+        {% if object.election.has_electionsopn %}
+            <p>This document was split from a <a href="{{ object.election.electionsopn.get_absolute_url }}">document
+                containing information for the entire election</a>.
 
+
+            </p>
+            {% if user_can_upload_documents %}
+                <p>If there are problems with the page splitting, you can <a
+                        href="{% url "election_sopn_match_pages_view" election_id=object.election.slug %}">fix them
+                    here</a>.</p>
+            {% endif %}
+        {% endif %}
+        <p></p>
         <p>To help us resolve bugs quicker, please report SOPN page extraction errors in
             <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/1726">github</a>.
         </p>
 
         <p><a href="{{ object.sopn.uploaded_file.url }}" class="button small">Download PDF</a></p>
         {% if user_can_upload_documents %}
-            {% url 'upload_document_view' ballot_paper_id=ballot.ballot_paper_id as url %}
+            {% url 'upload_ballot_sopn_view' ballot_paper_id=ballot.ballot_paper_id as url %}
             <a href="{{ url }}" class="button">Update SOPN</a>
         {% endif %}
 
@@ -64,24 +75,22 @@
 
 
     {% if user.is_staff and user_can_upload_documents %}
-        {% url 'admin:official_documents_officialdocument_change' object.sopn.id as url %}
+        {% url 'admin:official_documents_ballotsopn_change' object.sopn.id as url %}
         You can <a href="{{ url }}">edit this in the admin interface</a> (e.g. to delete it)
     {% endif %}
 
-    <script src="{% static "official_documents/js/pdf.worker.min.js" %}"></script>
-    <script src="{% static "official_documents/js/pdf.min.js" %}"></script>
-    {% javascript 'sopn_viewer' %}
-    <script>
-        SOPN_VIEWER.ShowSOPNInline(
-            '{{ object.sopn.uploaded_file.url }}',
-            '{{ object.ballot_paper_id }}',
-            {
-                {% if object.sopn.relevant_pages and object.sopn.relevant_pages != "all"%}
-                    'start_page': {{ object.sopn.first_page_number }},
-                    'end_page': {{ object.sopn.last_page_number }}
-                {% endif %}
-            }
-        )
-
-    </script>
+    {% if object.sopn.uploaded_file.url|slice:"-3" == "pdf" %}
+        <script src="{% static "official_documents/js/pdf.worker.min.js" %}"></script>
+        <script src="{% static "official_documents/js/pdf.min.js" %}"></script>
+        {% javascript 'sopn_viewer' %}
+        <script>
+            SOPN_VIEWER.ShowSOPNInline(
+                '{{ object.sopn.uploaded_file.url }}',
+                '{{ object.ballot_paper_id }}',
+            )
+        </script>
+    {% else %}
+        <div><img src="{{ object.sopn.uploaded_file.url }}"
+                  alt="Image of the candidate nomination data for {{ object.post.label }}"></div>
+    {% endif %}
 {% endblock %}

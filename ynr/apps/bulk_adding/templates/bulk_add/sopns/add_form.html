@@ -15,7 +15,7 @@
 
 {% block content %}
     <h2>Add candidates to {{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h2>
-    {% if official_document %}
+    {% if ballot_sopn %}
         {% if action_counts.last_months_actions <= 3 and action_counts.candidacy_create < 30 %}
             <details open class="panel">
                 <summary>How to add or check candidates</summary>
@@ -48,7 +48,7 @@
                 <details
                         {% if action_counts.last_months_actions <= 3 and action_counts.candidacy_create < 30 %}open{% else %}closed{% endif %}>
                     <summary>
-                        🤖 This SoPN has been parsed by a bot 🤖 ({% if active_parser.name == "TEXTRACT" %}V2{% else %}
+                        🤖 This SoPN has been parsed by a bot 🤖 ({% if ballot.rawpeople.textract_data %}V2{% else %}
                         V1{% endif %})
                     </summary>
                     <p>
@@ -90,7 +90,7 @@
                         {% else %}
                             <a href="{{ ballot.get_bulk_add_url }}">switch to the new parser</a>.
                         {% endif %}
-                    <strong>This will remove any changes you've made to the form</strong>.
+                        <strong>This will remove any changes you've made to the form</strong>.
                     </p>
                 </details>
             </div>
@@ -100,8 +100,7 @@
 
         <form method=POST id="bulk_add_form">
             <button type=submit>Review</button>
-            <a href="{{ official_document.get_absolute_url }}" target="sopn_view" class="button">Nomination paper
-                (SoPN)</a>
+            <a href="{{ ballot_sopn.get_absolute_url }}" target="sopn_view" class="button">Nomination paper (SoPN)</a>
             {% csrf_token %}
             {{ formset.management_form }}
             {% if formset.non_form_errors %}
@@ -121,7 +120,7 @@
         <p>
             This post doesn't have a nomination paper.
             Can you help us by
-            <a href="{% url 'upload_document_view' ballot_paper_id=ballot.ballot_paper_id %}">uploading
+            <a href="{% url 'upload_ballot_sopn_view' ballot_paper_id=ballot.ballot_paper_id %}">uploading
                 the PDF of the Statement of Persons Nominated?</a>
         </p>
     {% endif %}

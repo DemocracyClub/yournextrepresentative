@@ -72,6 +72,7 @@ class ActionType(models.TextChoices):
         "Confirmed council result ",
     )
     SOPN_UPLOAD = "sopn-upload", "SOPN uploaded"
+    SOPN_SPLIT_BALLOTS = "sopn-split", "Split a SOPN in to ballots"
     RECORD_COUNCIL_CONTROL = (
         "record-council-control",
         "Recorded council control",
@@ -131,6 +132,9 @@ class LoggedAction(models.Model):
     )
     ballot = models.ForeignKey(
         "candidates.Ballot", null=True, on_delete=models.CASCADE
+    )
+    election = models.ForeignKey(
+        "elections.Election", null=True, on_delete=models.CASCADE
     )
 
     flagged_type = models.CharField(

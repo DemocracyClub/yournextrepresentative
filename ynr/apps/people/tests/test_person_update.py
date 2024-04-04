@@ -4,6 +4,7 @@ from candidates.tests.factories import BallotPaperFactory, ElectionFactory
 from candidates.views.version_data import get_change_metadata
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.utils import timezone
 from freezegun import freeze_time
 from people.models import EditLimitationStatuses
 from people.tests.test_person_view import PersonViewSharedTestsMixin
@@ -526,14 +527,12 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         (it can include other edits). This test
         tries to catch a bug where the timestamp was being updated
         when a candidacy was added to a person."""
-        from datetime import datetime, timedelta
+        from datetime import timedelta
 
-        timestamp = datetime.now()
+        timestamp = timezone.now()
         later_timestamp = timestamp + timedelta(hours=8)
         timestamp = timestamp.isoformat()
         later_timestamp = later_timestamp.isoformat()
-
-        import pandas  # noqa: F401
 
         # freezegun issue with pandas https://github.com/spulec/freezegun/issues/464
         with freeze_time(timestamp):
@@ -553,16 +552,16 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
                 "/person/{}/".format(self.person.pk), user=self.user
             )
 
-            biography_update_timestamp = self.person.biography_last_updated
+            biography_update_timestamp = (
+                self.person.biography_last_updated.astimezone()
+            )
             # format into a string to compare with the response
             biography_update_timestamp = biography_update_timestamp.strftime(
                 "%-d %B %Y %H:%M"
             )
-            print(biography_update_timestamp)
             self.assertContains(
                 person_response_one, "This is a new test biography"
             )
-
             self.assertContains(
                 person_response_one,
                 "This statement was last updated on {}.".format(
@@ -595,7 +594,9 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             self.assertEqual(candidacy.party, self.green_party)
             self.assertEqual(candidacy.party_name, self.green_party.name)
 
-            candidacy_update_timestamp = self.person.biography_last_updated
+            candidacy_update_timestamp = (
+                self.person.biography_last_updated.astimezone()
+            )
             candidacy_update_timestamp = candidacy_update_timestamp.strftime(
                 "%-d %B %Y %H:%M"
             )

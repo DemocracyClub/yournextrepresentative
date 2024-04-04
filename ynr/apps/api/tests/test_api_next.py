@@ -5,7 +5,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.core.files.storage import DefaultStorage
 from django_webtest import WebTest
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from parties.models import Party
 from parties.tests.factories import PartyDescriptionFactory, PartyEmblemFactory
 from parties.tests.fixtures import DefaultPartyFixtures
@@ -270,9 +270,8 @@ class TestAPI(
         )
 
     def test_sopn_on_ballot(self):
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             ballot=self.dulwich_post_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
         )
         response = self.app.get(
             "/api/next/ballots/{}/".format(
@@ -283,7 +282,6 @@ class TestAPI(
         self.assertEqual(
             result["sopn"],
             {
-                "document_type": "Nomination paper",
                 "uploaded_file": None,
                 "source_url": "",
             },

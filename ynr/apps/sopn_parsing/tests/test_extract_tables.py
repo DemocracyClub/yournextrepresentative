@@ -6,7 +6,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from sopn_parsing.helpers.extract_tables import extract_ballot_table
 from sopn_parsing.models import CamelotParsedSOPN
 from sopn_parsing.tests import should_skip_pdf_tests
@@ -22,12 +22,10 @@ class TestSOPNHelpers(TmpMediaRootMixin, UK2015ExamplesMixin, TestCase):
         )
         with open(example_doc_path, "rb") as f:
             sopn_file = f.read()
-        self.doc = OfficialDocument.objects.create(
+        self.doc = BallotSOPN.objects.create(
             ballot=self.dulwich_post_ballot,
-            document_type=OfficialDocument.NOMINATION_PAPER,
             uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file),
             source_url="example.com",
-            relevant_pages="all",
         )
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")

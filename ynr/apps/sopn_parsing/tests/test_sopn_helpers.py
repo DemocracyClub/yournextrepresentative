@@ -12,25 +12,25 @@ from candidates.tests.factories import (
     ElectionFactory,
     OrganizationFactory,
 )
+from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from mock import Mock
-from official_documents.models import OfficialDocument
-from sopn_parsing.helpers.extract_pages import (
-    TextractSOPNHelper,
-    TextractSOPNParsingHelper,
-)
+from official_documents.models import BallotSOPN, ElectionSOPN
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
+from sopn_parsing.helpers.textract_helpers import (
+    TextractSOPNHelper,
+)
 from sopn_parsing.models import AWSTextractParsedSOPN
 from sopn_parsing.tests import should_skip_pdf_tests
 from textractor.entities.lazy_document import LazyDocument
 
 with contextlib.suppress(ImportError):
-    from sopn_parsing.helpers.pdf_helpers import SOPNDocument
+    from official_documents.extract_pages import ElectionSOPNDocument
 
 
-class TestSOPNHelpers(TestCase):
+class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
     def test_clean_text(self):
         text = "\n C andidates (Namés)"
         self.assertEqual(clean_text(text), "candidates")
@@ -51,11 +51,12 @@ class TestSOPNHelpers(TestCase):
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
         )
         with open(example_doc_path, "rb") as f:
-            sopn_file = File(f)
-            doc = SOPNDocument(
-                file=sopn_file,
-                source_url="http://example.com",
-                election_date="2019-02-28",
+            election_sopn = ElectionSOPN.objects.create(
+                election=self.local_election,
+                uploaded_file=SimpleUploadedFile("sopn.pdf", f.read()),
+            )
+            doc = ElectionSOPNDocument(
+                election_sopn=election_sopn,
             )
         doc.heading = {"reason", "2019", "a", "election", "the", "labour"}
         self.assertEqual(len(doc.pages), 1)
@@ -68,12 +69,11 @@ class TestSOPNHelpers(TestCase):
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
         )
         with open(example_doc_path, "rb") as f:
-            sopn_file = File(f)
-            doc = SOPNDocument(
-                sopn_file,
-                source_url="http://example.com",
-                election_date="2022-02-28",
+            election_sopn = ElectionSOPN.objects.create(
+                election=self.local_election,
+                uploaded_file=SimpleUploadedFile("sopn.pdf", f.read()),
             )
+            doc = ElectionSOPNDocument(election_sopn=election_sopn)
         self.assertSetEqual(
             doc.document_heading_set,
             {
@@ -135,26 +135,18 @@ class TestSOPNHelpers(TestCase):
             ballot_paper_id="local.stroud.berkeley-vale.by.2019-02-28"
         )
         with open(example_doc_path, "rb") as f:
-            sopn_file = File(f)
-            official_document = OfficialDocument(
-                ballot=ballot,
+            election_sopn = ElectionSOPN(
+                election=ballot.election,
                 source_url="http://example.com/strensall",
-                document_type=OfficialDocument.NOMINATION_PAPER,
             )
-            official_document.uploaded_file.save(
-                name="sopn.pdf", content=sopn_file
-            )
-            official_document.save()
-            self.assertEqual(official_document.relevant_pages, "")
+            election_sopn.uploaded_file.save(name="sopn.pdf", content=f)
+            election_sopn.save()
 
-            document_obj = SOPNDocument(
-                file=sopn_file,
-                source_url="http://example.com/strensall",
-                election_date=ballot.election.election_date,
-            )
+            document_obj = ElectionSOPNDocument(election_sopn=election_sopn)
             self.assertEqual(len(document_obj.pages), 1)
 
             document_obj.match_all_pages()
+            ballot.refresh_from_db()
             self.assertEqual(ballot.sopn.relevant_pages, "all")
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
@@ -163,7 +155,7 @@ class TestSOPNHelpers(TestCase):
         Uses the example of a multipage PDF which contains SOPN's for two
         ballots.
         Creates the ballots, then parses the document, and checks that the
-        correct pages have been assigned to the OfficialDocument object
+        correct pages have been assigned to the BallotSOPN object
         related to the ballot.
         """
         example_doc_path = abspath(
@@ -186,25 +178,14 @@ class TestSOPNHelpers(TestCase):
             post__organization=organization,
         )
         with open(example_doc_path, "rb") as f:
-            sopn_file = File(f)
-            # assign the same PDF to both ballots with the same source URL
-            for ballot in [north_antrim, mid_ulster]:
-                official_document = OfficialDocument(
-                    ballot=ballot,
-                    source_url="http://example.com",
-                    document_type=OfficialDocument.NOMINATION_PAPER,
-                )
-                official_document.uploaded_file.save(
-                    name="sopn.pdf", content=sopn_file
-                )
-                official_document.save()
-                self.assertEqual(official_document.relevant_pages, "")
-
-            document_obj = SOPNDocument(
-                file=sopn_file,
+            election_sopn = ElectionSOPN(
+                election=election,
                 source_url="http://example.com",
-                election_date=election.election_date,
             )
+            election_sopn.uploaded_file.save(name="sopn.pdf", content=f)
+            election_sopn.save()
+
+            document_obj = ElectionSOPNDocument(election_sopn=election_sopn)
         self.assertEqual(len(document_obj.pages), 9)
         document_obj.match_all_pages()
 
@@ -226,22 +207,14 @@ class TestSOPNHelpers(TestCase):
         )
         with open(sopn_pdf, "rb") as f:
             sopn_file = File(f)
-            official_document = OfficialDocument(
-                ballot=strensall,
+            election_sopn = ElectionSOPN(
+                election=strensall.election,
                 source_url="http://example.com/strensall",
-                document_type=OfficialDocument.NOMINATION_PAPER,
             )
-            official_document.uploaded_file.save(
-                name="sopn.pdf", content=sopn_file
-            )
-            official_document.save()
-            self.assertEqual(official_document.relevant_pages, "")
+            election_sopn.uploaded_file.save(name="sopn.pdf", content=sopn_file)
+            election_sopn.save()
 
-            document_obj = SOPNDocument(
-                file=sopn_file,
-                source_url="http://example.com/strensall",
-                election_date=strensall.election.election_date,
-            )
+            document_obj = ElectionSOPNDocument(election_sopn=election_sopn)
         self.assertEqual(len(document_obj.pages), 2)
 
         document_obj.match_all_pages()
@@ -263,15 +236,14 @@ def textract_sopn_helper(db):
         Path(__file__).parent / "data/local.york.strensall.2019-05-02.pdf"
     )
     with sopn_pdf_path.open("rb") as sopn_file:
-        official_document = OfficialDocument.objects.create(
+        ballot_sopn = BallotSOPN.objects.create(
             ballot=BallotPaperFactory(
                 ballot_paper_id="local.york.strensall.2019-05-02"
             ),
-            document_type=OfficialDocument.NOMINATION_PAPER,
             uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file.read()),
         )
     yield TextractSOPNHelper(
-        official_document=official_document, upload_path="s3://fake_bucket/"
+        ballot_sopn=ballot_sopn, upload_path="s3://fake_bucket/"
     )
 
 
@@ -336,9 +308,9 @@ def test_start_detection(
 def test_update_job_status_succeeded(
     textract_sopn_helper, get_document_analysis_json, get_mock_document
 ):
-    official_document = textract_sopn_helper.official_document
+    ballot_sopn = textract_sopn_helper.ballot_sopn
     AWSTextractParsedSOPN.objects.create(
-        sopn=official_document,
+        sopn=ballot_sopn,
         job_id="1234",
         raw_data="",
         status="NOT_STARTED",
@@ -351,15 +323,15 @@ def test_update_job_status_succeeded(
     textract_sopn_helper.extractor._get_document_images_from_path = lambda x: []
 
     textract_sopn_helper.update_job_status(blocking=True)
-    assert official_document.awstextractparsedsopn.status == "SUCCEEDED"
+    assert ballot_sopn.awstextractparsedsopn.status == "SUCCEEDED"
 
 
 def test_update_job_status_failed(
     textract_sopn_helper, failed_analysis, get_mock_document
 ):
-    official_document = textract_sopn_helper.official_document
+    ballot_sopn = textract_sopn_helper.ballot_sopn
     AWSTextractParsedSOPN.objects.create(
-        sopn=official_document,
+        sopn=ballot_sopn,
         job_id="1234",
         raw_data="",
         status="NOT_STARTED",
@@ -372,14 +344,5 @@ def test_update_job_status_failed(
     textract_sopn_helper.extractor._get_document_images_from_path = lambda x: []
 
     textract_sopn_helper.update_job_status(blocking=True)
-    official_document.awstextractparsedsopn.refresh_from_db()
-    assert official_document.awstextractparsedsopn.status == "FAILED"
-
-
-@pytest.fixture
-def textract_sopn_parsing_helper(db, get_document_analysis_json):
-    official_document = OfficialDocument.objects.create(
-        ballot=BallotPaperFactory(),
-        document_type=OfficialDocument.NOMINATION_PAPER,
-    )
-    yield TextractSOPNParsingHelper(official_document=official_document)
+    ballot_sopn.awstextractparsedsopn.refresh_from_db()
+    assert ballot_sopn.awstextractparsedsopn.status == "FAILED"

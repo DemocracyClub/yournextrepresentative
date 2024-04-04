@@ -5,7 +5,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.contrib.auth.models import Group
 from django_webtest import WebTest
 from moderation_queue.models import SuggestedPostLock
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from parties.tests.factories import PartyFactory
 from people.tests.factories import PersonFactory
 
@@ -17,9 +17,8 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             person=PersonFactory(),
             party=PartyFactory(),
         )
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -37,9 +36,8 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_suggest_post_lock_not_offered_with_document_when_locked(self):
         self.edinburgh_east_post_ballot.candidates_locked = True
         self.edinburgh_east_post_ballot.save()
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -55,9 +53,8 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             party=PartyFactory(),
         )
         self.assertEqual(LoggedAction.objects.count(), 0)
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -99,9 +96,8 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.user.groups.add(group)
         self.user.save()
 
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -142,9 +138,8 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.user.groups.add(group)
         self.user.save()
 
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -173,9 +168,8 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.user.groups.add(group)
         self.user.save()
 
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -212,9 +206,8 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.user.groups.add(group)
         self.user.save()
 
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.edinburgh_east_post_ballot,
             uploaded_file="sopn.pdf",
         )

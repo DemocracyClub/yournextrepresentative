@@ -1,13 +1,19 @@
 from django.contrib import admin
 
-from .models import OfficialDocument
+from .models import BallotSOPN, ElectionSOPN
 
 
-class OfficialDocumentAdmin(admin.ModelAdmin):
-    list_display = ("document_type", "created", "ballot", "source_url")
+class ElectionSOPNAdmin(admin.ModelAdmin):
+    list_display = ("created", "election", "source_url")
     search_fields = ("ballot__ballot_paper_id", "source_url")
-    list_filter = ("document_type",)
     ordering = ("-created",)
 
 
-admin.site.register(OfficialDocument, OfficialDocumentAdmin)
+class BallotSOPNAdmin(admin.ModelAdmin):
+    list_display = ("created", "ballot", "source_url")
+    search_fields = ("ballot__ballot_paper_id", "source_url")
+    ordering = ("-created",)
+
+
+admin.site.register(BallotSOPN, BallotSOPNAdmin)
+admin.site.register(ElectionSOPN, ElectionSOPNAdmin)

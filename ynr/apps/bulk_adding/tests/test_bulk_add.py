@@ -8,7 +8,7 @@ from candidates.tests.factories import MembershipFactory
 from candidates.tests.test_update_view import membership_id_set
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django_webtest import WebTest
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from parties.models import Party
 from parties.tests.factories import PartyDescriptionFactory, PartyFactory
 from people.models import Person
@@ -31,9 +31,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertNotContains(response, "Review")
 
     def testFormIfSopn(self):
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -56,9 +55,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         BulkAddFormSet would initialise with party data returned as a string
         but now expects a list or tuple.
         """
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -80,9 +78,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         causing a 500 error see:
         https://sentry.io/organizations/democracy-club-gp/issues/2326522296/?project=169287&query=is%3Aunresolved
         """
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -122,9 +119,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 200)
 
     def test_submitting_form(self):
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -133,7 +129,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             description="Green Party Stop Fracking Now", party=self.green_party
         )
 
-        with self.assertNumQueries(24):
+        with self.assertNumQueries(22):
             response = self.app.get(
                 "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
             )
@@ -161,7 +157,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(FuzzyInt(53, 55)):
+        with self.assertNumQueries(FuzzyInt(51, 53)):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -196,9 +192,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         is completing the bulk add process to create a lock suggestion
         that the lock suggestion is not created
         """
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -240,13 +235,12 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         welsh ballot, and results in a membership being created with the
         previous_party_affiliations relationships created
         """
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.senedd_ballot,
             uploaded_file="sopn.pdf",
         )
-        with self.assertNumQueries(25):
+        with self.assertNumQueries(23):
             response = self.app.get(
                 f"/bulk_adding/sopn/{self.senedd_ballot.ballot_paper_id}/",
                 user=self.user,
@@ -293,9 +287,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         welsh ballot, and results in a membership being created with the
         previous_party_affiliations relationships created
         """
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -367,9 +360,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         return response
 
     def test_adding_to_existing_person(self):
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -387,15 +379,13 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_flash_message_with_doc_for_multiple_ballots(self):
         # Make a new document
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.camberwell_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -424,9 +414,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         memberships_before = membership_id_set(existing_person)
         # Now try adding that person via bulk add:
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -486,9 +475,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 200)
 
     def test_invalid_with_no_memberships_or_raw_people(self):
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -502,9 +490,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
     def test_invalid_when_no_party_selected(self):
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -524,9 +511,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "This field is required.")
 
     def test_valid_when_second_form_only_party_changed(self):
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -558,9 +544,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ballot=self.election.ballot_set.get(post=self.dulwich_post),
         )
 
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -588,9 +573,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ballot=self.election.ballot_set.get(post=self.dulwich_post),
         )
 
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.camberwell_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -685,9 +669,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         """
         Check that if a ballot has parsed raw people, user is able to delete them
         """
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -722,9 +705,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         Check that if a ballot has raw people but they were not parsed by a bot
         the form to delete them is not on the page
         """
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -743,9 +725,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_bulk_add_person_removes_spaces_from_name(self):
         """Test that spaces are removed from the name field when bulk adding people"""
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
@@ -822,9 +803,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         """
         Check that a query param can change the parser we use
         """
-        OfficialDocument.objects.create(
+        BallotSOPN.objects.create(
             source_url="http://example.com",
-            document_type=OfficialDocument.NOMINATION_PAPER,
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )

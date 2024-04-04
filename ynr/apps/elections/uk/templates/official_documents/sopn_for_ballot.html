@@ -5,14 +5,14 @@
     </a>
 
     {% if user_can_upload_documents %}
-      <br><a href="{% url 'upload_document_view' ballot_paper_id=ballot.ballot_paper_id %}" class="button tiny">
+      <br><a href="{% url 'upload_ballot_sopn_view' ballot_paper_id=ballot.ballot_paper_id %}" class="button tiny">
         Change Statement of Persons Nominated document</a>
     {% endif %}
   </p>
 {% else %}
   {% if user_can_upload_documents %}
   <p>
-    <a href="{% url 'upload_document_view' ballot_paper_id=ballot.ballot_paper_id %}" class="button tiny">
+    <a href="{% url 'upload_ballot_sopn_view' ballot_paper_id=ballot.ballot_paper_id %}" class="button tiny">
     Upload the Statement of Persons Nominated</a>
   </p>
   {% endif %}
