@@ -219,7 +219,7 @@ class LoggedAction(models.Model):
                 desc = f"""entered results data for <a href="{url}">{self.ballot.ballot_paper_id}</a>"""
             if self.action_type == ActionType.SUGGEST_BALLOT_LOCK:
                 desc = f"""suggested locking ballot <a href="{url}">{self.ballot.ballot_paper_id}</a>"""
-            if self.action_type == ActionType.SOPN_UPLOAD:
+            if self.action_type == ActionType.SOPN_UPLOAD and self.ballot.sopn:
                 desc = f"""uploaded <a href="{self.ballot.sopn.get_absolute_url}">a SOPN</a> for <a href="{url}">{self.ballot.ballot_paper_id}</a>"""
         if self.person:
             if self.action_type == ActionType.PERSON_CREATE:
