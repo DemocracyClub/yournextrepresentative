@@ -106,7 +106,7 @@ class TestModels(TestUserMixin, WebTest):
         form = response.forms["document-upload-form"]
         form["source_url"] = "http://example.org/foo"
         with open(self.example_image_filename, "rb") as f:
-            form["uploaded_file"] = Upload("pilot.pdf", f.read())
+            form["uploaded_file"] = Upload("pilot.jpg", f.read())
 
         # TODO: Add back in
         # with patch(

@@ -39,7 +39,6 @@ class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
         }
 
     def get_object(self, queryset=None):
-        obj = None
         self.ballot = Ballot.objects.get(
             ballot_paper_id=self.kwargs["ballot_paper_id"]
         )

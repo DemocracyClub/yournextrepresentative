@@ -21,7 +21,6 @@ from official_documents.models import BallotSOPN, ElectionSOPN
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
 from sopn_parsing.helpers.textract_helpers import (
     TextractSOPNHelper,
-    TextractSOPNParsingHelper,
 )
 from sopn_parsing.models import AWSTextractParsedSOPN
 from sopn_parsing.tests import should_skip_pdf_tests
@@ -237,14 +236,14 @@ def textract_sopn_helper(db):
         Path(__file__).parent / "data/local.york.strensall.2019-05-02.pdf"
     )
     with sopn_pdf_path.open("rb") as sopn_file:
-        official_document = BallotSOPN.objects.create(
+        ballot_sopn = BallotSOPN.objects.create(
             ballot=BallotPaperFactory(
                 ballot_paper_id="local.york.strensall.2019-05-02"
             ),
             uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file.read()),
         )
     yield TextractSOPNHelper(
-        ballot_sopn=official_document, upload_path="s3://fake_bucket/"
+        ballot_sopn=ballot_sopn, upload_path="s3://fake_bucket/"
     )
 
 
@@ -309,9 +308,9 @@ def test_start_detection(
 def test_update_job_status_succeeded(
     textract_sopn_helper, get_document_analysis_json, get_mock_document
 ):
-    official_document = textract_sopn_helper.official_document
+    ballot_sopn = textract_sopn_helper.ballot_sopn
     AWSTextractParsedSOPN.objects.create(
-        sopn=official_document,
+        sopn=ballot_sopn,
         job_id="1234",
         raw_data="",
         status="NOT_STARTED",
@@ -324,15 +323,15 @@ def test_update_job_status_succeeded(
     textract_sopn_helper.extractor._get_document_images_from_path = lambda x: []
 
     textract_sopn_helper.update_job_status(blocking=True)
-    assert official_document.awstextractparsedsopn.status == "SUCCEEDED"
+    assert ballot_sopn.awstextractparsedsopn.status == "SUCCEEDED"
 
 
 def test_update_job_status_failed(
     textract_sopn_helper, failed_analysis, get_mock_document
 ):
-    official_document = textract_sopn_helper.official_document
+    ballot_sopn = textract_sopn_helper.ballot_sopn
     AWSTextractParsedSOPN.objects.create(
-        sopn=official_document,
+        sopn=ballot_sopn,
         job_id="1234",
         raw_data="",
         status="NOT_STARTED",
@@ -345,13 +344,5 @@ def test_update_job_status_failed(
     textract_sopn_helper.extractor._get_document_images_from_path = lambda x: []
 
     textract_sopn_helper.update_job_status(blocking=True)
-    official_document.awstextractparsedsopn.refresh_from_db()
-    assert official_document.awstextractparsedsopn.status == "FAILED"
-
-
-@pytest.fixture
-def textract_sopn_parsing_helper(db, get_document_analysis_json):
-    official_document = BallotSOPN.objects.create(
-        ballot=BallotPaperFactory(),
-    )
-    yield TextractSOPNParsingHelper(official_document=official_document)
+    ballot_sopn.awstextractparsedsopn.refresh_from_db()
+    assert ballot_sopn.awstextractparsedsopn.status == "FAILED"

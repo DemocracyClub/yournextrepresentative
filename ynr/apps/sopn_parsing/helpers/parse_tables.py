@@ -449,7 +449,7 @@ def parse_dataframe(ballot: Ballot, df: DataFrame):
         return None
 
 
-def parse_raw_data(ballot: Ballot):
+def parse_raw_data(ballot: Ballot, reparse=False):
     """
     Given a Ballot, go and get the Camelot and the AWS Textract dataframes
     and process them
@@ -459,9 +459,18 @@ def parse_raw_data(ballot: Ballot):
     camelot_data = {}
     textract_model = getattr(ballot.sopn, "awstextractparsedsopn", None)
     textract_data = {}
-    if camelot_model and camelot_model.raw_data_type == "pandas":
+    if (
+        camelot_model
+        and camelot_model.raw_data_type == "pandas"
+        and (reparse or not camelot_model.parsed_data)
+    ):
         camelot_data = parse_dataframe(ballot, camelot_model.as_pandas)
-    if textract_model and textract_model.raw_data_type == "pandas":
+    if (
+        textract_model
+        and textract_model.raw_data
+        and textract_model.raw_data_type == "pandas"
+        and (reparse or not textract_model.parsed_data)
+    ):
         textract_data = parse_dataframe(ballot, textract_model.as_pandas)
 
     if camelot_data or textract_data:

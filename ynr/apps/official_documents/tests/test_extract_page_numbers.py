@@ -6,6 +6,7 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase
+from django.utils.text import slugify
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from official_documents.models import ElectionSOPN
 from official_documents.tests.paths import (
@@ -74,7 +75,9 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
                 identifier=post_name,
             )
             Ballot.objects.create(
-                ballot_paper_id="local.{}.2019-05-02".format(post_name.lower()),
+                ballot_paper_id="local.{}.2019-05-02".format(
+                    slugify(post_name)
+                ),
                 post=post,
                 election=self.local_election,
             )

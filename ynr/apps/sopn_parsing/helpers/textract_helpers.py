@@ -37,7 +37,7 @@ class TextractSOPNHelper:
         bucket_name: str = None,
         upload_path: str = None,
     ):
-        self.official_document = ballot_sopn
+        self.ballot_sopn = ballot_sopn
         self.bucket_name = bucket_name or getattr(
             settings, "AWS_STORAGE_BUCKET_NAME", None
         )
@@ -47,9 +47,7 @@ class TextractSOPNHelper:
         self.extractor = Textractor(region_name="eu-west-2")
 
     def start_detection(self, replace=False) -> Optional[AWSTextractParsedSOPN]:
-        parsed_sopn = getattr(
-            self.official_document, "awstextractparsedsopn", None
-        )
+        parsed_sopn = getattr(self.ballot_sopn, "awstextractparsedsopn", None)
         if parsed_sopn and not replace:
             return None
         print("Starting analysis")
@@ -57,7 +55,7 @@ class TextractSOPNHelper:
         print("Saving results")
         try:
             textract_result, _ = AWSTextractParsedSOPN.objects.update_or_create(
-                sopn=self.official_document,
+                sopn=self.ballot_sopn,
                 defaults={"raw_data": "", "job_id": document.job_id},
             )
             textract_result.save()
@@ -68,12 +66,12 @@ class TextractSOPNHelper:
             return textract_result
         except IntegrityError as e:
             raise IntegrityError(
-                f"Failed to create AWSTextractParsedSOPN for {self.official_document.ballot.ballot_paper_id}: error {e}"
+                f"Failed to create AWSTextractParsedSOPN for {self.ballot_sopn.ballot.ballot_paper_id}: error {e}"
             )
 
     def textract_start_document_analysis(self) -> LazyDocument:
         document: LazyDocument = self.extractor.start_document_analysis(
-            file_source=f"s3://{self.bucket_name}{settings.MEDIA_URL}{self.official_document.uploaded_file.name}",
+            file_source=f"s3://{self.bucket_name}{settings.MEDIA_URL}{self.ballot_sopn.uploaded_file.name}",
             features=[TextractFeatures.TABLES],
             s3_output_path=f"s3://{settings.TEXTRACT_S3_BUCKET_NAME}/raw_textract_responses",
             s3_upload_path=self.upload_path,
@@ -82,7 +80,7 @@ class TextractSOPNHelper:
 
     def update_job_status(self, blocking=False, reparse=False):
         COMPLETED_STATES = ("SUCCEEDED", "FAILED", "PARTIAL_SUCCESS")
-        textract_result = self.official_document.awstextractparsedsopn
+        textract_result = self.ballot_sopn.awstextractparsedsopn
         if textract_result.status in COMPLETED_STATES and not reparse:
             return textract_result
 
@@ -110,7 +108,7 @@ class TextractSOPNHelper:
         print("Saving images")
         textract_result.images.all().delete()
         images = self.extractor._get_document_images_from_path(
-            f"s3://{self.bucket_name}{settings.MEDIA_URL}{self.official_document.uploaded_file.name}"
+            f"s3://{self.bucket_name}{settings.MEDIA_URL}{self.ballot_sopn.uploaded_file.name}"
         )
         for i, image in enumerate(images):
             image_model = AWSTextractParsedSOPNImage.objects.create(
@@ -121,7 +119,7 @@ class TextractSOPNHelper:
             )
             image_model.save()
         print(
-            f"Finished saving images for {self.official_document.ballot.ballot_paper_id}"
+            f"Finished saving images for {self.ballot_sopn.ballot.ballot_paper_id}"
         )
 
         # Add the images back in manually
@@ -147,8 +145,8 @@ class TextractSOPNParsingHelper:
     candidates to parties."""
 
     def __init__(self, ballot_sopn: BallotSOPN):
-        self.official_document = ballot_sopn
-        self.parsed_sopn = self.official_document.awstextractparsedsopn
+        self.ballot_sopn = ballot_sopn
+        self.parsed_sopn = self.ballot_sopn.awstextractparsedsopn
 
     def parse(self):
         self.parsed_sopn.parse_raw_data()
