@@ -79,14 +79,17 @@
         You can <a href="{{ url }}">edit this in the admin interface</a> (e.g. to delete it)
     {% endif %}
 
-    {% if object.sopn.uploaded_file.url|slice:"-3" == "pdf" %}
-        <script src="{% static "official_documents/js/pdf.worker.min.js" %}"></script>
+    {% if object.sopn.uploaded_file.url|slice:"-3:" == "pdf" %}
+
         <script src="{% static "official_documents/js/pdf.min.js" %}"></script>
+        <script>
+            pdfjsLib.GlobalWorkerOptions.workerSrc = '{% static "official_documents/js/pdf.worker.min.js" %}'
+        </script>
         {% javascript 'sopn_viewer' %}
         <script>
             SOPN_VIEWER.ShowSOPNInline(
                 '{{ object.sopn.uploaded_file.url }}',
-                '{{ object.ballot_paper_id }}',
+                '{{ object.ballot_paper_id }}'
             )
         </script>
     {% else %}

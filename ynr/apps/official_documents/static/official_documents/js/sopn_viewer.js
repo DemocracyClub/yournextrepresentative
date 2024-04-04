@@ -3,11 +3,11 @@ var SOPN_VIEWER = (function () {
 
     var module = {};
 
-    function load_pages_by_range(pdf, start_page, end_page, container) {
-        if (start_page > pdf.numPages || start_page === end_page + 1) {
+    function load_pages(pdf, container, page_num) {
+        if (page_num > pdf.numPages) {
             return;
         }
-        pdf.getPage(start_page).then(function (page) {
+        pdf.getPage(page_num).then(function (page) {
 
             var scale = 1.2;
             var page_container = document.createElement("div");
@@ -54,15 +54,15 @@ var SOPN_VIEWER = (function () {
                         viewport: viewport,
                         textDivs: []
                     });
-                    // Load more pages when this page is done
-                    start_page++;
-                    load_pages_by_range(pdf, start_page, end_page, container);
                 });
 
             }
 
         });
+        page_num++
+        load_pages(pdf, container, page_num)
     }
+
     function show_google_viewer(sopn_url, container) {
         /*
         Show the Google document viewer if PDFJS can't deal with this document for whatever reason
@@ -85,10 +85,7 @@ var SOPN_VIEWER = (function () {
             var loadingTask = pdfjsLib.getDocument(sopn_url);
 
             loadingTask.promise.then(function (pdf) {
-                // Get the end page either from the defined range, or the total number of pages
-                var start_page = options.start_page || 1;
-                var end_page = options.end_page || pdf.numPages;
-                load_pages_by_range(pdf, start_page, end_page, this_pdf_container);
+                load_pages(pdf, this_pdf_container, 1);
 
             }).then(null, function (error) {
 

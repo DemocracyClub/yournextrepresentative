@@ -355,7 +355,9 @@ class ElectionSOPNPageSplitter:
         self.reader = PdfReader(self.election_sopn.uploaded_file.open())
 
     @transaction.atomic()
-    def split(self, method=PageMatchingMethods.AUTO_MATCHED):
+    def split(
+        self, method=PageMatchingMethods.AUTO_MATCHED, parse_ballots=True
+    ):
         for ballot_paper_id, matched_pages in self.ballot_to_pages.items():
             pdf_pages = io.BytesIO()
             writer = PdfWriter()
@@ -389,6 +391,7 @@ class ElectionSOPNPageSplitter:
                 pdf_content,
                 self.election_sopn.source_url,
                 relevant_pages,
+                parse=parse_ballots,
             )
 
             self.election_sopn.page_matching_method = method
