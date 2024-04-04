@@ -1,3 +1,4 @@
+import contextlib
 import os
 from pathlib import Path
 from typing import List
@@ -229,6 +230,39 @@ class BallotSOPN(BaseBallotSOPN):
             kwargs={"ballot_id": self.ballot.ballot_paper_id},
         )
 
+    def parse(self):
+        """
+        Runs code that is needed to parse this SOPN.
+
+        When run, this should kick off the process that ends up in a set of models
+        that can be used by the bulk adding application.
+
+        The actual implementation of the parsing (e.g the backends that are used,
+        and async invocations) shouldn't matter here, the key point is that this is
+        the front door.
+
+        """
+
+        from sopn_parsing.helpers.extract_tables import extract_ballot_table
+        from sopn_parsing.helpers.textract_helpers import (
+            NotUsingAWSException,
+            TextractSOPNHelper,
+        )
+
+        # Pull out the tables from PDFs
+
+        # AWS Textract
+        # Don't break if we're not on AWS
+        with contextlib.suppress(NotUsingAWSException):
+            textract_helper = TextractSOPNHelper(self)
+            # Start detection isn't going to populate anything for a while.
+            # There's a cron job that should pick up the result and carry on parsing later.
+            textract_helper.start_detection()
+
+        # Camelot
+        if self.uploaded_file.name.endswith(".pdf"):
+            extract_ballot_table(self.ballot)
+
 
 class BallotSOPNHistory(BaseBallotSOPN):
     ballot = models.ForeignKey(
@@ -243,6 +277,7 @@ def add_ballot_sopn(
     pdf_content: ContentFile,
     source_url: str,
     relevant_pages: str = None,
+    parse=True,
 ):
     """
     Manage creating BallotSOPNs with history
@@ -256,9 +291,12 @@ def add_ballot_sopn(
     )
 
     BallotSOPN.objects.filter(ballot=ballot).delete()
-    return BallotSOPN.objects.create(
+    ballot_sopn: BallotSOPN = BallotSOPN.objects.create(
         ballot=ballot,
         relevant_pages=relevant_pages,
         uploaded_file=pdf_content,
         source_url=source_url,
     )
+    if parse:
+        ballot_sopn.parse()
+    return ballot_sopn
