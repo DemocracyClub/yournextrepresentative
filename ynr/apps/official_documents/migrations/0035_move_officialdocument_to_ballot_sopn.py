@@ -112,6 +112,10 @@ def move_official_documents_to_ballot_sopn(apps, schema_editor):
 class Migration(migrations.Migration):
     dependencies = [
         ("official_documents", "0034_ballotsopn_relevant_pages_and_more"),
+        (
+            "sopn_parsing",
+            "0009_alter_awstextractparsedsopn_official_document_and_more",
+        ),
     ]
 
     operations = [

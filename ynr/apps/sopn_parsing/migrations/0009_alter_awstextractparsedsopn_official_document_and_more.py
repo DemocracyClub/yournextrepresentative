@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("official_documents", "0035_move_officialdocument_to_ballot_sopn"),
         ("sopn_parsing", "0008_move_to_ballot_sopn"),
     ]
 
