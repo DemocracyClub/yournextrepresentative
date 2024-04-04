@@ -69,19 +69,20 @@ RUNNING_TESTS = False
 # SOPN_TRACKER
 # RESULTS_PROGRESS
 # BY_ELECTIONS
-FRONT_PAGE_CTA = "BY_ELECTIONS"
-SOPN_TRACKER_INFO = {}
-SOPN_TRACKER_INFO["election_date"] = "2023-05-04"
-SOPN_TRACKER_INFO["election_name"] = "May 2023 local elections"
-SOPN_SHEET_URL = "https://docs.google.com/spreadsheets/d/14lorx_tTzZOP6UB__biPdPisJ6kpv2vzFPMh2rCigd8/edit#gid=0"
+FRONT_PAGE_CTA = "SOPN_TRACKER"
+SOPN_TRACKER_INFO = {
+    "election_date": "2024-05-02",
+    "election_name": "May 2024 local elections",
+}
+SOPN_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTN0CXNZGfWFUlcVBGfGbvnHapjzoUICe4Q3ahDlpSZZOCTMIWNo2zw3Yvy71wYQiVLju4HiyVBeski/pub?output=csv"
 SOPN_DATES = [
     # ("Scotland", date(year=2023, month=3, day=30)),
-    ("England and Wales", date(year=2023, month=4, day=4)),
-    ("Northern Ireland", date(year=2023, month=4, day=24)),
+    ("England and Wales", date(year=2024, month=4, day=5)),
+    # ("Northern Ireland", date(year=2023, month=4, day=24)),
 ]
 
 
-SCHEDULED_ELECTION_DATES = ["2023-05-04", "2023-05-18"]
+SCHEDULED_ELECTION_DATES = ["2024-05-02", "2024-05-18"]
 
 
 STATICFILES_STORAGE = "ynr.storages.StaticStorage"
