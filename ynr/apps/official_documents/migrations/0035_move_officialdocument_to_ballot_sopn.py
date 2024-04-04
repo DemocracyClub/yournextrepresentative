@@ -95,7 +95,7 @@ def move_official_documents_to_ballot_sopn(apps, schema_editor):
             splitter = ElectionSOPNPageSplitter(
                 election_sopn=election_sopn, ballot_to_pages=splitter_data
             )
-            splitter.split()
+            splitter.split(parse_ballots=False)
         except IndexError:
             # Sometimes the matching is off. Re-match and try again
             election_sopn_doc = ElectionSOPNDocument(
