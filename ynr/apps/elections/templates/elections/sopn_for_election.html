@@ -28,8 +28,10 @@
     {% endif %}
     <div id="sopn-{{ object.slug }}" class="pdf_container"></div>
 
-    <script src="{% static "official_documents/js/pdf.worker.min.js" %}"></script>
     <script src="{% static "official_documents/js/pdf.min.js" %}"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '{% static "official_documents/js/pdf.worker.min.js" %}'
+    </script>
     {% javascript 'sopn_viewer' %}
     <script>
         SOPN_VIEWER.ShowSOPNInline(
