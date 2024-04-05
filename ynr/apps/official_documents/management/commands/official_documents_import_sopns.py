@@ -131,6 +131,9 @@ class Command(BaseCommand):
             uploaded_file=sopn_upload,
         )
         extract_pages_for_election_sopn(election_sopn)
+        for ballot in election_sopn.election.ballot_set.all():
+            if hasattr(ballot, "sopn"):
+                ballot.sopn.parse()
         return election_sopn
 
     def get_mimetype_and_extension_from_file_content(self, file_content):
