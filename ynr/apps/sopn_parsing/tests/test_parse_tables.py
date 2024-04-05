@@ -415,7 +415,7 @@ class TestParseTablesUnitTests(UK2015ExamplesMixin, TestCase):
 class TestParseTablesFilterKwargs(TestCase):
     def setUp(self):
         self.command = ParseTablesCommand()
-        self.default_filter_kwargs = {"sopn__camelotparsedsopn__isnull": False}
+        self.default_filter_kwargs = {}
 
     def test_when_testing(self):
         options = {"testing": True}
@@ -438,6 +438,4 @@ class TestParseTablesFilterKwargs(TestCase):
         options = {}
         result = self.command.build_filter_kwargs(options)
         expected = self.default_filter_kwargs.copy()
-        expected["sopn__camelotparsedsopn__parsed_data"] = None
-        expected["sopn__camelotparsedsopn__status"] = "unparsed"
         self.assertEqual(result, expected)
