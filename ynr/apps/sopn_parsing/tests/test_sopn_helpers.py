@@ -189,8 +189,8 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
         self.assertEqual(len(document_obj.pages), 9)
         document_obj.match_all_pages()
 
-        self.assertEqual(mid_ulster.sopn.relevant_pages, "1,2,3,4")
-        self.assertEqual(north_antrim.sopn.relevant_pages, "5,6,7,8,9")
+        self.assertEqual(mid_ulster.sopn.relevant_pages, "0,1,2,3")
+        self.assertEqual(north_antrim.sopn.relevant_pages, "4,5,6,7,8")
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_document_with_identical_headers(self):

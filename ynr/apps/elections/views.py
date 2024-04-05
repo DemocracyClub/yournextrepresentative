@@ -337,6 +337,11 @@ class SOPNForElectionView(DetailView):
     slug_field = "slug"
     template_name = "elections/sopn_for_election.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["ballots"] = self.object.ballot_set.order_by("post__label")
+        return context
+
 
 class PartyForBallotView(DetailView):
     model = Ballot

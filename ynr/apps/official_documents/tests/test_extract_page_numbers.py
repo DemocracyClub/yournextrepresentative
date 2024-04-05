@@ -47,25 +47,25 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
 
         # Create ballots
         posts = {
-            "Appleton": "1",
-            "Beechwood": "2",
-            "Birchfield": "3",
-            "Broadheath": "4",
-            "Daresbury": "5",
-            "Ditton": "6",
-            "Farnworth": "7",
-            "Grange": "8",
-            "Halton Brook": "9",
-            "Halton Castle": "10",
-            "Halton Lea": "11",
-            "Halton View": "12",
-            "Heath": "13",
-            "Hough Green": "14",
-            "Kingsway": "15",
-            "Mersey": "16",
-            "Norton North": "17",
-            "Norton South": "18",
-            "Riverside": "19",
+            "Appleton": "0",
+            "Beechwood": "1",
+            "Birchfield": "2",
+            "Broadheath": "3",
+            "Daresbury": "4",
+            "Ditton": "5",
+            "Farnworth": "6",
+            "Grange": "7",
+            "Halton Brook": "8",
+            "Halton Castle": "9",
+            "Halton Lea": "10",
+            "Halton View": "11",
+            "Heath": "12",
+            "Hough Green": "13",
+            "Kingsway": "14",
+            "Mersey": "15",
+            "Norton North": "16",
+            "Norton South": "17",
+            "Riverside": "18",
         }
         self.local_election.ballot_set.all().delete()
         for post_name in posts:
@@ -104,7 +104,7 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             Path(__file__).parent.parent.parent
             / "sopn_parsing/tests/data/local.buckinghamshire.amersham-and-chesham-bois.2021-05-06.pdf"
         )
-        posts = {"Chalfont St Peter": "7,8", "Chalfont St Giles": "5,6"}
+        posts = {"Chalfont St Peter": "6,7", "Chalfont St Giles": "4,5"}
         self.local_election.ballot_set.all().delete()
         with open(example_doc_path, "rb") as f:
             sopn_file = f.read()

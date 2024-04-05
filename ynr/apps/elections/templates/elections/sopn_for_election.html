@@ -12,7 +12,7 @@
     {% if object.electionsopn.pages_matched %}
         <p>The pages in this document have been matched to the ballots in this election:</p>
         <ul>
-            {% for ballot in object.ballot_set.all %}
+            {% for ballot in ballots %}
                 <li>
                     <a href="{{ ballot.get_sopn_url }}">{{ ballot.post.label }}</a>: {{ ballot.sopn.one_based_relevant_pages }}
                 </li>

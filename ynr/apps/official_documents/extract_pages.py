@@ -303,7 +303,7 @@ class ElectionSOPNDocument:
 
         matched_page_numbers = []
         for page in matched_to_ballot:
-            matched_page_numbers.append(page.page_number)
+            matched_page_numbers.append(page.page_number - 1)
             page.matched = True
         return matched_page_numbers
 
@@ -348,6 +348,9 @@ class ElectionSOPNPageSplitter:
     def __init__(
         self, election_sopn: ElectionSOPN, ballot_to_pages: Dict[str, List[int]]
     ):
+        """
+        ballot_to_pages MUST be 0th indexed, so the first page is page 0
+        """
         self.election_sopn = election_sopn
         self.ballot_to_pages = ballot_to_pages
         if not self.election_sopn.uploaded_file.name.endswith("pdf"):
@@ -363,7 +366,7 @@ class ElectionSOPNPageSplitter:
             writer = PdfWriter()
             try:
                 for page in matched_pages:
-                    writer.add_page(self.reader.pages[page - 1])
+                    writer.add_page(self.reader.pages[page])
             except (PDFEncryptionError, DependencyError) as exception:
                 raise PDFProcessingError(f"{exception}")
 
