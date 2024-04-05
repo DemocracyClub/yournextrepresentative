@@ -1,4 +1,5 @@
 import json
+import textwrap
 from os.path import dirname, join, realpath
 from pathlib import Path
 from unittest import skipIf
@@ -12,11 +13,16 @@ from candidates.tests.factories import (
     PostFactory,
 )
 from django.conf import settings
+from django.core import mail
 from django.core.files.base import ContentFile
 from django.urls import reverse
 from django_webtest import WebTest
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
-from official_documents.models import BallotSOPN, ElectionSOPN
+from official_documents.models import (
+    BallotSOPN,
+    BallotSOPNHistory,
+    ElectionSOPN,
+)
 from official_documents.tests.paths import (
     EXAMPLE_DOCX_FILENAME,
     EXAMPLE_HTML_FILENAME,
@@ -247,9 +253,77 @@ class TestModels(TestUserMixin, WebTest):
         with open(self.example_image_filename, "rb") as f:
             form["uploaded_file"] = Upload("pilot.jpg", f.read())
         response = form.submit()
-        print(response.content.decode())
         self.assertEqual(response.status_code, 302)
         self.assertEqual(BallotSOPN.objects.count(), 1)
+
+    @skipIf(
+        should_skip_conversion_tests(), "Required conversion libs not installed"
+    )
+    def test_update_existing_sopn(self):
+        self.assertFalse(LoggedAction.objects.exists())
+        response = self.app.get(
+            self.ballot.get_absolute_url(),
+            user=self.user_who_can_upload_documents,
+        )
+
+        self.assertInHTML("Upload SOPN", response.text)
+
+        response = self.app.get(
+            reverse(
+                "upload_ballot_sopn_view",
+                kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
+            ),
+            user=self.user_who_can_upload_documents,
+        )
+        form = response.forms["document-upload-form"]
+        form["source_url"] = "http://example.org/foo"
+        with open(self.example_image_filename, "rb") as f:
+            form["uploaded_file"] = Upload("pilot.jpg", f.read())
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(BallotSOPN.objects.count(), 1)
+        self.assertEqual(BallotSOPNHistory.objects.count(), 1)
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(LoggedAction.objects.count(), 1)
+
+        response = self.app.get(
+            reverse(
+                "upload_ballot_sopn_view",
+                kwargs={"ballot_paper_id": self.ballot.ballot_paper_id},
+            ),
+            user=self.user_who_can_upload_documents,
+        )
+        form = response.forms["document-upload-form"]
+        form["source_url"] = "http://example.org/foo"
+        with open(self.example_image_filename, "rb") as f:
+            form["uploaded_file"] = Upload("pilot.jpg", f.read())
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(BallotSOPN.objects.count(), 1)
+        self.assertEqual(BallotSOPNHistory.objects.count(), 2)
+        self.assertEqual(LoggedAction.objects.count(), 2)
+
+        # Emails
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            mail.outbox[0].subject,
+            "SOPN for parl.dulwich-and-west-norwood.2015-05-07 updated",
+        )
+        self.assertEqual(
+            mail.outbox[0].body,
+            textwrap.dedent(
+                """\
+            Hello,
+    
+            The user delilah has updated the SOPN for the ballot with ID parl.dulwich-and-west-norwood.2015-05-07.
+    
+            You can see this newly uploaded SOPN here:
+            
+            http://testserver/elections/parl.dulwich-and-west-norwood.2015-05-07/sopn/
+            
+            """
+            ),
+        )
 
 
 class TestElectionSOPNUpload(TestUserMixin, WebTest):

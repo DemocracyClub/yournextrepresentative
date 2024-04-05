@@ -1,9 +1,12 @@
 import contextlib
 import os
+import textwrap
 from pathlib import Path
 from typing import List
 
 from candidates.models import Ballot
+from django.conf import settings
+from django.core import mail
 from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -276,7 +279,7 @@ def add_ballot_sopn(
     ballot: Ballot,
     pdf_content: ContentFile,
     source_url: str,
-    relevant_pages: str = None,
+    relevant_pages: str = "all",
     parse=True,
 ):
     """
@@ -300,3 +303,26 @@ def add_ballot_sopn(
     if parse:
         ballot_sopn.parse()
     return ballot_sopn
+
+
+def send_ballot_sopn_update_notification(ballot_sopn: BallotSOPN, request):
+    message = textwrap.dedent(
+        f"""\
+    Hello,
+    
+    The user {request.user.username} has updated the SOPN for the ballot with ID {ballot_sopn.ballot.ballot_paper_id}.
+    
+    You can see this newly uploaded SOPN here:
+    
+    {request.build_absolute_uri(ballot_sopn.get_absolute_url())}
+    
+    """
+    )
+
+    mail.send_mail(
+        f"SOPN for {ballot_sopn.ballot.ballot_paper_id} updated",
+        message,
+        "hello@democracyclub.org.uk",
+        settings.SOPN_UPDATE_NOTIFICATION_EMAILS,
+        fail_silently=True,
+    )
