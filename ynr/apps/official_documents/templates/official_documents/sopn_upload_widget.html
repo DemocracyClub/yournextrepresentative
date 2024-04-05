@@ -24,10 +24,10 @@
         <a href="{{ widget.value.url }}">Existing SOPN</a>
     {% endif %}
 
-    <input type="{{ widget.type }}" id="{{ widget.attrs.id }}" name="{{ widget.name }}" {% include "django/forms/widgets/attrs.html" %} hidden="hidden">
-    <label for="{{ widget.attrs.id }}" class="drop_area">
-        <span class="preview_area">Click, paste or drag a file to upload</span>
-    </label>
+    <input type="{{ widget.type }}" id="{{ widget.attrs.id }}" name="{{ widget.name }}" {% include "django/forms/widgets/attrs.html" %}>
+{#    <label for="{{ widget.attrs.id }}" class="drop_area">#}
+{#        <span class="preview_area">Click, paste or drag a file to upload</span>#}
+{#    </label>#}
 </div>
 
 <script>
