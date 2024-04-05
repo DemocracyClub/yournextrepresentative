@@ -2,6 +2,7 @@ import csv
 import hashlib
 import mimetypes
 import re
+import traceback
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -47,6 +48,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--delete-existing", action="store_true")
         parser.add_argument("--reparse", action="store_true")
+        parser.add_argument("--full-traceback", action="store_true")
         parser.add_argument("source_url")
 
     def group_csv_by_source(self, csv_data: csv.DictReader):
@@ -228,4 +230,7 @@ class Command(BaseCommand):
                 try:
                     self.process_group(url, ballot_data)
                 except Exception as ex:
-                    self.output.writerow([url, str(ex)])
+                    if options["full_traceback"]:
+                        self.output.writerow([url, traceback.print_exc()])
+                    else:
+                        self.output.writerow([url, str(ex)])
