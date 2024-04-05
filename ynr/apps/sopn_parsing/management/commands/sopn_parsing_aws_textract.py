@@ -3,7 +3,7 @@ from time import sleep
 
 from django.conf import settings
 from django.utils import timezone
-from official_documents.models import OfficialDocument
+from official_documents.models import BallotSOPN
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 from sopn_parsing.helpers.textract_helpers import (
     TextractSOPNHelper,
@@ -73,14 +73,12 @@ class Command(BaseSOPNParsingCommand):
         # the following is repetitive but addresses both options
         if options["start_analysis"]:
             if not options["reparse"]:
-                qs = qs.exclude(
-                    officialdocument__awstextractparsedsopn__id=None
-                )
+                qs = qs.exclude(sopn__awstextractparsedsopn__id=None)
             for ballot in qs:
                 self.stdout.write(
                     f"Starting analysis for {ballot.ballot_paper_id}"
                 )
-                official_document: OfficialDocument = ballot.sopn
+                ballot_sopn: BallotSOPN = ballot.sopn
                 if self.queue_full():
                     self.stdout.write(
                         f"Queue full, sleeping {settings.TEXTRACT_BACKOFF_TIME}"
@@ -88,28 +86,27 @@ class Command(BaseSOPNParsingCommand):
                     self.check_all_documents(options)
                     sleep(settings.TEXTRACT_BACKOFF_TIME)
                 textract_helper = TextractSOPNHelper(
-                    official_document, upload_path=options["upload_path"]
+                    ballot_sopn, upload_path=options["upload_path"]
                 )
                 # TO DO: add logging here
-                if getattr(official_document, "textract_result", None):
+                if getattr(ballot_sopn, "textract_result", None):
                     continue
                 sleep(settings.TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA)
-                textract_helper.start_detection(official_document)
+                textract_helper.start_detection(ballot_sopn)
         if options["get_results"]:
-            qs = qs.filter(
-                officialdocument__awstextractparsedsopn__isnull=False
-            )
+            qs = qs.filter(sopn__awstextractparsedsopn__isnull=False)
             for ballot in qs:
-                official_document: OfficialDocument = ballot.sopn
-                print(official_document)
+                print(ballot)
+                ballot_sopn: BallotSOPN = ballot.sopn
+                print(ballot_sopn)
 
-                textract_helper = TextractSOPNHelper(official_document)
+                textract_helper = TextractSOPNHelper(ballot_sopn)
                 textract_helper.update_job_status(
                     blocking=options["blocking"], reparse=options["reparse"]
                 )
 
                 textract_sopn_parsing_helper = TextractSOPNParsingHelper(
-                    official_document
+                    ballot_sopn
                 )
                 parsed = textract_sopn_parsing_helper.parse()
                 print(parsed.as_pandas)

@@ -392,7 +392,7 @@ def parse_table(sopn, data):
     return ballot_data
 
 
-def parse_raw_data_for_ballot(ballot):
+def parse_raw_data_for_ballot(ballot, reparse=False):
     """
 
     :type ballot: candidates.models.Ballot
@@ -414,7 +414,7 @@ def parse_raw_data_for_ballot(ballot):
     # data that matches the data in the RawPeople model? We should let the user choose
     # which one to save. In this case, we need to present the user with the two sets of
     # data and let them choose which one to save.
-    parse_raw_data(ballot)
+    parse_raw_data(ballot, reparse=reparse)
 
 
 def parse_dataframe(ballot: Ballot, df: DataFrame):

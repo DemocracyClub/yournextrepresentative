@@ -23,7 +23,7 @@ class Command(BaseSOPNParsingCommand):
         """
         # Always skip any ballots where we do not have a CamelotParsedSOPN to try to
         # extract candidates from
-        filter_kwargs = {"sopn__camelotparsedsopn__isnull": False}
+        filter_kwargs = {}
         if options.get("testing"):
             return filter_kwargs
 
@@ -36,18 +36,12 @@ class Command(BaseSOPNParsingCommand):
             ] = RawPeople.SOURCE_PARSED_PDF
             return filter_kwargs
 
-        filter_kwargs["sopn__camelotparsedsopn__parsed_data"] = None
-
-        # Where the status is unparsed
-        filter_kwargs["sopn__camelotparsedsopn__status"] = "unparsed"
-
         return filter_kwargs
 
     def handle(self, *args, **options):
         # filters that we never change with args. These two would raise
         # ValueErrors in the parse_raw_data_for_ballot function
         base_qs = self.get_queryset(options)
-
         filter_kwargs = self.build_filter_kwargs(options)
 
         qs = base_qs.filter(**filter_kwargs)
@@ -67,4 +61,4 @@ class Command(BaseSOPNParsingCommand):
             self.stderr.write("\n".join(msg))
 
         for ballot in qs:
-            parse_raw_data_for_ballot(ballot)
+            parse_raw_data_for_ballot(ballot, options["reparse"])
