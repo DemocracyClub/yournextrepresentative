@@ -485,8 +485,8 @@ def parse_raw_data(ballot: Ballot, reparse=False):
                 RawPeople.objects.update_or_create(
                     ballot=ballot,
                     defaults={
-                        "data": camelot_data,
-                        "textract_data": textract_data,
+                        "data": camelot_data or "",
+                        "textract_data": textract_data or "",
                         "source": "Parsed from {}".format(
                             ballot.sopn.source_url
                         ),
