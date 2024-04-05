@@ -4,6 +4,7 @@ from auth_helpers.views import GroupRequiredMixin
 from candidates.models import Ballot, LoggedAction
 from candidates.models.db import ActionType, EditType
 from candidates.views.version_data import get_client_ip
+from django.core.files.base import ContentFile
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -71,7 +72,10 @@ class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
 
         self.object = add_ballot_sopn(
             ballot=form.cleaned_data["ballot"],
-            pdf_content=form.cleaned_data["uploaded_file"],
+            pdf_content=ContentFile(
+                form.cleaned_data["uploaded_file"].read(),
+                form.cleaned_data["uploaded_file"].name,
+            ),
             source_url=form.cleaned_data["source_url"],
         )
         try:
