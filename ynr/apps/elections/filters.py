@@ -139,8 +139,8 @@ class BaseBallotFilter(django_filters.FilterSet):
 
     def has_sopn_filter(self, queryset, name, value):
         if int(value):
-            return queryset.exclude(officialdocument=None)
-        return queryset.filter(officialdocument=None)
+            return queryset.exclude(sopn=None)
+        return queryset.filter(sopn=None)
 
     def is_by_election_filter(self, queryset, name, value):
         if int(value):
