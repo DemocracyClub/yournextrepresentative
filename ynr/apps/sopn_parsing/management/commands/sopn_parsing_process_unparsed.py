@@ -78,4 +78,7 @@ class Command(BaseCommand):
 
     def parse_tables_for_qs(self, qs):
         for parsed_sopn_model in qs:
-            parse_raw_data_for_ballot(parsed_sopn_model.sopn.ballot)
+            try:
+                parse_raw_data_for_ballot(parsed_sopn_model.sopn.ballot)
+            except ValueError as e:
+                print(str(e))

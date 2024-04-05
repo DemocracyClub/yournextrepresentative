@@ -61,4 +61,7 @@ class Command(BaseSOPNParsingCommand):
             self.stderr.write("\n".join(msg))
 
         for ballot in qs:
-            parse_raw_data_for_ballot(ballot, options["reparse"])
+            try:
+                parse_raw_data_for_ballot(ballot, options["reparse"])
+            except ValueError as e:
+                print(str(e))
