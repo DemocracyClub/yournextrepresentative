@@ -1,5 +1,5 @@
 ---
-- hosts: prod_cron
+- hosts: ynr_cron
   vars_files:
     - vars.yml
     # - @vault.yml
