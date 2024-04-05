@@ -14,6 +14,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
 from django.core.management.base import BaseCommand
 from elections.models import Election
+from official_documents.extract_pages import extract_pages_for_election_sopn
 from official_documents.models import (
     ElectionSOPN,
     add_ballot_sopn,
@@ -114,16 +115,18 @@ class Command(BaseCommand):
         election = Election.objects.get(
             ballot__ballot_paper_id=ballot_data[0]["ballot_paper_id"]
         )
-        if election.electionsopn:
+        if hasattr(election, "electionsopn"):
             election.electionsopn.delete()
         upload_filename = f"{election.slug}-sopn{extension}"
         with downloaded_filename.open() as sopn_file:
-            sopn_upload = ContentFile(sopn_file, upload_filename)
-        return ElectionSOPN.objects.create(
+            sopn_upload = ContentFile(sopn_file.read(), upload_filename)
+        election_sopn = ElectionSOPN.objects.create(
             election=election,
             source_url=source_url,
             uploaded_file=sopn_upload,
         )
+        extract_pages_for_election_sopn(election_sopn)
+        return election_sopn
 
     def get_mimetype_and_extension_from_file_content(self, file_content):
         sopn_mimetype = self.mime_type_magic.from_buffer(file_content)
