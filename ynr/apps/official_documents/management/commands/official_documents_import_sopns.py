@@ -89,7 +89,7 @@ class Command(BaseCommand):
 
         return False
 
-    def process_group(self, source_url, ballot_data):
+    def process_group(self, source_url, ballot_data, delete_existing=False):
         if len(ballot_data) == 1:
             ballot = Ballot.objects.get(
                 ballot_paper_id=ballot_data[0]["ballot_paper_id"]
@@ -118,7 +118,10 @@ class Command(BaseCommand):
             ballot__ballot_paper_id=ballot_data[0]["ballot_paper_id"]
         )
         if hasattr(election, "electionsopn"):
-            election.electionsopn.delete()
+            if delete_existing:
+                election.electionsopn.delete()
+            else:
+                return None
         upload_filename = f"{election.slug}-sopn{extension}"
         with downloaded_filename.open() as sopn_file:
             sopn_upload = ContentFile(sopn_file.read(), upload_filename)
@@ -228,7 +231,11 @@ class Command(BaseCommand):
         for url, ballot_data in grouped.items():
             if self.group_data_is_complete(ballot_data):
                 try:
-                    self.process_group(url, ballot_data)
+                    self.process_group(
+                        url,
+                        ballot_data,
+                        delete_existing=options["delete_existing"],
+                    )
                 except Exception as ex:
                     if options["full_traceback"]:
                         self.output.writerow([url, traceback.print_exc()])
