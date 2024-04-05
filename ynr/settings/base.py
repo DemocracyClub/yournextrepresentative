@@ -49,7 +49,6 @@ ADMINS = [()]
 # The From: address for all emails except error emails
 DEFAULT_FROM_EMAIL = "candidates@democracyclub.org.uk"
 
-
 # Sentry config
 sentry_sdk.init(
     dsn=os.environ.get("SENTRY_DSN"),
@@ -59,7 +58,6 @@ sentry_sdk.init(
     environment=os.environ.get("DC_ENVIRONMENT"),
     traces_sample_rate=0,
 )
-
 
 # aws
 TEXTRACT_S3_BUCKET_NAME = "public-sopns"
@@ -188,7 +186,6 @@ AUTHENTICATION_BACKENDS = (
     # `allauth` specific authentication methods, such as login by e-mail
     "allauth.account.auth_backends.AuthenticationBackend",
 )
-
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -347,7 +344,6 @@ SASS_ARGUMENT_LIST = ["-I " + p for p in SASS_INCLUDE_PATHS]
 SASS_ARGUMENT_LIST.append("--style compressed")
 PIPELINE["SASS_ARGUMENTS"] = " ".join(SASS_ARGUMENT_LIST)
 
-
 SOURCE_HINTS = """
     Please don't quote third-party candidate sites \u2014 we prefer URLs of
     news stories or official candidate pages."""
@@ -389,7 +385,6 @@ THUMBNAIL_DEBUG = DEBUG
 
 # If this is set to false, then no edits of people are allowed.
 EDITS_ALLOWED = True
-
 
 # A bearer token for the Twitter API for mapping between
 # Twitter usernames and IDs.
@@ -445,7 +440,6 @@ MARKDOWN_DEUX_STYLES = {
     }
 }
 
-
 # TODO Delete this once election specific import are gone
 ELECTION_APP = "uk"
 ELECTION_APP_FULLY_QUALIFIED = "elections.uk"
@@ -463,7 +457,6 @@ IMAGE_PROXY_URL = ""
 
 RESULTS_FEATURE_ACTIVE = False
 
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -479,7 +472,6 @@ LOGGING = {
     },
 }
 
-
 CANDIDATE_BOT_USERNAME = "CandidateBot"
 RESULTS_BOT_USERNAME = "ResultsBot"
 TWITTER_BOT_USERNAME = "TwitterBot"
@@ -487,6 +479,12 @@ TWITTER_BOT_USERNAME = "TwitterBot"
 TEXTRACT_CONCURRENT_QUOTA = 30
 TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA = 1
 TEXTRACT_BACKOFF_TIME = 10
+
+SOPN_UPDATE_NOTIFICATION_EMAILS = ",".split(
+    os.environ.get(
+        "SOPN_UPDATE_NOTIFICATION_EMAILS", "hello@democracyclub.org.uk"
+    )
+)
 
 # import application constants
 from .constants.needs_review import *  # noqa

@@ -23,6 +23,8 @@ from .models import (
     DOCUMENT_UPLOADERS_GROUP_NAME,
     BallotSOPN,
     PageMatchingMethods,
+    add_ballot_sopn,
+    send_ballot_sopn_update_notification,
 )
 
 
@@ -64,7 +66,14 @@ class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
         be parsed. We always save the file even if it cannot be parsed, then
         create a LoggedAction and redirect the user.
         """
-        self.object = form.save()
+        if self.object.pk:
+            send_ballot_sopn_update_notification(self.object, self.request)
+
+        self.object = add_ballot_sopn(
+            ballot=form.cleaned_data["ballot"],
+            pdf_content=form.cleaned_data["uploaded_file"],
+            source_url=form.cleaned_data["source_url"],
+        )
         try:
             if hasattr(self.object.ballot, "rawpeople"):
                 self.object.ballot.rawpeople.delete()
