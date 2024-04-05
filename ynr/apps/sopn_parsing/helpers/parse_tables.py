@@ -471,6 +471,8 @@ def parse_raw_data(ballot: Ballot, reparse=False):
         and textract_model.raw_data_type == "pandas"
         and (reparse or not textract_model.parsed_data)
     ):
+        if not textract_model.parsed_data:
+            textract_model.parse_raw_data()
         textract_data = parse_dataframe(ballot, textract_model.as_pandas)
 
     if camelot_data or textract_data:
