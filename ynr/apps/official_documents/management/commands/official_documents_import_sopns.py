@@ -94,7 +94,7 @@ class Command(BaseCommand):
             ballot = Ballot.objects.get(
                 ballot_paper_id=ballot_data[0]["ballot_paper_id"]
             )
-            if ballot.sopn and not self.delete_existing:
+            if hasattr(ballot, "sopn") and not self.delete_existing:
                 # There's already a SOPN for this ballot, don't replace
                 return None
             downloaded_filename, extension = self.get_file_path_from_source_url(
@@ -102,10 +102,10 @@ class Command(BaseCommand):
             )
             # TODO: convert to PDF here if we need to (e.g docx files)
             upload_filename = f"{ballot.ballot_paper_id}-sopn{extension}"
-            with downloaded_filename.open() as sopn_file:
+            with downloaded_filename.open("rb") as sopn_file:
                 return add_ballot_sopn(
                     ballot,
-                    ContentFile(sopn_file, upload_filename),
+                    ContentFile(sopn_file.read(), upload_filename),
                     source_url=source_url,
                 )
 
