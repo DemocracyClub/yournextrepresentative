@@ -480,11 +480,9 @@ TEXTRACT_CONCURRENT_QUOTA = 30
 TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA = 1
 TEXTRACT_BACKOFF_TIME = 10
 
-SOPN_UPDATE_NOTIFICATION_EMAILS = ",".split(
-    os.environ.get(
-        "SOPN_UPDATE_NOTIFICATION_EMAILS", "hello@democracyclub.org.uk"
-    )
-)
+SOPN_UPDATE_NOTIFICATION_EMAILS = os.environ.get(
+    "SOPN_UPDATE_NOTIFICATION_EMAILS", "hello@democracyclub.org.uk"
+).split(",")
 
 # import application constants
 from .constants.needs_review import *  # noqa
