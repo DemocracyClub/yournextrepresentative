@@ -1,8 +1,10 @@
+import base64
 import mimetypes
 
 import magic
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator
 from official_documents.fields import DropAndPasteFileWidget
 from official_documents.models import BallotSOPN, ElectionSOPN
@@ -16,7 +18,15 @@ class SOPNUploadFormMixin:
     SUPPORTED_FILE_TYPES = []
 
     def clean_uploaded_file(self):
+        if pasted_data := self.data.get("fileData"):
+            file_format, imgstr = pasted_data.split(";base64,")
+            ext = file_format.split("/")[-1]
+            self.cleaned_data["uploaded_file"] = ContentFile(
+                base64.b64decode(imgstr), name="temp." + ext
+            )
         uploaded_file = self.cleaned_data["uploaded_file"]
+        if not uploaded_file:
+            raise ValidationError("Uploaded file required")
 
         mime_type_magic = magic.Magic(mime=True)
         # Only read the first 4kb of the file, for speed but also to prevent
@@ -58,6 +68,7 @@ class UploadBallotSOPNForm(SOPNUploadFormMixin, forms.ModelForm):
             FileExtensionValidator(allowed_extensions=SUPPORTED_FILE_TYPES)
         ],
         widget=DropAndPasteFileWidget(),
+        required=False,
     )
 
 

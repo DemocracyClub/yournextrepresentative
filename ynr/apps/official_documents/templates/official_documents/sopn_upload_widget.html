@@ -24,10 +24,11 @@
         <a href="{{ widget.value.url }}">Existing SOPN</a>
     {% endif %}
 
-    <input type="{{ widget.type }}" id="{{ widget.attrs.id }}" name="{{ widget.name }}" {% include "django/forms/widgets/attrs.html" %}>
-{#    <label for="{{ widget.attrs.id }}" class="drop_area">#}
-{#        <span class="preview_area">Click, paste or drag a file to upload</span>#}
-{#    </label>#}
+    <input type="{{ widget.type }}" id="{{ widget.attrs.id }}"
+           name="{{ widget.name }}" {% include "django/forms/widgets/attrs.html" %} hidden="hidden">
+    <label for="{{ widget.attrs.id }}" class="drop_area">
+        <span class="preview_area">Click, paste or drag a file to upload</span>
+    </label>
 </div>
 
 <script>
@@ -37,9 +38,16 @@
         var dropArea = widget.querySelector('.drop_area');
         var fileInput = widget.querySelector('#{{ widget.attrs.id }}');
         var previewArea = widget.querySelector('.preview_area');
+        var containing_form = widget.closest("form");
+        var file_data = ""
+        var hiddenInput = document.createElement('input');
+        hiddenInput.setAttribute('type', 'hidden');
+        hiddenInput.setAttribute('name', 'fileData');
+        containing_form.appendChild(hiddenInput)
 
         // Function to handle file input changes and update UI
         function updateUIWithFile(file) {
+            file_data = file
             // Clear previous preview
             previewArea.innerHTML = '';
             // Only process image files.
@@ -48,6 +56,7 @@
                 reader.onload = function (e) {
                     const img = document.createElement('img');
                     img.src = e.target.result;
+                    hiddenInput.value = e.target.result;
                     previewArea.appendChild(img);
                 };
                 reader.readAsDataURL(file);
@@ -95,9 +104,11 @@
             for (var index in items) {
                 var item = items[index];
                 if (item.kind === 'file') {
+                    var newInput = fileInput.cloneNode();
+                    fileInput.parentNode.replaceChild(newInput, fileInput);
+
                     var blob = item.getAsFile();
                     // This effectively "selects" the file, replacing any previous
-                    fileInput.file = [blob]; // This line might not work due to browser security restrictions
                     updateUIWithFile(blob);
                 }
             }
