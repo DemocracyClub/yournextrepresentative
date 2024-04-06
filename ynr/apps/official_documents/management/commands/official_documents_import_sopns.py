@@ -100,6 +100,7 @@ class Command(BaseCommand):
             downloaded_filename, extension = self.get_file_path_from_source_url(
                 source_url
             )
+
             # TODO: convert to PDF here if we need to (e.g docx files)
             upload_filename = f"{ballot.ballot_paper_id}-sopn{extension}"
             with downloaded_filename.open("rb") as sopn_file:

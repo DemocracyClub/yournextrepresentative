@@ -35,6 +35,11 @@ class Command(BaseSOPNParsingCommand):
             action="store",
             help="For texting only: the S3 bucket path to upload local SOPNs to, in the form of s3://[bucket]/[prefix]/",
         )
+        parser.add_argument(
+            "--reparse",
+            action="store",
+            help="Don't ignore BallotSOPNs that already have been parsed",
+        )
 
     def queue_full(self):
         time_window = timezone.now() - timedelta(hours=1)
@@ -53,7 +58,7 @@ class Command(BaseSOPNParsingCommand):
 
     def check_all_documents(self, options, **kwargs):
         qs = self.get_queryset(options).filter(
-            officialdocument__awstextractparsedsopn__status__in=[
+            sopn__awstextractparsedsopn__status__in=[
                 "NOT_STARTED",
                 "IN_PROGRESS",
             ]
@@ -95,6 +100,8 @@ class Command(BaseSOPNParsingCommand):
                 textract_helper.start_detection(ballot_sopn)
         if options["get_results"]:
             qs = qs.filter(sopn__awstextractparsedsopn__isnull=False)
+            if not options["reparse"]:
+                qs = qs.filter(sopn__awstextractparsedsopn__parsed_data=None)
             for ballot in qs:
                 print(ballot)
                 ballot_sopn: BallotSOPN = ballot.sopn
