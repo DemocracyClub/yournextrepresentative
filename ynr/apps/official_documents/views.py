@@ -18,7 +18,7 @@ from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
-from .extract_pages import ElectionSOPNPageSplitter
+from .extract_pages import ElectionSOPNPageSplitter, clean_matcher_data
 from .forms import UploadBallotSOPNForm, UploadElectionSOPNForm
 from .models import (
     DOCUMENT_UPLOADERS_GROUP_NAME,
@@ -171,7 +171,8 @@ class ElectionSOPNMatchingView(GroupRequiredMixin, DetailView):
     def post(self, request, election_id):
         election = self.get_object()
         splitter = ElectionSOPNPageSplitter(
-            election.electionsopn, json.loads(request.POST.get("matched_pages"))
+            election.electionsopn,
+            clean_matcher_data(json.loads(request.POST.get("matched_pages"))),
         )
         splitter.split(method=PageMatchingMethods.MANUAL_MATCHED)
         LoggedAction.objects.create(

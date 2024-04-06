@@ -344,6 +344,47 @@ class ElectionSOPNDocument:
         return pages
 
 
+def clean_matcher_data(ballot_to_pages):
+    """
+    For simplicity, Svelte only POSTs the data of exact pages that
+    have been matched to a ballot.
+
+    We want to deal with a couple of things here:
+
+    1. Continuation page: we need to fill in the gaps of pages that have not been matched
+    2. Out of order pages: it's not always true that the pages in the SOPN are in order.
+
+    :return:
+    """
+    # It's not valid to have no matched all page
+    if not all(ballot_data["matched_page"] for ballot_data in ballot_to_pages):
+        raise ValueError("Not all ballots matched")
+
+    # First, convert the matched_page to a list of pages
+    for ballot_data in ballot_to_pages:
+        if matched_page := ballot_data.pop("matched_page", None):
+            ballot_data["matched_pages"] = [int(matched_page)]
+        else:
+            ballot_data["matched_pages"] = []
+
+    cleaned_data = {
+        ballot_data["ballot_paper_id"]: ballot_data["matched_pages"]
+        for ballot_data in ballot_to_pages
+    }
+
+    # Now, sort the list by the first matched page
+    sorted_data = sorted(cleaned_data.items(), key=lambda x: x[1][0])
+
+    for i in range(len(sorted_data) - 1):
+        this_ballot, this_value = sorted_data[i]
+        next_ballot, next_value = sorted_data[i + 1]
+
+        if this_value[-1] + 1 < next_value[0]:
+            this_value.extend(range(this_value[-1] + 1, next_value[0]))
+
+    return cleaned_data
+
+
 class ElectionSOPNPageSplitter:
     def __init__(
         self, election_sopn: ElectionSOPN, ballot_to_pages: Dict[str, List[int]]

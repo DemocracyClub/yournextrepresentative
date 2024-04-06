@@ -426,9 +426,14 @@ class TestElectionSOPNSplitting(TestUserMixin, WebTest):
             user=self.user_who_can_upload_documents,
             params={
                 "matched_pages": json.dumps(
-                    {
-                        self.ballot.ballot_paper_id: [0],
-                    }
+                    [
+                        {
+                            "ballot_paper_id": self.ballot.ballot_paper_id,
+                            "label": self.ballot.post.label,
+                            "matched": True,
+                            "matched_page": "0",
+                        }
+                    ]
                 )
             },
         )
