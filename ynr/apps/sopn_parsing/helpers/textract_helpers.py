@@ -75,6 +75,7 @@ class TextractSOPNHelper:
             features=[TextractFeatures.TABLES],
             s3_output_path=f"s3://{settings.TEXTRACT_S3_BUCKET_NAME}/raw_textract_responses",
             s3_upload_path=self.upload_path,
+            save_image=False,
         )
         return document
 
