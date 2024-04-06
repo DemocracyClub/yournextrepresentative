@@ -35,11 +35,6 @@ class Command(BaseSOPNParsingCommand):
             action="store",
             help="For texting only: the S3 bucket path to upload local SOPNs to, in the form of s3://[bucket]/[prefix]/",
         )
-        parser.add_argument(
-            "--reparse",
-            action="store",
-            help="Don't ignore BallotSOPNs that already have been parsed",
-        )
 
     def queue_full(self):
         time_window = timezone.now() - timedelta(hours=1)
