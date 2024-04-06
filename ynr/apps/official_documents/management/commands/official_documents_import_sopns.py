@@ -123,7 +123,7 @@ class Command(BaseCommand):
             else:
                 return None
         upload_filename = f"{election.slug}-sopn{extension}"
-        with downloaded_filename.open() as sopn_file:
+        with downloaded_filename.open("rb") as sopn_file:
             sopn_upload = ContentFile(sopn_file.read(), upload_filename)
         election_sopn = ElectionSOPN.objects.create(
             election=election,
