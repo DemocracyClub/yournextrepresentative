@@ -356,7 +356,7 @@ class Ballot(EEModifiedMixin, models.Model):
                 )
             )
         if self.has_lock_suggestion:
-            self.suggested_lock_html
+            return self.suggested_lock_html
         return ""
 
     @property
