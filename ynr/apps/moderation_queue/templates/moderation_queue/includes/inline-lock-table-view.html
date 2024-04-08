@@ -74,13 +74,7 @@
         <script>
           SOPN_VIEWER.ShowSOPNInline(
             '{{ ballot.sopn.uploaded_file.url }}',
-            '{{ ballot.ballot_paper_id }}',
-            {
-            {% if ballot.sopn.relevant_pages and ballot.sopn.relevant_pages != "all"%}
-              'start_page': {{ ballot.sopn.first_page_number }},
-              'end_page': {{ ballot.sopn.last_page_number }}
-            {% endif %}
-            }
+            '{{ ballot.ballot_paper_id }}'
           )
         </script>
         {% else %}

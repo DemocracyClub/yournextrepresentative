@@ -15,8 +15,10 @@
 {% endblock %}
 
 {% block content %}
-<script src="{% static "official_documents/js/pdf.worker.min.js" %}"></script>
 <script src="{% static "official_documents/js/pdf.min.js" %}"></script>
+<script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '{% static "official_documents/js/pdf.worker.min.js" %}'
+</script>
 {% javascript 'sopn_viewer' %}
 {% include "moderation_queue/includes/ajax_lock_button_js.html" %}
 

@@ -4,9 +4,6 @@ var SOPN_VIEWER = (function () {
     var module = {};
 
     function load_pages(pdf, container, page_num) {
-        if (page_num > pdf.numPages) {
-            return;
-        }
         pdf.getPage(page_num).then(function (page) {
 
             var scale = 1.2;
@@ -59,8 +56,6 @@ var SOPN_VIEWER = (function () {
             }
 
         });
-        page_num++
-        load_pages(pdf, container, page_num)
     }
 
     function show_google_viewer(sopn_url, container) {
@@ -85,7 +80,9 @@ var SOPN_VIEWER = (function () {
             var loadingTask = pdfjsLib.getDocument(sopn_url);
 
             loadingTask.promise.then(function (pdf) {
-                load_pages(pdf, this_pdf_container, 1);
+                for(var page = 1; page <= pdf.numPages; page++) {
+                    load_pages(pdf, this_pdf_container, page);
+                }
 
             }).then(null, function (error) {
 
@@ -96,6 +93,7 @@ var SOPN_VIEWER = (function () {
                 if (error.name === "InvalidPDFException") {
                     show_google_viewer(sopn_url, this_pdf_container);
                 }
+                console.log(error)
             });
         } catch (e) {
             show_google_viewer(sopn_url, this_pdf_container);
