@@ -1,3 +1,5 @@
+{% load static %}
+{% load pipeline %}
 <tr>
     <td>
         <a href="{{ ballot.get_absolute_url }}">
@@ -70,12 +72,12 @@
         {% include "moderation_queue/includes/ajax_lock_button_html.html" with ballot=ballot %}
     </td>
     <td>
-        {% if ballot.sopn %}
+        {% if ballot.sopn and ballot.sopn.uploaded_file %}
             <strong><a href="{{ ballot.sopn.get_absolute_url }}" target="_blank" class="button secondary tiny">
                 View the SOPN in a new window</a></strong>
             <div id="sopn-{{ ballot.ballot_paper_id }}" class="pdf_container"
                  style="max-width:100% !important; width: 100% !important;"></div>
-            {% if object.sopn.uploaded_file.url|slice:"-3:" == "pdf" %}
+            {% if ballot.sopn.uploaded_file.url|slice:"-3:" == "pdf" %}
 
                 <script src="{% static "official_documents/js/pdf.min.js" %}"></script>
                 <script>
@@ -84,13 +86,13 @@
                 {% javascript 'sopn_viewer' %}
                 <script>
                     SOPN_VIEWER.ShowSOPNInline(
-                        '{{ object.sopn.uploaded_file.url }}',
-                        '{{ object.ballot_paper_id }}'
+                        '{{ ballot.sopn.uploaded_file.url }}',
+                        '{{ ballot.ballot_paper_id }}'
                     )
                 </script>
             {% else %}
-                <div><img src="{{ object.sopn.uploaded_file.url }}"
-                          alt="Image of the candidate nomination data for {{ object.post.label }}"></div>
+                <div><img src="{{ ballot.sopn.uploaded_file.url }}"
+                          alt="Image of the candidate nomination data for {{ ballot.post.label }}"></div>
             {% endif %}
         {% else %}
             No SOPN uploaded
