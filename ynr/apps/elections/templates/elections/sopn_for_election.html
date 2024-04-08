@@ -28,15 +28,15 @@
     {% endif %}
     <div id="sopn-{{ object.slug }}" class="pdf_container"></div>
 
-    <script src="{% static "official_documents/js/pdf.min.js" %}"></script>
-    <script>
+    <script type="module">
+        import pdfjsDist from '{% static "official_documents/js/pdf.min.js" %}'
+
         pdfjsLib.GlobalWorkerOptions.workerSrc = '{% static "official_documents/js/pdf.worker.min.js" %}'
-    </script>
-    {% javascript 'sopn_viewer' %}
-    <script>
         SOPN_VIEWER.ShowSOPNInline(
-            '{{ object.electionsopn.uploaded_file.url }}',
-            '{{ object.slug }}',
+            '{{ object.sopn.uploaded_file.url }}',
+            '{{ object.ballot_paper_id }}'
         )
     </script>
+    {% javascript 'sopn_viewer' %}
+
 {% endblock %}

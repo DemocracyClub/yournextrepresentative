@@ -58,46 +58,25 @@ var SOPN_VIEWER = (function () {
         });
     }
 
-    function show_google_viewer(sopn_url, container) {
-        /*
-        Show the Google document viewer if PDFJS can't deal with this document for whatever reason
-        */
-        var google_frame = document.createElement("iframe");
-        google_frame.setAttribute("frameborder", 0);
-        google_frame.setAttribute("allowfullscreen", true);
-        google_frame.className = "document_viewer";
-        var url = "https://docs.google.com/viewer?url=https://candidates.democracyclub.org.uk";
-        url = url + encodeURI(sopn_url) + "&embedded=true";
-        google_frame.setAttribute("src", url);
-        container.append(google_frame);
-    }
-
     function ShowSOPNInline(sopn_url, ballot_paper_id, options) {
         // The container element
         var this_pdf_container = document.getElementById("sopn-" + ballot_paper_id);
 
-        try {
-            var loadingTask = pdfjsLib.getDocument(sopn_url);
+        var loadingTask = pdfjsLib.getDocument(sopn_url);
 
-            loadingTask.promise.then(function (pdf) {
-                for(var page = 1; page <= pdf.numPages; page++) {
-                    load_pages(pdf, this_pdf_container, page);
-                }
+        loadingTask.promise.then(function (pdf) {
+            for (var page = 1; page <= pdf.numPages; page++) {
+                load_pages(pdf, this_pdf_container, page);
+            }
 
-            }).then(null, function (error) {
+        }).then(null, function (error) {
 
-                if (error.name === "MissingPDFException") {
-                    this_pdf_container.innerHTML = "<h3>PDF file not found</h3>";
-                }
+            if (error.name === "MissingPDFException") {
+                this_pdf_container.innerHTML = "<h3>PDF file not found</h3>";
+            }
 
-                if (error.name === "InvalidPDFException") {
-                    show_google_viewer(sopn_url, this_pdf_container);
-                }
-                console.log(error)
-            });
-        } catch (e) {
-            show_google_viewer(sopn_url, this_pdf_container);
-        }
+            console.log(error)
+        });
 
     }
 
