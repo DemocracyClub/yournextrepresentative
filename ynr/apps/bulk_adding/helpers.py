@@ -262,8 +262,9 @@ class CSVImporter:
         if party_name in ("", None):
             return "ynmp-party:2"
         print(repr(party_name))
-
-        return Party.objects.register(register).get(name=party_name).ec_id
+        return (
+            Party.objects.register(register).get(name__iexact=party_name).ec_id
+        )
 
     def validate_posts(self):
         """
