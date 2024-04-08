@@ -1,102 +1,114 @@
 <tr>
-  <td>
-    <a href="{{ ballot.get_absolute_url }}">
-      {{ ballot.post.short_label }}
-    </a> 
-    suggested by<br>
-      {% for spl in ballot.suggestedpostlock_set.all %}
-        {{ spl.user }}{% if spl.justification %}: {{ spl.justification }}{% endif %}<br>
-      {% endfor %} 
-    <table style="width:100%">
-      <caption><strong>{{ ballot.membership_set.count }} people</strong></caption>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Existing other names</th>
-          <th>Actions</th>
-          <th>Party</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for membership in ballot.membership_set.all|dictsort:"person.last_name_guess"%}
-        <tr>
-          <td>
-            <a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>
-          </td>
-          <td>
-            <ul>
-            {% if membership.person.other_names.exists %}
-              {% for name in membership.person.other_names.all %}
-                <li>{{ name.name }}</li>
-              {% endfor %}
-            {% endif %}
-            </ul>
-          </td>
-          <td>
-          <a href="{% url 'person-update' membership.person.pk %}" class="radius secondary label" title="Edit person" target="_blank">
-              ✏️
-            </a>
-            <a href="{% url 'person-other-name-create' membership.person.pk %}" class="radius secondary label known-person-alternate-name" title="Add alternative names">
-              🏷️
-            </a>
-
-            <a data-person-id="{{ membership.person.pk }}" data-post-id="{{ membership.ballot.post.slug }}" href="{% url 'candidacy-delete' ballot_paper_id=membership.ballot.ballot_paper_id %}" class="radius secondary label known-person-not-standing" title="Mark as not standing">
-              ❌
-            </a>
-          </td>
-          <td>
-          {% if membership.party_description_text %}
-            {{ membership.party_description_text }}
-          {% else %}
-            {{ membership.party }}
-          {% endif %}
-
-            {% if membership.previous_party_affiliations.exists %}
-            <small>Previous party affiliations:</small>
-              {% for previous_party in membership.previous_party_affiliations.all %}
-                <small>{{ previous_party.name }}</small>
-              {% endfor %}
-            {% endif %}
-          </td>
-
-        </tr>
+    <td>
+        <a href="{{ ballot.get_absolute_url }}">
+            {{ ballot.post.short_label }}
+        </a>
+        suggested by<br>
+        {% for spl in ballot.suggestedpostlock_set.all %}
+            {{ spl.user }}{% if spl.justification %}: {{ spl.justification }}{% endif %}<br>
         {% endfor %}
-      </tbody>
-    </table>
-    {% include "moderation_queue/includes/ajax_lock_button_html.html" with ballot=ballot %}
-  </td>
-  <td>
-    {% if ballot.sopn %}
-        <strong><a href="{{ ballot.sopn.get_absolute_url }}" target="_blank" class="button secondary tiny">
-            View the SOPN in a new window</a></strong>
-        <div id="sopn-{{ ballot.ballot_paper_id }}" class="pdf_container" style="max-width:100% !important; width: 100% !important;"></div>
-        {% if ballot.sopn.relevant_pages %}
-        <script>
-          SOPN_VIEWER.ShowSOPNInline(
-            '{{ ballot.sopn.uploaded_file.url }}',
-            '{{ ballot.ballot_paper_id }}'
-          )
-        </script>
+        <table style="width:100%">
+            <caption><strong>{{ ballot.membership_set.count }} people</strong></caption>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Existing other names</th>
+                <th>Actions</th>
+                <th>Party</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for membership in ballot.membership_set.all|dictsort:"person.last_name_guess" %}
+                <tr>
+                    <td>
+                        <a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>
+                    </td>
+                    <td>
+                        <ul>
+                            {% if membership.person.other_names.exists %}
+                                {% for name in membership.person.other_names.all %}
+                                    <li>{{ name.name }}</li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    </td>
+                    <td>
+                        <a href="{% url 'person-update' membership.person.pk %}" class="radius secondary label"
+                           title="Edit person" target="_blank">
+                            ✏️
+                        </a>
+                        <a href="{% url 'person-other-name-create' membership.person.pk %}"
+                           class="radius secondary label known-person-alternate-name" title="Add alternative names">
+                            🏷️
+                        </a>
+
+                        <a data-person-id="{{ membership.person.pk }}" data-post-id="{{ membership.ballot.post.slug }}"
+                           href="{% url 'candidacy-delete' ballot_paper_id=membership.ballot.ballot_paper_id %}"
+                           class="radius secondary label known-person-not-standing" title="Mark as not standing">
+                            ❌
+                        </a>
+                    </td>
+                    <td>
+                        {% if membership.party_description_text %}
+                            {{ membership.party_description_text }}
+                        {% else %}
+                            {{ membership.party }}
+                        {% endif %}
+
+                        {% if membership.previous_party_affiliations.exists %}
+                            <small>Previous party affiliations:</small>
+                            {% for previous_party in membership.previous_party_affiliations.all %}
+                                <small>{{ previous_party.name }}</small>
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% include "moderation_queue/includes/ajax_lock_button_html.html" with ballot=ballot %}
+    </td>
+    <td>
+        {% if ballot.sopn %}
+            <strong><a href="{{ ballot.sopn.get_absolute_url }}" target="_blank" class="button secondary tiny">
+                View the SOPN in a new window</a></strong>
+            <div id="sopn-{{ ballot.ballot_paper_id }}" class="pdf_container"
+                 style="max-width:100% !important; width: 100% !important;"></div>
+            {% if object.sopn.uploaded_file.url|slice:"-3:" == "pdf" %}
+
+                <script src="{% static "official_documents/js/pdf.min.js" %}"></script>
+                <script>
+                    pdfjsLib.GlobalWorkerOptions.workerSrc = '{% static "official_documents/js/pdf.worker.min.js" %}'
+                </script>
+                {% javascript 'sopn_viewer' %}
+                <script>
+                    SOPN_VIEWER.ShowSOPNInline(
+                        '{{ object.sopn.uploaded_file.url }}',
+                        '{{ object.ballot_paper_id }}'
+                    )
+                </script>
+            {% else %}
+                <div><img src="{{ object.sopn.uploaded_file.url }}"
+                          alt="Image of the candidate nomination data for {{ object.post.label }}"></div>
+            {% endif %}
         {% else %}
-          (Unable to show this PDF inline, please open it in a new window)
+            No SOPN uploaded
         {% endif %}
-      {% else %}
-        No SOPN uploaded
-      {% endif %}
-  </td>
+    </td>
 </tr>
 
 <script>
 
-  function remove_old_inline_forms() {
-      $('.inline-edit-row').remove();
-  }
+    function remove_old_inline_forms() {
+        $('.inline-edit-row').remove();
+    }
 
-  $(document).on('click', '.inline-edit-cancel', function(){
-    remove_old_inline_forms();
-  });
+    $(document).on('click', '.inline-edit-cancel', function () {
+        remove_old_inline_forms();
+    });
 
-  $('.known-person-not-standing').on('click', function(e){
+    $('.known-person-not-standing').on('click', function (e) {
         var $this = $(this);
         e.preventDefault();
 
@@ -106,11 +118,11 @@
         $person = $($this.parents('tr')[0]);
         $link = $person.find('.known-person-not-standing');
 
-        var $inline_edit = $( $('.known-person-not-standing-form').html() );
+        var $inline_edit = $($('.known-person-not-standing-form').html());
 
         $inline_edit.insertAfter($person);
         $form = $inline_edit.find('form');
-        $form.find('button[type=submit]').on('click', function(e){
+        $form.find('button[type=submit]').on('click', function (e) {
             e.preventDefault();
 
             $form.find('#candidacyerr').remove();
@@ -128,10 +140,10 @@
                     csrfmiddlewaretoken: $form.find('input[type="hidden"]').val(),
                     person_id: $link.data('person-id'),
                     post_id: $link.data('post-id'),
-                    source : $form.find('input[name="source"]').val()
+                    source: $form.find('input[name="source"]').val()
                 },
 
-                success: function(json) {
+                success: function (json) {
                     if (json['success']) {
                         $person.remove();
                         remove_old_inline_forms();
@@ -140,7 +152,9 @@
                     } else {
                         if (json['errors']) {
                             for (var err in json.errors) {
-                                if (!json.errors.hasOwnProperty(err)) { continue; }
+                                if (!json.errors.hasOwnProperty(err)) {
+                                    continue;
+                                }
                                 el = $form.find('input[name="' + err + '"]');
                                 el.before('<ul class="errorlist"><li>' + json.errors[err] + '</li></ul>')
                             }
@@ -148,7 +162,7 @@
                     }
                 },
 
-                error: function(xhr,errmsg,err) {
+                error: function (xhr, errmsg, err) {
                     $form.prepend("<div class='alert-box alert radius' id='candidacyerr'>There was a problem removing the candidacy, please try again</div>");
                 }
             });
@@ -156,16 +170,10 @@
         });
 
 
-
     });
 
 
-
-
-
-
-
-  $('.known-person-alternate-name').on('click', function(e){
+    $('.known-person-alternate-name').on('click', function (e) {
         e.preventDefault();
 
         // remove all old rows with inline forms
@@ -174,8 +182,8 @@
         $person = $($(this).parents('tr')[0]);
         $link = $person.find('.known-person-alternate-name');
 
-        var $inline_edit = $( $('.known-person-alternate-name-form').html() );
-        var existing_other_name = $( $person.find('.other_names').html() );
+        var $inline_edit = $($('.known-person-alternate-name-form').html());
+        var existing_other_name = $($person.find('.other_names').html());
         console.log(existing_other_name);
         $inline_edit.find('.other_names_container').html(existing_other_name);
 
@@ -183,7 +191,7 @@
         var $form = $inline_edit.find('form');
         $form.find('input[type="text"]').focus();
 
-        $form.on('submit', function(){
+        $form.on('submit', function () {
             $form.find('#altnameerr').remove();
             $form.find('.alert').remove();
             $form.find('.errorlist').remove();
@@ -193,11 +201,11 @@
                 type: "POST",
                 data: {
                     csrfmiddlewaretoken: $form.find('input[type="hidden"]').val(),
-                    name : $name,
-                    source : $form.find('input[name="source"]').val()
+                    name: $name,
+                    source: $form.find('input[name="source"]').val()
                 },
 
-                success: function(json) {
+                success: function (json) {
                     if (json['success']) {
                         $other = $person.find('.other-names');
                         if ($other.length == 0) {
@@ -219,7 +227,9 @@
                     } else {
                         if (json['errors']) {
                             for (var err in json.errors) {
-                                if (!json.errors.hasOwnProperty(err)) { continue; }
+                                if (!json.errors.hasOwnProperty(err)) {
+                                    continue;
+                                }
                                 el = $form.find('input[name="' + err + '"]');
                                 el.before('<ul class="errorlist"><li>' + json.errors[err] + '</li></ul>')
                             }
@@ -227,7 +237,7 @@
                     }
                 },
 
-                error: function(xhr,errmsg,err) {
+                error: function (xhr, errmsg, err) {
                     $form.prepend("<div class='alert-box alert radius' id='altnameerr'>There was a problem adding the name, please try again</div>");
                 }
             });
@@ -236,52 +246,46 @@
     });
 
 
-
-
 </script>
 
 
 <script type="text/html" class="known-person-not-standing-form">
-          <tr class="inline-edit-row">
-            <td colspan="3" class="js-row">
-                <form action="" method="post" class="person-ajax-form">
-                  {% csrf_token %}
-                  <p>
-                      Are you sure you want to mark this candidate as not standing?
-                      <input id="alt-source" name="source" type="hidden" value="{{ ballot.sopn.source_url }}">
-                  </p>
-                  <p>
-                      <button type="button" class="button secondary inline-edit-cancel">Cancel</button>
-                      <button type="submit" class="button primary">Mark Not Standing</button>
-                  </p>
-              </form>
-            </td>
-          </tr>
-        </script>
-
-
-
-
+    <tr class="inline-edit-row">
+        <td colspan="3" class="js-row">
+            <form action="" method="post" class="person-ajax-form">
+                {% csrf_token %}
+                <p>
+                    Are you sure you want to mark this candidate as not standing?
+                    <input id="alt-source" name="source" type="hidden" value="{{ ballot.sopn.source_url }}">
+                </p>
+                <p>
+                    <button type="button" class="button secondary inline-edit-cancel">Cancel</button>
+                    <button type="submit" class="button primary">Mark Not Standing</button>
+                </p>
+            </form>
+        </td>
+    </tr>
+</script>
 
 
 <script type="text/html" class="known-person-alternate-name-form">
-          <tr class="inline-edit-row">
-            <td colspan="3" class="js-row">
-              <form action="" method="post" class="person-ajax-form">
-                  {% csrf_token %}
-                  <div class="other_names_container"></div>
-                  <p>
-                      <label for="alt-name">Name as it appears on nomination paper:</label>
-                      <input id="alt-name" name="name" type="text">
-                  </p>
-                  <p>
-                      <input id="alt-source" name="source" type="hidden" value="{{ ballot.sopn.source_url }}">
-                  </p>
-                  <p>
-                      <button type="button" class="button secondary inline-edit-cancel">Cancel</button>
-                      <button type="submit" class="button primary">Add alternate name</button>
-                  </p>
-              </form>
-            </td>
-          </tr>
-        </script>
+    <tr class="inline-edit-row">
+        <td colspan="3" class="js-row">
+            <form action="" method="post" class="person-ajax-form">
+                {% csrf_token %}
+                <div class="other_names_container"></div>
+                <p>
+                    <label for="alt-name">Name as it appears on nomination paper:</label>
+                    <input id="alt-name" name="name" type="text">
+                </p>
+                <p>
+                    <input id="alt-source" name="source" type="hidden" value="{{ ballot.sopn.source_url }}">
+                </p>
+                <p>
+                    <button type="button" class="button secondary inline-edit-cancel">Cancel</button>
+                    <button type="submit" class="button primary">Add alternate name</button>
+                </p>
+            </form>
+        </td>
+    </tr>
+</script>
