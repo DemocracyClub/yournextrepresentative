@@ -1,6 +1,6 @@
 from candidates.models import Ballot
 from django.db import models
-from django.db.models import Count
+from django.db.models import Count, TextChoices
 from django_extensions.db.models import TimeStampedModel
 
 
@@ -11,8 +11,21 @@ def get_attention_needed_posts():
     return qs.order_by("count", "election__name", "post__label")
 
 
+class ElectionTypeChoices(TextChoices):
+    PARL = "parl", "parl"
+    NIA = "nia", "nia"
+    SENEDD = "senedd", "senedd"
+    SP = "sp", "sp"
+    GLA = "gla", "gla"
+    LOCAL = "local", "local"
+    PCC = "pcc", "pcc"
+    MAYOR = "mayor", "mayor"
+
+
 class ElectionReport(TimeStampedModel):
-    election_type = models.CharField(max_length=20)
+    election_type = models.CharField(
+        max_length=20, choices=ElectionTypeChoices.choices
+    )
     election_date = models.DateField()
     title = models.CharField(max_length=255)
 
