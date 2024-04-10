@@ -157,7 +157,10 @@ class ElectionReportView(DetailView):
         context["reports"] = {}
 
         for report_klass in DEFAULT_REPORTS:
-            report = report_klass(str(self.object.election_date))
+            report = report_klass(
+                str(self.object.election_date),
+                election_type=self.object.election_type,
+            )
             report.run()
             context["reports"][report.__class__.__name__] = report
 

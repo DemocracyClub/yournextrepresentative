@@ -62,7 +62,6 @@ class BaseReport(abc.ABC):
         self.date = date
         self.nation = nation
         self.election_type = election_type or "local"
-        register = register or "GB"
         self.elected = elected
         self.exclude_cancelled = exclude_cancelled
         self.nuts_code = nuts_code
@@ -74,11 +73,13 @@ class BaseReport(abc.ABC):
             self.ballot_qs = self.ballot_qs.filter(
                 ballot_paper_id__startswith=self.election_type
             )
-        self.ballot_qs = (
-            self.ballot_qs.exclude(ballot_paper_id__in=EXCLUSION_IDS)
-            .filter(post__party_set__slug=register.lower())
-            .exclude(membership=None)
-        )
+        self.ballot_qs = self.ballot_qs.exclude(
+            ballot_paper_id__in=EXCLUSION_IDS
+        ).exclude(membership=None)
+        if register:
+            self.ballot_qs = self.ballot_qs.filter(
+                post__party_set__slug=register.lower()
+            )
 
         self.membership_qs = Membership.objects.filter(
             ballot__election__election_date=self.date
@@ -87,9 +88,13 @@ class BaseReport(abc.ABC):
             self.membership_qs = self.membership_qs.filter(
                 ballot__ballot_paper_id__startswith=self.election_type
             )
-        self.membership_qs = self.membership_qs.filter(
-            ballot__post__party_set__slug=register.lower()
-        ).exclude(ballot__ballot_paper_id__in=EXCLUSION_IDS)
+        self.membership_qs = self.membership_qs.exclude(
+            ballot__ballot_paper_id__in=EXCLUSION_IDS
+        )
+        if register:
+            self.membership_qs = self.membership_qs.filter(
+                ballot__post__party_set__slug=register.lower()
+            )
 
         if self.nation:
             self.ballot_qs = self.ballot_qs.filter(
