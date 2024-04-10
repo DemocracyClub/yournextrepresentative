@@ -153,29 +153,31 @@ class BaseReport(abc.ABC):
 
     def run(self):
         self.dataframe = self.as_dataframe()
-        # print()
-        # print()
-        # print()
-        # title = f"{self.date}: {self.name}, {self.election_type} elections"
-        # suffix = ""
-        # if self.nation:
-        #     suffix = f" ({settings.NATION_LABEL[self.nation]})"
-        #
-        # if self.elected:
-        #     suffix = f", elected only{suffix}"
-        #
-        # title = f"{title}{suffix}"
-        #
-        # print(title)
-        # print("=" * len(title))
-        # print()
-        # print(self.report())
+
+    def commandline(self):
+        print()
+        print()
+        print()
+        title = f"{self.date}: {self.name}, {self.election_type} elections"
+        suffix = ""
+        if self.nation:
+            suffix = f" ({settings.NATION_LABEL[self.nation]})"
+
+        if self.elected:
+            suffix = f", elected only{suffix}"
+
+        title = f"{title}{suffix}"
+
+        print(title)
+        print("=" * len(title))
+        print()
+        print(self.report())
 
 
 def report_runner(name, date, **kwargs):
     this_module = sys.modules[__name__]
     if hasattr(this_module, name):
-        return getattr(this_module, name)(date=date, **kwargs).run()
+        return getattr(this_module, name)(date=date, **kwargs).commandline()
     raise ValueError(
         "{} is unknown. Pick one of: {}".format(
             name,
