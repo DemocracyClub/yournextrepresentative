@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% load markdown_filter %}
+
+{% block hero %}
+    <h1>{{ object.title }}</h1>
+{% endblock %}
+
+{% block content %}
+
+    <style>
+        .report-tail {
+            display: none;
+        }
+
+        button + button {
+            margin-left: 1em;
+        }
+
+    </style>
+
+    <div class="row">
+        <div class="columns large-4 text-center">
+            <h2>Candidates</h2>
+            {{ reports.NumberOfCandidates.as_html }}
+        </div>
+        <div class="columns large-4 text-center">
+            <h2>Ballots</h2>
+            {{ reports.NumberOfBallots.as_html }}
+        </div>
+        <div class="columns large-4 text-center">
+            <h2>Seats</h2>
+            {{ reports.NumberOfSeats.as_html }}
+        </div>
+    </div>
+    <div class="row">
+        <hr>
+    </div>
+    <div class="row">
+        <h2>Candidates per party</h2>
+        {{ reports.CandidatesPerParty.as_html }}
+    </div>
+    <div class="row">
+        <h2>{{ reports.BallotsContestedPerParty.name }}</h2>
+        {{ reports.BallotsContestedPerParty.as_html }}
+    </div>
+    {% if not reports.UncontestedBallots.dataframe.empty %}
+        <div class="row">
+            <h2>{{ reports.UncontestedBallots.name }}</h2>
+            {{ reports.UncontestedBallots.as_html }}
+        </div>
+    {% endif %}
+    <div class="row">
+        <h2>{{ reports.NcandidatesPerSeat.name }}</h2>
+        {{ reports.NcandidatesPerSeat.as_html }}
+    </div>
+    <div class="row">
+        <h2>{{ reports.TwoWayRace.name }}</h2>
+        {{ reports.TwoWayRace.as_html }}
+    </div>
+    <div class="row">
+        <h2>{{ reports.TwoWayRaceForNewParties.name }}</h2>
+        {{ reports.TwoWayRaceForNewParties.as_html }}
+    </div>
+    <div class="row">
+        <h2>{{ reports.MostPerSeat.name }}</h2>
+        {{ reports.MostPerSeat.as_html }}
+    </div>
+    <div class="row">
+        <h2>{{ reports.NewParties.name }}</h2>
+        {{ reports.NewParties.as_html }}
+    </div>
+    <div class="row">
+        <h2>{{ reports.PartyMovers.name }}</h2>
+        {{ reports.PartyMovers.as_html }}
+    </div>
+    <div class="row">
+        <h2>{{ reports.NumCandidatesStandingInMultipleSeats.name }}</h2>
+        {{ reports.NumCandidatesStandingInMultipleSeats.as_html }}
+    </div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            {#const toggleButton = document.getElementById('toggleRows');#}
+
+
+            const tables = document.querySelectorAll('.aggregatable'); // Assuming tables are marked with this class
+
+            tables.forEach(table => {
+
+                const toggleButton = document.createElement('button');
+                toggleButton.classList.add("tiny");
+                toggleButton.classList.add("toggleRows");
+                toggleButton.textContent = 'Show more';
+
+                table.parentNode.insertBefore(toggleButton, table.nextSibling);
+                createAggregateRows(table); // Initially show aggregates
+
+                // Toggle functionality to show/hide detailed and aggregated views
+                toggleButton.addEventListener('click', () => toggleRowsVisibility(table));
+
+                function toggleRowsVisibility(table) {
+                    const reportTailRows = table.querySelectorAll('.report-tail');
+                    const aggregateRows = table.querySelectorAll('.aggregate-row'); // Tag aggregate rows for easy identification and manipulation
+
+                    if (aggregateRows.length) {
+                        // Aggregate rows are visible, so hide them and show detailed rows
+                        reportTailRows.forEach(row => row.style.display = 'table-row');
+                        aggregateRows.forEach(row => row.remove());
+                        toggleButton.textContent = 'Show fewer';
+                        table.querySelectorAll('[data-aggregate-collapse-hide]').forEach(el => el.style.display = 'table-cell');
+                        switch_labels(table);
+
+                    } else {
+                        // Detailed rows are visible, so hide them and show aggregate rows
+                        reportTailRows.forEach(row => row.style.display = 'none');
+                        createAggregateRows(table);
+                        toggleButton.textContent = 'Show more';
+                    }
+                }
+
+                function switch_labels(table) {
+                    table.querySelectorAll('[data-aggregate-collapse-label]').forEach(el => {
+                        var existing_value = el.textContent;
+                        var data_label = el.getAttribute('data-aggregate-collapse-label');
+                        el.setAttribute("data-aggregate-collapse-label", existing_value)
+                        el.textContent = data_label;
+
+                    });
+                }
+
+                function createAggregateRows(table) {
+                    const reportTailRows = table.querySelectorAll('.report-tail');
+                    const aggregates = {};
+                    let maxCols = 0; // To handle tables with varying number of columns
+
+                    table.querySelectorAll('[data-aggregate-collapse-hide]').forEach(el => el.style.display = 'none');
+                    switch_labels(table)
+
+
+                    reportTailRows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        maxCols = Math.max(maxCols, cells.length); // Ensure we account for all columns
+                        const label_cell = row.querySelector('[data-aggregate-label]')
+                        if (!label_cell) {
+                            return
+                        }
+                        const label = label_cell.getAttribute('data-aggregate-label');
+
+                        // Initialize the structure for each label if not already done
+                        if (!aggregates[label]) {
+                            aggregates[label] = Array(maxCols).fill(null);
+                            aggregates[label][0] = label; // First column is the label
+                        }
+
+                        cells.forEach((cell, index) => {
+                            if (cell.hasAttribute('data-aggregate-number')) {
+                                const number = parseInt(cell.getAttribute('data-aggregate-number'), 10);
+                                aggregates[label][index] = aggregates[label][index] ? aggregates[label][index] + number : number;
+
+                            }
+                            console.log(cell)
+                            if (cell.hasAttribute('data-aggregate-collapse-hide')) {
+                                cell.style.display = 'none';
+
+                            }
+                        });
+                    });
+
+                    // Create and append the aggregate rows
+                    Object.keys(aggregates).forEach(label => {
+                        const newRow = table.insertRow(-1);
+                        newRow.classList.add('aggregate-row'); // Mark as an aggregate row for easy identification
+                        aggregates[label].forEach((value, index) => {
+                            if (parseInt(value) === value) {
+                                value = value.toLocaleString()
+                            }
+                            const cell = newRow.insertCell(index);
+                            cell.textContent = value !== null ? value : cell.textContent; // Only show numbers or labels, leave others blank
+                        });
+                    });
+                }
+            });
+        });
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Find all tables with a 'data-markdown' attribute
+            const tables = document.querySelectorAll('table[data-markdown]');
+
+            tables.forEach(table => {
+                // Create the copy button
+                const copyButton = document.createElement('button');
+                copyButton.classList.add("tiny")
+                copyButton.textContent = 'Copy as Markdown';
+
+                // Optional: Add a class for styling the button
+                copyButton.classList.add('copy-markdown-button');
+
+                // Insert the button after the table
+                table.parentNode.insertBefore(copyButton, table);
+
+                // Attach the click event listener to copy markdown to clipboard
+                copyButton.addEventListener('click', () => {
+                    const markdown = table.getAttribute('data-markdown');
+                    const decodedMarkdown = decodeURIComponent(markdown);
+
+                    navigator.clipboard.writeText(decodedMarkdown).then(() => {
+                        console.log('Markdown copied to clipboard!');
+                        // Optionally, provide user feedback that copying was successful
+                        copyButton.textContent = 'Copied!';
+                        setTimeout(() => copyButton.textContent = 'Copy as Markdown', 2000); // Reset button text after 2 seconds
+                    }).catch(err => {
+                        console.error('Failed to copy markdown: ', err);
+                        // Optionally, provide user feedback that copying failed
+                        copyButton.textContent = 'Failed to copy!';
+                        setTimeout(() => copyButton.textContent = 'Copy as Markdown', 2000); // Reset button text after 2 seconds
+                    });
+                });
+            });
+        });
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Find all tables with a 'data-markdown' attribute
+            const tables = document.querySelectorAll('table[data-csv]');
+
+            tables.forEach(table => {
+                // Create the copy button
+                const copyButton = document.createElement('button');
+                copyButton.classList.add("tiny")
+                copyButton.textContent = 'Copy as CSV';
+
+                // Optional: Add a class for styling the button
+                copyButton.classList.add('copy-csv-button');
+
+                // Insert the button after the table
+                table.parentNode.insertBefore(copyButton, table);
+
+                // Attach the click event listener to copy markdown to clipboard
+                copyButton.addEventListener('click', () => {
+                    const markdown = table.getAttribute('data-csv');
+                    const decodedMarkdown = decodeURIComponent(markdown);
+
+                    navigator.clipboard.writeText(decodedMarkdown).then(() => {
+                        console.log('Markdown copied to clipboard!');
+                        // Optionally, provide user feedback that copying was successful
+                        copyButton.textContent = 'Copied!';
+                        setTimeout(() => copyButton.textContent = 'Copy as CSV', 2000); // Reset button text after 2 seconds
+                    }).catch(err => {
+                        console.error('Failed to copy markdown: ', err);
+                        // Optionally, provide user feedback that copying failed
+                        copyButton.textContent = 'Failed to copy!';
+                        setTimeout(() => copyButton.textContent = 'Copy as CSV', 2000); // Reset button text after 2 seconds
+                    });
+                });
+            });
+        });
+
+    </script>
+
+{% endblock %}

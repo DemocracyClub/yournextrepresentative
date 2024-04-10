@@ -1,15 +1,33 @@
 import json
+from typing import Tuple, Type
 
 from candidates.models import Ballot
 from django.db.models import Count
-from django.http import HttpResponse
-from django.views.generic import TemplateView
+from django.http import Http404, HttpResponse
+from django.views.generic import DetailView, TemplateView
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from parties.models import Party
 from popolo.models import Membership
 
-from .models import get_attention_needed_posts
+from .models import ElectionReport, get_attention_needed_posts
+from .report_helpers import (
+    BallotsContestedPerParty,
+    BaseReport,
+    CandidatesPerParty,
+    MostPerSeat,
+    NcandidatesPerSeat,
+    NewParties,
+    NumberOfBallots,
+    NumberOfCandidates,
+    NumberOfSeats,
+    NumCandidatesStandingInMultipleSeats,
+    PartyMovers,
+    TwoWayRace,
+    TwoWayRaceForNcandidates,
+    TwoWayRaceForNewParties,
+    UncontestedBallots,
+)
 
 
 def get_counts(for_json=True):
@@ -96,4 +114,51 @@ class AttentionNeededView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["post_counts"] = get_attention_needed_posts()
+        return context
+
+
+DEFAULT_REPORTS: Tuple[Type[BaseReport]] = (
+    NumberOfCandidates,
+    NumberOfBallots,
+    NumberOfSeats,
+    CandidatesPerParty,
+    BallotsContestedPerParty,
+    UncontestedBallots,
+    NcandidatesPerSeat,
+    TwoWayRace,
+    TwoWayRaceForNewParties,
+    TwoWayRaceForNcandidates,
+    MostPerSeat,
+    NewParties,
+    PartyMovers,
+    NumCandidatesStandingInMultipleSeats,
+)
+
+
+class ElectionReportView(DetailView):
+    model = ElectionReport
+
+    def get_object(self, queryset=None):
+        election_type, election_date = self.kwargs["report_slug"].split("-", 1)
+        qs = self.model.objects.filter(
+            election_type=election_type,
+            election_date=election_date,
+        )
+        try:
+            return qs.get()
+        except self.model.DoesNotExist:
+            raise Http404("Report not found")
+
+    template_name = "cached_counts/election-report.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["reports"] = {}
+
+        for report_klass in DEFAULT_REPORTS:
+            report = report_klass(str(self.object.election_date))
+            report.run()
+            context["reports"][report.__class__.__name__] = report
+
         return context

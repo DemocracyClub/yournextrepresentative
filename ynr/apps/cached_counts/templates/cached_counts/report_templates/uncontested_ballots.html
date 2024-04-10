@@ -1,0 +1,20 @@
+{% load humanize %}
+<table class="table" data-markdown="{{ report.as_markdown }}">
+    <thead>
+    <tr>
+        <th>Ballot</th>
+        <th>Candidates</th>
+        <th>Seats contested</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in report.head.iterrows %}
+        <tr>
+            <td><a href="{% url "election_view" election=row.1.ballot_paper_id %}">{{ row.1.ballot_paper_id }}</a></td>
+            <td>{{ row.1.memberships_count }}</td>
+            <td>{{ row.1.winner_count }}</td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>

@@ -1,0 +1,22 @@
+{% load humanize %}
+<table class="table aggregatable" data-markdown="{{ report.as_markdown }}" data-csv="{{ report.as_csv }}">
+    <thead>
+    <tr>
+        <th data-aggregate-collapse-label="Parties">Ballot</th>
+        <th data-aggregate-collapse-label="Contests">Candidates</th>
+        <th data-aggregate-collapse-hide="1">Party</th>
+        <th data-aggregate-collapse-hide="1">Vs</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in report.dataframe.iterrows %}
+        <tr class="report-tail">
+            <td data-aggregate-label="{{ row.1.party_names.0 }} / {{ row.1.party_names.1 }}"><a href="{% url "election_view" election=row.1.ballot_paper_id %}">{{ row.1.ballot_paper_id }}</a></td>
+            <td data-aggregate-number="1.0">{{ row.1.candidates }}</td>
+            <td data-aggregate-collapse-hide="1">{{ row.1.party_names.0 }}</td>
+            <td data-aggregate-collapse-hide="1">{{ row.1.party_names.1 }}</td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>

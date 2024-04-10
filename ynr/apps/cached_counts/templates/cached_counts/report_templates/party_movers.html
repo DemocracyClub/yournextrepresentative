@@ -1,0 +1,33 @@
+{% load humanize %}
+<table class="table aggregatable" data-markdown="{{ report.as_markdown }}" data-csv="{{ report.as_csv }}">
+    <thead>
+    <tr>
+        <th data-aggregate-collapse-label="Parties">Person</th>
+        <th data-aggregate-collapse-label="Party count">Candidates</th>
+        <th data-aggregate-collapse-hide="1">Ballot</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in report.dataframe.iterrows %}
+        {% if row.1.parties.1 %}
+            <tr class="report-tail">
+                <td data-aggregate-label="{{ row.1.parties.0 }} <> {{ row.1.parties.1 }}">
+                    <a href="{% url "person-view" person_id=row.1.person_id %}">{{ row.1.person__name }}</a>
+                </td>
+                <td data-aggregate-number="1">{{ row.1.party_count }}</td>
+                <td data-aggregate-collapse-hide="1">
+                <ul>
+                    {% for party in row.1.parties %}
+                    	<li>{{ party }}</li>
+                    {% endfor %}
+                </ul>
+
+
+                </td>
+            </tr>
+        {% endif %}
+
+    {% endfor %}
+
+    </tbody>
+</table>

@@ -5,12 +5,18 @@ Maybe strongest region groups (e.g. are Bath independents standing everywhere in
 Gender
 New parties
 """
+
+import abc
 import collections
 import sys
 from collections import Counter
 
+import pandas
 from candidates.models import Ballot
+from data_exports.models import MaterializedMemberships
 from django.conf import settings
+from django.contrib.humanize.templatetags.humanize import apnumber, intcomma
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import (
     Count,
     ExpressionWrapper,
@@ -21,6 +27,7 @@ from django.db.models import (
     Sum,
 )
 from django.db.models.query_utils import Q
+from django.template.loader import render_to_string
 from elections.filters import region_choices
 from parties.models import Party
 from people.models import Person
@@ -41,7 +48,7 @@ EXCLUSION_IDS = [
 ]
 
 
-class BaseReport:
+class BaseReport(abc.ABC):
     def __init__(
         self,
         date,
@@ -122,24 +129,47 @@ class BaseReport:
             self.f_winners / self.f_candidates, output_field=FloatField()
         )
 
+    HEAD_COUNT = 10
+
+    def as_dataframe(self):
+        return pandas.DataFrame(list(self.get_qs()))
+
+    def head(self):
+        return self.dataframe.head(self.HEAD_COUNT)
+
+    def tail(self):
+        return self.dataframe[self.HEAD_COUNT :]
+
+    def as_html(self):
+        if hasattr(self, "template_name"):
+            return render_to_string(self.template_name, {"report": self})
+        return None
+
+    def as_markdown(self):
+        return self.dataframe.to_markdown(index=False)
+
+    def as_csv(self):
+        return self.dataframe.to_csv(index=False)
+
     def run(self):
-        print()
-        print()
-        print()
-        title = f"{self.date}: {self.name}, {self.election_type} elections"
-        suffix = ""
-        if self.nation:
-            suffix = f" ({settings.NATION_LABEL[self.nation]})"
-
-        if self.elected:
-            suffix = f", elected only{suffix}"
-
-        title = f"{title}{suffix}"
-
-        print(title)
-        print("=" * len(title))
-        print()
-        print(self.report())
+        self.dataframe = self.as_dataframe()
+        # print()
+        # print()
+        # print()
+        # title = f"{self.date}: {self.name}, {self.election_type} elections"
+        # suffix = ""
+        # if self.nation:
+        #     suffix = f" ({settings.NATION_LABEL[self.nation]})"
+        #
+        # if self.elected:
+        #     suffix = f", elected only{suffix}"
+        #
+        # title = f"{title}{suffix}"
+        #
+        # print(title)
+        # print("=" * len(title))
+        # print()
+        # print(self.report())
 
 
 def report_runner(name, date, **kwargs):
@@ -163,6 +193,7 @@ def report_runner(name, date, **kwargs):
 
 class NumberOfCandidates(BaseReport):
     name = "Number of candidates standing"
+    template_name = "cached_counts/report_templates/total_candidates.html"
 
     def get_qs(self):
         return (
@@ -183,8 +214,28 @@ class NumberOfCandidates(BaseReport):
         return "\n".join(report)
 
 
+class NumberOfBallots(BaseReport):
+    name = "Number of ballots"
+    template_name = "cached_counts/report_templates/total_ballots.html"
+
+    def get_qs(self):
+        return (self.ballot_qs.count(),)
+
+    def report(self):
+        report = []
+        for election_type in self.get_qs():
+            report.append(
+                "{}\t{}".format(
+                    election_type["ballot__election__for_post_role"],
+                    election_type["seats"],
+                )
+            )
+        return "\n".join(report)
+
+
 class NumberOfSeats(BaseReport):
     name = "Number of seats"
+    template_name = "cached_counts/report_templates/total_seats.html"
 
     def get_qs(self):
         return self.ballot_qs.values("election__for_post_role").annotate(
@@ -205,6 +256,7 @@ class NumberOfSeats(BaseReport):
 
 class CandidatesPerParty(BaseReport):
     name = "Candidates per party"
+    template_name = "cached_counts/report_templates/candidates_per_party.html"
 
     def get_qs(self):
         return (
@@ -212,6 +264,9 @@ class CandidatesPerParty(BaseReport):
             .annotate(membership_count=Count("party_id"))
             .order_by("-membership_count")
         )
+
+    def for_html(self):
+        return self.dataframe
 
     def report(self):
         report = ["Party Name\tParty Register\tCandidates\tPercent of seats"]
@@ -244,7 +299,9 @@ class CandidatesPerParty(BaseReport):
         return "\n".join(report)
 
 
-class WardsContestedPerParty(BaseReport):
+class BallotsContestedPerParty(BaseReport):
+    template_name = "cached_counts/report_templates/ballots_per_party.html"
+
     def get_qs(self):
         # get candidates distinct by party and ballot
         qs = self.membership_qs.distinct("party_id", "ballot_id").order_by()
@@ -260,8 +317,10 @@ class WardsContestedPerParty(BaseReport):
 
     @property
     def name(self):
-        total_wards = self.ballot_qs.count()
-        return f"Wards contested per party ({total_wards})"
+        total_ballots = self.ballot_qs.count()
+        return (
+            f"Ballots contested per party (of {intcomma(total_ballots)} total)"
+        )
 
     def report(self):
         report = [
@@ -294,7 +353,7 @@ class WardsContestedPerParty(BaseReport):
 
 
 class UncontestedBallots(BaseReport):
-    name = "Uncontested Ballots"
+    template_name = "cached_counts/report_templates/uncontested_ballots.html"
 
     def get_qs(self):
         return (
@@ -302,7 +361,15 @@ class UncontestedBallots(BaseReport):
             .filter(winner_count__gte=F("memberships_count"))
             .filter(candidates_locked=True)
             .order_by("ballot_paper_id")
+            .values("ballot_paper_id", "winner_count", "memberships_count")
         )
+
+    def as_markdown(self):
+        return self.dataframe.to_markdown(index=False)
+
+    @property
+    def name(self):
+        return f"Uncontested Ballots ({self.get_qs().count()})"
 
     def report(self):
         report_list = []
@@ -324,19 +391,55 @@ class UncontestedBallots(BaseReport):
 
 
 class NcandidatesPerSeat(BaseReport):
+    template_name = "cached_counts/report_templates/n_candidates_per_seat.html"
+
     def __init__(self, date, n=2, **kwargs):
         self.n = 1 / n
         super().__init__(date, **kwargs)
 
     @property
     def name(self):
-        return "Wards with fewer than {} candidates per seat".format(1 / self.n)
+        return f"Ballots with fewer than {apnumber(int(1 / self.n))} candidates per seat"
 
     def get_qs(self):
-        return (
+        undercontested_ballots = (
             self.ballot_qs.annotate(candidates=Count("membership"))
             .annotate(per_seat=self.per_seat)
             .filter(per_seat__gt=self.n)
+            .values("ballot_paper_id")
+            .filter(cancelled=False)
+        )
+        template = "%(function)s(%(expressions)s AS FLOAT)"
+        # self.f_candidates =
+        return (
+            MaterializedMemberships.objects.values(
+                "ballot_paper_id", "party_id"
+            )
+            .annotate(membership_count=Count("pk"))
+            .annotate(
+                seats_per_candidate=ExpressionWrapper(
+                    Func(
+                        F("ballot_paper__winner_count"),
+                        function="CAST",
+                        template=template,
+                    )
+                    / Func(
+                        F("membership_count"),
+                        function="CAST",
+                        template=template,
+                    ),
+                    output_field=FloatField(),
+                )
+            )
+            .filter(membership_count__gte=F("ballot_paper__winner_count"))
+            .filter(ballot_paper__ballot_paper_id__in=undercontested_ballots)
+            .order_by("ballot_paper_id", "party_id")
+            .values(
+                "ballot_paper__ballot_paper_id",
+                "ballot_paper__winner_count",
+                "party__name",
+                "seats_per_candidate",
+            )
         )
 
     def report(self):
@@ -396,6 +499,7 @@ class NcandidatesPerSeat(BaseReport):
 
 class TwoWayRace(BaseReport):
     name = "Number of two-way fights"
+    template_name = "cached_counts/report_templates/two_way_races.html"
 
     def get_qs(self):
         return (
@@ -404,9 +508,12 @@ class TwoWayRace(BaseReport):
             .annotate(
                 party_count=Count("membership__party__name", distinct=True)
             )
+            .annotate(
+                party_names=ArrayAgg("membership__party__name", distinct=True)
+            )
             .filter(party_count=2)
-            .order_by("ballot_paper_id")
-        )
+            .order_by("party_names")
+        ).values("ballot_paper_id", "candidates", "party_names")
 
     def report(self):
         qs = self.get_qs()
@@ -437,6 +544,9 @@ class TwoWayRace(BaseReport):
 
 
 class TwoWayRaceForNewParties(TwoWayRace):
+    name = "Number of two-way fights for newly registered parties"
+    template_name = "cached_counts/report_templates/two_way_races.html"
+
     def get_qs(self):
         qs = super().get_qs()
         year = self.date.split("-")[0]
@@ -451,12 +561,16 @@ class TwoWayRaceForNcandidates(TwoWayRace):
 
 class MostPerSeat(BaseReport):
     name = "Highest number of candidates per seats"
+    template_name = "cached_counts/report_templates/most_per_seat.html"
+
+    HEAD_COUNT = 25
 
     def get_qs(self):
         return (
             self.ballot_qs.annotate(candidates=Count("membership"))
             .annotate(per_seat=self.per_seat)
             .order_by("per_seat")
+            .values()[:50]
         )
 
     def report(self):
@@ -473,11 +587,16 @@ class MostPerSeat(BaseReport):
 
 class NewParties(BaseReport):
     name = "Parties formed this year standing candidates"
+    template_name = "cached_counts/report_templates/new_parties.html"
 
     def get_qs(self):
-        return self.membership_qs.filter(
-            party__date_registered__year=self.date.split("-")[0]
-        ).order_by("party_id")
+        return (
+            self.membership_qs.filter(
+                party__date_registered__year=self.date.split("-")[0]
+            )
+            .order_by("party_id")
+            .values("party_name", "person__name", "ballot__ballot_paper_id")
+        )
 
     def report(self):
         qs = self.get_qs()
@@ -681,8 +800,8 @@ class GenderSplitBySeatsContested(BaseReport):
             ] = gender["gender_count"]
         for seats_contested, data in grouped_rows.items():
             ratio = (
-                f'{round(data["M"] / data["F"],2)}'
-                f':{round(data["F"] / data["F"],2)}'
+                f'{round(data["M"] / data["F"], 2)}'
+                f':{round(data["F"] / data["F"], 2)}'
             )
             report_list.append([seats_contested, data["F"], data["M"], ratio])
 
@@ -734,18 +853,26 @@ class SingleGenderedBallots(BaseReport):
 
 class PartyMovers(BaseReport):
     name = "Party movers"
+    template_name = "cached_counts/report_templates/party_movers.html"
 
     def get_qs(self):
         people_for_date = Membership.objects.filter(
-            ballot__election__election_date=self.date
+            ballot__in=self.ballot_qs
         ).values("person_id")
         return (
             Membership.objects.filter(person__in=people_for_date)
             .values("person_id", "person__name")
-            .annotate(party_count=Count("party_id", distinct=True))
+            .annotate(
+                party_count=Count("party__ec_id", distinct=True),
+                parties=ArrayAgg("party__name", distinct=True),
+            )
             .order_by("person_id")
             .filter(party_count__gt=1)
         )
+
+    def as_dataframe(self):
+        df = super().as_dataframe()
+        return df.sort_values(by="parties")
 
     def report(self):
         qs = self.get_qs()
@@ -858,6 +985,7 @@ class SmallPartiesCandidatesCouncilAreas(BaseReport):
 
 class NumCandidatesStandingInMultipleSeats(BaseReport):
     name = "Candidates standing in multiple seats"
+    template_name = "cached_counts/report_templates/multiple_seats.html"
 
     def get_qs(self):
         """
@@ -882,7 +1010,12 @@ class NumCandidatesStandingInMultipleSeats(BaseReport):
         current_candidacies = Count(
             "memberships", filter=membership_filter, distinct=True
         )
-        return people.annotate(num_candidacies=current_candidacies)
+        return (
+            people.annotate(num_candidacies=current_candidacies)
+            .filter(num_candidacies__gt=1)
+            .order_by("num_candidacies")
+            .values("pk", "name", "num_candidacies")
+        )
 
     def report(self):
         report_list = []
