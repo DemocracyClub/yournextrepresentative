@@ -1,6 +1,7 @@
 from candidates.models import Ballot
 from django.db import models
 from django.db.models import Count, TextChoices
+from django.urls import reverse
 from django_extensions.db.models import TimeStampedModel
 
 
@@ -34,3 +35,9 @@ class ElectionReport(TimeStampedModel):
 
     def __str__(self):
         return f"{self.election_type}: {self.election_date}"
+
+    def get_absolute_url(self):
+        return reverse(
+            "election_report_view",
+            args=[f"{self.election_type}-{self.election_date}"],
+        )
