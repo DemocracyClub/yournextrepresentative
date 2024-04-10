@@ -1,0 +1,22 @@
+{% load humanize %}
+<table class="table aggregatable" data-markdown="{{ report.as_markdown }}" data-csv="{{ report.as_csv }}">
+    <thead>
+    <tr>
+        <th data-aggregate-collapse-label="Count">Person</th>
+        <th>Candidates</th>
+        <th>Ballot</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in report.head.iterrows %}
+            <tr class="report-tail">
+                <td data-aggregate-label="{{ row.1.num_candidacies|apnumber|title }}">
+                    <a href="{% url "person-view" person_id=row.1.pk %}">{{ row.1.name }}</a>
+                </td>
+                <td data-aggregate-number="1">{{ row.1 }}</td>
+            </tr>
+
+    {% endfor %}
+
+    </tbody>
+</table>
