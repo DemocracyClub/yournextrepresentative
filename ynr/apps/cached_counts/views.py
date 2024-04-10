@@ -15,6 +15,8 @@ from .report_helpers import (
     BallotsContestedPerParty,
     BaseReport,
     CandidatesPerParty,
+    CommonFirstNames,
+    CommonLastNames,
     MostPerSeat,
     NcandidatesPerSeat,
     NewParties,
@@ -132,6 +134,8 @@ DEFAULT_REPORTS: Tuple[Type[BaseReport]] = (
     NewParties,
     PartyMovers,
     NumCandidatesStandingInMultipleSeats,
+    CommonFirstNames,
+    CommonLastNames,
 )
 
 

@@ -58,10 +58,10 @@
         <h2>{{ reports.TwoWayRace.name }}</h2>
         {{ reports.TwoWayRace.as_html }}
     </div>
-    <div class="row">
-        <h2>{{ reports.TwoWayRaceForNewParties.name }}</h2>
-        {{ reports.TwoWayRaceForNewParties.as_html }}
-    </div>
+    {#    <div class="row">#}
+    {#        <h2>{{ reports.TwoWayRaceForNewParties.name }}</h2>#}
+    {#        {{ reports.TwoWayRaceForNewParties.as_html }}#}
+    {#    </div>#}
     <div class="row">
         <h2>{{ reports.MostPerSeat.name }}</h2>
         {{ reports.MostPerSeat.as_html }}
@@ -70,13 +70,24 @@
         <h2>{{ reports.NewParties.name }}</h2>
         {{ reports.NewParties.as_html }}
     </div>
+    {#    <div class="row">#}
+    {#        <h2>{{ reports.PartyMovers.name }}</h2>#}
+    {#        {{ reports.PartyMovers.as_html }}#}
+    {#    </div>#}
+    {#    <div class="row">#}
+    {#        <h2>{{ reports.NumCandidatesStandingInMultipleSeats.name }}</h2>#}
+    {#        {{ reports.NumCandidatesStandingInMultipleSeats.as_html }}#}
+    {#    </div>#}
     <div class="row">
-        <h2>{{ reports.PartyMovers.name }}</h2>
-        {{ reports.PartyMovers.as_html }}
-    </div>
-    <div class="row">
-        <h2>{{ reports.NumCandidatesStandingInMultipleSeats.name }}</h2>
-        {{ reports.NumCandidatesStandingInMultipleSeats.as_html }}
+        <div class="columns large-6">
+            <h2>{{ reports.CommonFirstNames.name }}</h2>
+            {{ reports.CommonFirstNames.as_html }}
+        </div>
+        <div class="columns large-6">
+            <h2>{{ reports.CommonLastNames.name }}</h2>
+            {{ reports.CommonLastNames.as_html }}
+        </div>
+
     </div>
 
 

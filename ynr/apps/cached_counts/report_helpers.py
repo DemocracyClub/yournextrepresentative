@@ -32,6 +32,7 @@ from elections.filters import region_choices
 from parties.models import Party
 from people.models import Person
 from popolo.models import Membership
+from utils.db import LastWord
 
 EXCLUSION_IDS = [
     "local.flintshire.gwernymynydd.by.2021-05-06",
@@ -1120,14 +1121,25 @@ class NumCandidatesStandingInMultipleSeatsPerGender(
         )
 
 
+class SplitFirstName(Func):
+    function = "SPLIT_PART"
+    template = "%(function)s(%(expressions)s, ' ', 1)"
+
+
 class CommonFirstNames(BaseReport):
     name = "Common first names"
+    template_name = "cached_counts/report_templates/common_names.html"
 
     def get_qs(self):
         """
         Get all distinct people standing
         """
-        return self.membership_qs
+        return (
+            self.membership_qs.annotate(name=SplitFirstName(F("person__name")))
+            .values("name")
+            .annotate(name_count=Count("name"))
+            .order_by("-name_count")[:10]
+        ).values("name", "name_count")
 
     def collect_names(self, label, qs):
         all_names = qs.values_list("person__name", flat=True)
@@ -1176,13 +1188,18 @@ class CommonFirstNames(BaseReport):
 
 class CommonLastNames(CommonFirstNames):
     name = "Common last names"
+    template_name = "cached_counts/report_templates/common_names.html"
 
-    def collect_names(self, label, qs):
-        all_names = qs.values_list("person__name", flat=True)
-        all_first_names = [name.split(" ")[-1].title() for name in all_names]
-        collector = collections.Counter(all_first_names)
-        for name, count in collector.most_common(30):
-            yield [label, name, count]
+    def get_qs(self):
+        """
+        Get all distinct people standing
+        """
+        return (
+            self.membership_qs.annotate(name=LastWord(F("person__name")))
+            .values("name")
+            .annotate(name_count=Count("name"))
+            .order_by("-name_count")[:10]
+        ).values("name", "name_count")
 
 
 class CandidatesWithWithoutStatement(BaseReport):
