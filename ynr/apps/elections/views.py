@@ -313,7 +313,7 @@ class SOPNForBallotView(DetailView):
     A view to show a single SOPN for a ballot paper
     """
 
-    queryset = Ballot.objects.all().select_related("sopn")
+    queryset = Ballot.objects.all().select_related("sopn").exclude(sopn=None)
     slug_url_kwarg = "ballot_id"
     slug_field = "ballot_paper_id"
     template_name = "elections/sopn_for_ballot.html"
