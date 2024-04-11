@@ -9,6 +9,7 @@ from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django_filters.widgets import LinkWidget
 from elections.models import Election
+from uk_election_ids.datapackage import VOTING_SYSTEMS
 
 
 def _get_election_types_choices_for_qs(qs):
@@ -286,6 +287,12 @@ This may change depending on the elections. Used to determine if
         widget=AnyBooleanWidget,
         help_text="""Boolean. If results have been entered for this ballot.
         Only First Past The Post ballots have results at the moment.""",
+    )
+
+    voting_system = django_filters.ChoiceFilter(
+        field_name="voting_system",
+        choices=[(key, value["name"]) for key, value in VOTING_SYSTEMS.items()],
+        help_text=f"""One of {", ".join([f"`{key}`" for key in VOTING_SYSTEMS])}""",
     )
 
     def filter_last_updated(self, queryset, name, value):
