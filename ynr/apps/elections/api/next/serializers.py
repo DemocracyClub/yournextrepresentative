@@ -104,6 +104,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
             "replaced_by",
             "uncontested",
             "results",
+            "voting_system",
         )
 
     replaces = serializers.SlugRelatedField(

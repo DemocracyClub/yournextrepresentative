@@ -17,6 +17,7 @@ from django.utils.html import mark_safe
 from django.utils.http import urlencode
 from elections.models import Election
 from moderation_queue.models import QueuedImage
+from uk_election_ids.datapackage import VOTING_SYSTEMS
 from utils.mixins import EEModifiedMixin
 
 """Extensions to the base django-popolo classes for YourNextRepresentative
@@ -244,7 +245,11 @@ class Ballot(EEModifiedMixin, models.Model):
         related_name="replaced_by",
         on_delete=models.DO_NOTHING,
     )
-    voting_system = models.CharField(blank=True, max_length=255)
+    voting_system = models.CharField(
+        blank=True,
+        max_length=255,
+        choices=[(key, value["name"]) for key, value in VOTING_SYSTEMS.items()],
+    )
 
     tags = JSONField(default=dict, blank=True)
 
