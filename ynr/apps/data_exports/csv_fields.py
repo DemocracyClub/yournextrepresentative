@@ -197,6 +197,14 @@ csv_fields["votes_cast"] = CSVField(
     value_group="results",
     label="Votes cast",
 )
+
+csv_fields["elected"] = CSVField(
+    type="attr",
+    value="elected",
+    value_group="results",
+    label="Elected",
+)
+
 csv_fields["tied_vote_winner"] = CSVField(
     type="expr",
     value=F("membership__result__tied_vote_winner"),
@@ -239,7 +247,6 @@ csv_fields["results_source"] = CSVField(
     value_group="results",
     label="Results source",
 )
-
 
 for identifier in PersonIdentifierFields:
     csv_fields[identifier.name] = CSVField(

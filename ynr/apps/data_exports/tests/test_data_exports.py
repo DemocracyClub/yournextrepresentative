@@ -153,6 +153,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
                 "cancelled_poll",
                 "seats_contested",
                 "votes_cast",
+                "elected",
                 "tied_vote_winner",
                 "rank",
                 "turnout_reported",
