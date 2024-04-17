@@ -13,6 +13,10 @@ ELECTED_CHOICES = {
     ("True", "Elected"),
     ("False", "Not elected"),
 }
+CANCELLED_CHOICES = {
+    ("True", "Cancelled"),
+    ("False", "Not cancelled"),
+}
 
 
 class BallotPaperText(django_filters.CharFilter):
@@ -66,6 +70,9 @@ class MaterializedMembershipFilter(django_filters.FilterSet):
     )
     party_id = PartyINFilter(
         field_name="party_id",
+    )
+    cancelled = django_filters.ChoiceFilter(
+        field_name="ballot_paper__cancelled", choices=CANCELLED_CHOICES
     )
 
     class Meta:
