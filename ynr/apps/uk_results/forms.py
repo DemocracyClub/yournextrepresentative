@@ -76,7 +76,7 @@ class ResultSetForm(forms.ModelForm):
             except CandidateResult.DoesNotExist:
                 initial = {}
 
-            fields[name] = forms.IntegerField(
+            fields[name] = forms.CharField(
                 label=membership.name_and_party,
                 initial=initial.get("num_ballots"),
                 required=True,
@@ -117,9 +117,13 @@ class ResultSetForm(forms.ModelForm):
         """
         cleaned_data = super().clean()
 
+        for field_name, value in cleaned_data.items():
+            if field_name.startswith("memberships_"):
+                cleaned_data[field_name] = int(value.replace(",", ""))
+
         if len(self._tied_vote_winners) > self.ballot.winner_count:
             raise forms.ValidationError(
-                "Cant have more coin toss winners than seats up!"
+                "Can't have more coin toss winners than seats up!"
             )
 
         return cleaned_data
