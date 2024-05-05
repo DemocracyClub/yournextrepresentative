@@ -314,3 +314,4 @@ local.wandsworth.2024-05-02,https://democracy.wandsworth.gov.uk/mgWebService.asm
 local.west-lancashire.2024-05-02,https://democracy.westlancs.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=8
 local.west-oxfordshire.2024-05-02,https://meetings.westoxon.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=1
 local.wolverhampton.2024-05-02,https://wolverhampton.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=36
+local.cheltenham.2024-05-02,https://democracy.cheltenham.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=21
