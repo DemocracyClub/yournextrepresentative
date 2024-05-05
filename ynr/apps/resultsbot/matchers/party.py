@@ -37,7 +37,9 @@ class PartyMatacher(object):
 
     def match_party_name(self, cleaned_name):
         try:
-            Party.objects.get(name__iexact=cleaned_name)
+            Party.objects.filter(date_deregistered=None).get(
+                name__iexact=cleaned_name, register="GB"
+            )
         except Party.DoesNotExist:
             return
 

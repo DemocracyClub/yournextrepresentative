@@ -80,7 +80,10 @@ class ModGovDivision(BaseDivision):
     def spoiled_votes(self):
         for spoiled in self.soup.find_all("spoiledvote"):
             try:
-                if spoiled.description.get_text(strip=True) == "Rejected":
+                if (
+                    spoiled.description
+                    and spoiled.description.get_text(strip=True) == "Rejected"
+                ):
                     return int(spoiled.numvotes.get_text(strip=True))
             except ValueError:
                 pass
