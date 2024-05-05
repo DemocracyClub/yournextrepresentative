@@ -42,7 +42,7 @@ class TestResultSetForm(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
     def test_clean(self):
         """
         Test that you cant have more tied vote winners than number of winners
-        for the ballot
+        for the ballot and commas are accepted but removed in num_votes
         """
         form = ResultSetForm(ballot=self.ballot)
         self.assertEqual(self.ballot.winner_count, 1)
@@ -56,6 +56,18 @@ class TestResultSetForm(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
             self.assertEqual(
                 str(e), "Cant have more coin toss winners than seats up!"
             )
+
+    def test_commas_are_cleaned(self):
+        form = ResultSetForm(ballot=self.ballot)
+        cleaned_data = {}
+        cleaned_data[f"memberships_{self.candidacies[0].pk}"] = "1,000"
+
+        form.cleaned_data = cleaned_data
+        form.clean()
+
+        self.assertEqual(
+            form.cleaned_data, {f"memberships_{self.candidacies[0].pk}": 1000}
+        )
 
     def test_tied_vote_winners(self):
         form = ResultSetForm(ballot=self.ballot)

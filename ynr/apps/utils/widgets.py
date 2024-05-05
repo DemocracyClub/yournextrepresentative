@@ -43,7 +43,7 @@ class DCNumberInput(TextInput):
         attrs.update(
             {
                 "inputmode": "numeric",
-                "pattern": r"[0-9\s\.]*",
+                "pattern": r"[0-9\s\.,]*",
                 "oninvalid": "this.setCustomValidity('Enter a number')",
             }
         )
