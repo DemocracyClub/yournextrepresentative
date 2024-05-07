@@ -2,6 +2,7 @@ from auth_helpers.views import GroupRequiredMixin
 from candidates.csv_helpers import list_to_csv, memberships_dicts_for_csv
 from candidates.forms import ToggleLockForm
 from candidates.models import (
+    RESULT_RECORDERS_GROUP_NAME,
     TRUSTED_TO_LOCK_GROUP_NAME,
     Ballot,
     LoggedAction,
@@ -405,3 +406,28 @@ class BallotsForSelectAjaxView(View):
         #  https://github.com/DemocracyClub/yournextrepresentative/issues/1435
         data.insert(0, "<option></option>")
         return HttpResponse("\n".join(data))
+
+
+class DeleteBallotResultsView(GroupRequiredMixin, View):
+    required_group_name = RESULT_RECORDERS_GROUP_NAME
+
+    def post(self, request, *args, **kwargs):
+        ballot = get_object_or_404(
+            Ballot, ballot_paper_id=kwargs["ballot_paper_id"]
+        )
+
+        try:
+            candidate_results = ballot.resultset.candidate_results.all()
+            candidate_results.delete()
+        except AttributeError:
+            pass
+        try:
+            ballot_results = ballot.resultset
+            ballot_results.delete()
+        except AttributeError:
+            pass
+
+        # unset the winner status
+        Membership.objects.filter(ballot=ballot).update(elected=False)
+        ballot.save()
+        return HttpResponseRedirect(ballot.get_absolute_url())

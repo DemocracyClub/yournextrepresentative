@@ -50,4 +50,9 @@ urlpatterns = [
         views.BallotsForSelectAjaxView.as_view(),
         name="ajax_ballots_for_select",
     ),
+    re_path(
+        r"^(?P<ballot_paper_id>[^/]+)/delete-results/$",
+        views.DeleteBallotResultsView.as_view(),
+        name="delete_results",
+    ),
 ]

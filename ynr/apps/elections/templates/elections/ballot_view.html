@@ -171,6 +171,9 @@
           {% csrf_token %}
           <input type="submit" class="button alert small" value="Unset the current winners, if incorrect">
         </form>
+        <form action="{% url 'delete_results' ballot_paper_id=ballot.ballot_paper_id %}" id="delete-results" method="post">
+          {% csrf_token %}
+          <input type="submit" class="button alert small" value="Delete all results for this ballot">
       {% endif %}
 
     {% else %}

@@ -323,6 +323,7 @@ class TestBallotView(
         response.mustcontain(no="Waiting for election to happen")
         response.mustcontain(no="Unset the current winners")
         # TODO: Test winners in table
+        # assert a name, party, result (number of votes) and rank are shown
 
     def test_ballot_non_fptp(self):
         self.past_ballot.voting_system = "stv"
@@ -337,13 +338,14 @@ class TestBallotView(
         response.mustcontain(no="Tell us who won")
 
     def test_constituency_with_winner_record_results_user(self):
+        self.user = self.user_who_can_record_results
         self.ballot.election.election_date = "2015-05-07"
         self.ballot.election.save()
         self.create_memberships(self.ballot, self.parties)
         self.ballot.membership_set.update(elected=True)
         response = self.app.get(
             self.ballot.get_absolute_url(),
-            user=self.user_who_can_record_results,
+            user=self.user,
         )
         response.mustcontain("Unset the current winners")
 
@@ -499,6 +501,34 @@ class TestBallotView(
             user=self.user_who_can_record_results,
         )
         response.mustcontain(no="Unset the current winners")
+
+    def test_delete_results(self):
+        self.user = self.user_who_can_record_results
+        self.create_memberships(self.past_ballot, self.parties)
+        rs = ResultSet.objects.create(ballot=self.past_ballot)
+        for membership in self.past_ballot.membership_set.all():
+            CandidateResult.objects.create(
+                result_set=rs,
+                membership=membership,
+                num_ballots=randrange(1, 1000),
+            )
+        self.past_ballot.candidates_locked = True
+        self.past_ballot.sopn_received = True
+        self.past_ballot.has_any_winners = True
+
+        self.create_memberships(self.past_ballot, self.parties)
+        self.past_ballot.membership_set.update(elected=True)
+        self.past_ballot.election.save()
+        response = self.app.get(
+            self.past_ballot.get_absolute_url(),
+            user=self.user_who_can_record_results,
+        )
+        self.assertContains(response, "Winner(s) recorded")
+        self.assertContains(response, "Delete all results for this ballot")
+        form = response.forms["delete-results"]
+        response = form.submit().follow()
+        self.past_ballot.refresh_from_db()
+        self.assertContains(response, "Winner(s) unknown")
 
 
 class TestBallotFilter(SingleBallotStatesMixin, WebTest):
