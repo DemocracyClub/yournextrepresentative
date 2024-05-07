@@ -28,7 +28,7 @@ class SelectWithAttrs(Select):
         return option
 
 
-class DCNumberInput(TextInput):
+class DCIntegerInput(TextInput):
     """
     An input widget for entering numbers that isn't an input `type=number`.
 
@@ -43,7 +43,7 @@ class DCNumberInput(TextInput):
         attrs.update(
             {
                 "inputmode": "numeric",
-                "pattern": r"[0-9\s\.,]*",
+                "pattern": r"[0-9\s,]*",
                 "oninvalid": "this.setCustomValidity('Enter a number')",
             }
         )

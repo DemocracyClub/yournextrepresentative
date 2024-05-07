@@ -9,7 +9,7 @@ from django.db import transaction
 from django.db.models.functions import Coalesce
 from uk_results.helpers import RecordBallotResultsHelper
 from utils.db import LastWord, NullIfBlank
-from utils.widgets import DCNumberInput
+from utils.widgets import DCIntegerInput
 
 from .models import CandidateResult, ResultSet
 
@@ -33,10 +33,10 @@ class ResultSetForm(forms.ModelForm):
                     "columns": 72,
                 }
             ),
-            "num_turnout_reported": DCNumberInput(),
-            "turnout_percentage": DCNumberInput(),
-            "num_spoilt_ballots": DCNumberInput(),
-            "total_electorate": DCNumberInput(),
+            "num_turnout_reported": DCIntegerInput(),
+            "turnout_percentage": DCIntegerInput(),
+            "num_spoilt_ballots": DCIntegerInput(),
+            "total_electorate": DCIntegerInput(),
         }
 
     def __init__(self, ballot, *args, **kwargs):
@@ -80,7 +80,7 @@ class ResultSetForm(forms.ModelForm):
                 label=membership.name_and_party,
                 initial=initial.get("num_ballots"),
                 required=True,
-                widget=DCNumberInput,
+                widget=DCIntegerInput,
             )
             fields[f"tied_vote_{name}"] = forms.BooleanField(
                 required=False,
