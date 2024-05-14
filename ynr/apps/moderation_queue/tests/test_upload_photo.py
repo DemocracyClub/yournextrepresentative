@@ -15,7 +15,6 @@ from moderation_queue.helpers import (
     ImageDownloadException,
     convert_image_to_png,
     download_image_from_url,
-    rotate_photo,
 )
 from moderation_queue.models import QueuedImage
 from moderation_queue.tests.paths import (
@@ -198,14 +197,6 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         queued_image = QueuedImage.objects.filter(person_id=2009).last()
         image_size = queued_image.image.size
         self.assertLessEqual(image_size, 5000000)
-
-    def test_rotate_image_from_file_upload(self):
-        image = PillowImage.open(self.rotated_image_filename)
-        exif = image.getexif()
-        self.assertEqual(exif.get(274), 1)
-        image = rotate_photo(self.example_image_filename)
-        exif = image.getexif()
-        self.assertIsNone(exif.get(274), None)
 
 
 @patch("moderation_queue.forms.requests")
