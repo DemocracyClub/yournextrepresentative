@@ -18,8 +18,7 @@
       user: "{{ project_name }}"
 
   - cron:
-      name: "Detect faces"
-      minute: "30,04,19"
+      name: "Process images in moderation queue"
       job: "nice -n 19 ionice -c 3 output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py moderation_queue_process_queued_images"
       disabled: no
 
