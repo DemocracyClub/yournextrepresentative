@@ -1,8 +1,11 @@
 import json
+from io import BytesIO
 
 import boto3
+import sorl
 from django.core.management.base import BaseCommand, CommandError
 from moderation_queue.models import QueuedImage
+from PIL import Image, ImageOps
 
 # These magic values are because the AWS API crops faces quite tightly by
 # default, meaning we literally just get the face. These values are about
@@ -13,18 +16,27 @@ MAX_SCALING_FACTOR = 1.3
 
 class Command(BaseCommand):
     def handle(self, **options):
-        rekognition = boto3.client("rekognition", "eu-west-1")
+        rekognition = boto3.client("rekognition", region_name="eu-west-1")
         attributes = ["ALL"]
-
         any_failed = False
+
         qs = QueuedImage.objects.filter(decision="undecided").exclude(
             face_detection_tried=True
         )
 
         for qi in qs:
             try:
+                bytes_obj = qi.image.file.read()
+                pil_img = Image.open(BytesIO(bytes_obj))
+                pil_img = ImageOps.exif_transpose(pil_img)
+            except Exception as e:
+                msg = "Skipping QueuedImage{id}: {error}"
+                self.stdout.write(msg.format(id=qi.id, error=e))
+                continue
+
+            try:
                 detected = rekognition.detect_faces(
-                    Image={"Bytes": qi.image.file.read()}, Attributes=attributes
+                    Image={"Bytes": bytes_obj}, Attributes=attributes
                 )
                 self.set_x_y_from_response(qi, detected, options["verbosity"])
             except Exception as e:
@@ -33,7 +45,14 @@ class Command(BaseCommand):
                 any_failed = True
 
             qi.face_detection_tried = True
+            qi.rotation_tried = True
+
+            buffer = BytesIO()
+            pil_img.save(buffer, format="PNG")
+            qi.image.save(qi.image.name, buffer)
+            sorl.thumbnail.delete(qi.image.name, delete_file=False)
             qi.save()
+
         if any_failed:
             raise CommandError("Broken images found (see above)")
 
