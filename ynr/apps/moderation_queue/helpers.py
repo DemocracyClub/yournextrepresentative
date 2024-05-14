@@ -7,7 +7,6 @@ from candidates.views.version_data import get_client_ip
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from PIL import ExifTags, ImageOps
 from PIL import Image as PillowImage
 
 from .models import QueuedImage
@@ -45,46 +44,6 @@ def image_form_valid_response(request, person, image_form):
     return HttpResponseRedirect(
         reverse("photo-upload-success", kwargs={"person_id": person.id})
     )
-
-
-def rotate_photo(original_image):
-    # TO DO issue #2026 : This does not handle URL
-    # uploads.
-
-    # If an image has an EXIF Orientation tag, other than 1,
-    # return a new image that is transposed accordingly.
-    # The new image will have the orientation data removed.
-    # https://pillow.readthedocs.io/en/stable/_modules/PIL/ImageOps.html#exif_transpose
-    # Otherwise, return a copy of the image. If an image
-    # has an EXIF Orientation tag of 1, it might still
-    # need to be rotated, but we can handle that manually
-    # in the review process.
-    pil_image = PillowImage.open(original_image)
-
-    for orientation in ExifTags.TAGS:
-        if ExifTags.TAGS[orientation] == "Orientation":
-            break
-        exif = pil_image.getexif()
-        if exif and exif.get(274):
-            pil_image = ImageOps.exif_transpose(pil_image)
-        buffer = BytesIO()
-        pil_image.save(buffer, "PNG")
-    return pil_image
-
-
-def resize_photo(photo, original_image):
-    if not isinstance(photo, PillowImage.Image):
-        pil_image = PillowImage.open(photo)
-    else:
-        pil_image = photo
-
-    if original_image.width > 5000 or original_image.height > 5000:
-        size = 2000, 2000
-        pil_image.thumbnail(size)
-        buffer = BytesIO()
-        pil_image.save(buffer, "PNG")
-        return pil_image
-    return photo
 
 
 def convert_image_to_png(photo):

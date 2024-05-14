@@ -14,8 +14,6 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from moderation_queue.helpers import (
     convert_image_to_png,
-    resize_photo,
-    rotate_photo,
 )
 from people.forms.forms import StrippedCharField
 from PIL import Image as PILImage
@@ -64,9 +62,7 @@ class UploadPersonPhotoImageForm(forms.ModelForm):
         """
 
         original_image = self.instance.image
-        photo = rotate_photo(original_image)
-        resized_photo = resize_photo(photo, original_image)
-        png_image = convert_image_to_png(resized_photo)
+        png_image = convert_image_to_png(original_image)
         filename = self.instance.image.name
         extension = filename.split(".")[-1]
         filename = filename.replace(extension, "png")
