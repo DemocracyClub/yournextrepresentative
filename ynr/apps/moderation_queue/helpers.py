@@ -68,7 +68,11 @@ def rotate_photo(original_image):
         if exif and exif.get(274):
             pil_image = ImageOps.exif_transpose(pil_image)
         buffer = BytesIO()
-        pil_image.save(buffer, "PNG")
+        try:
+            pil_image.save(buffer, "PNG")
+        except AttributeError as e:
+            print(f"An error occurred: {e}")
+            continue
     return pil_image
 
 
