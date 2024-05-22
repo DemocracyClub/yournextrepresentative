@@ -85,7 +85,7 @@
         <div class="columns large-3">
             <ul class="cta-list">
                 <li>
-                    <a href="{{ MEDIA_URL }}candidates-{{ object.slug }}.csv" class="button small">
+                    <a href="{% url "data_export" %}?election_id={{ object.slug }}" class="button small">
                         Download CSV
                     </a>
                 </li>
