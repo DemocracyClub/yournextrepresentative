@@ -94,12 +94,6 @@
                         Add candidates for a party</a>
 
                 </li>
-                <li>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvUNUTxY7lPpNVrbgagp4C5-eXG6hGSTuKpuyQAHuus8WTKw/viewform?entry.1641661784={{ object.slug }}"
-                       class="button small">
-                        Add a hustings</a>
-
-                </li>
                 {% if user_can_review_photos and photos_for_review > 0 and object.get_absolute_queued_image_review_url %}
                     <li>
                         <a href="{{ object.get_absolute_queued_image_review_url }}" class="button small">
