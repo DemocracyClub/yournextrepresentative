@@ -47,7 +47,9 @@ class ElectionView(DetailView):
             .prefetch_related(
                 Prefetch(
                     "membership_set",
-                    Membership.objects.select_related("party", "person")
+                    Membership.objects.select_related(
+                        "party", "person", "result"
+                    )
                     .annotate(last_name=LastWord("person__name"))
                     .annotate(
                         name_for_ordering=Coalesce(
