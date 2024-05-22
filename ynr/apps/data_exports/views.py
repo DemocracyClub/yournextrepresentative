@@ -29,9 +29,12 @@ class DataFilterMixin:
             context["extra_fields"] = additional_fields_form.cleaned_data[
                 "extra_fields"
             ]
+
         context["additional_fields_form"] = additional_fields_form
 
         for field_name, field in csv_fields.items():
+            if field.core:
+                continue
             if field.value_group in self.request.GET.getlist("field_group"):
                 context["extra_fields"].append(field_name)
 

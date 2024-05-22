@@ -163,3 +163,40 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
                 "results_source",
             ],
         )
+
+    def test_complex_filter(self):
+        self.create_lots_of_candidates(
+            self.earlier_election, ((self.labour_party, 16), (self.ld_party, 8))
+        )
+        MaterializedMemberships.refresh_view()
+
+        req = self.client.get(
+            reverse("data_export"),
+            data={
+                # election_date=&ballot_paper_id=&election_id=parl&party_id=&cancelled=&
+                "format": "csv",
+                "field_group": "election",
+            },
+        )
+        csv_data = csv_to_dicts(req.content)
+        headers = list(next(csv_data).keys())
+        self.assertListEqual(
+            headers,
+            [
+                "person_id",
+                "person_name",
+                "election_id",
+                "ballot_paper_id",
+                "election_date",
+                "election_current",
+                "party_name",
+                "party_id",
+                "post_label",
+                "cancelled_poll",
+                "seats_contested",
+                "gss",
+                "post_id",
+                "nuts1",
+                "organisation_name",
+            ],
+        )

@@ -69,8 +69,9 @@ csv_fields["election_id"] = CSVField(
     ),
     label="Election ID",
 )
+
 csv_fields["ballot_paper_id"] = CSVField(
-    value="ballot_paper_id",
+    value="ballot_paper",
     type="attr",
     core=True,
     value_group="election",
@@ -79,6 +80,7 @@ csv_fields["ballot_paper_id"] = CSVField(
     ),
     label="Ballot paper ID",
 )
+
 csv_fields["election_date"] = CSVField(
     value="election_date",
     type="attr",
