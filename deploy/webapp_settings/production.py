@@ -69,10 +69,10 @@ RUNNING_TESTS = False
 # SOPN_TRACKER
 # RESULTS_PROGRESS
 # BY_ELECTIONS
-FRONT_PAGE_CTA = "RESULTS_PROGRESS"
+FRONT_PAGE_CTA = "None"
 SOPN_TRACKER_INFO = {
-    "election_date": "2024-05-02",
-    "election_name": "May 2024 local elections",
+    "election_date": "2024-07-04",
+    "election_name": "2024 general election",
 }
 SOPN_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTN0CXNZGfWFUlcVBGfGbvnHapjzoUICe4Q3ahDlpSZZOCTMIWNo2zw3Yvy71wYQiVLju4HiyVBeski/pub?output=csv"
 SOPN_DATES = [
