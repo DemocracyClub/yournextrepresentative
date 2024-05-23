@@ -110,10 +110,12 @@ class Command(BaseCommand):
         party_id = line["Party ID"]
         if party_id not in self.party_cache:
             try:
-                if "ynmp-party:2" in party_id:
+                if (
+                    "ynmp-party:2" in party_id
+                    or "-" in party_id
+                    and party_id != "ynmp-party:2"
+                ):
                     ec_id = party_id
-                elif "-" in party_id and party_id != "ynmp-party:2":
-                    ec_id = "joint-party:" + party_id
                 else:
                     ec_id = "PP" + party_id
                 self.party_cache[party_id] = Party.objects.get(ec_id=ec_id)
@@ -128,7 +130,9 @@ class Command(BaseCommand):
         info
         """
 
-        return any((line["Candidate Name"], line["Existing Candidate Profile"]))
+        return any(
+            (line["Candidate Name"], line["Existing Candidate Profile URL"])
+        )
 
     def add_contact_details(self, bot, person, line):
         if not person.get_email and line["Email"]:
@@ -171,7 +175,7 @@ class Command(BaseCommand):
         except Exception as e:
             print(e)
 
-        bot = CandidateBot(person.pk)
+        bot = CandidateBot(person.pk, update=True)
         bot.save(
             self.get_source_from_line(line), action_type="candidacy-create"
         )
