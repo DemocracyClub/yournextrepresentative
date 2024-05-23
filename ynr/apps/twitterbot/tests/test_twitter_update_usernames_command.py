@@ -287,7 +287,7 @@ class TestUpdateTwitterUsernamesCommand(TestUserMixin, TestCase):
         self.assertIsNone(self.just_userid.get_twitter_username, None)
 
         # Clear the cached_property for this object
-        del self.screen_name_and_user_id.get_all_idenfitiers
+        del self.screen_name_and_user_id.get_all_identifiers
         self.assertIsNone(self.screen_name_and_user_id.get_twitter_username)
         self.assertEqual(
             self.screen_name_and_user_id.get_twitter_username, None
