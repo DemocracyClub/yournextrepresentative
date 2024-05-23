@@ -473,11 +473,11 @@ class Person(TimeStampedModel, models.Model):
         return self.queued_image.get_absolute_url()
 
     @cached_property
-    def get_all_idenfitiers(self):
+    def get_all_identifiers(self):
         return list(self.tmp_person_identifiers.all())
 
     def get_identifiers_of_type(self, value_type=None):
-        id_list = self.get_all_idenfitiers
+        id_list = self.get_all_identifiers
         if value_type:
             id_list = [i for i in id_list if i.value_type == value_type]
         return id_list
@@ -518,7 +518,7 @@ class Person(TimeStampedModel, models.Model):
         in downstream code, invalidate the cache after moving.
         Do the same for the `get_all_identifiers` cache
         """
-        attrs = ["_prefetched_objects_cache", "get_all_idenfitiers"]
+        attrs = ["_prefetched_objects_cache", "get_all_identifiers"]
 
         for attr in attrs:
             with contextlib.suppress(AttributeError):
