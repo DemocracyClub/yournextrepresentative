@@ -86,7 +86,9 @@ class ElectionListView(TemplateView):
                     filter=Q(membership__elected=True),
                 )
             )
-            .order_by("election__election_date", "election__name")
+            .order_by(
+                "election__election_date", "election__name", "post__label"
+            )
         )
         f = CurrentOrFutureBallotFilter(self.request.GET, qs)
 
