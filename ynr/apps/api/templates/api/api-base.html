@@ -12,10 +12,8 @@
         <li><a href="{% url "api-home" %}">Data Overview</a></li>
         <li><a href="{% url "api-terms" %}">Terms</a></li>
         <li class="divider"></li>
-        <li class="heading"><a href="{% url "api_docs_csv" %}">CSV / Excel downloads</a></li>
-        <li class="heading"><a href="{% url "api_docs_results" %}">Results</a></li>
-        <li><a href="{% url "api_docs_results" %}#elected_csv">Elected CSV</a></li>
-        <li><a href="{% url "api_docs_results" %}#atom">ATOM feed</a></li>
+        <li class="heading"><a href="{% url "data_home" %}">CSV / Excel downloads</a></li>
+
         <li class="divider"></li>
         <li class="heading">
           <a href="{% url "api_docs_next_home" %}">
@@ -26,6 +24,7 @@
         <li><a href="{% url "api_docs_next_definitions" %}">Definitions</a></li>
         <li class="divider"></li>
         <li class="heading"><a href="{% url "api-root" version="v0.9" %}">v0.9 API</a></li>
+        <li><a href="{% url "api_docs_atom" %}">Results ATOM feed</a></li>
       </ul>
     </div>
     <div class="columns large-10">

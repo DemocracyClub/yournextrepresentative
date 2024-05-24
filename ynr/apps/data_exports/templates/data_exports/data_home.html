@@ -1,11 +1,15 @@
-{% extends "base.html" %}
+{% extends "api/api-base.html" %}
 {% load get_query %}
 {% load data_field_value %}
-{% block content %}
-
+{% block api_content %}
+<p>
+    This page allows downloading CSV exports of our data.
+    Please see the <a href="{% url "api-terms" %}">terms page</a> for usage terms.
+</p>
+    <p>Although the data is free to use under the terms, we would love to know what your planning to use the data
+    and are happy to answer any questions you might have. <a href="https://democracyclub.org.uk/contact/">
+            Please get in touch</a>!</p>
     <form action="" method="get">
-
-
 
         <aside class="ds-filter">
             <details {% if filter_set.data %}open=""{% endif %}>
@@ -79,9 +83,12 @@
             </details>
         </aside>
 
+<p style="margin-top:1em">
+    <button type="submit" class="button">Filter</button>
+    <a class="button" href="{% url "data_export" %}{% query_string request.GET format='csv' %}">Download CSV</a>
+</p>
 
 
-        <input type="submit" class="button">
     </form>
     <div style="overflow-x: scroll; max-width: 100%">
 
