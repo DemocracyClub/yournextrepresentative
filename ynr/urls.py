@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, re_path
 from django.views.generic import TemplateView
+from sesame.views import LoginView as SesameLoginView
 
 
 def trigger_error(request):
@@ -20,10 +21,11 @@ urlpatterns = [
     re_path(r"^", include("search.urls")),
     re_path(r"^admin/doc/", include("django.contrib.admindocs.urls")),
     re_path(r"^admin/", admin.site.urls),
+    path("sesame/login/", SesameLoginView.as_view(), name="sesame-login"),
     re_path(r"^upload_document/", include("official_documents.urls")),
     re_path(r"^results/", include("results.urls")),
     re_path(r"^duplicates/", include("duplicates.urls")),
-    re_path(r"^wombles/", include("wombles.urls")),
+    re_path(r"^accounts/", include("wombles.urls", namespace="wombles")),
     re_path(r"^data/", include("data_exports.urls")),
     path(
         "volunteer/",

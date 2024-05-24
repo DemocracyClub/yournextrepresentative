@@ -171,9 +171,17 @@ MIDDLEWARE = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "candidates.middleware.DisableCachingForAuthenticatedUsers",
+    "wombles.middleware.CheckProfileDetailsMiddleware",
 )
 
-AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
+AUTHENTICATION_BACKENDS = (
+    "sesame.backends.ModelBackend",
+    "django.contrib.auth.backends.ModelBackend",
+)
+
+SESAME_MAX_AGE = 60 * 10
+SESAME_ONE_TIME = False
+SESAME_TOKEN_NAME = "login_token"
 
 LOGIN_REDIRECT_URL = "/"
 

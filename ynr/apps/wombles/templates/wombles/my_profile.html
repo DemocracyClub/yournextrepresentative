@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>My profile</h1>
-    <p>Your username is {{ user.username }} and your contact email is {{ user.email }}.</p>
+    <p>Your username is <strong>{{ user.username }}</strong> and your contact email is {{ user.email }}.</p>
     <p>When you create an account we create an API key for you, this lets you use <a href="{% url "api-home" %}">our API</a>.</p>
     <p>Your API key is <code>{{ user.auth_token.key }}</code>.</p>
 

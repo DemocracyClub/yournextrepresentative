@@ -201,10 +201,9 @@
 
       {% elif not user.is_authenticated %}
         <p>
-{#        TODO: restore #}
-{#          <a href="{% url 'account_login' %}?next={{ request.path }}" class="button">#}
-{#            Sign in to add a new candidate#}
-{#          </a>#}
+          <a href="{% url 'wombles:login' %}?next={{ request.path }}" class="button">
+            Sign in to add a new candidate
+          </a>
         </p>
       {% endif %}
     </div>
