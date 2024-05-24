@@ -3,7 +3,6 @@ Test some of the basic model use cases
 
 """
 from candidates.tests.helpers import TmpMediaRootMixin
-from django.conf import settings
 from django.core.files.storage import DefaultStorage
 from django.test import TestCase
 
@@ -25,13 +24,12 @@ class TestPartyModels(TmpMediaRootMixin, TestCase):
         self.assertEqual(party.emblems.count(), 3)
         first_emblem = party.emblems.first()
         self.assertEqual(
-            first_emblem.image.url,
-            f"{settings.MEDIA_ROOT}/emblems/PP0/{first_emblem.ec_emblem_id}_example.jpg",
+            first_emblem.image.url, "/media/emblems/PP0/1_example.jpg"
         )
 
         # Add a default image and assert it's the deafult on the party
         PartyEmblemFactory(party=party, __sequence=99, default=True)
         self.assertEqual(
             party.default_emblem.image.url,
-            f"{settings.MEDIA_ROOT}/emblems/PP0/99_example.jpg",
+            "/media/emblems/PP0/99_example.jpg",
         )
