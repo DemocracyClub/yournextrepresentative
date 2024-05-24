@@ -201,9 +201,10 @@
 
       {% elif not user.is_authenticated %}
         <p>
-          <a href="{% url 'account_login' %}?next={{ request.path }}" class="button">
-            Sign in to add a new candidate
-          </a>
+{#        TODO: restore #}
+{#          <a href="{% url 'account_login' %}?next={{ request.path }}" class="button">#}
+{#            Sign in to add a new candidate#}
+{#          </a>#}
         </p>
       {% endif %}
     </div>

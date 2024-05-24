@@ -241,7 +241,8 @@
           <a href="{% url 'photo-upload' person.id %}" class="button">Upload candidate photo</a>
         {% endif %} 
       {% else %}
-        <a href="{% url 'account_login' %}?next={{ redirect_after_login }}" class="button">Log in to edit</a>
+{#          TODO: Restore#}
+{#        <a href="{% url 'account_login' %}?next={{ redirect_after_login }}" class="button">Log in to edit</a>#}
       {% endif %}
     {% else %}
       <h2>Edits disabled</h2>
