@@ -94,6 +94,14 @@
   {{ form.biography.errors }}
 </div>
 
+<div class="form-item {% if form.favourite_biscuit.errors %}form-item--errors{% endif %}">
+  <p>
+    {{ form.favourite_biscuit.label_tag }}
+    {{ form.favourite_biscuit }}
+  </p>
+  {{ form.favourite_biscuit.errors }}
+</div>
+
   <div class="form-item">
     <h2>Candidacy:</h2>
     {% if current_locked_ballots %}
@@ -220,15 +228,6 @@
     {{ form.birth_date }}
   </p>
   {{ form.birth_date.errors }}
-</div>
-
-<h2>Additional information:</h2>
-<div class="form-item {% if form.favourite_biscuit.errors %}form-item--errors{% endif %}">
-  <p>
-    {{ form.favourite_biscuit.label_tag }}
-    {{ form.favourite_biscuit }}
-  </p>
-  {{ form.favourite_biscuit.errors }}
 </div>
 
 <div class="source-confirmation {% if form.source.errors %}source-confirmation--errors{% endif %}">

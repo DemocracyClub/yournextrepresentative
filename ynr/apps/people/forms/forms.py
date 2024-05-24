@@ -306,7 +306,7 @@ class BasePersonForm(forms.ModelForm):
     )
 
     favourite_biscuit = StrippedCharField(
-        label="Favourite biscuit 🍪", required=False
+        label="Favourite biscuit 🍪", required=False, max_length=100
     )
 
     source = StrippedCharField(
