@@ -1,5 +1,9 @@
 {% csrf_token %}
-
+<style>
+    label {
+        font-weight: bold;
+    }
+</style>
 {% for field in form.hidden_fields %}
   {{ field }}
 {% endfor %}
