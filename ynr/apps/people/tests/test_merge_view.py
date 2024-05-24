@@ -644,7 +644,6 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms[1]
         form["birth_date"] = "1962"
-        form["death_date"] = "2000"
         form["source"] = "BBC News"
         form.submit().follow()
 
@@ -677,7 +676,6 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms[1]
         form["birth_date"] = "1962"
-        form["death_date"] = "2000"
         form["source"] = "BBC News"
         form.submit().follow()
 

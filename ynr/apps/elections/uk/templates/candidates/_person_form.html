@@ -218,15 +218,6 @@
   {{ form.birth_date.errors }}
 </div>
 
-<div class="form-item {% if death_date.errors %}form-item--errors{% endif %}">
-  <p>
-    {{ form.death_date.label_tag }}
-    {{ form.death_date }}
-  </p>
-  {{ form.death_date.errors }}
-</div>
-
-
 <h2>Additional information:</h2>
 <div class="form-item {% if form.favourite_biscuit.errors %}form-item--errors{% endif %}">
   <p>
@@ -235,7 +226,6 @@
   </p>
   {{ form.favourite_biscuit.errors }}
 </div>
-
 
 <div class="source-confirmation {% if form.source.errors %}source-confirmation--errors{% endif %}">
   <p>
