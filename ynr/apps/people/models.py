@@ -124,7 +124,6 @@ class PersonIdentifier(TimeStampedModel):
 
     class Meta:
         unique_together = (
-            ("person", "value"),
             ("person", "internal_identifier", "value_type"),
             # TODO: Remove this.
             # At the moemnt the version history can't deal with more than one
