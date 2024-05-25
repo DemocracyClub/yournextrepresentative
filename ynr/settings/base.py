@@ -127,12 +127,6 @@ INSTALLED_APPS = (
     "template_timings_panel",
     "official_documents",
     "results",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",
-    "allauth.socialaccount.providers.facebook",
-    "allauth.socialaccount.providers.twitter",
     "corsheaders",
     "uk_results",
     "bulk_adding",
@@ -177,37 +171,20 @@ MIDDLEWARE = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "candidates.middleware.DisableCachingForAuthenticatedUsers",
+    "wombles.middleware.CheckProfileDetailsMiddleware",
 )
 
-# django-allauth settings:
 AUTHENTICATION_BACKENDS = (
-    # Needed to login by username in Django admin, regardless of `allauth`
+    "sesame.backends.ModelBackend",
     "django.contrib.auth.backends.ModelBackend",
-    # `allauth` specific authentication methods, such as login by e-mail
-    "allauth.account.auth_backends.AuthenticationBackend",
 )
 
-SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "SCOPE": ["https://www.googleapis.com/auth/userinfo.profile"],
-        "AUTH_PARAMS": {"access_type": "online"},
-    },
-    "facebook": {"SCOPE": ["email"]},
-}
+SESAME_MAX_AGE = 60 * 10
+SESAME_ONE_TIME = False
+SESAME_TOKEN_NAME = "login_token"
 
 LOGIN_REDIRECT_URL = "/"
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-SOCIALACCOUNT_ADAPTER = "ynr.account_adapter.LoggingSocialAccountAdapter"
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_FORMS = {
-    "login": "ynr.forms.CustomLoginForm",
-    "signup": "ynr.forms.CustomSignupForm",
-}
-ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_USERNAME_VALIDATORS = "ynr.helpers.allauth_validators"
-SOCIALACCOUNT_AUTO_SIGNUP = True
+
 ROOT_URLCONF = "ynr.urls"
 WSGI_APPLICATION = "ynr.wsgi.application"
 

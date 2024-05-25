@@ -42,8 +42,8 @@
       <div class="container">
         <a href="/" class="header__masthead__logo">{{ site.name }}</a>
         <ul class="nav-links">
-          {% if user.is_authenticated %}
-              <li class="nav-links__item">Signed in as <strong><a href="{% url "my_profile" %}">{{ user.username }}</a></strong></li>
+          {% if user.is_authenticated and user.username %}
+              <li class="nav-links__item">Signed in as <strong><a href="{% url "wombles:my_profile" %}">{{ user.username }}</a></strong></li>
             {% if user_can_lock and suggestions_to_lock > 0 %}
               <li class="nav-links__item">
                 <a href="{% url 'suggestions-to-lock-review-list' %}">
@@ -68,9 +68,9 @@
                 </a>
               </li>
             {% endif %}  
-              <li class="nav-links__item"><a href="{% url 'account_logout' %}{% if redirect_after_login %}?next={{ redirect_after_login }}{% endif %}">Sign out</a></li>
+              <li class="nav-links__item"><a href="{% url 'wombles:logout' %}{% if redirect_after_login %}?next={{ redirect_after_login }}{% endif %}">Sign out</a></li>
           {% else %}
-            <li class="nav-links__item"><a href="{% url 'account_login' %}{% if redirect_after_login %}?next={{ redirect_after_login }}{% endif %}" class="header__nav__login">Sign in to edit</a></li>
+            <li class="nav-links__item"><a href="{% url 'wombles:login' %}{% if redirect_after_login %}?next={{ redirect_after_login }}{% endif %}" class="header__nav__login">Sign in to edit</a></li>
           {% endif %}
         </ul>
       </div>

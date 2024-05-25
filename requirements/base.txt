@@ -11,7 +11,6 @@ cffi>=1.7
 coverage>=3.6
 cryptography==40.0.1
 decorator==5.1.1
-django-allauth==0.54.0
 django-appconf==1.0.5
 django-braces==1.15.0
 django-celery-results==2.5.0
@@ -24,6 +23,7 @@ django-extensions==3.2.1
 django-filter==23.1
 django-model-utils==4.3.1
 django-pipeline==2.1.0
+django-sesame==3.2.2
 django-storages==1.13.2
 django-svelte==0.2.1
 django-webtest==1.9.10

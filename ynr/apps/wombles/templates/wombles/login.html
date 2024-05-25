@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Log in
+{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        <aside class="ds-status" aria-label="Status">
+            <ul class="ds-stack">
+                {% for message in messages %}
+                    <li {% if message.tags %}class=" {{ message.tags }} ds-status-message ds-status-{{ message.level_tag }} " {% endif %}> {{ message }} </li>
+                {% endfor %}
+            </ul>
+        </aside>
+    {% else %}
+        <h1>Login</h1>
+
+        <p>Please enter your email, and we will send you a magic link URL to authenticate your account.</p>
+        <form method="post">
+            {% csrf_token %}
+            <div>
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="ds-button">Login</button>
+        </form>
+        <p>Contributions to this site are made public and form part of an openly licenced database.
+            <a href="{% url "help-about" %}">Find out more about our data licencing</a>.</p>
+
+    {% endif %}
+
+{% endblock %}
