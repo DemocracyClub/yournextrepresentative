@@ -32,7 +32,6 @@ SITE_WIDE_MESSAGES = [
     }
 ]
 
-
 # **** Other settings that might be useful to change locally
 
 INTERNAL_IPS = [
@@ -55,7 +54,6 @@ CACHES = {
     },
 }
 
-
 # **** Settings that might be useful in production
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
@@ -63,11 +61,11 @@ RAVEN_CONFIG = {"dsn": os.environ.get("RAVEN_DSN")}
 
 RUNNING_TESTS = False
 
-
 # This should be one of:
 # ELECTION_STATS
 # SOPN_TRACKER
 # RESULTS_PROGRESS
+# DATA_DOWNLOAD
 # BY_ELECTIONS
 FRONT_PAGE_CTA = "None"
 SOPN_TRACKER_INFO = {
@@ -81,9 +79,13 @@ SOPN_DATES = [
     # ("Northern Ireland", date(year=2023, month=4, day=24)),
 ]
 
+DATA_DOWNLOAD_INFO = {
+    "election_date": "2024-07-04",
+    "election_name": "2024 general election",
+    "election_regex": "parl.2024-07-04",
+}
 
 SCHEDULED_ELECTION_DATES = ["2024-05-02", "2024-05-18"]
-
 
 STATICFILES_STORAGE = "ynr.storages.StaticStorage"
 DEFAULT_FILE_STORAGE = "ynr.storages.MediaStorage"
@@ -94,7 +96,6 @@ MEDIAFILES_LOCATION = "media"
 AWS_DEFAULT_ACL = "public-read"
 AWS_BUCKET_ACL = AWS_DEFAULT_ACL
 AWS_QUERYSTRING_AUTH = False
-
 
 CSRF_TRUSTED_ORIGINS = [
     f"https://{os.environ.get('FQDN')}",
@@ -108,7 +109,6 @@ EMAIL_HOST = "email-smtp.eu-west-1.amazonaws.com"
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("SMTP_USERNAME")
 EMAIL_HOST_PASSWORD = os.environ.get("SMTP_PASSWORD")
-
 
 SLACK_TOKEN = os.environ.get("SLACK_TOKEN")
 

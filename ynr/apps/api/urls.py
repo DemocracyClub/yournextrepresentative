@@ -7,7 +7,6 @@ from api.v09 import views as v09views
 from api.views import (
     APIDocsDefinitionsView,
     APIDocsEndpointsView,
-    CSVListView,
     NextAPIDocsView,
     ResultsDocs,
 )
@@ -84,7 +83,6 @@ next_api_router.register(r"results", ResultViewSet)
 next_api_router.register(r"candidates_elected", ElectedViewSet)
 next_api_router.register(r"facebook_adverts", FacebookAdvertViewSet)
 
-
 urlpatterns = [
     # Router views
     re_path(r"^api/(?P<version>v0.9)/", include(v09_api_router.urls)),
@@ -104,10 +102,7 @@ urlpatterns = [
         TemplateView.as_view(template_name="api/terms.html"),
         name="api-terms",
     ),
-    re_path(r"^api/docs/csv/$", CSVListView.as_view(), name="api_docs_csv"),
-    re_path(
-        r"^api/docs/results/$", ResultsDocs.as_view(), name="api_docs_results"
-    ),
+    re_path(r"^api/docs/atom/$", ResultsDocs.as_view(), name="api_docs_atom"),
     re_path(
         r"^api/docs/next/$",
         NextAPIDocsView.as_view(patterns=next_api_router.urls, version="next"),

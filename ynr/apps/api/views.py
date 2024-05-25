@@ -3,7 +3,6 @@ from collections import OrderedDict
 from django.views.generic import TemplateView
 from drf_yasg import openapi
 from drf_yasg.generators import OpenAPISchemaGenerator
-from elections.models import Election
 from rest_framework.request import Request
 
 
@@ -64,21 +63,5 @@ class APIDocsDefinitionsView(OpenAPISchemaMixin, TemplateView):
         return context
 
 
-class CSVListView(TemplateView):
-    template_name = "api/csv_list.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        base_qs = Election.objects.all().order_by(
-            "current", "-election_date", "slug"
-        )
-        context["current_elections"] = base_qs.current()
-        context["future_elections"] = base_qs.future().exclude(current=True)
-        context["past_elections"] = base_qs.past().exclude(current=True)
-
-        return context
-
-
 class ResultsDocs(TemplateView):
-    template_name = "api/results.html"
+    template_name = "api/atom.html"

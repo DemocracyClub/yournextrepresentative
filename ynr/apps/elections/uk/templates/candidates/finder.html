@@ -49,6 +49,7 @@
         {% sopn_import_progress %}
         {% current_election_stats %}
         {% results_progress %}
+        {% data_download %}
       </div>
     </div>
   {% endif %}
@@ -97,9 +98,6 @@
         {{ postcode_form.as_p }}
         <input type="submit" class="button" value="Help add information!"/>
       </form>
-      <h4>or</h4>
-      <h3>Get the data</h3>
-      <p><a href="/help/api" class="button secondary">Via our API or CSV download</a></p>
     </div>
     {% if front_page_cta == "BY_ELECTIONS" %}
       <div class="finder__forms__container" style="margin-top:3em">
