@@ -16,7 +16,6 @@ from parties.forms import (
 from parties.models import Party
 from people.forms.fields import (
     CurrentUnlockedBallotsField,
-    PastOnlyBlankApproximateDateFormField,
     StrippedCharField,
 )
 from people.helpers import (
@@ -269,6 +268,7 @@ class BasePersonForm(forms.ModelForm):
             "national_identity",
             "name_search_vector",
             "biography_last_updated",
+            "death_date",
         )
 
     honorific_prefix = StrippedCharField(
@@ -293,9 +293,6 @@ class BasePersonForm(forms.ModelForm):
         required=False,
         widget=forms.NumberInput,
     )
-    death_date = PastOnlyBlankApproximateDateFormField(
-        label="Date of death (a four digit year or a full date)", required=False
-    )
 
     biography = StrippedCharField(
         label="Statement to voters",
@@ -309,7 +306,7 @@ class BasePersonForm(forms.ModelForm):
     )
 
     favourite_biscuit = StrippedCharField(
-        label="Favourite biscuit 🍪", required=False
+        label="Favourite biscuit 🍪", required=False, max_length=100
     )
 
     source = StrippedCharField(

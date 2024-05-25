@@ -1,5 +1,3 @@
-import datetime
-
 from candidates.tests.factories import BallotPaperFactory, ElectionFactory
 from candidates.views.version_data import get_change_metadata
 from django.contrib.auth.models import User
@@ -40,44 +38,6 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         self.person.record_version(get_change_metadata(None, "Nothing changed"))
         self.assertEqual(len(self.person.versions), 2)
 
-    def test_set_death_date(self):
-        self.assertEqual(self.person.death_date, "")
-
-        response = self.app.get(
-            "/person/{}/update".format(self.person.pk), user=self.user
-        )
-
-        form = response.forms[1]
-        form["death_date"] = "2017-01-01"
-        form["source"] = "BBC News"
-        form.submit()
-
-        self.person.refresh_from_db()
-        self.assertEqual(self.person.death_date, "2017-01-01")
-
-    def test_set_death_date_different_formats(self):
-        date_formats = ["23 July 2019", "23/07/2019"]
-        for date_format in date_formats:
-            response = self.app.get(
-                "/person/{}/update".format(self.person.pk), user=self.user
-            )
-
-            form = response.forms[1]
-            form["death_date"] = date_format
-            form["source"] = "BBC News"
-            form.submit()
-
-    def test_set_death_date_too_long(self):
-        response = self.app.get(
-            "/person/{}/update".format(self.person.pk), user=self.user
-        )
-
-        form = response.forms[1]
-        form["death_date"] = ("a really really really long string",)
-        form["source"] = "BBC News"
-        response = form.submit()
-        self.assertContains(response, "Please enter a valid date.")
-
     def test_set_birth_date_invalid_date(self):
         """
         Regression for
@@ -109,52 +69,6 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         form["source"] = "BBC News"
         response = form.submit().follow()
         self.assertContains(response, "1962")
-
-    def test_set_dead_person_age(self):
-        """
-        Regression for
-        https://github.com/DemocracyClub/yournextrepresentative/issues/980
-        """
-
-        response = self.app.get(
-            "/person/{}/update".format(self.person.pk), user=self.user
-        )
-
-        form = response.forms[1]
-        form["birth_date"] = "1962"
-        form["death_date"] = "2000"
-        form["source"] = "BBC News"
-        form.submit().follow()
-        self.person.refresh_from_db()
-        self.assertEqual(self.person.age, "37 or 38")
-
-    def test_validate_death_date_not_in_future(self):
-        response = self.app.get(
-            "/person/{}/update".format(self.person.pk), user=self.user
-        )
-
-        form = response.forms[1]
-        form["birth_date"] = "1962"
-        form["death_date"] = "2200"
-        form["source"] = "BBC News"
-        response = form.submit()
-        self.assertEqual(
-            response.context["form"].errors,
-            {"death_date": ["Can't enter a date in the future"]},
-        )
-
-    def test_validate_death_date_can_be_today(self):
-        response = self.app.get(
-            "/person/{}/update".format(self.person.pk), user=self.user
-        )
-        death_date = datetime.datetime.today().date().isoformat()
-        form = response.forms[1]
-        form["birth_date"] = "1962"
-        form["death_date"] = death_date
-        form["source"] = "BBC News"
-        form.submit().follow()
-        self.person.refresh_from_db()
-        self.assertEqual(self.person.death_date, death_date)
 
     def test_user_cannot_review_person_name(self):
         # current user is not in the TRUSTED_TO_EDIT_NAME group
@@ -348,7 +262,6 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
                 "honorific_suffix",
                 "gender",
                 "birth_date",
-                "death_date",
                 "biography",
                 "favourite_biscuit",
                 "delisted",
