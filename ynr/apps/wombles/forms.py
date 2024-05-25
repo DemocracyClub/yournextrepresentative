@@ -28,6 +28,13 @@ class UserProfileForm(forms.ModelForm):
         help_text="Your username is displayed publicly. We don't accept email addresses or '@' symbols",
     )
 
+    def __init__(self, *args, **kwargs):
+        super(UserProfileForm, self).__init__(*args, **kwargs)
+        # We add a fake username before people first sign up. Don't show this to the user and ask them to
+        # enter their own
+        if self.initial and self.initial.get("username", "").startswith("@@"):
+            self.initial["username"] = ""
+
     def clean_username(self):
         username = self.cleaned_data["username"]
 

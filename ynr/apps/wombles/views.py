@@ -1,3 +1,5 @@
+import hashlib
+
 from candidates.models import LoggedAction
 from django.contrib import messages
 from django.contrib.auth import login
@@ -76,14 +78,22 @@ class LoginView(FormView):
     form_class = LoginForm
     template_name = "wombles/login.html"
 
+    def make_fake_username(self, email):
+        hash_object = hashlib.sha256(email.encode())
+        # Convert the hash object to a hexadecimal string
+        hashed_email = hash_object.hexdigest()
+        # Optionally, you can shorten the hash for the username (e.g., first 10 characters)
+        return f"@@{hashed_email[:10]}"
+
     def form_valid(self, form):
         """
         Create or retrieve a user trigger the send login email
         """
         user, created = User.objects.get_or_create(
-            email=form.cleaned_data["email"]
+            email=form.cleaned_data["email"],
         )
         if created:
+            user.username = self.make_fake_username(form.cleaned_data["email"])
             user.set_unusable_password()
             user.save()
 

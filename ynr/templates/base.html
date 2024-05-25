@@ -42,36 +42,43 @@
       <div class="container">
         <a href="/" class="header__masthead__logo">{{ site.name }}</a>
         <ul class="nav-links">
-          {% if user.is_authenticated and user.username %}
-              <li class="nav-links__item">Signed in as <strong><a href="{% url "wombles:my_profile" %}">{{ user.username }}</a></strong></li>
+            {% if user.is_authenticated and user.username %}
+                {% if not user.username|slice:":2" == "@@" %}
+                <li class="nav-links__item">Signed in as <strong><a
+                        href="{% url "wombles:my_profile" %}">{{ user.username }}</a></strong></li>
+                {% endif %}
+
             {% if user_can_lock and suggestions_to_lock > 0 %}
-              <li class="nav-links__item">
+            <li class="nav-links__item">
                 <a href="{% url 'suggestions-to-lock-review-list' %}">
-                  <span class="notification">{{ suggestions_to_lock }}</span> Ballot lock suggestions
+                    <span class="notification">{{ suggestions_to_lock }}</span> Ballot lock suggestions
                 </a>
-              </li>
+            </li>
             {% endif %}
             {% if user_can_merge and duplicate_suggestions %}
-              <li class="nav-links__item">
+            <li class="nav-links__item">
                 <a href="{% url 'duplicate-list' %}">
-                  <span class="notification">{{ duplicate_suggestions }}</span> Duplicate Suggestions
+                    <span class="notification">{{ duplicate_suggestions }}</span> Duplicate Suggestions
                 </a>
-              </li>
+            </li>
             {% endif %}
             {% if user_can_review_photos and photos_for_review > 0 %}
-              <li class="nav-links__item"><a href="{% url 'photo-review-list' %}"><span class="notification">{{ photos_for_review }}</span> Photos for review</a></li>
+            <li class="nav-links__item"><a href="{% url 'photo-review-list' %}"><span
+                    class="notification">{{ photos_for_review }}</span> Photos for review</a></li>
             {% endif %}
             {% if user_can_edit_name and person_name_edits > 0 %}
-              <li class="nav-links__item">
+            <li class="nav-links__item">
                 <a href="{% url 'person-name-review' %}">
-                  <span class="notification">{{ person_name_edits }}</span>Name edits to review
+                    <span class="notification">{{ person_name_edits }}</span>Name edits to review
                 </a>
-              </li>
-            {% endif %}  
-              <li class="nav-links__item"><a href="{% url 'wombles:logout' %}{% if redirect_after_login %}?next={{ redirect_after_login }}{% endif %}">Sign out</a></li>
-          {% else %}
-            <li class="nav-links__item"><a href="{% url 'wombles:login' %}{% if redirect_after_login %}?next={{ redirect_after_login }}{% endif %}" class="header__nav__login">Sign in to edit</a></li>
-          {% endif %}
+            </li>
+            {% endif %}
+            <li class="nav-links__item"><a href="{% url 'wombles:logout' %}{% if redirect_after_login %}?next=
+                    {{ redirect_after_login }}{% endif %}">Sign out</a></li>
+            {% else %}
+            <li class="nav-links__item"><a href="{% url 'wombles:login' %}{% if redirect_after_login %}?next=
+                    {{ redirect_after_login }}{% endif %}" class="header__nav__login">Sign in to edit</a></li>
+            {% endif %}
         </ul>
       </div>
     </div>
