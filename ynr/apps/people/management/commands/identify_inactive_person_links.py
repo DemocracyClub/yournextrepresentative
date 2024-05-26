@@ -1,8 +1,11 @@
+import csv
+from typing import List
 from urllib.parse import urlparse
 
 import requests
 from django.core.management.base import BaseCommand
 from people.models import Person
+from popolo.models import Membership
 
 
 def get_domain(url):
@@ -25,10 +28,13 @@ class Command(BaseCommand):
         Iterate over all Person objects and check if the
         person identifier urls return a 200 status code.
         """
-        inactive_links = []
+        inactive_links: List[List] = []
         # facebook_url is any url with facebook or fb in the url
+        memberships = Membership.objects.filter(
+            ballot__election__slug="parl.2024-07-04"
+        )
 
-        people = Person.objects.all()
+        people = Person.objects.all().filter(memberships__in=memberships)
         for person in people:
             person_identifiers = person.get_all_identifiers
             person_identifiers = [
@@ -42,7 +48,7 @@ class Command(BaseCommand):
             for identifier in person_identifiers:
                 resp = None
                 try:
-                    resp = requests.head(identifier.value).status_code
+                    resp = requests.get(identifier.value, timeout=2).status_code
                 except requests.exceptions.RequestException as e:
                     self.stdout.write(
                         f"Request exception: {e} for {person.name}"
@@ -58,12 +64,18 @@ class Command(BaseCommand):
                     self.stdout.write(
                         f"Status code: {resp} for {person.name} {identifier.value}"
                     )
-                    inactive_links.append(identifier)
+                    inactive_links.append(
+                        [
+                            str(person.pk),
+                            person.name,
+                            identifier.value,
+                            str(resp),
+                        ]
+                    )
 
-                    with open("inactive_links.tsv", "w") as f:
-                        f.write("person\tidentifier\tvalue\tstatus_code\n")
-                        for link in inactive_links:
-                            f.write(
-                                f"{person.name}\t{identifier}\t{identifier.value}\t{resp}\n"
-                            )
-                            f.close()
+        with open("inactive_links.tsv", "w") as f:
+            writer = csv.writer(f)
+            writer.writerow(
+                ["person ID", "Person Name", "value", "status_code"]
+            )
+            writer.writerows(inactive_links)
