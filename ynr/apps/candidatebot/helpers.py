@@ -1,8 +1,12 @@
+import re
+
+import pypandoc
 from candidates.models import LoggedAction
 from candidates.views.version_data import get_change_metadata
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
+from django.utils.safestring import mark_safe
 from people.helpers import (
     clean_mastodon_username,
     clean_twitter_username,
@@ -30,6 +34,7 @@ class CandidateBot(object):
     SUPPORTED_EDIT_FIELDS = [
         "other_names",
         "name",
+        "biography",
     ] + SUPPORTED_PERSON_IDENTIFIER_FIELDS
 
     def __init__(self, person_id, ignore_errors=False, update=False):
@@ -62,6 +67,8 @@ class CandidateBot(object):
     def edit_field(
         self, field_name, field_value, internal_id=None, update=None
     ):
+        if not field_value:
+            return
         if update is None:
             update = self.update
         ignore_edit = False
@@ -113,6 +120,10 @@ class CandidateBot(object):
 
                     if not ignore_edit:
                         self.edits_made = True
+        else:
+            if field_name == "biography":
+                self.person.biography = field_value
+                self.edits_made = True
 
     def clean_email(self, value):
         # The lightest of validation
@@ -128,6 +139,14 @@ class CandidateBot(object):
 
     def clean_wikidata_id(self, value):
         return clean_wikidata_id(value)
+
+    def clean_biography(self, value):
+        value = value.replace("&nbsp;", " ")
+        value = pypandoc.convert_text(
+            mark_safe(value), "md", format="html", extra_args=["--wrap=none"]
+        )
+        value = re.sub(r'\\([@\'"])', r"\1", value).replace("\\\n", "\n\n")
+        return value.replace("• ", "* ")
 
     def save(self, source, action_type="person-update"):
         if not self.edits_made:
