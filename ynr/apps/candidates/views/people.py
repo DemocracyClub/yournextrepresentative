@@ -24,7 +24,12 @@ from duplicates.forms import DuplicateSuggestionForm
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from elections.uk.forms import SelectBallotForm
-from people.forms.forms import NewPersonForm, UpdatePersonForm
+from people.forms.forms import (
+    NewPersonForm,
+    PersonSplitForm,
+    PersonSplitFormSet,
+    UpdatePersonForm,
+)
 from people.forms.formsets import (
     PersonIdentifierFormsetFactory,
     PersonMembershipFormsetFactory,
@@ -488,6 +493,96 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
         return HttpResponseRedirect(
             reverse("person-view", kwargs={"person_id": person.id})
         )
+
+
+class PersonSplitView(FormView):
+    template_name = "people/split_person.html"
+    form_class = PersonSplitForm
+
+    def get_review_url(self):
+        person_id = self.kwargs.get("person_id")
+        return reverse_lazy(
+            "review_split_person", kwargs={"person_id": person_id}
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["person"] = self.get_person()
+        context["person_id"] = self.kwargs["person_id"]
+        context["formset"] = self.get_form()
+        return context
+
+    def get_initial_data(self, form_class=None):
+        person = self.get_person()
+        return [
+            {"attribute_name": "name", "attribute_value": person.name},
+            # {"attribute_name": "image", "attribute_value": person.image.image if person.image else None},
+            {"attribute_name": "gender", "attribute_value": person.gender},
+            # {
+            # "attribute_name": "birth_date",
+            # "attribute_value": person.birth_date if person.birth_date else None,
+            # },
+            # {
+            #     "attribute_name": "death_date",
+            #     "attribute_value": person.death_date if person.death_date else None,
+            # },
+            # {"attribute_name": "summary", "attribute_value": person.summary if person.summary else None },
+            # {
+            # "attribute_name": "biography",
+            # "attribute_value": person.biography if person.biography else None,
+            # },
+            # {
+            # "attribute_name": "other_names",
+            # "attribute_value": person.other_names.all if person.other_names.all else None,
+            # },
+            # {
+            #     "attribute_name": "memberships",
+            #     "attribute_value": person.memberships.all if person.memberships.all else None,
+            # },
+        ]
+
+    def get_form(self, form_class=None):
+        initial_data = self.get_initial_data()
+        print("Initial Data:", initial_data)
+        return PersonSplitFormSet(
+            initial=self.get_initial_data(form_class),
+        )
+
+    def get_person(self):
+        person_id = self.kwargs.get("person_id")
+        return get_object_or_404(Person, pk=person_id)
+
+    def form_valid(self, formset):
+        choices = {
+            "keep": [],
+            "add": [],
+            "both": [],
+        }
+        for form in formset:
+            attribute_name = form.cleaned_data["attribute_name"]
+            attribute_value = form.cleaned_data["attribute_value"]
+            choice = form.cleaned_data["choice"]
+            person_id = self.kwargs.get("person_id")
+            if choice == "keep":
+                choices["keep"].append({attribute_name: attribute_value})
+            elif choice == "move":
+                choices["move"].append({attribute_name: attribute_value})
+            elif choice == "both":
+                choices["both"].append({attribute_name: attribute_value})
+        if choices:
+            self.request.session["choices"] = choices
+            self.request.session["person_id"] = person_id
+            return redirect(self.get_review_url())
+        return self.form_invalid(formset)
+
+    def post(self, request, *args, **kwargs):
+        formset = PersonSplitFormSet(request.POST)
+        print("POST Data:", request.POST)  # Print POST data to inspect
+        if formset.is_valid():
+            return self.form_valid(formset)
+
+        print("Formset Errors:", formset.errors)
+        return self.form_invalid(formset)
 
 
 class NewPersonSelectElectionView(LoginRequiredMixin, FormView):

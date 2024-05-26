@@ -48,6 +48,11 @@ urlpatterns = [
         name="person-update",
     ),
     re_path(
+        r"^person/(?P<person_id>\d+)/split/?$",
+        views.PersonSplitView.as_view(),
+        name="person-split",
+    ),
+    re_path(
         r"^person/create/select_election$",
         views.NewPersonSelectElectionView.as_view(),
         name="person-create-select-election",
