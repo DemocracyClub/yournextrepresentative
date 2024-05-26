@@ -256,6 +256,27 @@
     </p>
     <input type="submit" class="button alert" value="Suggest duplicate">
   </form>
+  
+  <div class="person__actions__action person__actions__merge">
+    <h2>Split this person</h2>
+    {% if user_can_edit and person_edits_allowed %}
+      <p>Has this person been merged incorrectly?</p>
+      {% if user.is_authenticated %}
+        <a href="{% url 'person-split' person.id %}" class="button">Split person</a>
+        {% if person.queued_image %} 
+          {% if user_can_review_photos %}
+            <p>{{ person.name }} has a photo that needs to be reviewed</p>
+            <a href="{{ person.get_absolute_queued_image_url}}" class="button">Review image</a>
+          {% endif %} 
+        {% endif %} 
+      {% else %}
+        <a href="{% url 'account_login' %}?next={{ redirect_after_login }}" class="button">Log in to split</a>
+      {% endif %}
+    {% else %}
+      <h2>Edits disabled</h2>
+      {% include 'candidates/_edits_disallowed_message.html' %}
+    {% endif %}
+  </div>
 
   <div class="person__actions__action person__actions__data">
     <h2>Use this data!</h2>
