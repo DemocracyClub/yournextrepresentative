@@ -38,7 +38,7 @@ class WombleTags(models.Model):
         return text.title()
 
     def get_absolute_url(self):
-        return reverse("womble_tag", args=[self.label])
+        return reverse("wombles:womble_tag", args=[self.label])
 
 
 class WombleProfile(models.Model):
@@ -53,7 +53,7 @@ class WombleProfile(models.Model):
         return str(self.user.pk)
 
     def get_absolute_url(self):
-        return reverse("single_womble", args=[self.user.pk])
+        return reverse("wombles:single_womble", args=[self.user.pk])
 
     def edits_over_time(self):
         cursor = connection.cursor()
