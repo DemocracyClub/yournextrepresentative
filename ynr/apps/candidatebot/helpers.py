@@ -64,6 +64,8 @@ class CandidateBot(object):
     def edit_field(
         self, field_name, field_value, internal_id=None, update=None
     ):
+        if not field_value:
+            return
         if update is None:
             update = self.update
         ignore_edit = False
