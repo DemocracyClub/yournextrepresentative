@@ -3,6 +3,7 @@ from candidates.views.version_data import get_change_metadata
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
+from django.utils.html import strip_tags
 from people.helpers import (
     clean_mastodon_username,
     clean_twitter_username,
@@ -30,6 +31,7 @@ class CandidateBot(object):
     SUPPORTED_EDIT_FIELDS = [
         "other_names",
         "name",
+        "biography",
     ] + SUPPORTED_PERSON_IDENTIFIER_FIELDS
 
     def __init__(self, person_id, ignore_errors=False, update=False):
@@ -113,6 +115,10 @@ class CandidateBot(object):
 
                     if not ignore_edit:
                         self.edits_made = True
+        else:
+            if field_name == "biography":
+                self.person.biography = field_value
+                self.edits_made = True
 
     def clean_email(self, value):
         # The lightest of validation
@@ -128,6 +134,9 @@ class CandidateBot(object):
 
     def clean_wikidata_id(self, value):
         return clean_wikidata_id(value)
+
+    def clean_biography(self, value):
+        return strip_tags(value)
 
     def save(self, source, action_type="person-update"):
         if not self.edits_made:
