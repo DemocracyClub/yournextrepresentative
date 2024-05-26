@@ -1,9 +1,12 @@
+import re
+
+import pypandoc
 from candidates.models import LoggedAction
 from candidates.views.version_data import get_change_metadata
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
-from django.utils.html import strip_tags
+from django.utils.safestring import mark_safe
 from people.helpers import (
     clean_mastodon_username,
     clean_twitter_username,
@@ -138,7 +141,12 @@ class CandidateBot(object):
         return clean_wikidata_id(value)
 
     def clean_biography(self, value):
-        return strip_tags(value)
+        value = value.replace("&nbsp;", " ")
+        value = pypandoc.convert_text(
+            mark_safe(value), "md", format="html", extra_args=["--wrap=none"]
+        )
+        value = re.sub(r'\\([@\'"])', r"\1", value).replace("\\\n", "\n\n")
+        return value.replace("• ", "* ")
 
     def save(self, source, action_type="person-update"):
         if not self.edits_made:
