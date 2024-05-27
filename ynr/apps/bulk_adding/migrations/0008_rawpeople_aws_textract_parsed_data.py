@@ -7,6 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     dependencies = [
         ("bulk_adding", "0007_alter_rawpeople_data"),
+        ("sopn_parsing", "0002_awstextractparsedsopn"),
     ]
 
     operations = [
