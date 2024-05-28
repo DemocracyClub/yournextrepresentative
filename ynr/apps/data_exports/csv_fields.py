@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from typing import Callable, Dict, Literal, Optional, Union
 
 from django.core.files.storage import default_storage
-from django.db.models import CharField, Expression
+from django.db.models import BooleanField, CharField, Expression
 from django.db.models.expressions import Case, Combinable, F, Value, When
 from django.db.models.functions import Concat, Substr
 from django.urls import reverse
@@ -95,6 +95,16 @@ csv_fields["election_current"] = CSVField(
     core=True,
     value_group="election",
     label="Current election (boolean)",
+)
+csv_fields["by_election"] = CSVField(
+    value=Case(
+        When(ballot_paper__ballot_paper_id__contains=".by.", then=Value(True)),
+        default=Value(False),
+        output_field=BooleanField(),
+    ),
+    type="expr",
+    value_group="election",
+    label="By-election (boolean)",
 )
 csv_fields["party_name"] = CSVField(
     value="party_name",
