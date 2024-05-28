@@ -1,7 +1,12 @@
+from typing import List, Optional, Tuple
+
 import django_filters
+from django.db.models import CharField, Q
+from django.db.models.functions import Cast
 from django_filters import BaseInFilter
 from elections.filters import DSLinkWidget
 
+from .csv_fields import CSVField
 from .models import MaterializedMemberships
 
 BY_ELECTION_CHOICES = {
@@ -85,3 +90,68 @@ class MaterializedMembershipFilter(django_filters.FilterSet):
             "election_id",
             "party_id",
         ]
+
+    def filter_null_or_empty_str(self, queryset, name, value):
+        annotation = {}
+        annotation[f"{name}_filterfield"] = Cast(
+            name, output_field=CharField(blank=True)
+        )
+
+        queryset = queryset.annotate(**annotation)
+        if value == "yes":
+            return queryset.filter(~Q(**{f"{name}_filterfield__exact": ""}))
+        if value == "no":
+            return queryset.filter(
+                Q(**{f"{name}__exact": ""})
+                | Q(**{f"{name}_filterfield__isnull": True})
+            )
+        return queryset
+
+    def filter_null_or_empty_int(self, queryset, name, value):
+        annotation = {}
+        annotation[f"{name}_filterfield"] = Cast(
+            name, output_field=CharField(blank=True)
+        )
+
+        queryset = queryset.annotate(**annotation)
+        if value == "yes":
+            return queryset.filter(~Q(**{f"{name}_filterfield__exact": ""}))
+        if value == "no":
+            return queryset.filter(Q(**{f"{name}_filterfield__isnull": True}))
+        return queryset
+
+
+def create_materialized_membership_filter(
+    fields: Optional[List[Tuple[str, CSVField]]] = None,
+):
+    """
+    Needed for adding dynamic filters to the class in a thread-safe way.
+
+    If we just add these to the class in an __init__ method, there is a chance that
+    the class is re-used across different requests.
+
+    Using a builder like this allows each request to have it's own class, making sure it's safe.
+
+    :param fields:
+    :return:
+    """
+
+    class DynamicMaterializedMembershipFilter(MaterializedMembershipFilter):
+        ...
+
+    for field_name, field in fields:
+        method = "filter_null_or_empty_str"
+        if field.value_type == "int":
+            method = "filter_null_or_empty_int"
+
+        DynamicMaterializedMembershipFilter.base_filters[
+            f"has_{field_name}"
+        ] = django_filters.ChoiceFilter(
+            field_name=field_name,
+            method=method,
+            label=f"Has {field.label}",
+            choices=[("yes", "Yes"), ("no", "No")],
+            # widget=forms.CheckboxInput,
+        )
+
+    return DynamicMaterializedMembershipFilter

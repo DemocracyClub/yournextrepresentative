@@ -35,6 +35,7 @@ class CSVField:
     label: str
     core: bool = False
     formatter: Optional[Callable] = None
+    value_type: str = "str"
 
 
 def link_formatter(value, url):
@@ -209,6 +210,7 @@ csv_fields["votes_cast"] = CSVField(
     value=F("membership__result__num_ballots"),
     value_group="results",
     label="Votes cast",
+    value_type="int",
 )
 
 csv_fields["elected"] = CSVField(
