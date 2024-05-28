@@ -3,6 +3,8 @@ from collections import namedtuple
 from datetime import datetime, timedelta
 from enum import Enum, unique
 
+import openai
+import sentry_sdk
 from django.conf import settings
 
 # How many previously approved edits of a type are ok before we stop flagging?
@@ -250,6 +252,56 @@ class EditTypesThatNeverNeedReview(BaseReviewRequiredDecider):
         return self.Status.UNDECIDED
 
 
+class OpenAIModerationReview(BaseReviewRequiredDecider):
+    def review_description_text(self):
+        reasons = ", ".join(
+            [cat for cat, flagged in self.moderation.categories if flagged]
+        )
+        return f"Automated moderation detected: {reasons}"
+
+    def needs_review(self):
+        if not self.logged_action.person:
+            return self.Status.UNDECIDED
+        from candidates.models.db import ActionType
+
+        if self.logged_action.action_type not in [
+            ActionType.PERSON_UPDATE,
+            ActionType.PERSON_CREATE,
+        ]:
+            return self.Status.UNDECIDED
+
+        statement = None
+        la = self.logged_action
+        for version_diff in la.person.version_diffs:
+            if version_diff["version_id"] == la.popit_person_new_version:
+                this_diff = version_diff["diffs"][0]["parent_diff"]
+                for op in this_diff:
+                    if op["path"] == "biography":
+                        # this is an edit to a biography / statement
+                        statement = op["value"]
+        if not statement:
+            return self.Status.UNDECIDED
+
+        api_key = getattr(settings, "OPEN_AI_API_KEY", None)
+        if not api_key:
+            return self.Status.UNDECIDED
+        try:
+            client = openai.OpenAI(api_key=api_key)
+            response = client.moderations.create(
+                input=statement, model="text-moderation-latest"
+            )
+        except openai.APIStatusError:
+            sentry_sdk.capture_exception()
+            return self.Status.UNDECIDED
+        if not response.results:
+            return self.Status.UNDECIDED
+        self.moderation = response.results[0]
+        if self.moderation.flagged:
+            return self.Status.NEEDS_REVIEW
+
+        return self.Status.UNDECIDED
+
+
 ReviewType = namedtuple("ReviewType", ["type", "label", "cls"])
 
 REVIEW_TYPES = (
@@ -282,6 +334,11 @@ REVIEW_TYPES = (
         type="needs_review_due_to_first_edits",
         label="First edits by user",
         cls=FirstByUserEditsDecider,
+    ),
+    ReviewType(
+        type="automated_statement_moderation",
+        label="Automated moderation of statement",
+        cls=OpenAIModerationReview,
     ),
     ReviewType(
         type="needs_review_due_to_statement_edit",
