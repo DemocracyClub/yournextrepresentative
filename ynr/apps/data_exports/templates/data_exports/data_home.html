@@ -44,7 +44,7 @@
                         {% for field_name, field in fields %}
                             <li>
                                 <label for="id_{{ field_name }}">
-                                    <input type="checkbox" name="extra_fields" id="id_{{ field_name }}" value="{{ field_name }}" {% if field_name in headers %}checked{% endif %} data-group="{{ field.value_group }}">
+                                    <input type="checkbox" name="extra_fields" id="id_{{ field_name }}" value="{{ field_name }}" {% if field_name in headers %}checked="checked"{% endif %} data-group="{{ field.value_group }}">
                                     {{ field.label }}
                                 </label>
                             </li>
@@ -65,7 +65,6 @@
                         } else {
                             group_sub_options.forEach(function(el) {
                                 el.disabled = false;
-                                el.checked = false;
                             })
                         }
                     }
@@ -77,7 +76,17 @@
                         })
                         disable_for_group(el);
                     })
-
+                    // Initially disable/enable without changing the checked state of the sub-options
+                    var group_sub_options = document.querySelectorAll(`input[data-group=${el.value}]`);
+                    if (el.checked) {
+                        group_sub_options.forEach(function(sub_el) {
+                            sub_el.disabled = true;
+                        });
+                    } else {
+                        group_sub_options.forEach(function(sub_el) {
+                            sub_el.disabled = false;
+                        });
+                    }
 
                 </script>
             </details>
