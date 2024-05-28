@@ -20,7 +20,7 @@ class TestWombleLogin(WebTest):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject,
-            "Your magic link to log in to the Democracy Club API",
+            "Your magic link to log in to the Democracy Club Candidates site",
         )
 
     def test_login(self):

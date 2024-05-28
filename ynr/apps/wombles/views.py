@@ -113,7 +113,9 @@ class LoginView(FormView):
         domain = self.request.get_host()
         path = reverse("wombles:authenticate")
         url = f"{self.request.scheme}://{domain}{path}{querystring}"
-        subject = "Your magic link to log in to the Democracy Club API"
+        subject = (
+            "Your magic link to log in to the Democracy Club Candidates site"
+        )
         txt = render_to_string(
             template_name="wombles/email/login_message.txt",
             context={
