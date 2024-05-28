@@ -58,6 +58,7 @@ nameparser==1.1.2
 ndg-httpsclient==0.5.1
 numpy==1.24.2
 oauthlib==3.2.2
+openai==1.30.3
 path.py==12.5.0
 pexpect==4.8.0
 pickleshare==0.7.5

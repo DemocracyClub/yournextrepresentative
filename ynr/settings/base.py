@@ -369,6 +369,8 @@ TWITTER_APP_ONLY_BEARER_TOKEN = os.environ.get(
     "TWITTER_APP_ONLY_BEARER_TOKEN", None
 )
 
+OPEN_AI_API_KEY = os.environ.get("OPEN_AI_API_KEY", None)
+
 # A bearer token for the Mastodon API for mapping between
 # Mastodon usernames and IDs.
 MASTODON_APP_ONLY_BEARER_TOKEN = os.environ.get(
