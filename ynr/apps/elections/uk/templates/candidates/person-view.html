@@ -8,6 +8,7 @@
 {% load extra_field_value %}
 {% load thumbnail %}
 {% load approximate_dates %}
+{% load markdown_filter %}
 
 {% block extra_head %}
     <link rel="canonical" href="{{ canonical_url }}" />
@@ -126,7 +127,7 @@
     
     {% if person.biography %}
       <dt>Statement to voters</dt>
-      <dd class="person_biography">{{ person.biography|linebreaks }}</dd>
+      <dd class="person_biography">{{ person.biography|markdown}}</dd>
       {% if person.biography_last_updated %}<dd>This statement was last updated on {{ person.biography_last_updated }}.</dd>{% endif %}
     {% endif %}
   </dl>
