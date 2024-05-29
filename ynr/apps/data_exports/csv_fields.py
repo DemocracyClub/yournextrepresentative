@@ -22,6 +22,7 @@ from django.core.files.storage import default_storage
 from django.db.models import BooleanField, CharField, Expression
 from django.db.models.expressions import Case, Combinable, F, Value, When
 from django.db.models.functions import Concat, Substr
+from django.template.defaultfilters import truncatechars
 from django.urls import reverse
 from django.utils.safestring import SafeString
 from ynr_refactoring.settings import PersonIdentifierFields
@@ -296,6 +297,7 @@ csv_fields["statement_to_voters"] = CSVField(
     value=F("person__biography"),
     value_group="person",
     label="Statement to voters",
+    formatter=lambda value: truncatechars(value, 100),
 )
 
 storages_url = default_storage.url("")
