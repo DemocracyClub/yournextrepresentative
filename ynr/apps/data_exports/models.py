@@ -83,8 +83,7 @@ class MaterializedMembershipsQuerySet(models.QuerySet):
 
         """
         fieldnames = self._fieldnames(extra_fields)
-        qs = self._with_fields(extra_fields)
-        sql, params = qs.query.sql_with_params()
+        sql, params = self.query.sql_with_params()
         fields = [f"QS.{field}" for field in fieldnames]
 
         outer_query = f"""select {", ".join(fields)} FROM ({sql}) as QS"""

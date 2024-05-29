@@ -8,7 +8,9 @@ from django.views import View
 from django.views.generic import TemplateView
 
 from .csv_fields import csv_fields, get_core_fieldnames
-from .filters import MaterializedMembershipFilter
+from .filters import (
+    create_materialized_membership_filter,
+)
 from .forms import AdditionalFieldsForm, grouped_choices
 from .models import MaterializedMemberships, MaterializedMembershipsQuerySet
 
@@ -19,16 +21,14 @@ class DataFilterMixin:
 
     def get_filter_data(self, **kwargs):
         context = {}
-        qs = self.get_queryset()
-        filter_set = MaterializedMembershipFilter(self.request.GET, queryset=qs)
-
-        additional_fields_form = AdditionalFieldsForm(data=self.request.GET)
-        context["csv_fields"] = grouped_choices()
         context["extra_fields"] = []
+        additional_fields_form = AdditionalFieldsForm(data=self.request.GET)
         if additional_fields_form.is_valid():
             context["extra_fields"] = additional_fields_form.cleaned_data[
                 "extra_fields"
             ]
+
+        context["csv_fields"] = grouped_choices()
 
         context["additional_fields_form"] = additional_fields_form
 
@@ -39,6 +39,18 @@ class DataFilterMixin:
                 context["extra_fields"].append(field_name)
 
         context["headers"] = get_core_fieldnames() + context["extra_fields"]
+
+        qs = self.get_queryset()
+        qs = qs.for_data_table(extra_fields=context["extra_fields"])
+        filter_set = create_materialized_membership_filter(
+            [
+                (field_name, csv_fields[field_name])
+                for field_name in context["extra_fields"]
+            ]
+        )(
+            self.request.GET,
+            queryset=qs,
+        )
 
         queryset = filter_set.qs
         context["objects"]: Union[
@@ -62,9 +74,7 @@ class DataHomeView(DataFilterMixin, TemplateView):
         context.update(self.get_filter_data())
 
         paginator = Paginator(
-            context["objects"].for_data_table(
-                extra_fields=context["extra_fields"]
-            ),
+            context["objects"],
             50,
         )
         page = paginator.get_page(self.request.GET.get("page", "1"))

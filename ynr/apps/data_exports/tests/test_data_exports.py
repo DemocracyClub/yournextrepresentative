@@ -194,6 +194,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
                 "post_label",
                 "cancelled_poll",
                 "seats_contested",
+                "by_election",
                 "gss",
                 "post_id",
                 "nuts1",

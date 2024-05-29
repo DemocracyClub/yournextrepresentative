@@ -2,12 +2,12 @@
 {% load get_query %}
 {% load data_field_value %}
 {% block api_content %}
-<p>
-    This page allows downloading CSV exports of our data.
-    Please see the <a href="{% url "api-terms" %}">terms page</a> for usage terms.
-</p>
+    <p>
+        This page allows downloading CSV exports of our data.
+        Please see the <a href="{% url "api-terms" %}">terms page</a> for usage terms.
+    </p>
     <p>Although the data is free to use under the terms, we would love to know what your planning to use the data
-    and are happy to answer any questions you might have. <a href="https://democracyclub.org.uk/contact/">
+        and are happy to answer any questions you might have. <a href="https://democracyclub.org.uk/contact/">
             Please get in touch</a>!</p>
     <form action="" method="get">
 
@@ -19,7 +19,8 @@
 
                         {% for field in filter_set.form %}
                             <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
-                                <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">
+                                <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label"
+                                    aria-hidden="true">
                                     {{ field.label }}:
                                     {{ field }}
                                 </li>
@@ -28,6 +29,8 @@
                         {% endfor %}
                     </div>
                 </div>
+                <p>To filter on other fields, please select them from the 'additional fields' section below, press the
+                    filter button and the filters will appear here. Currently only boolean (yes/no) filters are supported for additional fields.</p>
             </details>
 
             <details>
@@ -36,7 +39,8 @@
                 {% for group_name, fields in csv_fields.items %}
                     <h3>{{ group_name|title }}</h3>
                     <label>
-                        <input type="checkbox" name="field_group" id="id_{{ group_name }}" value="{{ group_name }}" {% if group_name in request.GET.field_group %}checked{% endif %} class="group_checkbox">
+                        <input type="checkbox" name="field_group" id="id_{{ group_name }}" value="{{ group_name }}"
+                               {% if group_name in request.GET.field_group %}checked{% endif %} class="group_checkbox">
                         All {{ group_name }} fields
 
                     </label>
@@ -44,7 +48,10 @@
                         {% for field_name, field in fields %}
                             <li>
                                 <label for="id_{{ field_name }}">
-                                    <input type="checkbox" name="extra_fields" id="id_{{ field_name }}" value="{{ field_name }}" {% if field_name in headers %}checked{% endif %} data-group="{{ field.value_group }}">
+                                    <input type="checkbox" name="extra_fields" id="id_{{ field_name }}"
+                                           value="{{ field_name }}"
+                                           {% if field_name in headers %}checked="checked"{% endif %}
+                                           data-group="{{ field.value_group }}">
                                     {{ field.label }}
                                 </label>
                             </li>
@@ -59,41 +66,50 @@
                         let checked = element.checked;
                         var group_sub_options = document.querySelectorAll(`input[data-group=${element.value}]`);
                         if (checked) {
-                            group_sub_options.forEach(function(el) {
+                            group_sub_options.forEach(function (el) {
                                 el.disabled = true;
                             })
                         } else {
-                            group_sub_options.forEach(function(el) {
+                            group_sub_options.forEach(function (el) {
                                 el.disabled = false;
-                                el.checked = false;
                             })
                         }
                     }
 
                     let group_checkboxes = document.querySelectorAll("input[type=checkbox][class=group_checkbox]");
-                    group_checkboxes.forEach(function(el) {
-                        el.addEventListener("click", function(event) {
+                    group_checkboxes.forEach(function (el) {
+                        el.addEventListener("click", function (event) {
                             disable_for_group(event.target);
                         })
                         disable_for_group(el);
                     })
-
+                    // Initially disable/enable without changing the checked state of the sub-options
+                    var group_sub_options = document.querySelectorAll(`input[data-group=${el.value}]`);
+                    if (el.checked) {
+                        group_sub_options.forEach(function (sub_el) {
+                            sub_el.disabled = true;
+                        });
+                    } else {
+                        group_sub_options.forEach(function (sub_el) {
+                            sub_el.disabled = false;
+                        });
+                    }
 
                 </script>
             </details>
         </aside>
 
-<p style="margin-top:1em">
-    <button type="submit" class="button">Filter</button>
-    <a class="button" href="{% url "data_export" %}{% query_string request.GET format='csv' %}">Download CSV</a>
-</p>
+        <p style="margin-top:1em">
+            <button type="submit" class="button">Filter</button>
+            <a class="button" href="{% url "data_export" %}{% query_string request.GET format='csv' %}">Download CSV</a>
+        </p>
 
 
     </form>
     <div style="overflow-x: scroll; max-width: 100%">
 
 
-        <table >
+        <table>
             <thead>
             <tr>
                 {% for header in headers %}

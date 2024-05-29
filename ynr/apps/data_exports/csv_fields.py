@@ -18,9 +18,11 @@ from collections import OrderedDict
 from dataclasses import dataclass
 from typing import Callable, Dict, Literal, Optional, Union
 
-from django.db.models import Expression
-from django.db.models.expressions import Case, Combinable, F, When
-from django.db.models.functions import Substr
+from django.core.files.storage import default_storage
+from django.db.models import BooleanField, CharField, Expression
+from django.db.models.expressions import Case, Combinable, F, Value, When
+from django.db.models.functions import Concat, Substr
+from django.template.defaultfilters import truncatechars
 from django.urls import reverse
 from django.utils.safestring import SafeString
 from ynr_refactoring.settings import PersonIdentifierFields
@@ -34,6 +36,7 @@ class CSVField:
     label: str
     core: bool = False
     formatter: Optional[Callable] = None
+    value_type: str = "str"
 
 
 def link_formatter(value, url):
@@ -94,6 +97,16 @@ csv_fields["election_current"] = CSVField(
     core=True,
     value_group="election",
     label="Current election (boolean)",
+)
+csv_fields["by_election"] = CSVField(
+    value=Case(
+        When(ballot_paper__ballot_paper_id__contains=".by.", then=Value(True)),
+        default=Value(False),
+        output_field=BooleanField(),
+    ),
+    type="expr",
+    value_group="election",
+    label="By-election (boolean)",
 )
 csv_fields["party_name"] = CSVField(
     value="party_name",
@@ -198,6 +211,7 @@ csv_fields["votes_cast"] = CSVField(
     value=F("membership__result__num_ballots"),
     value_group="results",
     label="Votes cast",
+    value_type="int",
 )
 
 csv_fields["elected"] = CSVField(
@@ -257,6 +271,54 @@ for identifier in PersonIdentifierFields:
         value_group="person",
         label=identifier.value,
     )
+
+csv_fields["gender"] = CSVField(
+    type="expr",
+    value=F("person__gender"),
+    value_group="person",
+    label="Gender",
+)
+
+csv_fields["birth_date"] = CSVField(
+    type="expr",
+    value=F("person__birth_date"),
+    value_group="person",
+    label="Year of birth",
+)
+
+csv_fields["favourite_biscuit"] = CSVField(
+    type="expr",
+    value=F("person__favourite_biscuit"),
+    value_group="person",
+    label="Favourite Biscuit",
+)
+csv_fields["statement_to_voters"] = CSVField(
+    type="expr",
+    value=F("person__biography"),
+    value_group="person",
+    label="Statement to voters",
+    formatter=lambda value: truncatechars(value, 100),
+)
+
+storages_url = default_storage.url("")
+
+csv_fields["image"] = CSVField(
+    type="expr",
+    value=Case(
+        When(
+            person__image__image__isnull=False,
+            then=Concat(
+                Value(storages_url),
+                F("person__image__image"),
+                output_field=CharField(),
+            ),
+        ),
+        default=Value(None),
+        output_field=CharField(),
+    ),
+    value_group="person",
+    label="Image URL",
+)
 
 
 def get_core_fieldnames():
