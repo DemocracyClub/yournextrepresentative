@@ -218,10 +218,8 @@ with the source: \n> {source}
     def post_message(self):
         self.sh.post_message(
             getattr(settings, "SLACK_REVIEW_CHANNEL", "C59LHLH7A"),
-            text="Edit to {}".format(self.logged_action.person.name),
+            "Edit to {}".format(self.logged_action.person.name),
             blocks=self.message,
-            username=settings.CANDIDATE_BOT_USERNAME,
-            icon_emoji=":robot_face:",
         )
 
 
