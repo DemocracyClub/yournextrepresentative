@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load completeness_filter %}
+
+{% block hero %}
+    <h1>
+        Candidate profile completeness for {{ election }}
+    </h1>
+
+{% endblock hero %}
+
+
+{% block content %}
+
+    <form action="" method="get">
+        <aside class="ds-filter">
+            <details>
+                <summary>Filters</summary>
+                <div class="ds-advanced-filters">
+                    <div class="ds-filter-cluster">
+                        {% for field in filter_set.form %}
+                            {% if not field.is_hidden %}
+                                <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+
+                                    <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label"
+                                        aria-hidden="true">
+                                        {{ field.label }}:
+                                        {{ field }}
+                                    </li>
+
+                                </ul>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <p style="margin-top:1em">
+                    <button type="submit" class="button">Filter</button>
+                </p>
+            </details>
+        </aside>
+    </form>
+
+    <h2>Stats</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Field</th>
+            <th>%</th>
+            <th>Filter</th>
+        </tr>
+        </thead>
+
+        {% for label, percentage in percentages.items %}
+            <tr>
+                <th>{{ label }}</th>
+                <td>{{ percentage|floatformat:"0" }}%</td>
+                <td>
+                    {% completeness_filter_links label %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+    <div style="overflow-x: scroll; max-width: 100%">
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Person</th>
+                <th>Ballot</th>
+                <th>Party</th>
+                {% for identifier_field in identifier_fields %}
+                    <th>{{ identifier_field }}</th>
+                {% endfor %}
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for membership in qs %}
+                <tr>
+                    <td><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a></td>
+                    <td>
+                        <a href="{{ membership.ballot_paper.get_absolute_url }}">{{ membership.ballot_paper.ballot_paper_id }}</a>
+                    </td>
+                    <td>{{ membership.party_name }}</td>
+                    {% for identifier_field in identifier_fields %}
+                        <th>{% model_attr membership identifier_field %}</th>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

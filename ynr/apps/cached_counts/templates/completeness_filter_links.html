@@ -1,0 +1,21 @@
+<td>
+    {% if not has_value %}
+        All
+    {% else %}
+        <a href="{{ all_url }}">All</a>
+
+    {% endif %}
+    |
+    {% if has_value == 'yes' %}
+        With
+    {% else %}
+        <a href="{{ with_url }}">With</a>
+    {% endif %}
+    |
+    {% if has_value == 'no' %}
+        Without
+    {% else %}
+        <a href="{{ without_url }}">Without</a>
+    {% endif %}
+
+</td>

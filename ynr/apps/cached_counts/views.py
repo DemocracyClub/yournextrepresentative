@@ -2,14 +2,17 @@ import json
 from typing import Tuple, Type
 
 from candidates.models import Ballot
-from django.db.models import Count
+from data_exports.models import MaterializedMemberships
+from django.db.models import Count, F
 from django.http import Http404, HttpResponse
 from django.views.generic import DetailView, TemplateView
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from parties.models import Party
 from popolo.models import Membership
+from ynr_refactoring.settings import PersonIdentifierFields
 
+from .filters import CompletenessFilter
 from .models import ElectionReport, get_attention_needed_posts
 from .report_helpers import (
     BallotsContestedPerParty,
@@ -167,5 +170,29 @@ class ElectionReportView(DetailView):
             )
             report.run()
             context["reports"][report.__class__.__name__] = report
+
+        return context
+
+
+class CandidateCompletenessView(ElectionMixin, TemplateView):
+    template_name = "candidate_completeness.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = MaterializedMemberships.objects.filter(
+            ballot_paper__election__slug=self.election
+        ).select_related("person", "ballot_paper")
+
+        identifier_fields = sorted(pi.name for pi in PersonIdentifierFields)
+        annotations = {}
+        for field in identifier_fields:
+            annotations[field] = F(f"identifiers__{field}")
+        qs = qs.annotate(**annotations)
+
+        filter_set = CompletenessFilter(self.request.GET, queryset=qs)
+        context["filter_set"] = filter_set
+        context["qs"] = filter_set.qs
+        context["percentages"] = filter_set.qs.percentage_for_fields()
+        context["identifier_fields"] = identifier_fields
 
         return context

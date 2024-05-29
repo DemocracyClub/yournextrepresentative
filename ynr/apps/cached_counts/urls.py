@@ -2,6 +2,7 @@ from django.urls import re_path
 
 from .views import (
     AttentionNeededView,
+    CandidateCompletenessView,
     ConstituencyCountsView,
     ElectionReportView,
     PartyCountsView,
@@ -24,6 +25,11 @@ urlpatterns = [
         r"^election/(?P<election>[-\w\.0-9]+)/posts$",
         ConstituencyCountsView.as_view(),
         name="posts_counts",
+    ),
+    re_path(
+        r"^election/(?P<election>[-\w\.0-9]+)/completeness$",
+        CandidateCompletenessView.as_view(),
+        name="candidate_completeness",
     ),
     re_path(
         r"^report/(?P<report_slug>[-\w\.0-9]+)/$",
