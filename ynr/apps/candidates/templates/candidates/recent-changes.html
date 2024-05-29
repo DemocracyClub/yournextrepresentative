@@ -91,7 +91,7 @@
       <td style="overflow: scroll; width: 15%">{{ action.source }}</td>
       <td>
         {% if action.flagged_reason %}
-        ⚠
+         <small style="display:inline-block;max-width:20ch;color:red;">⚠ {{ action.flagged_reason }}</small>
         {% endif %}
       </td>
       {% if action.diff_html %}
