@@ -11,12 +11,15 @@ class SlackHelper:
             self.client = Slacker(settings.SLACK_TOKEN)
         self.user = user
 
-    def post_message(self, to, message_text, attachments=None, extra_dict=None):
+    def post_message(
+        self, to, message_text, blocks=None, attachments=None, extra_dict=None
+    ):
         kwargs = {
             "username": self.user,
             "icon_emoji": ":robot_face:",
             "text": message_text,
             "attachments": attachments,
+            "blocks": blocks,
         }
         if extra_dict:
             kwargs.update(extra_dict)

@@ -340,11 +340,11 @@ REVIEW_TYPES = (
         label="Automated moderation of statement",
         cls=OpenAIModerationReview,
     ),
-    ReviewType(
-        type="needs_review_due_to_statement_edit",
-        label="Edit of a statement to voters",
-        cls=CandidateStatementEditDecider,
-    ),
+    # ReviewType(
+    #     type="needs_review_due_to_statement_edit",
+    #     label="Edit of a statement to voters",
+    #     cls=CandidateStatementEditDecider,
+    # ),
     ReviewType(
         type="needs_review_due_to_current_candidate_name_change",
         label="Edit of name of current candidate",

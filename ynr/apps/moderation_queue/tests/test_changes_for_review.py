@@ -498,8 +498,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         #    1 edit from a user who was mostly active in the past to the
         #      prime minister's record
         #    1 constituency-lock from a new user
-        #    1 edit of a biography field
-        self.assertEqual(needs_review_qs.count(), 1 + 3 + 1 + 1 + 1 + 1)
+        self.assertEqual(needs_review_qs.count(), 1 + 3 + 1 + 1 + 1)
         results = [
             (la.user.username, la.action_type, la.flagged_reason)
             for la in needs_review_qs
@@ -542,11 +541,6 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
                     "new_suddenly_lots",
                     "person-update",
                     "One of the first 3 edits of user new_suddenly_lots",
-                ),
-                (
-                    "lapsed_experienced",
-                    "person-update",
-                    "Edit of a statement to voters",
                 ),
             ],
         )
@@ -605,12 +599,6 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
             b"<author><name>new_suddenly_lots</name></author>"
             b"<id>needs-review:2002</id>"
             b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/2009"&gt;Tessa Jowell (2009)&lt;/a&gt; by new_suddenly_lots with source: \xe2\x80\x9c Just for tests \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\nOne of the first 3 edits of user new_suddenly_lots\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>'
-            b"<entry><title>Yoshi Aarle (**YoshiAarleID**) - person-update</title>"
-            b'<link href="http://example.com/person/**YoshiAarleID**" rel="alternate"></link>'
-            b"<updated>2017-05-02T16:30:05+00:00</updated>"
-            b"<author><name>lapsed_experienced</name></author>"
-            b"<id>needs-review:**laID**</id>"
-            b'<summary type="html">&lt;p&gt;person-update of &lt;a href="/person/**YoshiAarleID**"&gt;Yoshi Aarle (**YoshiAarleID**)&lt;/a&gt; by lapsed_experienced with source: \xe2\x80\x9c just a test \xe2\x80\x9d;&lt;/p&gt;\n&lt;ul&gt;\nEdit of a statement to voters\n&lt;/ul&gt;&lt;/p&gt;&lt;div style="color: red"&gt;Fake diff&lt;/div&gt;</summary></entry>'
             b"</feed>"
         )
 
