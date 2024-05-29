@@ -53,6 +53,16 @@ urlpatterns = [
         name="person-split",
     ),
     re_path(
+        r"^person/(?P<person_id>\d+)/review/?$",
+        views.ReviewPersonSplitView.as_view(),
+        name="review_split_person",
+    ),
+    re_path(
+        r"^person/(?P<person_id>\d+)/confirm_split/?$",
+        views.ConfirmPersonSplitView.as_view(),
+        name="confirm_split_person",
+    ),
+    re_path(
         r"^person/create/select_election$",
         views.NewPersonSelectElectionView.as_view(),
         name="person-create-select-election",

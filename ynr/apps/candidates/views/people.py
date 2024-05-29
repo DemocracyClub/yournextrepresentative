@@ -13,9 +13,9 @@ from django.http import (
     HttpResponsePermanentRedirect,
     HttpResponseRedirect,
 )
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, TemplateView, UpdateView, View
@@ -514,6 +514,7 @@ class PersonSplitView(FormView):
 
     def get_initial_data(self, form_class=None):
         person = self.get_person()
+        #: TO DO: Figure out how to return attribute names and values only for those that are not empty
         return [
             {"attribute_name": "name", "attribute_value": person.name},
             # {"attribute_name": "image", "attribute_value": person.image.image if person.image else None},
@@ -542,10 +543,8 @@ class PersonSplitView(FormView):
         ]
 
     def get_form(self, form_class=None):
-        initial_data = self.get_initial_data()
-        print("Initial Data:", initial_data)
         return PersonSplitFormSet(
-            initial=self.get_initial_data(form_class),
+            initial=self.get_initial_data(),
         )
 
     def get_person(self):
@@ -555,7 +554,7 @@ class PersonSplitView(FormView):
     def form_valid(self, formset):
         choices = {
             "keep": [],
-            "add": [],
+            "move": [],
             "both": [],
         }
         for form in formset:
@@ -577,12 +576,21 @@ class PersonSplitView(FormView):
 
     def post(self, request, *args, **kwargs):
         formset = PersonSplitFormSet(request.POST)
-        print("POST Data:", request.POST)  # Print POST data to inspect
         if formset.is_valid():
             return self.form_valid(formset)
-
-        print("Formset Errors:", formset.errors)
         return self.form_invalid(formset)
+
+
+class ReviewPersonSplitView(TemplateView):
+    template_name = "people/review_split_person.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["choices"] = self.request.session.get("choices", {})
+        context["person"] = get_object_or_404(
+            Person, pk=self.request.session.get("person_id")
+        )
+        return context
 
 
 class NewPersonSelectElectionView(LoginRequiredMixin, FormView):

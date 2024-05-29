@@ -406,19 +406,14 @@ class UpdatePersonForm(BasePersonForm):
 
 
 class PersonSplitForm(forms.Form):
+    CHOICES = [
+        ("keep", "Keep for original person"),
+        ("move", "Move to a new person"),
+        ("both", "Do both"),
+    ]
     attribute_name = forms.CharField(widget=forms.HiddenInput())
-    attribute_value = forms.CharField(
-        widget=forms.TextInput(attrs={"readonly": "readonly"})
-    )
-
-    choice = forms.ChoiceField(
-        choices=[
-            ("keep", "Keep"),
-            ("add", "Add"),
-            ("both", "Both"),
-        ],
-        widget=forms.RadioSelect,
-    )
+    attribute_value = forms.CharField(widget=forms.HiddenInput())
+    choice = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect)
 
 
 PersonSplitFormSet = formset_factory(PersonSplitForm, extra=0)

@@ -29,15 +29,18 @@
 
                 <tr>
                     <td>{{ form.attribute_name.value }}</td>
-                    {% if form.attribute_name.value == "image" and form.attribute_value.value %}
-                        {% thumbnail form.attribute_value.value "100x100" as im %}
-                            <td><img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}"></td>
-                        {% endthumbnail %} 
-                    {% elif form.attribute_name.value == "image" and not form.attribute_value.value %}
-                        <td>No image available</td>
-                    {% else %}
-                        <td>{{ form.attribute_value.value }}</td>
-                    {% endif %}
+                    <td>
+                        {% if form.attribute_name.value == "image"  %}
+                            {% thumbnail form.attribute_value.value "100x100" as im %}
+                                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                            {% endthumbnail %} 
+                        {% else %}
+                                {{ form.attribute_value.value }}
+                        {% endif %}
+
+                        {{ form.attribute_name }}
+                        {{ form.attribute_value }}
+                    </td>
                     <td>{{ form.choice.0 }}</td>
                     <td>{{ form.choice.1 }}</td>
                     <td>{{ form.choice.2 }}</td>
