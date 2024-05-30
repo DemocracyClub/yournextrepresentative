@@ -4,7 +4,7 @@ import django_filters
 from django.db.models import CharField, Q
 from django.db.models.functions import Cast
 from django_filters import BaseInFilter
-from elections.filters import DSLinkWidget
+from elections.filters import DSLinkWidget, region_choices
 
 from .csv_fields import CSVField
 from .models import MaterializedMemberships
@@ -56,6 +56,13 @@ class MaterializedMembershipFilter(django_filters.FilterSet):
         widget=DSLinkWidget(),
     )
 
+    filter_by_region = django_filters.ChoiceFilter(
+        widget=DSLinkWidget(),
+        method="region_filter",
+        label="Filter by region",
+        choices=region_choices,
+    )
+
     elected = django_filters.ChoiceFilter(
         field_name="elected",
         label="Elected",
@@ -90,6 +97,12 @@ class MaterializedMembershipFilter(django_filters.FilterSet):
             "election_id",
             "party_id",
         ]
+
+    def region_filter(self, queryset, name, value):
+        """
+        Filter queryset by region using the NUTS1 code
+        """
+        return queryset.filter(ballot_paper__tags__NUTS1__key__in=[value])
 
     def filter_null_or_empty_str(self, queryset, name, value):
         annotation = {}
