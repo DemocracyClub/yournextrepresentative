@@ -146,6 +146,10 @@ class PersonIdentifierForm(forms.ModelForm):
 
     def clean_email(self, email):
         validate_email(email)
+        if email.lower().endswith("parliament.uk"):
+            raise ValidationError(
+                "MPs are locked out of their email addresses during a general election. Please find a different email address."
+            )
         return email
 
     def save(self, commit=True):
