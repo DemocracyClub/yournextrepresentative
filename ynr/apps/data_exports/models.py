@@ -2,9 +2,11 @@ from typing import List, Optional, TextIO
 
 from data_exports.csv_fields import csv_fields, get_core_fieldnames
 from django.db import connection, models, transaction
-from django.db.models import JSONField
+from django.db.models import Count, IntegerField, JSONField
+from django.db.models.expressions import Case, When
 from django.db.models.functions import Coalesce
 from utils.db import LastWord, NullIfBlank
+from ynr_refactoring.settings import PersonIdentifierFields
 
 
 class MaterializedModelMixin:
@@ -94,6 +96,27 @@ class MaterializedMembershipsQuerySet(models.QuerySet):
             with cur.copy(sql) as copy:
                 for row in copy:
                     file_like.write(row)
+
+    def percentage_for_fields(self):
+        identifier_fields = sorted(pi.name for pi in PersonIdentifierFields)
+        total_rows = self.count()
+        annotations = {}
+        for field in identifier_fields:
+            annotations[field] = Count(
+                Case(
+                    When(**{f"identifiers__{field}__isnull": False}, then=1),
+                    output_field=IntegerField(),
+                )
+            )
+
+        results = self.aggregate(**annotations)
+        ret = {}
+        for field, count in results.items():
+            if not count:
+                ret[field] = 0
+                continue
+            ret[field] = (count / total_rows) * 100
+        return ret
 
 
 class MaterializedMemberships(MaterializedModelMixin, models.Model):

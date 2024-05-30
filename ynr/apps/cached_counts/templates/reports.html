@@ -36,16 +36,21 @@
               {% with election_name=election.name %}
                 <h4>Statistics for the {{ election_name }}</h4>
                 <ul>
-                  <li>Total candidates: {{ election.total }}</li>
-                  <li><a href="{% url "posts_counts" election=election.id %}">Candidates per post</a></li>
-                  <li>
-                    <a href="{% url "parties_counts" election=election.id %}">Candidates per party</a>
-                  </li>
-                  <li>
-                    <a href="{% url "constituencies-unlocked" election=election.id %}">
-                      See progress towards locking all posts
-                    </a>
-                  </li>
+                    <li>Total candidates: {{ election.total }}</li>
+                    <li><a href="{% url "posts_counts" election=election.id %}">Candidates per post</a></li>
+                    <li>
+                        <a href="{% url "parties_counts" election=election.id %}">Candidates per party</a>
+                    </li>
+                    <li>
+                        <a href="{% url "constituencies-unlocked" election=election.id %}">
+                            See progress towards locking all posts
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url "candidate_completeness" election=election.id %}">
+                            Candidate profile completeness
+                        </a>
+                    </li>
                 </ul>
               {% endwith %}
             </div>
