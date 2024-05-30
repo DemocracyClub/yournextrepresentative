@@ -58,7 +58,7 @@ urlpatterns = [
         name="review_split_person",
     ),
     re_path(
-        r"^person/(?P<person_id>\d+)/confirm_split/?$",
+        r"^person/(?P<person_id>\d+)/confirm_split_person/(?P<new_person_id>\d+)?/?$",
         views.ConfirmPersonSplitView.as_view(),
         name="confirm_split_person",
     ),

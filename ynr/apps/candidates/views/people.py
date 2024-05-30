@@ -593,6 +593,69 @@ class ReviewPersonSplitView(TemplateView):
         return context
 
 
+class ConfirmPersonSplitView(TemplateView):
+    template_name = "people/confirm_split_person.html"
+
+    def get_success_url(self, person_id, new_person_id=None):
+        person_id = self.kwargs.get("person_id")
+        if new_person_id:
+            return reverse(
+                "confirm_split_person",
+                kwargs={"person_id": person_id, "new_person_id": new_person_id},
+            )
+        return reverse("confirm_split_person", kwargs={"person_id": person_id})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        person_id = kwargs.get("person_id")
+        context["person"] = get_object_or_404(Person, pk=person_id)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        person_id = self.request.session.get("person_id")
+        person = get_object_or_404(Person, pk=person_id)
+        choices = request.session.get("choices", {})
+        new_person_data = self.split(person, choices)
+        new_person_id = new_person_data.id if new_person_data else None
+        return redirect(
+            self.get_success_url(
+                person_id=person_id, new_person_id=new_person_id
+            )
+        )
+
+    def split(self, person, choices):
+        person_id = person.id
+        new_person = None
+        if not choices:
+            # TODO: ADD A MESSAGE TO SAY THAT NO CHOICES WERE MADE?
+            # TODO: Do we even need to do this?
+            return redirect("person-view", person_id=person_id)
+        if choices["both"] or choices["move"]:
+            new_person = Person.objects.create()
+        for choice in choices["keep"]:
+            for key, value in choice.items():
+                setattr(person, key, value)
+            person.save()
+        for choice in choices["move"]:
+            # create a new person with the chosen attribute values
+            new_person = Person.objects.create()
+            for key, value in choice.items():
+                setattr(new_person, key, value)
+            # remove this attribute from the original person
+            # TODO: however if this is a required person field, such as name, how can we handle it?
+            # perhaps we need to add a text input to the form in the previous step
+            # to allow the user to enter a new value
+            for key, value in choice.items():
+                setattr(person, key, None)
+        for choice in choices["both"]:
+            # create a new person with the chosen attribute values
+            for key, value in choice.items():
+                setattr(new_person, key, value)
+        person.save()
+        new_person.save()
+        return new_person
+
+
 class NewPersonSelectElectionView(LoginRequiredMixin, FormView):
     """
     For when we know new person's name, but not the election they are standing
