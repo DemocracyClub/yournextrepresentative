@@ -39,6 +39,8 @@ To populate the database run from the live site run:
 python manage.py candidates_import_from_live_site
 ```
 
+(Note that this command will take multiple hours to complete.)
+
 ## Build frontend assets
 
 ```
