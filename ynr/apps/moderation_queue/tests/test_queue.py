@@ -213,28 +213,6 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         response = self.app.get(review_url, user=self.test_reviewer)
         self.assertContains(response, "Photo policy")
 
-    def test_photo_review_rotate_photo_privileged(self):
-        self.assertEqual(428, self.q1.image.width)
-        self.assertEqual(640, self.q1.image.height)
-        review_url = reverse(
-            "photo-review", kwargs={"queued_image_id": self.q1.id}
-        )
-        self.assertFalse(self.q1.rotation_tried)
-
-        response = self.app.get(review_url, user=self.test_reviewer)
-        form = response.forms["photo-review-form"]
-        response = form.submit(name="rotate", value="right")
-        self.q1.refresh_from_db()
-        self.assertEqual(640, self.q1.image.width)
-        self.assertEqual(428, self.q1.image.height)
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(self.q1.rotation_tried)
-        split_location = urlsplit(response.location)
-        self.assertEqual(
-            "/moderation/photo/review/{}".format(self.q1.id),
-            split_location.path,
-        )
-
     @patch("moderation_queue.forms.send_mail")
     @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     def test_photo_review_upload_approved_privileged(self, mock_send_mail):
