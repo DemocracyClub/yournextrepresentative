@@ -43,7 +43,7 @@
   also do a <a href="{{ google_reverse_image_search_url }}">reverse image
   search</a> on the uploaded image.</p>
 
-  <h3>Click and drag in the image to crop</h3>
+  <h4>Click and drag in the image to crop</h4>
 
   <p>Please crop to just around the candidate's head, since
   they're displayed in thumbnail form on the site.</p>
@@ -89,12 +89,15 @@
         {{ form.y_max }}
       </p>
     </div>
-
-    <h3>Rotate the image as needed</h3>
-    <input type="hidden" name="queued_image_id" value="{{ queued_image.id }}">
-    <button name="rotate" type="submit" value="left">Anti-clockwise ⟲</button>
-    <button name="rotate" type="submit" value="right">Clockwise ⟳</button>
-
+    <div class=col-6>
+      <p>Rotate the image as needed</p>
+    </div>
+    <div class=col-6>
+      <input type="hidden" name="queued_image_id" value="{{ queued_image.id }}">
+      <button class="tiny" name="rotate" type="submit" value="left">Anti-clockwise ⟲</button>
+      <button class="tiny" name="rotate" type="submit" value="right">Clockwise ⟳</button>
+    </div>
+  
     <p>
     {% if queued_image.detection_metadata and queued_image.user.is_superuser %}
       <details>
@@ -106,7 +109,7 @@
     {% endif %}
     </p>
  
-  <h3>User-submitted information</h3>
+  <h4>User-submitted information</h4>
 
   <p>
     Uploaded by user <tt>{{ username }}</tt>.
@@ -140,7 +143,7 @@
       </p>
     {% endif %}
 
-    <h3>Your decision</h3>
+    <h4>Your decision</h4>
 
     <div id="moderator-photo-decision">
 
