@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from dateutil.parser import parse
 from django.db.models import Count, F
 from django.utils import timezone
 
@@ -20,6 +21,11 @@ class ContributorsMixin(object):
             #     timezone.make_aware(parse("2024-03-01")),
             #     timezone.make_aware(parse("2024-05-31")),
             # ),
+            (
+                "Since the 4 July 2024 General Election Announcement",
+                timezone.make_aware(parse("2024-05-22")),
+                timezone.now(),
+            ),
         ]
         if all_time:
             boards.insert(0, ("All Time", None, None))
