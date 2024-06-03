@@ -276,8 +276,10 @@ class BallotSOPN(BaseBallotSOPN):
             # There's a cron job that should pick up the result and carry on parsing later.
             textract_helper.start_detection()
 
-        # Camelot
-        if self.uploaded_file.name.endswith(".pdf"):
+        if getattr(
+            settings, "CAMELOT_ENABLED", False
+        ) and self.uploaded_file.name.endswith(".pdf"):
+            # Camelot
             extract_ballot_table(self.ballot)
 
 

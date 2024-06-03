@@ -44,6 +44,7 @@ class TextractSOPNHelper:
         self.upload_path = upload_path
         if not any((self.bucket_name, self.upload_path)):
             raise NotUsingAWSException()
+
         self.extractor = Textractor(region_name="eu-west-2")
 
     def start_detection(self, replace=False) -> Optional[AWSTextractParsedSOPN]:
