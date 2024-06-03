@@ -15,5 +15,6 @@
         app_path: "{{ project_root }}/code"
         virtualenv: "{{ project_root }}/env"
       with_items:
-        - { name: "2024 Locals", "url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vTN0CXNZGfWFUlcVBGfGbvnHapjzoUICe4Q3ahDlpSZZOCTMIWNo2zw3Yvy71wYQiVLju4HiyVBeski/pub?output=csv" }
+        - { name: "2024 General Election", "url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnjgy1HCQBHtQovwRNuoVA3-jVcGluRvlKFx0ad5IjXEB9PjHQPr-8DqzvqYb9EjF7OwMGtq8uHGnF/pub?output=csv"}
+        # - { name: "2024 Locals", "url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vTN0CXNZGfWFUlcVBGfGbvnHapjzoUICe4Q3ahDlpSZZOCTMIWNo2zw3Yvy71wYQiVLju4HiyVBeski/pub?output=csv" }
         # - { name: "2023 NI", "url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-S4lA6qKxeFbxL-e7DM9WeFEBzaqQvQbfeM4GWNln55C4gANfOVTL0bsWKhwm_iV-_MIUulTGhdUI/pub?gid=752865614&single=true&output=csv" }
