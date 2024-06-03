@@ -267,6 +267,7 @@ class TestModels(TestUserMixin, WebTest):
         )
 
         self.assertInHTML("Upload SOPN", response.text)
+        self.assertNotContains(response, "Replacement reason")
 
         response = self.app.get(
             reverse(
@@ -293,13 +294,20 @@ class TestModels(TestUserMixin, WebTest):
             ),
             user=self.user_who_can_upload_documents,
         )
+        self.assertInHTML("Replacement reason", response.text)
+
         form = response.forms["document-upload-form"]
         form["source_url"] = "http://example.org/foo"
+        form["replacement_reason"] = "It's the point of the test"
         with open(self.example_image_filename, "rb") as f:
             form["uploaded_file"] = Upload("pilot.jpg", f.read())
         response = form.submit()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(BallotSOPN.objects.count(), 1)
+        self.assertEqual(
+            BallotSOPN.objects.first().replacement_reason,
+            "It's the point of the test",
+        )
         self.assertEqual(BallotSOPNHistory.objects.count(), 2)
         self.assertEqual(LoggedAction.objects.count(), 2)
 
@@ -321,6 +329,10 @@ class TestModels(TestUserMixin, WebTest):
             
             http://testserver/elections/parl.dulwich-and-west-norwood.2015-05-07/sopn/
             
+            Their reason for the new upload was:
+
+            > "It's the point of the test"
+
             """
             ),
         )

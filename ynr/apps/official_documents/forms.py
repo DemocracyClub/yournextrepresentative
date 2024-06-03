@@ -17,6 +17,11 @@ from sopn_parsing.helpers.convert_pdf import (
 class SOPNUploadFormMixin:
     SUPPORTED_FILE_TYPES = []
 
+    def __init__(self: forms.ModelForm, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if kwargs.get("instance") and kwargs["instance"].pk:
+            self.fields["replacement_reason"] = forms.CharField()
+
     def clean_uploaded_file(self):
         if pasted_data := self.data.get("fileData"):
             file_format, imgstr = pasted_data.split(";base64,")

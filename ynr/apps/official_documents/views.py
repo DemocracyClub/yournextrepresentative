@@ -67,9 +67,9 @@ class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
         be parsed. We always save the file even if it cannot be parsed, then
         create a LoggedAction and redirect the user.
         """
+        replacement = False
         if self.object.pk:
-            send_ballot_sopn_update_notification(self.object, self.request)
-
+            replacement = True
         self.object = add_ballot_sopn(
             ballot=form.cleaned_data["ballot"],
             pdf_content=ContentFile(
@@ -77,7 +77,11 @@ class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
                 form.cleaned_data["uploaded_file"].name,
             ),
             source_url=form.cleaned_data["source_url"],
+            replacement_reason=form.cleaned_data.get("replacement_reason"),
         )
+        if replacement:
+            send_ballot_sopn_update_notification(self.object, self.request)
+
         try:
             if hasattr(self.object.ballot, "rawpeople"):
                 self.object.ballot.rawpeople.delete()
@@ -86,7 +90,7 @@ class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
             # extract_ballot_table(ballot=self.object.ballot)
             # parse_raw_data_for_ballot(ballot=self.object.ballot)
         except (ValueError, NoTextInDocumentError):
-            # If PDF couldnt be parsed continue
+            # If PDF couldn't be parsed continue
             # TODO should be log this error?
             pass
 

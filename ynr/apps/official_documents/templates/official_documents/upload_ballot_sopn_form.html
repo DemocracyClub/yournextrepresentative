@@ -22,11 +22,16 @@
     <form id="document-upload-form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.errors }}
+        {{ form.non_field_errors }}
         {{ form.uploaded_file }}
 
-        {{ form.source_url.label }}
+        <label for="{{ form.source_url.id_for_label }}">{{ form.source_url.label }}</label>
         {{ form.source_url }}
 
+        {% if form.replacement_reason %}
+            <label for="{{ form.replacement_reason.id_for_label }}">{{ form.replacement_reason.label }}</label>
+            {{ form.replacement_reason }}
+        {% endif %}
         {% for field in form.hidden_fields %}
             {{ field }}
         {% endfor %}
