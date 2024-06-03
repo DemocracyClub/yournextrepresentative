@@ -72,7 +72,7 @@ SOPN_TRACKER_INFO = {
     "election_date": "2024-07-04",
     "election_name": "2024 general election",
 }
-SOPN_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTN0CXNZGfWFUlcVBGfGbvnHapjzoUICe4Q3ahDlpSZZOCTMIWNo2zw3Yvy71wYQiVLju4HiyVBeski/pub?output=csv"
+SOPN_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnjgy1HCQBHtQovwRNuoVA3-jVcGluRvlKFx0ad5IjXEB9PjHQPr-8DqzvqYb9EjF7OwMGtq8uHGnF/pub?output=csv"
 SOPN_DATES = [
     # ("Scotland", date(year=2023, month=3, day=30)),
     ("England and Wales", date(year=2024, month=4, day=5)),
