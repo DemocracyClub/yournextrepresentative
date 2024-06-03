@@ -143,6 +143,13 @@ class ElectionSOPN(TimeStampedModel):
         max_length=255, choices=PageMatchingMethods.choices, null=True
     )
 
+    replacement_reason = models.CharField(
+        verbose_name="Reason for replacement",
+        help_text="Please be as descriptive as possible to explain why the replacement SOPN is needed",
+        max_length=255,
+        blank=True,
+    )
+
     class Meta:
         get_latest_by = "modified"
 
@@ -204,6 +211,13 @@ class BaseBallotSOPN(TimeStampedModel):
         max_length=20,
         help_text="The pages in the ElectionSOPN that relate to this Ballot",
         default="all",
+    )
+
+    replacement_reason = models.CharField(
+        verbose_name="Reason for replacement",
+        help_text="Please be as descriptive as possible to explain why the replacement SOPN is needed",
+        max_length=255,
+        blank=True,
     )
 
     class Meta:
@@ -280,17 +294,21 @@ def add_ballot_sopn(
     pdf_content: ContentFile,
     source_url: str,
     relevant_pages: str = "all",
+    replacement_reason=None,
     parse=True,
 ):
     """
     Manage creating BallotSOPNs with history
     """
+    if not replacement_reason:
+        replacement_reason = ""
 
     BallotSOPNHistory.objects.create(
         ballot=ballot,
         relevant_pages=relevant_pages,
         uploaded_file=pdf_content,
         source_url=source_url,
+        replacement_reason=replacement_reason,
     )
 
     BallotSOPN.objects.filter(ballot=ballot).delete()
@@ -299,6 +317,7 @@ def add_ballot_sopn(
         relevant_pages=relevant_pages,
         uploaded_file=pdf_content,
         source_url=source_url,
+        replacement_reason=replacement_reason,
     )
     if parse:
         ballot_sopn.parse()
@@ -315,6 +334,10 @@ def send_ballot_sopn_update_notification(ballot_sopn: BallotSOPN, request):
     You can see this newly uploaded SOPN here:
     
     {request.build_absolute_uri(ballot_sopn.get_absolute_url())}
+    
+    Their reason for the new upload was:
+    
+    > "{ballot_sopn.replacement_reason}"
     
     """
     )
