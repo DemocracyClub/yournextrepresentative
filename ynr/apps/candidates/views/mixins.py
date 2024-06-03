@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from dateutil.parser import parse
+from django.contrib.auth.models import User
 from django.db.models import Count, F
 from django.utils import timezone
 
@@ -63,3 +64,8 @@ class ContributorsMixin(object):
             .select_related("user", "person", "ballot", "ballot__post")
             .order_by("-created")
         )
+
+    def get_num_new_users(self):
+        """Return the number of new users
+        created since the GE 2024 announcement."""
+        return User.objects.filter(date_joined__gt=parse("2024-05-22")).count()  # noqa

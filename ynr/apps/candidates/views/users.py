@@ -41,6 +41,7 @@ class LeaderboardView(ContributorsMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["leaderboards"] = self.get_leaderboards()
+        context["num_new_users"] = self.get_num_new_users()
         return context
 
 
