@@ -197,6 +197,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
                 "by_election",
                 "gss",
                 "post_id",
+                "candidates_locked",
                 "nuts1",
                 "organisation_name",
             ],

@@ -23,6 +23,11 @@ CANCELLED_CHOICES = {
     ("False", "Not cancelled"),
 }
 
+LOCKED_CHOICES = {
+    ("True", "Locked"),
+    ("False", "Unlocked"),
+}
+
 
 class BallotPaperText(django_filters.CharFilter):
     field_name = "ballot_paper_id"
@@ -85,6 +90,12 @@ class MaterializedMembershipFilter(django_filters.FilterSet):
     )
     cancelled = django_filters.ChoiceFilter(
         field_name="ballot_paper__cancelled", choices=CANCELLED_CHOICES
+    )
+
+    locked = django_filters.ChoiceFilter(
+        field_name="ballot_paper__candidates_locked",
+        empty_label="All",
+        choices=LOCKED_CHOICES,
     )
 
     class Meta:
@@ -153,6 +164,8 @@ def create_materialized_membership_filter(
         ...
 
     for field_name, field in fields:
+        if not field.dynamic_filter:
+            continue
         method = "filter_null_or_empty_str"
         if field.value_type == "int":
             method = "filter_null_or_empty_int"

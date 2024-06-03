@@ -37,6 +37,7 @@ class CSVField:
     core: bool = False
     formatter: Optional[Callable] = None
     value_type: str = "str"
+    dynamic_filter: bool = True
 
 
 def link_formatter(value, url):
@@ -179,6 +180,13 @@ csv_fields["cancelled_poll"] = CSVField(
     core=True,
     value_group="election",
     label="Cancelled poll (boolean)",
+)
+csv_fields["candidates_locked"] = CSVField(
+    type="expr",
+    value=F("ballot_paper__candidates_locked"),
+    value_group="election",
+    label="Candidates locked (boolean)",
+    dynamic_filter=False,
 )
 csv_fields["nuts1"] = CSVField(
     type="expr",
