@@ -75,8 +75,9 @@ SOPN_TRACKER_INFO = {
 SOPN_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnjgy1HCQBHtQovwRNuoVA3-jVcGluRvlKFx0ad5IjXEB9PjHQPr-8DqzvqYb9EjF7OwMGtq8uHGnF/pub?output=csv"
 SOPN_DATES = [
     # ("Scotland", date(year=2023, month=3, day=30)),
-    ("England and Wales", date(year=2024, month=4, day=5)),
+    # ("England and Wales", date(year=2024, month=4, day=5)),
     # ("Northern Ireland", date(year=2023, month=4, day=24)),
+    ("Great Britain", date(year=2024, month=7, day=4)),
 ]
 
 DATA_DOWNLOAD_INFO = {
@@ -85,7 +86,7 @@ DATA_DOWNLOAD_INFO = {
     "election_regex": "parl.2024-07-04",
 }
 
-SCHEDULED_ELECTION_DATES = ["2024-05-02", "2024-05-18"]
+SCHEDULED_ELECTION_DATES = ["2024-07-04"]
 
 STATICFILES_STORAGE = "ynr.storages.StaticStorage"
 DEFAULT_FILE_STORAGE = "ynr.storages.MediaStorage"
