@@ -385,6 +385,13 @@ class ECParty(dict):
                 emblem.active = False
                 emblem.save()
 
+        # if the length of the emblem list is 1,
+        # then we should import the emblem just in case it has change
+        # but the id has not
+        if len(ec_emblem_id_list) == 1:
+            emblem = ECEmblem(self.model, self["PartyEmblems"][0])
+            emblem.save()
+
     def mark_inactive_descriptions(self):
         ec_description_list = []
 
