@@ -48,7 +48,7 @@ NAME_FIELDS = (
     + WELSH_NAME_FIELDS
 )
 
-INDEPENDENT_VALUES = ["Independent", "", "Annibynnol"]
+INDEPENDENT_VALUES = ["independent", "", "annibynnol", "independents"]
 
 WELSH_DESCRIPTION_VALUES = [
     "disgrifiad",
@@ -200,7 +200,7 @@ def get_description(description, sopn):
 
     if not description:
         return None
-    if description in INDEPENDENT_VALUES:
+    if description.lower() in INDEPENDENT_VALUES:
         return None
 
     register = sopn.sopn.ballot.post.party_set.slug.upper()
@@ -284,7 +284,7 @@ def get_party(description_model, description_str, sopn):
         .active_for_date(date=sopn.sopn.ballot.election.election_date)
         .annotate(search_text=Replace("name", Value("&"), Value("and")))
     )
-    if not party_name or party_name in INDEPENDENT_VALUES:
+    if not party_name or party_name.lower() in INDEPENDENT_VALUES:
         return Party.objects.get(ec_id="ynmp-party:2")
 
     try:
