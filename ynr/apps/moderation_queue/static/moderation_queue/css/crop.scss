@@ -16,6 +16,11 @@ $include-html-classes: false;
 @media #{$large-up} {
   .photo-review__primary {
     @include grid-column($columns: 9, $collapse: true);
+
+    fieldset {
+      margin: 0.75rem;
+      padding: 0.75rem;
+    }
   }
 
   .photo-review__secondary {
