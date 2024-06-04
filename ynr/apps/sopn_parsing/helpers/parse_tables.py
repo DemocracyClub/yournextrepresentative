@@ -6,8 +6,8 @@ from candidates.models import Ballot
 from django.contrib.postgres.search import TrigramSimilarity
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
-from django.db.models import Value
-from django.db.models.functions import Replace
+from django.db.models import F, Value
+from django.db.models.functions import Lower, Replace
 from django.db.utils import DataError
 from nameparser import HumanName
 from pandas import DataFrame
@@ -203,6 +203,9 @@ def get_description(description, sopn):
     if description.lower() in INDEPENDENT_VALUES:
         return None
 
+    description_value = Replace(
+        Lower(Value(description)), Value("&"), Value("and")
+    )
     register = sopn.sopn.ballot.post.party_set.slug.upper()
 
     # First try to get Party object with an exact match between parsed
@@ -214,9 +217,9 @@ def get_description(description, sopn):
     party_qs = (
         Party.objects.register(register)
         .current()
-        .annotate(search_text=Replace("name", Value("&"), Value("and")))
+        .annotate(search_text=Lower(Replace("name", Value("&"), Value("and"))))
     )
-    party = party_qs.filter(search_text=description)
+    party = party_qs.filter(search_text=description_value)
     # If we find one, return None, so that the pain Party object
     # is parsed in get_party below, and this will then be preselected
     # for the user on the form.
@@ -224,11 +227,11 @@ def get_description(description, sopn):
         return None
 
     party_description_qs = PartyDescription.objects.annotate(
-        search_text=Replace("description", Value("&"), Value("and"))
+        search_text=Lower(Replace("description", Value("&"), Value("and")))
     )
     try:
         return party_description_qs.get(
-            search_text=description, party__register=register
+            search_text=description_value, party__register=register
         )
     except (
         PartyDescription.DoesNotExist,
@@ -239,17 +242,15 @@ def get_description(description, sopn):
 
     # try to find any that start with parsed description
     description_obj = party_description_qs.filter(
-        search_text__istartswith=description, party__register=register
+        search_text__istartswith=description_value, party__register=register
     ).first()
-    if description_obj:
-        return description_obj
 
     # Levenshtein
     try:
         qs = party_description_qs.annotate(
-            lev_dist=Levenshtein("search_text", Value(description))
+            lev_dist=Levenshtein(F("search_text"), description_value)
         ).order_by("lev_dist")
-        description_obj = qs.filter(lev_dist__lte=5).first()
+        description_obj = qs.filter(lev_dist__lte=3).first()
         if description_obj:
             print(
                 f"{description} matched with {description_obj.description} with a distance of {description_obj.lev_dist}"
@@ -258,6 +259,9 @@ def get_description(description, sopn):
     except ValueError:
         print("Levenshtein failed")
         pass
+
+    if description_obj:
+        return description_obj
 
     # final check - if this is a Welsh version of a description, it will be at
     # the end of the description

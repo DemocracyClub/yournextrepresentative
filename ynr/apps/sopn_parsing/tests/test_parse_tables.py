@@ -1,14 +1,16 @@
 import json
+from pathlib import Path
 from unittest import skipIf
 from unittest.mock import patch
 
 from bulk_adding.models import RawPeople
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.core.management import call_command
+from django.db import connection
 from django.test import TestCase
 from official_documents.models import BallotSOPN
 from pandas import Index, Series
-from parties.models import Party
+from parties.models import Party, PartyDescription
 from parties.tests.factories import PartyFactory
 from parties.tests.fixtures import DefaultPartyFixtures
 from sopn_parsing.helpers import parse_tables
@@ -24,6 +26,8 @@ from ynr.apps.sopn_parsing.management.commands.sopn_parsing_parse_tables import 
 class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
     def setUp(self):
         PartyFactory(ec_id="PP85", name="UK Independence Party (UKIP)")
+        with connection.cursor() as cursor:
+            cursor.execute("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;")
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_basic_parsing(self):
@@ -138,6 +142,87 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
                     "name": "Judy Johnson",
                     "party_id": plaid_cymru.ec_id,
                     "previous_party_affiliations": [self.labour_party.ec_id],
+                },
+                {"name": "Julie Williams", "party_id": "ynmp-party:2"},
+            ],
+        )
+
+    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
+    def test_match_complex_descriptions(self):
+        self.assertFalse(RawPeople.objects.exists())
+        doc = BallotSOPN.objects.create(
+            ballot=self.senedd_ballot,
+            source_url="example.com",
+        )
+
+        plaid_cymru, _ = Party.objects.update_or_create(
+            ec_id="PP77",
+            legacy_slug="party:77",
+            defaults={
+                "name": "Plaid Cymru - The Party of Wales",
+                "date_registered": "1999-01-14",
+            },
+        )
+
+        dickens_heath, _ = Party.objects.update_or_create(
+            ec_id="PP1",
+            legacy_slug="PP!",
+            defaults={
+                "name": "Independent Dickens Heath Residents Action Group",
+                "date_registered": "1999-01-14",
+            },
+        )
+        PartyDescription.objects.create(
+            party=dickens_heath,
+            description="Independent Dickens Heath Residents Action Group",
+        )
+        lib_dem, _ = Party.objects.update_or_create(
+            ec_id="PP100",
+            legacy_slug="PP100",
+            defaults={
+                "name": "Liberal Democrats",
+                "date_registered": "1999-01-14",
+            },
+            register="GB",
+        )
+
+        PartyDescription.objects.create(
+            party=lib_dem,
+            description="Liberal Democrat Focus Team | Tîm Ffocws y Democratiaid Rhyddfrydol",
+        )
+
+        data_path = (
+            Path(__file__).parent / "data/edge_case_description_data.json"
+        )
+        with data_path.open() as f:
+            CamelotParsedSOPN.objects.create(
+                sopn=doc, raw_data=f.read(), status="unparsed"
+            )
+        call_command("sopn_parsing_parse_tables")
+        self.assertEqual(RawPeople.objects.count(), 1)
+        raw_people = RawPeople.objects.get()
+        self.assertEqual(
+            raw_people.data,
+            [
+                {
+                    "name": "John Smith",
+                    "party_id": self.conservative_party.ec_id,
+                },
+                {
+                    "name": "Joe Bloggs",
+                    "party_id": self.labour_party.ec_id,
+                },
+                {
+                    "name": "Jon Doe",
+                    "party_id": self.ld_party.ec_id,
+                },
+                {
+                    "name": "Jane Brown",
+                    "party_id": "ynmp-party:2",
+                },
+                {
+                    "name": "Judy Johnson",
+                    "party_id": plaid_cymru.ec_id,
                 },
                 {"name": "Julie Williams", "party_id": "ynmp-party:2"},
             ],

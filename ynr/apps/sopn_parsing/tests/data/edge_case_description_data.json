@@ -1,0 +1,36 @@
+{
+    "0": {
+        "0": "Candidate Name",
+        "1": "SMITH \nJohn",
+        "2": "BLOGGS \nJoe",
+        "3": "DOE \nJon",
+        "4": "BROWN \nJane",
+        "5": "JOHNSON \nJudy",
+        "6": "WILLIAMS \nJulie"
+    },
+    "1": {
+        "0": "Description of\ncandidate \n(if any)",
+        "1": "Conservative Party",
+        "2": "Labour Party",
+        "3": "Liberal Democrat",
+        "4": "INDEPENDENT",
+        "5": "Plaid Cymru - The Party of Wales",
+        "6": "Annibynnol"
+    },
+    "2": {
+        "0": "Address of \ncandidate or \nsuch relevant \ninformation as \nprovided in the \nhome address \nform",
+        "1": "1 Example Road",
+        "2": "2 Example Road",
+        "3": "3 Example Road",
+        "4": "4 Example Road",
+        "5": "5 Example Road",
+        "6": "6 Example Road"
+    },
+    "3": {
+        "0": "Reason why\n candidate no \nlonger nominated",
+        "1": "",
+        "2": "",
+        "3": "",
+        "4": ""
+    }
+}
