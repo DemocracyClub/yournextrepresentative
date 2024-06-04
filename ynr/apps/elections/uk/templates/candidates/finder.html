@@ -49,10 +49,14 @@
         {% sopn_import_progress %}
         {% current_election_stats %}
         {% results_progress %}
-        {% data_download %}
       </div>
     </div>
   {% endif %}
+  <div class="finder__forms cta-DATA-DOWNLOAD">
+    <div class="finder__forms__container">
+      {% include "includes/data_download.html" %}
+    </div>
+  </div>
 
 {#  <div class="finder__forms cta-{{ front_page_cta }}">#}
 {#    <div class="finder__forms__container">#}
