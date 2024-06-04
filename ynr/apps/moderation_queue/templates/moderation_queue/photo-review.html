@@ -89,60 +89,8 @@
         {{ form.y_max }}
       </p>
     </div>
-    <div class=col-6>
-      <p>Rotate the image as needed</p>
-    </div>
-    <div class=col-6>
-      <input type="hidden" name="queued_image_id" value="{{ queued_image.id }}">
-      <button class="tiny" name="rotate" type="submit" value="left">Anti-clockwise ⟲</button>
-      <button class="tiny" name="rotate" type="submit" value="right">Clockwise ⟳</button>
-    </div>
-  
-    <p>
-    {% if queued_image.detection_metadata and queued_image.user.is_superuser %}
-      <details>
-        <summary>Facial recognition data (click to expand)</summary>
-        <pre>{{ queued_image.detection_metadata | pprint}}<pre>
-      </details>
-    {% elif not queued_image.detection_metadata %}
-      Image analysis is not available for this photo.
-    {% endif %}
-    </p>
- 
-  <h4>User-submitted information</h4>
-
-  <p>
-    Uploaded by user <tt>{{ username }}</tt>.
-    {% if person.get_email %}
-      {% if person.get_email == email %}
-        <strong>The uploading user's email address matches the candidate's email address</strong>
-      {% endif %}
-      (The candidate's unconfirmed email address is
-      <tt>{{ person.get_email }}</tt>.)
-    {% endif %}
-    </p>
-
-    {% if why_allowed == 'public-domain' %}
-      <p>
-        {{ username }} asserted that photo is free of copyright restrictions
-      </p>
-    {% elif why_allowed == 'copyright-assigned' %}
-      <p>
-        {{ username }} assigned the copyright to {{ settings.COPYRIGHT_HOLDER }}
-      </p>
-    {% elif why_allowed == 'profile-photo' %}
-      <p>
-        {{ username }} said that this is the candidate's photo from their official campaign page or profile photo from social media
-      </p>
-    {% endif %}
-
-    {% if justification_for_use %}
-      <p>
-        {{ username }}'s justification for use of this photo was:
-        &#8220;{{ justification_for_use|safe }}&#8221;
-      </p>
-    {% endif %}
-
+    
+   
     <h4>Your decision</h4>
 
     <div id="moderator-photo-decision">
@@ -188,6 +136,57 @@
 
       <a href="{% url 'photo-review-list' %}" class="button">Cancel</a>
     </div>
+
+    <p>
+    {% if queued_image.detection_metadata and queued_image.user.is_superuser %}
+      <details>
+        <summary>Facial recognition data (click to expand)</summary>
+        <pre>{{ queued_image.detection_metadata | pprint}}<pre>
+      </details>
+    {% elif not queued_image.detection_metadata %}
+      Image analysis is not available for this photo.
+    {% endif %}
+    </p>
+  <h4>User-submitted information</h4> 
+  <p>
+    Uploaded by user <tt>{{ username }}</tt>.
+    {% if person.get_email %}
+      {% if person.get_email == email %}
+        <strong>The uploading user's email address matches the candidate's email address</strong>
+      {% endif %}
+      (The candidate's unconfirmed email address is
+      <tt>{{ person.get_email }}</tt>.)
+    {% endif %}
+    </p>
+
+    {% if why_allowed == 'public-domain' %}
+      <p>
+        {{ username }} asserted that photo is free of copyright restrictions
+      </p>
+    {% elif why_allowed == 'copyright-assigned' %}
+      <p>
+        {{ username }} assigned the copyright to {{ settings.COPYRIGHT_HOLDER }}
+      </p>
+    {% elif why_allowed == 'profile-photo' %}
+      <p>
+        {{ username }} said that this is the candidate's photo from their official campaign page or profile photo from social media
+      </p>
+    {% endif %}
+
+    {% if justification_for_use %}
+      <p>
+        {{ username }}'s justification for use of this photo was:
+        &#8220;{{ justification_for_use|safe }}&#8221;
+      </p>
+    {% endif %}
+  </p>
+
+
+  <h4>Rotate the image as needed</h4>
+  <input type="hidden" name="queued_image_id" value="{{ queued_image.id }}">
+  <button name="rotate" type="submit" value="left">Anti-clockwise ⟲</button>
+  <button name="rotate" type="submit" value="right">Clockwise ⟳</button>
+
   </form>
 </div>
 
