@@ -21,7 +21,7 @@
     <p>
     The SOPN publication dates this year are:
     </p>
-    <ul>
+    <ul style="list-style: none;">
       {% for nation, date in SOPN_DATES %}
         <li><strong>{{ nation }}</strong>: {{ date|date }}</li>
     {% endfor %}
