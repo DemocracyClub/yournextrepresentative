@@ -37,11 +37,9 @@ class TestWombleLogin(WebTest):
         user = User.objects.get(email="test1@example.com")
         querystring = get_query_string(user=user)
 
-        response = (
-            self.app.get(reverse("wombles:authenticate") + querystring)
-            .follow()
-            .follow()
-        )
+        response = self.app.get(
+            reverse("wombles:authenticate") + querystring
+        ).follow()
         self.assertTrue(response.context["user"].is_authenticated)
         self.assertEqual(response.context["request"].path, "/accounts/details")
 

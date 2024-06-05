@@ -1,3 +1,5 @@
-Use the following URL to authenticate with the Democracy Club candidates site:
+Thank you for logging in to Democracy Club's candidate site.
 
-{{ authenticate_url }}
+To continue to the site, please click on the following link:
+
+{{ authenticate_url }}&next={{next_url}}

@@ -10,6 +10,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import (
     DetailView,
     FormView,
@@ -113,6 +114,7 @@ class LoginView(FormView):
         domain = self.request.get_host()
         path = reverse("wombles:authenticate")
         url = f"{self.request.scheme}://{domain}{path}{querystring}"
+        next_url = self.request.GET.get("next", "/")
         subject = (
             "Your magic link to log in to the Democracy Club Candidates site"
         )
@@ -121,6 +123,7 @@ class LoginView(FormView):
             context={
                 "authenticate_url": url,
                 "subject": subject,
+                "next_url": next_url,
             },
         )
         return user.email_user(subject=subject, message=txt)
@@ -129,6 +132,7 @@ class LoginView(FormView):
         """
         Redirect to same page where success message will be displayed
         """
+
         return reverse("wombles:login")
 
 
@@ -141,13 +145,30 @@ class AuthenticateView(TemplateView):
         their profile page. Renders an error message if django-sesame fails to
         get a user from the request.
         """
-        user = get_user(request)
+        if scope := self.request.GET.get("scope"):
+            # 30 days
+            scope_age = 60 * 60 * 24 * 30
+            user = get_user(request, scope=scope, max_age=scope_age)
+        else:
+            user = get_user(request)
         if not user:
             return super().get(request, *args, **kwargs)
 
         login(request, user)
-        if not user.username:
-            return redirect("wombles:add_profile_details")
+        next_url = self.request.GET.get("next")
+        if not url_has_allowed_host_and_scheme(
+            url=next_url, allowed_hosts={self.request.get_host()}
+        ):
+            next_url = None
+        if user.username.startswith("@@"):
+            profile_url = reverse("wombles:add_profile_details")
+            if next_url:
+                profile_url = f"{profile_url}?next={next_url}"
+            return HttpResponseRedirect(profile_url)
+
+        if next_url:
+            return HttpResponseRedirect(next_url)
+
         return redirect("/")
 
 
@@ -159,4 +180,10 @@ class UpdateProfileDetailsView(UpdateView):
         return self.request.user
 
     def get_success_url(self):
+        next_url = self.request.GET.get("next")
+        if url_has_allowed_host_and_scheme(
+            url=next_url, allowed_hosts={self.request.get_host()}
+        ):
+            return next_url
+
         return reverse("wombles:my_profile")
