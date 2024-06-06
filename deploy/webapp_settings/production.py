@@ -77,7 +77,7 @@ SOPN_DATES = [
     # ("Scotland", date(year=2023, month=3, day=30)),
     # ("England and Wales", date(year=2024, month=4, day=5)),
     # ("Northern Ireland", date(year=2023, month=4, day=24)),
-    ("Great Britain", date(year=2024, month=7, day=4)),
+    ("Great Britain", date(year=2024, month=6, day=7)),
 ]
 
 DATA_DOWNLOAD_INFO = {
