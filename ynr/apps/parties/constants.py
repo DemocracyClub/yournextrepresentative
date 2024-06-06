@@ -58,6 +58,8 @@ DEFAULT_EMBLEMS = {
     "PP52": 7730,
     # Mansfield Independents
     "PP504": 8345,
+    # Independent Network
+    "PP1951": 8015,
 }
 
 JOINT_DESCRIPTION_REGEX = r"^(.*?) \(joint descriptions? with\s?(.*)\)"
