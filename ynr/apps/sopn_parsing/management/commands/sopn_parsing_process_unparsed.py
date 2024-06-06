@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from sopn_parsing.helpers.parse_tables import parse_raw_data_for_ballot
 from sopn_parsing.helpers.textract_helpers import (
@@ -44,13 +45,14 @@ class Command(BaseCommand):
             "sopn__ballot__candidates_locked": False,
         }
 
-        # Camelot first
-        qs = (
-            CamelotParsedSOPN.objects.filter(parsed_data=None)
-            .exclude(raw_data="")
-            .filter(**current_ballot_kwargs)
-        )
-        self.parse_tables_for_qs(qs)
+        if getattr(settings, "CAMELOT_ENABLED", False):
+            # Camelot first
+            qs = (
+                CamelotParsedSOPN.objects.filter(parsed_data=None)
+                .exclude(raw_data="")
+                .filter(**current_ballot_kwargs)
+            )
+            self.parse_tables_for_qs(qs)
 
         # Textract
         qs = AWSTextractParsedSOPN.objects.exclude(
