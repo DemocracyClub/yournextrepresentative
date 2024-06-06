@@ -76,8 +76,7 @@
             <li class="nav-links__item"><a href="{% url 'wombles:logout' %}{% if redirect_after_login %}?next=
                     {{ redirect_after_login }}{% endif %}">Sign out</a></li>
             {% else %}
-            <li class="nav-links__item"><a href="{% url 'wombles:login' %}{% if redirect_after_login %}?next=
-                    {{ redirect_after_login }}{% endif %}" class="header__nav__login">Sign in to edit</a></li>
+            <li class="nav-links__item"><a href="{% url 'wombles:login' %}?next={{ request.path }}" class="header__nav__login">Sign in to edit</a></li>
             {% endif %}
         </ul>
       </div>
