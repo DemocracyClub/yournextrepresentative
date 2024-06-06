@@ -1,5 +1,6 @@
-from django.urls import re_path
+from django.urls import path, re_path
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import TemplateView
 
 from . import views
 
@@ -28,5 +29,13 @@ urlpatterns = [
         r"^(?P<ballot_paper_id>[^/]+)/$",
         views.CreateOrUpdateBallotSOPNView.as_view(),
         name="upload_ballot_sopn_view",
+    ),
+    path(
+        "sopn_viewer.js",
+        TemplateView.as_view(
+            content_type="application/javascript",
+            template_name="official_documents/sopn_viewer.js",
+        ),
+        name="sopn_viewer",
     ),
 ]
