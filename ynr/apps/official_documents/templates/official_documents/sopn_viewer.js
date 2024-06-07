@@ -9,8 +9,8 @@ var SOPN_VIEWER = (function () {
 
     var module = {};
 
-    function load_pages(pdf, container, page_num) {
-        pdf.getPage(page_num).then(function (page) {
+    function load_page(pdf, container, page_num) {
+        return pdf.getPage(page_num).then(function (page) {
 
             var scale = 1.2;
             var page_container = document.createElement("div");
@@ -31,7 +31,7 @@ var SOPN_VIEWER = (function () {
                 };
 
                 var renderTask = page.render(renderContext);
-                renderTask.promise.then(function () {
+                return renderTask.promise.then(function () {
                     container.append(page_container);
                     return page.getTextContent({normalizeWhitespace: true});
                 }).then(function (textContent) {
@@ -65,23 +65,24 @@ var SOPN_VIEWER = (function () {
     }
 
     function ShowSOPNInline(sopn_url, ballot_paper_id, options) {
-// The container element
+        // The container element
         var this_pdf_container = document.getElementById("sopn-" + ballot_paper_id);
 
         var loadingTask = pdfjs.getDocument(sopn_url);
 
         loadingTask.promise.then(function (pdf) {
-            for (var page = 1; page <= pdf.numPages; page++) {
-                load_pages(pdf, this_pdf_container, page);
+            var promise = Promise.resolve();
+            for (let page = 1; page <= pdf.numPages; page++) {
+                promise = promise.then(() => load_page(pdf, this_pdf_container, page));
             }
-
+            return promise;
         }).then(null, function (error) {
 
             if (error.name === "MissingPDFException") {
                 this_pdf_container.innerHTML = "<h3>PDF file not found</h3>";
             }
 
-            console.log(error)
+            console.log(error);
         });
 
     }
