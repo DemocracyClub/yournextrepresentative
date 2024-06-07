@@ -422,6 +422,21 @@ def parse_raw_data_for_ballot(ballot, reparse=False):
 
 
 def parse_dataframe(ballot: Ballot, df: DataFrame):
+    # Don't parse situation of polling stations
+    df.reset_index(drop=True, inplace=True)
+    polling_station_index = df[
+        df.apply(
+            lambda row: row.astype(str).str.contains("polling station").any(),
+            axis=1,
+        )
+    ].index
+    if not polling_station_index.empty:
+        polling_station_index = polling_station_index[0]
+        if isinstance(polling_station_index, str):
+            polling_station_index = int(polling_station_index)
+        new_df = df.loc[: polling_station_index - 1]
+        df = new_df
+
     cell_counts = [len(merge_row_cells(c)) for c in iter_rows(df)]
 
     header_found = False
