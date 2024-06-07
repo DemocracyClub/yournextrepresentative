@@ -79,15 +79,12 @@
                  style="max-width:100% !important; width: 100% !important;"></div>
             {% if ballot.sopn.uploaded_file.url|slice:"-3:" == "pdf" %}
                 <script type="module">
-                    import pdfjsDist from '{% static "official_documents/js/pdf.min.js" %}'
-
-                    pdfjsLib.GlobalWorkerOptions.workerSrc = '{% static "official_documents/js/pdf.worker.min.js" %}'
+                    import { SOPN_VIEWER } from '/upload_document/sopn_viewer.js';
                     SOPN_VIEWER.ShowSOPNInline(
                         '{{ ballot.sopn.uploaded_file.url }}',
                         '{{ ballot.ballot_paper_id }}'
                     )
                 </script>
-                {% javascript 'sopn_viewer' %}
             {% else %}
                 <div><img src="{{ ballot.sopn.uploaded_file.url }}"
                           alt="Image of the candidate nomination data for {{ ballot.post.label }}"></div>
