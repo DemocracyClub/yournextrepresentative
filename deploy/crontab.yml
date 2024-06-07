@@ -77,5 +77,5 @@
 
   - cron:
       name: "Update materialized view"
-      minute: "*/15"
+      minute: "*/1"
       job: "output-on-error /var/www/ynr/env/bin/python /var/www/ynr/code/manage.py update_data_export_view"
