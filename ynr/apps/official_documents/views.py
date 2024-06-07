@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from auth_helpers.views import GroupRequiredMixin
@@ -58,6 +59,7 @@ class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
         )
         context["ballot"] = ballot
         context["post_label"] = ballot.post.label
+        context["general_election"] = self.is_general_election()
         return context
 
     def form_valid(self, form):
@@ -103,6 +105,11 @@ class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
         )
         self.object.parse()
         return HttpResponseRedirect(self.get_success_url())
+
+    def is_general_election(self):
+        return self.ballot.election.slug.startswith(
+            "parl"
+        ) and self.ballot.election.election_date == datetime.date(2024, 7, 4)
 
 
 class CreateElectionSOPNView(GroupRequiredMixin, CreateView):
