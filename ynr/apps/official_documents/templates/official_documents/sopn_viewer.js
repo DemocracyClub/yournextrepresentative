@@ -1,12 +1,8 @@
 {% load static %}
 
 const pdfjs = await import('{% static "official_documents/js/pdf.mjs" %}');
-// const pdfjs = await import('{% static "official_documents/js/pdf.min.js" %}');
-const pdfjsWorker = await import('{% static "official_documents/js/pdf.worker.mjs" %}');
 
-
-// pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-// pdfjs.GlobalWorkerOptions.workerSrc = '{% static "official_documents/js/pdf.worker.min.js" %}';
+pdfjs.GlobalWorkerOptions.workerSrc = '{% static "official_documents/js/pdf.worker.mjs" %}';
 
 var SOPN_VIEWER = (function () {
     "use strict";

@@ -29,14 +29,11 @@
     <div id="sopn-{{ object.slug }}" class="pdf_container"></div>
 
     <script type="module">
-        import pdfjsDist from '{% static "official_documents/js/pdf.min.js" %}'
-
-        pdfjsLib.GlobalWorkerOptions.workerSrc = '{% static "official_documents/js/pdf.worker.min.js" %}'
+        import { SOPN_VIEWER } from '/upload_document/sopn_viewer.js';
         SOPN_VIEWER.ShowSOPNInline(
             '{{ object.sopn.uploaded_file.url }}',
             '{{ object.ballot_paper_id }}'
         )
     </script>
-    {% javascript 'sopn_viewer' %}
 
 {% endblock %}
