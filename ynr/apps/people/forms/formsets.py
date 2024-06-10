@@ -12,7 +12,8 @@ PersonIdentifierFormsetFactory = forms.inlineformset_factory(
     can_delete=True,
     widgets={
         "value_type": forms.Select(
-            choices=PersonIdentifier.objects.select_choices()
+            choices=[("", "Select an option")]
+            + PersonIdentifier.objects.select_choices()[1:],
         )
     },
 )
