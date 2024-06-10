@@ -42,17 +42,13 @@
 
 {% block content %}
 
-  <div class="finder__forms cta-DATA-DOWNLOAD">
-    <div class="finder__forms__container">
-      {% include "includes/data_download.html" %}
-    </div>
-  </div>
   {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}
     <div class="finder__forms cta-{{ front_page_cta }}">
       <div class="finder__forms__container">
         {% sopn_import_progress %}
         {% current_election_stats %}
         {% results_progress %}
+        {% data_download %}
       </div>
     </div>
   {% endif %}
