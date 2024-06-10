@@ -42,7 +42,11 @@
 
 {% block content %}
 
-
+  <div class="finder__forms cta-DATA-DOWNLOAD">
+    <div class="finder__forms__container">
+      {% include "includes/data_download.html" %}
+    </div>
+  </div>
   {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}
     <div class="finder__forms cta-{{ front_page_cta }}">
       <div class="finder__forms__container">
@@ -52,11 +56,7 @@
       </div>
     </div>
   {% endif %}
-  <div class="finder__forms cta-DATA-DOWNLOAD">
-    <div class="finder__forms__container">
-      {% include "includes/data_download.html" %}
-    </div>
-  </div>
+
 
 {#  <div class="finder__forms cta-{{ front_page_cta }}">#}
 {#    <div class="finder__forms__container">#}
