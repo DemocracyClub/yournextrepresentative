@@ -430,7 +430,9 @@ def parse_dataframe(ballot: Ballot, df: DataFrame):
     df.reset_index(drop=True, inplace=True)
     polling_station_index = df[
         df.apply(
-            lambda row: row.astype(str).str.contains("polling station").any(),
+            lambda row: row.astype(str)
+            .str.contains("polling station", case=False)
+            .any(),
             axis=1,
         )
     ].index
