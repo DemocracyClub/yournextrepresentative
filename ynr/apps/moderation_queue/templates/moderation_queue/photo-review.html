@@ -33,14 +33,14 @@
     Please check that this is really <a href="{{ url }}">{{ person.name }}</a>
     (<a href="{{ person.last_candidacy.ballot.get_absolute_url }}">
       {{ person.last_party.name }}, {{ person.last_candidacy.ballot.ballot_paper_id }}
-    </a>) before approving the upload. This
-    <a href="{{ google_image_search_url }}">Google Image search for candidate
+    </a>) before approving the upload.<br>This
+    <a href="{{ google_image_search_url }} target="_blank">Google Image search for candidate
     details</a> may be a good start.
   </p>
 
   <p>
   If you're trying to find the likely <em>source</em> of this image, you can
-  also do a <a href="{{ google_reverse_image_search_url }}">reverse image
+  also do a <a href="{{ google_reverse_image_search_url }}" target="_blank">reverse image
   search</a> on the uploaded image.</p>
 
   <h4>Click and drag in the image to crop</h4>
