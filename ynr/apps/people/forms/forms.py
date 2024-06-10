@@ -98,7 +98,9 @@ class PersonIdentifierForm(forms.ModelForm):
                 self.cleaned_data["id"].delete()
             self.cleaned_data["DELETE"] = True
             return self.cleaned_data
-
+        value_type = self.cleaned_data.get("value_type")
+        if not value_type:
+            raise forms.ValidationError("Please select a link type.")
         if self.cleaned_data.get("value_type") in self.HTTP_IDENTIFIERS:
             URLValidator()(value=self.cleaned_data["value"])
         if (
