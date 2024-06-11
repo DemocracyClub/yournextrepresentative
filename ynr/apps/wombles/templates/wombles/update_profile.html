@@ -1,11 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <form method="POST">
-    <h1>Update Profile</h1>
-    {%  csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="ds-button">Save</button>
-  </form>
+    <form method="POST">
+        <h1>Create a username</h1>
+        <p>As part of making your account you need to enter a username. This will be displayed on the site
+            when you make edits.</p>
+        <p>Because it's public, your username doesn't have to be your real name. If you are standing as a candidate
+            you'll get the chance to
+            update your candidate profile later. </p>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="ds-button">Save</button>
+    </form>
 
 {% endblock %}

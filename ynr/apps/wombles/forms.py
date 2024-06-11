@@ -25,7 +25,7 @@ class UserProfileForm(forms.ModelForm):
 
     username = forms.CharField(
         max_length=50,
-        help_text="Your username is displayed publicly. We don't accept email addresses or '@' symbols",
+        help_text="Your username is displayed publicly. We don't accept email addresses, '@' symbols or spaces.",
     )
 
     def __init__(self, *args, **kwargs):
@@ -46,7 +46,7 @@ class UserProfileForm(forms.ModelForm):
         if " " in username:
             raise ValidationError("Usernames can't contain spaces")
 
-        user = User.objects.filter(username__iexact=username)
+        user = User.objects.filter(username__iexact=username.strip())
         if user:
             raise ValidationError("A user with that username already exists.")
         return username
