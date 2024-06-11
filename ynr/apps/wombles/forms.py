@@ -43,6 +43,9 @@ class UserProfileForm(forms.ModelForm):
                 "Usernames can't be email addresses or contain an '@' symbol"
             )
 
+        if " " in username:
+            raise ValidationError("Usernames can't contain spaces")
+
         user = User.objects.filter(username__iexact=username)
         if user:
             raise ValidationError("A user with that username already exists.")
