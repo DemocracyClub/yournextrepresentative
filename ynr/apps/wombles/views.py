@@ -172,7 +172,7 @@ class AuthenticateView(TemplateView):
         return redirect("/")
 
 
-class UpdateProfileDetailsView(UpdateView):
+class UpdateProfileDetailsView(LoginRequiredMixin, UpdateView):
     form_class = UserProfileForm
     template_name = "wombles/update_profile.html"
 
