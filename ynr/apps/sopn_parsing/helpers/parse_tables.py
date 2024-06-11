@@ -181,6 +181,7 @@ def clean_last_names(names):
 
 def clean_description(description):
     description = str(description)
+    description = description.strip()
     description = description.replace("\\n", "")
     description = description.replace("\n", "")
     description = description.replace("`", "'")
@@ -190,13 +191,16 @@ def clean_description(description):
     description = re.sub(r"\s+", " ", description)
     # handle edgecases for the green party to stop incorrectly matching against
     # Welsh descriptions
-    if description.lower() in ["the green party", "the green party candidate"]:
+    if description.lower().strip() in [
+        "the green party",
+        "the green party candidate",
+    ]:
         description = "Green Party"
     return description
 
 
 def get_description(description, sopn):
-    description = clean_description(description)
+    description = clean_description(description).strip()
 
     if not description:
         return None
@@ -288,7 +292,7 @@ def get_party(description_model, description_str, sopn):
         .active_for_date(date=sopn.sopn.ballot.election.election_date)
         .annotate(search_text=Replace("name", Value("&"), Value("and")))
     )
-    if not party_name or party_name.lower() in INDEPENDENT_VALUES:
+    if not party_name or party_name.lower().strip() in INDEPENDENT_VALUES:
         return Party.objects.get(ec_id="ynmp-party:2")
 
     try:
@@ -426,7 +430,9 @@ def parse_dataframe(ballot: Ballot, df: DataFrame):
     df.reset_index(drop=True, inplace=True)
     polling_station_index = df[
         df.apply(
-            lambda row: row.astype(str).str.contains("polling station").any(),
+            lambda row: row.astype(str)
+            .str.contains("polling station", case=False)
+            .any(),
             axis=1,
         )
     ].index
