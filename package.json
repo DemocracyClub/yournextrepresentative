@@ -20,8 +20,8 @@
     "sorttable": "^1.0.2"
   },
   "devDependencies": {
-    "gulp": "^4.0.2",
-    "gulp-cli": "^2.3.0",
+    "gulp": "^5.0.0",
+    "gulp-cli": "^3.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-convert-encoding": "^2.1.0"
   }
