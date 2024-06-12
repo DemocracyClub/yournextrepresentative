@@ -1,3 +1,4 @@
+import contextlib
 import re
 
 import pypandoc
@@ -196,3 +197,10 @@ class CandidateBot(object):
         value = f"https://www.theyworkforyou.com/mp/{twfy_id}/"
         internal_id = f"uk.org.publicwhip/person/{twfy_id}"
         self.edit_field("theyworkforyou", value, internal_id=internal_id)
+
+    def remove_person_identifier(self, identifier):
+        with contextlib.suppress(PersonIdentifier.DoesNotExist):
+            self.person.get_all_identifiers.remove(identifier)
+            self.person.save()
+            identifier.delete()
+        return self.person

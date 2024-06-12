@@ -56,7 +56,12 @@ class TestPersonIdentifiers(TestCase):
             self.person.get_all_identifiers[1].value,
             "http://www.conservatives.com/about/our-team/example.com",
         )
-        call_command("remove_inactive_person_links")
+
+        call_command(
+            "candidatebot_remove_inactive_person_links",
+            "--person-id",
+            self.person.id,
+        )
         self.person.refresh_from_db()
         self.assertEqual(len(self.person.get_all_identifiers), 1)
         self.assertEqual(

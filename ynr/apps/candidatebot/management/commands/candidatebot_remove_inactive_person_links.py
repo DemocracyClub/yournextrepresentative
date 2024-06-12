@@ -2,6 +2,7 @@ from typing import List
 from urllib.parse import urlparse
 
 import requests
+from candidatebot.helpers import CandidateBot
 from django.core.management.base import BaseCommand
 from people.models import Person
 from popolo.models import Membership
@@ -21,6 +22,12 @@ class Command(BaseCommand):
     """
     Test and remove inactive or dead links from Person objects.
     """
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--person-id",
+            help="Person ID to test",
+        )
 
     def handle(self, *args, **options):
         """
@@ -66,9 +73,8 @@ class Command(BaseCommand):
                         ]
                     )
                     # delete the identifier from the person identifiers
-                    identifier.person.get_all_identifiers.remove(identifier)
-                    identifier.delete()
-                    identifier.person.save()
+                    bot = CandidateBot(person.pk, ignore_errors=True)
+                    bot.remove_person_identifier(identifier)
                     print(
-                        f"Deleted {identifier.value_type}:{identifier.value} from {person.name}"
+                        f"Candidatebot deleted {identifier.value_type}:{identifier.value} from {person.name}"
                     )
