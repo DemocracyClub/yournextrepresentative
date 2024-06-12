@@ -60,6 +60,8 @@ DEFAULT_EMBLEMS = {
     "PP504": 8345,
     # Independent Network
     "PP1951": 8015,
+    #Propel
+    "PP12731": 7769,
 }
 
 JOINT_DESCRIPTION_REGEX = r"^(.*?) \(joint descriptions? with\s?(.*)\)"
