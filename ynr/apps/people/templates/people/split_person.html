@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% load static %}
+{% load pipeline %}
+
+{% block content %}
+    <h1>Split <a href="{% url 'person-view' person_id %}">{{ person.name }} ({{person_id}})</a> into two people</h1></h1>
+    <p>Choose which properties to keep on {{ person.name }}, which to move to a new person, and which to keep on both.</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                    <th>Keep on original</th>
+                    <th>Add to new</th>
+                    <th>Use for Both</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                    {% for error in form.errors %}
+                        <div class="error">{{ error }}</div>
+                    {% endfor %}
+
+                <tr>
+                    <td>{{ form.attribute_name.value }}</td>
+                    <td>
+                        {% if form.attribute_name.value == "image"  %}
+                            {% thumbnail form.attribute_value.value "100x100" as im %}
+                                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                            {% endthumbnail %} 
+                        {% else %}
+                                {{ form.attribute_value.value }}
+                        {% endif %}
+
+                        {{ form.attribute_name }}
+                        {{ form.attribute_value }}
+                    </td>
+                    <td>{{ form.choice.0 }}</td>
+                    <td>{{ form.choice.1 }}</td>
+                    <td>{{ form.choice.2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <input class="button primary small"  type="submit" value="Split person" />
+        <a class="button secondary small" href="{% url 'person-view' person.id %}">Cancel</a>
+    </form>
+{% endblock %}

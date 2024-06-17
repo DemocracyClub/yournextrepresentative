@@ -13,9 +13,9 @@ from django.http import (
     HttpResponsePermanentRedirect,
     HttpResponseRedirect,
 )
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, TemplateView, UpdateView, View
@@ -24,7 +24,12 @@ from duplicates.forms import DuplicateSuggestionForm
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from elections.uk.forms import SelectBallotForm
-from people.forms.forms import NewPersonForm, UpdatePersonForm
+from people.forms.forms import (
+    NewPersonForm,
+    PersonSplitForm,
+    PersonSplitFormSet,
+    UpdatePersonForm,
+)
 from people.forms.formsets import (
     PersonIdentifierFormsetFactory,
     PersonMembershipFormsetFactory,
@@ -488,6 +493,167 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
         return HttpResponseRedirect(
             reverse("person-view", kwargs={"person_id": person.id})
         )
+
+
+class PersonSplitView(FormView):
+    template_name = "people/split_person.html"
+    form_class = PersonSplitForm
+
+    def get_review_url(self):
+        person_id = self.kwargs.get("person_id")
+        return reverse_lazy(
+            "review_split_person", kwargs={"person_id": person_id}
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["person"] = self.get_person()
+        context["person_id"] = self.kwargs["person_id"]
+        context["formset"] = self.get_form()
+        return context
+
+    def get_initial_data(self, form_class=None):
+        person = self.get_person()
+        #: TO DO: Figure out how to return attribute names and values only for those that are not empty
+        return [
+            {"attribute_name": "name", "attribute_value": person.name},
+            # {"attribute_name": "image", "attribute_value": person.image.image if person.image else None},
+            {"attribute_name": "gender", "attribute_value": person.gender},
+            # {
+            # "attribute_name": "birth_date",
+            # "attribute_value": person.birth_date if person.birth_date else None,
+            # },
+            # {
+            #     "attribute_name": "death_date",
+            #     "attribute_value": person.death_date if person.death_date else None,
+            # },
+            # {"attribute_name": "summary", "attribute_value": person.summary if person.summary else None },
+            # {
+            # "attribute_name": "biography",
+            # "attribute_value": person.biography if person.biography else None,
+            # },
+            # {
+            # "attribute_name": "other_names",
+            # "attribute_value": person.other_names.all if person.other_names.all else None,
+            # },
+            # {
+            #     "attribute_name": "memberships",
+            #     "attribute_value": person.memberships.all if person.memberships.all else None,
+            # },
+        ]
+
+    def get_form(self, form_class=None):
+        return PersonSplitFormSet(
+            initial=self.get_initial_data(),
+        )
+
+    def get_person(self):
+        person_id = self.kwargs.get("person_id")
+        return get_object_or_404(Person, pk=person_id)
+
+    def form_valid(self, formset):
+        choices = {
+            "keep": [],
+            "move": [],
+            "both": [],
+        }
+        for form in formset:
+            attribute_name = form.cleaned_data["attribute_name"]
+            attribute_value = form.cleaned_data["attribute_value"]
+            choice = form.cleaned_data["choice"]
+            person_id = self.kwargs.get("person_id")
+            if choice == "keep":
+                choices["keep"].append({attribute_name: attribute_value})
+            elif choice == "move":
+                choices["move"].append({attribute_name: attribute_value})
+            elif choice == "both":
+                choices["both"].append({attribute_name: attribute_value})
+        if choices:
+            self.request.session["choices"] = choices
+            self.request.session["person_id"] = person_id
+            return redirect(self.get_review_url())
+        return self.form_invalid(formset)
+
+    def post(self, request, *args, **kwargs):
+        formset = PersonSplitFormSet(request.POST)
+        if formset.is_valid():
+            return self.form_valid(formset)
+        return self.form_invalid(formset)
+
+
+class ReviewPersonSplitView(TemplateView):
+    template_name = "people/review_split_person.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["choices"] = self.request.session.get("choices", {})
+        context["person"] = get_object_or_404(
+            Person, pk=self.request.session.get("person_id")
+        )
+        return context
+
+
+class ConfirmPersonSplitView(TemplateView):
+    template_name = "people/confirm_split_person.html"
+
+    def get_success_url(self, person_id, new_person_id=None):
+        person_id = self.kwargs.get("person_id")
+        if new_person_id:
+            return reverse(
+                "confirm_split_person",
+                kwargs={"person_id": person_id, "new_person_id": new_person_id},
+            )
+        return reverse("confirm_split_person", kwargs={"person_id": person_id})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        person_id = kwargs.get("person_id")
+        context["person"] = get_object_or_404(Person, pk=person_id)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        person_id = self.request.session.get("person_id")
+        person = get_object_or_404(Person, pk=person_id)
+        choices = request.session.get("choices", {})
+        new_person_data = self.split(person, choices)
+        new_person_id = new_person_data.id if new_person_data else None
+        return redirect(
+            self.get_success_url(
+                person_id=person_id, new_person_id=new_person_id
+            )
+        )
+
+    def split(self, person, choices):
+        person_id = person.id
+        new_person = None
+        if not choices:
+            # TODO: ADD A MESSAGE TO SAY THAT NO CHOICES WERE MADE?
+            # TODO: Do we even need to do this?
+            return redirect("person-view", person_id=person_id)
+        if choices["both"] or choices["move"]:
+            new_person = Person.objects.create()
+        for choice in choices["keep"]:
+            for key, value in choice.items():
+                setattr(person, key, value)
+            person.save()
+        for choice in choices["move"]:
+            # create a new person with the chosen attribute values
+            new_person = Person.objects.create()
+            for key, value in choice.items():
+                setattr(new_person, key, value)
+            # remove this attribute from the original person
+            # TODO: however if this is a required person field, such as name, how can we handle it?
+            # perhaps we need to add a text input to the form in the previous step
+            # to allow the user to enter a new value
+            for key, value in choice.items():
+                setattr(person, key, None)
+        for choice in choices["both"]:
+            # create a new person with the chosen attribute values
+            for key, value in choice.items():
+                setattr(new_person, key, value)
+        person.save()
+        new_person.save()
+        return new_person
 
 
 class NewPersonSelectElectionView(LoginRequiredMixin, FormView):

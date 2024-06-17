@@ -4,6 +4,7 @@ from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, validate_email
+from django.forms import formset_factory
 from django.utils import timezone
 from django.utils.functional import cached_property
 from facebook_data.tasks import extract_fb_page_id
@@ -14,10 +15,7 @@ from parties.forms import (
     PreviousPartyAffiliationsField,
 )
 from parties.models import Party
-from people.forms.fields import (
-    CurrentUnlockedBallotsField,
-    StrippedCharField,
-)
+from people.forms.fields import CurrentUnlockedBallotsField, StrippedCharField
 from people.helpers import (
     clean_mastodon_username,
     clean_twitter_username,
@@ -411,6 +409,20 @@ class NewPersonForm(PopulatePartiesMixin, BasePersonForm):
 
 class UpdatePersonForm(BasePersonForm):
     pass
+
+
+class PersonSplitForm(forms.Form):
+    CHOICES = [
+        ("keep", "Keep for original person"),
+        ("move", "Move to a new person"),
+        ("both", "Do both"),
+    ]
+    attribute_name = forms.CharField(widget=forms.HiddenInput())
+    attribute_value = forms.CharField(widget=forms.HiddenInput())
+    choice = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect)
+
+
+PersonSplitFormSet = formset_factory(PersonSplitForm, extra=0)
 
 
 class OtherNameForm(forms.ModelForm):

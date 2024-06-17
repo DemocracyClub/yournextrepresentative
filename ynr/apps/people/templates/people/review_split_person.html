@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% load static %}
+{% load pipeline %}
+
+{% block content %}
+    <h1>Review split person choices</h1>
+
+    {% if choices.keep %}
+        <h2>Keep these attributes on <a href="{% url 'person-view' person_id %}">Person:# {{person_id}}</a></h2>
+        <ul>
+            {% for item in choices.keep %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+        <p>Submitting this form will create a new person with the above attributes.</p>
+    {% endif %}
+
+    {% if choices.move %}
+        <h2>Move these attributes to a new Person</h2>
+        <ul>
+            {% for item in choices.move %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+        <p>Submitting this form will create a new person with the above attributes and remove the above attributes from the original person.</p>
+    {% endif %}
+
+    {% if choices.both %}
+        <h2>Do both</h2>
+        <ul>
+            {% for item in choices.both %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+        <p>Submitting this form will create a new person with the above attributes and keep the above attributes on the original person.</p>
+    {% endif %}
+    <form method="post" action="{% url 'confirm_split_person' person_id %}">
+        {% csrf_token %}
+        <input class="button primary small" type="submit" value="Submit choices">
+    </form>
+        <a class="button secondary small" onclick="window.history.back()">Go back</a>
+{% endblock %}
