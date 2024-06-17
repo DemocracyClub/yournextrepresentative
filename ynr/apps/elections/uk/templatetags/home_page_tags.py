@@ -177,7 +177,7 @@ def current_election_stats(context):
 @register.inclusion_tag("includes/results_progress.html", takes_context=True)
 def results_progress(context):
     context["SHOW_RESULTS_PROGRESS"] = (
-        getattr(settings, "FRONT_PAGE_CTA", False) == "RESULTS_PROGRESS"
+        getattr(settings, "FRONT_PAGE_CTA", True) == "RESULTS_PROGRESS"
     )
 
     if context["SHOW_RESULTS_PROGRESS"]:
@@ -259,7 +259,7 @@ def by_election_ctas(context):
 @register.inclusion_tag("includes/data_download.html", takes_context=True)
 def data_download(context):
     context["DATA_DOWNLOAD"] = (
-        getattr(settings, "FRONT_PAGE_CTA", False) == "DATA_DOWNLOAD"
+        getattr(settings, "FRONT_PAGE_CTA", True) == "DATA_DOWNLOAD"
     )
 
     if context["DATA_DOWNLOAD"]:

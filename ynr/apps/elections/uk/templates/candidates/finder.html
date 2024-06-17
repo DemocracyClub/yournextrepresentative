@@ -42,15 +42,21 @@
 {% block content %}
 
   {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}
+    <div class="finder__forms cta-{{ front_page_cta }}"> 
+      <div class="finder__forms__container">
+        {% data_download %}
+      </div>
+    </div>
+
     <div class="finder__forms cta-{{ front_page_cta }}">
       <div class="finder__forms__container">
         {% sopn_import_progress %}
         {% current_election_stats %}
         {% results_progress %}
-        {% data_download %}
-        {% results_download %}
       </div>
     </div>
+
+    
   {% endif %}
 
 
