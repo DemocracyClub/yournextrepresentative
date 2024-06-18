@@ -50,10 +50,12 @@
   <div class="person__photo">
 
     <img class="person-avatar" src="{{ person.get_display_image_url }}"/>
-    {% if not person.person_image and user.is_authenticated %}
-      <a class="upload-photo" href="{% url 'photo-upload' person.id %}">
-        Upload photo
-      </a>
+    {% if not person.person_image %}
+      {% if user_can_edit and person_edits_allowed %}
+          <a class="upload-photo" href="{% url 'photo-upload' person.id %}">
+            Upload photo
+          </a>
+      {% endif %}
     {% endif %}
   </div>
   <h1>{{ person.name }}</h1>
@@ -124,7 +126,7 @@
       <dt>Party</dt>
       <dd>{{ last_candidacy.party.name }}</dd>
     {% endif %}
-    
+
     {% if person.biography %}
       <dt>Statement to voters</dt>
       <dd class="person_biography">{{ person.biography|markdown}}</dd>
@@ -144,7 +146,7 @@
         {% else %}
            Contesting the {{ election_data.name }} ({{ election_data.election_date }})
         {% endif %}</dt>
-       
+
       <dd>{{ person|post_in_election:election_data }}</dd>
       {% for membership in person.memberships.all %}
       {% if membership.ballot.election == election_data %}
@@ -158,7 +160,7 @@
       <p>No candidacies known at the moment.</p>
     {% endfor %}
   </dl>
- 
+
   <h2>Links and social media:</h2>
 
   <dl>
@@ -233,14 +235,14 @@
       <p>Please add extra details about this candidate – it only takes a moment.</p>
       {% if user.is_authenticated %}
         <a href="{% url 'person-update' person_id=person.id %}" class="button">Edit candidate</a>
-        {% if person.queued_image %} 
+        {% if person.queued_image %}
           {% if user_can_review_photos %}
             <p>{{ person.name }} has a photo that needs to be reviewed</p>
             <a href="{{ person.get_absolute_queued_image_url}}" class="button">Review image</a>
-          {% endif %} 
+          {% endif %}
         {% else %}
           <a href="{% url 'photo-upload' person.id %}" class="button">Upload candidate photo</a>
-        {% endif %} 
+        {% endif %}
       {% else %}
         <a href="{% url 'wombles:login' %}?next={{ redirect_after_login }}" class="button">Log in to edit</a>
       {% endif %}
