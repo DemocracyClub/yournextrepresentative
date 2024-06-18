@@ -15,6 +15,7 @@ from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import Count, Q
 from django.http import (
+    Http404,
     HttpResponseBadRequest,
     HttpResponseRedirect,
     JsonResponse,
@@ -30,7 +31,7 @@ from moderation_queue.helpers import (
     image_form_valid_response,
     upload_photo_response,
 )
-from people.models import TRUSTED_TO_EDIT_NAME, Person
+from people.models import TRUSTED_TO_EDIT_NAME, EditLimitationStatuses, Person
 from popolo.models import Membership, OtherName
 
 from .forms import (
@@ -46,6 +47,8 @@ from .models import PHOTO_REVIEWERS_GROUP_NAME, QueuedImage, SuggestedPostLock
 @login_required
 def upload_photo(request, person_id):
     person = get_object_or_404(Person, id=person_id)
+    if person.edit_limitations == EditLimitationStatuses.EDITS_PREVENTED.name:
+        raise Http404()
     image_form = UploadPersonPhotoImageForm(initial={"person": person})
     url_form = UploadPersonPhotoURLForm(initial={"person": person})
     return upload_photo_response(request, person, image_form, url_form)
