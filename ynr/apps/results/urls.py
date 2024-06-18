@@ -1,5 +1,5 @@
 from django.urls import re_path
-from uk_results.views import Parl19ResultsCSVView
+from django.views.generic import RedirectView
 
 from .feeds import BasicResultEventsFeed, ResultEventsFeed
 
@@ -10,7 +10,9 @@ urlpatterns = [
     ),
     re_path(
         r"^csv/parl.2019-12-12/$",
-        Parl19ResultsCSVView.as_view(),
+        RedirectView.as_view(
+            url="/data/export_csv/?election_id=parl.2019-12-12&field_group=results"
+        ),
         name="parl-2019-csv-results",
     ),
 ]
