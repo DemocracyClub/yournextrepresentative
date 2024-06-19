@@ -76,7 +76,7 @@ class UploadPersonPhotoURLForm(forms.Form):
         choices=CopyrightOptions.WHY_ALLOWED_CHOICES, widget=forms.RadioSelect()
     )
     justification_for_use_url = StrippedCharField(
-        widget=forms.Textarea(attrs={"rows": 1, "columns": 72}), required=False
+        widget=forms.Textarea(attrs={"rows": 1, "columns": 72}), required=True
     )
 
     def clean_image_url(self):
