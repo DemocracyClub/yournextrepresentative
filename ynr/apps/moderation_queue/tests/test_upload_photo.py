@@ -325,6 +325,21 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
             upload_response.content.decode("utf-8"),
         )
 
+    def test_fails_validation_if_why_allowed_url_is_not_set(
+        self, *all_mock_requests
+    ):
+        self.successful_get_image(*all_mock_requests)
+        form = self.form_page_response.forms["person-upload-photo-url"]
+        form["image_url"] = "http://foo.com/bar.jpg"
+        form["why_allowed_url"] = "copyright-assigned"
+        form["justification_for_use_url"] = ""
+        upload_response = form.submit()
+        self.assertEqual(upload_response.status_code, 200)
+        self.assertIn(
+            "This field is required.",
+            upload_response.content.decode("utf-8"),
+        )
+
     def test_fails_validation_if_image_has_wrong_content_type(
         self, *all_mock_requests
     ):
