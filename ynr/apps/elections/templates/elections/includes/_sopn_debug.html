@@ -46,7 +46,9 @@
         {% if textract_parsed.images.exists %}
             <h3>AWS document annotated</h3>
             {% for image in textract_parsed.images.all %}
-                <img src="{{ image.image.url }}">
+                {% if image.image %}
+                    <img src="{{ image.image.url }}">
+                {% endif %}
             {% endfor %}
         {% endif %}
 
