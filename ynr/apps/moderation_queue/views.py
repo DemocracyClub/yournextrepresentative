@@ -189,7 +189,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         )
 
     def get_google_reverse_image_search_url(self, image_url):
-        url = "https://www.google.com/searchbyimage?&image_url="
+        url = "https://lens.google.com/uploadbyurl?url="
         absolute_image_url = self.request.build_absolute_uri(image_url)
         return url + quote(absolute_image_url)
 
