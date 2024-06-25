@@ -274,7 +274,7 @@ def data_download(context):
 @register.inclusion_tag("includes/results_download.html", takes_context=True)
 def results_download(context):
     context["RESULTS_DOWNLOAD"] = (
-        getattr(settings, "FRONT_PAGE_CTA", False) == "RESULTS_DOWNLOAD"
+        getattr(settings, "FRONT_PAGE_CTA", True) == "RESULTS_DOWNLOAD"
     )
 
     if context["RESULTS_DOWNLOAD"]:
