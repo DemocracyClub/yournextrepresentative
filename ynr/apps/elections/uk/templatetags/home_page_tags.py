@@ -286,3 +286,22 @@ def data_download(context):
         ]
         context["election_name"] = settings.DATA_DOWNLOAD_INFO["election_name"]
     return context
+
+
+@register.inclusion_tag("includes/results_download.html", takes_context=True)
+def results_download(context):
+    context["RESULTS_DOWNLOAD"] = (
+        getattr(settings, "FRONT_PAGE_CTA", False) == "RESULTS_DOWNLOAD"
+    )
+
+    if context["RESULTS_DOWNLOAD"]:
+        context["election_date"] = settings.RESULTS_DOWNLOAD_INFO[
+            "election_date"
+        ]
+        context["election_regex"] = settings.RESULTS_DOWNLOAD_INFO[
+            "election_regex"
+        ]
+        context["election_name"] = settings.RESULTS_DOWNLOAD_INFO[
+            "election_name"
+        ]
+    return context
