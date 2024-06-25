@@ -280,6 +280,21 @@ for identifier in PersonIdentifierFields:
         label=identifier.value,
     )
 
+
+csv_fields["mnis_id"] = CSVField(
+    type="expr",
+    value=F("identifiers__mnis_id"),
+    value_group="person",
+    label="MNIS ID",
+)
+
+csv_fields["twfy_id"] = CSVField(
+    type="expr",
+    value=F("identifiers__theyworkforyou"),
+    value_group="person",
+    label="TheyWorkForYou ID",
+)
+
 csv_fields["gender"] = CSVField(
     type="expr",
     value=F("person__gender"),
