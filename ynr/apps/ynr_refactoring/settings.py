@@ -19,7 +19,7 @@ class PersonIdentifierFields(Enum):
     wikipedia_url = "Wikipedia"
     wikidata_id = "Wikidata"
     youtube_profile = "YouTube Profile"
-    instagram_url = "Instagram Profile"
+    instagram_url = "Instagram URL"
     blue_sky_url = "Bluesky URL"
     threads_url = "Threads URL"
     tiktok_url = "TikTok URL"

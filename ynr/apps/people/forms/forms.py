@@ -19,6 +19,7 @@ from people.forms.fields import (
     StrippedCharField,
 )
 from people.helpers import (
+    clean_instagram_url,
     clean_linkedin_url,
     clean_mastodon_username,
     clean_twitter_username,
@@ -116,6 +117,17 @@ class PersonIdentifierForm(forms.ModelForm):
                 except ValidationError as e:
                     self.add_error(None, e)
         return self.cleaned_data
+
+    def clean_instagram_url(self, username):
+        if self.instance.value != username:
+            self.instance.internal_identifier = None
+        if self.instance.internal_identifier:
+            return username
+        try:
+            return clean_instagram_url(username)
+        except ValueError as e:
+            raise ValidationError(e)
+        return username
 
     def clean_twitter_username(self, username):
         if self.instance.value != username:

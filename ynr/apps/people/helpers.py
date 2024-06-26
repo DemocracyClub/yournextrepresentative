@@ -141,6 +141,31 @@ def clean_linkedin_url(url):
     return urlunparse(parsed_url._replace(path=path))
 
 
+def clean_instagram_url(url):
+    parsed_username = urlparse(url)
+    if not parsed_username.scheme:
+        url = f"https://{url}"
+        parsed_username = urlparse(url)
+
+    if parsed_username.netloc and parsed_username.netloc not in [
+        "instagram.com",
+        "www.instagram.com",
+        "instagr.am",
+        "www.instagr.am",
+    ]:
+        raise ValueError(
+            "The Instagram URL must be from a valid Instagram domain."
+        )
+    username = parsed_username.path.strip("/")
+    # RegEx thanks to https://blog.jstassen.com/2016/03/code-regex-for-instagram-username-and-hashtags/
+    if not re.match(
+        r"(?:@?)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)$",
+        username,
+    ):
+        raise ValueError("This is not a valid Instagram URL. Please try again.")
+    return f"https://www.instagram.com/{username}/"
+
+
 def clean_wikidata_id(identifier):
     identifier = identifier.strip().lower()
     m = re.search(r"^.*wikidata.org/(wiki|entity)/(\w+)", identifier)

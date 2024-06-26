@@ -33,6 +33,23 @@ class TestPersonIdentifiers(TestCase):
         # Test the value type HTML
         self.assertEqual(pi.get_value_type_html, "Twitter")
 
+    def test_get_value_html_instagram(self):
+        pi = PersonIdentifier.objects.create(
+            person=self.person,
+            value="https://www.instagram.com/democlub",
+            value_type="instagram_url",
+            internal_identifier="2324",
+        )
+
+        # Test the value HTML
+        self.assertEqual(
+            pi.get_value_html,
+            """<a href="https://www.instagram.com/democlub" rel="nofollow">https://www.instagram.com/democlub</a>""",
+        )
+
+        # Test the value type HTML
+        self.assertEqual(pi.get_value_type_html, "Instagram")
+
     def test_get_value_html_mastodon(self):
         pi = PersonIdentifier.objects.create(
             person=self.person,
