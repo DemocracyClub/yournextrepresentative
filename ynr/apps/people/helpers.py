@@ -120,6 +120,30 @@ def clean_twitter_username(username):
     return username
 
 
+def clean_instagram_url(url):
+    parsed_username = urlparse(url)
+    if parsed_username.netloc not in [
+        "instagram.com",
+        "www.instagram.com",
+        "instagr.am",
+        "www.instagr.am",
+    ]:
+        raise ValueError(
+            "The Instagram URL must be from a valid Instagram domain."
+        )
+    username = parsed_username.path.strip("/")
+    if not re.search(
+        r"^(?!.*[_.]{2})(?!.*[_.]$)[a-zA-Z0-9._]{1,30}$",
+        username,
+    ):
+        raise ValueError(
+            "This is not a valid Instagram username. Please try again."
+        )
+    return "https://{domain}/{username}".format(
+        domain=parsed_username.netloc, username=username
+    )
+
+
 def clean_wikidata_id(identifier):
     identifier = identifier.strip().lower()
     m = re.search(r"^.*wikidata.org/(wiki|entity)/(\w+)", identifier)
