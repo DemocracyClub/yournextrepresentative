@@ -185,6 +185,24 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
             PersonIdentifier.objects.get().value, "madeuptwitteraccount"
         )
 
+    def test_clean_instagram_url(self):
+        resp = self._submit_values("@blah", "instagram_url")
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(
+            PersonIdentifier.objects.get().value,
+            "blah",
+        )
+
+    def test_instagram_full_url(self):
+        resp = self._submit_values(
+            "http://www.instagram.com/blah", "instagram_url"
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(
+            PersonIdentifier.objects.get().value,
+            "blah",
+        )
+
     def test_mastodon_bad_url(self):
         # submit a username missing the `@` symbol
         resp = self._submit_mastodon_values("https://mastodon.social/joe")

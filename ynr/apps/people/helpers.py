@@ -120,6 +120,20 @@ def clean_twitter_username(username):
     return username
 
 
+def clean_instagram_username(username):
+    # Remove any URL bits around it:
+    username = username.strip()
+    m = re.search(r"^.*(instagram.com|x.com)/(\@?)(\w+)", username)
+    if m:
+        username = m.group(3)
+    # If there's a leading '@', strip that off:
+    username = re.sub(r"^@", "", username)
+    if not re.search(r"^\w*$", username):
+        message = "The Instagram username must only consist of alphanumeric characters or underscore"
+        raise ValueError(message)
+    return username
+
+
 def clean_wikidata_id(identifier):
     identifier = identifier.strip().lower()
     m = re.search(r"^.*wikidata.org/(wiki|entity)/(\w+)", identifier)
