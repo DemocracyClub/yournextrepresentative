@@ -209,6 +209,27 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         qs = PersonIdentifier.objects.all()
         self.assertEqual(qs[0].value, "joe")
 
+    def test_linkedin_urls(self):
+        urls_to_valid = (
+            ("http://example.com/@blah", False),
+            ("https://www.linkedin.com/in/first-last-57338a4/", True),
+            ("https://uk.linkedin.com/in/first-last-57338a4/", True),
+            ("https://ie.linkedin.com/in/first-last-57338a4/", True),
+            ("https://ie.linkedin.com/in/first-last-57338a4", True),
+        )
+        for url, valid in urls_to_valid:
+            with self.subTest(url=url, value=valid):
+                resp = self._submit_values(url, "linkedin_url")
+                if valid:
+                    self.assertEqual(resp.status_code, 302)
+                else:
+                    form = resp.context["identifiers_formset"]
+                    self.assertFalse(form.is_valid())
+                    self.assertEqual(
+                        form[0].non_field_errors(),
+                        ["Please enter a valid LinkedIn URL."],
+                    )
+
     def test_bad_email_address(self):
         resp = self._submit_values("whoops", "email")
         form = resp.context["identifiers_formset"]

@@ -1,6 +1,6 @@
 import contextlib
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 from candidates.mastodon_api import (
     MastodonAPITokenMissing,
@@ -118,6 +118,27 @@ def clean_twitter_username(username):
         message = "The Twitter username must only consist of alphanumeric characters or underscore"
         raise ValueError(message)
     return username
+
+
+def clean_linkedin_url(url):
+    parsed_url = urlparse(url)
+    valid = True
+    if not re.match(r"([^.]+)?\.linkedin.com$", parsed_url.netloc):
+        valid = False
+    path = parsed_url.path
+    if path.startswith("/pub/"):
+        parts = path.split("/")
+        name = parts[2]
+        id_parts = parts[3:]
+        user_id = "".join(id_parts[::-1])
+        path = f"/in/{name}-{user_id}/"
+
+    if not path.startswith("/in/"):
+        valid = False
+
+    if not valid:
+        raise ValueError("Please enter a valid LinkedIn URL.")
+    return urlunparse(parsed_url._replace(path=path))
 
 
 def clean_wikidata_id(identifier):
