@@ -12,7 +12,7 @@ class PersonIdentifierFields(Enum):
     facebook_personal_url = "Facebook Personal"
     homepage_url = "Homepage"
     blog_url = "Blog"
-    linkedin_url = "Linkedin"
+    linkedin_url = "LinkedIn URL"
     party_ppc_page_url = "Party Candidate Page"
     twitter_username = "Twitter"
     mastodon_username = "Mastodon"
