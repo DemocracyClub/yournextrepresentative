@@ -120,17 +120,25 @@ def clean_twitter_username(username):
     return username
 
 
-def clean_instagram_username(username):
-    # Remove any URL bits around it:
-    username = username.strip()
-    m = re.search(r"^.*(instagram.com|x.com)/(\@?)(\w+)", username)
-    if m:
-        username = m.group(3)
-    # If there's a leading '@', strip that off:
-    username = re.sub(r"^@", "", username)
-    if not re.search(r"^\w*$", username):
-        message = "The Instagram username must only consist of alphanumeric characters or underscore"
-        raise ValueError(message)
+def clean_instagram_url(username):
+    parsed_username = urlparse(username)
+    if parsed_username.netloc not in [
+        "instagram.com",
+        "www.instagram.com",
+        "instagr.am",
+        "www.instagr.am",
+    ]:
+        raise ValueError(
+            "The Instagram URL must be from a valid Instagram domain."
+        )
+    username = parsed_username.path.strip("/")
+    if not re.search(
+        r"(?:@)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)",
+        username,
+    ):
+        raise ValueError(
+            "This is not a valid Instagram username. Please try again."
+        )
     return username
 
 
