@@ -192,16 +192,27 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
             PersonIdentifier.objects.get().value,
-            "_@_disco__dude_",
+            "https://www.instagr.am/_@_disco__dude_",
         )
 
-    def test_bad_instagram_url(self):
-        resp = self._submit_values("blah", "instagram_url")
+    def test_bad_instagram_domain(self):
+        resp = self._submit_values("www.instagl.am/blah", "instagram_url")
         form = resp.context["identifiers_formset"]
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form[0].non_field_errors(),
             ["The Instagram URL must be from a valid Instagram domain."],
+        )
+
+    def test_bad_instagram_username(self):
+        resp = self._submit_values(
+            "https://www.instagr.am/_____blah", "instagram_url"
+        )
+        form = resp.context["identifiers_formset"]
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form[0].non_field_errors(),
+            ["This is not a valid Instagram username. Please try again."],
         )
 
     def test_mastodon_bad_url(self):

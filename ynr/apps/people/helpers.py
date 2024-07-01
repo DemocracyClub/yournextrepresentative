@@ -139,7 +139,9 @@ def clean_instagram_url(username):
         raise ValueError(
             "This is not a valid Instagram username. Please try again."
         )
-    return username
+    return "https://{domain}/{username}".format(
+        domain=parsed_username.netloc, username=username
+    )
 
 
 def clean_wikidata_id(identifier):
