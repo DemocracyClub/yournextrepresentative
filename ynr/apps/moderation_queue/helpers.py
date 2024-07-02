@@ -57,9 +57,12 @@ def convert_image_to_png(photo):
     # open it as a PillowImage object before
     # converting it to RGBA.
     if not isinstance(photo, PillowImage.Image):
-        photo = PillowImage.open(photo)
-    converted = photo.convert("RGBA")
+        photo = PillowImage.open(photo).convert("RGBA")
+    else:
+        photo = photo.convert("RGBA")
     bytes_obj = BytesIO()
+    converted = photo.copy()
+    converted = converted.convert("RGB")
     converted.save(bytes_obj, "PNG")
     return bytes_obj
 
