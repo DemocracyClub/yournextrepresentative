@@ -32,7 +32,7 @@ SECRET_KEY = "just here for testing"
 ALLOWED_HOSTS = ["candidates.democracyclub.org.uk"]
 
 SHOW_SOPN_TRACKER = False
-SHOW_RESULTS_PROGRESS = False
+SHOW_RESULTS_PROGRESS = True
 
 ALWAYS_ALLOW_RESULT_RECORDING = False
 

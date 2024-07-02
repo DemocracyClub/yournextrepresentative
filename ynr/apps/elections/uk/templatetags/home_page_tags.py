@@ -177,7 +177,7 @@ def current_election_stats(context):
 @register.inclusion_tag("includes/results_progress.html", takes_context=True)
 def results_progress(context):
     context["SHOW_RESULTS_PROGRESS"] = (
-        getattr(settings, "FRONT_PAGE_CTA", False) == "RESULTS_PROGRESS"
+        getattr(settings, "FRONT_PAGE_CTA", True) == "RESULTS_PROGRESS"
     )
 
     if context["SHOW_RESULTS_PROGRESS"]:
@@ -259,7 +259,7 @@ def by_election_ctas(context):
 @register.inclusion_tag("includes/data_download.html", takes_context=True)
 def data_download(context):
     context["DATA_DOWNLOAD"] = (
-        getattr(settings, "FRONT_PAGE_CTA", False) == "DATA_DOWNLOAD"
+        getattr(settings, "FRONT_PAGE_CTA", True) == "DATA_DOWNLOAD"
     )
 
     if context["DATA_DOWNLOAD"]:
@@ -268,4 +268,23 @@ def data_download(context):
             "election_regex"
         ]
         context["election_name"] = settings.DATA_DOWNLOAD_INFO["election_name"]
+    return context
+
+
+@register.inclusion_tag("includes/results_download.html", takes_context=True)
+def results_download(context):
+    context["RESULTS_DOWNLOAD"] = (
+        getattr(settings, "FRONT_PAGE_CTA", True) == "RESULTS_DOWNLOAD"
+    )
+
+    if context["RESULTS_DOWNLOAD"]:
+        context["election_date"] = settings.RESULTS_DOWNLOAD_INFO[
+            "election_date"
+        ]
+        context["election_regex"] = settings.RESULTS_DOWNLOAD_INFO[
+            "election_regex"
+        ]
+        context["election_name"] = settings.RESULTS_DOWNLOAD_INFO[
+            "election_name"
+        ]
     return context
