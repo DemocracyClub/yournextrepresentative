@@ -91,35 +91,30 @@ class CandidateBot(object):
 
         if field_name in self.SUPPORTED_PERSON_IDENTIFIER_FIELDS:
             kwargs = {"person": self.person, "value_type": field_name}
-
+            # The exact record doesn't already exist
             try:
-                # Try to get this exact record
-                PersonIdentifier.objects.get(value=field_value, **kwargs)
-                # If it exists, do nothing
-                self.edits_made = False
-            except PersonIdentifier.DoesNotExist:
-                # The exact record doesn't already exist
-                try:
-                    existing = PersonIdentifier.objects.get(**kwargs)
-                    if not update and not self.IGNORE_ERRORS:
-                        raise IntegrityError(
-                            f"Person {self.person.pk} already has a {field_name}"
-                        )
-                    if update:
-                        existing.value = field_value
-                        existing.save()
-                except PersonIdentifier.DoesNotExist:
-                    # The person doesn't have this value type at all
-                    PersonIdentifier.objects.create(
-                        person=self.person,
-                        value_type=field_name,
-                        value=field_value,
-                        internal_identifier=internal_id,
+                existing = PersonIdentifier.objects.get(**kwargs)
+                if not update and not self.IGNORE_ERRORS:
+                    raise IntegrityError(
+                        f"Person {self.person.pk} already has a {field_name}"
                     )
-                    self.edits_made = True
+                if update:
+                    existing.value = field_value
+                    if internal_id:
+                        existing.internal_identifier = internal_id
+                    existing.save()
+            except PersonIdentifier.DoesNotExist:
+                # The person doesn't have this value type at all
+                PersonIdentifier.objects.create(
+                    person=self.person,
+                    value_type=field_name,
+                    value=field_value,
+                    internal_identifier=internal_id,
+                )
+                self.edits_made = True
 
-                    if not ignore_edit:
-                        self.edits_made = True
+                if not ignore_edit:
+                    self.edits_made = True
         else:
             if field_name == "biography":
                 self.person.biography = field_value
@@ -192,7 +187,7 @@ class CandidateBot(object):
     def add_facebook_page_url(self, username):
         self.edit_field("facebook_page_url", username)
 
-    def add_theyworkforyou_id(self, twfy_id):
+    def add_theyworkforyou(self, twfy_id):
         value = f"https://www.theyworkforyou.com/mp/{twfy_id}/"
         internal_id = f"uk.org.publicwhip/person/{twfy_id}"
         self.edit_field("theyworkforyou", value, internal_id=internal_id)

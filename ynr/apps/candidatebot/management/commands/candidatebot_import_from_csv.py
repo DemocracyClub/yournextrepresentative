@@ -65,7 +65,10 @@ class Command(BaseCommand):
                 continue
             with contextlib.suppress(ValueError):
                 try:
-                    bot.edit_field(field_name, row.get(field_name))
+                    if method_name := getattr(bot, f"add_{field_name}", None):
+                        method_name(row.get(field_name))
+                    else:
+                        bot.edit_field(field_name, row.get(field_name))
                 except IntegrityError:
                     self.stderr.write(
                         f"{field_name} for {row['person_id']} not updated. Use --replace to overwrite"
