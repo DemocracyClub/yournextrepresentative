@@ -363,6 +363,10 @@ THUMBNAIL_DEBUG = DEBUG
 # If this is set to false, then no edits of people are allowed.
 EDITS_ALLOWED = True
 
+# If set to False, new users won't be allowed to make accounts
+# Useful for pre-election anti-vandalism
+NEW_USER_ACCOUNT_CREATION_ALLOWED = True
+
 # A bearer token for the Twitter API for mapping between
 # Twitter usernames and IDs.
 TWITTER_APP_ONLY_BEARER_TOKEN = os.environ.get(
