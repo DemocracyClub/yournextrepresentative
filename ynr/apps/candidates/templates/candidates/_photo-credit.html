@@ -5,7 +5,9 @@
 {% with user_comment=image.user_notes %}
 
   {% if contributor %}
-    This photo was uploaded by the user ‘{{ contributor }}’.
+    This photo was uploaded by the user ‘{{ contributor }}’ on {{ image.modified }}.
+  {% else%}
+    This photo was uploaded on {{ image.modified }}.
   {% endif %}
   {% if user_reason and user_reason != 'other'  %}
     Their justification for its use on the site was:
