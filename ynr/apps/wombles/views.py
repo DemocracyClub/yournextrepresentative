@@ -1,6 +1,7 @@
 import hashlib
 
 from candidates.models import LoggedAction
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -79,6 +80,13 @@ class LoginView(FormView):
     form_class = LoginForm
     template_name = "wombles/login.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context[
+            "new_user_creation_allowed"
+        ] = settings.NEW_USER_ACCOUNT_CREATION_ALLOWED
+        return context
+
     def make_fake_username(self, email):
         hash_object = hashlib.sha256(email.encode())
         # Convert the hash object to a hexadecimal string
@@ -97,6 +105,15 @@ class LoginView(FormView):
             user.username = self.make_fake_username(form.cleaned_data["email"])
             user.set_unusable_password()
             user.save()
+
+        if not settings.NEW_USER_ACCOUNT_CREATION_ALLOWED and (
+            created or user.username.startswith("@@")
+        ):
+            # Set user accounts to inactive when new account creation isn't allowed
+            user.is_active = False
+            user.save()
+            # Redirect without sending an email, as the new user can't log in with it
+            return HttpResponseRedirect(self.get_success_url())
 
         self.send_login_url(user=user)
         messages.success(

@@ -17,6 +17,16 @@
         <h1>Login</h1>
 
         <p>Please enter your email, and we will send you a magic link URL to authenticate your account.</p>
+
+        {% if not new_user_creation_allowed %}
+            <p class="panel"><strong>NOTE:</strong> Creating a new account is disabled to prevent vandalism. Existing
+                users can still log in.
+
+                <a href="https://democracyclub.org.uk/contact/">Get in touch</a> if you would like us to allow you to
+                create an account, or if you need us to make an edit for you.
+            </p>
+        {% endif %}
+
         <form method="post">
             {% csrf_token %}
             <div>

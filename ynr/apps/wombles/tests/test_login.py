@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.core import mail
+from django.test import override_settings
 from django.urls import reverse
 from django_webtest import WebTest
 from sesame.utils import get_query_string
@@ -106,3 +107,34 @@ class TestWombleLogin(WebTest):
                 "email": "test2@example.com",
             },
         ).follow()
+
+    @override_settings(NEW_USER_ACCOUNT_CREATION_ALLOWED=False)
+    def cant_create_account_when_creation_disabled(self):
+        response = self.app.get(reverse("wombles:login"))
+        csrftoken = self.app.cookies["csrftoken"]
+        response = self.app.post(
+            reverse("wombles:login"),
+            params={
+                "csrfmiddlewaretoken": csrftoken,
+                "email": "test1@example.com",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), 0)
+
+        user = User.objects.get(email="test1@example.com")
+        self.assertFalse(user.is_active)
+
+        response = self.app.get(reverse("wombles:login"))
+        csrftoken = self.app.cookies["csrftoken"]
+        response = self.app.post(
+            reverse("wombles:login"),
+            params={
+                "csrfmiddlewaretoken": csrftoken,
+                "email": "test1@example.com",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), 0)
