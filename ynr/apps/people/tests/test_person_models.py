@@ -7,6 +7,7 @@ from candidates.tests.factories import faker_factory
 from candidates.tests.helpers import TmpMediaRootMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from django_webtest import WebTest
 from moderation_queue.models import QueuedImage
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
@@ -46,6 +47,42 @@ class TestPersonModels(
         # cached value of person_image
         person = Person.objects.get()
         self.assertEqual(person.get_display_image_url(), url)
+
+    def test_all_person_images_have_a_timestamp(self):
+        """ensure that all person images have a timestamp"""
+        person = PersonFactory(name=faker_factory.name())
+        pi = PersonImage.objects.create_from_file(
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/jowell-pilot.jpg",
+            defaults={
+                "person": person,
+                "source": "Taken from Wikipedia",
+                "copyright": "example-license",
+                "user_notes": "A photo of Tessa Jowell",
+            },
+        )
+        self.assertIsNotNone(pi.created)
+        self.assertIsNotNone(pi.modified)
+
+    def test_person_image_modified_timestamp(self):
+        """visit the person-view.html template and check the response for the modified timestamp"""
+        person = PersonFactory(name=faker_factory.name())
+        pi = PersonImage.objects.create_from_file(
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/jowell-pilot.jpg",
+            defaults={
+                "person": person,
+                "source": "Taken from Wikipedia",
+                "copyright": "example-license",
+                "user_notes": "A photo of Tessa Jowell",
+            },
+        )
+        modified = timezone.localtime(pi.modified)
+        response = self.app.get(f"/person/{person.id}", user=self.user)
+        self.assertIn(
+            f"This photo was uploaded on {modified.strftime('%-d %B %Y %H:%M')}.",
+            response.text,
+        )
 
     def test_get_alive_now(self):
         alive_person = PersonFactory(name=faker_factory.name())

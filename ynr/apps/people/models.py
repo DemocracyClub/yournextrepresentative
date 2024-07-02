@@ -53,7 +53,7 @@ class EditLimitationStatuses(Enum):
     EDITS_PREVENTED = "Edits prevented"
 
 
-class PersonImage(models.Model):
+class PersonImage(TimeStampedModel):
     """
     Images of people, uploaded by users of the site. It's important we keep
     track of the copyright the uploading user asserts over the image, and any
