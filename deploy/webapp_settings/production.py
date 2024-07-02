@@ -118,3 +118,7 @@ CELERY_IMPORTS = [
 ]
 ALWAYS_ALLOW_RESULT_RECORDING = True
 EDITS_ALLOWED = True
+
+# If set to False, new users won't be allowed to make accounts
+# Useful for pre-election anti-vandalism
+NEW_USER_ACCOUNT_CREATION_ALLOWED = False
