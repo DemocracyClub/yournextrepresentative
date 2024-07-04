@@ -186,7 +186,9 @@ def results_progress(context):
 
         context["election_name"] = settings.SOPN_TRACKER_INFO["election_name"]
         ballot_qs = Ballot.objects.filter(
-            election__election_date=election_date, cancelled=False
+            election__election_date=election_date,
+            cancelled=False,
+            election__slug="parl.2024-07-04",
         )
 
         # TODO: Remove after the General election
