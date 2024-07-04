@@ -1,7 +1,10 @@
+from data_exports.models import MaterializedMemberships
+from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
-from django.db.models import JSONField
+from django.db import models, transaction
+from django.db.models import JSONField, OuterRef, Subquery
 from django_extensions.db.models import TimeStampedModel
+from popolo.models import Membership
 
 
 class ResultSet(TimeStampedModel):
@@ -135,3 +138,82 @@ class CandidateResult(TimeStampedModel):
 
     def __unicode__(self):
         return "{} ({} votes)".format(self.membership.person, self.num_ballots)
+
+
+# Useful when debugging
+ALWAYS_REFRESH = False
+
+
+class SuggestedWinner(TimeStampedModel):
+    """
+    Model that tracks when someone has marked a person as a winner
+    by directly pressing a button, rather than entering votes cast.
+
+    If the last `N_SUGGESTIONS_NEEDED` agree, then we mark the winner.
+
+    """
+
+    N_SUGGESTIONS_NEEDED = 2
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    membership = models.ForeignKey(
+        Membership, related_name="suggested_winners", on_delete=models.CASCADE
+    )
+    is_elected = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.membership.party.ec_id}: {self.is_elected} ({self.user})"
+
+    @classmethod
+    def record_suggestion(
+        cls, user: User, membership: Membership, is_elected: bool = True
+    ):
+        ballot = membership.ballot
+        if ballot.winner_count > 1:
+            raise ValueError(
+                "Can't use mark winner system for multi-seat posts"
+            )
+        with transaction.atomic():
+            # Create or update the vote
+            suggestion, created = cls.objects.update_or_create(
+                user=user,
+                membership=membership,
+                defaults={"is_elected": is_elected},
+            )
+
+            # If a different winner is already set on the ballot,
+            # we shouldn't have allowed a user to make a suggestion.
+            # We're here now though, so we still record the above, but
+            # do nothing else
+            other_winners = ballot.membership_set.filter(elected=True).exclude(
+                pk=membership.pk
+            )
+            if other_winners.exists():
+                return suggestion
+
+            # Retrieve the last two votes for the membership
+            subquery = (
+                cls.objects.filter(user=OuterRef("user"), membership=membership)
+                .order_by("-id")
+                .values("id")[:1]
+            )
+
+            latest_votes = (
+                cls.objects.filter(membership=membership)
+                .annotate(latest_id=Subquery(subquery))
+                .filter(id=Subquery(subquery))[:2]
+            )
+
+            elected_count = sum(v.is_elected for v in latest_votes)
+            if elected_count == cls.N_SUGGESTIONS_NEEDED:
+                membership.elected = True
+                membership.save()
+                if ALWAYS_REFRESH:
+                    MaterializedMemberships.refresh_view()
+                return suggestion
+            if not is_elected:
+                membership.elected = False
+                membership.save()
+                if ALWAYS_REFRESH:
+                    MaterializedMemberships.refresh_view()
+            return suggestion
