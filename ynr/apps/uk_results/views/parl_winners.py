@@ -166,11 +166,11 @@ class ParlBallotsWinnerEntryView(LoginRequiredMixin, TemplateView):
         if not is_elected:
             action_type = ActionType.RETRACT_WINNER
             message = (
-                f"Thanks for confirming {membership.person.name} as the winner"
+                f"Thanks for unsetting{membership.person.name} as the winner"
             )
         if membership.elected:
             message = (
-                f"Thanks for unsetting {membership.person.name} as the winner"
+                f"Thanks for confirming {membership.person.name} as the winner"
             )
             action_type = ActionType.SET_CANDIDATE_ELECTED
 
