@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load order_by_custom %}
+{% load get_query %}
 {% block title %}
     2024 general election results
 {% endblock %}
@@ -172,11 +173,22 @@
             </div>
         </details>
     </aside>
+    <p>Sort:
+    {% if sort_by == "name" %}
+    	<a href="{% query_string request.GET sort_by="time" %}">Time</a>
+    	| Name
+    {% else %}
+        Time |
+        <a href="{% query_string request.GET sort_by="name" %}">Name</a>
 
+
+    {% endif %}
+
+    </p>
     <hr>
 
     {% regroup memberships by ballot_paper_id as by_ballots %}
-    {% for ballot, ballot_memberships in by_ballots|order_groups:"d" %}
+    {% for ballot, ballot_memberships in by_ballots|order_groups:sort_by %}
         <div class="ballot" data-name="{{ ballot_memberships.0.division_name }}">
             <h2>{{ ballot_memberships.0.division_name }}
                 <a href="{% url "election_view" ballot %}">#</a>
@@ -228,7 +240,6 @@
 
                                     </div>
                                     <div>
-                                        {{ membership.membership.suggested_winners.all }}
                                         <input type="hidden" name="membership_id" value="{{ membership.pk }}">
                                         <input type="hidden" name="unset" value="1">
                                         <button type="submit" class="btn secondary tiny">Unset winner</button>

@@ -140,6 +140,7 @@ class ParlBallotsWinnerEntryView(LoginRequiredMixin, TemplateView):
         context["filter"] = f
         context["memberships"] = f.qs
         context["shortcuts"] = filter_shortcuts(self.request)
+        context["sort_by"] = self.request.GET.get("sort_by", "time")
 
         return context
 
