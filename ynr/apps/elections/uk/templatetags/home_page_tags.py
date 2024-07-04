@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from candidates.models import Ballot
+from data_exports.models import MaterializedMemberships
 from django import template
 from django.conf import settings
 from django.db.models import Count, F, Func, Q, Sum, TextField, Value
@@ -187,6 +188,22 @@ def results_progress(context):
         ballot_qs = Ballot.objects.filter(
             election__election_date=election_date, cancelled=False
         )
+
+        # TODO: Remove after the General election
+        context["parl_marked_elected"] = MaterializedMemberships.objects.filter(
+            ballot_paper__election__election_date=election_date, elected=True
+        ).count()
+        context["parl_elected_by_party"] = (
+            MaterializedMemberships.objects.filter(
+                ballot_paper__election__election_date=election_date,
+                elected=True,
+            )
+            .annotate(party_count=Count("party_id"))
+            .values("party_name", "party_count", "party_id")
+            .order_by("-party_count")
+        )
+
+        # END TODO
 
         context["results_entered"] = ballot_qs.has_results().count()
         context["areas_total"] = ballot_qs.count()
