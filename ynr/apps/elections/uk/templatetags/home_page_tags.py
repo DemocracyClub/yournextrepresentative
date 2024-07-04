@@ -193,7 +193,9 @@ def results_progress(context):
 
         # TODO: Remove after the General election
         context["parl_marked_elected"] = MaterializedMemberships.objects.filter(
-            ballot_paper__election__election_date=election_date, elected=True
+            ballot_paper__election__election_date=election_date,
+            ballot_paper__election__slug="parl.2024-07-04",
+            elected=True,
         ).count()
         context["parl_elected_by_party"] = (
             MaterializedMemberships.objects.filter(
