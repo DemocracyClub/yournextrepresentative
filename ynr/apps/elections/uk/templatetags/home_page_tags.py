@@ -198,6 +198,7 @@ def results_progress(context):
         context["parl_elected_by_party"] = (
             MaterializedMemberships.objects.filter(
                 ballot_paper__election__election_date=election_date,
+                ballot_paper__election__slug="parl.2024-07-04",
                 elected=True,
             )
             .annotate(party_count=Count("party_id"))
