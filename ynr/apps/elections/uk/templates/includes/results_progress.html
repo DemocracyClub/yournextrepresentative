@@ -1,62 +1,92 @@
 {% load humanize %}
 {% if SHOW_RESULTS_PROGRESS %}
-  <h3>Enter results as they come in</h3>
-  <p><a href="{% url "election_list_view"%}?{{ has_results_shortcut.querystring }}" class="button">Get started</a></p>
-  <p><a href="{% url "results-home"%}" class="button">Get the data</a></p>
+    <h2>General election winners</h2>
+    <p>{{ parl_marked_elected }} out of 650 seats have winners marked</p>
+    <div class="radius progress success large-12" role="progressbar"
+         aria-valuenow="{{ parl_marked_elected }}"
+         aria-valuemin="0" aria-valuemax="650">
+        <span class="meter" style="width: {{ parl_marked_elected }}%"></span>
+    </div>
+    {% if parl_elected_by_party %}
+        <h3>Winners by party</h3>
+        <ol>
+            {% for party_row in parl_elected_by_party %}
+                <li class="party party-colour-{{ party_row.party_id|slugify }}"><strong>{{ party_row.party_count|intcomma }}</strong>: {{ party_row.party_name }} </li>
+            {% endfor %}
+        </ol>
+    {% endif %}
 
-  <h3>{{ results_percent }}% of votes for {{ areas_total|intcomma }} areas in total have been entered</h3>
-  <div class="radius progress success large-12" role="progressbar" aria-valuenow="{{ results_entered }}" aria-valuemin="0" aria-valuemax="{{ areas_total }}">
-    <span class="meter" style="width: {{ results_percent }}%"></span>
-  </div>
 
-  <h2>By region</h2>
-  <div class="region-grid" style="display: flex;flex-wrap: wrap;margin: -0.5em;">
-    {% for nuts1_id, stats in results_progress_by_region.items %}
-      <section style="flex: 1 0 45%;margin: 0.5em;">
-        <hr>
-        <h3 style="font-size: 1.2em; min-width: 275.5px; min-height: 52px"><a
-        href="{% url "election_list_view" %}?filter_by_region={{ nuts1_id }}&{{ has_results_shortcut.querystring }}">{{ stats.label }}: {{ stats.posts_total }}
-          ballots</a></h3>
-        <div class="row">
-          <div class="columns large-12">
-            <p style="margin-bottom: 0"><strong>{{ stats.has_results|intcomma }}</strong> entered</p>
-            <div class="radius progress success large-12" role="progressbar"
-                aria-valuenow="{{ stats.has_results }}"
-                aria-valuemin="0" aria-valuemax="{{ stats.posts_total }}">
-              <span class="meter" style="width: {{ stats.has_results_percent }}%"></span>
-            </div>
-          </div>
-        </div>
-        <p>Out of {{ stats.posts_total|intcomma }} areas in total
-          <strong>{{ stats.has_results|intcomma }}</strong> areas have had results entered.
-        </p>
-      </section>
-    {% endfor %}
-  </div>
 
-  <h2>By election type</h2>
-  <div class="region-grid" style="display: flex;flex-wrap: wrap;margin: -0.5em;">
-    {% for election_type, stats in results_progress_by_election_type.items %}
-      <section style="flex: 1 0 45%;margin: 0.5em;">
-        <hr>
-        <h3 style="font-size: 1.2em; min-width: 275.5px; min-height: 52px"><a
-        href="{% url "election_list_view" %}?election_type={{ election_type }}&{{ has_results_shortcut.querystring }}">{{ stats.label }}: {{ stats.posts_total }}
-          ballots</a></h3>
-        <div class="row">
-          <div class="columns large-12">
-            <p style="margin-bottom: 0"><strong>{{ stats.has_results|intcomma }}</strong> entered</p>
-            <div class="radius progress success large-12" role="progressbar"
-                 aria-valuenow="{{ stats.has_results }}"
-                 aria-valuemin="0" aria-valuemax="{{ stats.posts_total }}">
-              <span class="meter" style="width: {{ stats.has_results_percent }}%"></span>
-            </div>
-          </div>
-        </div>
-        <p>Out of {{ stats.posts_total|intcomma }} areas in total
-          <strong>{{ stats.has_results|intcomma }}</strong> areas have had results entered.
-        </p>
-      </section>
-    {% endfor %}
-  </div>
+    <p><a href="{% url "parl_24_winner_form" %}" class="button">Enter winners</a></p>
+
+
+<hr>
+    <h2>Votes cast</h2>
+
+    <p>{{ results_percent }}% of votes for {{ areas_total|intcomma }} areas in total have been entered</p>
+    <div class="radius progress success large-12" role="progressbar" aria-valuenow="{{ results_entered }}"
+         aria-valuemin="0" aria-valuemax="{{ areas_total }}">
+        <span class="meter" style="width: {{ results_percent }}%"></span>
+    </div>
+
+    <p><a href="{% url "election_list_view" %}?{{ has_results_shortcut.querystring }}" class="button">Enter votes
+        cast</a>
+    </p>
+
+    <h3>Votes cast by region</h3>
+    <div class="region-grid" style="display: flex;flex-wrap: wrap;margin: -0.5em;">
+        {% for nuts1_id, stats in results_progress_by_region.items %}
+            <section style="flex: 1 0 45%;margin: 0.5em;">
+                <hr>
+                <h3 style="font-size: 1.2em; min-width: 275.5px; min-height: 52px"><a
+                        href="{% url "election_list_view" %}?filter_by_region={{ nuts1_id }}&{{ has_results_shortcut.querystring }}">{{ stats.label }}: {{ stats.posts_total }}
+                    ballots</a></h3>
+                <div class="row">
+                    <div class="columns large-12">
+                        <p style="margin-bottom: 0"><strong>{{ stats.has_results|intcomma }}</strong> entered</p>
+                        <div class="radius progress success large-12" role="progressbar"
+                             aria-valuenow="{{ stats.has_results }}"
+                             aria-valuemin="0" aria-valuemax="{{ stats.posts_total }}">
+                            <span class="meter" style="width: {{ stats.has_results_percent }}%"></span>
+                        </div>
+                    </div>
+                </div>
+                <p>Out of {{ stats.posts_total|intcomma }} areas in total
+                    <strong>{{ stats.has_results|intcomma }}</strong> areas have had results entered.
+                </p>
+                {% if stats.posts_total == stats.has_results %}
+                    <p><a href="{% url "election_list_view" %}?filter_by_region={{ nuts1_id }}" class="button">Enter
+                        votes cast for {{ stats.label }}</a></p>
+                {% endif %}
+                <p></p>
+            </section>
+        {% endfor %}
+    </div>
+
+    <h3>Votes cast by election type</h3>
+    <div class="region-grid" style="display: flex;flex-wrap: wrap;margin: -0.5em;">
+        {% for election_type, stats in results_progress_by_election_type.items %}
+            <section style="flex: 1 0 45%;margin: 0.5em;">
+                <hr>
+                <h3 style="font-size: 1.2em; min-width: 275.5px; min-height: 52px"><a
+                        href="{% url "election_list_view" %}?election_type={{ election_type }}&{{ has_results_shortcut.querystring }}">{{ stats.label }}: {{ stats.posts_total }}
+                    ballots</a></h3>
+                <div class="row">
+                    <div class="columns large-12">
+                        <p style="margin-bottom: 0"><strong>{{ stats.has_results|intcomma }}</strong> entered</p>
+                        <div class="radius progress success large-12" role="progressbar"
+                             aria-valuenow="{{ stats.has_results }}"
+                             aria-valuemin="0" aria-valuemax="{{ stats.posts_total }}">
+                            <span class="meter" style="width: {{ stats.has_results_percent }}%"></span>
+                        </div>
+                    </div>
+                </div>
+                <p>Out of {{ stats.posts_total|intcomma }} areas in total
+                    <strong>{{ stats.has_results|intcomma }}</strong> areas have had results entered.
+                </p>
+            </section>
+        {% endfor %}
+    </div>
 
 {% endif %}

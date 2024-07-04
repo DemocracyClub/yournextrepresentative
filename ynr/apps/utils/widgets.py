@@ -42,7 +42,6 @@ class DCIntegerInput(TextInput):
         attrs = super().build_attrs(base_attrs, extra_attrs)
         attrs.update(
             {
-                "inputmode": "numeric",
                 "pattern": r"[0-9\s,]*",
                 "oninvalid": "this.setCustomValidity('Enter a number')",
             }

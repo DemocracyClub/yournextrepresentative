@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% load order_by_custom %}
+{% load get_query %}
+{% block title %}
+    2024 general election results
+{% endblock %}
+
+{% block hero %}
+    <h1>2024 general election results</h1>
+{% endblock %}
+
+{% block content %}
+
+    <style>
+
+        :root {
+            --party-colour-default: lightgray;
+        }
+
+        .party.party-colour-pp90 {
+            border-left-color: #FAA61A;
+        }
+
+        .party.party-colour-pp7931 {
+            border-left-color: #00b1da;
+        }
+
+        .party.party-colour-pp52 {
+            border-left-color: #0087DC;
+        }
+
+        .party.party-colour-pp63 {
+            border-left-color: #00643b;
+        }
+
+        .party.party-colour-pp12700 {
+            border-left-color: #005eb8;
+        }
+
+        .party.party-colour-pp130 {
+            border-left-color: #00b140;
+        }
+
+        .party.party-colour-pp102 {
+            border-left-color: #fdf38e;
+        }
+
+        .party.party-colour-pp53,
+        .party.party-colour-joint-party53-119 {
+            border-left-color: #E4003B;
+        }
+
+        .ballot + .ballot {
+            margin-top: 2em;
+        }
+
+        form .submit {
+            margin-top: 1em;
+            margin-left: 2em;
+        }
+
+        .party {
+            display: block;
+            border-left: 1em solid var(--party-colour-default);
+            padding: 0.5em;
+        }
+
+        .party_select_form ul {
+            list-style-type: none;
+            margin: 0;
+        }
+
+        .party_select_form ul li label:before {
+            content: "";
+            position: absolute;
+            left: -2em;
+            top: 0.5em;
+            border-radius: 50%;
+            display: inline-block;
+            width: 1.5em;
+            height: 1.5em;
+            border: 2px solid #403F41;
+        }
+
+        .party_select_form ul li label:has(input[type="radio"]:checked):before {
+            background-color: black;
+            box-shadow: inset 0 0 0 0.25rem #fff;
+        }
+
+        .party_select_form ul li {
+            position: relative;
+            margin-left: 2em;
+        }
+
+        .party_select_form ul li p {
+            padding: 0;
+            margin: 0;
+        }
+
+        .party_select_form ul li label {
+
+            padding-left: 1em;
+        }
+
+        .party_select_form ul li input {
+            display: none;
+        }
+
+        .party_select_form ul li:has(input[type="radio"]:checked) {
+            border-color: black;
+            font-weight: bold !important;
+        }
+
+        .party_select_form ul li:has(input[type="radio"]:checked) * {
+            font-weight: bold !important;
+        }
+
+        .party_select_form ul li {
+            border: 1px solid lightgrey;
+        }
+
+        .party_select_form ul li + li {
+            margin-top: 1em;
+        }
+
+        .elected_container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .elected_container .party {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .elected_container button {
+            flex-shrink: 0;
+        }
+
+
+    </style>
+
+
+    <aside class="ds-filter" aria-labelledby="filter-label">
+        <label for="name_filter">Filter by constituency name</label>
+        <input id="name_filter">
+        <div class="ds-filter-cluster">
+            <ul>
+                <li id="filter-label" class="ds-filter-label" aria-hidden="true">Filter:</li>
+                <li><a href="{% url "parl_24_winner_form" %}"
+                       {% if request.get_full_path == "/elections/" %}aria-current="true" {% endif %}>All</a></li>
+                {% for shortcut in shortcuts.list %}
+                    <li><a href="{% url "parl_24_winner_form" %}?{{ shortcut.querystring }}"
+                           {% if shortcut.active %}aria-current="true" {% endif %}>{{ shortcut.label }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <details {% if filter.data %}open=""{% endif %}>
+            <summary>Advanced filters</summary>
+            <div class="ds-advanced-filters">
+                <div class="ds-filter-cluster">
+                    {% for field in filter.form %}
+                        <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+                            <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label"
+                                aria-hidden="true">{{ field.label }}:
+                            </li>
+                            {{ field }}
+                        </ul>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </details>
+    </aside>
+    <p>Sort:
+    {% if sort_by == "name" %}
+    	<a href="{% query_string request.GET sort_by="time" %}">Time</a>
+    	| Name
+    {% else %}
+        Time |
+        <a href="{% query_string request.GET sort_by="name" %}">Name</a>
+
+
+    {% endif %}
+
+    </p>
+    <hr>
+
+    {% regroup memberships by ballot_paper_id as by_ballots %}
+    {% for ballot, ballot_memberships in by_ballots|order_groups:sort_by %}
+        <div class="ballot" data-name="{{ ballot_memberships.0.division_name }}">
+            <h2>{{ ballot_memberships.0.division_name }}
+                <a href="{% url "election_view" ballot %}">#</a>
+                {% if ballot_memberships.0.has_winner %}
+                    🟢
+                {% else %}
+                    {% if ballot_memberships.0.suggested_ballot %}
+                        <small>
+                            <abbr title="Someone has entered a result. Enter the same result to mark a winner">🟡</abbr>
+                        </small>
+
+                    {% endif %}
+                {% endif %}
+            </h2>
+            {% if not ballot_memberships.0.has_winner %}
+                <p>🕰️ Expected {{ ballot|expected_time|date:"H:i" }}</p>
+            {% endif %}
+            <div>
+                <form class="party_select_form" method="post" id="{{ ballot|slugify }}">
+                    {% csrf_token %}
+                    {% if not ballot_memberships.0.has_winner %}
+                        <ul>
+                            {% for membership in ballot_memberships %}
+
+                                <li>
+                                    <label for="{{ ballot }}-{{ membership.pk }}"
+                                           class="party party-colour-{{ membership.party_id|slugify }}">
+                                        <input type="radio" id="{{ ballot }}-{{ membership.pk }}"
+                                               name="membership_id" value="{{ membership.pk }}">
+
+                                        <p class="party_name">{{ membership.party_name }}
+                                            — {{ membership.person_name }}</p>
+
+                                    </label>
+                                </li>
+
+                            {% endfor %}
+                        </ul>
+                        <div class="submit">
+                            <button type="submit">Mark winner</button>
+                        </div>
+                    {% else %}
+                        {% for membership in ballot_memberships %}
+                            {% if membership.elected %}
+                                <div class="elected_container">
+                                    <div class="party party-colour-{{ membership.party_id|slugify }}">
+                                        <p class="party_name">{{ membership.party_name }}
+                                            — {{ membership.person_name }}</p>
+
+                                    </div>
+                                    <div>
+                                        <input type="hidden" name="membership_id" value="{{ membership.pk }}">
+                                        <input type="hidden" name="unset" value="1">
+                                        <button type="submit" class="btn secondary tiny">Unset winner</button>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                    {% endif %}
+                </form>
+
+            </div>
+        </div>
+    {% endfor %}
+
+
+
+    <script>
+        // JavaScript to handle live filtering
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterInput = document.getElementById('name_filter');
+            const ballotDivs = document.querySelectorAll('.ballot');
+
+            filterInput.addEventListener('input', function () {
+                const filterText = filterInput.value.toLowerCase();
+
+                ballotDivs.forEach(div => {
+                    const name = div.getAttribute('data-name').toLowerCase();
+
+                    if (name.includes(filterText)) {
+                        div.style.display = ''; // Show the element
+                    } else {
+                        div.style.display = 'none'; // Hide the element
+                    }
+                });
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (!event.ctrlKey && !event.altKey && !event.metaKey && event.key.length === 1 && event.key.match(/[a-z]/i)) {
+                    filterInput.focus();
+                }
+            });
+
+        });
+    </script>
+
+{% endblock %}
