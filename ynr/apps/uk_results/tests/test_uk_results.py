@@ -116,7 +116,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         self.result_set.total_electorate = 10000
         self.result_set.calculate_turnout_percentage()
         # check rounded to 2 places max
-        self.assertEqual(self.result_set.turnout_percentage, 33.33)
+        self.assertEqual(self.result_set.turnout_percentage, 33)
 
     def test_turnout_percentage_is_none(self):
         results = [

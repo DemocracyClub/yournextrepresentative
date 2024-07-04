@@ -13,7 +13,7 @@ class ResultSet(TimeStampedModel):
     num_turnout_reported = models.PositiveIntegerField(
         null=True, verbose_name="Reported Turnout"
     )
-    turnout_percentage = models.FloatField(
+    turnout_percentage = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         blank=True,
         null=True,
