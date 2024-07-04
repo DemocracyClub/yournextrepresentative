@@ -256,6 +256,8 @@ class LoggedAction(models.Model):
                 desc = f"""changed an alternate name for <a href="{url}">candidate #{self.person.id}</a>"""
             if self.action_type == ActionType.SUSPENDED_TWITTER_ACCOUNT:
                 desc = f"""updated twitter account status for <a href="{url}">candidate #{self.person.id}</a>"""
+            if self.action_type == ActionType.ENTERED_RESULTS_DATA:
+                desc = f"""entered results data for <a href="{url}">{self.person.name}</a>"""
 
         if desc:
             output = f"{prefix} {desc}"
