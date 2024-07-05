@@ -190,7 +190,7 @@
     {% for ballot in ballots %}
         <div class="ballot" data-name="{{ ballot.post.label }}">
             <h2>{{ ballot.post.label }}
-                <a href="{% url "election_view" ballot %}">#</a>
+                <a href="{{ ballot.get_absolute_url }}">#</a>
                 {% if ballot.has_winner %}
                     🟢
                 {% else %}
