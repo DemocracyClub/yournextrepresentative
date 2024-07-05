@@ -20,14 +20,13 @@ from django.db.models import (
     Exists,
     OuterRef,
 )
-from django.db.models.functions import Coalesce
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import TemplateView
 from elections.filters import DSLinkWidget, region_choices
 from popolo.models import Membership
 from uk_results.models import SuggestedWinner
-from utils.db import LastWord, NullIfBlank
+from utils.db import LastWord
 
 
 def filter_shortcuts(request):
@@ -127,12 +126,7 @@ class ParlBallotsWinnerEntryView(LoginRequiredMixin, TemplateView):
             .annotate(suggested_ballot=Exists(suggested_subquery))
             .annotate(has_winner=Exists(elected_subquery))
             .annotate(last_name=LastWord("person_name"))
-            .annotate(
-                name_for_ordering=Coalesce(
-                    NullIfBlank("person__sort_name"), "last_name"
-                )
-            )
-            .order_by("ballot_paper_id", "name_for_ordering")
+            .order_by("ballot_paper_id", "last_name")
         )
 
         f = MembershipsFilter(self.request.GET, memberships)
