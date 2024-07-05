@@ -12,18 +12,11 @@ from braces.views import LoginRequiredMixin
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType, EditType
 from candidates.views import get_change_metadata, get_client_ip
-from data_exports.filters import ELECTED_CHOICES
 from data_exports.models import MaterializedMemberships
 from django.contrib import messages
-from django.db.models import (
-    Count,
-    Exists,
-    OuterRef,
-)
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import TemplateView
-from elections.filters import DSLinkWidget, region_choices
 from popolo.models import Membership
 from uk_results.models import SuggestedWinner
 from utils.db import LastWord
@@ -54,48 +47,49 @@ def filter_shortcuts(request):
 
 
 class MembershipsFilter(django_filters.FilterSet):
-    filter_by_region = django_filters.ChoiceFilter(
-        widget=DSLinkWidget(),
-        method="region_filter",
-        label="Filter by region",
-        choices=region_choices,
-    )
-    part_entered = django_filters.ChoiceFilter(
-        widget=DSLinkWidget(),
-        method="part_entered_filter",
-        label="Part entered",
-        choices=(("true", "Yes"),),
-    )
-
-    elected = django_filters.ChoiceFilter(
-        field_name="elected",
-        label="Elected",
-        choices=ELECTED_CHOICES,
-        method="elected_filter",
-        empty_label="All",
-        widget=DSLinkWidget(),
-    )
-
-    def region_filter(self, queryset, name, value):
-        """
-        Filter queryset by region using the NUTS1 code
-        """
-        return queryset.filter(ballot_paper__tags__NUTS1__key__in=[value])
-
-    def part_entered_filter(self, queryset, name, value):
-        """
-        Filter queryset by region using the NUTS1 code
-        """
-        if value == "true":
-            return queryset.filter(suggested_ballot=True)
-        return queryset
-
-    def elected_filter(self, queryset, name, value):
-        if value == "True":
-            return queryset.filter(has_winner=True)
-        if value == "False":
-            return queryset.filter(has_winner=False)
-        return queryset
+    ...
+    # filter_by_region = django_filters.ChoiceFilter(
+    #     widget=DSLinkWidget(),
+    #     method="region_filter",
+    #     label="Filter by region",
+    #     choices=region_choices,
+    # )
+    # part_entered = django_filters.ChoiceFilter(
+    #     widget=DSLinkWidget(),
+    #     method="part_entered_filter",
+    #     label="Part entered",
+    #     choices=(("true", "Yes"),),
+    # )
+    #
+    # elected = django_filters.ChoiceFilter(
+    #     field_name="elected",
+    #     label="Elected",
+    #     choices=ELECTED_CHOICES,
+    #     method="elected_filter",
+    #     empty_label="All",
+    #     widget=DSLinkWidget(),
+    # )
+    #
+    # def region_filter(self, queryset, name, value):
+    #     """
+    #     Filter queryset by region using the NUTS1 code
+    #     """
+    #     return queryset.filter(ballot_paper__tags__NUTS1__key__in=[value])
+    #
+    # def part_entered_filter(self, queryset, name, value):
+    #     """
+    #     Filter queryset by region using the NUTS1 code
+    #     """
+    #     if value == "true":
+    #         return queryset.filter(suggested_ballot=True)
+    #     return queryset
+    #
+    # def elected_filter(self, queryset, name, value):
+    #     if value == "True":
+    #         return queryset.filter(has_winner=True)
+    #     if value == "False":
+    #         return queryset.filter(has_winner=False)
+    #     return queryset
 
 
 class ParlBallotsWinnerEntryView(LoginRequiredMixin, TemplateView):
@@ -104,27 +98,27 @@ class ParlBallotsWinnerEntryView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        suggested_subquery = (
-            Membership.objects.annotate(suggested=Count("suggested_winners"))
-            .filter(
-                ballot__ballot_paper_id=OuterRef("ballot_paper"),
-                suggested=1,
-                elected=False,
-            )
-            .only("pk")
-        )
-        elected_subquery = MaterializedMemberships.objects.filter(
-            ballot_paper=OuterRef("ballot_paper"),
-            elected=True,
-        ).only("pk")
+        # suggested_subquery = (
+        #     Membership.objects.annotate(suggested=Count("suggested_winners"))
+        #     .filter(
+        #         ballot__ballot_paper_id=OuterRef("ballot_paper"),
+        #         suggested=1,
+        #         elected=False,
+        #     )
+        #     .only("pk")
+        # )
+        # elected_subquery = MaterializedMemberships.objects.filter(
+        #     ballot_paper=OuterRef("ballot_paper"),
+        #     elected=True,
+        # ).only("pk")
 
         memberships = (
             MaterializedMemberships.objects.filter(
                 ballot_paper__election__slug="parl.2024-07-04"
             )
             .select_related("ballot_paper__post")
-            .annotate(suggested_ballot=Exists(suggested_subquery))
-            .annotate(has_winner=Exists(elected_subquery))
+            # .annotate(suggested_ballot=Exists(suggested_subquery))
+            # .annotate(has_winner=Exists(elected_subquery))
             .annotate(last_name=LastWord("person_name"))
             .order_by("ballot_paper_id", "last_name")
         )
