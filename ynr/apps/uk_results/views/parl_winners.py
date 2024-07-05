@@ -74,7 +74,7 @@ class BallotsFilter(django_filters.FilterSet):
         """
         Filter queryset by region using the NUTS1 code
         """
-        return queryset.filter(ballot_paper__tags__NUTS1__key__in=[value])
+        return queryset.filter(tags__NUTS1__key__in=[value])
 
     def part_entered_filter(self, queryset, name, value):
         """
