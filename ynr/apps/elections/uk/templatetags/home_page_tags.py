@@ -197,6 +197,9 @@ def results_progress(context):
             ballot_paper__election__slug="parl.2024-07-04",
             elected=True,
         ).count()
+        context["parl_marked_elected_percent"] = round(
+            float(context["parl_marked_elected"]) / float(650) * 100
+        )
         context["parl_elected_by_party"] = (
             MaterializedMemberships.objects.filter(
                 ballot_paper__election__election_date=election_date,
