@@ -334,7 +334,7 @@ DATABASES = {
         "USER": os.environ.get("POSTGRES_USERNAME", ""),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
         "HOST": os.environ.get("POSTGRES_HOST", ""),
-        "CONN_MAX_AGE": 0 if DEBUG else 60,
+        "CONN_MAX_AGE": 0,
     }
 }
 
