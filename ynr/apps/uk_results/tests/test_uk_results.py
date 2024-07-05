@@ -2,7 +2,6 @@ from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from data_exports.models import MaterializedMemberships
 from django.test import TestCase
 from django_webtest import WebTest
 from people.tests.factories import PersonFactory
@@ -298,16 +297,19 @@ class TestGEMarkWinnerFrontend(
         self.local_election.ballot_set.first().membership_set.update(
             elected=False
         )
-        MaterializedMemberships.refresh_view()
 
     def test_mark_winners(self):
+        ballot = self.local_post.ballot_set.get()
+
+        ballot.membership_set.update(elected=False)
+
         self.assertFalse(Membership.objects.filter(elected=True).exists())
 
         response = self.app.get("/uk_results/parl.2024-07-04/", user=self.user)
         form = response.forms["localmaidstonediwe050050042016-05-05"]
+
         form["membership_id"] = form["membership_id"].options[0][0]
         form.submit()
-        MaterializedMemberships.refresh_view()
 
         self.assertFalse(Membership.objects.filter(elected=True).exists())
 
@@ -316,7 +318,6 @@ class TestGEMarkWinnerFrontend(
         form = response.forms["localmaidstonediwe050050042016-05-05"]
         form["membership_id"] = form["membership_id"].options[0][0]
         form.submit()
-        MaterializedMemberships.refresh_view()
 
         self.assertFalse(Membership.objects.filter(elected=True).exists())
 
@@ -328,7 +329,6 @@ class TestGEMarkWinnerFrontend(
         form = response.forms["localmaidstonediwe050050042016-05-05"]
         form["membership_id"] = form["membership_id"].options[0][0]
         form.submit()
-        MaterializedMemberships.refresh_view()
 
         self.assertTrue(Membership.objects.filter(elected=True).exists())
 
@@ -340,7 +340,6 @@ class TestGEMarkWinnerFrontend(
         form = response.forms["localmaidstonediwe050050042016-05-05"]
         form["unset"] = "1"
         form.submit()
-        MaterializedMemberships.refresh_view()
 
         self.assertFalse(Membership.objects.filter(elected=True).exists())
 

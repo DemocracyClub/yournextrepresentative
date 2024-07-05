@@ -187,15 +187,14 @@
     </p>
     <hr>
 
-    {% regroup memberships by ballot_paper_id as by_ballots %}
-    {% for ballot, ballot_memberships in by_ballots|order_groups:sort_by %}
-        <div class="ballot" data-name="{{ ballot_memberships.0.division_name }}">
-            <h2>{{ ballot_memberships.0.division_name }}
+    {% for ballot in ballots %}
+        <div class="ballot" data-name="{{ ballot.post.label }}">
+            <h2>{{ ballot.post.label }}
                 <a href="{% url "election_view" ballot %}">#</a>
-                {% if ballot_memberships.0.has_winner %}
+                {% if ballot.has_winner %}
                     🟢
                 {% else %}
-                    {% if ballot_memberships.0.suggested_ballot %}
+                    {% if ballot.has_suggested %}
                         <small>
                             <abbr title="Someone has entered a result. Enter the same result to mark a winner">🟡</abbr>
                         </small>
@@ -203,27 +202,25 @@
                     {% endif %}
                 {% endif %}
             </h2>
-            {% if not ballot_memberships.0.has_winner %}
-                <p>🕰️ Expected {{ ballot|expected_time|date:"H:i" }}</p>
+            {% if not ballot.has_winner %}
+                <p>🕰️ Expected {{ ballot.ballot_paper_id|expected_time|date:"H:i" }}</p>
             {% endif %}
             <div>
-                <form class="party_select_form" method="post" id="{{ ballot|slugify }}">
+                <form class="party_select_form" method="post" id="{{ ballot.ballot_paper_id|slugify }}">
                     {% csrf_token %}
-                    {% if not ballot_memberships.0.has_winner %}
+                    {% if not ballot.has_winner %}
                         <ul>
-                            {% for membership in ballot_memberships %}
+                            {% for membership in ballot.membership_set.all %}
+                            <li>
+                                <label for="{{ ballot.ballot_paper_id }}-{{ membership.pk }}"
+                                       class="party party-colour-{{ membership.party.ec_id|slugify }}">
+                                    <input type="radio" id="{{ ballot.ballot_paper_id }}-{{ membership.pk }}"
+                                           name="membership_id" value="{{ membership.pk }}">
 
-                                <li>
-                                    <label for="{{ ballot }}-{{ membership.pk }}"
-                                           class="party party-colour-{{ membership.party_id|slugify }}">
-                                        <input type="radio" id="{{ ballot }}-{{ membership.pk }}"
-                                               name="membership_id" value="{{ membership.pk }}">
-
-                                        <p class="party_name">{{ membership.party_name }}
-                                            — {{ membership.person_name }}</p>
-
-                                    </label>
-                                </li>
+                                    <p class="party_name">{{ membership.party_name }}
+                                        — {{ membership.person.name }}</p>
+                                </label>
+                            </li>
 
                             {% endfor %}
                         </ul>
@@ -231,12 +228,12 @@
                             <button type="submit">Mark winner</button>
                         </div>
                     {% else %}
-                        {% for membership in ballot_memberships %}
+                        {% for membership in ballot.membership_set.all %}
                             {% if membership.elected %}
                                 <div class="elected_container">
                                     <div class="party party-colour-{{ membership.party_id|slugify }}">
                                         <p class="party_name">{{ membership.party_name }}
-                                            — {{ membership.person_name }}</p>
+                                            — {{ membership.person.name }}</p>
 
                                     </div>
                                     <div>
