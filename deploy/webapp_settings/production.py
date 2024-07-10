@@ -67,7 +67,7 @@ RUNNING_TESTS = False
 # RESULTS_PROGRESS
 # DATA_DOWNLOAD
 # BY_ELECTIONS
-FRONT_PAGE_CTA = "RESULTS_PROGRESS"
+FRONT_PAGE_CTA = "BY_ELECTIONS"
 SOPN_TRACKER_INFO = {
     "election_date": "2024-07-04",
     "election_name": "2024 general election",
