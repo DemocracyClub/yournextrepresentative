@@ -153,21 +153,54 @@ class BallotQueryset(models.QuerySet):
 
     def has_results(self):
         """
-        Return a QuerySet of ballots that either have a ResultSet or have a candidate marked elected
+        Return a QuerySet of ballots that have a membership with candidate results
         """
-        return self.filter(
-            models.Q(resultset__isnull=False)
-            | models.Q(membership__elected=True)
-        ).distinct()
+        return self.filter(models.Q(membership__elected=True))
 
     def no_results(self):
         """
-        Return a QuerySet of ballots that excluding those with a ResultSet or have a candidate marked elected
+        Return a QuerySet of ballots that excluding those with a candidate marked elected
         """
-        return self.exclude(
-            models.Q(resultset__isnull=False)
-            | models.Q(membership__elected=True)
+        return self.filter(models.Q(membership__elected=False))
+
+    def incomplete_result_set(self):
+        """
+        Return a QuerySet of ballots that some combination
+        of ballot results that are missing.
+        """
+        return self.filter(
+            models.Q(
+                resultset__num_turnout_reported__isnull=True,
+                resultset__num_spoilt_ballots__isnull=False,
+                resultset__total_electorate__isnull=False,
+            )
+            | models.Q(
+                resultset__num_turnout_reported__isnull=False,
+                resultset__num_spoilt_ballots__isnull=True,
+                resultset__total_electorate__isnull=False,
+            )
+            | models.Q(
+                resultset__num_turnout_reported__isnull=False,
+                resultset__num_spoilt_ballots__isnull=False,
+                resultset__total_electorate__isnull=True,
+            )
         ).distinct()
+
+    def complete_result_set(self):
+        """
+        Return a QuerySet of ballots that have a complete result set
+        """
+        return self.filter(
+            resultset__num_turnout_reported__isnull=False,
+            resultset__num_spoilt_ballots__isnull=False,
+            resultset__total_electorate__isnull=False,
+        ).distinct()
+
+    def no_result_set(self):
+        """
+        Return a QuerySet of ballots that have no result set
+        """
+        return self.filter(resultset__isnull=True).distinct()
 
     def with_last_updated(self):
         """
@@ -372,8 +405,7 @@ class Ballot(EEModifiedMixin, models.Model):
 
     @cached_property
     def has_results(self):
-        if getattr(self, "resultset", None):
-            return True
+        """Return a boolean if the ballot has candidate results"""
         if self.membership_set.filter(elected=True).exists():
             return True
         return False
@@ -447,6 +479,19 @@ class Ballot(EEModifiedMixin, models.Model):
             )
         )
         return poll_close_datetime <= timezone.now()
+
+    @property
+    def results_completed(self):
+        """
+        Return a boolean if the result_set is complete for this ballot
+        """
+        return self.filter(
+            models.Q(resultset__isnull=False)
+            | models.Q(membership__elected=True)
+            | models.Q(membership__turnout__isnull=False)
+            | models.Q(membership__spoilt_ballots__isnull=False)
+            | models.Q(membership__num_ballots__isnull=False)
+        ).distinct()
 
     @property
     def has_lock_suggestion(self):

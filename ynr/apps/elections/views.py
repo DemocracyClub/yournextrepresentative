@@ -76,6 +76,7 @@ class ElectionListView(TemplateView):
         qs = (
             Ballot.objects.current_or_future()
             .select_related("election", "post")
+            .select_related("resultset")
             .prefetch_related("suggestedpostlock_set")
             .prefetch_related("officialdocument_set")
             .annotate(memberships_count=Count("membership", distinct=True))

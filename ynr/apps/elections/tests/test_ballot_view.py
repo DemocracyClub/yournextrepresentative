@@ -317,6 +317,12 @@ class TestBallotView(
                 num_ballots=randrange(1, 1000),
             )
 
+        # find the person with the most votes and mark elected
+        for membership in self.past_ballot.membership_set.all():
+            winner = rs.candidate_results.order_by("-num_ballots").first()
+            winner.membership.elected = True
+            winner.membership.save()
+
         response = self.app.get(self.past_ballot.get_absolute_url())
         response.mustcontain("Winner(s) recorded")
         response.mustcontain(no="Winner(s) unknown")
@@ -550,6 +556,8 @@ class TestBallotFilter(SingleBallotStatesMixin, WebTest):
                 self.assertEqual(results.count(), 1)
 
     def test_has_results(self):
+        """Test that the has_results_filter returns the expected ballots
+        containing candidate results."""
         ballot_with_results = self.create_ballot(
             election=self.election,
             post=self.post,
@@ -584,13 +592,9 @@ class TestBallotFilter(SingleBallotStatesMixin, WebTest):
 
         filter = CurrentOrFutureBallotFilter()
         ballots = Ballot.objects.all()
-        for case in [True, False]:
-            with self.subTest(msg=case):
-                results = filter.has_results_filter(
-                    queryset=ballots, name=case, value=case
-                )
-                self.assertEqual(ballot_with_results in results, case)
-                self.assertEqual(
-                    ballot_with_candidate_marked_elected in results, case
-                )
-                self.assertEqual(ballot_without_results in results, not case)
+        results = filter.has_results_filter(
+            queryset=ballots, name="has_results", value=1
+        )
+        self.assertFalse(ballot_with_results in results)
+        self.assertTrue(ballot_with_candidate_marked_elected in results)
+        self.assertFalse(ballot_without_results in results)

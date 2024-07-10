@@ -288,6 +288,28 @@ class BallotsWithResultsMixin(SingleBallotStatesMixin):
         self.post = self.create_post("Foo")
         self.parties = self.create_parties(3)
 
+    def create_ballots_with_candidate_results(
+        self, num, elected=True, **kwargs
+    ):
+        results = []
+        for i in range(num):
+            ballot = self.create_ballot(
+                post=self.post, election=self.election, **kwargs
+            )
+            self.create_memberships(ballot=ballot, parties=self.parties)
+            if elected:
+                winners = ballot.membership_set.all()[:1]
+                for winner in winners:
+                    winner.elected = True
+                    winner.save()
+            else:
+                not_elected = ballot.membership_set.all()[:1]
+                for n in not_elected:
+                    n.elected = False
+                    n.save()
+            results.append(ballot)
+        return results
+
     def create_ballots_with_results(
         self, num, resultset=False, elected=False, num_winners=1, **kwargs
     ):
@@ -319,25 +341,43 @@ class BallotsWithResultsMixin(SingleBallotStatesMixin):
 
 
 class TestHasResultsOrNoResults(BallotsWithResultsMixin, TestCase):
-    def test_has_results_and_no_results(self):
+    def test_has_results(self):
         """
-        Test that the has_results QS method only returns Ballots which either
-        have a resultset, or have a candidate marked as elected. Test that
-        no_results doesnt include Ballots that have a ResultSet or a candidate
-        marked elected
+        Test that the has_results QS method only returns Ballots which
+        have a candidate result. Test that no_results doesn't a candidate
+        marked elected.
         """
-        no_results = self.create_ballots_with_results(num=5, resultset=False)
-        has_results = self.create_ballots_with_results(num=5, resultset=True)
-        has_winner_no_result = self.create_ballots_with_results(
-            num=5, resultset=False, elected=True
-        )
+        self.create_ballots_with_candidate_results(num=5, elected=True)
+        self.create_ballots_with_candidate_results(num=4, elected=False)
 
-        self.assertEqual(Ballot.objects.count(), 15)
-        self.assertEqual(Ballot.objects.has_results().count(), 10)
-        self.assertEqual(Ballot.objects.no_results().count(), 5)
-        all_winners = set(has_results + has_winner_no_result)
-        self.assertEqual(set(Ballot.objects.has_results()), all_winners)
-        self.assertEqual(set(Ballot.objects.no_results()), set(no_results))
+        self.assertEqual(Ballot.objects.count(), 9)
+        self.assertEqual(Ballot.objects.has_results().count(), 5)
+        self.assertEqual(Ballot.objects.no_results().count(), 4)
+
+    def test_has_complete_results_set(self):
+        self.create_ballots_with_results(num=5, resultset=True)
+        self.assertEqual(Ballot.objects.count(), 5)
+
+        ballot = Ballot.objects.all().first()
+        ballot.resultset.total_electorate = 1000
+        ballot.resultset.save()
+        ballot.resultset.refresh_from_db()
+
+        self.assertEqual(Ballot.objects.complete_result_set().count(), 1)
+        self.assertEqual(Ballot.objects.incomplete_result_set().count(), 4)
+        self.assertEqual(Ballot.objects.no_result_set().count(), 0)
+
+    def test_does_not_have_results_set(self):
+        self.create_ballots_with_results(num=5, resultset=False)
+        self.assertEqual(Ballot.objects.no_result_set().count(), 5)
+        self.assertEqual(Ballot.objects.incomplete_result_set().count(), 0)
+        self.assertEqual(Ballot.objects.complete_result_set().count(), 0)
+
+    def test_has_incomplete_results_set(self):
+        self.create_ballots_with_results(num=5, resultset=True)
+        self.assertEqual(Ballot.objects.incomplete_result_set().count(), 5)
+        self.assertEqual(Ballot.objects.complete_result_set().count(), 0)
+        self.assertEqual(Ballot.objects.no_result_set().count(), 0)
 
     @patch("candidates.models.popolo_extra.BallotQueryset.with_last_updated")
     def test_last_updated(self, mock_with_last_updated):

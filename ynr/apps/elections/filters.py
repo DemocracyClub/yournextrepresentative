@@ -311,11 +311,23 @@ class CurrentOrFutureBallotFilter(BaseBallotFilter):
 
     def has_results_filter(self, queryset, name, value):
         """
-        Filter queryset by if they have results or not
+        Filter queryset by if they have candidate results or not
         """
         mapping = {1: "has_results", 0: "no_results"}
         has_results_or_not = getattr(queryset, mapping[int(value)])
         return has_results_or_not()
+
+    def has_result_set_filter(self, queryset, name, value):
+        """
+        Filter queryset by if they have a result set or not
+        """
+        mapping = {
+            1: "has_result_set",
+            0: "no_result_set",
+            2: "incomplete_result_set",
+        }
+        has_result_set_or_not = getattr(queryset, mapping[int(value)])
+        return has_result_set_or_not()
 
     election_type = django_filters.ChoiceFilter(
         widget=DSLinkWidget(),
@@ -325,10 +337,17 @@ class CurrentOrFutureBallotFilter(BaseBallotFilter):
     )
 
     has_results = django_filters.ChoiceFilter(
-        label="Has Results",
+        label="Has Candidate Results",
         method="has_results_filter",
         widget=DSLinkWidget(),
         choices=[(1, "Yes"), (0, "No")],
+    )
+
+    has_result_set = django_filters.ChoiceFilter(
+        label="Has Result Set",
+        method="has_result_set_filter",
+        widget=DSLinkWidget(),
+        choices=[(1, "Yes"), (0, "No"), (2, "Incomplete")],
     )
 
 
