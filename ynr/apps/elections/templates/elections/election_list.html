@@ -82,8 +82,12 @@
           <th>Ballot</th>
           <th>Candidates known</th>
           <th>Status</th>
-          {% if group.list.0.polls_closed %}
-            <th>Has Results</th>
+          {% if group.list.0.polls_closed %} 
+            <th>Results Complete?</th>
+            <th>Winner(s) marked</th>
+            <th>Has Number of Ballots</th>
+            <th>Has Turnout Reported</th>
+            <th>Has Spoilt Ballots</th>
           {% endif %}
 
         </tr>
@@ -124,16 +128,28 @@
 
             {% endif %}
           </td>
-          {% if ballot.polls_closed %}
-          <td>
-              {% if ballot.elected_count >= ballot.winner_count %}
-                Completed
-              {% elif user_can_record_results %}
+          {% if ballot.polls_closed %} 
+            <td>
+            {% if ballot.resultset.resultset_complete %}
+              <i style="text-align:center;">✓</i>
+            {% else %}
+              {% if user_can_record_results %}
                 <a href="{{ ballot.get_results_url }}" class="button tiny">{{ ballot.results_button_text }}</a>
               {% else %}
-                No results
+                Incomplete
               {% endif %}
-          </td>
+            {% endif %}
+            </td>
+            <td>
+              {% if ballot.elected_count >= ballot.winner_count %}
+                <i style="text-align:center;">✓</i>
+              {% else %}
+                No
+              {% endif %}
+            </td>
+            <td>{% if ballot.resultset.total_electorate %}{{ ballot.resultset.total_electorate }}{% else %}No{% endif %}</td>
+            <td>{% if ballot.resultset.num_turnout_reported %}{{ ballot.resultset.num_turnout_reported }}{% else %}No{% endif %}</td>
+            <td>{% if ballot.resultset.num_spoilt_ballots %}{{ ballot.resultset.num_spoilt_ballots }}{% else %}No{% endif %}</td>
           {% endif %}
         </tr>
       {% endfor %}

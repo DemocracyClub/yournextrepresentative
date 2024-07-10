@@ -40,6 +40,25 @@ class ResultSet(TimeStampedModel):
         return "Result for {}".format(self.ballot.ballot_paper_id)
 
     @property
+    def resultset_complete(self):
+        """
+        Check if the result set has all the required fields filled in
+        """
+        if (
+            all(
+                [
+                    self.num_turnout_reported,
+                    self.total_electorate,
+                    self.num_spoilt_ballots,
+                    self.turnout_percentage,
+                ]
+            )
+            and self.ballot.elected_count
+        ):
+            return True
+        return False
+
+    @property
     def rank(self):
         self.ballot.result_sets.order_by("-num_turnout_reported").index(self)
 
