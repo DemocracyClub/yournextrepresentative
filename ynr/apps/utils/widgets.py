@@ -1,6 +1,7 @@
 """
 For storing custom Django form widgets
 """
+
 from django.forms.widgets import Select, TextInput
 
 
@@ -42,8 +43,23 @@ class DCIntegerInput(TextInput):
         attrs = super().build_attrs(base_attrs, extra_attrs)
         attrs.update(
             {
-                "pattern": r"[0-9\s,]*",
+                "pattern": r"[0-9\s\.]*",
                 "oninvalid": "this.setCustomValidity('Enter a number')",
+                "onchange": "this.value = Math.round(this.value.replace(/\D/g, '')).toString()",
+            }
+        )
+        return attrs
+
+
+class DCPercentageInput(TextInput):
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        attrs = super().build_attrs(base_attrs, extra_attrs)
+        attrs.update(
+            {
+                "pattern": r"[0-9\s\.]*",
+                "oninvalid": "this.setCustomValidity('Enter a percentage or a whole number')",
+                # round to the nearest whole number and remove the decimal
+                "onchange": "this.value = Math.round(this.value).toString().replace(/,/g, '')",
             }
         )
         return attrs
