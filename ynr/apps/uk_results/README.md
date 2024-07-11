@@ -6,7 +6,8 @@ The ResultSet object relates to the ballot results (not elected candidates which
 - accepts a positive integer
 - verbose_name="Reported Turnout (Number, not required)
 - help_text="The number of people who voted in this election"
-- `TO DO`: this field only accepts a whole number, but should be able to accept commas and clean them for the user
+- This field only accepts a whole number, but accepts commas and cleans them 
+on input for the user
 
 #### `turnout_percentage`: 
 - accepts an Integer
@@ -20,13 +21,15 @@ The ResultSet object relates to the ballot results (not elected candidates which
 - accepts a postive integer
 - verbose_name="Spoilt Ballots"
 - help_text="The number of spoilt ballots in this election"
-- `TO DO`: this field only accepts a whole number, but should be able to accept commas and clean them for the user
+- This field only accepts a whole number, but accepts commas and cleans them 
+on input for the user
 
 #### `total_electorate`: 
 - acceptes a positive integer
 - verbose_name="Total Electorate", aka `num_ballots`
 - help_text="The total number of people eligible to vote in this election"
-- `TO DO`: this field only accepts a whole number, but should be able to accept commas and clean them for the user
+- This field only accepts a whole number, but accepts commas and cleans them 
+on input for the user
 
 
 #### `source`: 
