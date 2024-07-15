@@ -9,7 +9,7 @@ from django.db import transaction
 from django.db.models.functions import Coalesce
 from uk_results.helpers import RecordBallotResultsHelper
 from utils.db import LastWord, NullIfBlank
-from utils.widgets import DCIntegerInput
+from utils.widgets import DCIntegerInput, DCPercentageInput
 
 from .models import CandidateResult, ResultSet
 
@@ -34,7 +34,7 @@ class ResultSetForm(forms.ModelForm):
                 }
             ),
             "num_turnout_reported": DCIntegerInput(),
-            "turnout_percentage": DCIntegerInput(),
+            "turnout_percentage": DCPercentageInput(),
             "num_spoilt_ballots": DCIntegerInput(),
             "total_electorate": DCIntegerInput(),
         }

@@ -58,8 +58,7 @@ class DCPercentageInput(TextInput):
             {
                 "pattern": r"[0-9\s\.]*",
                 "oninvalid": "this.setCustomValidity('Enter a percentage or a whole number')",
-                # round to the nearest whole number and remove the decimal
-                "onchange": "this.value = Math.round(this.value).toString().replace(/,/g, '')",
+                "onchange": "this.value = Math.round(this.value.replace(/\D/g, '')).toString()",
             }
         )
         return attrs
