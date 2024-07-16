@@ -7,6 +7,7 @@ from typing import Dict
 from urllib.parse import urlencode
 
 import dateutil.parser
+import httpx
 import magic
 import requests
 from candidates.models.popolo_extra import UnsafeToDelete
@@ -123,7 +124,27 @@ class ECPartyImporter:
         params = self.params
         params["start"] = start
         url = "{}?{}".format(self.base_url, urlencode(params, doseq=True))
-        req = requests.get(url)
+        # The EC API has added bot protection so we need to set the user agent here to get the data
+        headers = {
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8",
+            "Accept-Language": "en-GB,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate",
+            "DNT": "1",
+            "Connection": "keep-alive",
+            "Cookie": "__cf_bm=WbQ13AzV7xV4sObvFzwyLMD6gNfUGaLDqyY1fMF1FkY-1719217501-1.0.1.1-Trbp.aODPGxNkDki6oOHtqpmdRn_TQ4ws6jKiBC5U8nPrx6edTaqCq_CL7n.R8YEK8xQtATmp5Cqqzr.Tu9mjA",
+            "Upgrade-Insecure-Requests": "1",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1",
+            "Sec-GPC": "1",
+            "Priority": "u=0, i",
+            "TE": "trailers",
+            "If-Modified-Since": "Sun, 23 Jun 2023 10:28:42 GMT",
+        }
+        client = httpx.Client(headers=headers)
+        req = client.get(url, timeout=300, follow_redirects=True)
         req.raise_for_status()
         return req.json()
 
