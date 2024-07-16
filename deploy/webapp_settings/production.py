@@ -121,4 +121,4 @@ EDITS_ALLOWED = True
 
 # If set to False, new users won't be allowed to make accounts
 # Useful for pre-election anti-vandalism
-NEW_USER_ACCOUNT_CREATION_ALLOWED = False
+NEW_USER_ACCOUNT_CREATION_ALLOWED = True
