@@ -12,11 +12,11 @@ def get_timestamp_from_queued_image(apps, schema_editor):
     PersonImage = apps.get_model("people", "PersonImage")
     for personimage in PersonImage.objects.all():
         person = personimage.person
-        queued_images = person.queuedimage_set.all()
+        queued_images = person.queuedimage_set.filter(decision="approved")
         if not queued_images:
             continue
-        modified = queued_images.filter(decision="approved").last().modified
-        created = queued_images.filter(decision="approved").last().created
+        modified = queued_images.last().updated
+        created = queued_images.last().created
         if modified:
             personimage.modified = modified
             personimage.created = created
