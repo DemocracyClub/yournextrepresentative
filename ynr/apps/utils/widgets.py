@@ -58,7 +58,13 @@ class DCPercentageInput(TextInput):
             {
                 "pattern": r"[0-9\s\.]*",
                 "oninvalid": "this.setCustomValidity('Enter a percentage or a whole number')",
-                "onchange": "this.value = Math.round(this.value.replace(/\D/g, '')).toString()",
+                "onchange": """
+                let value = this.value.replace(",", ".");
+                value = value.replace("%", "");
+                value = value.trim();
+                value = Math.round(parseFloat(value)).toString();
+                this.value = value;
+            """,
             }
         )
         return attrs
