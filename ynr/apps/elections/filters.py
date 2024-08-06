@@ -322,7 +322,7 @@ class CurrentOrFutureBallotFilter(BaseBallotFilter):
         Filter queryset by if they have a result set or not
         """
         mapping = {
-            1: "has_result_set",
+            1: "complete_result_set",
             0: "no_result_set",
             2: "incomplete_result_set",
         }
