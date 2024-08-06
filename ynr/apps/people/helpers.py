@@ -8,6 +8,7 @@ from candidates.mastodon_api import (
 )
 from dateutil import parser
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django_date_extensions.fields import ApproximateDate
 
 
@@ -118,6 +119,15 @@ def clean_twitter_username(username):
         message = "The Twitter username must only consist of alphanumeric characters or underscore"
         raise ValueError(message)
     return username
+
+
+def clean_linkedin_url(url):
+    parsed_url = urlparse(url)
+    if parsed_url.netloc != "linkedin.com" or not parsed_url.path.startswith(
+        "/in/"
+    ):
+        raise ValidationError("Please enter a valid LinkedIn URL.")
+    return url
 
 
 def clean_wikidata_id(identifier):
