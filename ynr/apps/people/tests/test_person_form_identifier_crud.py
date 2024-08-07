@@ -152,30 +152,6 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         form["tmp_person_identifiers-0-value"] = value
         return form.submit()
 
-    def _submit_mastodon_values(self, value, value_type="mastodon_username"):
-        resp = self.app.get(
-            reverse("person-update", kwargs={"person_id": self.person.pk}),
-            user=self.user,
-        )
-
-        form = resp.forms[1]
-        form["source"] = "They changed their username"
-        form["tmp_person_identifiers-0-value_type"] = value_type
-        form["tmp_person_identifiers-0-value"] = value
-        return form.submit()
-
-    def _submit_instagram_values(self, value, value_type="instagram_url"):
-        resp = self.app.get(
-            reverse("person-update", kwargs={"person_id": self.person.pk}),
-            user=self.user,
-        )
-
-        form = resp.forms[1]
-        form["source"] = "They changed their username"
-        form["tmp_person_identifiers-0-value_type"] = value_type
-        form["tmp_person_identifiers-0-value"] = value
-        return form.submit()
-
     def test_twitter_bad_url(self):
         resp = self._submit_values("http://example.com/blah")
         form = resp.context["identifiers_formset"]
@@ -196,8 +172,8 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         )
 
     def test_clean_instagram_url(self):
-        resp = self._submit_instagram_values(
-            "https://www.instagr.am/disco_dude"
+        resp = self._submit_values(
+            "https://www.instagr.am/disco_dude", value_type="instagram_url"
         )
         self.assertEqual(resp.status_code, 302)
         instagram_url_qs = PersonIdentifier.objects.filter(
@@ -206,11 +182,13 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         self.assertEqual(instagram_url_qs.count(), 1)
         self.assertEqual(
             instagram_url_qs[0].value,
-            "https://www.instagr.am/disco_dude",
+            "https://www.instagram.com/disco_dude/",
         )
 
     def test_bad_instagram_domain(self):
-        resp = self._submit_instagram_values("www.instagl.am/blah")
+        resp = self._submit_values(
+            "www.instbad.am/blah", value_type="instagram_url"
+        )
         form = resp.context["identifiers_formset"]
         self.assertFalse(form.is_valid())
         self.assertEqual(
@@ -219,20 +197,22 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         )
 
     def test_bad_instagram_username(self):
-        resp = self._submit_instagram_values(
-            "https://www.instagr.am/________blah"
+        resp = self._submit_values(
+            "https://www.instagr.am/___@_____blah", value_type="instagram_url"
         )
         self.assertEqual(resp.status_code, 200)
         form = resp.context["identifiers_formset"]
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form[0].non_field_errors(),
-            ["This is not a valid Instagram username. Please try again."],
+            ["This is not a valid Instagram URL. Please try again."],
         )
 
     def test_mastodon_bad_url(self):
         # submit a username missing the `@` symbol
-        resp = self._submit_mastodon_values("https://mastodon.social/joe")
+        resp = self._submit_values(
+            "https://mastodon.social/joe", value_type="mastodon_username"
+        )
         form = resp.context["identifiers_formset"]
         self.assertFalse(form.is_valid())
         self.assertEqual(
