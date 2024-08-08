@@ -1,6 +1,6 @@
 import contextlib
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 from candidates.mastodon_api import (
     MastodonAPITokenMissing,
@@ -118,6 +118,52 @@ def clean_twitter_username(username):
         message = "The Twitter username must only consist of alphanumeric characters or underscore"
         raise ValueError(message)
     return username
+
+
+def clean_linkedin_url(url):
+    parsed_url = urlparse(url)
+    valid = True
+    if not re.match(r"([^.]+)?\.linkedin.com$", parsed_url.netloc):
+        valid = False
+    path = parsed_url.path
+    if path.startswith("/pub/"):
+        parts = path.split("/")
+        name = parts[2]
+        id_parts = parts[3:]
+        user_id = "".join(id_parts[::-1])
+        path = f"/in/{name}-{user_id}/"
+
+    if not path.startswith("/in/"):
+        valid = False
+
+    if not valid:
+        raise ValueError("Please enter a valid LinkedIn URL.")
+    return urlunparse(parsed_url._replace(path=path))
+
+
+def clean_instagram_url(url):
+    parsed_username = urlparse(url)
+    if not parsed_username.scheme:
+        url = f"https://{url}"
+        parsed_username = urlparse(url)
+
+    if parsed_username.netloc and parsed_username.netloc not in [
+        "instagram.com",
+        "www.instagram.com",
+        "instagr.am",
+        "www.instagr.am",
+    ]:
+        raise ValueError(
+            "The Instagram URL must be from a valid Instagram domain."
+        )
+    username = parsed_username.path.strip("/")
+    # RegEx thanks to https://blog.jstassen.com/2016/03/code-regex-for-instagram-username-and-hashtags/
+    if not re.match(
+        r"(?:@?)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)$",
+        username,
+    ):
+        raise ValueError("This is not a valid Instagram URL. Please try again.")
+    return f"https://www.instagram.com/{username}/"
 
 
 def clean_wikidata_id(identifier):

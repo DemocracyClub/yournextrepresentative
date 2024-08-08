@@ -150,20 +150,6 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         form["source"] = "They changed their username"
         form["tmp_person_identifiers-0-value_type"] = value_type
         form["tmp_person_identifiers-0-value"] = value
-        form.submit()
-        return form.submit()
-
-    def _submit_mastodon_values(self, value, value_type="mastodon_username"):
-        resp = self.app.get(
-            reverse("person-update", kwargs={"person_id": self.person.pk}),
-            user=self.user,
-        )
-
-        form = resp.forms[1]
-        form["source"] = "They changed their username"
-        form["tmp_person_identifiers-0-value_type"] = value_type
-        form["tmp_person_identifiers-0-value"] = value
-        form.submit()
         return form.submit()
 
     def test_twitter_bad_url(self):
@@ -185,9 +171,48 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
             PersonIdentifier.objects.get().value, "madeuptwitteraccount"
         )
 
+    def test_clean_instagram_url(self):
+        resp = self._submit_values(
+            "https://www.instagr.am/disco_dude", value_type="instagram_url"
+        )
+        self.assertEqual(resp.status_code, 302)
+        instagram_url_qs = PersonIdentifier.objects.filter(
+            value_type="instagram_url"
+        )
+        self.assertEqual(instagram_url_qs.count(), 1)
+        self.assertEqual(
+            instagram_url_qs[0].value,
+            "https://www.instagram.com/disco_dude/",
+        )
+
+    def test_bad_instagram_domain(self):
+        resp = self._submit_values(
+            "www.instbad.am/blah", value_type="instagram_url"
+        )
+        form = resp.context["identifiers_formset"]
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form[0].non_field_errors(),
+            ["The Instagram URL must be from a valid Instagram domain."],
+        )
+
+    def test_bad_instagram_username(self):
+        resp = self._submit_values(
+            "https://www.instagr.am/___@_____blah", value_type="instagram_url"
+        )
+        self.assertEqual(resp.status_code, 200)
+        form = resp.context["identifiers_formset"]
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form[0].non_field_errors(),
+            ["This is not a valid Instagram URL. Please try again."],
+        )
+
     def test_mastodon_bad_url(self):
         # submit a username missing the `@` symbol
-        resp = self._submit_mastodon_values("https://mastodon.social/joe")
+        resp = self._submit_values(
+            "https://mastodon.social/joe", value_type="mastodon_username"
+        )
         form = resp.context["identifiers_formset"]
         self.assertFalse(form.is_valid())
         self.assertEqual(
@@ -208,6 +233,27 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         self.assertEqual(resp.status_code, 200)
         qs = PersonIdentifier.objects.all()
         self.assertEqual(qs[0].value, "joe")
+
+    def test_linkedin_urls(self):
+        urls_to_valid = (
+            ("http://example.com/@blah", False),
+            ("https://www.linkedin.com/in/first-last-57338a4/", True),
+            ("https://uk.linkedin.com/in/first-last-57338a4/", True),
+            ("https://ie.linkedin.com/in/first-last-57338a4/", True),
+            ("https://ie.linkedin.com/in/first-last-57338a4", True),
+        )
+        for url, valid in urls_to_valid:
+            with self.subTest(url=url, value=valid):
+                resp = self._submit_values(url, "linkedin_url")
+                if valid:
+                    self.assertEqual(resp.status_code, 302)
+                else:
+                    form = resp.context["identifiers_formset"]
+                    self.assertFalse(form.is_valid())
+                    self.assertEqual(
+                        form[0].non_field_errors(),
+                        ["Please enter a valid LinkedIn URL."],
+                    )
 
     def test_bad_email_address(self):
         resp = self._submit_values("whoops", "email")

@@ -191,3 +191,13 @@ class CandidateBot(object):
         value = f"https://www.theyworkforyou.com/mp/{twfy_id}/"
         internal_id = f"uk.org.publicwhip/person/{twfy_id}"
         self.edit_field("theyworkforyou", value, internal_id=internal_id)
+
+    def delete_field(self, value_type):
+        """
+        Remove a PersonIdentifier from a person
+        """
+        deleted, _ = self.person.tmp_person_identifiers.filter(
+            value_type=value_type
+        ).delete()
+        if deleted:
+            self.edits_made = True
