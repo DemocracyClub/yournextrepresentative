@@ -238,6 +238,8 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         urls_to_valid = (
             ("http://example.com/@blah", False),
             ("https://www.linkedin.com/in/first-last-57338a4/", True),
+            ("https://linkedin.com/in/first-last-57338a4/", True),
+            ("https://LinkedIn.com/in/first-last-57338a4/", True),
             ("https://uk.linkedin.com/in/first-last-57338a4/", True),
             ("https://ie.linkedin.com/in/first-last-57338a4/", True),
             ("https://ie.linkedin.com/in/first-last-57338a4", True),
