@@ -123,7 +123,11 @@ def clean_twitter_username(username):
 def clean_linkedin_url(url):
     parsed_url = urlparse(url)
     valid = True
-    if not re.match(r"([^.]+)?\.linkedin.com$", parsed_url.netloc):
+    if not re.match(
+        r"^(www\.)?(linkedin\.com|[a-z]{2,3}\.linkedin\.com)$",
+        parsed_url.netloc,
+        re.IGNORECASE,
+    ):
         valid = False
     path = parsed_url.path
     if path.startswith("/pub/"):
@@ -143,11 +147,11 @@ def clean_linkedin_url(url):
 
 def clean_instagram_url(url):
     parsed_username = urlparse(url)
-    if not parsed_username.scheme:
+    if "/" in url and not parsed_username.scheme:
         url = f"https://{url}"
         parsed_username = urlparse(url)
 
-    if parsed_username.netloc and parsed_username.netloc not in [
+    if parsed_username.netloc and parsed_username.netloc.lower() not in [
         "instagram.com",
         "www.instagram.com",
         "instagr.am",
