@@ -11,13 +11,11 @@ class Command(BaseCommand):
 
     def find_uncontested_ballots(self):
         uncontested_ballots = []
-        # created a qs of all ballots since 2016 where seats_contested ==  excluding cancelled ballots
         qs = Election.objects.filter(election_date__gte="2016-01-01").order_by(
             "election_date"
         )
 
         for election in qs:
-            # find the related ballot
             for ballot in election.ballot_set.all():
                 if ballot.uncontested is True:
                     uncontested_ballots.append(ballot)
@@ -29,12 +27,10 @@ class Command(BaseCommand):
 
     def write_report(self, uncontested_ballots):
         with open("uncontested_ballots.csv", "w") as report:
-            report.write(
-                "ballot_date,id,ballot_paper_id,cancelled,ballot.cancelled_status_text\n"
-            )
+            report.write("ballot_date,id,ballot_paper_id,cancelled,\n")
             for ballot in uncontested_ballots:
                 ballot_date = ballot.election.election_date.strftime("%d %b %Y")
                 report.write(
-                    f"{ballot_date},{ballot.id},{ballot.ballot_paper_id},{ballot.cancelled} {ballot.cancelled_status_text}  \n"
+                    f"{ballot_date},{ballot.id},{ballot.ballot_paper_id},{ballot.cancelled}\n"
                 )
             report.close()
