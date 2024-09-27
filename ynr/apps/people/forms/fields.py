@@ -68,7 +68,7 @@ class ValidBallotField(forms.CharField):
             raise ValidationError("Unknown ballot paper ID")
 
 
-class CurrentUnlockedBallotsField(ValidBallotField):
+class UnlockedBallotsField(ValidBallotField):
     def clean(self, value):
         ballot = super().clean(value)
 
@@ -76,14 +76,22 @@ class CurrentUnlockedBallotsField(ValidBallotField):
             raise ValidationError("Ballot not selected")
 
         if ballot.candidates_locked:
-            raise ValidationError("Cannot add candidates to a locked " "ballot")
-        if not ballot.election.current:
-            raise ValidationError(
-                "Cannot update an election that isn't 'current'"
-            )
+            raise ValidationError("Cannot add candidates to a locked ballot")
+
         if ballot.cancelled and not self.user.is_staff:
             raise ValidationError(
                 "Cannot add candidates to a cancelled election"
+            )
+        return ballot
+
+
+class CurrentUnlockedBallotsField(UnlockedBallotsField):
+    def clean(self, value):
+        ballot = super().clean(value)
+
+        if not ballot.election.current:
+            raise ValidationError(
+                "Cannot update an election that isn't 'current'"
             )
         return ballot
 

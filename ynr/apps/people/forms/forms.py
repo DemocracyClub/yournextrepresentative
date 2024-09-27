@@ -17,6 +17,7 @@ from parties.models import Party
 from people.forms.fields import (
     CurrentUnlockedBallotsField,
     StrippedCharField,
+    UnlockedBallotsField,
 )
 from people.helpers import (
     clean_instagram_url,
@@ -244,7 +245,7 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
     party_identifier = PartyIdentifierField(
         require_all_fields=False, required=True
     )
-    ballot_paper_id = CurrentUnlockedBallotsField(label="Ballot")
+    ballot_paper_id = UnlockedBallotsField(label="Ballot")
 
     party_list_position = forms.IntegerField(
         max_value=20,
@@ -418,7 +419,7 @@ class NewPersonForm(PopulatePartiesMixin, BasePersonForm):
         widget=forms.NumberInput(attrs={"class": "party-list-position"}),
     )
 
-    ballot_paper_id = CurrentUnlockedBallotsField(widget=forms.HiddenInput)
+    ballot_paper_id = UnlockedBallotsField(widget=forms.HiddenInput)
 
     def save(self, commit=True):
         person = super().save(commit)
