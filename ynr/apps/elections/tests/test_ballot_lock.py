@@ -187,6 +187,8 @@ class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
     def test_add_when_unlocked_allowed(self):
         self.camberwell_post_ballot.candidates_locked = False
+        self.camberwell_post_ballot.election.current = False
+        self.camberwell_post_ballot.election.save()
         self.camberwell_post_ballot.save()
         response = self.app.get(
             self.camberwell_post_ballot.get_absolute_url(),
