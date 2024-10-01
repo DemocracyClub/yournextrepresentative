@@ -172,6 +172,7 @@ MIDDLEWARE = (
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "candidates.middleware.DisableCachingForAuthenticatedUsers",
     "wombles.middleware.CheckProfileDetailsMiddleware",
+    "dc_utils.middleware.BasicAuthMiddleware",
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -501,3 +502,9 @@ if _is_running_tests():
     from .testing import *  # noqa
 else:
     RUNNING_TESTS = False
+
+# Allowlist of URLs that should be ignored by dc_utils BasicAuthMiddleware
+BASIC_AUTH_ALLOWLIST = [
+    "/api",
+    "/api/*",
+]
