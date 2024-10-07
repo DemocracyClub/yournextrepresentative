@@ -74,6 +74,11 @@
       minute: "23"
       hour: "23"
       job: "output-on-error /var/www/ynr/env/bin/python /var/www/ynr/code/manage.py uk_create_elections_from_every_election --check-current"
+  - cron:
+      name: "Mop up any missed recently modified elections"
+      minute: "33"
+      hour: "23"
+      job: "output-on-error /var/www/ynr/env/bin/python /var/www/ynr/code/manage.py uk_create_elections_from_every_election --recently-updated --recently-updated-delta 25"
 
   - cron:
       name: "Update materialized view"

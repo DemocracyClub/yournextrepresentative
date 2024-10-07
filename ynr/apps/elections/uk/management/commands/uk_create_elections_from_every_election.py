@@ -2,6 +2,7 @@ from datetime import date, timedelta
 
 from candidates.models import Ballot
 from dateutil.parser import parse
+from django.core.management import CommandError
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from elections.models import Election
@@ -28,6 +29,13 @@ class Command(BaseCommand):
             dest="recently_updated",
             action="store_true",
             help="Only import elections that have been updated since last ee_modified date",
+        )
+        parser.add_argument(
+            "--recently-updated-delta",
+            dest="recently_updated_delta",
+            action="store",
+            type=int,
+            help="Subtract this many hours from the recently updated time used by `--recently-updated`",
         )
         parser.add_argument(
             "--check-current",
@@ -128,8 +136,17 @@ class Command(BaseCommand):
         )
         recently_updated_timestamp = None
         if options["recently_updated"]:
-            recently_updated_timestamp = (
-                self.get_latest_ee_modified_datetime().isoformat()
+            latest_ee_modified = self.get_latest_ee_modified_datetime()
+            if hours := options["recently_updated_delta"]:
+                latest_ee_modified = latest_ee_modified - timedelta(hours=hours)
+            recently_updated_timestamp = latest_ee_modified.isoformat()
+
+        if (
+            options["recently_updated_delta"]
+            and not options["recently_updated"]
+        ):
+            raise CommandError(
+                "--recently-updated-delta only works with --recently-updated"
             )
 
         with transaction.atomic():
