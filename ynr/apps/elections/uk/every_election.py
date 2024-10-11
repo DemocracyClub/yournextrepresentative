@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from datetime import date, timedelta
 from time import sleep
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urljoin
 
 import requests
 from candidates.models import Ballot, PartySet
@@ -339,6 +339,7 @@ class EveryElectionImporter(object):
         self.EE_BASE_URL = getattr(
             settings, "EE_BASE_URL", "https://elections.democracyclub.org.uk/"
         )
+        self.url = urljoin(self.EE_BASE_URL, "/api/elections/")
 
         self.election_tree: dict[str:EEElection] = {}
         if query_args is None:
@@ -351,15 +352,18 @@ class EveryElectionImporter(object):
         query_args["exclude_election_id_regex"] = r"^ref\..*"
         self.query_args = query_args
 
+    def build_url_with_query_args(self):
+        params = urlencode(OrderedDict(sorted(self.query_args.items())))
+        return f"{self.url}?{params}"
+
     def build_election_tree(self, deleted=False):
         """
         Get all current elections from Every Election and build them in to
         a tree of IDs
         """
 
-        url = f"{self.EE_BASE_URL}api/elections/"
         if self.election_id:
-            url = f"{url}{self.election_id}"
+            url = f"{self.url}{self.election_id}"
             req = requests.get(url)
             req.raise_for_status()
             data = req.json()
@@ -368,8 +372,7 @@ class EveryElectionImporter(object):
         else:
             # First pass: just get elections
             self.query_args["identifier_type"] = "election"
-            params = urlencode(OrderedDict(sorted(self.query_args.items())))
-            url = f"{url}?{params}"
+            url = self.build_url_with_query_args()
             total = None
             seen = 0
             print("Importing elections")
@@ -395,7 +398,10 @@ class EveryElectionImporter(object):
                     date = parts.pop(-1)
                     parent_prefix = ".".join(parts[:2])
 
-                    url = f"{self.EE_BASE_URL}api/elections/?poll_open_date={date}&election_id_regex={parent_prefix}"
+                    url = urljoin(
+                        self.EE_BASE_URL,
+                        f"api/elections/?poll_open_date={date}&election_id_regex={parent_prefix}",
+                    )
                     if deleted:
                         url = f"{url}&deleted=1"
                     while url:
