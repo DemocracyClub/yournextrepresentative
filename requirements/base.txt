@@ -53,7 +53,7 @@ lxml==4.9.2
 Markdown==3.4.3
 markupsafe==2.0.1
 mock==5.0.1
-moto[s3]==4.2.11
+moto[s3]==5.0.16
 nameparser==1.1.2
 ndg-httpsclient==0.5.1
 numpy==1.24.2
