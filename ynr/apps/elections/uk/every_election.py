@@ -352,6 +352,16 @@ class EveryElectionImporter(object):
         query_args["exclude_election_id_regex"] = r"^ref\..*"
         self.query_args = query_args
 
+    def count_results(self) -> int:
+        """
+        Return the count for a given set of filters
+        """
+
+        url = self.build_url_with_query_args()
+        req = requests.get(url)
+        req.raise_for_status()
+        return int(req.json().get("count", 0))
+
     def build_url_with_query_args(self):
         params = urlencode(OrderedDict(sorted(self.query_args.items())))
         return f"{self.url}?{params}"
