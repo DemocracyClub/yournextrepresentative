@@ -41,7 +41,7 @@ class Command(BaseCommand):
             "--check-current",
             dest="check_current",
             action="store_true",
-            help="Check that current elections are still marked as such in EE",
+            help="Check that current elections are still marked as such in EE and verified the 'current' ballots",
         )
 
     def valid_date(self, value):
@@ -104,6 +104,18 @@ class Command(BaseCommand):
             if not current:
                 election.current = False
                 election.save()
+
+        # Now get all EE current elections and count them against the local DB.
+        ee_importer = EveryElectionImporter(
+            {"current": 1, "identifier_type": "ballot"}
+        )
+        ee_current_ballots = ee_importer.count_results()
+        local_current_ballots = Ballot.objects.filter(
+            election__current=True
+        ).count()
+        assert (
+            ee_current_ballots == local_current_ballots
+        ), f"Local and EE current ballots don't match EE: {ee_current_ballots} Local: {local_current_ballots}"
 
     def delete_deleted_elections(self, recently_updated_timestamp):
         # Get all deleted elections from EE
