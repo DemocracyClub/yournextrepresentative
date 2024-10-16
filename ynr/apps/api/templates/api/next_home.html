@@ -38,22 +38,20 @@ A *person* can stand in more than one election, that is, they can have many
 *Ballots* make up the main structure of the data, with each ballot being
 grouped by *elections* or *divisions*.
 
-Apart from the base data model, there are two other concepts in this API.
-
-Firstly, the data will change over time, from a ballot being announced through to results being entered.
+The data will change over time, from a ballot being announced through to results being entered.
 
 
 ## Timeline of a ballot
 
 Ballots are created soon after they are added to Every Election. This is typically a few months
-before the polls open. In the case of by-elections they are added as soon as we hear about them
+before the polls open. In the case of by-elections they are added as soon as we hear about them.
 
 Scheduled elections are more complex, as we know a long time in advance when a given council
 will have an election, but we don't know if a boundary change will happen in that council area
 until quite close to the election. We add scheduled elections as soon as we think nothing will
-changes about them, however we still maintain the ability to cancel and replace ballots.
+change about them, however we maintain the ability to cancel and replace ballots.
 
-As soon as a ballot is created it's possible to create *candidacies* for them. And candidacy
+As soon as a ballot is created it's possible to create *candidacies* for them. Any candidacy
 added to the ballot before the *SOPN* is published is speculative and typically sourced from
 candidates or parties asserting that they intend to stand in that election.
 
