@@ -448,11 +448,10 @@ LOGGING = {
         "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}
     },
     "handlers": {
-        "mail_admins": {
+        "console": {
             "level": "ERROR",
-            "filters": ["require_debug_false"],
-            "class": "django.utils.log.AdminEmailHandler",
-        }
+            "class": "logging.StreamHandler",
+        },
     },
 }
 
