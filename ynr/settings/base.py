@@ -57,6 +57,7 @@ sentry_sdk.init(
     ],
     environment=os.environ.get("DC_ENVIRONMENT"),
     traces_sample_rate=0,
+    profiles_sample_rate=0,
 )
 
 # aws
