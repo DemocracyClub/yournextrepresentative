@@ -2,6 +2,7 @@
 Test some of the basic model use cases
 
 """
+
 from io import StringIO
 from tempfile import NamedTemporaryFile
 
@@ -12,11 +13,13 @@ from mock import patch
 from moderation_queue.tests.paths import (
     BROKEN_IMAGE_FILENAME,
     EXAMPLE_IMAGE_FILENAME,
+    IMAGE_WITH_ALPHA,
 )
 from parties.importer import ECParty, ECPartyImporter, make_description_text
 from parties.management.commands.parties_import_from_ec import Command
 from parties.models import Party, PartyDescription, PartyEmblem
 from parties.tests.fixtures import DefaultPartyFixtures
+from sorl.thumbnail import get_thumbnail
 
 from .factories import PartyDescriptionFactory, PartyEmblemFactory, PartyFactory
 
@@ -355,3 +358,24 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
             "joint-party:1-2",
         )
         self.assertTrue(len(importer.collector), 3)
+
+    @patch("parties.importer.ECEmblem.download_emblem")
+    def test_save_with_alpha_emblem(self, FakeEmblemPath):
+        """
+        As per https://github.com/jazzband/sorl-thumbnail/issues/564
+
+        sorl.thumbnail has a bug that means it tries to convert images with an
+        alpha channel to JPEG. That's not possible in the JPEG format, so we
+        get a 500 when trying to load the image.
+
+        To fix this, remove the alpha channel before saving it at import time.
+
+        """
+        FakeEmblemPath.return_value = make_tmp_file_from_source(
+            IMAGE_WITH_ALPHA
+        )
+        self.assertFalse(PartyEmblem.objects.all().exists())
+        party = ECParty(FAKE_PARTY_DICT)
+        party_obj, _ = party.save()
+        self.assertTrue(PartyEmblem.objects.all().exists())
+        get_thumbnail(party_obj.emblems.first().image.file.name, "1x1")

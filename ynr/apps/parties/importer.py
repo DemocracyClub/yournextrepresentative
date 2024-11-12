@@ -13,6 +13,7 @@ import requests
 from candidates.models.popolo_extra import UnsafeToDelete
 from django.contrib.admin.utils import NestedObjects
 from django.db import connection
+from PIL import Image
 
 from .constants import (
     CORRECTED_DESCRIPTION_DATES,
@@ -422,6 +423,26 @@ class ECEmblem:
             f.write(r.content)
         return ntf.name
 
+    def clean_image(self, image_file_name):
+        # Normalize the image: Sometimes the EC publishes png images with an
+        # alpha channel. This breaks later conversion to JPEG.
+        # See: https://github.com/jazzband/sorl-thumbnail/issues/564
+        with Image.open(image_file_name) as img:
+            # Convert RGBA to RGB
+            if img.mode == "RGBA":
+                # Create a white background and paste the image onto it
+                background = Image.new("RGB", img.size, (255, 255, 255))
+                background.paste(img, mask=img.split()[3])
+                img = background
+            # LA is luminance + alpha. e.g. greyscale with transparency
+            if img.mode == "LA":
+                img = img.convert("L")
+            # Save the image as a PNG without alpha
+            png_tempfile = NamedTemporaryFile(delete=False, suffix=".png")
+            img.save(png_tempfile.name, "PNG")
+
+        return png_tempfile.name
+
     def save(self):
         existing_emblem = PartyEmblem.objects.filter(
             ec_emblem_id=self.emblem_dict["Id"], party=self.party
@@ -442,6 +463,7 @@ class ECEmblem:
         if not mime_type.startswith("image/"):
             # This isn't an image, so let's not try to save it
             return None
+        cleaned_image_file_name = self.clean_image(image_file_name)
         extension = mimetypes.guess_extension(mime_type)
         filename = "Emblem_{}{}".format(self.emblem_dict["Id"], extension)
 
@@ -454,9 +476,10 @@ class ECEmblem:
             },
         )
 
-        with open(image_file_name, "rb") as f:
+        with open(cleaned_image_file_name, "rb") as f:
             emblem.image.save(filename, f)
         os.remove(image_file_name)
+        os.remove(cleaned_image_file_name)
         return (emblem, True)
 
     def get_default(self):
