@@ -32,8 +32,8 @@ djangorestframework-jsonp==1.0.2
 djangorestframework-csv==2.1.1
 djangorestframework==3.15.2
 drf-yasg==1.21.5
-uk-election-timetables==3.0.0
-uk-election-ids==0.7.5
+uk-election-timetables==4.1.0
+uk-election-ids==0.9.1
 factory-boy==3.2.1
 Faker==19.2.0
 freezegun==1.2.2
