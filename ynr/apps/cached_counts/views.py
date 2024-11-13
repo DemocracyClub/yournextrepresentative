@@ -181,7 +181,7 @@ class CandidateCompletenessView(ElectionMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         qs = MaterializedMemberships.objects.filter(
             ballot_paper__election__slug=self.election
-        ).select_related("person", "ballot_paper")
+        )
 
         identifier_fields = sorted(pi.name for pi in PersonIdentifierFields)
         annotations = {}
