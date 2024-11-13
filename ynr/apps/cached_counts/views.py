@@ -1,6 +1,7 @@
 import json
 from typing import Tuple, Type
 
+from braces.views import LoginRequiredMixin
 from candidates.models import Ballot
 from data_exports.models import MaterializedMemberships
 from django.db.models import Count, F
@@ -174,7 +175,9 @@ class ElectionReportView(DetailView):
         return context
 
 
-class CandidateCompletenessView(ElectionMixin, TemplateView):
+class CandidateCompletenessView(
+    LoginRequiredMixin, ElectionMixin, TemplateView
+):
     template_name = "candidate_completeness.html"
 
     def get_context_data(self, **kwargs):
