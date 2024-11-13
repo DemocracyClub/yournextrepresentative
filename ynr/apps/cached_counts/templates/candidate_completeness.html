@@ -78,9 +78,9 @@
             <tbody>
             {% for membership in qs %}
                 <tr>
-                    <td><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a></td>
+                    <td><a href="{% url "person-view" membership.person_id %}">{{ membership.person_name }}</a></td>
                     <td>
-                        <a href="{{ membership.ballot_paper.get_absolute_url }}">{{ membership.ballot_paper.ballot_paper_id }}</a>
+                        <a href="{% url "election_view" membership.ballot_paper_id %}">{{ membership.ballot_paper_id }}</a>
                     </td>
                     <td>{{ membership.party_name }}</td>
                     {% for identifier_field in identifier_fields %}
