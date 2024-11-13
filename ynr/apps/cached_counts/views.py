@@ -174,6 +174,15 @@ class ElectionReportView(DetailView):
         return context
 
 
+class TempCandidateCompletenessView(TemplateView):
+    template_name = "candidate_completeness.html"
+
+    def get(self, *args, **kwargs):
+        response = HttpResponse("Temporarily Unavailable")
+        response.status_code = 503
+        return response
+
+
 class CandidateCompletenessView(ElectionMixin, TemplateView):
     template_name = "candidate_completeness.html"
 

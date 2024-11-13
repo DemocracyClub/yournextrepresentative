@@ -2,11 +2,11 @@ from django.urls import re_path
 
 from .views import (
     AttentionNeededView,
-    CandidateCompletenessView,
     ConstituencyCountsView,
     ElectionReportView,
     PartyCountsView,
     ReportsHomeView,
+    TempCandidateCompletenessView,
 )
 
 urlpatterns = [
@@ -28,7 +28,7 @@ urlpatterns = [
     ),
     re_path(
         r"^election/(?P<election>[-\w\.0-9]+)/completeness$",
-        CandidateCompletenessView.as_view(),
+        TempCandidateCompletenessView.as_view(),
         name="candidate_completeness",
     ),
     re_path(
