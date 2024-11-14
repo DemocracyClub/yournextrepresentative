@@ -63,6 +63,8 @@ def create_database_and_restore():
             )
     except psycopg.Error as e:
         print(f"Error creating database: {e}")
+        raise
+
     finally:
         conn.close()
 
