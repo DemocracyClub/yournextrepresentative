@@ -9,7 +9,7 @@ set -euxo
 # This script requires access to the YNR production AWS account
 #
 # Usage:
-#   ./script.sh [LOCAL_DB_NAME]
+#   ./scripts/get-prod-db.sh [LOCAL_DB_NAME]
 #
 # Arguments:
 #   LOCAL_DB_NAME: Optional. Name of the local database to restore data to.
