@@ -40,7 +40,7 @@ def get_db_conn(db_name):
     return conn
 
 
-def create_database_from_template():
+def create_database_and_restore():
     # Connect to the PostgreSQL server (usually to the 'postgres' database for administrative tasks)
     conn = get_db_conn(SOURCE_DATABASE)
     # Enable autocommit to run CREATE DATABASE commands
@@ -56,18 +56,51 @@ def create_database_from_template():
             # SQL to create the new database from the template
             print(f"Creating {TMP_DATABASE_NAME}")
             cur.execute(
-                sql.SQL("CREATE DATABASE {} TEMPLATE {};").format(
+                sql.SQL("CREATE DATABASE {} ;").format(
                     sql.Identifier(TMP_DATABASE_NAME),
-                    sql.Identifier(SOURCE_DATABASE),
                 )
             )
             print(
-                f"Database '{TMP_DATABASE_NAME}' created successfully from template '{SOURCE_DATABASE}'."
+                f"Database '{TMP_DATABASE_NAME}' created successfully '{SOURCE_DATABASE}'."
             )
     except psycopg.Error as e:
         print(f"Error creating database: {e}")
     finally:
         conn.close()
+
+    # Dump and restore the source DB to the temp one
+    dump_command = [
+        "pg_dump",
+        "-h",
+        DB_HOST,
+        "-U",
+        DB_USER,
+        "-d",
+        SOURCE_DATABASE,
+        "-Fc",
+    ]
+
+    restore_command = [
+        "pg_restore",
+        "-h",
+        DB_HOST,
+        "-U",
+        DB_USER,
+        "-d",
+        TMP_DATABASE_NAME,
+    ]
+
+    print("Populating new database (pg_dump | pg_restore")
+    with subprocess.Popen(
+        dump_command,
+        stdout=subprocess.PIPE,
+    ) as dump_proc:
+        subprocess.run(
+            restore_command,
+            stdin=dump_proc.stdout,
+            check=True,
+        )
+        dump_proc.stdout.close()
 
 
 def clean_database():
@@ -171,7 +204,7 @@ def lambda_handler(event, context):
         return recent_export
 
     print("Creating temp database")
-    create_database_from_template()
+    create_database_and_restore()
     print("Cleaning temp database")
     clean_database()
     print("Dumping and exporting")
