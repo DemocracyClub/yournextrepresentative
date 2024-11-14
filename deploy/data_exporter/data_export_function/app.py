@@ -8,7 +8,7 @@ from psycopg import sql
 
 ssm = boto3.client("ssm")
 s3 = boto3.client("s3", region_name="eu-west-1")
-bucket_name = "dc-ynr-short-term-backups"
+BUCKET_NAME = "dc-ynr-short-term-backups"
 current_time = datetime.now().isoformat()
 PREFIX = "ynr-export"
 FILENAME = f"{PREFIX}-{current_time.replace(':', '-')}.dump"
@@ -159,12 +159,12 @@ def dump_and_export():
         )
 
         print("Upload the dump to S3")
-        s3.upload_file(dump_file, bucket_name, FILENAME)
+        s3.upload_file(dump_file, BUCKET_NAME, FILENAME)
 
         print("Generate a presigned URL for downloading the dump")
         presigned_url = s3.generate_presigned_url(
             "get_object",
-            Params={"Bucket": bucket_name, "Key": FILENAME},
+            Params={"Bucket": BUCKET_NAME, "Key": FILENAME},
             ExpiresIn=3600,  # URL expires in 1 hour
         )
         print("Finished")
@@ -180,7 +180,7 @@ def check_for_recent_exports():
 
     """
     one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
-    response = s3.list_objects_v2(Bucket=bucket_name, Prefix=PREFIX)
+    response = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=PREFIX)
     if "Contents" in response:
         recent_files = [
             obj
@@ -193,7 +193,7 @@ def check_for_recent_exports():
         if recent_files:
             return s3.generate_presigned_url(
                 "get_object",
-                Params={"Bucket": bucket_name, "Key": recent_files[0]["Key"]},
+                Params={"Bucket": BUCKET_NAME, "Key": recent_files[0]["Key"]},
                 ExpiresIn=3600,  # URL expires in 1 hour
             )
     return None
