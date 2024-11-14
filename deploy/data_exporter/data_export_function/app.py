@@ -41,9 +41,7 @@ def get_db_conn(db_name):
 
 
 def create_database_and_restore():
-    # Connect to the PostgreSQL server (usually to the 'postgres' database for administrative tasks)
     conn = get_db_conn(SOURCE_DATABASE)
-    # Enable autocommit to run CREATE DATABASE commands
     try:
         with conn.cursor() as cur:
             print(f"Deleting {TMP_DATABASE_NAME}")
@@ -53,7 +51,7 @@ def create_database_and_restore():
                 )
             )
         with conn.cursor() as cur:
-            # SQL to create the new database from the template
+            # SQL to create the new database from the source
             print(f"Creating {TMP_DATABASE_NAME}")
             cur.execute(
                 sql.SQL("CREATE DATABASE {} ;").format(
@@ -137,8 +135,6 @@ def clean_database():
 
 def dump_and_export():
     dump_file = "/tmp/db_dump.sql"  # Temporary file for the dump
-
-    # Database credentials and parameters
 
     print("Run pg_dump to create the database dump")
     try:
