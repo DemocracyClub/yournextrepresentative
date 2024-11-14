@@ -115,7 +115,7 @@ def clean_database():
         )
         print("Cleaning Account email table")
         cur.execute(
-            """UPDATE auth_user SET 
+            """UPDATE account_emailaddress SET 
                 email = CONCAT('anon_', id, '@example.com');
             """
         )
