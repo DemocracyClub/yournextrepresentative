@@ -28,12 +28,16 @@ for tool in $REQUIRED_TOOLS; do
   fi
 done
 
+# Check the DB URL and get the cleaned $_SCRIPT_DATABASE_URL
+. ./scripts/check-database-url.sh
+
+
 # Create a temporary file and set up clean up on script exit
 TEMP_FILE=$(mktemp)
 trap 'rm -f "$TEMP_FILE"' EXIT
 
 # Invoke AWS Lambda and store the result in the temp file
-# The result is a presigned URL to the dump file on S3
+# The result is a pre-signed URL to the dump file on S3
 echo "Invoking Lambda to get DB URL. This might take a few minutes..."
 aws lambda invoke \
   --function-name "$LAMBDA_FUNCTION_NAME" \
@@ -46,12 +50,22 @@ aws lambda invoke \
 # Extract the URL from the response
 # This is because the response is quoted, so we just need to remove the quotation marks
 URL=$(sed 's/^"\(.*\)"$/\1/' "$TEMP_FILE")
-echo "Got URL: $(URL)"
+case "$URL" in
+    https://*)
+        echo "Got URL: $(URL)"
 
-echo "Dropping DB $(LOCAL_DB_NAME)"
-dropdb --if-exists "$LOCAL_DB_NAME"
-echo "Creating DB $(LOCAL_DB_NAME)"
-createdb "$LOCAL_DB_NAME"
+        ;;
+    *)
+        echo "The received URL looks invalid. This might mean the database export failed."
+        echo "Check the logs of the '$LAMBDA_FUNCTION_NAME' Lambda function"
+        exit 1
+        ;;
+esac
 
-echo "Downloading and restoring DB $(LOCAL_DB_NAME)"
-wget -qO- "$URL" | pg_restore -d "$LOCAL_DB_NAME" -Fc --no-owner --no-privileges
+echo "Dropping DB $(_SCRIPT_DATABASE_URL)"
+dropdb --if-exists "$_SCRIPT_DATABASE_URL"
+echo "Creating DB $(_SCRIPT_DATABASE_URL)"
+createdb "$_SCRIPT_DATABASE_URL"
+
+echo "Downloading and restoring DB $(_SCRIPT_DATABASE_URL)"
+wget -qO- "$URL" | pg_restore -d "$_SCRIPT_DATABASE_URL" -Fc --no-owner --no-privileges
