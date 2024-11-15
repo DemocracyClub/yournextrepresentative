@@ -9,9 +9,8 @@ from psycopg import sql
 ssm = boto3.client("ssm")
 s3 = boto3.client("s3", region_name="eu-west-1")
 BUCKET_NAME = "dc-ynr-short-term-backups"
-current_time = datetime.now().isoformat()
 PREFIX = "ynr-export"
-FILENAME = f"{PREFIX}-{current_time.replace(':', '-')}.dump"
+FILENAME_FORMAT = "{PREFIX}-{CURRENT_TIME_STR}.dump"
 
 
 def get_parameter(name):
@@ -135,6 +134,12 @@ def clean_database():
         cur.execute("""TRUNCATE TABLE django_session;""")
 
 
+def get_filename():
+    return FILENAME_FORMAT.format(
+        PREFIX=PREFIX, CURRENT_TIME=datetime.now().isoformat().replace(":", "-")
+    )
+
+
 def dump_and_export():
     dump_file = "/tmp/db_dump.sql"  # Temporary file for the dump
 
@@ -156,13 +161,15 @@ def dump_and_export():
             check=True,
         )
 
+        file_name = get_filename()
+
         print("Upload the dump to S3")
-        s3.upload_file(dump_file, BUCKET_NAME, FILENAME)
+        s3.upload_file(dump_file, BUCKET_NAME, file_name)
 
         print("Generate a presigned URL for downloading the dump")
         presigned_url = s3.generate_presigned_url(
             "get_object",
-            Params={"Bucket": BUCKET_NAME, "Key": FILENAME},
+            Params={"Bucket": BUCKET_NAME, "Key": file_name},
             ExpiresIn=3600,  # URL expires in 1 hour
         )
         print("Finished")
