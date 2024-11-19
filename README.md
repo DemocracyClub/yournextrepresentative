@@ -64,7 +64,7 @@ Sentry is used to report errors in production. We have added a url for `sentry-d
 
 # Enable Candidate Leaderboard
 
-The candidate leaderboard is a way of showing the most active candidates on the site. It is a way of volunteers to add more information about candidates and elections.
+The candidate leaderboard is a way of showing the most active candidates on the site. It is a way of encouraging volunteers to add more information about candidates and elections.
 
 We take a slice of edits in YNR and assign them to a election leaderboard. 
 
