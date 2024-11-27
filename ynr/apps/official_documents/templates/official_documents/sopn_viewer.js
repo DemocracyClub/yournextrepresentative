@@ -9,7 +9,17 @@ var SOPN_VIEWER = (function () {
 
     var module = {};
 
-    function load_page(pdf, container, page_num) {
+    function drawRectangles(context, rectangles) {
+        rectangles.forEach(rect => {
+            context.beginPath();
+            context.rect(rect.x, rect.y, rect.width, rect.height);
+            context.lineWidth = rect.lineWidth || 1;
+            context.strokeStyle = rect.color || 'red';
+            context.stroke();
+        });
+    }
+
+    function load_page(pdf, container, page_num, rectanglesPerPage) {
         return pdf.getPage(page_num).then(function (page) {
 
             var scale = 1.2;
@@ -25,6 +35,8 @@ var SOPN_VIEWER = (function () {
                 var context = canvas.getContext("2d");
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
+                console.log(canvas.height)
+                console.log(canvas.width)
                 var renderContext = {
                     canvasContext: context,
                     viewport: viewport
@@ -33,6 +45,12 @@ var SOPN_VIEWER = (function () {
                 var renderTask = page.render(renderContext);
                 return renderTask.promise.then(function () {
                     container.append(page_container);
+
+                    if (rectanglesPerPage && rectanglesPerPage[page_num]) {
+                        drawRectangles(context, rectanglesPerPage[page_num]);
+                    }
+
+
                     return page.getTextContent({normalizeWhitespace: true});
                 }).then(function (textContent) {
                     var pdf_canvas = $(canvas),
@@ -57,6 +75,8 @@ var SOPN_VIEWER = (function () {
                         viewport: viewport,
                         textDivs: []
                     });
+
+
                 });
 
             }
@@ -64,7 +84,7 @@ var SOPN_VIEWER = (function () {
         });
     }
 
-    function ShowSOPNInline(sopn_url, ballot_paper_id, options) {
+    function ShowSOPNInline(sopn_url, ballot_paper_id, rectanglesPerPage) {
         // The container element
         var this_pdf_container = document.getElementById("sopn-" + ballot_paper_id);
 
@@ -73,7 +93,7 @@ var SOPN_VIEWER = (function () {
         loadingTask.promise.then(function (pdf) {
             var promise = Promise.resolve();
             for (let page = 1; page <= pdf.numPages; page++) {
-                promise = promise.then(() => load_page(pdf, this_pdf_container, page));
+                promise = promise.then(() => load_page(pdf, this_pdf_container, page, rectanglesPerPage));
             }
             return promise;
         }).then(null, function (error) {
