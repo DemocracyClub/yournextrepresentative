@@ -45,4 +45,5 @@ class ElectedViewSet(viewsets.ReadOnlyModelViewSet):
     ).filter(elected=True)
 
     serializer_class = ElectedSerializer
+    pagination_class = DefaultPageNumberPagination
     filterset_class = ElectedSetFilter
