@@ -116,8 +116,8 @@ class CandidateBot(object):
                 if not ignore_edit:
                     self.edits_made = True
         else:
-            if field_name == "biography":
-                self.person.biography = field_value
+            if field_name in ["biography", "name"]:
+                setattr(self.person, field_name, field_value)
                 self.edits_made = True
 
     def clean_email(self, value):
