@@ -6,16 +6,10 @@ ARG invalidate_all_cached_layers=202411270705
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-run date \
- && apt update \
- && date
-
 copy container/build/system-packages /tmp/apt-packages
 run date \
+ && apt update \
  && </tmp/apt-packages xargs apt install --no-install-suggests --assume-yes \
- && date
-
-run date \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* \
  && date
