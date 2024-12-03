@@ -17,6 +17,7 @@ class DisableMigrations(object):
     def __getitem__(self, item):
         return None
 
+ADMINS = [("dummy", "dummy@dummy.example")]
 
 MIGRATION_MODULES = DisableMigrations()
 
@@ -29,7 +30,7 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 RUNNING_TESTS = True
 
 SECRET_KEY = "just here for testing"
-ALLOWED_HOSTS = ["candidates.democracyclub.org.uk"]
+ALLOWED_HOSTS = ["candidates.democracyclub.org.uk","*"]
 
 SHOW_SOPN_TRACKER = False
 SHOW_RESULTS_PROGRESS = False
