@@ -24,7 +24,7 @@ chars_to_replace = {
 
 
 def replace_char(name, char, replace):
-    name = name.repalce(char, replace)
+    name = name.replace(char, replace)
     return " ".join(name.split()).strip()
 
 
