@@ -35,11 +35,15 @@ run date \
 ######################
 # Copy node dependency manifests into the container image.
 copy package.json package-lock.json $APP_CODE/
+# "setting NODE_ENV to anything but production is considered an antipattern."
+# (https://nodejs.org/en/learn/getting-started/nodejs-the-difference-between-development-and-production)
+arg NODE_ENV=production
+env NODE_ENV $NODE_ENV
 # Install dependencies.
-# TODO: npm equivalent of "apt-get clean && rm -rf /var/lib/apt/lists/*"
 run date \
  && cd $APP_CODE/ \
- && npm install \
+ && npm ci \
+ && npm cache clean --force \
  && date
 
 ########################
@@ -67,8 +71,8 @@ run date \
 ## App code #
 #############
 # Copy the client-side directory "." (the build context passed to the build
-# command) into the container image.
-# NB This obeys the rules in the .containerignore file.
+# command) into the container image, obeying the inclusions & exclusions
+# encoded in the ./.containerignore file.
 copy . $APP_CODE/
 # Set the working directory for the container entrypoint.
 workdir $APP_CODE
