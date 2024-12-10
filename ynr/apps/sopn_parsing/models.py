@@ -140,3 +140,45 @@ class AWSTextractParsedSOPN(TimeStampedModel):
 
     def as_textractor_document(self):
         return response_parser.parse(json.loads(self.raw_data))
+
+    def get_withdrawals_bboxes(self):
+        # headers = self.as_pandas.iloc[0].tolist()
+        # get colmun index from headers
+        column = "5"
+        column_values = self.as_pandas[column].tolist()
+        cells_with_value = []
+        for i, row in enumerate(column_values):
+            if row:
+                cells_with_value.append(i)
+        cells_with_value.pop(0)
+        # Deal with more than one page
+        textract_cells = []
+        for table in self.as_textractor_document().tables:
+            for cell in table.table_cells:
+                # if str(cell.col_index-1) != column:
+                #     continue
+                if cell.row_index - 1 in cells_with_value:
+                    textract_cells.append(cell)
+        print(textract_cells)
+
+        doc_height = 1429
+        doc_width = 1010
+
+        page = 1
+        box_data = {page: []}
+        for cell in textract_cells:
+            absolute_x = cell.x * doc_width
+            absolute_y = cell.y * doc_height
+            absolute_width = cell.width * doc_width
+            absolute_height = cell.height * doc_height
+            box_data[page].append(
+                {
+                    "x": absolute_x,
+                    "y": absolute_y,
+                    "width": absolute_width,
+                    "height": absolute_height,
+                    "color": "red",
+                    "lineWidth": 2,
+                },
+            )
+        return json.dumps(box_data)
