@@ -35,12 +35,22 @@ run date \
 ######################
 # Copy node dependency manifests into the container image.
 copy package.json package-lock.json $APP_CODE/
+# "setting NODE_ENV to anything but production is considered an antipattern."
+#   (https://nodejs.org/en/learn/getting-started/nodejs-the-difference-between-development-and-production)
+# However, the version of npm we currently use doesn't appear to offer any way
+# to make "npm ci" install the devDependencies (which include the "gulp"
+# command that's required later in this build) when NODE_ENV="production".
+# Therefore we delay setting NODE_ENV until after "npm ci" has run.
+# arg NODE_ENV=production
+# env NODE_ENV=$NODE_ENV
 # Install dependencies.
-# TODO: npm equivalent of "apt-get clean && rm -rf /var/lib/apt/lists/*"
 run date \
  && cd $APP_CODE/ \
- && npm install \
+ && npm ci \
+ && npm cache clean --force \
  && date
+arg NODE_ENV=production
+env NODE_ENV=$NODE_ENV
 
 ########################
 ## Python dependencies #
@@ -67,8 +77,8 @@ run date \
 ## App code #
 #############
 # Copy the client-side directory "." (the build context passed to the build
-# command) into the container image.
-# NB This obeys the rules in the .containerignore file.
+# command) into the container image, obeying the inclusions & exclusions
+# encoded in the ./.dockerignore file.
 copy . $APP_CODE/
 # Set the working directory for the container entrypoint.
 workdir $APP_CODE
@@ -80,6 +90,14 @@ workdir $APP_CODE
 # baseline level of correctness, whilst also generating .pyc files for faster
 # app startup.
 run python manage.py check --settings=ynr.settings.testing
+
+###########
+## Assets #
+###########
+run date \
+ && npm run build \
+ && python manage.py collectstatic --no-input --settings=ynr.settings.testing \
+ && date
 
 ###########################################################################
 ## Testing image ##########################################################
