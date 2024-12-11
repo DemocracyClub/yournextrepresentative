@@ -9,7 +9,6 @@ services:
 
   frontend:
     image: ynr:test
-    pull_policy: never
     command: gunicorn --reload --log-level=debug ynr.wsgi
     environment:
       RUN_ENV: test
@@ -28,10 +27,17 @@ services:
       - ./package.json:/dc/ynr/code/package.json
       - ./package-lock.json:/dc/ynr/code/package-lock.json
       - ./pyproject.toml:/dc/ynr/code/pyproject.toml
-    ports: 8080:8080
+    ports:
+      - "8080:8080"
     depends_on:
       dbpsql:
         condition: service_healthy
+    pull_policy: never
+    build:
+      dockerfile: container/build/Containerfile
+      # Context is relative to this docker-compose.yml file.
+      context: .
+      target: test
 
   dbpsql:
     image: public.ecr.aws/docker/library/postgres:12.20
