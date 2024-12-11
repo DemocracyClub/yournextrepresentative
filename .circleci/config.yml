@@ -166,6 +166,12 @@ jobs:
             ./scripts/container.image.build.bash prod
             ./scripts/container.image.build.bash test
       - run:
+          name: Check that compose is happy
+          command: |
+            docker compose config
+            # No-op, due to a shared layer cache with earlier image builds.
+            docker compose build
+      - run:
           name: Run app tests
           command: |
             net="$(docker network inspect $(docker network ls -q -f "label=task-network") --format '{{.Name}}')"
