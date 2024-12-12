@@ -10,6 +10,9 @@ services:
   frontend:
     image: ynr:test
     command: gunicorn --reload --log-level=debug ynr.wsgi
+    env_file:
+      - path: env/frontend.env
+        required: false
     environment:
       RUN_ENV: test
       PGHOST: dbpsql
