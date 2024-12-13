@@ -2,6 +2,9 @@
 
 This app is designed to extract useful information out of UK Statement
 Of Persons Nominated documents (SOPNs), published before elections.
+It uses the `pypandoc_binary` dependency (which both provides an interface to,
+and installs the binary of, the upstream [pandoc](https://pandoc.org/) project)
+to convert SOPN documents to PDF (as needed) to be parsed.
 
 The documents contain information on candidates for a given election,
 but are published in a wide variety of layouts.

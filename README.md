@@ -18,51 +18,42 @@ details, their social media accounts etc. The software requires
 that each change is submitted with a source, so that the
 collected information can be independently checked.
 
-# Installation
+## Installation
 
-See [INSTALL.md](https://github.com/DemocracyClub/yournextrepresentative/blob/master/docs/INSTALL.md)
+See [docs/INSTALL.md](docs/INSTALL.md)
 
-# Known Bugs
+## Development
+
+See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
+
+## Known Bugs
 
 You can find a list of known issues to work on here:
 
 * https://github.com/DemocracyClub/yournextrepresentative/issues
 
-# Acknowledgements
+## Acknowledgements
 
 This codebase was originally forked from
 [mysociety/yournextrepresentative](http://github.com/mysociety/yournextrepresentative)
 We no longer track the upstream but we thank [mySociety](http://mysociety.org/)
 for their work on the project which we have been able to build on.
 
-# API Versions
+## API Versions
 
 v0.9 is legacy code and is now frozen. v1.0 is currently in alpha. We plan on publishing a v1 API once we have some more feedback from users and we think it’s stable enough.
 
-# Statement Of Persons Nominated (SOPN) Parsing
+## Statement Of Persons Nominated (SOPN) Parsing
 
-YNR uses `pypandoc` (which relies on `pandoc`) to convert SOPN documents to PDF, as needed, to be parsed.
+See [ynr/apps/sopn_parsing/README.md](ynr/apps/sopn_parsing/README.md).
 
-To install `pandoc`, visit this page and follow the instructions for you operating system:
-https://pandoc.org/installing.html
-
-Once `pandoc` is installed
-
-Install pypandoc (or via `requirements.txt`):
-
-`pip install pandoc`
-
-If `pypandoc` does not install via `pip`, visit https://pypi.org/project/pypandoc/ for further instructions. 
-
-# Sentry Error Reporting
+## Sentry Error Reporting
 
 Sentry is used to report errors in production. We have added a url for `sentry-debug` to the `urls.py` file. This is to allow us verify that Sentry is configured correctly and working in production.
 
-```
+## Pre-election Tasks
 
-# Pre-election Tasks
-
-# Enable Candidate Leaderboard
+### Enable Candidate Leaderboard
 
 The candidate leaderboard is a way of showing the most active candidates on the site. It is a way of encouraging volunteers to add more information about candidates and elections.
 
@@ -72,4 +63,9 @@ This is defined here: https://github.com/DemocracyClub/yournextrepresentative/bl
 
 We can modify the old value to reflect the current election. Change, PR, merge, [currently Sym needs to deploy]
 
-If this is a General Election, the parliamentary candidates can be imported using a google sheet csv url with `python manage candidatebot_import_next_ppcs --sheet-url SHEET_URL`
+If this is a General Election, the parliamentary candidates can be imported using a google sheet csv url with:
+```
+podman compose up -d dbpqsl
+./scripts/container.run.bash python manage candidatebot_import_next_ppcs --sheet-url SHEET_URL
+podman compose down
+```

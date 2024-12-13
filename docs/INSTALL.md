@@ -1,25 +1,146 @@
 # Installation
 
-TODO: improve these docs with more detail
+## Local development
 
-YourNextRepresentative requires python >=3.5 and PostgreSQL
+Local development uses a containerised setup. This reduces the complexity of
+setting up the project's dependencies.
 
-## Install python dependencies
+### Initial steps
+
+1. Clone this repository:
+   `git clone --branch jcm/wip https://github.com/DemocracyClub/yournextrepresentative`
+1. Install the `podman` command: https://podman.io/docs/installation.
+   These installation mechanisms have been tested:
+   - System package on Ubuntu 24.04 LTS
+     - https://podman.io/docs/installation#ubuntu
+1. Install the `podman-compose` command: https://pypi.org/project/podman-compose/.
+   These installation mechanisms have been tested:
+   - System package on Ubuntu 24.04 LTS
+     - This version (v1.0.x) emits non-optional verbose debug logs
+     - https://packages.ubuntu.com/noble/podman-compose
+     - `apt install podman-compose`
+   - Manual installation of v1.2.0 on Ubuntu 24.04 LTS
+     - This version's verbose debug logs are optional
+     - https://packages.ubuntu.com/oracular/all/podman-compose/download
+     - `dkpkg -i path/to/debian-package.deb`
+1. Configure `podman` to be less chatty, by placing this configuration in `$HOME/.config/containers/containers.conf`:
+   ```ini
+   # Don't emit logs on each invocation of the compose command indicating
+   # that an external compose provider is being executed.
+   [engine]
+   compose_warning_logs=false
+   ```
+1. Make sure the `bash` shell is available:
+   `which bash || echo Not found`
+1. Build any container images used by the compose stack:
+   `podman compose build`
+1. Pull any 3rd-party container images used by the compose stack:
+   `podman compose pull`
+1. Set up your local/development envvars as needed, by placing keys and values
+   `env/frontend.env`, like this:
+   ```
+   DJANGO_SETTINGS_MODULE=ynr.settings.testing
+   ```
+1. Test that the compose stack can be stood up:
+   ```bash
+   podman compose up -d # NB Space between "podman" and "compose"!
+   curl 0:8080
+   ```
+   Curl **should** report a server error (i.e. a 500) because your database
+   setup is incomplete. This step tests only that `podman` and `podman-compose`
+   are able to run successfully on your machine when given YNR's
+   `docker-compose.yml` file
+1. Test that Django management commands can be invoked:
+   `./scripts/container.manage-py.bash check`
+1. Run the test suite (which only requires that a database server be
+   *available*, not that its contents should have been primed) - this will not
+   complete instantly:
+   `./scripts/container.pytest.bash`
+1. Shut down the compose stack:
+   `podman compose stop`
+
+If you have access to the contents of a YNR database, follow
+[Priming the local database](#priming-the-local-database), which is required to
+allow the webapp to serve requests.
+
+### Priming the local database
+
+If you have access to a database dump from a YNR instance you can restore it to
+a containerised database as follows:
+
+1. Start the database container:
+   `podman compose up dbpsql -d`
+1. Restore the database dump:
+   `cat path/to/database.dump | podman compose exec -T dbpsql pg_restore -d ynr -U ynr --no-owner`.
+1. Apply any pending migrations:
+   `./scripts/container.run.bash python manage.py migrate`
+1. Shut down the database container:
+   `podman compose down`
+
+Now read [Running the app](#running-the-app).
+
+<!--
+Alternatively, you can populate the database using the public YNR API.
+**This is significantly slower**, and will take multiple hours to complete the
+`candidates_import_from_live_site` step in the following process:
+
+FIXME: this doesn't work when run from scratch, with an entirely empty DB.
+What schemas need to exist for this to work, and how are they created?
 
 ```
-pip install -U pip
-pip install -r requirements.txt
+Importing parties from The Electoral Commission (using `parties_import_from_ec`)
+Traceback (most recent call last):
+  File "/dc/ynr/venv/lib/python3.8/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "/dc/ynr/venv/lib/python3.8/site-packages/psycopg/cursor.py", line 737, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedTable: relation "parties_party" does not exist
+LINE 1: ..._party"."ec_data", "parties_party"."nations" FROM "parties_p...
+                                                             ^
 ```
 
-## Set up database
+1. Start the database container:
+   `podman compose up dbpsql -d`
+1. Restore the database dump:
+   `./scripts/container.run.bash python manage.py candidates_import_from_live_site`
+1. Apply any pending migrations:
+   `./scripts/container.run.bash python manage.py migrate`
+1. Shut down the database container:
+   `podman compose down`
 
-```
-sudo -u postgres createdb ynr
-```
+-->
 
-If using mac-os/homebrew
-```
-createdb ynr
+### Running the app
+
+(FIXME: this will live in README.md, not INSTALL.md)
+
+Run the app as follows:
+
+1. Add or update any settings in `env/frontend.env` as required.
+1. (Re-)Build any container images used by the compose stack:
+   `podman compose build`
+1. Start the compose stack:
+   `podman compose up -d`
+1. Build some required JS resources in the running frontend container:
+   `./scripts/container.exec.bash npm run build`
+1. Collect the static assets:
+   `./scripts/container.manage-py.bash collectstatic --no-input`
+   - FIXME: is this *only* required because we're using `gunicorn --reload`, and not `runserver`?
+1. Browse to http://localhost:8080
+1. Remember to shut down the compose stack when you're done:
+   `podman compose down`
+
+### Testing the app
+
+1. Start the compose stack:
+   `podman compose up -d`
+1. Run the test suite, stopping on first failure:
+   `./scripts/container.pytest.bash -x`
+1. Stop the compose stack:
+   `podman compose down`
+
+## Setting up database
+
 ```
 
 ```
@@ -33,59 +154,9 @@ brew install libmagic
 ./manage.py migrate
 ```
 
-To populate the database run from the live site run:
+## TODO
 
-```
-python manage.py candidates_import_from_live_site
-```
-
-(Note that this command will take multiple hours to complete.)
-
-## Build frontend assets
-
-```
-npm run build
-npm install
-```
-
-## (Optional) Code linting
-
-A CI will check all code against Black and Flake8. To save pushing commits that don't
-pass these tests you can configure pre-commmit hooks.
-
-Do this by installing `[precommit](https://pre-commit.com/)`:
-
-```
-pip install pre-commit
-pre-commit install
-```
-
-## (Optional) SOPN parsing
-
-SOPNs parsing (see `ynr/apps/sopn_parsing/README.md`) is optional
-because it depends on various system packages beyond python packages.
-
-It currently requires [camelot-py](https://camelot-py.readthedocs.io/en/master/user/install.html#install)
-and that in turn requires `python-tk` and `ghostscript`.
-
-Read up on how to install them, and then install the SOPN parsing requirements:
-
-```
-pip install -r requirements/sopn_parsing.txt
-```
-
-File conversion relies on `pandoc` to turn non-pdf SOPN files into pdf files.
-To install `pandoc`, visit https://pandoc.org/installing.html and follow instructions
-for Mac OS and Ubuntu.
-
-AWS Textract relies on the following packages for viewing image results: 
-
-https://pypi.org/project/pdf2image/
-
-To install these packages run:
-
-```
-brew install poppler
-```
-
-_If you have omitted SOPN and are having problems getting the project to run, you may need to follow the SOPN steps._
+Docs TODO: **WIP!**
+- static assets
+- workflows for modifying different layers of the build process (NPM deps; JS and CSS; etc)
+- code hot reload and its implications
