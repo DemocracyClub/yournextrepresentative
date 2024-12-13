@@ -14,10 +14,7 @@ services:
       - path: env/frontend.env
         required: false
     environment:
-      RUN_ENV: test
       PGHOST: dbpsql
-      CIRCLECI: true
-      DJANGO_SETTINGS_MODULE: ynr.settings.testing
       PORT: 8080
     volumes:
       - ./ynr/:/dc/ynr/code/ynr/
