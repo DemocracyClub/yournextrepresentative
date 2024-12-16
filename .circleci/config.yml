@@ -151,7 +151,7 @@ jobs:
     working_directory: ~/repo
     docker:
       - image: cimg/base:current
-      - image: cimg/postgres:12.20
+      - image: cimg/postgres:16.4
         name: dbpsql
         environment:
           POSTGRES_USER: ynr
