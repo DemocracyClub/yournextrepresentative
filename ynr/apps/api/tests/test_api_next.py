@@ -287,6 +287,23 @@ class TestAPI(
             },
         )
 
+    def test_tags_on_ballot(self):
+        self.edinburgh_east_post_ballot.tags = {
+            "NUTS1": {"key": "UKM", "value": "Scotland"}
+        }
+        self.edinburgh_east_post_ballot.save()
+
+        response = self.app.get(
+            "/api/next/ballots/{}/".format(
+                self.edinburgh_east_post_ballot.ballot_paper_id
+            )
+        )
+        result = response.json
+        self.assertEqual(
+            result["tags"],
+            {"NUTS1": {"key": "UKM", "value": "Scotland"}},
+        )
+
     def test_no_results_on_ballot(self):
         response = self.app.get(
             "/api/next/ballots/{}/".format(
