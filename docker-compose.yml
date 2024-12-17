@@ -51,3 +51,8 @@ services:
       - psql-data:/var/lib/postgresql/data
     ports:
       - 54321:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ynr"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
