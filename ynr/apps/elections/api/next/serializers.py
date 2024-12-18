@@ -1,5 +1,6 @@
 from api.next.serializers import OrganizationSerializer
 from candidates import models as candidates_models
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_serializer_method
 from elections import models as election_models
 from official_documents.api.next.serializers import BallotSOPNSerializer
@@ -83,6 +84,39 @@ class ElectionSerializer(MinimalElectionSerializer):
         ).data
 
 
+class TagsField(serializers.JSONField):
+    class Meta:
+        swagger_schema_fields = {
+            "type": openapi.TYPE_OBJECT,
+            "title": "Tags",
+            "description": """Freeform tags, but typically contain NUTS1 tags
+                    for the ballot. Don't rely on this data existing, defaults to an 
+                    empty object""",
+            "properties": {
+                "NUTS1": {
+                    "type": openapi.TYPE_OBJECT,
+                    "properties": {
+                        "key": {
+                            "type": openapi.TYPE_STRING,
+                            "example": "UKM",
+                            "description": "The key representing the NUTS1 code (e.g., UKM for Scotland).",
+                        },
+                        "value": {
+                            "type": openapi.TYPE_STRING,
+                            "example": "Scotland",
+                            "description": "The human-readable name associated with the NUTS1 code.",
+                        },
+                    },
+                    "description": "An object containing NUTS1 tag details.",
+                    "example": {"key": "UKM", "value": "Scotland"},
+                }
+            },
+            "example": {
+                "NUTS1": {"key": "UKM", "value": "Scotland"},
+            },
+        }
+
+
 class BallotSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = candidates_models.Ballot
@@ -139,6 +173,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
     )
     last_updated = serializers.SerializerMethodField()
     cancelled = serializers.SerializerMethodField()
+    tags = TagsField()
 
     def get_last_updated(self, instance):
         """
