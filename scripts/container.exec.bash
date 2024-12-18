@@ -5,7 +5,7 @@ set -euo pipefail
 # The container must be running before running this script (see README.md).
 #
 # Usage:
-#    scripts/container.exec.bash echo hello world 
+#    scripts/container.exec.bash echo hello world
 #
 # This script is a deliberately simple convenience shim, and doesn't include a
 # way to set or override environment variables. To do this, invoke "podman"
