@@ -9,4 +9,4 @@ pycrypto==2.6.1
 pyparsing==3.1.1
 PyYAML==6.0
 -e git+https://github.com/confirm/ansibleci.git#egg=ansibleci
-Jinja2==3.1.2
+Jinja2==3.1.5
