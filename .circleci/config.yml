@@ -147,6 +147,17 @@ jobs:
           event: fail
           template: basic_fail_1
 
+  container_build:
+    working_directory: ~/repo
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build container image
+          command: docker build .
 
 workflows:
   test_build_deploy:
@@ -157,3 +168,6 @@ workflows:
         - build_and_test
         filters: { branches: { only: [ main, master, deployment-upgrades] } }
         context: [ deployment-production-ynr, slack-secrets ]
+  container:
+    jobs:
+    - container_build
