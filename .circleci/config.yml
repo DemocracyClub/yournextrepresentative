@@ -151,13 +151,33 @@ jobs:
     working_directory: ~/repo
     docker:
       - image: cimg/base:current
+      - image: cimg/postgres:12.20
+        name: dbpsql
+        environment:
+          POSTGRES_USER: ynr
+          POSTGRES_DB: ynr
     steps:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Build container image
-          command: docker build .
+          name: Build base container image
+          command: docker build -t ynr:base .
+      - run:
+          name: Build test container image
+          command: docker build -t ynr:test -f container/build/Containerfile.test .
+      - run:
+          name: Run app tests
+          command: |
+            net="$(docker network inspect $(docker network ls -q -f "label=task-network") --format '{{.Name}}')"
+            docker run -it --rm \
+              --net="$net" \
+              -e RUN_ENV=test \
+              -e PGHOST=dbpsql \
+              -e CIRCLECI=true \
+              \
+              ynr:test \
+              pytest --ds=ynr.settings.testing -x
 
 workflows:
   test_build_deploy:
