@@ -59,7 +59,7 @@ env NODE_ENV=$NODE_ENV
 # Install a common pre-req.
 run date \
  && python -m venv $APP_VENV \
- && $APP_VENV/bin/pip install wheel \
+ && $APP_VENV/bin/pip install --upgrade pip wheel \
  && date
 # Use the virtualenv without explicit activation.
 env PATH="$APP_VENV/bin:$PATH"
