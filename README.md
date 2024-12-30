@@ -39,7 +39,7 @@ for their work on the project which we have been able to build on.
 
 v0.9 is legacy code and is now frozen. v1.0 is currently in alpha. We plan on publishing a v1 API once we have some more feedback from users and we think it’s stable enough.
 
-# SOPN Parsing
+# Statement Of Persons Nominated (SOPN) Parsing
 
 YNR uses `pypandoc` (which relies on `pandoc`) to convert SOPN documents to PDF, as needed, to be parsed.
 
