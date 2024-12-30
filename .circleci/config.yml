@@ -161,11 +161,10 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Build production container image
-          command: docker build -t ynr:prod --target prod .
-      - run:
-          name: Build test container image
-          command: docker build -t ynr:test --target test .
+          name: Build container images
+          command: |
+            ./scripts/container.image.build.bash prod
+            ./scripts/container.image.build.bash test
       - run:
           name: Run app tests
           command: |

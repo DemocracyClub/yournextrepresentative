@@ -3,20 +3,12 @@
 ###########################################################################
 from public.ecr.aws/lts/ubuntu:20.04 as prod
 
+#########################
+## Build-time arguments #
+#########################
 # Increase this arbitary number to force all image layers to be rebuilt.
 # This is designed to invalidate the layer cache inside CI, not locally.
 arg invalidate_all_cached_layers=202412030000
-
-arg DEBIAN_FRONTEND=noninteractive
-
-copy container/build/system-packages /tmp/apt-packages
-run date \
- && apt update \
- && </tmp/apt-packages xargs apt install --no-install-suggests --assume-yes \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/* \
- && date
-
 # Base path for the app install build process.
 arg APP_ROOT=/dc/ynr
 # Path for the app's virtualenv.
@@ -24,35 +16,66 @@ arg APP_VENV=$APP_ROOT/venv
 # Path for the app's code.
 arg APP_CODE=$APP_ROOT/code
 
-# Set up a virtualenv to avoid interactions with system packages, and install a
-# common pre-req.
+########################
+## System dependencies #
+########################
+arg DEBIAN_FRONTEND=noninteractive
+# Copy system dependency manifest into the container image.
+copy container/build/system-packages /tmp/apt-packages
+# Install dependencies.
+run date \
+ && apt update \
+ && </tmp/apt-packages xargs apt install --no-install-suggests --assume-yes \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* \
+ && date
+
+######################
+## Node dependencies #
+######################
+# Copy node dependency manifests into the container image.
+copy package.json package-lock.json $APP_CODE/
+# Install dependencies.
+# TODO: npm equivalent of "apt-get clean && rm -rf /var/lib/apt/lists/*"
+run date \
+ && cd $APP_CODE/ \
+ && npm install \
+ && date
+
+########################
+## Python dependencies #
+########################
+# Set up a virtualenv to avoid interactions with system packages.
+# Install a common pre-req.
 run date \
  && python -m venv $APP_VENV \
  && $APP_VENV/bin/pip install wheel \
  && date
 # Use the virtualenv without explicit activation.
 env PATH="$APP_VENV/bin:$PATH"
-
 # Copy dependency manifests into the container image.
 copy requirements.txt $APP_CODE/
 copy requirements/    $APP_CODE/requirements/
-
-# Install app requirements. Instruct pip not to use a cache directory to
-# inprove container-image-level cache effectiveness.
-# TODO: run as not-root?
-# TODO: run upgrade pip?
+# Install dependencies.
+# Instruct pip not to use a cache directory to inprove container-image-level
+# cache effectiveness.
 run date \
  && pip install --no-cache-dir -r $APP_CODE/requirements/sopn_parsing.txt \
  && date
 
-# Copy the client-side directory "." (i.e. the build context passed to the
-# build command) into the container image.
+#############
+## App code #
+#############
+# Copy the client-side directory "." (the build context passed to the build
+# command) into the container image.
 # NB This obeys the rules in the .containerignore file.
 copy . $APP_CODE/
-
 # Set the working directory for the container entrypoint.
 workdir $APP_CODE
 
+###########
+## Checks #
+###########
 # Invoke a lightweight, post-build test that proves the container reaches a
 # baseline level of correctness, whilst also generating .pyc files for faster
 # app startup.
