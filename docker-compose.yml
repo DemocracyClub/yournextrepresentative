@@ -40,7 +40,7 @@ services:
       target: test
 
   dbpsql:
-    image: public.ecr.aws/docker/library/postgres:12.20
+    image: public.ecr.aws/docker/library/postgres:16.4
     pull_policy: missing
     environment:
       POSTGRES_DB: ynr
