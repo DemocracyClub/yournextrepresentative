@@ -1,16 +1,24 @@
-# Start with a clean slate by ignoring all paths.
+# This file contains paths, .gitignore-style, that will be excluded from being
+# copied into a container image during build.
+# cf. https://docs.docker.com/build/concepts/context/#dockerignore-files
+
+# Start with a clean slate by excluding all paths.
 *
 
-# Selectively include paths that need to be part of the image.
+# Selectively re-include paths to copy into the container. This list should
+# track and match the bind mounts for the "frontend" service in the
+# docker-compose.yml file.
 !/ynr/
 !/requirements/
 !/requirements.txt
 !/manage.py
-!/gulpfile.js
 !/Makefile
-
-# Paths that don't need to be part of the image, but also don't need to be
-# excluded when explicitly referenced by COPY and ADD commands.
-!/container/build/system-packages
+!/scripts/
+!/gulpfile.js
 !/package.json
 !/package-lock.json
+!/pyproject.toml
+
+# Paths that don't need to be part of the image, but also need not to be
+# excluded when explicitly referenced by build-time COPY and ADD commands.
+!/container/build/system-packages

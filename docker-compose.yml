@@ -18,9 +18,16 @@ services:
       DJANGO_SETTINGS_MODULE: ynr.settings.testing
       PORT: 8080
     volumes:
-      - type: bind
-        source: ./ynr
-        target: /dc/ynr/code/ynr
+      - ./ynr/:/dc/ynr/code/ynr/
+      - ./requirements/:/dc/ynr/code/requirements/
+      - ./requirements.txt:/dc/ynr/code/requirements.txt
+      - ./manage.py:/dc/ynr/code/manage.py
+      - ./Makefile:/dc/ynr/code/Makefile
+      - ./scripts/:/dc/ynr/code/scripts/
+      - ./gulpfile.js:/dc/ynr/code/gulpfile.js
+      - ./package.json:/dc/ynr/code/package.json
+      - ./package-lock.json:/dc/ynr/code/package-lock.json
+      - ./pyproject.toml:/dc/ynr/code/pyproject.toml
     ports: 8080:8080
     depends_on:
       dbpsql:
