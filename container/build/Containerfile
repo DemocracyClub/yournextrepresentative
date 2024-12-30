@@ -1,5 +1,9 @@
 from public.ecr.aws/lts/ubuntu:20.04
 
+# Increase this arbitary number to force all image layers to be rebuilt.
+# This is designed to invalidate the layer cache inside CI, not locally.
+ARG invalidate_all_cached_layers=202411270705
+
 ARG DEBIAN_FRONTEND=noninteractive
 
 run date \
