@@ -1,10 +1,13 @@
-from public.ecr.aws/lts/ubuntu:20.04
+###########################################################################
+## Production image #######################################################
+###########################################################################
+from public.ecr.aws/lts/ubuntu:20.04 as prod
 
 # Increase this arbitary number to force all image layers to be rebuilt.
 # This is designed to invalidate the layer cache inside CI, not locally.
-ARG invalidate_all_cached_layers=202411270705
+arg invalidate_all_cached_layers=202412030000
 
-ARG DEBIAN_FRONTEND=noninteractive
+arg DEBIAN_FRONTEND=noninteractive
 
 copy container/build/system-packages /tmp/apt-packages
 run date \
@@ -28,7 +31,7 @@ run date \
  && $APP_VENV/bin/pip install wheel \
  && date
 # Use the virtualenv without explicit activation.
-ENV PATH="$APP_VENV/bin:$PATH"
+env PATH="$APP_VENV/bin:$PATH"
 
 # Copy dependency manifests into the container image.
 copy requirements.txt $APP_CODE/
@@ -54,3 +57,18 @@ workdir $APP_CODE
 # baseline level of correctness, whilst also generating .pyc files for faster
 # app startup.
 run python manage.py check --settings=ynr.settings.testing
+
+###########################################################################
+## Testing image ##########################################################
+###########################################################################
+from prod as test
+
+# Base path for the app install build process.
+arg APP_ROOT=/dc/ynr
+# Path for the app's code.
+arg APP_CODE=$APP_ROOT/code
+
+# Install additional test dependencies.
+run date \
+ && pip install --no-cache-dir -r $APP_CODE/requirements/testing.txt \
+ && date
