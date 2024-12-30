@@ -1,6 +1,10 @@
 # Only set DEBUG to True in development environments.
 DEBUG = True
 
+# These Postgres settings should match docker-compose.yml.
+DATABASES["default"]["NAME"] = "ynr"  # noqa
+DATABASES["default"]["USER"] = "ynr"  # noqa
+
 # This short, known value is insecure.
 SECRET_KEY = "development"
 
