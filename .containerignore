@@ -1,0 +1,7 @@
+# Start with a clean slate by ignoring all paths.
+*
+
+# Selectively include paths that need to be part of the image.
+!/ynr/
+!/requirements/
+!/requirements.txt

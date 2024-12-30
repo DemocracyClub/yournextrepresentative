@@ -1,0 +1,15 @@
+from public.ecr.aws/docker/library/python:3.8.15
+
+# Set the working directory for the following RUN/COPY/ADD/CMD directives.
+workdir /dc/ynr/
+
+# Copy the client-side directory "." (i.e. the build context passed to the
+# build command) into the container image.
+# NB This obeys the rules in the .containerignore file.
+copy . code/
+
+# Install basic app requirements. Instruct pip not to use a cache directory to
+# inprove container-image-level cache effectiveness.
+# TODO: run as not-root?
+# TODO: run upgrade pip?
+run pip install --no-cache-dir -r code/requirements.txt
