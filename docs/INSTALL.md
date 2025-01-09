@@ -59,6 +59,6 @@ and to get closer to the intended future state of the application's
    This will take a little time to finish:
    `./scripts/container.pytest.bash`
 1. Shut down the compose stack:
-   `podman compose stop`
+   `podman compose down`
 
 Now you can use the tools and workflows detailed in [DEVELOPMENT.md](DEVELOPMENT.md).

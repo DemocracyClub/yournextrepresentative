@@ -85,8 +85,11 @@ Alternatively, you can populate the database using the public YNR API.
 
 1. Start the compose stack:
    `podman compose up -d`
-1. Run the test suite, stopping on first failure:
-   `./scripts/container.pytest.bash -x`
+1. Run the test suite:
+   `./scripts/container.pytest.bash`
+   - We can provide additional pytest options.
+     For example, to run the test suite and stop on the first failure:
+     `./scripts/container.pytest.bash -x`
 1. Stop the compose stack:
    `podman compose down`
 
