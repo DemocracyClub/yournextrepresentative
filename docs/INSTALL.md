@@ -16,21 +16,15 @@ and to get closer to the intended future state of the application's
    These installation mechanisms have been tested:
    - System package on Ubuntu 24.04 LTS
      - https://podman.io/docs/installation#ubuntu
-1. Install the `podman-compose` command: https://pypi.org/project/podman-compose/.
+1. Install `podman-compose` v1.2.0: https://pypi.org/project/podman-compose/.
    These installation mechanisms have been tested:
-   - System package on Ubuntu 24.04 LTS
-     - This version (v1.0.x) emits non-optional verbose debug logs
-     - https://packages.ubuntu.com/noble/podman-compose
-     - `apt install podman-compose`
-   - Manual installation of v1.2.0 APT package on Ubuntu 24.04 LTS
-     - This version's verbose debug logs are optional
-     - https://packages.ubuntu.com/oracular/all/podman-compose/download
-     - `dkpkg -i path/to/debian-package.deb`
    - Local `pip` installation of v1.2.0 on Ubuntu 24.04 LTS
-     - This version's verbose debug logs are optional
      - https://pypi.org/project/podman-compose/
      - `pip install podman-compose`
      - Either inside a venv, or not, as you prefer
+   - Manual installation of v1.2.0 APT package on Ubuntu 24.04 LTS
+     - https://packages.ubuntu.com/oracular/all/podman-compose/download
+     - `dkpkg -i path/to/debian-package.deb`
 1. Configure `podman` to be less chatty, by placing this configuration in `$HOME/.config/containers/containers.conf`:
    ```ini
    # Don't emit logs on each invocation of the compose command indicating
