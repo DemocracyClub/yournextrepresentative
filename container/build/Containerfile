@@ -1,29 +1,29 @@
 ###########################################################################
 ## Production image #######################################################
 ###########################################################################
-from public.ecr.aws/lts/ubuntu:20.04 as prod
+FROM public.ecr.aws/lts/ubuntu:20.04 AS prod
 
 #########################
 ## Build-time arguments #
 #########################
 # Increase this arbitary number to force all image layers to be rebuilt.
 # This is designed to invalidate the layer cache inside CI, not locally.
-arg invalidate_all_cached_layers=202412030000
+ARG invalidate_all_cached_layers=202412030000
 # Base path for the app install build process.
-arg APP_ROOT=/dc/ynr
+ARG APP_ROOT=/dc/ynr
 # Path for the app's virtualenv.
-arg APP_VENV=$APP_ROOT/venv
+ARG APP_VENV=$APP_ROOT/venv
 # Path for the app's code.
-arg APP_CODE=$APP_ROOT/code
+ARG APP_CODE=$APP_ROOT/code
 
 ########################
 ## System dependencies #
 ########################
-arg DEBIAN_FRONTEND=noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 # Copy system dependency manifest into the container image.
-copy container/build/system-packages /tmp/apt-packages
+COPY container/build/system-packages /tmp/apt-packages
 # Install dependencies.
-run date \
+RUN date \
  && apt update \
  && </tmp/apt-packages xargs apt install --no-install-suggests --assume-yes \
  && apt-get clean \
@@ -34,7 +34,7 @@ run date \
 ## Node dependencies #
 ######################
 # Copy node dependency manifests into the container image.
-copy package.json package-lock.json $APP_CODE/
+COPY package.json package-lock.json $APP_CODE/
 # "setting NODE_ENV to anything but production is considered an antipattern."
 #   (https://nodejs.org/en/learn/getting-started/nodejs-the-difference-between-development-and-production)
 # However, the version of npm we currently use doesn't appear to offer any way
@@ -44,32 +44,32 @@ copy package.json package-lock.json $APP_CODE/
 # arg NODE_ENV=production
 # env NODE_ENV=$NODE_ENV
 # Install dependencies.
-run date \
+RUN date \
  && cd $APP_CODE/ \
  && npm ci \
  && npm cache clean --force \
  && date
-arg NODE_ENV=production
-env NODE_ENV=$NODE_ENV
+ARG NODE_ENV=production
+ENV NODE_ENV=$NODE_ENV
 
 ########################
 ## Python dependencies #
 ########################
 # Set up a virtualenv to avoid interactions with system packages.
 # Install a common pre-req.
-run date \
+RUN date \
  && python -m venv $APP_VENV \
  && $APP_VENV/bin/pip install --upgrade pip wheel \
  && date
 # Use the virtualenv without explicit activation.
-env PATH="$APP_VENV/bin:$PATH"
+ENV PATH="$APP_VENV/bin:$PATH"
 # Copy dependency manifests into the container image.
-copy requirements.txt $APP_CODE/
-copy requirements/    $APP_CODE/requirements/
+COPY requirements.txt $APP_CODE/
+COPY requirements/    $APP_CODE/requirements/
 # Install dependencies.
 # Instruct pip not to use a cache directory to inprove container-image-level
 # cache effectiveness.
-run date \
+RUN date \
  && pip install --no-cache-dir -r $APP_CODE/requirements/sopn_parsing.txt \
  && date
 
@@ -79,9 +79,9 @@ run date \
 # Copy the client-side directory "." (the build context passed to the build
 # command) into the container image, obeying the inclusions & exclusions
 # encoded in the ./.dockerignore file.
-copy . $APP_CODE/
+COPY . $APP_CODE/
 # Set the working directory for the container entrypoint.
-workdir $APP_CODE
+WORKDIR $APP_CODE
 
 ###########
 ## Checks #
@@ -89,12 +89,12 @@ workdir $APP_CODE
 # Invoke a lightweight, post-build test that proves the container reaches a
 # baseline level of correctness, whilst also generating .pyc files for faster
 # app startup.
-run python manage.py check --settings=ynr.settings.testing
+RUN python manage.py check --settings=ynr.settings.testing
 
 ###########
 ## Assets #
 ###########
-run date \
+RUN date \
  && npm run build \
  && python manage.py collectstatic --no-input --settings=ynr.settings.testing \
  && date
@@ -102,14 +102,14 @@ run date \
 ###########################################################################
 ## Testing image ##########################################################
 ###########################################################################
-from prod as test
+FROM prod AS test
 
 # Base path for the app install build process.
-arg APP_ROOT=/dc/ynr
+ARG APP_ROOT=/dc/ynr
 # Path for the app's code.
-arg APP_CODE=$APP_ROOT/code
+ARG APP_CODE=$APP_ROOT/code
 
 # Install additional test dependencies.
-run date \
+RUN date \
  && pip install --no-cache-dir -r $APP_CODE/requirements/testing.txt \
  && date
