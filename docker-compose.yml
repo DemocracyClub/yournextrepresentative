@@ -18,6 +18,7 @@ services:
       PORT: 8080
     volumes:
       - ./ynr/:/dc/ynr/code/ynr/
+      - ./data/:/dc/ynr/code/data/
       - ./requirements/:/dc/ynr/code/requirements/
       - ./requirements.txt:/dc/ynr/code/requirements.txt
       - ./manage.py:/dc/ynr/code/manage.py

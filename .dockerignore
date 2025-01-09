@@ -9,6 +9,7 @@
 # track and match the bind mounts for the "frontend" service in the
 # docker-compose.yml file.
 !/ynr/
+!/data/
 !/requirements/
 !/requirements.txt
 !/manage.py
