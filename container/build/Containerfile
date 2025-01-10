@@ -33,24 +33,23 @@ RUN date \
 ######################
 ## Node dependencies #
 ######################
+ARG NODE_ENV=production
+ENV NODE_ENV=$NODE_ENV
 # Copy node dependency manifests into the container image.
 COPY package.json package-lock.json $APP_CODE/
-# "setting NODE_ENV to anything but production is considered an antipattern."
-#   (https://nodejs.org/en/learn/getting-started/nodejs-the-difference-between-development-and-production)
-# However, the version of npm we currently use doesn't appear to offer any way
-# to make "npm ci" install the devDependencies (which include the "gulp"
-# command that's required later in this build) when NODE_ENV="production".
-# Therefore we delay setting NODE_ENV until after "npm ci" has run.
-# arg NODE_ENV=production
-# env NODE_ENV=$NODE_ENV
 # Install dependencies.
+# The version of npm we currently use doesn't appear to offer any way to make
+# "npm ci" install the devDependencies (which include the "gulp" command that's
+# required later in this build) when NODE_ENV="production". We fix this by
+# overriding NODE_ENV for these npm commands. Whilst "npm cache clean" might
+# not require the same value, we keep it aligned in case it has some effect
+# (e.g. maybe the cache location is env-specific, etc).
 RUN date \
+ && export NODE_ENV=development \
  && cd $APP_CODE/ \
  && npm ci \
  && npm cache clean --force \
  && date
-ARG NODE_ENV=production
-ENV NODE_ENV=$NODE_ENV
 
 ########################
 ## Python dependencies #
