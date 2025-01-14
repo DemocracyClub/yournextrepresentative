@@ -177,12 +177,11 @@ jobs:
             net="$(docker network inspect $(docker network ls -q -f "label=task-network") --format '{{.Name}}')"
             docker run -it --rm \
               --net="$net" \
-              -e RUN_ENV=test \
               -e PGHOST=dbpsql \
               -e CIRCLECI=true \
               \
               ynr:test \
-              pytest --ds=ynr.settings.testing -x
+              pytest -x
 
 workflows:
   test_build_deploy:

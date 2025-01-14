@@ -2,11 +2,19 @@
 DEBUG = True
 
 # These Postgres settings should match docker-compose.yml.
-DATABASES["default"]["NAME"] = "ynr"  # noqa
-DATABASES["default"]["USER"] = "ynr"  # noqa
+# Credentials are not required.
+DATABASES = {"default": {
+  "ENGINE": "django.db.backends.postgresql",
+  "HOST": "dbpsql", "NAME": 'ynr', "USER": "ynr",
+}}
+
+# The containerised setup does not include the same memcache service that
+# production currently uses for its cache, so we explicitly set up a dummy
+# cache when running locally.
+CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
 
 # This short, known value is insecure.
-SECRET_KEY = "development"
+SECRET_KEY = "insecure"
 
 # Certain errors are very noisy (obscuring the real problem) if this list is
 # empty.

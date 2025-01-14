@@ -88,14 +88,14 @@ WORKDIR $APP_CODE
 # Invoke a lightweight, post-build test that proves the container reaches a
 # baseline level of correctness, whilst also generating .pyc files for faster
 # app startup.
-RUN python manage.py check --settings=ynr.settings.testing
+RUN DJANGO_SECRET_KEY=insecure python manage.py check
 
 ###########
 ## Assets #
 ###########
 RUN date \
  && npm run build \
- && python manage.py collectstatic --no-input --settings=ynr.settings.testing \
+ && DJANGO_SECRET_KEY=insecure python manage.py collectstatic --no-input \
  && date
 
 ###########################################################################

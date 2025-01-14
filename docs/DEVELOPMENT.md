@@ -119,7 +119,9 @@ Run a Django management command:
    `podman compose up -d`
 1. Use the `container.manage-py.bash` script to invoke the command:
    ```
-   ./scripts/container.manage-py.bash command-to-invoke --command-args command params
+   # ./scripts/container.manage-py.bash command-to-invoke --command-args command params
+   # e.g.
+   ./scripts/container.manage-py.bash check
    ```
 1. Stop the compose stack:
    `podman compose down`
@@ -190,8 +192,6 @@ GitHub-rendered view so that command strings don't line-wrap. -->
 
 These executable scripts are available from the [`scripts`](../scripts) directory.
 
-<!-- The &nbsp; HTML entities force the Script column to be wide enough in the
-GitHub-rendered view so that command strings don't line-wrap. -->
 | Script | Purpose | Parameters
 | :--- | :--- | :---
 | `container.image.build.bash` | Builds the YNR container image | $1 -- The named stage from [`container/build/Containerfile`](../container/build/Containerfile) to build and tag (*required*)<br>$2, $3, ... -- Any parameters to pass to the underlying builder process (*optional*)
