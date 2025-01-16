@@ -28,36 +28,6 @@ a containerised database as follows:
 1. Shut down the database container:
    `podman compose down`
 
-<!--
-FIXME: this doesn't work when run from scratch, with an entirely empty DB.
-What schemas need to exist for this to work, and how are they created?
-
-```
-Importing parties from The Electoral Commission (using `parties_import_from_ec`)
-Traceback (most recent call last):
-  File "/dc/ynr/venv/lib/python3.8/site-packages/django/db/backends/utils.py", line 89, in _execute
-    return self.cursor.execute(sql, params)
-  File "/dc/ynr/venv/lib/python3.8/site-packages/psycopg/cursor.py", line 737, in execute
-    raise ex.with_traceback(None)
-psycopg.errors.UndefinedTable: relation "parties_party" does not exist
-LINE 1: ..._party"."ec_data", "parties_party"."nations" FROM "parties_p...
-                                                             ^
-```
-
-Alternatively, you can populate the database using the public YNR API.
-**This is significantly slower**, and will take multiple hours to complete the
-`candidates_import_from_live_site` step in the following process:
-
-1. Start the database container:
-   `podman compose up -d dbpsql`
-1. Restore the database dump:
-   `./scripts/container.run.bash python manage.py candidates_import_from_live_site`
-1. Apply any pending migrations:
-   `./scripts/container.run.bash python manage.py migrate`
-1. Shut down the database container:
-   `podman compose down`
--->
-
 ### Running the app
 
 1. Add or update any environment variables in `env/frontend.env` as required.
