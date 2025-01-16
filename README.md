@@ -3,73 +3,81 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 ![CodeQL](https://github.com/DemocracyClub/yournextrepresentative/workflows/CodeQL/badge.svg)
 
+# A website for crowd-sourcing structured data about election candidates
 
-# A website for crowd-sourcing structured election candidate data
+[**candidates.democracyclub.org.uk**](https://candidates.democracyclub.org.uk)
 
-https://candidates.democracyclub.org.uk/
-
-YourNextRepresentative is a open source platform for
-crowd-sourcing information about candidates for political office
+YourNextRepresentative ("**YNR**") is an open source platform
+for crowd-sourcing information about candidates for political office,
 and making it available as open data to anyone.
+YNR collects some core data, including:
+- who is standing,
+- what party they’re standing for,
+- their contact details, and
+- their social media accounts.
 
-The core data that YourNextRepresentative collects includes who
-is standing, what party they’re standing for, their contact
-details, their social media accounts etc. The software requires
-that each change is submitted with a source, so that the
-collected information can be independently checked.
+YNR requires that each change is submitted with a source, so that the collected
+information can be verified.
 
-# Installation
+## Using YNR
 
-See [INSTALL.md](https://github.com/DemocracyClub/yournextrepresentative/blob/master/docs/INSTALL.md)
+**To find out information** about who you can vote for in upcoming elections, head
+over to [whocanivotefor.co.uk](https://whocanivotefor.co.uk) and search for
+candidates in your area.
 
-# Known Bugs
+**To contribute information** about candidates, use the YNR application at
+[candidates.democracyclub.org.uk](https://candidates.democracyclub.org.uk).
+
+## Developing YNR
+
+Before you can start modifying the YNR application and website, you'll need to
+install its development prerequisites -- as detailed in
+[`docs/INSTALL.md`](docs/INSTALL.md).
+
+After you've confirmed that the prerequisites are working correctly on your
+machine you'll be able to use the workflows detailed in
+[`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) to make changes to YNR.
+
+## Known Bugs
 
 You can find a list of known issues to work on here:
 
 * https://github.com/DemocracyClub/yournextrepresentative/issues
 
-# Acknowledgements
+## Acknowledgements
 
 This codebase was originally forked from
 [mysociety/yournextrepresentative](http://github.com/mysociety/yournextrepresentative)
-We no longer track the upstream but we thank [mySociety](http://mysociety.org/)
+We no longer track the upstream but we thank [mySociety](https://mysociety.org/)
 for their work on the project which we have been able to build on.
 
-# API Versions
+## API Versions
 
 v0.9 is legacy code and is now frozen. v1.0 is currently in alpha. We plan on publishing a v1 API once we have some more feedback from users and we think it’s stable enough.
 
-# SOPN Parsing
+## Statement Of Persons Nominated (SOPN) Parsing
 
-YNR uses `pypandoc` (which relies on `pandoc`) to convert SOPN documents to PDF, as needed, to be parsed.
+See [`ynr/apps/sopn_parsing`](ynr/apps/sopn_parsing#readme).
 
-To install `pandoc`, visit this page and follow the instructions for you operating system:
-https://pandoc.org/installing.html
+## Sentry Error Reporting
 
-Once `pandoc` is installed
+Sentry is used to report errors in production. We have added a url for `sentry-debug` to the [`urls.py`](ynr/urls.py#L42) file. This is to allow us verify that Sentry is configured correctly and working in production.
 
-Install pypandoc (or via `requirements.txt`):
+## Pre-election Tasks
 
-`pip install pandoc`
+### Enable Candidate Leaderboard
 
-If `pypandoc` does not install via `pip`, visit https://pypi.org/project/pypandoc/ for further instructions. 
-
-# Sentry Error Reporting
-
-Sentry is used to report errors in production. We have added a url for `sentry-debug` to the `urls.py` file. This is to allow us verify that Sentry is configured correctly and working in production.
-
-```
-
-# Pre-election Tasks
-
-# Enable Candidate Leaderboard
-
-The candidate leaderboard is a way of showing the most active candidates on the site. It is a way of encouraging volunteers to add more information about candidates and elections.
+The candidate leaderboard shows the most active contributors to the site.
+It is a way of encouraging volunteers to add more information about candidates and elections.
 
 We take a slice of edits in YNR and assign them to a election leaderboard. 
-
-This is defined here: https://github.com/DemocracyClub/yournextrepresentative/blob/master/ynr/apps/candidates/views/mixins.py#L20
+This is defined in [`ynr/apps/candidates/views/mixins.py`](ynr/apps/candidates/views/mixins.py#L20).
 
 We can modify the old value to reflect the current election. Change, PR, merge, [currently Sym needs to deploy]
 
-If this is a General Election, the parliamentary candidates can be imported using a google sheet csv url with `python manage candidatebot_import_next_ppcs --sheet-url SHEET_URL`
+If this is a General Election, the parliamentary candidates can be imported using a google sheet csv url with:
+```
+podman compose up -d dbpqsl
+./scripts/container.run.bash python manage candidatebot_import_next_ppcs --sheet-url SHEET_URL
+podman compose down
+```

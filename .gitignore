@@ -20,7 +20,7 @@ ynr/assets/*
 .pytest_cache
 *.css.map
 test-results
-env/
+/env/*.env
 node_modules/
 .vscode/
 /test-env

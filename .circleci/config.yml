@@ -147,6 +147,41 @@ jobs:
           event: fail
           template: basic_fail_1
 
+  container_build:
+    working_directory: ~/repo
+    docker:
+      - image: cimg/base:current
+      - image: cimg/postgres:16.4
+        name: dbpsql
+        environment:
+          POSTGRES_USER: ynr
+          POSTGRES_DB: ynr
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build container images
+          command: |
+            ./scripts/container.image.build.bash prod
+            ./scripts/container.image.build.bash test
+      - run:
+          name: Check that compose is happy
+          command: |
+            docker compose config
+            # No-op, due to a shared layer cache with earlier image builds.
+            docker compose build
+      - run:
+          name: Run app tests
+          command: |
+            net="$(docker network inspect $(docker network ls -q -f "label=task-network") --format '{{.Name}}')"
+            docker run -it --rm \
+              --net="$net" \
+              -e PGHOST=dbpsql \
+              -e CIRCLECI=true \
+              \
+              ynr:test \
+              pytest -x
 
 workflows:
   test_build_deploy:
@@ -157,3 +192,6 @@ workflows:
         - build_and_test
         filters: { branches: { only: [ main, master, deployment-upgrades] } }
         context: [ deployment-production-ynr, slack-secrets ]
+  container:
+    jobs:
+    - container_build

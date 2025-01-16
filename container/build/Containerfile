@@ -1,0 +1,114 @@
+###########################################################################
+## Production image #######################################################
+###########################################################################
+FROM public.ecr.aws/lts/ubuntu:20.04 AS prod
+
+#########################
+## Build-time arguments #
+#########################
+# Increase this arbitary number to force all image layers to be rebuilt.
+# This is designed to invalidate the layer cache inside CI, not locally.
+ARG invalidate_all_cached_layers=202412030000
+# Base path for the app install build process.
+ARG APP_ROOT=/dc/ynr
+# Path for the app's virtualenv.
+ARG APP_VENV=$APP_ROOT/venv
+# Path for the app's code.
+ARG APP_CODE=$APP_ROOT/code
+
+########################
+## System dependencies #
+########################
+ARG DEBIAN_FRONTEND=noninteractive
+# Copy system dependency manifest into the container image.
+COPY container/build/system-packages /tmp/apt-packages
+# Install dependencies.
+RUN date \
+ && apt update \
+ && </tmp/apt-packages xargs apt install --no-install-suggests --assume-yes \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* \
+ && date
+
+######################
+## Node dependencies #
+######################
+ARG NODE_ENV=production
+ENV NODE_ENV=$NODE_ENV
+# Copy node dependency manifests into the container image.
+COPY package.json package-lock.json $APP_CODE/
+# Install dependencies.
+# The version of npm we currently use doesn't appear to offer any way to make
+# "npm ci" install the devDependencies (which include the "gulp" command that's
+# required later in this build) when NODE_ENV="production". We fix this by
+# overriding NODE_ENV for these npm commands. Whilst "npm cache clean" might
+# not require the same value, we keep it aligned in case it has some effect
+# (e.g. maybe the cache location is env-specific, etc).
+RUN date \
+ && export NODE_ENV=development \
+ && cd $APP_CODE/ \
+ && npm ci \
+ && npm cache clean --force \
+ && date
+
+########################
+## Python dependencies #
+########################
+# Set up a virtualenv to avoid interactions with system packages.
+# Install a common pre-req.
+RUN date \
+ && python -m venv $APP_VENV \
+ && $APP_VENV/bin/pip install --upgrade pip wheel \
+ && date
+# Use the virtualenv without explicit activation.
+ENV PATH="$APP_VENV/bin:$PATH"
+# Copy dependency manifests into the container image.
+COPY requirements.txt $APP_CODE/
+COPY requirements/    $APP_CODE/requirements/
+# Install dependencies.
+# Instruct pip not to use a cache directory to inprove container-image-level
+# cache effectiveness.
+RUN date \
+ && pip install --no-cache-dir -r $APP_CODE/requirements/sopn_parsing.txt \
+ && date
+
+#############
+## App code #
+#############
+# Copy the client-side directory "." (the build context passed to the build
+# command) into the container image, obeying the inclusions & exclusions
+# encoded in the ./.dockerignore file.
+COPY . $APP_CODE/
+# Set the working directory for the container entrypoint.
+WORKDIR $APP_CODE
+
+###########
+## Checks #
+###########
+# Invoke a lightweight, post-build test that proves the container reaches a
+# baseline level of correctness, whilst also generating .pyc files for faster
+# app startup.
+RUN DJANGO_SECRET_KEY=insecure python manage.py check
+
+###########
+## Assets #
+###########
+RUN date \
+ && npm run build \
+ && DJANGO_SECRET_KEY=insecure python manage.py collectstatic --no-input \
+ && date
+
+###########################################################################
+## Testing image ##########################################################
+###########################################################################
+FROM prod AS test
+
+# Base path for the app install build process.
+ARG APP_ROOT=/dc/ynr
+# Path for the app's code.
+ARG APP_CODE=$APP_ROOT/code
+
+# Install additional test dependencies.
+RUN date \
+ && pip install --no-cache-dir -r $APP_CODE/requirements/testing.txt \
+ && date
