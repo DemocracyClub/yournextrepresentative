@@ -12,6 +12,7 @@ const paths = {
     foundation_js: [`${foundationDir}/scss/*`,`${foundationDir}/scss/*/**`,]
 };
 
+const output_root = './vendor_assets'
 
 
 function jquery_js() {
@@ -19,7 +20,7 @@ function jquery_js() {
         `${jqueryDir}/dist/jquery.js`,
     ];
     return gulp.src(paths)
-        .pipe(gulp.dest('ynr/assets/js/'))
+        .pipe(gulp.dest(output_root + '/js/'))
 }
 
 function select2_js() {
@@ -27,7 +28,7 @@ function select2_js() {
         `${select2Dir}/dist/js/select2.full.js`,
     ];
     return gulp.src(paths)
-        .pipe(gulp.dest('ynr/assets/js/'))
+        .pipe(gulp.dest(output_root + '/js/'))
 }
 
 function select2_css() {
@@ -35,7 +36,7 @@ function select2_css() {
         `${select2Dir}/dist/css/select2.css`,
     ];
     return gulp.src(paths)
-        .pipe(gulp.dest('ynr/assets/scss/'))
+        .pipe(gulp.dest(output_root + '/scss/'))
 }
 
 function foundation_js() {
@@ -44,13 +45,13 @@ function foundation_js() {
     ];
     return gulp.src(paths)
         .pipe(concat('foundation.js'))
-        .pipe(gulp.dest('ynr/assets/js/'))
+        .pipe(gulp.dest(output_root + '/js/'))
 }
 
 function foundation_scss() {
     var paths = [`${foundationDir}/scss/*`,`${foundationDir}/scss/*/**`,];
     return gulp.src(paths)
-        .pipe(gulp.dest('ynr/assets/scss/'))
+        .pipe(gulp.dest(output_root + '/scss/'))
 }
 
 function sorttable_js() {
@@ -59,7 +60,7 @@ function sorttable_js() {
     ];
     return gulp.src(paths)
         .pipe(convertEncoding({from: 'iso-8859-15', to: 'utf8'}))
-        .pipe(gulp.dest('ynr/assets/js/'))
+        .pipe(gulp.dest(output_root + '/js/'))
 }
 
 exports.default = gulp.series(

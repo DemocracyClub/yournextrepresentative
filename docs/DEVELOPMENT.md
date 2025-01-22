@@ -38,8 +38,6 @@ a containerised database as follows:
    `podman compose up -d`
 1. (In a separate terminal) Start tailing the stack's logs:
    `podman compose logs --follow` (you can safely CTRL-C this process at any time).
-1. Build some required JS resources in the running frontend container:
-   `./scripts/container.exec.bash npm run build`
 1. (**If your active `ynr/settings/...` file does NOT include `DEBUG = True`**) \
    Collect the static assets:
    `./scripts/container.manage-py.bash collectstatic --no-input`

@@ -79,6 +79,14 @@ RUN date \
 # command) into the container image, obeying the inclusions & exclusions
 # encoded in the ./.dockerignore file.
 COPY . $APP_CODE/
+# Create the empty directory that will hold the intermediate static assets
+# output by `npm run build` and consumed by `collectstatic`. It is deliberately
+# /not/ bind-mounted during local development so that the developer doesn't
+# need to re-run `npm run build` after container startup, and isn't included as
+# an empty directory in the repository so as not to give the false impression
+# that the dev-visible directory will be populated by some containerised
+# process.
+RUN mkdir $APP_CODE/vendor_assets/
 # Set the working directory for the container entrypoint.
 WORKDIR $APP_CODE
 

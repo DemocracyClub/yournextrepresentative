@@ -1,0 +1,14 @@
+This empty directory is only present in the repository temporarily (whilst the
+app is being containerised) to ensure the directory exists for the
+/non/-containerised (i.e. production) environment.
+
+It is created explicitly in container/build/Containerfile, therefore this
+directory can be removed when the containerised app has replaced the current
+VM-based setup in all environments.
+
+As per the comment in container/build/Containerfile, don't expect this
+directory to accumulate or expose CSS or JS assets during local development.
+This directory is deliberately *not* bind-mounted into the running container,
+which means that any in-container processes (e.g. gulp; collectstatic) that use
+it will have an effect inside the container only - their changes won't be
+visible outside the container.
