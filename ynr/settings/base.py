@@ -225,7 +225,7 @@ SOPN__MATCHER_PATH = (
 STATIC_URL = "/static/"
 STATIC_ROOT = root("static")
 STATICFILES_DIRS = (
-    os.path.abspath(os.path.join(PROJECT_ROOT, "assets")),
+    os.path.abspath(os.path.join(BASE_DIR, "vendor_assets")),
     SOPN__MATCHER_PATH / "dist" / "assets",
 )
 
@@ -317,7 +317,9 @@ PIPELINE = {
     "YUI_JS_ARGUMENTS": "--nomunge",
 }
 
-SASS_INCLUDE_PATHS = (root("assets/scss/"),)
+SASS_INCLUDE_PATHS = (
+    os.path.abspath(os.path.join(BASE_DIR, "vendor_assets/scss")),
+)
 SASS_ARGUMENT_LIST = ["-I " + p for p in SASS_INCLUDE_PATHS]
 SASS_ARGUMENT_LIST.append("--style compressed")
 PIPELINE["SASS_ARGUMENTS"] = " ".join(SASS_ARGUMENT_LIST)

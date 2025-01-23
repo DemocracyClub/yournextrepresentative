@@ -5,7 +5,7 @@ __pycache__
 /static
 ynr/static/*
 ynr/media/*
-ynr/assets/*
+/vendor_assets/*
 !.gitkeep
 /ynr/apps/candidates/static/candidates/style.css
 /ynr/apps/elections/*/static/candidates/style.css
