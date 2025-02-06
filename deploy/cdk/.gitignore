@@ -1,0 +1,12 @@
+# Entries added by the CDK
+*.swp
+__pycache__
+.pytest_cache
+*.egg-info
+
+# The CDK asset staging directory
+/.cdk.staging
+# The venv used when we interact with the CDK
+/venv
+# The CDK's generated output
+/out

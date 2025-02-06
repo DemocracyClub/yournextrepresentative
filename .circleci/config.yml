@@ -183,6 +183,30 @@ jobs:
               ynr:test \
               pytest -x
 
+  cdk_test:
+    docker:
+      - image: cimg/python:3.8.15-node
+    working_directory: ~/repo/
+    steps:
+      - checkout
+      - run:
+          name: Create CDK venv and install Python and Node dependencies
+          command: |
+            python -m venv ./deploy/cdk/venv
+            . ./deploy/cdk/venv/bin/activate
+            pip install -r ./deploy/cdk/requirements.txt
+            npm install --save=false ./deploy/cdk
+      - run:
+          name: Check that CDK stacks synthesise
+          command: |
+            . ./deploy/cdk/venv/bin/activate
+            npx cdk synth
+      - run:
+          name: Run CDK tests
+          command: |
+            . ./deploy/cdk/venv/bin/activate
+            pytest ./deploy/cdk
+
 workflows:
   test_build_deploy:
     jobs:
@@ -195,3 +219,6 @@ workflows:
   container:
     jobs:
     - container_build
+  cdk:
+    jobs:
+    - cdk_test
