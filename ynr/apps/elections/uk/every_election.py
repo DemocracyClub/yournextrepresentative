@@ -366,7 +366,23 @@ class EveryElectionImporter(object):
         params = urlencode(OrderedDict(sorted(self.query_args.items())))
         return f"{self.url}?{params}"
 
-    def build_election_tree(self, deleted=False):
+    def url_to_election_tree(self, url: str, counter: int = 0):
+        while url:
+            req = requests.get(url)
+            req.raise_for_status()
+            data = req.json()
+            total = data["count"]
+
+            for result in data["results"]:
+                election_id = result["election_id"]
+                self.election_tree[election_id] = EEElection(result)
+                counter += 1
+            if counter:
+                print(f"Added {counter} of {total}")
+            url = data.get("next")
+        return self.election_tree
+
+    def build_election_tree(self, deleted=False) -> dict:
         """
         Get all current elections from Every Election and build them in to
         a tree of IDs
@@ -379,49 +395,36 @@ class EveryElectionImporter(object):
             data = req.json()
             election_id = data["election_id"]
             self.election_tree[election_id] = EEElection(data)
-        else:
-            # First pass: just get elections
-            self.query_args["identifier_type"] = "election"
+            return self.election_tree
+
+        if "modified" in self.query_args:
             url = self.build_url_with_query_args()
-            total = None
-            seen = 0
-            print("Importing elections")
-            while url:
-                req = requests.get(url)
-                req.raise_for_status()
-                data = req.json()
-                total = data["count"]
+            return self.url_to_election_tree(url)
 
-                for result in data["results"]:
-                    election_id = result["election_id"]
-                    self.election_tree[election_id] = EEElection(result)
-                    seen += 1
-                print(f"Added {seen} of {total}")
-                url = data.get("next")
-            # Second pass: get the children
-            print("Importing ballots")
-            for election_id, election in self.election_tree.copy().items():
-                if not settings.RUNNING_TESTS:
-                    sleep(1)
-                for child in election["children"]:
-                    parts = child.split(".")
-                    date = parts.pop(-1)
-                    parent_prefix = ".".join(parts[:2])
+        # First pass: just get elections
+        self.query_args["identifier_type"] = "election"
+        url = self.build_url_with_query_args()
+        print(url)
+        print("Importing elections")
+        self.url_to_election_tree(url)
 
-                    url = urljoin(
-                        self.EE_BASE_URL,
-                        f"api/elections/?poll_open_date={date}&election_id_regex={parent_prefix}",
-                    )
-                    if deleted:
-                        url = f"{url}&deleted=1"
-                    while url:
-                        req = requests.get(url)
-                        req.raise_for_status()
-                        data = req.json()
-                        for result in data["results"]:
-                            election_id = result["election_id"]
-                            self.election_tree[election_id] = EEElection(result)
-                        url = data.get("next")
+        # Second pass: get the children
+        print("Importing ballots")
+        for election_id, election in self.election_tree.copy().items():
+            if not settings.RUNNING_TESTS:
+                sleep(1)
+            for child in election["children"]:
+                parts = child.split(".")
+                date = parts.pop(-1)
+                parent_prefix = ".".join(parts[:2])
+                url = urljoin(
+                    self.EE_BASE_URL,
+                    f"api/elections/?poll_open_date={date}&election_id_regex={parent_prefix}",
+                )
+                if deleted:
+                    url = f"{url}&deleted=1"
+                self.url_to_election_tree(url)
+        return self.election_tree
 
     @property
     def ballot_ids(self):
