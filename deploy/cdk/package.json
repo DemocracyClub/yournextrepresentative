@@ -1,0 +1,9 @@
+{
+  "name": "democracy-club-ynr-deploy-cdk",
+  "version": "0.0.1",
+  "license": "AGPL-3.0-only",
+  "dependencies": {
+    "aws-cdk": "^2.178.0",
+    "cdk": "^2.178.0"
+  }
+}
