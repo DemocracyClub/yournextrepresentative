@@ -31,13 +31,19 @@ class YnrStack(Stack):
             "YnrService",
             cluster=cluster,
             assign_public_ip=True,
-            cpu=512,
-            memory_limit_mib=1024,
+            cpu=1024,
+            memory_limit_mib=2048,
             desired_count=2,
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
                 image=ecs.ContainerImage.from_registry(
-                    "amazon/amazon-ecs-sample"
-                )
+                    "public.ecr.aws/h3q9h5r7/dc-test/ynr"
+                ),
+                environment={
+                    "DJANGO_SETTINGS_MODULE": "ynr.settings.deploy",
+                    "YNR_DJANGO_SECRET_KEY": "insecure",
+                    "YNR_DEBUG": "True",
+                    "YNR_DJANGO_LOG_LEVEL": "DEBUG",
+                },
             ),
             public_load_balancer=True,
         )

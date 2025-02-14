@@ -15,7 +15,6 @@ services:
         required: false
     environment:
       PGHOST: dbpsql
-      PORT: 8080
     volumes:
       - ./ynr/:/dc/ynr/code/ynr/
       - ./data/:/dc/ynr/code/data/
@@ -29,7 +28,7 @@ services:
       - ./package-lock.json:/dc/ynr/code/package-lock.json
       - ./pyproject.toml:/dc/ynr/code/pyproject.toml
     ports:
-      - "8080:8080"
+      - "8080:80"
     depends_on:
       dbpsql:
         condition: service_healthy
