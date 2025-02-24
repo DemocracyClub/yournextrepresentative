@@ -54,11 +54,11 @@ RUN date \
 ########################
 ## Python dependencies #
 ########################
-# Set up a virtualenv to avoid interactions with system packages.
-# Install a common pre-req.
+# Set up a virtualenv to avoid interactions with system packages,
+# and install/upgrade some common pre-reqs.
 RUN date \
  && python -m venv $APP_VENV \
- && $APP_VENV/bin/pip install --upgrade pip wheel \
+ && $APP_VENV/bin/pip install --upgrade pip wheel setuptools \
  && date
 # Use the virtualenv without explicit activation.
 ENV PATH="$APP_VENV/bin:$PATH"
