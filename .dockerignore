@@ -20,13 +20,18 @@
 !/package-lock.json
 !/pyproject.toml
 
-# Paths overriding early re-inclusions.
+# Paths overriding earlier re-inclusions.
+
 # The content inside /ynr/media/ is bind-mounted into the container when
 # running as part of a compose stack, as part of the bind-mount of its parent,
 # /ynr/. However its contents *should not* be statically copied into the
 # container image because they're either irrelevant/empty (in non-development
 # environments), or potentially very large (in development environments).
 /ynr/media/
+# Whilst we're developing this image locally, this file mustn't be included in
+# the image. Later, when the image is managed in CI, this file won't exist (as
+# it's gitignored), and this line might be deleted.
+/ynr/settings/local.py
 
 # Paths that don't need to be part of the image, but also need not to be
 # excluded when explicitly referenced by build-time COPY and ADD commands.
