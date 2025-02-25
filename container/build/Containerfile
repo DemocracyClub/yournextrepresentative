@@ -89,6 +89,11 @@ COPY . $APP_CODE/
 RUN mkdir $APP_CODE/vendor_assets/
 # Set the working directory for the container entrypoint.
 WORKDIR $APP_CODE
+# Set the default but overridable port that the default command listens on.
+ENV PORT=80
+# Set the default but overridable command the container executes on startup.
+ENTRYPOINT ["gunicorn"]
+CMD ["ynr.wsgi"]
 
 ###########
 ## Checks #
