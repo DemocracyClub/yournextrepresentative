@@ -145,7 +145,7 @@ class TestBallotView(
         response = self.app.get(future_ballot.get_absolute_url())
 
         self.assertEqual(
-            future_ballot.expected_sopn_date, datetime.date(2024, 9, 11)
+            future_ballot.expected_sopn_date, datetime.date(2024, 9, 10)
         )
         self.assertFalse(future_ballot.candidates_locked)
         self.assertEqual(response.context["candidates"].count(), 9)
@@ -159,7 +159,7 @@ class TestBallotView(
 
         expected_notice = """
             <p>
-                These candidates will not be confirmed until the council publishes the official candidate list on 11 September 2024. 
+                These candidates will not be confirmed until the council publishes the official candidate list on 10 September 2024. 
                 Once nomination papers are published, we will manually verify each candidate.
             </p>
             """
