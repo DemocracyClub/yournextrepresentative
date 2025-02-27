@@ -223,6 +223,8 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                             pk=int(data["select_person"])
                         )
 
+                    self.set_person_fields(data, person)
+
                     # TODO check about updating PartyDescription here
                     # Update the person's candacies
                     helpers.update_person(
@@ -236,6 +238,16 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
 
         url = self.get_election().get_absolute_url()
         return HttpResponseRedirect(url)
+
+    def set_person_fields(self, data, person):
+        fields_to_update = [
+            "biography",
+            "gender",
+            "birth_date",
+        ]
+        for field in fields_to_update:
+            if data.get(field):
+                setattr(person, field, data[field])
 
     def form_invalid(self):
         context = self.get_context_data()
