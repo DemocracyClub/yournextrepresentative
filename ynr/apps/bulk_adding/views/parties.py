@@ -121,8 +121,14 @@ class BulkAddPartyView(BasePartyBulkAddView):
                 self.request.POST, **form_kwargs
             )
 
+            identifiers_formset = PersonIdentifierFormsetFactory(
+                self.request.POST, **form_kwargs
+            )
+            cleaned_data = (
+                formset.cleaned_data + identifiers_formset.cleaned_data
+            )
             session_data["post_data"].append(
-                {"ballot_pk": ballot.pk, "data": formset.cleaned_data}
+                {"ballot_pk": ballot.pk, "data": cleaned_data}
             )
         self.request.session["bulk_add_by_party_data"] = session_data
         self.request.session.save()
@@ -223,6 +229,8 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                             pk=int(data["select_person"])
                         )
 
+                        self.set_person_fields(data, person)
+
                     # TODO check about updating PartyDescription here
                     # Update the person's candacies
                     helpers.update_person(
@@ -236,6 +244,16 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
 
         url = self.get_election().get_absolute_url()
         return HttpResponseRedirect(url)
+
+    def set_person_fields(self, data, person):
+        fields_to_update = [
+            "biography",
+            "gender",
+            "birth_date",
+        ]
+        for field in fields_to_update:
+            if data.get(field):
+                setattr(person, field, data[field])
 
     def form_invalid(self):
         context = self.get_context_data()
