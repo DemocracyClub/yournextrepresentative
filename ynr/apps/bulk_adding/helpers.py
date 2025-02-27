@@ -10,8 +10,12 @@ from popolo.models import Membership
 
 
 def add_person(request, person_data):
-    person = Person.objects.create(name=person_data["name"])
-
+    person = Person.objects.create(
+        name=person_data["name"],
+        biography=person_data.get("biography", ""),
+        gender=person_data.get("gender", ""),
+        birth_date=person_data.get("birth_date", ""),
+    )
     change_metadata = get_change_metadata(request, person_data["source"])
 
     person.record_version(change_metadata, new_person=True)

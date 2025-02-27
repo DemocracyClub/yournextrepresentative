@@ -102,7 +102,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/bulk_adding/party/parl.2015-05-07/PP52/", user=self.user
         ).forms[1]
 
-        self.assertEqual(len(form.fields), 25)
+        self.assertEqual(len(form.fields), 43)
 
         form["source"] = "https://example.com/candidates/"
         form["{}-0-name".format(ballot.pk)] = "Pemphero Pasternak"
@@ -120,14 +120,52 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response = form.submit().follow()
 
         # We should have a new person and membership
-        self.assertTrue(
+        self.assertEqual(
             ballot.post.memberships.first().person.name, "Pemphero Pasternak"
         )
 
-        # We should have a new person and membership
-        self.assertTrue(
-            ballot.post.memberships.first().person.name, "Pemphero Pasternak"
+        # We should have created 2 logged actions, one for person-create
+        # and one for person-update (adding the membership)
+        self.assertEqual(LoggedAction.objects.count(), 2)
+
+    def test_submit_name_and_demographic_details_for_area(self):
+        ballot = self.election.ballot_set.first()
+        ballot.winner_count = 3
+        ballot.save()
+        # Make sure we have no people or logged actions
+        self.assertEqual(ballot.post.memberships.count(), 0)
+        self.assertEqual(LoggedAction.objects.count(), 0)
+
+        form = self.app.get(
+            "/bulk_adding/party/parl.2015-05-07/PP52/", user=self.user
+        ).forms[1]
+
+        self.assertEqual(len(form.fields), 43)
+
+        form["source"] = "https://example.com/candidates/"
+        form["{}-0-name".format(ballot.pk)] = "Pemphero Pasternak"
+        form["{}-0-biography".format(ballot.pk)] = "Foo"
+        form["{}-0-gender".format(ballot.pk)] = "male"
+        form["{}-0-birth_date".format(ballot.pk)] = 1987
+
+        response = form.submit().follow()
+
+        self.assertContains(
+            response, '<label>Add a new profile "Pemphero Pasternak"</label>'
         )
+
+        form = response.forms[1]
+        # Now submit the valid form
+        with self.assertNumQueries(FuzzyInt(49, 54)):
+            form["{}-0-select_person".format(ballot.pk)] = "_new"
+            response = form.submit().follow()
+
+        # We should have a new person with demographic details and membership
+        new_person = ballot.post.memberships.first().person
+        self.assertEqual(new_person.name, "Pemphero Pasternak")
+        self.assertEqual(new_person.biography, "Foo")
+        self.assertEqual(new_person.gender, "male")
+        self.assertEqual(new_person.birth_date, "1987")
 
         # We should have created 2 logged actions, one for person-create
         # and one for person-update (adding the membership)
