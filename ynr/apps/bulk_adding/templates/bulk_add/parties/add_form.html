@@ -37,6 +37,12 @@
                   </tr>
                 {% endif %}
                 {% endfor %}
+              <tr>
+                <th>Links and social media:</th>
+              </tr>
+              <tr>
+                <td>{% include "people/forms/person_identifier_inline_formset.html" with identifiers_formset=post_info.identifiers_formset %}<td>
+              </tr>
               {% if election_obj.party_lists_in_use %}
               <tr>
                 <th>{{ form.party_list_position.label }}</th>

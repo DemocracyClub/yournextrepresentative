@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.views.generic import FormView, TemplateView
 from elections.models import Election
 from parties.models import Party
+from people.forms.formsets import PersonIdentifierFormsetFactory
 from people.models import Person
 from popolo.models import Membership
 
@@ -87,13 +88,20 @@ class BulkAddPartyView(BasePartyBulkAddView):
                 formset = forms.BulkAddByPartyFormset(
                     self.request.POST, **form_kwargs
                 )
+                identifiers_formset = PersonIdentifierFormsetFactory(
+                    self.request.POST, **form_kwargs
+                )
             else:
                 formset = forms.BulkAddByPartyFormset(**form_kwargs)
+                identifiers_formset = PersonIdentifierFormsetFactory(
+                    **form_kwargs,
+                )
 
             post_info = {
                 "ballot": ballot,
                 "existing": existing,
                 "formset": formset,
+                "identifiers_formset": identifiers_formset,
             }
             posts.append(post_info)
 
