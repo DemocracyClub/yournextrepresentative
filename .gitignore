@@ -32,3 +32,7 @@ node_modules/
 deploy/.vault_pass.txt
 deploy/.env
 .dev
+
+# CDK
+## This accumulates semi-secret info. Ignore for now.
+cdk.context.json
