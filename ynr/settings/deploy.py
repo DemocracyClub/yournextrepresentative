@@ -1,5 +1,6 @@
-from .base_from_environment import *
 import os
+
+from .base_from_environment import *  # noqa
 
 # TODO: constrain the values allowed in the env.
 DEBUG = os.getenv("YNR_DEBUG", False)
@@ -26,3 +27,10 @@ LOGGING = {
         },
     },
 }
+
+# FIXME: remove DummyCache.
+CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
+
+# Certain errors are very noisy (obscuring the real problem) if this list is
+# empty. FIXME: figure out a principled fix to this issue.
+ADMINS = [("Dummy Admin", "dummy@example.com")]
