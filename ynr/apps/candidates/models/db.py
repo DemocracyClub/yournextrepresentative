@@ -240,7 +240,7 @@ class LoggedAction(models.Model):
                 desc = f"""reverted to an earlier version of <a href="{url}">candidate #{self.person.id}</a>"""
             if self.action_type == ActionType.CANDIDACY_CREATE:
                 desc = f"""confirmed candidacy for <a href="{url}">candidate #{self.person.id}</a>"""
-            if self.action_type == ActionType.CANDIDACY_CREATE:
+            if self.action_type == ActionType.CANDIDACY_DELETE:
                 desc = f"""removed candidacy for <a href="{url}">candidate #{self.person.id}</a>"""
             if self.action_type == ActionType.DUPLICATE_SUGGEST:
                 desc = f"""Suggested a duplicate of <a href="{url}">{self.person.name}</a>"""
