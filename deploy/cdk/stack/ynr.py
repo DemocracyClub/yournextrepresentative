@@ -2,6 +2,8 @@ from aws_cdk import Stack
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
+from aws_cdk import aws_kms as kms
+from aws_cdk import aws_ssm as ssm
 from constructs import Construct
 
 
@@ -37,7 +39,22 @@ class YnrStack(Stack):
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
                 image=ecs.ContainerImage.from_registry(
                     "amazon/amazon-ecs-sample"
-                )
+                ),
+                # Secrets aren't necessarily "secret", but are created as
+                # environment variables that are looked up at ECS task
+                # instantiation.
+                secrets={
+                    "DJANGO_SETTINGS_MODULE": ecs.Secret.from_ssm_parameter(
+                        ssm.StringParameter.from_string_parameter_name(
+                            self,
+                            "DSM",
+                            "/dc/ynr/dev/1/web/DJANGO_SETTINGS_MODULE",
+                        )
+                    )
+                },
+                environment={
+                    "YNR_DJANGO_SECRET_KEY": "insecure",
+                },
             ),
             public_load_balancer=True,
         )
