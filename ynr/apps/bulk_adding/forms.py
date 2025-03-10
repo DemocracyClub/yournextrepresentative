@@ -68,9 +68,9 @@ class BulkAddFormSet(BaseBulkAddFormSet):
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)
         kwargs["party_choices"] = self.parties
-        kwargs[
-            "previous_party_affiliations_choices"
-        ] = self.previous_party_affiliations_choices
+        kwargs["previous_party_affiliations_choices"] = (
+            self.previous_party_affiliations_choices
+        )
         return kwargs
 
     @property
@@ -246,6 +246,24 @@ class NameOnlyPersonForm(forms.Form):
     )
 
 
+class BulkAddByPartyForm(NameOnlyPersonForm):
+    biography = StrippedCharField(
+        label="Statement to Voters",
+        required=False,
+        widget=forms.Textarea(
+            attrs={"class": "person_biography"},
+        ),
+    )
+    gender = StrippedCharField(
+        label="Gender (e.g. “male”, “female”)", required=False
+    )
+    birth_date = forms.CharField(
+        label="Year of birth (a four digit year)",
+        required=False,
+        widget=forms.NumberInput,
+    )
+
+
 class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
     source = forms.CharField(required=True)
     party = PartyIdentifierField()
@@ -282,6 +300,18 @@ class ReviewSinglePersonNameOnlyForm(forms.Form):
         super().__init__(*args, **kwargs)
 
     name = StrippedCharField(
+        required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
+    )
+
+
+class ReviewBulkAddByPartyForm(ReviewSinglePersonNameOnlyForm):
+    biography = StrippedCharField(
+        required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
+    )
+    gender = StrippedCharField(
+        required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
+    )
+    birth_date = forms.CharField(
         required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
     )
 
@@ -344,7 +374,7 @@ class BaseBulkAddByPartyFormset(forms.BaseFormSet):
 
 
 BulkAddByPartyFormset = forms.formset_factory(
-    NameOnlyPersonForm,
+    BulkAddByPartyForm,
     extra=6,
     formset=BaseBulkAddByPartyFormset,
     can_delete=False,
@@ -382,7 +412,7 @@ class PartyBulkAddReviewFormSet(BaseBulkAddReviewFormSet):
 
 
 PartyBulkAddReviewNameOnlyFormSet = forms.formset_factory(
-    ReviewSinglePersonNameOnlyForm, extra=0, formset=PartyBulkAddReviewFormSet
+    ReviewBulkAddByPartyForm, extra=0, formset=PartyBulkAddReviewFormSet
 )
 
 
