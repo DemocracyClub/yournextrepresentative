@@ -243,6 +243,8 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
             ("https://uk.linkedin.com/in/first-last-57338a4/", True),
             ("https://ie.linkedin.com/in/first-last-57338a4/", True),
             ("https://ie.linkedin.com/in/first-last-57338a4", True),
+            ("www.linkedin.com/in/first-last-57338a4", True),
+            ("linkedin.com/in/first-last-57338a4", True),
         )
         for url, valid in urls_to_valid:
             with self.subTest(url=url, value=valid):
