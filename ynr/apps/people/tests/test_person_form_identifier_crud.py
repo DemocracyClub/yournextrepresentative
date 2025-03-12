@@ -243,6 +243,8 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
             ("https://uk.linkedin.com/in/first-last-57338a4/", True),
             ("https://ie.linkedin.com/in/first-last-57338a4/", True),
             ("https://ie.linkedin.com/in/first-last-57338a4", True),
+            ("www.linkedin.com/in/first-last-57338a4", True),
+            ("linkedin.com/in/first-last-57338a4", True),
         )
         for url, valid in urls_to_valid:
             with self.subTest(url=url, value=valid):
@@ -256,6 +258,17 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
                         form[0].non_field_errors(),
                         ["Please enter a valid LinkedIn URL."],
                     )
+
+    def test_company_linkedin_urls(self):
+        resp = self._submit_values(
+            "https://www.linkedin.com/company/acme/", "linkedin_url"
+        )
+        form = resp.context["identifiers_formset"]
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form[0].non_field_errors(),
+            ["LinkedIn URL must be for a person, not a company."],
+        )
 
     def test_bad_email_address(self):
         resp = self._submit_values("whoops", "email")
