@@ -368,12 +368,7 @@ class BasePersonForm(forms.ModelForm):
             self.cleaned_data["biography"] = self.cleaned_data[
                 "biography"
             ].replace("\r", "")
-        return "\n\n".join(
-            [
-                line.replace("\n", " ")
-                for line in self.cleaned_data["biography"].split("\n\n")
-            ]
-        )
+        return self.cleaned_data["biography"]
 
     def save(self, commit=True, user=None):
         suggested_name = self.cleaned_data["name"]
