@@ -3,6 +3,7 @@ from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
 from aws_cdk import aws_ssm as ssm
+from aws_cdk import aws_kms as kms
 from constructs import Construct
 
 
@@ -27,6 +28,7 @@ class YnrStack(Stack):
 
         cluster = ecs.Cluster(self, "YnrCluster", vpc=vpc)
 
+
         ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
             "YnrService",
@@ -49,7 +51,15 @@ class YnrStack(Stack):
                             "DSM",
                             "/dc/ynr/dev/1/web/DJANGO_SETTINGS_MODULE",
                         )
-                    )
+                    ),
+                    "DATABASE_URL": ecs.Secret.from_ssm_parameter(
+                        ssm.StringParameter.from_secure_string_parameter_attributes(
+                            self,
+                            "DBURL",
+                            encryption_key=kms.Alias.from_alias_name(self, "SSMKey", "alias/aws/ssm"),
+                            parameter_name="/dc/ynr/dev/1/database_url",
+                        )
+                    ),
                 },
                 environment={
                     "YNR_DJANGO_SECRET_KEY": "insecure",
