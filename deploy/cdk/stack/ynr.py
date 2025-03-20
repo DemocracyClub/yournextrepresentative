@@ -27,6 +27,7 @@ class YnrStack(Stack):
         )
 
         cluster = ecs.Cluster(self, "YnrCluster", vpc=vpc)
+        encryption_key = kms.Alias.from_alias_name(self, "SSMKey", "alias/aws/ssm")
 
         ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
@@ -50,7 +51,31 @@ class YnrStack(Stack):
                             "DSM",
                             "/dc/ynr/dev/1/web/DJANGO_SETTINGS_MODULE",
                         )
-                    )
+                    ),
+                    "POSTGRES_USERNAME": ecs.Secret.from_ssm_parameter(
+                        ssm.StringParameter.from_secure_string_parameter_attributes(
+                            self,
+                            "DBUSER",
+                            encryption_key=encryption_key,
+                            parameter_name="/dc/ynr/dev/1/postgres_username",
+                        )
+                    ),
+                    "POSTGRES_PASSWORD": ecs.Secret.from_ssm_parameter(
+                        ssm.StringParameter.from_secure_string_parameter_attributes(
+                            self,
+                            "DBPASSWD",
+                            encryption_key=encryption_key,
+                            parameter_name="/dc/ynr/dev/1/postgres_password",
+                        )
+                    ),
+                    "POSTGRES_HOST": ecs.Secret.from_ssm_parameter(
+                        ssm.StringParameter.from_secure_string_parameter_attributes(
+                            self,
+                            "DBHOST",
+                            encryption_key=encryption_key,
+                            parameter_name="/dc/ynr/dev/1/postgres_host",
+                        )
+                    ),
                 },
                 environment={
                     "YNR_DJANGO_SECRET_KEY": "insecure",
