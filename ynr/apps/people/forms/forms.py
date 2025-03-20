@@ -364,15 +364,12 @@ class BasePersonForm(forms.ModelForm):
     )
 
     def clean_biography(self):
-        if self.cleaned_data["biography"].find("\r"):
-            self.cleaned_data["biography"] = self.cleaned_data[
-                "biography"
-            ].replace("\r", "")
+        bio = self.cleaned_data["biography"]
+        if bio.find("\r"):
+            bio = bio.replace("\r", "")
+        # Reduce > 2 newlines to 2 newlines
         return "\n\n".join(
-            [
-                line.replace("\n", " ")
-                for line in self.cleaned_data["biography"].split("\n\n")
-            ]
+            [line.strip() for line in bio.split("\n\n") if line.strip()]
         )
 
     def save(self, commit=True, user=None):
