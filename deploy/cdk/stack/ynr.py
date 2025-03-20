@@ -2,8 +2,8 @@ from aws_cdk import Stack
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
-from aws_cdk import aws_ssm as ssm
 from aws_cdk import aws_kms as kms
+from aws_cdk import aws_ssm as ssm
 from constructs import Construct
 
 
