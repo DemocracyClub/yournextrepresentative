@@ -137,6 +137,9 @@ def clean_linkedin_url(url):
         user_id = "".join(id_parts[::-1])
         path = f"/in/{name}-{user_id}/"
 
+    if path.startswith("/company/"):
+        raise ValueError("LinkedIn URL must be for a person, not a company.")
+
     if not path.startswith("/in/"):
         valid = False
 
