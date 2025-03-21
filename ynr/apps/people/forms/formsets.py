@@ -5,10 +5,23 @@ from people.forms.forms import PersonIdentifierForm, PersonMembershipForm
 from people.models import Person, PersonIdentifier
 from popolo.models import Membership
 
+
+class PersonIdentifierFormset(BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        if "ballot" in kwargs:
+            ballot = kwargs["ballot"]
+            kwargs["prefix"] = f"{ballot.pk}_" + self.get_default_prefix()
+
+            del kwargs["ballot"]
+
+        super().__init__(*args, **kwargs)
+
+
 PersonIdentifierFormsetFactory = forms.inlineformset_factory(
     Person,
     PersonIdentifier,
     form=PersonIdentifierForm,
+    formset=PersonIdentifierFormset,
     can_delete=True,
     widgets={
         "value_type": forms.Select(
