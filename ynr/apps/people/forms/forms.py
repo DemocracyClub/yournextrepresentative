@@ -105,6 +105,11 @@ class PersonIdentifierForm(forms.ModelForm):
         if not value_type:
             raise forms.ValidationError("Please select a link type.")
         if self.cleaned_data.get("value_type") in self.HTTP_IDENTIFIERS:
+            # Add https schema if missing
+            if not self.cleaned_data.get("value").startswith("http"):
+                self.cleaned_data["value"] = (
+                    f"https://{self.cleaned_data['value']}"
+                )
             URLValidator()(value=self.cleaned_data["value"])
         if (
             "value_type" in self.cleaned_data
