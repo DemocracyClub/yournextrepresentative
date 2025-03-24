@@ -27,6 +27,9 @@
           {% for form in post_info.formset %}
           <tr>
             <table class="table">
+              {% if form.errors %}
+                {{ form.errors }}
+              {% endif %}
                 {% for field in form %}
                 {% if not field.is_hidden %}
                   <tr>

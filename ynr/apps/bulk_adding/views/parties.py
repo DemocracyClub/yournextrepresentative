@@ -110,20 +110,27 @@ class BulkAddPartyView(BasePartyBulkAddView):
         )
         if not has_some_data:
             form.add_error(None, "Please enter at least one name")
-
         if not has_some_data or not form.is_valid():
             return self.render_to_response(self.get_context_data(form=form))
 
+        formsets = []
         session_data = {"source": form.cleaned_data["source"], "post_data": []}
+
         for ballot in qs:
             form_kwargs = {"ballot": ballot}
             formset = forms.BulkAddByPartyFormset(
                 self.request.POST, **form_kwargs
             )
+            formsets.append(formset)
 
-            session_data["post_data"].append(
-                {"ballot_pk": ballot.pk, "data": formset.cleaned_data}
-            )
+            if formset.is_valid():
+                session_data["post_data"].append(
+                    {"ballot_pk": ballot.pk, "data": formset.cleaned_data}
+                )
+
+        if not all(f.is_valid() for f in formsets):
+            return self.render_to_response(self.get_context_data(form=form))
+
         self.request.session["bulk_add_by_party_data"] = session_data
         self.request.session.save()
 
