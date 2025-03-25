@@ -170,3 +170,35 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # We should have created 2 logged actions, one for person-create
         # and one for person-update (adding the membership)
         self.assertEqual(LoggedAction.objects.count(), 2)
+
+    def test_submit_social_media_link_without_link_type(self):
+        ballot = self.election.ballot_set.first()
+        form = self.app.get(
+            "/bulk_adding/party/parl.2015-05-07/PP52/",
+            user=self.user_who_can_upload_documents,
+        ).forms[1]
+
+        form["source"] = "https://example.com/candidates/"
+
+        # Fill in the link field but don't select the link type
+        form[f"{ballot.pk}-0-name"] = "Pemphero Pasternak"
+        form[f"{ballot.pk}-0-person_identifier_0"] = "https://example.com"
+
+        response = form.submit()
+        self.assertContains(response, "Please select a link type")
+
+    def test_submit_social_media_link_type_without_link(self):
+        ballot = self.election.ballot_set.first()
+        form = self.app.get(
+            "/bulk_adding/party/parl.2015-05-07/PP52/",
+            user=self.user_who_can_upload_documents,
+        ).forms[1]
+
+        form["source"] = "https://example.com/candidates/"
+
+        # Select a link type but leave link field blank
+        form[f"{ballot.pk}-0-name"] = "Pemphero Pasternak"
+        form[f"{ballot.pk}-0-person_identifier_1"] = "mastodon_username"
+
+        response = form.submit()
+        self.assertContains(response, "Please enter a social media link")

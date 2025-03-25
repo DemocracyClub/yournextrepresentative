@@ -1,3 +1,4 @@
+from bulk_adding.fields import PersonIdentifierField
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
@@ -261,6 +262,10 @@ class BulkAddByPartyForm(NameOnlyPersonForm):
         label="Year of birth (a four digit year)",
         required=False,
         widget=forms.NumberInput,
+    )
+    person_identifier = PersonIdentifierField(
+        label="Links and social media",
+        required=False,
     )
 
 
