@@ -4,6 +4,7 @@ from dateutil.parser import parse
 from django.contrib.auth.models import User
 from django.db.models import Count, F
 from django.utils import timezone
+from elections.helpers import get_latest_charismatic_election_dates
 
 from ..models import LoggedAction
 
@@ -17,17 +18,17 @@ class ContributorsMixin(object):
                 timezone.now() - timedelta(days=7),
                 timezone.now(),
             ),
-            # (
-            #     "May 2024 Elections",
-            #     timezone.make_aware(parse("2024-03-01")),
-            #     timezone.make_aware(parse("2024-05-31")),
-            # ),
-            (
-                "Since the 4 July 2024 General Election Announcement",
-                timezone.make_aware(parse("2024-05-22")),
-                timezone.now(),
-            ),
         ]
+
+        for date in get_latest_charismatic_election_dates(2):
+            boards.append(
+                (
+                    date.strftime("%B %Y"),
+                    date - timedelta(days=60),
+                    date + timedelta(days=7),
+                ),
+            )
+
         if all_time:
             boards.insert(0, ("All Time", None, None))
 
