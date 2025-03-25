@@ -102,7 +102,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/bulk_adding/party/parl.2015-05-07/PP52/", user=self.user
         ).forms[1]
 
-        self.assertEqual(len(form.fields), 43)
+        self.assertEqual(len(form.fields), 79)
 
         form["source"] = "https://example.com/candidates/"
         form["{}-0-name".format(ballot.pk)] = "Pemphero Pasternak"
@@ -115,7 +115,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms[1]
         # Now submit the valid form
-        with self.assertNumQueries(FuzzyInt(49, 54)):
+        with self.assertNumQueries(FuzzyInt(49, 72)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
             response = form.submit().follow()
 
@@ -140,7 +140,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/bulk_adding/party/parl.2015-05-07/PP52/", user=self.user
         ).forms[1]
 
-        self.assertEqual(len(form.fields), 43)
+        self.assertEqual(len(form.fields), 79)
 
         form["source"] = "https://example.com/candidates/"
         form["{}-0-name".format(ballot.pk)] = "Pemphero Pasternak"
@@ -156,7 +156,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms[1]
         # Now submit the valid form
-        with self.assertNumQueries(FuzzyInt(49, 54)):
+        with self.assertNumQueries(FuzzyInt(49, 72)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
             response = form.submit().follow()
 
@@ -166,6 +166,53 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(new_person.biography, "Foo")
         self.assertEqual(new_person.gender, "male")
         self.assertEqual(new_person.birth_date, "1987")
+
+        # We should have created 2 logged actions, one for person-create
+        # and one for person-update (adding the membership)
+        self.assertEqual(LoggedAction.objects.count(), 2)
+
+    def test_submit_name_and_social_media_links_for_area(self):
+        ballot = self.election.ballot_set.first()
+        ballot.winner_count = 3
+        ballot.save()
+        # Make sure we have no people or logged actions
+        self.assertEqual(ballot.post.memberships.count(), 0)
+        self.assertEqual(LoggedAction.objects.count(), 0)
+
+        form = self.app.get(
+            "/bulk_adding/party/parl.2015-05-07/PP52/", user=self.user
+        ).forms[1]
+
+        self.assertEqual(len(form.fields), 79)
+
+        form["source"] = "https://example.com/candidates/"
+        form[f"{ballot.pk}-0-name"] = "Pemphero Pasternak"
+        form[f"{ballot.pk}-0-person_identifier_1_0"] = "https://example.com"
+        form[f"{ballot.pk}-0-person_identifier_1_1"] = "homepage_url"
+        form[f"{ballot.pk}-0-person_identifier_2_0"] = "pp@gmail.com"
+        form[f"{ballot.pk}-0-person_identifier_2_1"] = "email"
+        form[f"{ballot.pk}-0-person_identifier_3_0"] = (
+            "https://linkedin.com/in/pamphero"
+        )
+        form[f"{ballot.pk}-0-person_identifier_3_1"] = "linkedin_url"
+
+        response = form.submit().follow()
+
+        self.assertContains(
+            response, '<label>Add a new profile "Pemphero Pasternak"</label>'
+        )
+
+        form = response.forms[1]
+        # Now submit the valid form
+        with self.assertNumQueries(FuzzyInt(49, 72)):
+            form["{}-0-select_person".format(ballot.pk)] = "_new"
+            response = form.submit().follow()
+
+        # We should have a new person with demographic details and membership
+        new_person = ballot.post.memberships.first().person
+        self.assertEqual(new_person.name, "Pemphero Pasternak")
+        pids = new_person.tmp_person_identifiers.count()
+        self.assertEqual(pids, 3)
 
         # We should have created 2 logged actions, one for person-create
         # and one for person-update (adding the membership)
@@ -182,7 +229,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         # Fill in the link field but don't select the link type
         form[f"{ballot.pk}-0-name"] = "Pemphero Pasternak"
-        form[f"{ballot.pk}-0-person_identifier_0"] = "https://example.com"
+        form[f"{ballot.pk}-0-person_identifier_1_0"] = "https://example.com"
 
         response = form.submit()
         self.assertContains(response, "Please select a link type")
@@ -198,7 +245,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         # Select a link type but leave link field blank
         form[f"{ballot.pk}-0-name"] = "Pemphero Pasternak"
-        form[f"{ballot.pk}-0-person_identifier_1"] = "mastodon_username"
+        form[f"{ballot.pk}-0-person_identifier_1_1"] = "mastodon_username"
 
         response = form.submit()
         self.assertContains(response, "Please enter a social media link")
@@ -213,9 +260,9 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["source"] = "https://example.com/candidates/"
 
         form[f"{ballot.pk}-0-name"] = "Pemphero Pasternak"
-        form[f"{ballot.pk}-0-person_identifier_0"] = "https://example"
+        form[f"{ballot.pk}-0-person_identifier_1_0"] = "https://example"
 
-        form[f"{ballot.pk}-0-person_identifier_1"] = "homepage_url"
+        form[f"{ballot.pk}-0-person_identifier_1_1"] = "homepage_url"
 
         response = form.submit()
         self.assertContains(response, "Enter a valid URL")

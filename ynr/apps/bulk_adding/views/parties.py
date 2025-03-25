@@ -1,3 +1,5 @@
+import ast
+
 from braces.views import LoginRequiredMixin
 from bulk_adding import forms, helpers
 from django.db import transaction
@@ -6,7 +8,7 @@ from django.urls import reverse
 from django.views.generic import FormView, TemplateView
 from elections.models import Election
 from parties.models import Party
-from people.models import Person
+from people.models import Person, PersonIdentifier
 from popolo.models import Membership
 
 # Assume 5 winners if we have no other info.
@@ -231,6 +233,11 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                         )
 
                     self.set_person_fields(data, person)
+                    if data.get("person_identifiers"):
+                        pids_dict = ast.literal_eval(
+                            data.get("person_identifiers")
+                        )
+                        self.save_person_identifiers(pids_dict, person)
 
                     # TODO check about updating PartyDescription here
                     # Update the person's candacies
@@ -255,6 +262,15 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
         for field in fields_to_update:
             if data.get(field):
                 setattr(person, field, data[field])
+
+    def save_person_identifiers(self, pids_dict, person):
+        # TODO: Saving PIDs like this doesn't record a person version
+        for pid_type, pid in pids_dict.items():
+            PersonIdentifier.objects.update_or_create(
+                person=person,
+                value_type=pid_type,
+                defaults={"value": pid},
+            )
 
     def form_invalid(self):
         context = self.get_context_data()

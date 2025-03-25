@@ -263,10 +263,29 @@ class BulkAddByPartyForm(NameOnlyPersonForm):
         required=False,
         widget=forms.NumberInput,
     )
-    person_identifier = PersonIdentifierField(
+    person_identifier_1 = PersonIdentifierField(
         label="Links and social media",
         required=False,
     )
+    person_identifier_2 = PersonIdentifierField(
+        label="Links and social media",
+        required=False,
+    )
+    person_identifier_3 = PersonIdentifierField(
+        label="Links and social media",
+        required=False,
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # Combine the person identifier fields into one field and remove them
+        person_identifiers = {}
+        for i in range(1, 4):
+            identifier = cleaned_data.pop(f"person_identifier_{i}", None)
+            if identifier:
+                person_identifiers.update(identifier)
+        cleaned_data["person_identifiers"] = person_identifiers
+        return cleaned_data
 
 
 class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
@@ -318,6 +337,12 @@ class ReviewBulkAddByPartyForm(ReviewSinglePersonNameOnlyForm):
     )
     birth_date = forms.CharField(
         required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
+    )
+    person_identifiers = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(
+            attrs={"readonly": "readonly"},
+        ),
     )
 
 

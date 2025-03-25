@@ -83,6 +83,8 @@ class PersonIdentifierField(forms.MultiValueField):
         )
 
     def compress(self, data_list):
+        if not data_list:
+            return None
         pid = data_list[0]
         pid_type = data_list[1]
         # Validate URLs:
