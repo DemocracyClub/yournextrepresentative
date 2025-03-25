@@ -1,7 +1,10 @@
 import datetime
 from functools import update_wrapper
+from typing import List
 
 from candidates.models import Ballot
+from django.core.cache import cache
+from django.db.models import Count
 from django.utils import timezone
 
 
@@ -51,3 +54,36 @@ def four_weeks_before_election_date(election):
         election_date.day,
         tzinfo=datetime.timezone.utc,
     )
+
+
+def get_latest_charismatic_election_dates(count=5) -> List[datetime.date]:
+    """
+    Returns a list of dates that "charismatic" elections took place on.
+
+    This is typically a scheduled election date (e.g May elections).
+
+    Useful for presenting a list of major election dates.
+
+    As the data doesn't change very much, we cache it and set a long TTL.
+
+    """
+
+    key = f"charismatic_election_dates-{count}"
+    ttl = 60 * 60 * 24  # 1 day in seconds
+    result = cache.get(key)
+
+    if not result:
+        result = list(
+            Ballot.objects.exclude(ballot_paper_id__contains=".by.")
+            .order_by("-election__election_date")
+            .values("election__election_date")
+            .annotate(ballots=Count("ballot_paper_id", distinct=True))
+            .exclude(ballot_paper_id__startswith="local.city-of-london")
+            .filter(replaces=None)
+            .filter(ballots__gt=10)
+            .values_list("election__election_date", flat=True)[:count]
+        )
+
+        cache.set(key, result, ttl)
+
+    return result
