@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from candidates.models import Ballot
 from django import template
 from django.conf import settings
@@ -160,16 +158,6 @@ def current_election_stats(context):
             ).count(),
         }
         context["election_stats"] = stats
-
-        try:
-            election_date_obj = datetime.strptime(
-                election_date, "%Y-%m-%d"
-            ).date()
-            context["SHOW_SPREADSHEET_LINKS"] = (
-                election_date_obj > datetime.now().date()
-            )
-        except ValueError:
-            context["SHOW_SPREADSHEET_LINKS"] = False
 
     return context
 
