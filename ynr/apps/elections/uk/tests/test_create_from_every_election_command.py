@@ -1,4 +1,5 @@
 import datetime
+from copy import deepcopy
 from typing import Dict, List
 from unittest import mock
 from urllib.parse import parse_qs, urlencode, urljoin, urlparse
@@ -49,10 +50,10 @@ EE_BASE_URL = getattr(
 )
 
 
-def make_elections_url_with_params(params):
+def make_elections_url_with_params(params, path="/api/elections/"):
     base_url = urljoin(
         EE_BASE_URL,
-        "/api/elections/",
+        path,
     )
     return f"{base_url}?{urlencode(params)}"
 
@@ -84,13 +85,19 @@ def make_per_election_fixtures_from_pages(pages: List[Dict], deleted=False):
 
 
 def create_mock_with_fixtures(
-    params: dict, parents, ballot_pages, deleted=None
+    params: dict,
+    parents,
+    ballot_pages,
+    deleted=None,
+    modified=False,
+    extra_urls=None,
 ):
     fixtures = {}
     if not deleted:
         deleted = no_results
     params.update(exclude_ref_regex_param)
-    params["identifier_type"] = "election"
+    if not modified:
+        params["identifier_type"] = "election"
     parent_url = make_elections_url_with_params(params)
 
     fixtures[parent_url] = parents
@@ -110,6 +117,13 @@ def create_mock_with_fixtures(
     fixtures.update(
         make_per_election_fixtures_from_pages([deleted], deleted=True)
     )
+
+    for params, fixture in extra_urls or []:
+        if election_id := params.get("election_id", None):
+            url = make_elections_url_with_params(
+                {}, f"/api/elections/{election_id}"
+            )
+            fixtures[url] = fixture
 
     def mock(url):
         url_params = parse_qs(urlparse(url).query)
@@ -594,6 +608,39 @@ class EE_ImporterTest(WebTest):
 
         call_command("uk_create_elections_from_every_election")
         self.assertEqual(Ballot.objects.all().count(), 2)
+
+    @patch("elections.uk.every_election.requests")
+    @patch(
+        "elections.uk.management.commands.uk_create_elections_from_every_election.Command.get_latest_ee_modified_datetime"
+    )
+    @freeze_time("2018-02-02")
+    def test_get_parent_when_missing_from_tree(
+        self, ee_modified_datetime, mock_requests
+    ):
+        ee_modified_datetime.return_value = datetime.datetime(
+            year=2018, month=2, day=2
+        )
+        self.assertEqual(Ballot.objects.all().count(), 0)
+        self.assertEqual(Election.objects.all().count(), 0)
+        missing_parent = deepcopy(local_highland)
+        del missing_parent["results"][0]
+        mock_requests.get.side_effect = create_mock_with_fixtures(
+            {"modified": "2018-02-02T00:00:00"},
+            missing_parent,
+            [missing_parent],
+            modified=True,
+            extra_urls=[
+                (
+                    {"election_id": "local.highland.2018-12-06"},
+                    local_highland["results"][0],
+                )
+            ],
+        )
+        call_command(
+            "uk_create_elections_from_every_election", recently_updated=True
+        )
+        self.assertEqual(Ballot.objects.all().count(), 1)
+        self.assertEqual(Election.objects.all().count(), 1)
 
 
 class TestRecenlyUpdated:

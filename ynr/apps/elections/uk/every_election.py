@@ -457,7 +457,10 @@ class EveryElectionImporter(object):
         child = self.election_tree[election_id]
         if election_id[:-10] == "gla.a.":
             return child
-        try:
-            return self.election_tree[child.parent]
-        except KeyError:
-            EveryElectionImporter(election_id=child.parent)
+
+        if child.parent not in self.election_tree:
+            new_importer = EveryElectionImporter(election_id=child.parent)
+            new_importer.build_election_tree()
+            self.election_tree.update(new_importer.election_tree)
+
+        return self.election_tree[child.parent]
