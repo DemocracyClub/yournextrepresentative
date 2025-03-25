@@ -202,3 +202,20 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         response = form.submit()
         self.assertContains(response, "Please enter a social media link")
+
+    def test_submit_social_media_link_invalid_url(self):
+        ballot = self.election.ballot_set.first()
+        form = self.app.get(
+            "/bulk_adding/party/parl.2015-05-07/PP52/",
+            user=self.user_who_can_upload_documents,
+        ).forms[1]
+
+        form["source"] = "https://example.com/candidates/"
+
+        form[f"{ballot.pk}-0-name"] = "Pemphero Pasternak"
+        form[f"{ballot.pk}-0-person_identifier_0"] = "https://example"
+
+        form[f"{ballot.pk}-0-person_identifier_1"] = "homepage_url"
+
+        response = form.submit()
+        self.assertContains(response, "Enter a valid URL")
