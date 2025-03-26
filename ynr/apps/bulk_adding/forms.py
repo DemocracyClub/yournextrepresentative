@@ -1,4 +1,4 @@
-from bulk_adding.fields import PersonIdentifierField
+from bulk_adding.fields import PersonIdentifierFieldSet
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
@@ -263,29 +263,19 @@ class BulkAddByPartyForm(NameOnlyPersonForm):
         required=False,
         widget=forms.NumberInput,
     )
-    person_identifier_1 = PersonIdentifierField(
-        label="Links and social media",
-        required=False,
-    )
-    person_identifier_2 = PersonIdentifierField(
-        label="Links and social media",
-        required=False,
-    )
-    person_identifier_3 = PersonIdentifierField(
+    person_identifiers = PersonIdentifierFieldSet(
         label="Links and social media",
         required=False,
     )
 
-    def clean(self):
-        cleaned_data = super().clean()
-        # Combine the person identifier fields into one field and remove them
-        person_identifiers = {}
-        for i in range(1, 4):
-            identifier = cleaned_data.pop(f"person_identifier_{i}", None)
-            if identifier:
-                person_identifiers.update(identifier)
-        cleaned_data["person_identifiers"] = person_identifiers
-        return cleaned_data
+    def clean_biography(self):
+        bio = self.cleaned_data["biography"]
+        if bio.find("\r"):
+            bio = bio.replace("\r", "")
+        # Reduce > 2 newlines to 2 newlines
+        return "\n\n".join(
+            [line.strip() for line in bio.split("\n\n") if line.strip()]
+        )
 
 
 class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
