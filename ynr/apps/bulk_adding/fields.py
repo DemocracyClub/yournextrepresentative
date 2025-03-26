@@ -34,7 +34,7 @@ def clean_email(email):
 
 
 class PersonIdentifierWidget(forms.MultiWidget):
-    template_name = "bulk_add/includes/person_identifier_multiwidget.html"
+    template_name = "bulk_add/widgets/person_identifier_multiwidget.html"
 
     def __init__(self, *args, **kwargs):
         super().__init__(
@@ -53,6 +53,23 @@ class PersonIdentifierWidget(forms.MultiWidget):
             pid_type, pid = next(iter(value.items()))
             return [pid, pid_type]
         return [None, None]
+
+
+class PersonIdentifierWidgetSet(forms.MultiWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            widgets=[
+                PersonIdentifierWidget(),
+                PersonIdentifierWidget(),
+                PersonIdentifierWidget(),
+            ],
+            **kwargs,
+        )
+
+    def decompress(self, value):
+        if value:
+            return [{k: v} for k, v in value.items()]
+        return [None, None, None]
 
 
 class PersonIdentifierField(forms.MultiValueField):
@@ -112,3 +129,33 @@ class PersonIdentifierField(forms.MultiValueField):
             raise ValidationError(e)
 
         return {pid_type: pid}
+
+
+class PersonIdentifierFieldSet(forms.MultiValueField):
+    def __init__(self, **kwargs):
+        fields = (
+            PersonIdentifierField(
+                required=False,
+            ),
+            PersonIdentifierField(
+                required=False,
+            ),
+            PersonIdentifierField(
+                required=False,
+            ),
+        )
+        widget = PersonIdentifierWidgetSet()
+
+        super().__init__(
+            fields=fields,
+            require_all_fields=False,
+            widget=widget,
+            **kwargs,
+        )
+
+    def compress(self, data_list):
+        person_identifiers = {}
+        for pi in data_list:
+            if pi:
+                person_identifiers.update(pi)
+        return person_identifiers
