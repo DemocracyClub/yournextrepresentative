@@ -115,7 +115,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms[1]
         # Now submit the valid form
-        with self.assertNumQueries(FuzzyInt(49, 72)):
+        with self.assertNumQueries(FuzzyInt(55, 60)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
             response = form.submit().follow()
 
@@ -124,9 +124,9 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ballot.post.memberships.first().person.name, "Pemphero Pasternak"
         )
 
-        # We should have created 2 logged actions, one for person-create
+        # We should have created 3 logged actions, one for form use, one for person-create
         # and one for person-update (adding the membership)
-        self.assertEqual(LoggedAction.objects.count(), 2)
+        self.assertEqual(LoggedAction.objects.count(), 3)
 
     def test_submit_name_and_demographic_details_for_area(self):
         ballot = self.election.ballot_set.first()
@@ -156,7 +156,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms[1]
         # Now submit the valid form
-        with self.assertNumQueries(FuzzyInt(49, 72)):
+        with self.assertNumQueries(FuzzyInt(50, 60)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
             response = form.submit().follow()
 
@@ -167,9 +167,9 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(new_person.gender, "male")
         self.assertEqual(new_person.birth_date, "1987")
 
-        # We should have created 2 logged actions, one for person-create
+        # We should have created 3 logged actions, one for form use, one for person-create
         # and one for person-update (adding the membership)
-        self.assertEqual(LoggedAction.objects.count(), 2)
+        self.assertEqual(LoggedAction.objects.count(), 3)
 
     def test_submit_name_and_social_media_links_for_area(self):
         ballot = self.election.ballot_set.first()
@@ -204,7 +204,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms[1]
         # Now submit the valid form
-        with self.assertNumQueries(FuzzyInt(49, 72)):
+        with self.assertNumQueries(FuzzyInt(75, 80)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
             response = form.submit().follow()
 
@@ -214,9 +214,9 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         pids = new_person.tmp_person_identifiers.count()
         self.assertEqual(pids, 3)
 
-        # We should have created 2 logged actions, one for person-create
+        # We should have created 3 logged actions, one for form use, one for person-create
         # and one for person-update (adding the membership)
-        self.assertEqual(LoggedAction.objects.count(), 2)
+        self.assertEqual(LoggedAction.objects.count(), 3)
 
     def test_submit_social_media_link_without_link_type(self):
         ballot = self.election.ballot_set.first()
