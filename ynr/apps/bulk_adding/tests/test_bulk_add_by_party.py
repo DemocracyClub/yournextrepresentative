@@ -1,8 +1,15 @@
 from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import MembershipFactory
+from candidates.tests.factories import (
+    BallotPaperFactory,
+    ElectionFactory,
+    MembershipFactory,
+    OrganizationFactory,
+    PostFactory,
+)
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django_webtest import WebTest
+from parties.tests.factories import PartyFactory
 from people.tests.factories import PersonFactory
 from utils.testing_utils import FuzzyInt
 
@@ -266,3 +273,73 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         response = form.submit()
         self.assertContains(response, "Enter a valid URL")
+
+    def test_bulk_add_with_100_ballots(self):
+        # Create an election with 100 ballots, 100 posts
+        election = ElectionFactory(
+            slug="parl.2025-05-07", name="General Election 2025"
+        )
+        party = PartyFactory(ec_id="PP99", name="Test Party")
+        ballots = [
+            BallotPaperFactory(
+                election=election,
+                post=PostFactory(
+                    label=f"Constituency {i + 1}",
+                    organization=OrganizationFactory(
+                        name=f"org {i + 1}",
+                        slug=f"org-slug-{i + 1}",
+                    ),
+                ),
+                ballot_paper_id=f"parl.2025-05-07.constituency-{i + 1}",
+            )
+            for i in range(100)
+        ]
+
+        # Access the form
+        form = self.app.get(
+            f"/bulk_adding/party/{election.slug}/{party.ec_id}/", user=self.user
+        ).forms[1]
+
+        # Fill in all fields for each ballot
+        form["source"] = "https://example.com/candidates/"
+        for ballot in ballots:
+            form[f"{ballot.pk}-0-name"] = f"Candidate {ballot.pk}"
+            form[f"{ballot.pk}-0-biography"] = (
+                f"Biography for Candidate {ballot.pk}"
+            )
+            form[f"{ballot.pk}-0-gender"] = "female"
+            form[f"{ballot.pk}-0-birth_date"] = "1990"
+            form[f"{ballot.pk}-0-person_identifiers_0_0"] = (
+                f"https://example.com/{ballot.pk}"
+            )
+            form[f"{ballot.pk}-0-person_identifiers_0_1"] = "homepage_url"
+            form[f"{ballot.pk}-0-person_identifiers_1_0"] = (
+                f"candidate{ballot.pk}@example.com"
+            )
+            form[f"{ballot.pk}-0-person_identifiers_1_1"] = "email"
+            form[f"{ballot.pk}-0-person_identifiers_2_0"] = (
+                f"https://linkedin.com/in/candidate{ballot.pk}"
+            )
+            form[f"{ballot.pk}-0-person_identifiers_2_1"] = "linkedin_url"
+
+        # Submit the form
+
+        response = form.submit().follow()
+        form = response.forms[1]
+        # Select add new person for each ballot
+        for ballot in ballots:
+            form[f"{ballot.pk}-0-select_person"] = "_new"
+
+        # Submit the review form
+        response = form.submit().follow()
+
+        # Verify that all candidates were created
+        for ballot in ballots:
+            person = ballot.post.memberships.first().person
+            self.assertEqual(person.name, f"Candidate {ballot.pk}")
+            self.assertEqual(
+                person.biography, f"Biography for Candidate {ballot.pk}"
+            )
+            self.assertEqual(person.gender, "female")
+            self.assertEqual(person.birth_date, "1990")
+            self.assertEqual(person.tmp_person_identifiers.count(), 3)
