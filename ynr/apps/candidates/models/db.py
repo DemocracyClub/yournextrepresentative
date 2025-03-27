@@ -95,6 +95,7 @@ class ActionType(models.TextChoices):
         "deleted-parsed-raw-people",
         "Deleted parsed RawPeople",
     )
+    BULK_ADD_BY_PARTY = ("bulk-add-by-party", "Bulk add by party")
 
     def get_action_type_display():
         return ActionType.choices

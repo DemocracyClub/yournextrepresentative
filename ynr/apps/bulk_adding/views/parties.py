@@ -2,6 +2,9 @@ import ast
 
 from braces.views import LoginRequiredMixin
 from bulk_adding import forms, helpers
+from candidates.models import LoggedAction
+from candidates.models.db import ActionType
+from candidates.views.version_data import get_client_ip
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -211,6 +214,14 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
     def form_valid(self, formsets):
         source = self.request.session["bulk_add_by_party_data"].get("source")
         assert len(formsets) >= 1
+
+        LoggedAction.objects.create(
+            user=self.request.user,
+            election=self.get_election(),
+            action_type=ActionType.BULK_ADD_BY_PARTY,
+            ip_address=get_client_ip(self.request),
+            source=source,
+        )
 
         with transaction.atomic():
             for formset in formsets:
