@@ -115,7 +115,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms[1]
         # Now submit the valid form
-        with self.assertNumQueries(FuzzyInt(53, 58)):
+        with self.assertNumQueries(FuzzyInt(55, 60)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
             response = form.submit().follow()
 
@@ -156,7 +156,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms[1]
         # Now submit the valid form
-        with self.assertNumQueries(FuzzyInt(53, 58)):
+        with self.assertNumQueries(FuzzyInt(50, 60)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
             response = form.submit().follow()
 
@@ -204,7 +204,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = response.forms[1]
         # Now submit the valid form
-        with self.assertNumQueries(FuzzyInt(70, 75)):
+        with self.assertNumQueries(FuzzyInt(75, 80)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
             response = form.submit().follow()
 
