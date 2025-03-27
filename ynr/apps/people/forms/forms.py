@@ -216,9 +216,9 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
         )
 
         if self.show_previous_party_affiliations:
-            self.fields[
-                "previous_party_affiliations"
-            ] = PreviousPartyAffiliationsField(membership=self.instance)
+            self.fields["previous_party_affiliations"] = (
+                PreviousPartyAffiliationsField(membership=self.instance)
+            )
 
     @property
     def show_previous_party_affiliations(self):
