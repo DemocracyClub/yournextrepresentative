@@ -243,12 +243,14 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                             pk=int(data["select_person"])
                         )
 
-                    self.set_person_fields(data, person)
                     if data.get("person_identifiers"):
                         pids_dict = ast.literal_eval(
                             data.get("person_identifiers")
                         )
                         self.save_person_identifiers(pids_dict, person)
+                        person.refresh_from_db()
+
+                    self.set_person_fields(data, person)
 
                     # TODO check about updating PartyDescription here
                     # Update the person's candacies
@@ -275,7 +277,6 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                 setattr(person, field, data[field])
 
     def save_person_identifiers(self, pids_dict, person):
-        # TODO: Saving PIDs like this doesn't record a person version
         for pid_type, pid in pids_dict.items():
             PersonIdentifier.objects.update_or_create(
                 person=person,
