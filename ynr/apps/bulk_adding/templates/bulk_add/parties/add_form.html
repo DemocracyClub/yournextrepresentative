@@ -40,14 +40,6 @@
                   </tr>
                 {% endif %}
                 {% endfor %}
-              {% if election_obj.party_lists_in_use %}
-              <tr>
-                <th>{{ form.party_list_position.label }}</th>
-              </tr>
-              <tr>
-                <td>{{ form.party_list_position }}</td>
-              </tr>
-              {% endif %}
             </table>
           </tr>
           {% endfor %}
