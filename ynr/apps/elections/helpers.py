@@ -1,6 +1,6 @@
 import datetime
 from functools import update_wrapper
-from typing import List
+from typing import List, Optional
 
 from candidates.models import Ballot
 from django.core.cache import cache
@@ -87,3 +87,18 @@ def get_latest_charismatic_election_dates(count=5) -> List[datetime.date]:
         cache.set(key, result, ttl)
 
     return result
+
+
+def get_last_charismatic_election_date() -> Optional[datetime.date]:
+    """
+    Returns the first date that's in the past from
+    `get_latest_charismatic_election_dates`
+
+    """
+
+    dates = get_latest_charismatic_election_dates()
+    today = datetime.date.today()
+    for date in dates:
+        if date < today:
+            return date
+    return None
