@@ -3,7 +3,7 @@ import re
 from typing import Any, Dict
 from urllib.parse import quote
 
-import bleach
+import nh3
 from auth_helpers.views import GroupRequiredMixin
 from braces.views import LoginRequiredMixin
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
@@ -22,6 +22,7 @@ from django.http import (
 )
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.utils.html import urlize
 from django.views.generic import CreateView, ListView, TemplateView, View
 from elections.models import Election
 from moderation_queue.filters import QueuedImageFilter
@@ -236,11 +237,9 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         # There are often source links supplied in the justification,
         # and it's convenient to be able to follow them. However, make
         # sure that any maliciously added HTML tags have been stripped
-        # before linkifying any URLs:
-        context["justification_for_use"] = bleach.linkify(
-            bleach.clean(
-                self.queued_image.justification_for_use, tags=[], strip=True
-            )
+        # before linkifying any URLs:.
+        context["justification_for_use"] = urlize(
+            nh3.clean(self.queued_image.justification_for_use)
         )
         context["google_image_search_url"] = self.get_google_image_search_url(
             person
