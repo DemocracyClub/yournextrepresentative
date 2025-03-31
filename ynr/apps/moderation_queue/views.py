@@ -239,7 +239,7 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         # sure that any maliciously added HTML tags have been stripped
         # before linkifying any URLs:.
         context["justification_for_use"] = urlize(
-            nh3.clean(self.queued_image.justification_for_use)
+            nh3.clean(self.queued_image.justification_for_use, tags={"a"})
         )
         context["google_image_search_url"] = self.get_google_image_search_url(
             person

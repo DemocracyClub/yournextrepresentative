@@ -8,7 +8,7 @@ register = template.Library()
 
 @register.filter(name="markdown")
 def markdown_filter(text):
-    cleaned_text = nh3.clean(text)
+    cleaned_text = nh3.clean(text, tags={"a"})
     return mark_safe(markdown.markdown(cleaned_text, extensions=["nl2br"]))
 
 
