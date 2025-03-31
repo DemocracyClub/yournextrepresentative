@@ -83,6 +83,10 @@ def get_latest_charismatic_election_dates(count=5) -> List[datetime.date]:
             .filter(ballots__gt=10)
             .values_list("election__election_date", flat=True)[:count]
         )
+        if not result:
+            # In the event where we have no elections in the system, return the
+            # first election we know about
+            return [datetime.date(year=2010, month=5, day=6)]
 
         cache.set(key, result, ttl)
 
