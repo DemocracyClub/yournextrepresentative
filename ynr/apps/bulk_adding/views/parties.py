@@ -1,12 +1,17 @@
+import json
+
 from braces.views import LoginRequiredMixin
 from bulk_adding import forms, helpers
+from candidates.models import LoggedAction
+from candidates.models.db import ActionType
+from candidates.views.version_data import get_client_ip
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import FormView, TemplateView
 from elections.models import Election
 from parties.models import Party
-from people.models import Person
+from people.models import Person, PersonIdentifier
 from popolo.models import Membership
 
 # Assume 5 winners if we have no other info.
@@ -110,20 +115,27 @@ class BulkAddPartyView(BasePartyBulkAddView):
         )
         if not has_some_data:
             form.add_error(None, "Please enter at least one name")
-
         if not has_some_data or not form.is_valid():
             return self.render_to_response(self.get_context_data(form=form))
 
+        formsets = []
         session_data = {"source": form.cleaned_data["source"], "post_data": []}
+
         for ballot in qs:
             form_kwargs = {"ballot": ballot}
             formset = forms.BulkAddByPartyFormset(
                 self.request.POST, **form_kwargs
             )
+            formsets.append(formset)
 
-            session_data["post_data"].append(
-                {"ballot_pk": ballot.pk, "data": formset.cleaned_data}
-            )
+            if formset.is_valid():
+                session_data["post_data"].append(
+                    {"ballot_pk": ballot.pk, "data": formset.cleaned_data}
+                )
+
+        if not all(f.is_valid() for f in formsets):
+            return self.render_to_response(self.get_context_data(form=form))
+
         self.request.session["bulk_add_by_party_data"] = session_data
         self.request.session.save()
 
@@ -203,6 +215,14 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
         source = self.request.session["bulk_add_by_party_data"].get("source")
         assert len(formsets) >= 1
 
+        LoggedAction.objects.create(
+            user=self.request.user,
+            election=self.get_election(),
+            action_type=ActionType.BULK_ADD_BY_PARTY,
+            ip_address=get_client_ip(self.request),
+            source=source,
+        )
+
         with transaction.atomic():
             for formset in formsets:
                 for person_form in formset:
@@ -223,6 +243,13 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                             pk=int(data["select_person"])
                         )
 
+                    if data.get("person_identifiers"):
+                        pids_dict = json.loads(data.get("person_identifiers"))
+                        self.save_person_identifiers(pids_dict, person)
+                        person.refresh_from_db()
+
+                    self.set_person_fields(data, person)
+
                     # TODO check about updating PartyDescription here
                     # Update the person's candacies
                     helpers.update_person(
@@ -236,6 +263,24 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
 
         url = self.get_election().get_absolute_url()
         return HttpResponseRedirect(url)
+
+    def set_person_fields(self, data, person):
+        fields_to_update = [
+            "biography",
+            "gender",
+            "birth_date",
+        ]
+        for field in fields_to_update:
+            if data.get(field):
+                setattr(person, field, data[field])
+
+    def save_person_identifiers(self, pids_dict, person):
+        for pid_type, pid in pids_dict.items():
+            PersonIdentifier.objects.update_or_create(
+                person=person,
+                value_type=pid_type,
+                defaults={"value": pid},
+            )
 
     def form_invalid(self):
         context = self.get_context_data()

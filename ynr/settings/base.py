@@ -454,6 +454,10 @@ SOPN_UPDATE_NOTIFICATION_EMAILS = os.environ.get(
     "SOPN_UPDATE_NOTIFICATION_EMAILS", "hello@democracyclub.org.uk"
 ).split(",")
 
+# The maximum number of fields that can be uploaded in a single request.
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
+
+
 # import application constants
 from .constants.needs_review import *  # noqa
 from .constants.csv_fields import *  # noqa
