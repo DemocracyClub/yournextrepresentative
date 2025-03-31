@@ -1,10 +1,12 @@
 from datetime import timedelta
 
-from dateutil.parser import parse
 from django.contrib.auth.models import User
 from django.db.models import Count, F
 from django.utils import timezone
-from elections.helpers import get_latest_charismatic_election_dates
+from elections.helpers import (
+    get_last_charismatic_election_date,
+    get_latest_charismatic_election_dates,
+)
 
 from ..models import LoggedAction
 
@@ -66,7 +68,11 @@ class ContributorsMixin(object):
             .order_by("-created")
         )
 
-    def get_num_new_users(self):
+    def get_num_new_users_since_date(self):
         """Return the number of new users
-        created since the GE 2024 announcement."""
-        return User.objects.filter(date_joined__gt=parse("2024-05-22")).count()  # noqa
+        created since the last charismatic election."""
+        date = get_last_charismatic_election_date()
+        return {
+            "date": date,
+            "count": User.objects.filter(date_joined__gt=date).count(),
+        }
