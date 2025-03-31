@@ -1,3 +1,5 @@
+import json
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, validate_email
@@ -158,4 +160,4 @@ class PersonIdentifierFieldSet(forms.MultiValueField):
         for pi in data_list:
             if pi:
                 person_identifiers.update(pi)
-        return person_identifiers
+        return json.dumps(person_identifiers)

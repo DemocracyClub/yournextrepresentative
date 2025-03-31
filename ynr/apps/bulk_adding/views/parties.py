@@ -1,4 +1,4 @@
-import ast
+import json
 
 from braces.views import LoginRequiredMixin
 from bulk_adding import forms, helpers
@@ -244,9 +244,7 @@ class BulkAddPartyReviewView(BasePartyBulkAddView):
                         )
 
                     if data.get("person_identifiers"):
-                        pids_dict = ast.literal_eval(
-                            data.get("person_identifiers")
-                        )
+                        pids_dict = json.loads(data.get("person_identifiers"))
                         self.save_person_identifiers(pids_dict, person)
                         person.refresh_from_db()
 
