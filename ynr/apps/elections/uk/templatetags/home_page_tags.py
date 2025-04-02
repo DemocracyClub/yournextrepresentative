@@ -57,7 +57,7 @@ def sopn_progress_by_value(base_qs, lookup_value, label_field=None):
     ballot_qs = ballot_qs.annotate(
         has_sopn_count=Count("pk", filter=Q(sopn__isnull=False), distinct=True),
         locked_count=Count(
-            "pk", filter=Q(candidates_locked=True), distinct=True
+            "pk", filter=Q(candidates_locked=True, cancelled=False), distinct=True
         ),
         locksuggested_count=Count("suggestedpostlock", distinct=True),
         count=Count("ballot_paper_id", distinct=True),
