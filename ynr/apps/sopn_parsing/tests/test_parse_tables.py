@@ -7,7 +7,7 @@ from bulk_adding.models import RawPeople
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.core.management import call_command
 from django.db import connection
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from official_documents.models import BallotSOPN
 from pandas import Index, Series
 from parties.models import Party, PartyDescription
@@ -30,6 +30,7 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
             cursor.execute("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;")
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
+    @override_settings(CAMELOT_ENABLED=True)
     def test_basic_parsing(self):
         self.assertFalse(RawPeople.objects.exists())
         doc = BallotSOPN.objects.create(
@@ -112,6 +113,7 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
         )
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
+    @override_settings(CAMELOT_ENABLED=True)
     def test_welsh_run_sopn(self):
         """
         Test that if the ballot is welsh run and previous party affiliations
@@ -186,6 +188,7 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
         )
 
     @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
+    @override_settings(CAMELOT_ENABLED=True)
     def test_match_complex_descriptions(self):
         self.assertFalse(RawPeople.objects.exists())
         doc = BallotSOPN.objects.create(

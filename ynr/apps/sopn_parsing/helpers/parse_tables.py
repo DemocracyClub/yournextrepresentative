@@ -3,6 +3,7 @@ import re
 
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot
+from django.conf import settings
 from django.contrib.postgres.search import TrigramSimilarity
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
@@ -534,17 +535,19 @@ def parse_raw_data(ballot: Ballot, reparse=False):
     Given a Ballot, go and get the Camelot and the AWS Textract dataframes
     and process them
     """
-
-    camelot_model = getattr(ballot.sopn, "camelotparsedsopn", None)
     camelot_data = {}
+    camelot_model = getattr(ballot.sopn, "camelotparsedsopn", None)
+    if getattr(settings, "CAMELOT_ENABLED", False):
+        if (
+            camelot_model
+            and camelot_model.raw_data_type == "pandas"
+            and (reparse or not camelot_model.parsed_data)
+        ):
+            camelot_data = parse_dataframe(ballot, camelot_model.as_pandas)
+
     textract_model = getattr(ballot.sopn, "awstextractparsedsopn", None)
     textract_data = {}
-    if (
-        camelot_model
-        and camelot_model.raw_data_type == "pandas"
-        and (reparse or not camelot_model.parsed_data)
-    ):
-        camelot_data = parse_dataframe(ballot, camelot_model.as_pandas)
+
     if (
         textract_model
         and textract_model.raw_data
