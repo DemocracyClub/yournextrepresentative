@@ -14,6 +14,7 @@ from nameparser import HumanName
 from pandas import DataFrame
 from parties.models import Party, PartyDescription
 from sopn_parsing.helpers.text_helpers import clean_text
+from sopn_parsing.models import AWSTextractParsedSOPN
 from utils.db import Levenshtein
 
 FIRST_NAME_FIELDS = [
@@ -545,7 +546,7 @@ def parse_raw_data(ballot: Ballot, reparse=False):
         ):
             camelot_data = parse_dataframe(ballot, camelot_model.as_pandas)
 
-    textract_model = getattr(ballot.sopn, "awstextractparsedsopn", None)
+    textract_model: AWSTextractParsedSOPN = getattr(ballot.sopn, "awstextractparsedsopn", None)
     textract_data = {}
 
     if (
@@ -556,6 +557,9 @@ def parse_raw_data(ballot: Ballot, reparse=False):
     ):
         if not textract_model.parsed_data:
             textract_model.parse_raw_data()
+            if textract_model.withdrawal_rows():
+                ballot.sopn.withdrawal_detected = True
+                ballot.sopn.save()
         textract_data = parse_dataframe(ballot, textract_model.as_pandas)
 
     if camelot_data or textract_data:
