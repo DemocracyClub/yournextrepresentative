@@ -159,7 +159,57 @@ class AWSTextractParsedSOPN(TimeStampedModel):
         self.parsed_data = df.to_json()
 
     def as_textractor_document(self):
+        if not self.raw_data:
+            return None
         return response_parser.parse(json.loads(self.raw_data))
+
+    def get_heading_row(self):
+        if self.as_pandas is None:
+            return []
+        heading_row_index = 0
+        heading_values = []
+        # We need at least three values (name, party, division)
+        while len(heading_values) < 3:
+            row = self.as_pandas.iloc[
+                heading_row_index
+            ]
+            heading_values = [
+                heading.lower().strip()
+                for heading in row.tolist()
+                if heading
+            ]
+            if len(heading_values) > 1 and "name" in heading_values[0]:
+                return row
+
+            heading_row_index += 1
+
+        return row
+
+    def get_withdrawal_column(self):
+        column_names = [
+            "no longer",
+            "withdrawal",
+            "invalid",
+            "decision",
+        ]
+
+        for i, heading in enumerate(self.get_heading_row()):
+            if any([col in heading for col in column_names]):
+                return self.as_pandas[str(i)]
+
+    def withdrawal_rows(self):
+        column_values = self.get_withdrawal_column()
+        if column_values is None:
+            return None
+        # column_values = self.as_pandas[column].tolist()
+        cells_with_value = []
+        for i, row in enumerate(column_values):
+            # Skip the header, as that always contains a value
+            if i == 0:
+                continue
+            if row:
+                cells_with_value.append(i)
+        return cells_with_value
 
     def get_withdrawals_bboxes(self):
         # headers = self.as_pandas.iloc[0].tolist()
