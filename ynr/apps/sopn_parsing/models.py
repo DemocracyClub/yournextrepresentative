@@ -3,6 +3,7 @@ from io import BytesIO
 
 from django.core.files.images import ImageFile
 from django.db import models
+from django.utils.functional import cached_property
 from model_utils.models import TimeStampedModel
 from pandas import concat
 from textractor.parsers import response_parser
@@ -102,12 +103,31 @@ class AWSTextractParsedSOPN(TimeStampedModel):
         default=AWSTextractParsedSOPNStatus.NOT_STARTED,
     )
 
-    @property
+    @cached_property
     def as_pandas(self):
+        if not self.parsed_data:
+            return None
         import pandas
 
         pandas.set_option("display.max_colwidth", None)
-        return pandas.DataFrame.from_dict(json.loads(self.parsed_data))
+        df = pandas.DataFrame.from_dict(json.loads(self.parsed_data))
+
+        # Don't parse situation of polling stations
+        df.reset_index(drop=True, inplace=True)
+        polling_station_index = df[
+            df.apply(
+                lambda row: row.astype(str).str.contains(
+                    "polling station", case=False).any(),
+                axis=1,
+            )
+        ].index
+        if not polling_station_index.empty:
+            polling_station_index = polling_station_index[0]
+            if isinstance(polling_station_index, str):
+                polling_station_index = int(polling_station_index)
+            new_df = df.loc[: polling_station_index - 1]
+            df = new_df
+        return df
 
     def parse_raw_data(self):
         """
