@@ -38,3 +38,5 @@ ALWAYS_ALLOW_RESULT_RECORDING = False
 
 DEFAULT_FILE_STORAGE = "ynr.storages.TestMediaStorage"
 MEDIA_ROOT = mkdtemp()
+
+FRONT_PAGE_CTA = "BY_ELECTIONS"

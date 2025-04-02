@@ -57,7 +57,7 @@ def sopn_progress_by_value(base_qs, lookup_value, label_field=None):
     ballot_qs = ballot_qs.annotate(
         has_sopn_count=Count("pk", filter=Q(sopn__isnull=False), distinct=True),
         locked_count=Count(
-            "pk", filter=Q(candidates_locked=True), distinct=True
+            "pk", filter=Q(candidates_locked=True, cancelled=False), distinct=True
         ),
         locksuggested_count=Count("suggestedpostlock", distinct=True),
         count=Count("ballot_paper_id", distinct=True),
@@ -108,10 +108,6 @@ def sopn_import_progress(context):
         value = settings.SOPN_TRACKER_INFO["election_date"]
 
         base_ballot_qs = Ballot.objects.filter(election__election_date=value)
-        # TMP for UK general
-        base_ballot_qs = base_ballot_qs.filter(
-            ballot_paper_id__startswith="parl."
-        )
         context["sopn_progress"] = sopn_progress_by_value(
             base_ballot_qs, lookup_value="election__election_date"
         )[value]
@@ -248,16 +244,7 @@ def by_election_ctas(context):
 
 @register.inclusion_tag("includes/data_download.html", takes_context=True)
 def data_download(context):
-    context["DATA_DOWNLOAD"] = (
-        getattr(settings, "FRONT_PAGE_CTA", False) == "DATA_DOWNLOAD"
-    )
-
-    if context["DATA_DOWNLOAD"]:
-        context["election_date"] = settings.DATA_DOWNLOAD_INFO["election_date"]
-        context["election_regex"] = settings.DATA_DOWNLOAD_INFO[
-            "election_regex"
-        ]
-        context["election_name"] = settings.DATA_DOWNLOAD_INFO["election_name"]
+    context["data_download_info"] = settings.DATA_DOWNLOAD_INFO
     return context
 
 

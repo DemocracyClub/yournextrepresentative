@@ -463,6 +463,7 @@ from .constants.needs_review import *  # noqa
 from .constants.csv_fields import *  # noqa
 from .constants.nuts import *  # noqa
 from .constants.sopn_parsing import *  # noqa
+from .constants.home_page_cta import *  # noqa
 
 from ynr_refactoring.settings import *  # noqa
 
