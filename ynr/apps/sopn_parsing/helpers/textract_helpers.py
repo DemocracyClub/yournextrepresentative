@@ -103,9 +103,18 @@ class TextractSOPNHelper:
         # because the above check for `if not blocking` should have returned
         # by now if we didn't want to block (or the job is finished)
         # it's safe to call this and have it 'block' on noting.
-        textract_document = self.extractor.get_result(
-            textract_result.job_id, TextractAPI.ANALYZE
-        )
+        try:
+            textract_document = self.extractor.get_result(
+                textract_result.job_id, TextractAPI.ANALYZE
+            )
+        except Exception as e:
+            print(
+                f"Failed to get results for {self.ballot_sopn.ballot.ballot_paper_id}"
+            )
+            print(e)
+            textract_result.status = "FAILED"
+            textract_result.save()
+            return None
 
         print("Saving images")
         textract_result.images.all().delete()
