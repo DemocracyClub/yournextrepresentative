@@ -1,7 +1,7 @@
 <h2>Get the data</h2>
 <p>Download the CSV of all candidates for the {{ data_download_info.election_name }}:</p>
 <p><a class="button" href="{% url 'data_export' %}?election_id={{ data_download_info.election_regex }}&field_group=results">Download CSV</a></p>
-<p>Or for more advance filters and more fields, try the
+<p>Or for more advanced filters and more fields, try the
     <a href="{% url 'data_home' %}?election_id={{ data_download_info.election_regex }}&field_group=results">custom CSV builder</a>.</p>
 <p>You can also use our <a href="{% url 'api-home' %}">candidates API</a> or <a
         href="https://developers.democracyclub.org.uk/">postcode lookup API</a>.</p>
