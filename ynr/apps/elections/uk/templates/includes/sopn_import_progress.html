@@ -17,17 +17,6 @@
     </p>
   {% endif %}
 
-  {% if SOPN_DATES %}
-    <p>
-    The SOPN publication date for the 2024 General Election is:
-    </p>
-    <ul style="list-style: none;">
-      {% for nation, date in SOPN_DATES %}
-        <li><strong>{{ nation }}</strong>: {{ date|date }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-
   {% if sopn_progress.sopns_imported %}
   <h2>By region</h2>
   <div class="region-grid" style="display: flex;flex-wrap: wrap;margin: -0.5em;">

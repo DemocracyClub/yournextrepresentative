@@ -1,6 +1,5 @@
 # Only set this to True in development environments
 import os
-from datetime import date
 
 import requests
 
@@ -61,32 +60,6 @@ RAVEN_CONFIG = {"dsn": os.environ.get("RAVEN_DSN")}
 
 RUNNING_TESTS = False
 
-# This should be one of:
-# ELECTION_STATS
-# SOPN_TRACKER
-# RESULTS_PROGRESS
-# DATA_DOWNLOAD
-# BY_ELECTIONS
-FRONT_PAGE_CTA = "BY_ELECTIONS"
-SOPN_TRACKER_INFO = {
-    "election_date": "2024-07-04",
-    "election_name": "2024 general election",
-}
-SOPN_SHEET_URL = "https://docs.google.com/spreadsheets/d/1v_R6_m2T1wIaVeD9nHbcts73l9nplXWHDgsww91WtHQ/edit#gid=0"
-SOPN_DATES = [
-    # ("Scotland", date(year=2023, month=3, day=30)),
-    # ("England and Wales", date(year=2024, month=4, day=5)),
-    # ("Northern Ireland", date(year=2023, month=4, day=24)),
-    ("United Kingdom", date(year=2024, month=6, day=7)),
-]
-
-DATA_DOWNLOAD_INFO = {
-    "election_date": "2024-07-04",
-    "election_name": "2024 general election",
-    "election_regex": "parl.2024-07-04",
-}
-
-SCHEDULED_ELECTION_DATES = ["2024-07-04"]
 
 STATICFILES_STORAGE = "ynr.storages.StaticStorage"
 DEFAULT_FILE_STORAGE = "ynr.storages.MediaStorage"

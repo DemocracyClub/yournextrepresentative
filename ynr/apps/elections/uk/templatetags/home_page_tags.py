@@ -108,10 +108,6 @@ def sopn_import_progress(context):
         value = settings.SOPN_TRACKER_INFO["election_date"]
 
         base_ballot_qs = Ballot.objects.filter(election__election_date=value)
-        # TMP for UK general
-        base_ballot_qs = base_ballot_qs.filter(
-            ballot_paper_id__startswith="parl."
-        )
         context["sopn_progress"] = sopn_progress_by_value(
             base_ballot_qs, lookup_value="election__election_date"
         )[value]
