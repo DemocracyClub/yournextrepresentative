@@ -244,16 +244,7 @@ def by_election_ctas(context):
 
 @register.inclusion_tag("includes/data_download.html", takes_context=True)
 def data_download(context):
-    context["DATA_DOWNLOAD"] = (
-        getattr(settings, "FRONT_PAGE_CTA", False) == "DATA_DOWNLOAD"
-    )
-
-    if context["DATA_DOWNLOAD"]:
-        context["election_date"] = settings.DATA_DOWNLOAD_INFO["election_date"]
-        context["election_regex"] = settings.DATA_DOWNLOAD_INFO[
-            "election_regex"
-        ]
-        context["election_name"] = settings.DATA_DOWNLOAD_INFO["election_name"]
+    context["data_download_info"] = settings.DATA_DOWNLOAD_INFO
     return context
 
 
