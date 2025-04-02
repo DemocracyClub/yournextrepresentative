@@ -12,6 +12,15 @@
             <li>AWS Textract Data: {% if textract_parsed.raw_data %}Yes{% else %}No{% endif %}</li>
             <li>AWS Textract Parsed? {% if textract_parsed.parsed_data %}Yes{% else %}
                 No{% endif %}</li>
+            <li>
+                Withdrawal detected:
+                {% if textract_parsed.withdrawal_rows %}
+                    Yes in row{{ textract_parsed.withdrawal_rows|pluralize }}
+                    {{ textract_parsed.withdrawal_rows|join:", " }}
+                {% else %}
+                    No
+                {% endif %}
+            </li>
         </ul>
 
         <h3>Camelot raw Data</h3>
