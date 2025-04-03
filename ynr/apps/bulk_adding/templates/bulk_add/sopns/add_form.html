@@ -16,8 +16,8 @@
 {% block content %}
     <h2>Add candidates to {{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h2>
     {% if ballot_sopn %}
-        {% if action_counts.last_months_actions <= 3 and action_counts.candidacy_create < 30 %}
-            <details open class="panel">
+
+            <details {% if action_counts.last_months_actions <= 3 and action_counts.candidacy_create < 30 %}open{% else %}closed{% endif %} class="panel">
                 <summary>How to add or check candidates</summary>
 
                 <ol>
@@ -41,7 +41,6 @@
                     <li>Return to the home page to do another one!</li>
                 </ol>
             </details>
-        {% endif %}
 
         {% if ballot.rawpeople and ballot.rawpeople.is_parsed_from_pdf %}
             <div class="panel callout">
