@@ -198,9 +198,9 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form[f"{ballot.pk}-0-person_identifiers_0_1"] = "homepage_url"
         form[f"{ballot.pk}-0-person_identifiers_1_0"] = "pp@gmail.com"
         form[f"{ballot.pk}-0-person_identifiers_1_1"] = "email"
-        form[f"{ballot.pk}-0-person_identifiers_2_0"] = (
-            "https://linkedin.com/in/pamphero"
-        )
+        form[
+            f"{ballot.pk}-0-person_identifiers_2_0"
+        ] = "https://linkedin.com/in/pamphero"
         form[f"{ballot.pk}-0-person_identifiers_2_1"] = "linkedin_url"
 
         response = form.submit().follow()
@@ -304,22 +304,22 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["source"] = "https://example.com/candidates/"
         for ballot in ballots:
             form[f"{ballot.pk}-0-name"] = f"Candidate {ballot.pk}"
-            form[f"{ballot.pk}-0-biography"] = (
-                f"Biography for Candidate {ballot.pk}"
-            )
+            form[
+                f"{ballot.pk}-0-biography"
+            ] = f"Biography for Candidate {ballot.pk}"
             form[f"{ballot.pk}-0-gender"] = "female"
             form[f"{ballot.pk}-0-birth_date"] = "1990"
-            form[f"{ballot.pk}-0-person_identifiers_0_0"] = (
-                f"https://example.com/{ballot.pk}"
-            )
+            form[
+                f"{ballot.pk}-0-person_identifiers_0_0"
+            ] = f"https://example.com/{ballot.pk}"
             form[f"{ballot.pk}-0-person_identifiers_0_1"] = "homepage_url"
-            form[f"{ballot.pk}-0-person_identifiers_1_0"] = (
-                f"candidate{ballot.pk}@example.com"
-            )
+            form[
+                f"{ballot.pk}-0-person_identifiers_1_0"
+            ] = f"candidate{ballot.pk}@example.com"
             form[f"{ballot.pk}-0-person_identifiers_1_1"] = "email"
-            form[f"{ballot.pk}-0-person_identifiers_2_0"] = (
-                f"https://linkedin.com/in/candidate{ballot.pk}"
-            )
+            form[
+                f"{ballot.pk}-0-person_identifiers_2_0"
+            ] = f"https://linkedin.com/in/candidate{ballot.pk}"
             form[f"{ballot.pk}-0-person_identifiers_2_1"] = "linkedin_url"
 
         # Submit the form

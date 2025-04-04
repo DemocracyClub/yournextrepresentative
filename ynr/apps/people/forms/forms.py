@@ -107,9 +107,9 @@ class PersonIdentifierForm(forms.ModelForm):
         if self.cleaned_data.get("value_type") in self.HTTP_IDENTIFIERS:
             # Add https schema if missing
             if not self.cleaned_data.get("value").startswith("http"):
-                self.cleaned_data["value"] = (
-                    f"https://{self.cleaned_data['value']}"
-                )
+                self.cleaned_data[
+                    "value"
+                ] = f"https://{self.cleaned_data['value']}"
             URLValidator()(value=self.cleaned_data["value"])
         if (
             "value_type" in self.cleaned_data
@@ -216,9 +216,9 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
         )
 
         if self.show_previous_party_affiliations:
-            self.fields["previous_party_affiliations"] = (
-                PreviousPartyAffiliationsField(membership=self.instance)
-            )
+            self.fields[
+                "previous_party_affiliations"
+            ] = PreviousPartyAffiliationsField(membership=self.instance)
 
     @property
     def show_previous_party_affiliations(self):
