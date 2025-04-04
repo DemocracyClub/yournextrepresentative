@@ -1,11 +1,12 @@
 import json
+import re
 from io import BytesIO
 
+import pandas
 from django.core.files.images import ImageFile
 from django.db import models
 from django.utils.functional import cached_property
 from model_utils.models import TimeStampedModel
-from pandas import concat
 from textractor.parsers import response_parser
 from textractor.parsers.response_parser import parse
 
@@ -110,24 +111,8 @@ class AWSTextractParsedSOPN(TimeStampedModel):
         import pandas
 
         pandas.set_option("display.max_colwidth", None)
-        df = pandas.DataFrame.from_dict(json.loads(self.parsed_data))
-
-        # Don't parse situation of polling stations
-        df.reset_index(drop=True, inplace=True)
-        polling_station_index = df[
-            df.apply(
-                lambda row: row.astype(str).str.contains(
-                    "polling station", case=False).any(),
-                axis=1,
-            )
-        ].index
-        if not polling_station_index.empty:
-            polling_station_index = polling_station_index[0]
-            if isinstance(polling_station_index, str):
-                polling_station_index = int(polling_station_index)
-            new_df = df.loc[: polling_station_index - 1]
-            df = new_df
-        return df
+        # df = pandas.DataFrame.from_dict(json.loads(self.parsed_data))
+        return self.parse_raw_data()
 
     def parse_raw_data(self):
         """
@@ -145,45 +130,140 @@ class AWSTextractParsedSOPN(TimeStampedModel):
         # Store all data frames in a list
         frames = []
 
-        # Table headers that we've seen
-        for table in parsed.tables:
-            # Get the pandas version of the table
-            df = table.to_pandas()
-            frames.append(df)
+        last_title = None
+        force_process_table = False
+        found_situation_of_poll = False
 
-        # Merge all the dataframes
-        df = concat(
-            frames,
-            ignore_index=True,
-        )
+        for page in parsed.pages:
+            for layout in page.layouts[:5]:
+                if "polling station" in layout.text.lower():
+                    found_situation_of_poll = True
+                    break
+            if found_situation_of_poll:
+                break
+
+            for i, initial_table in enumerate(page.tables):
+                if initial_table.column_count < 3:
+                    force_process_table = True
+                    continue
+                try:
+                    table_title = initial_table.title.text
+                except AttributeError:
+                    table_title = ""
+                if "polling station" in table_title.lower():
+                    continue
+
+                table = initial_table
+                if not force_process_table or page.page_num == 1:
+                    df = self.remove_non_table_header_content(
+                        initial_table.to_pandas()
+                    )
+                else:
+                    df = initial_table.to_pandas()
+                # else:
+                #     try:
+                #         table = initial_table.strip_headers()
+                #         df = table.to_pandas()
+                #     except IndexError:
+                #         df = self.remove_non_header_rows(initial_table.to_pandas())
+                #
+                if i > 0 or page.page_num > 1:
+                    if not force_process_table:
+                        df = self.remove_header_rows(df)
+                    force_process_table = False
+
+                if df.empty:
+                    continue
+
+                frames.append(df)
+
+                current_title = getattr(table.title, "text", None)
+                if last_title and current_title != last_title:
+                    break
+                last_title = current_title
+
+        all_rows = []
+        max_len = 0
+        for df in frames:
+            if df.empty:
+                continue
+            rows = df.values.tolist()
+            all_rows.extend(rows)
+            max_len = max(max_len, max(len(row) for row in rows))
+        padded_rows = [row + [""] * (max_len - len(row)) for row in all_rows]
+        df = pandas.DataFrame(padded_rows)
+        # Don't parse situation of polling stations
+        df.reset_index(drop=True, inplace=True)
+
+        polling_station_index = df[
+            df.apply(
+                lambda row: row.astype(str)
+                .str.contains("polling station", case=False)
+                .any(),
+                axis=1,
+            )
+        ].index
+        if not polling_station_index.empty:
+            polling_station_index = polling_station_index[0]
+            if isinstance(polling_station_index, str):
+                polling_station_index = int(polling_station_index)
+            new_df = df.loc[: polling_station_index - 1]
+            df = new_df
+
         self.parsed_data = df.to_json()
+        return df
+
+    def remove_non_table_header_content(self, df):
+        """
+        Some tables include rows that aren't headers. Remove them
+
+        """
+        # How many rows to scan form the top of a df
+        max_search = 4
+
+        for i in range(min(len(df), max_search)):
+            if self.is_header_row(df.iloc[i]):
+                return df.iloc[i:].copy()
+        return df
+
+    def remove_header_rows(self, df: pandas.DataFrame):
+        """
+        Given a data frame, remove header rows
+
+        """
+        # How many rows to scan form the top of a df
+        max_search = 4
+        header_start_index = 0
+        header_row_found = False
+
+        for i in range(min(len(df), max_search)):
+            if self.is_header_row(df.iloc[i]):
+                header_row_found = True
+                break
+            header_start_index += 1
+        if header_row_found:
+            df = df.iloc[header_start_index + 1 :].copy()
+        return df
 
     def as_textractor_document(self):
         if not self.raw_data:
             return None
         return response_parser.parse(json.loads(self.raw_data))
 
-    def get_heading_row(self):
-        if self.as_pandas is None:
-            return []
-        heading_row_index = 0
-        heading_values = []
-        # We need at least three values (name, party, division)
-        while len(heading_values) < 3:
-            row = self.as_pandas.iloc[
-                heading_row_index
-            ]
-            heading_values = [
-                heading.lower().strip()
-                for heading in row.tolist()
-                if heading
-            ]
-            if len(heading_values) > 1 and "name" in heading_values[0]:
-                return row
+    def normalise_row(self, row):
+        """Convert a row to a cleaned, comparable list of strings."""
+        return [
+            str(re.sub("[^a-z\s]", "", cell.lower())).strip()
+            for cell in row
+            if cell
+        ]
 
-            heading_row_index += 1
-
-        return row
+    def is_header_row(self, row):
+        keywords = ["name", "first", "surname"]
+        cleaned = self.normalise_row(row)
+        if len(cleaned) <= 3:
+            return False
+        return any(any(kw in cell for kw in keywords) for cell in cleaned)
 
     def get_withdrawal_column(self):
         column_names = [
@@ -192,10 +272,12 @@ class AWSTextractParsedSOPN(TimeStampedModel):
             "invalid",
             "decision",
         ]
-
-        for i, heading in enumerate(self.get_heading_row()):
-            if any([col in heading for col in column_names]):
-                return self.as_pandas[str(i)]
+        if self.as_pandas.empty:
+            return None
+        for i, heading in enumerate(self.as_pandas.iloc[0]):
+            if any(col in str(heading) for col in column_names):
+                return self.as_pandas[i]
+        return None
 
     def withdrawal_rows(self):
         column_values = self.get_withdrawal_column()
@@ -212,9 +294,10 @@ class AWSTextractParsedSOPN(TimeStampedModel):
         return cells_with_value
 
     def get_withdrawals_bboxes(self):
+        return "{}"
         # headers = self.as_pandas.iloc[0].tolist()
         # get colmun index from headers
-        column = "5"
+        column = "4"
         column_values = self.as_pandas[column].tolist()
         cells_with_value = []
         for i, row in enumerate(column_values):

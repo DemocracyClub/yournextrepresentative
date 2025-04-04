@@ -538,15 +538,16 @@ def parse_raw_data(ballot: Ballot, reparse=False):
     """
     camelot_data = {}
     camelot_model = getattr(ballot.sopn, "camelotparsedsopn", None)
-    if getattr(settings, "CAMELOT_ENABLED", False):
-        if (
-            camelot_model
-            and camelot_model.raw_data_type == "pandas"
-            and (reparse or not camelot_model.parsed_data)
-        ):
-            camelot_data = parse_dataframe(ballot, camelot_model.as_pandas)
+    if getattr(settings, "CAMELOT_ENABLED", False) and (
+        camelot_model
+        and camelot_model.raw_data_type == "pandas"
+        and (reparse or not camelot_model.parsed_data)
+    ):
+        camelot_data = parse_dataframe(ballot, camelot_model.as_pandas)
 
-    textract_model: AWSTextractParsedSOPN = getattr(ballot.sopn, "awstextractparsedsopn", None)
+    textract_model: AWSTextractParsedSOPN = getattr(
+        ballot.sopn, "awstextractparsedsopn", None
+    )
     textract_data = {}
 
     if (

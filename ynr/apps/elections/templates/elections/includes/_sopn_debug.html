@@ -37,6 +37,7 @@
             N/A
         {% endif %}
         <br/>
+        {{ textract_parsed.as_pandas.to_html|safe }}
 
 
         {% if textract_parsed and textract_parsed.as_textractor_document %}
@@ -46,6 +47,7 @@
                 {{ table.to_html|safe }}
             {% endfor %}
         {% endif %}
+    
 
         {% if textract_parsed.parsed_data %}
             <h3>AWS document markdown</h3>
