@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("official_documents", "0038_ballotsopn_replacement_reason_and_more"),
     ]
