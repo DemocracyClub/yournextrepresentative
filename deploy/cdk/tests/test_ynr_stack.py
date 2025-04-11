@@ -23,3 +23,5 @@ def test_template_components():
     # (i.e. per AWS AZ), as public IP addresses are charged at 0.005USD/hour.
     # For now, we simply ensure that zero NAT Gateways exist in the stack.
     template.resource_count_is('AWS::EC2::NatGateway', 0)
+
+    template.resource_count_is('AWS::EC2::VPC', 1)
