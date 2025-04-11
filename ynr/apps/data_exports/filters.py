@@ -1,10 +1,10 @@
 from typing import List, Optional, Tuple
 
 import django_filters
-from django.db.models import CharField, Q
-from django.db.models.functions import Cast
-from django_filters import BaseInFilter
+from django.db.models import CharField, F, Q, Value
+from django.db.models.functions import Cast, Concat
 from elections.filters import DSLinkWidget, region_choices
+from parties.models import Party
 
 from .csv_fields import CSVField
 from .models import MaterializedMemberships
@@ -47,7 +47,7 @@ class ElectionIDText(django_filters.CharFilter):
         return qs
 
 
-class PartyINFilter(BaseInFilter, django_filters.CharFilter):
+class PartyINFilter(django_filters.MultipleChoiceFilter):
     pass
 
 
@@ -87,6 +87,17 @@ class MaterializedMembershipFilter(django_filters.FilterSet):
     )
     party_id = PartyINFilter(
         field_name="party_id",
+        choices=Party.objects.annotate(
+            label=Concat(
+                F("name"),
+                Value(" ("),
+                F("ec_id"),
+                Value(", "),
+                F("register"),
+                Value(")"),
+                output_field=CharField(),
+            )
+        ).values_list("ec_id", "label"),
     )
     cancelled = django_filters.ChoiceFilter(
         field_name="ballot_paper__cancelled", choices=CANCELLED_CHOICES
