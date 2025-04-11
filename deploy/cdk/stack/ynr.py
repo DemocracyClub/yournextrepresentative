@@ -39,7 +39,7 @@ class YnrStack(Stack):
             desired_count=2,
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
                 image=ecs.ContainerImage.from_registry(
-                    "amazon/amazon-ecs-sample"
+                    "public.ecr.aws/h3q9h5r7/dc-test/ynr"
                 ),
                 # Secrets aren't necessarily "secret", but are created as
                 # environment variables that are looked up at ECS task
