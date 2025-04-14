@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.utils.text import slugify
 from django.views import View
 from django.views.generic import TemplateView
+from elections.helpers import get_latest_charismatic_election_dates
 
 from .csv_fields import csv_fields, get_core_fieldnames
 from .filters import (
@@ -61,12 +62,12 @@ class DataFilterMixin:
         return context
 
 
-class DataHomeView(DataFilterMixin, TemplateView):
+class DataCustomBuilderView(DataFilterMixin, TemplateView):
     """
     A view for presenting all options for getting all data out of this site
     """
 
-    template_name = "data_exports/data_home.html"
+    template_name = "data_exports/custom_builder.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -79,6 +80,7 @@ class DataHomeView(DataFilterMixin, TemplateView):
         )
         page = paginator.get_page(self.request.GET.get("page", "1"))
         context["page_obj"] = page
+
         return context
 
 
@@ -104,3 +106,13 @@ class DataExportView(DataFilterMixin, View):
             response, extra_fields=context["extra_fields"]
         )
         return response
+
+
+class DataShortcutView(TemplateView):
+    template_name = "data_exports/data_home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get loads of recent elections for this page
+        context["charismatic_dates"] = get_latest_charismatic_election_dates(30)
+        return context

@@ -25,7 +25,8 @@ class SelectWithAttrs(Select):
         option = super().create_option(
             name, value, label_text, selected, index, subindex=None, attrs=None
         )
-        option["attrs"].update(label)
+        if isinstance(label, dict):
+            option["attrs"].update(label)
         return option
 
 

@@ -2,5 +2,5 @@
 <p>Download the CSV of all election results for the 2024 general election:</p>
 <p><a class="button" href="{% url 'data_export' %}?election_date=2024-07-04&ballot_paper_id=&election_id=&party_id=&cancelled=&locked=&has_votes_cast=&has_elected=&has_tied_vote_winner=&has_rank=&has_turnout_reported=&has_spoilt_ballots=&has_total_electorate=&has_turnout_percentage=&has_results_source=&field_group=results">Download CSV</a></p>
 <p>Or for more advance filters and more fields, try the
-    <a href="{% url 'data_home' %}?election_date=2024-07-04&ballot_paper_id=&election_id=&party_id=&cancelled=&locked=&field_group=results">custom CSV builder</a>.</p>
+    <a href="{% url 'data_custom_builder' %}?election_date=2024-07-04&ballot_paper_id=&election_id=&party_id=&cancelled=&locked=&field_group=results">custom CSV builder</a>.</p>
 <p>This data is updated every minute.</p>
