@@ -113,5 +113,6 @@ class DataShortcutView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["charismatic_dates"] = get_latest_charismatic_election_dates()
+        # Get loads of recent elections for this page
+        context["charismatic_dates"] = get_latest_charismatic_election_dates(30)
         return context
