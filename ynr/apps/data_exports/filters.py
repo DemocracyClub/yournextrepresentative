@@ -77,6 +77,8 @@ class MaterializedMembershipFilter(django_filters.FilterSet):
     )
     election_date = django_filters.CharFilter(
         lookup_expr="regex",
+        label="Election date",
+        help_text="Blank fields will match anything",
     )
 
     ballot_paper_id = BallotPaperText(lookup_expr="regex")
