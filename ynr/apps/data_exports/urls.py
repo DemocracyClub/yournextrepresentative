@@ -2,6 +2,7 @@ from data_exports import views
 from django.urls import path
 
 urlpatterns = [
+    path(r"shortcuts", views.DataShortcutView.as_view(), name="data_shortcuts"),
     path(
         r"", views.DataCustomBuilderView.as_view(), name="data_custom_builder"
     ),
