@@ -424,19 +424,6 @@ IMAGE_PROXY_URL = ""
 
 RESULTS_FEATURE_ACTIVE = False
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "filters": {
-        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}
-    },
-    "handlers": {
-        "console": {
-            "level": "ERROR",
-            "class": "logging.StreamHandler",
-        },
-    },
-}
 
 CANDIDATE_BOT_USERNAME = "CandidateBot"
 RESULTS_BOT_USERNAME = "ResultsBot"
