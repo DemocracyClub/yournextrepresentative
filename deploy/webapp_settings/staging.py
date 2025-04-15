@@ -17,8 +17,6 @@ DATABASES = {
     },
 }
 
-# A tuple of tuples containing (Full name, email address)
-ADMINS = ("YNR Stage Developers", "developers+ynr-stage@democracyclub.org.uk")
 
 # **** Other settings that might be useful to change locally
 
