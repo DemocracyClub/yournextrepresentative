@@ -43,8 +43,6 @@ TWITTER_USERNAME = "democlub"
 # support email to:
 SUPPORT_EMAIL = "candidates@democracyclub.org.uk"
 
-# Email addresses that error emails are sent to when DEBUG = False
-ADMINS = [()]
 
 # The From: address for all emails except error emails
 DEFAULT_FROM_EMAIL = "candidates@democracyclub.org.uk"
@@ -68,8 +66,6 @@ AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", None)
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", None)
 AWS_SESSION_TOKEN = os.environ.get("AWS_SESSION_TOKEN", None)
 
-# The From: address for error emails
-SERVER_EMAIL = "candidates@democracyclub.org.uk"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -428,19 +424,6 @@ IMAGE_PROXY_URL = ""
 
 RESULTS_FEATURE_ACTIVE = False
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "filters": {
-        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}
-    },
-    "handlers": {
-        "console": {
-            "level": "ERROR",
-            "class": "logging.StreamHandler",
-        },
-    },
-}
 
 CANDIDATE_BOT_USERNAME = "CandidateBot"
 RESULTS_BOT_USERNAME = "ResultsBot"
