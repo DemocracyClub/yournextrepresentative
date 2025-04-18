@@ -67,7 +67,7 @@ class DCPercentageInput(TextInput):
                 value = value.replace("%", "");
                 value = value.trim();
                 if (value !== "") {
-                    value = Math.round(parseFloat(value)).toString();
+                    value = parseFloat(value).toFixed(2).toString();
                 }
                 this.value = value;
             """,
