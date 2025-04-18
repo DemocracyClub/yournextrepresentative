@@ -51,7 +51,7 @@
             Spoilt ballots
           </th>
           <td>
-            {{ version.spoilt_ballots }}
+            {{ version.spoilt_ballots|default_if_none:"" }}
           </td>
         </tr>
         <tr>
@@ -59,7 +59,7 @@
             Turnout
           </th>
           <td>
-            {{ version.turnout }}
+            {{ version.turnout|default_if_none:"" }}
           </td>
         </tr>
       </tbody>
