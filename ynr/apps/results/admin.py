@@ -1,6 +1,5 @@
+from candidates.models import Ballot
 from django.contrib import admin
-from django.urls import reverse
-from django.utils.text import slugify
 
 from .models import ResultEvent
 
@@ -14,7 +13,7 @@ class ResultEventAdmin(admin.ModelAdmin):
         "winner_link",
         "old_post_id",
         "old_post_name",
-        "post_link",
+        "election_link",
         "source",
     )
     search_fields = (
@@ -31,38 +30,20 @@ class ResultEventAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.select_related(
-            "user", "winner", "post", "winner_party__extra", "election"
+            "user", "winner", "post", "winner_party", "election"
         )
 
     def winner_link(self, o):
-        url = reverse(
-            "person-view",
-            kwargs={
-                "person_id": o.winner.id,
-                "ignored_slug": slugify(o.winner.name),
-            },
-        )
-        return '<a href="{}">{}</a>'.format(url, o.winner.name)
+        return o.winner.get_absolute_url()
 
-    winner_link.allow_tags = True
-
-    def post_link(self, o):
+    def election_link(self, o):
         if o.post:
-            url = reverse(
-                "constituency",
-                kwargs={
-                    "election": o.election.slug,
-                    "post_id": o.post.slug,
-                    "ignored_slug": slugify(o.post.short_label),
-                },
-            )
-            return '<a href="{}">{}</a>'.format(url, o.post.short_label)
+            ballot = Ballot.objects.get(election=o.election, post=o.post)
+            return ballot.get_absolute_url()
         # There is still data in the database for some posts that
         # were deleted and never recreated, so we can't create a
         # link for them.
         return ""
-
-    post_link.allow_tags = True
 
 
 admin.site.register(ResultEvent, ResultEventAdmin)
