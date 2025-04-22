@@ -7,6 +7,7 @@ from elections.models import Election
 from resultsbot.matchers.candidate import CandidateMatcher
 from resultsbot.matchers.mappings import SavedMapping
 from resultsbot.matchers.party import PartyMatacher
+from uk_results.utils import calculate_turnout_percentage
 
 from .base import BaseCandidate, BaseDivision, BaseImporter
 
@@ -96,7 +97,10 @@ class ModGovDivision(BaseDivision):
     def turnout_percentage(self):
         if not all([self.numballotpapersissued, self.electorate]):
             return None
-        return int((self.numballotpapersissued / self.electorate) * 100)
+        return calculate_turnout_percentage(
+            self.numballotpapersissued, self.electorate
+        )
+
 
 class ModGovImporter(BaseImporter):
     def __init__(self, *args, **kwargs):

@@ -87,4 +87,4 @@ class TestModGov(KirkleesBatleyEastMixin, TestCase):
         division = mg_importer.divisions().__next__()
         self.assertEqual(division.spoiled_votes, 8)
         self.assertEqual(division.numballotpapersissued, 3437)
-        self.assertEqual(division.turnout_percentage, 25)
+        self.assertEqual(division.turnout_percentage, 25.88)
