@@ -5,6 +5,7 @@ from django.db import models, transaction
 from django.db.models import JSONField, OuterRef, Subquery
 from django_extensions.db.models import TimeStampedModel
 from popolo.models import Membership
+from uk_results.utils import calculate_turnout_percentage
 
 
 class ResultSet(TimeStampedModel):
@@ -64,15 +65,16 @@ class ResultSet(TimeStampedModel):
     def rank(self):
         self.ballot.result_sets.order_by("-num_turnout_reported").index(self)
 
-    def calculate_turnout_percentage(self):
+    def set_turnout_percentage(self):
         """
-        Return turnout as a percentage, rounded to two decimal places
+        Set turnout percentage, if possible.
         """
         if not all([self.num_turnout_reported, self.total_electorate]):
             return
 
-        percentage = (self.num_turnout_reported / self.total_electorate) * 100
-        self.turnout_percentage = int(min(round(percentage, 2), 100))
+        self.turnout_percentage = calculate_turnout_percentage(
+            self.num_turnout_reported, self.total_electorate
+        )
 
     def as_dict(self):
         """
@@ -133,7 +135,7 @@ class ResultSet(TimeStampedModel):
         return (existing, changed)
 
     def save(self, **kwargs):
-        self.calculate_turnout_percentage()
+        self.set_turnout_percentage()
         return super().save(**kwargs)
 
 

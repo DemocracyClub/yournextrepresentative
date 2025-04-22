@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
@@ -106,13 +108,16 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         self.result_set.record_version()
 
     def test_turnout_percentage(self):
-        self.result_set.calculate_turnout_percentage()
-        self.assertEqual(self.result_set.turnout_percentage, 20.0)
+        self.result_set.set_turnout_percentage()
+        self.assertEqual(self.result_set.turnout_percentage, Decimal(20.00))
         self.result_set.num_turnout_reported = 3333
         self.result_set.total_electorate = 10000
-        self.result_set.calculate_turnout_percentage()
+        self.result_set.set_turnout_percentage()
         # check rounded to 2 places max
-        self.assertEqual(self.result_set.turnout_percentage, 33)
+        self.assertEqual(
+            self.result_set.turnout_percentage,
+            Decimal(33.33).quantize(Decimal("0.01")),
+        )
 
     def test_turnout_percentage_is_none(self):
         results = [
@@ -122,12 +127,12 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
         ]
         for result in results:
             with self.subTest(msg=result):
-                result.calculate_turnout_percentage()
+                result.set_turnout_percentage()
                 self.assertIsNone(result.turnout_percentage)
 
     def test_turnout_percentage_max_100(self):
         result = ResultSet(num_turnout_reported=100, total_electorate=50)
-        result.calculate_turnout_percentage()
+        result.set_turnout_percentage()
         self.assertEqual(result.turnout_percentage, 100)
 
     def test_suggesting_votes(self):

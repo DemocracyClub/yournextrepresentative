@@ -1,4 +1,5 @@
 import os
+from decimal import Decimal
 from tempfile import NamedTemporaryFile
 
 import mock
@@ -73,7 +74,6 @@ class TestModGov(KirkleesBatleyEastMixin, TestCase):
             candidates = list(mg_importer.candidates(div))
             self.assertEqual(len(candidates), 5)
 
-
     def test_extra_ballot_data(self, *args):
         """
         Tests that a division can access spoilt ballots etc.
@@ -87,4 +87,4 @@ class TestModGov(KirkleesBatleyEastMixin, TestCase):
         division = mg_importer.divisions().__next__()
         self.assertEqual(division.spoiled_votes, 8)
         self.assertEqual(division.numballotpapersissued, 3437)
-        self.assertEqual(division.turnout_percentage, 25)
+        self.assertEqual(division.turnout_percentage, Decimal("25.88"))
