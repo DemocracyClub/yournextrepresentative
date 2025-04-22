@@ -1,3 +1,4 @@
+import sentry_sdk
 from candidates.models import PartySet
 from candidates.models.popolo_extra import Ballot
 from django import forms
@@ -107,9 +108,9 @@ class PersonIdentifierForm(forms.ModelForm):
         if self.cleaned_data.get("value_type") in self.HTTP_IDENTIFIERS:
             # Add https schema if missing
             if not self.cleaned_data.get("value").startswith("http"):
-                self.cleaned_data["value"] = (
-                    f"https://{self.cleaned_data['value']}"
-                )
+                self.cleaned_data[
+                    "value"
+                ] = f"https://{self.cleaned_data['value']}"
             URLValidator()(value=self.cleaned_data["value"])
         if (
             "value_type" in self.cleaned_data
@@ -186,6 +187,14 @@ class PersonIdentifierForm(forms.ModelForm):
         return email
 
     def save(self, commit=True):
+        # TMP: this is added to help debug a problem with
+        # duplicate IDs being writtien to the database.
+        # Use the class ID to not duplicate context IDs between more than
+        # one PersonIdentifier form.
+        prefix = id(self)
+        sentry_sdk.set_context(f"{prefix}_cleaned_data", self.cleaned_data)
+        sentry_sdk.set_context(f"{prefix}_initial", self.initial)
+        sentry_sdk.set_context(f"{prefix}_instance", self.instance.__dict__)
         ret = super().save(commit=commit)
         if commit and self.cleaned_data["value_type"].startswith("facebook"):
             extract_fb_page_id.delay(self.instance.pk)
@@ -216,9 +225,9 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
         )
 
         if self.show_previous_party_affiliations:
-            self.fields["previous_party_affiliations"] = (
-                PreviousPartyAffiliationsField(membership=self.instance)
-            )
+            self.fields[
+                "previous_party_affiliations"
+            ] = PreviousPartyAffiliationsField(membership=self.instance)
 
     @property
     def show_previous_party_affiliations(self):
