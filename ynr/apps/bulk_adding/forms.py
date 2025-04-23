@@ -1,3 +1,5 @@
+from datetime import date
+
 from bulk_adding.fields import PersonIdentifierFieldSet
 from django import forms
 from django.core.exceptions import ValidationError
@@ -277,6 +279,14 @@ class BulkAddByPartyForm(NameOnlyPersonForm):
             [line.strip() for line in bio.split("\n\n") if line.strip()]
         )
 
+    def clean_birth_date(self):
+        bd = self.cleaned_data["birth_date"]
+        if bd:
+            current_year = date.today().year
+            min_year = str(current_year - 19)
+            if not "1900" < bd <= min_year:
+                raise ValidationError("Please enter a valid year of birth")
+        return bd
 
 class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
     source = forms.CharField(required=True)

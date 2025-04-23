@@ -1,3 +1,5 @@
+from datetime import date
+
 import sentry_sdk
 from candidates.models import PartySet
 from candidates.models.popolo_extra import Ballot
@@ -385,6 +387,15 @@ class BasePersonForm(forms.ModelForm):
         return "\n\n".join(
             [line.strip() for line in bio.split("\n\n") if line.strip()]
         )
+
+    def clean_birth_date(self):
+        bd = self.cleaned_data["birth_date"]
+        if bd:
+            current_year = date.today().year
+            min_year = str(current_year - 19)
+            if not "1900" < bd <= min_year:
+                raise ValidationError("Please enter a valid year of birth")
+        return bd
 
     def save(self, commit=True, user=None):
         suggested_name = self.cleaned_data["name"]
