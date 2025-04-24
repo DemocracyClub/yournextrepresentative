@@ -47,6 +47,16 @@ class ElectionIDText(django_filters.CharFilter):
         return qs
 
 
+class DateIncludingReplacedFilter(django_filters.CharFilter):
+    def filter(self, qs, value):
+        if value:
+            qs = qs.filter(
+                Q(election_date=value)
+                | Q(ballot_paper__replaces__ballot_paper_id__contains=value)
+            )
+        return qs
+
+
 class PartyINFilter(django_filters.MultipleChoiceFilter):
     pass
 
@@ -75,7 +85,7 @@ class MaterializedMembershipFilter(django_filters.FilterSet):
         empty_label="All Candidates",
         widget=DSLinkWidget(),
     )
-    election_date = django_filters.CharFilter(
+    election_date = DateIncludingReplacedFilter(
         lookup_expr="regex",
         label="Election date",
         help_text="Blank fields will match anything",
