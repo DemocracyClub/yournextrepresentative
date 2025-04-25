@@ -145,6 +145,7 @@ INSTALLED_APPS = (
     "duplicates",
     "data_exports",
     "django_svelte",
+    "hcaptcha",
 )
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
@@ -440,6 +441,9 @@ SOPN_UPDATE_NOTIFICATION_EMAILS = os.environ.get(
 # The maximum number of fields that can be uploaded in a single request.
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
 
+
+HCAPTCHA_SITEKEY = os.environ.get("HCAPTCHA_SITEKEY", None)
+HCAPTCHA_SECRET = os.environ.get('HCAPTCHA_SECRET', None)
 
 # import application constants
 from .constants.needs_review import *  # noqa

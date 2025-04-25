@@ -1,6 +1,8 @@
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from hcaptcha.fields import hCaptchaField
 
 
 class LoginForm(forms.Form):
@@ -16,6 +18,11 @@ class LoginForm(forms.Form):
         """
         email = self.cleaned_data["email"]
         return User.objects.normalize_email(email)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if settings.HCAPTCHA_SITEKEY and settings.HCAPTCHA_SECRET:
+            self.fields['hcaptcha'] = hCaptchaField()
 
 
 class UserProfileForm(forms.ModelForm):
