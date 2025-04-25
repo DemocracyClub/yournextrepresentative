@@ -1,12 +1,12 @@
 import datetime
 from typing import List, Union
 
+from cached_counts.models import ElectionReport
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.utils.text import slugify
 from django.views import View
 from django.views.generic import TemplateView
-from elections.helpers import get_latest_charismatic_election_dates
 
 from .csv_fields import csv_fields, get_core_fieldnames
 from .filters import (
@@ -114,5 +114,20 @@ class DataShortcutView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Get loads of recent elections for this page
-        context["charismatic_dates"] = get_latest_charismatic_election_dates(30)
+        context[
+            "charismatic_elections"
+        ] = ElectionReport.objects.all().order_by("-election_date")
+        context["special_reports"] = [
+            {
+                "only_by_elections": True,
+                "election_type": "local",
+                "title": "Local by-elections",
+            },
+            {
+                "only_by_elections": True,
+                "election_type": "parl",
+                "title": "Parliamentary by-elections",
+            },
+        ]
+
         return context

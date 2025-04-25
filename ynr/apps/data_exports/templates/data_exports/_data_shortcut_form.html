@@ -1,0 +1,58 @@
+<h3>{{ title }}</h3>
+<form action="{% url "data_export" %}">
+    <input type="hidden" name="election_date" value="{{ election_date.isoformat }}">
+    <input type="hidden" name="election_id" value="^{{ election_type }}.*">
+    {% if only_by_elections %}
+    	    <input type="hidden" name="by_election" value="True">
+
+    {% endif %}
+    <input type="hidden" name="format" value="csv">
+    <input type="hidden" name="field_group" value="results">
+
+    <table class="table">
+        <caption>{{ election_date }}</caption>
+        <thead>
+        <tr>
+            <td>Fields</td>
+            <td>Links</td>
+        </tr>
+        </thead>
+
+
+        <tbody class="table">
+
+        <tr>
+
+            <td>
+                <label>
+                    Person profiles
+                    <input type="checkbox" name="field_group" value="person">
+                </label>
+                <label>
+                    Candidacy fields
+                    <input type="checkbox" name="field_group" value="candidacy">
+                </label>
+                <label>
+                    Election fields
+                    <input type="checkbox" name="field_group" value="election">
+                </label>
+                <label>
+                    Only elected
+                    <input type="checkbox" name="elected" value="True">
+                </label>
+            </td>
+            <td>
+                <button type="submit" class="button small">
+                    Download
+                </button>
+                <button type="submit" class="button small" formaction="{% url "data_custom_builder" %}">
+                    More options
+                </button>
+            </td>
+        </tr>
+
+        </tbody>
+
+
+    </table>
+</form>
