@@ -128,6 +128,11 @@ class DataShortcutView(TemplateView):
                 "election_type": "parl",
                 "title": "Parliamentary by-elections",
             },
+            {
+                "only_by_elections": None,
+                "election_type": "",
+                "title": "All candidates",
+            },
         ]
 
         return context
