@@ -15,6 +15,7 @@ from people.forms.fields import (
     StrippedCharField,
     ValidBallotField,
 )
+from people.helpers import clean_biography, clean_birth_date
 from popolo.models import Membership
 from search.utils import search_person_by_name
 
@@ -270,12 +271,11 @@ class BulkAddByPartyForm(NameOnlyPersonForm):
 
     def clean_biography(self):
         bio = self.cleaned_data["biography"]
-        if bio.find("\r"):
-            bio = bio.replace("\r", "")
-        # Reduce > 2 newlines to 2 newlines
-        return "\n\n".join(
-            [line.strip() for line in bio.split("\n\n") if line.strip()]
-        )
+        return clean_biography(bio)
+
+    def clean_birth_date(self):
+        bd = self.cleaned_data["birth_date"]
+        return clean_birth_date(bd)
 
 
 class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):

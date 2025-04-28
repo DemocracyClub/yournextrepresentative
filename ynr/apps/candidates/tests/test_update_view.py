@@ -87,13 +87,24 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual("/person/2009", split_location.path)
         self.assertEqual(memberships_before, membership_id_set(person))
 
+    def test_update_invalid_birth_date(self):
+        response = self.app.get(
+            "/person/2009/update", user=self.user_who_can_lock
+        )
+        form = response.forms["person-details"]
+        form["birth_date"] = "952"
+        form["source"] = "An update for testing purposes"
+        response = form.submit()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Please enter a valid year of birth")
+
     def test_update_birth_date(self):
         memberships_before = membership_id_set(Person.objects.get(pk=2009))
         response = self.app.get(
             "/person/2009/update", user=self.user_who_can_lock
         )
         form = response.forms["person-details"]
-        form["birth_date"] = "1875"
+        form["birth_date"] = "1952"
         form["source"] = "An update for testing purposes"
         response = form.submit()
 
@@ -102,7 +113,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual("/person/2009", split_location.path)
 
         person = Person.objects.get(id="2009")
-        self.assertEqual(person.birth_date, "1875")
+        self.assertEqual(person.birth_date, "1952")
         self.assertEqual(memberships_before, membership_id_set(person))
 
     def test_update_person_extra_fields(self):
@@ -112,7 +123,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/person/2009/update", user=self.user_who_can_lock
         )
         form = response.forms["person-details"]
-        form["birth_date"] = "1875"
+        form["birth_date"] = "1952"
         form["source"] = "An update for testing purposes"
         response = form.submit()
 
@@ -121,7 +132,7 @@ class TestUpdatePersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual("/person/2009", split_location.path)
 
         person = Person.objects.get(id="2009")
-        self.assertEqual(person.birth_date, "1875")
+        self.assertEqual(person.birth_date, "1952")
         versions_data = person.versions
         self.assertEqual(
             versions_data[0]["data"]["extra_fields"], {"favourite_biscuits": ""}

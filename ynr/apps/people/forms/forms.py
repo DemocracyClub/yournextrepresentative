@@ -21,6 +21,8 @@ from people.forms.fields import (
     UnlockedBallotsField,
 )
 from people.helpers import (
+    clean_biography,
+    clean_birth_date,
     clean_instagram_url,
     clean_linkedin_url,
     clean_mastodon_username,
@@ -379,12 +381,11 @@ class BasePersonForm(forms.ModelForm):
 
     def clean_biography(self):
         bio = self.cleaned_data["biography"]
-        if bio.find("\r"):
-            bio = bio.replace("\r", "")
-        # Reduce > 2 newlines to 2 newlines
-        return "\n\n".join(
-            [line.strip() for line in bio.split("\n\n") if line.strip()]
-        )
+        return clean_biography(bio)
+
+    def clean_birth_date(self):
+        bd = self.cleaned_data["birth_date"]
+        return clean_birth_date(bd)
 
     def save(self, commit=True, user=None):
         suggested_name = self.cleaned_data["name"]
