@@ -1,5 +1,6 @@
 import contextlib
 import re
+from datetime import date
 from urllib.parse import urlparse, urlunparse
 
 from candidates.mastodon_api import (
@@ -8,6 +9,7 @@ from candidates.mastodon_api import (
 )
 from dateutil import parser
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django_date_extensions.fields import ApproximateDate
 
 
@@ -190,3 +192,21 @@ def person_names_equal(name, other_name):
         return name.replace(" ", "")
 
     return _normalize(name) == _normalize(other_name)
+
+
+def clean_biography(bio):
+    if bio.find("\r"):
+        bio = bio.replace("\r", "")
+    # Reduce > 2 newlines to 2 newlines
+    return "\n\n".join(
+        [line.strip() for line in bio.split("\n\n") if line.strip()]
+    )
+
+
+def clean_birth_date(year):
+    if year:
+        current_year = date.today().year
+        min_year = str(current_year - 19)
+        if not "1900" < year <= min_year:
+            raise ValidationError("Please enter a valid year of birth")
+    return year

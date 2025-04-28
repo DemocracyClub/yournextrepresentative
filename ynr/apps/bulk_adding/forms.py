@@ -1,5 +1,3 @@
-from datetime import date
-
 from bulk_adding.fields import PersonIdentifierFieldSet
 from django import forms
 from django.core.exceptions import ValidationError
@@ -17,6 +15,7 @@ from people.forms.fields import (
     StrippedCharField,
     ValidBallotField,
 )
+from people.helpers import clean_biography, clean_birth_date
 from popolo.models import Membership
 from search.utils import search_person_by_name
 
@@ -272,21 +271,12 @@ class BulkAddByPartyForm(NameOnlyPersonForm):
 
     def clean_biography(self):
         bio = self.cleaned_data["biography"]
-        if bio.find("\r"):
-            bio = bio.replace("\r", "")
-        # Reduce > 2 newlines to 2 newlines
-        return "\n\n".join(
-            [line.strip() for line in bio.split("\n\n") if line.strip()]
-        )
+        return clean_biography(bio)
 
     def clean_birth_date(self):
         bd = self.cleaned_data["birth_date"]
-        if bd:
-            current_year = date.today().year
-            min_year = str(current_year - 19)
-            if not "1900" < bd <= min_year:
-                raise ValidationError("Please enter a valid year of birth")
-        return bd
+        return clean_birth_date(bd)
+
 
 class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
     source = forms.CharField(required=True)
