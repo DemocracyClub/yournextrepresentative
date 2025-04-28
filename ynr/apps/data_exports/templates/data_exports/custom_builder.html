@@ -120,8 +120,6 @@
 
                     // Split up date inputs for easier UX
                     const DateInput = document.querySelector('input[name="election_date"]');
-                    console.log("DateInput");
-                    console.log(DateInput);
                     DateInput.type = "hidden";
                     DateInput.insertAdjacentHTML("afterend", `
                         <div class="row">
@@ -162,7 +160,10 @@
                     }
 
                     const filter_form = DateInput.closest('form');
-                    filter_form.addEventListener('submit', function () {
+
+                    filter_form.addEventListener('submit', function (e) {
+                        e.preventDefault();  // stop the normal GET
+
                         let d = dayInput.value.trim() || '*';
                         let m = monthInput.value.trim() || '*';
                         let y = yearInput.value.trim() || '*';
@@ -191,6 +192,27 @@
                         y = toRegexPart(y, false);
                         // Combine them into ISO-like "YYYY-MM-DD"
                         DateInput.value = `${y}-${m}-${d}`;
+                        if (DateInput.value === ".*-.*-.*") {
+                            DateInput.value = "";
+                        }
+
+
+                        // Us JS to submit the form, removing empty values
+                        const params = new URLSearchParams();
+                        const formData = new FormData(filter_form);
+                        // …then drop any blank values
+                        for (const [key, value] of formData.entries()) {
+                            if (value.toString().trim() !== '') {
+                                params.append(key, value);
+                            }
+                        }
+
+                        // finally navigate to the cleaned URL
+                        const url = new URL(filter_form.action, location.href);
+                        url.search = params.toString();
+                        window.location.href = url.toString();
+
+
                     });
 
                 </script>
