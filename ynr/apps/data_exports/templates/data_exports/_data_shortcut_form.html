@@ -1,5 +1,5 @@
 <h3>{{ title }}</h3>
-<form action="{% url "data_export" %}">
+<form action="{% url "download_reason" %}">
     <input type="hidden" name="election_date" value="{{ election_date.isoformat }}">
     <input type="hidden" name="election_id" value="^{{ election_type }}.*">
     {% if only_by_elections %}

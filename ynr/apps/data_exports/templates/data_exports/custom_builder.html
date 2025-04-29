@@ -220,7 +220,7 @@
 
         <p style="margin-top:1em">
             <button type="submit" class="button">Filter</button>
-            <a class="button" href="{% url "data_export" %}{% query_string request.GET format='csv' %}">Download CSV</a>
+            <a class="button" href="{% url "download_reason" %}{% query_string request.GET format='csv' %}">Download CSV</a>
         </p>
 
 
@@ -268,7 +268,7 @@
     </div>
 
     <p>
-        <a class="button" href="{% url "data_export" %}{% query_string request.GET format='csv' %}">Download CSV</a>
+        <a class="button" href="{% url "download_reason" %}{% query_string request.GET format='csv' %}">Download CSV</a>
     </p>
 
 {% endblock %}

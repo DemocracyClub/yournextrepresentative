@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 
 from cached_counts.models import ElectionReport
 from django.core.paginator import Paginator
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.text import slugify
 from django.views import View
@@ -93,14 +93,6 @@ class DataCustomBuilderView(DataFilterMixin, TemplateView):
 
 class DataExportView(DataFilterMixin, View):
     def get(self, request, *args, **kwargs):
-        if "download" not in self.request.GET and (
-            request.user.is_authenticated
-            and not CSVDownloadReason.objects.filter(user=request.user).exists()
-        ):
-            url = reverse("download_reason")
-            url = f"{url}?{self.request.GET.urlencode()}"
-            return HttpResponseRedirect(url)
-
         context = self.get_filter_data()
         content_type = "text/csv"
         date_str = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
@@ -184,7 +176,7 @@ class CSVDownloadReasonView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["download_url"] = reverse_with_query_params(
-            "data_export", self.request.GET, {"download": 1}
+            "data_export", self.request.GET
         )
         return context
 
@@ -208,6 +200,6 @@ class CSVDownloadThanksView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["download_url"] = reverse_with_query_params(
-            "data_export", self.request.GET, {"download": 1}
+            "data_export", self.request.GET
         )
         return context

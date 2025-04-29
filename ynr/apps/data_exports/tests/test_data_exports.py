@@ -17,7 +17,6 @@ def csv_to_dicts(csv_data):
 
 
 def csv_url(query_params):
-    query_params["download"] = 1
     return f"{reverse('data_export')}?{urlencode(query_params)}"
 
 
