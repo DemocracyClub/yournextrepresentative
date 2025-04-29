@@ -1,9 +1,10 @@
 import django_filters
-from data_exports.filters import BallotPaperText, PartyINFilter
+from data_exports.filters import BallotPaperText
 from django import forms
-from django.db.models import CharField, Q
-from django.db.models.functions import Cast
+from django.db.models import CharField, F, Q, Value
+from django.db.models.functions import Cast, Concat
 from elections.filters import DSLinkWidget, region_choices
+from parties.models import Party
 from ynr_refactoring.settings import PersonIdentifierFields
 
 
@@ -30,8 +31,19 @@ class CompletenessFilter(django_filters.FilterSet):
         choices=region_choices,
     )
 
-    party_id = PartyINFilter(
+    party_id = django_filters.MultipleChoiceFilter(
         field_name="party_id",
+        choices=Party.objects.annotate(
+            label=Concat(
+                F("name"),
+                Value(" ("),
+                F("ec_id"),
+                Value(", "),
+                F("register"),
+                Value(")"),
+                output_field=CharField(),
+            )
+        ).values_list("ec_id", "label"),
     )
 
     def region_filter(self, queryset, name, value):

@@ -57,10 +57,6 @@ class DateIncludingReplacedFilter(django_filters.CharFilter):
         return qs
 
 
-class PartyINFilter(django_filters.MultipleChoiceFilter):
-    pass
-
-
 class MaterializedMembershipFilter(django_filters.FilterSet):
     by_election = django_filters.ChoiceFilter(
         field_name="is_by_election",
@@ -97,7 +93,7 @@ class MaterializedMembershipFilter(django_filters.FilterSet):
         field_name="ballot_paper__election__slug",
         label="Election ID matches RegEx",
     )
-    party_id = PartyINFilter(
+    party_id = django_filters.MultipleChoiceFilter(
         field_name="party_id",
         choices=Party.objects.annotate(
             label=Concat(
