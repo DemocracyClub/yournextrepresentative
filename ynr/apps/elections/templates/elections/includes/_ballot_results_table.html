@@ -1,0 +1,35 @@
+<div>
+<table class="table">
+    <thead>
+        <tr>
+        <th colspan="2">Results Summary</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Reported Turnout</td>
+            <td>{{ results.num_turnout_reported|default_if_none:"Unknown" }}</td>
+        </tr>
+        <tr>
+            <td>Total Electorate</td>
+            <td>{{ results.total_electorate|default_if_none:"Unknown" }}</td>
+        <tr>
+            <td>Number of Spoilt Ballots</td>
+            <td>{{ results.num_spoilt_ballots|default_if_none:"Unknown" }}</td>
+        </tr>
+        <tr>
+            <td>Turnout Percentage</td>
+            <td>
+                {% if results.turnout_percentage is not None %}
+                    {{ results.turnout_percentage }}%
+                {% else %}
+                    Unknown
+                {% endif %}
+            </td>
+        </tr>
+    </tbody>
+</table>
+<p style="font-size: x-small;">
+    Result Source: {{ results.source|default:"Unknown" }}
+</p>
+</div>
