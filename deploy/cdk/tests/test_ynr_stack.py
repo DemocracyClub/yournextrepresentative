@@ -1,3 +1,5 @@
+import os
+
 import aws_cdk as core
 import aws_cdk.assertions as assertions
 from stack.ynr import YnrStack
@@ -5,7 +7,11 @@ from stack.ynr import YnrStack
 
 def test_template_components():
     app = core.App()
-    stack = YnrStack(app, "YnrStack")
+    stack = YnrStack(app, "YnrStack",
+        env={
+        'account': os.getenv('CDK_DEFAULT_ACCOUNT'),
+        'region': os.getenv('CDK_DEFAULT_REGION')
+    })
     template = assertions.Template.from_stack(stack)
 
     # We're managing the ECS Cluster in-stack, instead of taking a cluster ID
