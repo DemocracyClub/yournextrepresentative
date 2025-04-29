@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 from candidates.models import Ballot
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from data_exports.csv_fields import get_core_fieldnames
-from data_exports.models import MaterializedMemberships
+from data_exports.models import CSVDownloadLog, MaterializedMemberships
 from data_exports.templatetags.data_field_value import data_cell
 from django.core.management import call_command
 from django.test import TestCase
@@ -31,12 +31,14 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
         self.assertEqual(MaterializedMemberships.objects.count(), 24)
 
     def test_csv_simple_memberships(self):
+        self.assertFalse(CSVDownloadLog.objects.exists())
         req = self.client.get(csv_url({}))
         csv_data = csv_to_dicts(req.content)
         self.assertEqual(
             csv_data.fieldnames,
             get_core_fieldnames(),
         )
+        self.assertEqual(CSVDownloadLog.objects.count(), 1)
 
     def test_extra_fields_show_in_export(self):
         req = self.client.get(csv_url({"extra_fields": "votes_cast"}))

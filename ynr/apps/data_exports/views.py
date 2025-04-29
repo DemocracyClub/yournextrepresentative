@@ -16,6 +16,7 @@ from .filters import (
 )
 from .forms import AdditionalFieldsForm, CSVDownloadReasonForm, grouped_choices
 from .models import (
+    CSVDownloadLog,
     CSVDownloadReason,
     MaterializedMemberships,
     MaterializedMembershipsQuerySet,
@@ -119,6 +120,10 @@ class DataExportView(DataFilterMixin, View):
         context["objects"].write_csv(
             response, extra_fields=context["extra_fields"]
         )
+
+        user = request.user if request.user.is_authenticated else None
+        CSVDownloadLog.objects.create(user=user, query_params=request.GET)
+
         return response
 
 

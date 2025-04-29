@@ -181,3 +181,15 @@ class CSVDownloadReason(TimeStampedModel):
     )
     email = models.EmailField(blank=True)
     usage_reason = models.TextField()
+
+
+class CSVDownloadLog(TimeStampedModel):
+    """
+    A log of all downloads
+
+    """
+
+    user = models.ForeignKey(
+        "auth.User", blank=True, null=True, on_delete=models.SET_NULL
+    )
+    query_params = models.JSONField(default={})
