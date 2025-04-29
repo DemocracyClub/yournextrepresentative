@@ -92,7 +92,10 @@ class DataCustomBuilderView(DataFilterMixin, TemplateView):
 
 class DataExportView(DataFilterMixin, View):
     def get(self, request, *args, **kwargs):
-        if "download" not in self.request.GET:
+        if "download" not in self.request.GET and (
+            request.user.is_authenticated
+            and not CSVDownloadReason.objects.filter(user=request.user).exists()
+        ):
             url = reverse("download_reason")
             url = f"{url}?{self.request.GET.urlencode()}"
             return HttpResponseRedirect(url)
