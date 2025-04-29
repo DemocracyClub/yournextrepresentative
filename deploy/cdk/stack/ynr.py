@@ -11,19 +11,9 @@ class YnrStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        publicSubnet = ec2.SubnetConfiguration(
-            name="Public", subnet_type=ec2.SubnetType.PUBLIC, cidr_mask=24
-        )
 
-        vpc = ec2.Vpc(
-            self,
-            "YnrVpc",
-            enable_dns_hostnames=False,
-            enable_dns_support=True,
-            create_internet_gateway=True,
-            max_azs=2,
-            nat_gateways=0,
-            subnet_configuration=[publicSubnet],
+        vpc = ec2.Vpc.from_lookup(self, "YnrVpc",
+            vpc_id = ssm.StringParameter.value_from_lookup(self, "/dc/ynr/dev/1/vpcid")
         )
 
         cluster = ecs.Cluster(self, "YnrCluster", vpc=vpc)
