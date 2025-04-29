@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 
 from cached_counts.models import ElectionReport
 from django.core.paginator import Paginator
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.text import slugify
 from django.views import View
@@ -161,6 +161,16 @@ class CSVDownloadReasonView(CreateView):
     model = CSVDownloadReason
     form_class = CSVDownloadReasonForm
     template_name = "data_exports/download_reason.html"
+
+    def get(self, request, *args, **kwargs):
+        if (
+            request.user.is_authenticated
+            and CSVDownloadReason.objects.filter(user=request.user).exists()
+        ):
+            url = reverse("data_export")
+            url = f"{url}?{self.request.GET.urlencode()}"
+            return HttpResponseRedirect(url)
+        return super().get(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         """
