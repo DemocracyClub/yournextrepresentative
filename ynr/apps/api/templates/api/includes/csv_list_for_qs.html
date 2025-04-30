@@ -1,7 +1,7 @@
 {% regroup election_qs by election_date as elections_by_date %}
   {% for grouper, election_list in elections_by_date %}
     <h4>{{ grouper }}</h4>
-    <a class="button small" href="{% url "data_export" %}?election_date={{ grouper.isoformat }}">CSV of all candidates for all elections on {{ grouper }}</a>
+    <a class="button small" href="{% url "download_reason" %}?election_date={{ grouper.isoformat }}">CSV of all candidates for all elections on {{ grouper }}</a>
     <table class="table">
     <thead>
       <tr>

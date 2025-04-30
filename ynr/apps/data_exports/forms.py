@@ -1,4 +1,5 @@
 from data_exports.csv_fields import csv_fields
+from data_exports.models import CSVDownloadReason
 from django import forms
 
 
@@ -34,3 +35,24 @@ class AdditionalFieldsForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(),
         required=False,
     )
+
+
+class CSVDownloadReasonForm(forms.ModelForm):
+    class Meta:
+        model = CSVDownloadReason
+        exclude = ("user",)
+
+    def __init__(self, *args, user=None, **kwargs):
+        """
+        Take a User. If the user is authenticated, remove email from the form.
+        """
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+        if user and user.is_authenticated:
+            self.fields.pop("email", None)
+        else:
+            self.fields["email"].required = False
+            self.fields[
+                "email"
+            ].help_text = "(optional - please enter your email if you are happy to contacted by us if we have questions about your work)"

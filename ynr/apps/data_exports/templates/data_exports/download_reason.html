@@ -1,0 +1,18 @@
+{% extends "api/api-base.html" %}
+{% block api_content %}
+
+    <p>Please let us know what you plan on using this CSV for</p>
+<form method="post">
+  {% csrf_token %}
+  {{ form.usage_reason.label_tag }} {{ form.usage_reason }}
+
+  {% if form.email %}
+    {{ form.email.label_tag }} {{ form.email }}
+      <p class="help_text">{{ form.email.help_text }}</p>
+  {% endif %}
+
+  <button type="submit">Submit</button>
+</form>
+
+    <p>Or, if you'd rather not, you can <a href="{{ download_url }}">download the data anyway</a>.</p>
+{% endblock %}

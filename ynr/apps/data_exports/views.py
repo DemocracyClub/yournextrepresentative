@@ -1,18 +1,26 @@
 import datetime
-from typing import List, Union
+from typing import Dict, List, Union
+from urllib.parse import urlencode
 
+from cached_counts.models import ElectionReport
 from django.core.paginator import Paginator
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.utils.text import slugify
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import CreateView, TemplateView
 
 from .csv_fields import csv_fields, get_core_fieldnames
 from .filters import (
     create_materialized_membership_filter,
 )
-from .forms import AdditionalFieldsForm, grouped_choices
-from .models import MaterializedMemberships, MaterializedMembershipsQuerySet
+from .forms import AdditionalFieldsForm, CSVDownloadReasonForm, grouped_choices
+from .models import (
+    CSVDownloadLog,
+    CSVDownloadReason,
+    MaterializedMemberships,
+    MaterializedMembershipsQuerySet,
+)
 
 
 class DataFilterMixin:
@@ -61,12 +69,12 @@ class DataFilterMixin:
         return context
 
 
-class DataHomeView(DataFilterMixin, TemplateView):
+class DataCustomBuilderView(DataFilterMixin, TemplateView):
     """
     A view for presenting all options for getting all data out of this site
     """
 
-    template_name = "data_exports/data_home.html"
+    template_name = "data_exports/custom_builder.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -79,6 +87,7 @@ class DataHomeView(DataFilterMixin, TemplateView):
         )
         page = paginator.get_page(self.request.GET.get("page", "1"))
         context["page_obj"] = page
+
         return context
 
 
@@ -103,4 +112,104 @@ class DataExportView(DataFilterMixin, View):
         context["objects"].write_csv(
             response, extra_fields=context["extra_fields"]
         )
+
+        user = request.user if request.user.is_authenticated else None
+        CSVDownloadLog.objects.create(user=user, query_params=request.GET)
+
         return response
+
+
+class DataShortcutView(TemplateView):
+    template_name = "data_exports/data_home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get loads of recent elections for this page
+        context[
+            "charismatic_elections"
+        ] = ElectionReport.objects.all().order_by("-election_date")
+        context["special_reports"] = [
+            {
+                "only_by_elections": True,
+                "election_type": "local",
+                "title": "Local by-elections",
+            },
+            {
+                "only_by_elections": True,
+                "election_type": "parl",
+                "title": "Parliamentary by-elections",
+            },
+            {
+                "only_by_elections": None,
+                "election_type": "",
+                "title": "All candidates",
+            },
+        ]
+
+        return context
+
+
+def reverse_with_query_params(view_name, query_params, extra: Dict = None):
+    url = f"{reverse(view_name)}?{query_params.urlencode()}"
+    if not extra:
+        return url
+
+    return f"{url}&{urlencode(extra)}"
+
+
+class CSVDownloadReasonView(CreateView):
+    model = CSVDownloadReason
+    form_class = CSVDownloadReasonForm
+    template_name = "data_exports/download_reason.html"
+
+    def get(self, request, *args, **kwargs):
+        if (
+            request.user.is_authenticated
+            and CSVDownloadReason.objects.filter(user=request.user).exists()
+        ):
+            url = reverse("data_export")
+            url = f"{url}?{self.request.GET.urlencode()}"
+            return HttpResponseRedirect(url)
+        return super().get(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        """
+        Pass `user` into the form so __init__ can pop or require email.
+        """
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def get_success_url(self):
+        return reverse_with_query_params("download_thanks", self.request.GET)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["download_url"] = reverse_with_query_params(
+            "data_export", self.request.GET
+        )
+        return context
+
+    def form_valid(self, form):
+        """
+        Attach the user (if authenticated) and clear email if it's been popped.
+        """
+        self.object = form.save(commit=False)
+        if self.request.user.is_authenticated:
+            self.object.user = self.request.user
+            # ensure we don't keep an email on authenticated submissions
+            self.object.email = ""
+        # otherwise, .email was filled in by the form
+        self.object.save()
+        return super().form_valid(form)
+
+
+class CSVDownloadThanksView(TemplateView):
+    template_name = "data_exports/download_thanks.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["download_url"] = reverse_with_query_params(
+            "data_export", self.request.GET
+        )
+        return context

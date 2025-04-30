@@ -5,6 +5,7 @@ from django.db import connection, models, transaction
 from django.db.models import Count, IntegerField, JSONField
 from django.db.models.expressions import Case, When
 from django.db.models.functions import Coalesce
+from model_utils.models import TimeStampedModel
 from utils.db import LastWord, NullIfBlank
 from ynr_refactoring.settings import PersonIdentifierFields
 
@@ -172,3 +173,23 @@ class MaterializedMemberships(MaterializedModelMixin, models.Model):
     identifiers = JSONField()
 
     objects = MaterializedMembershipsQuerySet.as_manager()
+
+
+class CSVDownloadReason(TimeStampedModel):
+    user = models.ForeignKey(
+        "auth.User", blank=True, null=True, on_delete=models.SET_NULL
+    )
+    email = models.EmailField(blank=True)
+    usage_reason = models.TextField()
+
+
+class CSVDownloadLog(TimeStampedModel):
+    """
+    A log of all downloads
+
+    """
+
+    user = models.ForeignKey(
+        "auth.User", blank=True, null=True, on_delete=models.SET_NULL
+    )
+    query_params = models.JSONField(default={})

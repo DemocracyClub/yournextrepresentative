@@ -1,9 +1,10 @@
 import csv
+from urllib.parse import urlencode
 
 from candidates.models import Ballot
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from data_exports.csv_fields import get_core_fieldnames
-from data_exports.models import MaterializedMemberships
+from data_exports.models import CSVDownloadLog, MaterializedMemberships
 from data_exports.templatetags.data_field_value import data_cell
 from django.core.management import call_command
 from django.test import TestCase
@@ -13,6 +14,10 @@ from people.models import Person
 
 def csv_to_dicts(csv_data):
     return csv.DictReader(csv_data.decode("utf-8").splitlines())
+
+
+def csv_url(query_params):
+    return f"{reverse('data_export')}?{urlencode(query_params)}"
 
 
 class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
@@ -25,24 +30,24 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
         self.assertEqual(MaterializedMemberships.objects.count(), 24)
 
     def test_csv_simple_memberships(self):
-        req = self.client.get(reverse("data_export"))
+        self.assertFalse(CSVDownloadLog.objects.exists())
+        req = self.client.get(csv_url({}))
         csv_data = csv_to_dicts(req.content)
         self.assertEqual(
             csv_data.fieldnames,
             get_core_fieldnames(),
         )
+        self.assertEqual(CSVDownloadLog.objects.count(), 1)
 
     def test_extra_fields_show_in_export(self):
-        req = self.client.get(
-            reverse("data_export") + "?extra_fields=votes_cast"
-        )
+        req = self.client.get(csv_url({"extra_fields": "votes_cast"}))
         csv_data = csv_to_dicts(req.content)
         self.assertTrue(
             "votes_cast" in csv_data.fieldnames,
         )
 
     def test_random_header_cant_be_added(self):
-        req = self.client.get(reverse("data_export") + "?extra_fields=made_up")
+        req = self.client.get(csv_url({"extra_fields": "made_up"}))
         csv_data = csv_to_dicts(req.content)
         self.assertFalse(
             "made_up" in csv_data.fieldnames,
@@ -54,7 +59,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
         )
         MaterializedMemberships.refresh_view()
 
-        req = self.client.get(reverse("data_export"))
+        req = self.client.get(csv_url({}))
         csv_data = csv_to_dicts(req.content)
         expected_person_id = Person.objects.all().first().pk
         self.assertDictEqual(
@@ -115,7 +120,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
         )
         MaterializedMemberships.refresh_view()
 
-        req = self.client.get(reverse("data_export"))
+        req = self.client.get(csv_url({}))
         csv_data = csv_to_dicts(req.content)
         headers = list(next(csv_data).keys())
         self.assertListEqual(
@@ -135,7 +140,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
             ],
         )
 
-        req = self.client.get(reverse("data_export") + "?field_group=results")
+        req = self.client.get(csv_url({"field_group": "results"}))
         csv_data = csv_to_dicts(req.content)
         headers = list(next(csv_data).keys())
         self.assertListEqual(
@@ -171,12 +176,13 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
         MaterializedMemberships.refresh_view()
 
         req = self.client.get(
-            reverse("data_export"),
-            data={
-                # election_date=&ballot_paper_id=&election_id=parl&party_id=&cancelled=&
-                "format": "csv",
-                "field_group": "election",
-            },
+            csv_url(
+                {
+                    # election_date=&ballot_paper_id=&election_id=parl&party_id=&cancelled=&
+                    "format": "csv",
+                    "field_group": "election",
+                }
+            )
         )
         csv_data = csv_to_dicts(req.content)
         headers = list(next(csv_data).keys())
