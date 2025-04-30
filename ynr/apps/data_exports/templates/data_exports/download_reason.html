@@ -8,6 +8,7 @@
 
   {% if form.email %}
     {{ form.email.label_tag }} {{ form.email }}
+      <p class="help_text">{{ form.email.help_text }}</p>
   {% endif %}
 
   <button type="submit">Submit</button>

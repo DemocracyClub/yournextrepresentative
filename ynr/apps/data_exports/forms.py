@@ -52,4 +52,7 @@ class CSVDownloadReasonForm(forms.ModelForm):
         if user and user.is_authenticated:
             self.fields.pop("email", None)
         else:
-            self.fields["email"].required = True
+            self.fields["email"].required = False
+            self.fields[
+                "email"
+            ].help_text = "(optional - please enter your email if you are happy to contacted by us if we have questions about your work)"
