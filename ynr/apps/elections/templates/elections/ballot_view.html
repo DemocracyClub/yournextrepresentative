@@ -230,7 +230,7 @@
       {% include "elections/includes/_ballot_candidates_might_stand.html" %}
       {% include "elections/includes/_ballot_candidates_not_standing.html" %}
     {% endif %}
-  {% if ballot.has_results %}
+  {% if ballot.has_results and ballot.resultset %}
     {% include "elections/includes/_ballot_results_table.html" with results=ballot.resultset %}
   {% endif %}
   </div>
