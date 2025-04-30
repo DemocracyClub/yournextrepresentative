@@ -48,6 +48,23 @@ EXAMPLE_VERSIONS = [
         },
     },
     {
+        "username": "TwitterBot",
+        "information_source": "Correcting the screen name from Foo to Bar",
+        "ip": "127.0.0.1",
+        "version_id": "5469de7db0cbd155",
+        "timestamp": "2014-10-01T15:12:34.732426",
+        "data": {
+            "name": "Tessa Jowell",
+            "id": "2009",
+            "twitter_username": "Bar",
+            "candidacies": {"parl.65808.2010-05-06": {"party": "PP53"}},
+            "homepage_url": "http://example.org/tessajowell",
+            "birth_date": "1947",
+            "wikipedia_url": "",
+            "email": "tessa.jowell@example.com",
+        },
+    },
+    {
         "username": "mark",
         "information_source": "An initial version",
         "ip": "127.0.0.1",
