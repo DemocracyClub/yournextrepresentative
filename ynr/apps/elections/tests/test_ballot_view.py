@@ -347,6 +347,7 @@ class TestBallotView(
         self.ballot.election.save()
         self.create_memberships(self.ballot, self.parties)
         self.ballot.membership_set.update(elected=True)
+        ResultSet.objects.create(ballot=self.ballot)
         response = self.app.get(
             self.ballot.get_absolute_url(),
             user=self.user_who_can_record_results,

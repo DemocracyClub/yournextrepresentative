@@ -4,6 +4,7 @@ from django_webtest import WebTest
 from people.models import Person
 from people.tests.factories import PersonFactory
 from results.models import ResultEvent
+from uk_results.models import ResultSet
 
 from .auth import TestUserMixin
 from .dates import mock_in_past
@@ -31,6 +32,7 @@ class TestRecordWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             party=self.labour_party,
             ballot=self.dulwich_post_ballot_earlier,
         )
+        ResultSet.objects.create(ballot=self.ballot)
 
     @mock.patch("django.utils.timezone.now")
     def test_record_winner_link_present(self, mock_now):
@@ -169,6 +171,7 @@ class TestRetractWinner(TestUserMixin, UK2015ExamplesMixin, WebTest):
             elected=True,
             ballot=self.ballot,
         )
+        ResultSet.objects.create(ballot=self.ballot)
 
     def test_retract_winner_link_present(self):
         response = self.app.get(
