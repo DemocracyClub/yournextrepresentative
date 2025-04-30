@@ -51,8 +51,8 @@ class DateIncludingReplacedFilter(django_filters.CharFilter):
     def filter(self, qs, value):
         if value:
             qs = qs.filter(
-                Q(election_date=value)
-                | Q(ballot_paper__replaces__ballot_paper_id__contains=value)
+                Q(election_date__iregex=value)
+                | Q(ballot_paper__replaces__ballot_paper_id__iregex=value)
             )
         return qs
 
