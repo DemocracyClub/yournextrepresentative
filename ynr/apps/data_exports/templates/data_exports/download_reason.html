@@ -1,7 +1,8 @@
 {% extends "api/api-base.html" %}
 {% block api_content %}
 
-    <p>Please let us know what you plan on using this CSV for</p>
+    <p>Please let us know what you plan on using this CSV for.
+        If you plan on downloading CSVs regularly, please consider <a href="{% url "wombles:login" %}">creating an account</a> to save being asked this each time. </p>
 <form method="post">
   {% csrf_token %}
   {{ form.usage_reason.label_tag }} {{ form.usage_reason }}
