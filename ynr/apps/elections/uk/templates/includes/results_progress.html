@@ -1,5 +1,6 @@
 {% load humanize %}
 {% if SHOW_RESULTS_PROGRESS %}
+    {% comment %}
     <h2>General election winners</h2>
     <p>{{ parl_marked_elected }} out of 650 seats have winners marked</p>
     <div class="radius progress success large-12" role="progressbar"
@@ -19,9 +20,11 @@
 
 
     <p><a href="{% url "parl_24_winner_form" %}" class="button">Enter winners</a></p>
+    {% endcomment %}
 
+    <h2>2025 Local Elections</h2>
+    <hr>
 
-<hr>
     <h2>Votes cast</h2>
 
     <p>{{ results_percent }}% of votes for {{ areas_total|intcomma }} areas in total have been entered</p>
