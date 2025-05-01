@@ -335,3 +335,5 @@ local.buckinghamshire.2025-05-01,https://buckinghamshire.moderngov.co.uk/mgWebSe
 local.brighton-and-hove.2025-05-01,https://democracy.brighton-hove.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=50
 local.lichfield.2025-05-01,https://democracy.lichfielddc.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=24
 local.northumberland.2025-05-01,https://northumberland.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=3
+local.tunbridge-wells.2025-05-01,https://democracy.tunbridgewells.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=28
+local.gedling.2025-05-01,https://democracy.gedling.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=17
