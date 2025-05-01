@@ -25,6 +25,7 @@ class TestDataRemoval(TestUserMixin, UK2015ExamplesMixin, WebTest):
             dr.collect(),
             {
                 "PhotoCheck": [],
+                "TwitterBotLoggedActionCheck": [],
                 "VersionHistoryCheck": [
                     {"title": "birth_date", "description": "1947"},
                     {
@@ -36,6 +37,7 @@ class TestDataRemoval(TestUserMixin, UK2015ExamplesMixin, WebTest):
                         "title": "homepage_url",
                         "description": "http://example.org/tessajowell",
                     },
+                    {"description": "Bar", "title": "twitter_username"},
                 ],
             },
         )
@@ -81,6 +83,25 @@ class TestDataRemoval(TestUserMixin, UK2015ExamplesMixin, WebTest):
                         "wikipedia_url": "https://en.wikipedia.org/wiki/Tessa_Jowell",
                         "email": "<DELETED>",
                     },
+                },
+                {
+                    "data": {
+                        "birth_date": "<DELETED>",
+                        "candidacies": {
+                            "parl.65808.2010-05-06": {"party": "PP53"}
+                        },
+                        "email": "<DELETED>",
+                        "homepage_url": "<DELETED>",
+                        "id": "2009",
+                        "name": "Tessa Jowell",
+                        "twitter_username": "<DELETED>",
+                        "wikipedia_url": "",
+                    },
+                    "information_source": "Correcting the screen name from <DELETED> to <DELETED>",
+                    "ip": "127.0.0.1",
+                    "timestamp": "2014-10-01T15:12:34.732426",
+                    "username": "TwitterBot",
+                    "version_id": "5469de7db0cbd155",
                 },
                 {
                     "username": "mark",

@@ -4,10 +4,16 @@ A set of helpers that automate personal data removal. Used in the admin
 interface, typically after a GDPR request for removal.
 
 """
+
 import abc
 import contextlib
+import re
 from collections import defaultdict
+from typing import List
 
+from candidates.models import LoggedAction
+from django.conf import settings
+from django.db import transaction
 from people.models import PersonImage
 
 DELETED_STR = "<DELETED>"
@@ -114,12 +120,61 @@ class VersionHistoryCheck(BaseCheck):
         self.run_collect(do_remove=True)
 
 
+class TwitterBotLoggedActionCheck(BaseCheck):
+    """
+    TwitterBot adds Twitter usernames to the source field. Detect and remove them
+    """
+
+    def base_qs(self) -> List[LoggedAction]:
+        return LoggedAction.objects.filter(
+            person=self.person,
+            user__username=settings.TWITTER_BOT_USERNAME,
+            source__contains="Correcting the screen name",
+        ).exclude(source__contains=DELETED_STR)
+
+    def run_collect(self):
+        return [self.get_item_display_info(la) for la in self.base_qs()]
+
+    @transaction.atomic
+    def run_remove(self):
+        versions = self.person.versions
+
+        replace_pattern = re.compile(r"(from )\w+( to )\w+")
+        version_ids_to_remove = []
+        for la in self.base_qs():
+            la.source = replace_pattern.sub(
+                r"\1<DELETED>\2<DELETED>", la.source
+            )
+            la.save()
+            version_ids_to_remove.append(la.popit_person_new_version)
+        for version in versions:
+            if not version["information_source"].startswith(
+                "Correcting the screen name"
+            ):
+                continue
+            version["information_source"] = replace_pattern.sub(
+                r"\1<DELETED>\2<DELETED>", version["information_source"]
+            )
+        self.person.versions = versions
+        self.person.save()
+
+    def get_item_display_info(self, item):
+        return {
+            "title": "LoggedAction",
+            "description": item.source,
+        }
+
+
 class DataRemover:
     def __init__(self, person):
         self.person = person
         self.to_remove = {}
         self._collected = False
-        self.checks = [PhotoCheck, VersionHistoryCheck]
+        self.checks = [
+            PhotoCheck,
+            VersionHistoryCheck,
+            TwitterBotLoggedActionCheck,
+        ]
 
     def collect(self):
         """
