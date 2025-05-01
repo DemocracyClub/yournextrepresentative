@@ -25,6 +25,7 @@ class Command(BaseCommand):
         path = os.path.join(
             os.path.dirname(resultsbot.__file__), "election_id_to_url.csv"
         )
+
         with open(path) as f:
             csv_file = csv.reader(f)
             for line in csv_file:
@@ -32,6 +33,8 @@ class Command(BaseCommand):
                     id_to_url[line[0]] = line[1]
                 except IndexError:
                     continue
+
+        found_elections = self.get_found_elections(path)
 
         url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJT-XOl2ryx0crgPLj5phgeLmJ2C_jRxVJ0WQdiGNUjguQ4xgTIe_cNTNc7VIELt4XaRy6RyCJSoAo/pub?output=csv"
         data = []
@@ -43,11 +46,10 @@ class Command(BaseCommand):
             election_id = row["Election ID"]
             url = row["ModGov Install"]
             print(repr(election_id))
-            if not election_id:
+            if not election_id or election_id in found_elections:
                 continue
 
             data.append((election_id, url))
-
         for election_id, url in data:
             if election_id in id_to_url:
                 continue
@@ -75,3 +77,16 @@ class Command(BaseCommand):
                 print("\tTry the following for debugging:")
                 print("\t" + matcher.format_elections_html_url())
                 print("\t" + matcher.format_elections_api_url())
+
+    def get_found_elections(self, path):
+        found_elections = []
+        self.stdout.write(f"Reading found elections from {path}")
+        try:
+            with open(path) as f:
+                csv_file = csv.reader(f)
+                for line in csv_file:
+                    found_elections.append(line[0])
+
+        except FileNotFoundError:
+            return []
+        return found_elections
