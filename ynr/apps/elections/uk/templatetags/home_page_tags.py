@@ -176,7 +176,6 @@ def results_progress(context):
         ballot_qs = Ballot.objects.filter(
             election__election_date=election_date,
             cancelled=False,
-            election__slug="parl.2024-07-04",
         )
 
         context["results_entered"] = ballot_qs.has_results().count()
