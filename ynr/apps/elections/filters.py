@@ -69,11 +69,13 @@ class FutureDateFilter(django_filters.BooleanFilter):
         return qs
 
 
-class HasResultsFilter(django_filters.BooleanFilter):
+class HasResultsFilter(django_filters.ChoiceFilter):
     def filter(self, qs, value):
-        if value is True:
+        if not value:
+            return qs
+        if value in [True, "1"]:
             return qs.exclude(resultset=None)
-        if value is False:
+        if value in [False, "0"]:
             return qs.filter(resultset=None)
         return qs
 
@@ -309,14 +311,6 @@ class CurrentOrFutureBallotFilter(BaseBallotFilter):
     elections
     """
 
-    def has_results_filter(self, queryset, name, value):
-        """
-        Filter queryset by if they have candidate results or not
-        """
-        mapping = {1: "has_results", 0: "no_results"}
-        has_results_or_not = getattr(queryset, mapping[int(value)])
-        return has_results_or_not()
-
     def has_result_set_filter(self, queryset, name, value):
         """
         Filter queryset by if they have a result set or not
@@ -336,9 +330,9 @@ class CurrentOrFutureBallotFilter(BaseBallotFilter):
         label="Election Type",
     )
 
-    has_results = django_filters.ChoiceFilter(
+    has_results = HasResultsFilter(
         label="Has Candidate Results",
-        method="has_results_filter",
+        # method="has_results_filter",
         widget=DSLinkWidget(),
         choices=[(1, "Yes"), (0, "No")],
     )
