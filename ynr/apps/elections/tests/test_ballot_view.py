@@ -591,11 +591,8 @@ class TestBallotFilter(SingleBallotStatesMixin, WebTest):
         with self.assertRaises(ResultSet.DoesNotExist):
             ballot_with_candidate_marked_elected.resultset
 
-        filter = CurrentOrFutureBallotFilter()
-        ballots = Ballot.objects.all()
-        results = filter.has_results_filter(
-            queryset=ballots, name="has_results", value=1
-        )
+        filter = CurrentOrFutureBallotFilter({"has_results": 0})
+        results = list(filter.qs)
         self.assertFalse(ballot_with_results in results)
         self.assertTrue(ballot_with_candidate_marked_elected in results)
-        self.assertFalse(ballot_without_results in results)
+        self.assertTrue(ballot_without_results in results)
