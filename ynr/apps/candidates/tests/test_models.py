@@ -20,6 +20,7 @@ from elections.tests.test_ballot_view import SingleBallotStatesMixin
 from mock import patch
 from moderation_queue.tests.factories import QueuedImageFactory
 from people.tests.factories import PersonFactory
+from popolo.models import Membership
 from uk_results.models import ResultSet
 
 fake = faker.Faker()
@@ -353,6 +354,10 @@ class TestHasResultsOrNoResults(BallotsWithResultsMixin, TestCase):
         self.assertEqual(Ballot.objects.count(), 9)
         self.assertEqual(Ballot.objects.has_results().count(), 5)
         self.assertEqual(Ballot.objects.no_results().count(), 4)
+
+        # Test that more than one winner per ballot only returns unique ballots
+        Membership.objects.update(elected=True)
+        self.assertEqual(Ballot.objects.has_results().count(), 9)
 
     def test_has_complete_results_set(self):
         self.create_ballots_with_results(num=5, resultset=True)

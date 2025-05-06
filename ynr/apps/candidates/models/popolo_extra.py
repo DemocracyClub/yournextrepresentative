@@ -8,7 +8,7 @@ from candidates.models.db import ActionType
 from django.conf import settings
 from django.contrib.admin.utils import NestedObjects
 from django.db import connection, models
-from django.db.models import Count, F, JSONField, Max
+from django.db.models import Count, Exists, F, JSONField, Max, OuterRef
 from django.db.models.functions import Greatest
 from django.urls import reverse
 from django.utils import timezone
@@ -17,6 +17,7 @@ from django.utils.html import mark_safe
 from django.utils.http import urlencode
 from elections.models import Election
 from moderation_queue.models import QueuedImage
+from popolo.models import Membership
 from uk_election_ids.datapackage import VOTING_SYSTEMS
 from utils.mixins import EEModifiedMixin
 
@@ -155,7 +156,11 @@ class BallotQueryset(models.QuerySet):
         """
         Return a QuerySet of ballots that have a membership with candidate results
         """
-        return self.filter(models.Q(membership__elected=True))
+        return self.annotate(
+            has_winner=Exists(
+                Membership.objects.filter(ballot=OuterRef("pk"), elected=True)
+            )
+        ).filter(has_winner=True)
 
     def no_results(self):
         """
