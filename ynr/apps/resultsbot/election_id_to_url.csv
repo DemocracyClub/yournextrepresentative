@@ -316,7 +316,6 @@ local.west-oxfordshire.2024-05-02,https://meetings.westoxon.gov.uk/mgWebService.
 local.wolverhampton.2024-05-02,https://wolverhampton.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=36
 local.cheltenham.2024-05-02,https://democracy.cheltenham.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=21
 local.west-northamptonshire.2025-05-01,https://westnorthants.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=9
-local.tonbridge-and-malling.2025-05-01,https://democracy.tmbc.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=61
 local.staffordshire.2025-05-01,https://staffordshire.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=38
 local.oxfordshire.2025-05-01,https://mycouncil.oxfordshire.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=23
 local.north-northamptonshire.2025-05-01,https://northnorthants.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=44
@@ -329,11 +328,8 @@ local.hertfordshire.2025-05-01,https://democracy.hertfordshire.gov.uk/mgWebServi
 local.gloucestershire.2025-05-01,https://glostext.gloucestershire.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=14
 local.forest-of-dean.2025-05-01,https://meetings.fdean.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=20
 local.derbyshire.2025-05-01,https://democracy.derbyshire.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=5
-local.cornwall.2025-05-01,https://democracy.cornwall.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=45
 local.cheltenham.2025-05-01,https://democracy.cheltenham.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=23
 local.buckinghamshire.2025-05-01,https://buckinghamshire.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=44
 local.brighton-and-hove.2025-05-01,https://democracy.brighton-hove.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=50
-local.lichfield.2025-05-01,https://democracy.lichfielddc.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=24
 local.northumberland.2025-05-01,https://northumberland.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=3
-local.tunbridge-wells.2025-05-01,https://democracy.tunbridgewells.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=28
 local.gedling.2025-05-01,https://democracy.gedling.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=17
