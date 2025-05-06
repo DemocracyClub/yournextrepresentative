@@ -104,7 +104,6 @@ local.eastleigh.2019-05-02,https://meetings.eastleigh.gov.uk/mgWebService.asmx/G
 local.west-sussex.2019-05-02,https://westsussex.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=1
 local.north-west-leicestershire.2019-05-02,https://minutes-1.nwleics.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=4
 local.stoke-on-trent.2019-05-02,http://www.moderngov.stoke.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=17
-
 local.basildon.2021-05-06,https://www.basildonmeetings.info/mgWebService.asmx/GetElectionResults?lElectionId=45
 local.barking-and-dagenham.2021-05-06,https://modgov.lbbd.gov.uk/internet/mgWebService.asmx/GetElectionResults?lElectionId=7
 local.buckinghamshire.2021-05-06,https://buckinghamshire.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=1
@@ -276,18 +275,13 @@ local.newcastle-upon-tyne.2023-05-04,https://democracy.newcastle.gov.uk/mgWebSer
 local.north-kesteven.2023-05-04,https://democracy.n-kesteven.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=57
 local.nottingham.2023-05-04,https://committee.nottinghamcity.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=8
 local.thanet.2023-05-04,https://democracy.thanet.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=88
-
 local.darlington.2023-05-04,https://democracy.darlington.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=22
 local.north-devon.2023-05-04,https://democracy.northdevon.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=5
 local.west-sussex.2023-05-04,https://westsussex.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=24
-
-
 local.brighton-and-hove.2023-05-04,https://democracy.brighton-hove.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=45
 local.swale.2023-05-04,https://ws.swale.gov.uk/meetings/mgWebService.asmx/GetElectionResults?lElectionId=16
 local.west-lancashire.2023-05-04,https://democracy.westlancs.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=500000026
-
 local.rochdale.2023-05-04,https://democracy.rochdale.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=41
-
 local.basildon.2024-05-02,https://www.basildonmeetings.info/mgWebService.asmx/GetElectionResults?lElectionId=58
 local.bradford.2024-05-02,https://bradford.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=77
 local.bromley.2024-05-02,https://cds.bromley.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=13
