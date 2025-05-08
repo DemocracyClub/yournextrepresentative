@@ -208,3 +208,56 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
                 "organisation_name",
             ],
         )
+
+    def test_last_updated_in_csv(self):
+        self.create_lots_of_candidates(
+            self.earlier_election, ((self.labour_party, 16), (self.ld_party, 8))
+        )
+        MaterializedMemberships.refresh_view()
+
+        req = self.client.get(csv_url({"field_group": "person"}))
+        csv_data = csv_to_dicts(req.content)
+        headers = list(next(csv_data).keys())
+        self.maxDiff = None
+        self.assertListEqual(
+            headers,
+            [
+                "person_id",
+                "person_name",
+                "election_id",
+                "ballot_paper_id",
+                "election_date",
+                "election_current",
+                "party_name",
+                "party_id",
+                "post_label",
+                "cancelled_poll",
+                "seats_contested",
+                "email",
+                "facebook_page_url",
+                "facebook_personal_url",
+                "homepage_url",
+                "blog_url",
+                "linkedin_url",
+                "party_ppc_page_url",
+                "twitter_username",
+                "mastodon_username",
+                "wikipedia_url",
+                "wikidata_id",
+                "youtube_profile",
+                "instagram_url",
+                "blue_sky_url",
+                "threads_url",
+                "tiktok_url",
+                "other_url",
+                "mnis_id",
+                "twfy_id",
+                "gender",
+                "birth_date",
+                "favourite_biscuit",
+                "statement_to_voters",
+                "statement_last_updated",
+                "person_last_updated",
+                "image",
+            ],
+        )

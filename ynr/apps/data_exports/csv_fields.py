@@ -323,6 +323,21 @@ csv_fields["statement_to_voters"] = CSVField(
     formatter=lambda value: truncatechars(value, 100),
 )
 
+csv_fields["statement_last_updated"] = CSVField(
+    type="expr",
+    value=F("person__biography_last_updated"),
+    value_group="person",
+    label="Statement last updated",
+)
+
+csv_fields["person_last_updated"] = CSVField(
+    type="expr",
+    value=F("person__modified"),
+    value_group="person",
+    label="Person last updated",
+)
+
+
 storages_url = default_storage.url("")
 
 csv_fields["image"] = CSVField(
