@@ -74,7 +74,10 @@ class ModGovDivision(BaseDivision):
         for attr in ATTRS:
             soup_attr = getattr(soup, attr)
             if soup_attr:
-                setattr(self, attr, soup_attr.get_text(strip=True))
+                value = soup_attr.get_text(strip=True)
+                if attr.startswith("num") or attr == "electorate":
+                    value = int(value)
+                setattr(self, attr, value)
 
     @property
     def spoiled_votes(self):
@@ -89,6 +92,11 @@ class ModGovDivision(BaseDivision):
                 pass
         return None
 
+    @property
+    def turnout_percentage(self):
+        if not all([self.numballotpapersissued, self.electorate]):
+            return None
+        return int((self.numballotpapersissued / self.electorate) * 100)
 
 class ModGovImporter(BaseImporter):
     def __init__(self, *args, **kwargs):

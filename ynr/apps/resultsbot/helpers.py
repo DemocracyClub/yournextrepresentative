@@ -72,6 +72,9 @@ class ResultsBot(object):
                 defaults={
                     "source": source,
                     "num_spoilt_ballots": division.spoiled_votes,
+                    "turnout_percentage": division.turnout_percentage,
+                    "total_electorate": division.electorate,
+                    "num_turnout_reported": division.numballotpapersissued,
                 },
             )
             instance.user = self.user
