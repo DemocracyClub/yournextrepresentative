@@ -13,7 +13,7 @@ class ResultSet(TimeStampedModel):
     num_turnout_reported = models.PositiveIntegerField(
         null=True, verbose_name="Reported Turnout"
     )
-    turnout_percentage = models.IntegerField(
+    turnout_percentage = models.FloatField(
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         blank=True,
         null=True,
@@ -70,7 +70,7 @@ class ResultSet(TimeStampedModel):
             return
 
         percentage = (self.num_turnout_reported / self.total_electorate) * 100
-        self.turnout_percentage = int(min(round(percentage, 2), 100))
+        self.turnout_percentage = min(round(percentage, 2), 100)
 
     def as_dict(self):
         """

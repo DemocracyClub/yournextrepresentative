@@ -10,12 +10,11 @@ The ResultSet object relates to the ballot results (not elected candidates which
 on input for the user
 
 #### `turnout_percentage`: 
-- accepts an Integer
+- accepts a Float
 - validates a minimum value of 0 and a max of 100
 - verbose_name="Turnout Percentage"
 - help_text="The percentage of the electorate who voted in this election"
-- this is automatically calculated by dividing the number of ballots cast by the total electorate if those fields are populated, otherwise accepts a whole number
-- `TO DO`: this field should accept a float and round to 2 decimal places
+- this is automatically calculated by dividing the number of ballots cast by the total electorate if those fields are populated, otherwise accepts a float and will round to two decimal places
 
 #### `num_spoilt_ballots`: 
 - accepts a postive integer
