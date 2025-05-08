@@ -70,9 +70,9 @@ class BulkAddFormSet(BaseBulkAddFormSet):
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)
         kwargs["party_choices"] = self.parties
-        kwargs["previous_party_affiliations_choices"] = (
-            self.previous_party_affiliations_choices
-        )
+        kwargs[
+            "previous_party_affiliations_choices"
+        ] = self.previous_party_affiliations_choices
         return kwargs
 
     @property
