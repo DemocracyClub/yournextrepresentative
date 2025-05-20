@@ -78,6 +78,8 @@ class MinimalResultSerializer(serializers.ModelSerializer):
             "source",
             "total_electorate",
         )
+        extra_kwargs = {"turnout_percentage": {"coerce_to_string": False}}
+
         ref_name = None  # Tells swagger that this is always embedded
 
 
