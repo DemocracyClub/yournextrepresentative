@@ -106,11 +106,25 @@
       <status>Published</status>
       <spoiledvotes>
         <spoiledvote>
-          <voteid>620</voteid>
-          <description>Rejected</description>
-          <numvotes>8</numvotes>
+          <voteid>1744</voteid>
+          <description>B - voting for more Candidates than voter was entitled to</description>
+          <numvotes>1</numvotes>
           <numvotes2>0</numvotes2>
-          <updatedatetime>19/04/2018, 10:52</updatedatetime>
+          <updatedatetime>02/05/2025, 18:00</updatedatetime>
+        </spoiledvote>
+        <spoiledvote>
+          <voteid>1745</voteid>
+          <description>C - writing or mark by which voter could be identified</description>
+          <numvotes>4</numvotes>
+          <numvotes2>0</numvotes2>
+          <updatedatetime>02/05/2025, 18:00</updatedatetime>
+        </spoiledvote>
+        <spoiledvote>
+          <voteid>1746</voteid>
+          <description>D - being unmarked or wholly void for uncertainty</description>
+          <numvotes>3</numvotes>
+          <numvotes2>0</numvotes2>
+          <updatedatetime>02/05/2025, 18:00</updatedatetime>
         </spoiledvote>
       </spoiledvotes>
     </electionarea>

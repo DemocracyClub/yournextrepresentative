@@ -1,3 +1,4 @@
+import contextlib
 from urllib.parse import urljoin
 
 import requests
@@ -82,16 +83,23 @@ class ModGovDivision(BaseDivision):
 
     @property
     def spoiled_votes(self):
-        for spoiled in self.soup.find_all("spoiledvote"):
+        if not self.soup.spoiledvotes:
+            return None
+
+        spoiled_vote_count = 0
+
+        for spoiled_vote in self.soup.spoiledvotes.find_all("spoiledvote"):
             try:
-                if (
-                    spoiled.description
-                    and spoiled.description.get_text(strip=True) == "Rejected"
-                ):
-                    return int(spoiled.numvotes.get_text(strip=True))
+                if spoiled_vote.numvotes:
+                    spoiled_vote_count += int(
+                        spoiled_vote.numvotes.get_text(strip=True)
+                    )
             except ValueError:
                 pass
-        return None
+
+        if not spoiled_vote_count:
+            return None
+        return spoiled_vote_count
 
     @property
     def turnout_percentage(self):
