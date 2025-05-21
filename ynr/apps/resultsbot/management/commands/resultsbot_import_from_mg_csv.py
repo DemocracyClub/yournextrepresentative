@@ -67,7 +67,10 @@ class Command(BaseCommand):
                 ):
                     continue
 
-                if hasattr(div.local_area, "resultset"):
+                if (
+                    hasattr(div.local_area, "resultset")
+                    and not options["re_import_current"]
+                ):
                     continue
 
                 candidates = list(importer.candidates(div))
