@@ -67,15 +67,21 @@ class ResultsBot(object):
         ballot = division.local_area
 
         with transaction.atomic():
+            defaults = {
+                "source": source,
+                "num_spoilt_ballots": division.spoiled_votes,
+                "turnout_percentage": division.turnout_percentage,
+                "total_electorate": division.electorate,
+            }
+            # Only include num_turnout_reported if it was reported in Modgov
+            if division.numballotpapersissued > 0:
+                defaults[
+                    "num_turnout_reported"
+                ] = division.numballotpapersissued
+
             instance, _ = ResultSet.objects.update_or_create(
                 ballot=ballot,
-                defaults={
-                    "source": source,
-                    "num_spoilt_ballots": division.spoiled_votes,
-                    "turnout_percentage": division.turnout_percentage,
-                    "total_electorate": division.electorate,
-                    "num_turnout_reported": division.numballotpapersissued,
-                },
+                defaults=defaults,
             )
             instance.user = self.user
             instance.save()
