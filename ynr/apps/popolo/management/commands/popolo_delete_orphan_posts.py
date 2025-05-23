@@ -12,7 +12,7 @@ from popolo.models import Post
 class Command(BaseCommand):
     def guess_replacement_post(self, post) -> Optional[Post]:
         def guess(post, related_obj, object_attr="posts", exclude_kwargs=None):
-            print(f"Guessing for post {post.pk} and {related_obj}")
+            self.stdout.write(f"Guessing for post {post.pk} and {related_obj}")
             # special case PCCs
             if "Police and Crime Commissioner for " in post.label:
                 return (
@@ -68,27 +68,27 @@ class Command(BaseCommand):
                 qs = qs.exclude(**exclude_kwargs)
 
             try:
-                print(f"Finding an exact match for {label}")
+                self.stdout.write(f"Finding an exact match for {label}")
                 return qs.filter(
                     label=label,
                 ).get()
             except Post.DoesNotExist:
-                print("Exact match not found, trying trigram")
+                self.stdout.write("Exact match not found, trying trigram")
                 matches = (
                     qs.annotate(sim=TrigramSimilarity("label", label))
                     .filter(sim__gt=0.6)
                     .exclude(pk=post.pk)
                 )
                 if matches.count() > 1:
-                    print("more than one match found")
+                    self.stdout.write("more than one match found")
                     raise ValueError(
                         f"Too many results {matches.values('label', 'sim')}"
                     )
-                print("At most one match found")
+                self.stdout.write("At most one match found")
                 with contextlib.suppress(post.DoesNotExist):
                     return matches.get()
             except post.MultipleObjectsReturned:
-                print(f"more than one post matches {label}")
+                self.stdout.write(f"more than one post matches {label}")
                 return (
                     qs.filter(
                         label=label,
@@ -105,12 +105,12 @@ class Command(BaseCommand):
                     return guessed
         org_qs = post.organization.posts.exclude(ballot=None)
         if org_qs.exists():
-            print("Guessing based on Org")
+            self.stdout.write("Guessing based on Org")
             with contextlib.suppress(ValueError):
                 return guess(
                     post, post.organization, exclude_kwargs={"ballot": None}
                 )
-        print("no guess")
+        self.stdout.write("no guess")
         return None
 
     @transaction.atomic
@@ -156,6 +156,6 @@ class Command(BaseCommand):
             collector.collect([post])
             collected = collector.nested()
             if len(collected) > 1:
-                print(post.pk)
-                print(collected)
+                self.stdout.write(post.pk)
+                self.stdout.write(collected)
                 raise ValueError(f"Object has related objects: {collected}")
