@@ -136,6 +136,8 @@ class Command(BaseCommand):
                         f"{post.pk} has resultevent, but no replacement guess found"
                     )
                     replacement_failed = True
+                    continue
+
                 resultevent.post = replacement_post
                 resultevent.save()
 
@@ -145,6 +147,7 @@ class Command(BaseCommand):
                         f"{post.pk}: post has loggedaction, but no replacement guess found"
                     )
                     replacement_failed = True
+                    continue
 
                 loggedaction.post = replacement_post
                 loggedaction.save()
