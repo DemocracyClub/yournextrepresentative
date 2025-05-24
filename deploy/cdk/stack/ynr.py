@@ -29,10 +29,8 @@ class YnrStack(Stack):
             desired_count=2,
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
                 image=ecs.ContainerImage.from_registry(
-                    "public.ecr.aws/h3q9h5r7/dc-test/ynr:v2"
+                    "public.ecr.aws/h3q9h5r7/dc-test/ynr:v3"
                 ),
-                entry_point=["gunicorn"],
-                command=["--log-level", "debug", "--access-logfile", "-", "--capture-output", "-t", "300", "ynr.wsgi"],
                 # Secrets aren't necessarily "secret", but are created as
                 # environment variables that are looked up at ECS task
                 # instantiation.
