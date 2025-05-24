@@ -23,3 +23,10 @@ SECRET_KEY = os.environ["YNR_DJANGO_SECRET_KEY"]
 # protections as they no longer apply in any environment that imports this
 # module.
 ALLOWED_HOSTS = ['*']
+
+AWS_STORAGE_BUCKET_NAME = os.environ["YNR_AWS_S3_MEDIA_BUCKET"]
+AWS_S3_REGION_NAME = os.environ["YNR_AWS_S3_MEDIA_REGION"]
+
+TEXTRACT_S3_BUCKET_NAME = os.environ["YNR_AWS_S3_SOPN_BUCKET"]
+TEXTRACT_S3_BUCKET_REGION = os.environ["YNR_AWS_S3_SOPN_REGION"]
+TEXTRACT_S3_BUCKET_URL = f"https://{TEXTRACT_S3_BUCKET_NAME}.s3.{TEXTRACT_S3_BUCKET_REGION}.amazonaws.com"
