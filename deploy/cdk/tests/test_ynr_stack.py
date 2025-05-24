@@ -24,4 +24,6 @@ def test_template_components():
     # For now, we simply ensure that zero NAT Gateways exist in the stack.
     template.resource_count_is('AWS::EC2::NatGateway', 0)
 
-    template.resource_count_is('AWS::EC2::VPC', 1)
+    # We create the infra in an already-existing VPC so we don't make one in
+    # the stack
+    # template.resource_count_is('AWS::EC2::VPC', 1)
