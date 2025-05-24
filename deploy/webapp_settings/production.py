@@ -61,8 +61,8 @@ RUNNING_TESTS = False
 
 STATICFILES_STORAGE = "ynr.storages.StaticStorage"
 DEFAULT_FILE_STORAGE = "ynr.storages.MediaStorage"
-AWS_STORAGE_BUCKET_NAME = "static-candidates.democracyclub.org.uk"
-AWS_S3_REGION_NAME = "eu-west-2"
+AWS_STORAGE_BUCKET_NAME = os.environ.get("YNR_AWS_S3_MEDIA_BUCKET", "static-candidates.democracyclub.org.uk")
+AWS_S3_REGION_NAME = os.environ.get("YNR_AWS_S3_MEDIA_REGION", "eu-west-2")
 STATICFILES_LOCATION = "static"
 MEDIAFILES_LOCATION = "media"
 AWS_DEFAULT_ACL = "public-read"
