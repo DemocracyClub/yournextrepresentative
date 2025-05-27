@@ -169,13 +169,19 @@ class Command(BaseCommand):
                 posts_with_no_replacement.append(post)
                 continue
 
-            collector = NestedObjects(using="default")
-            collector.collect([post])
-            collected = collector.nested()
-            if len(collected) > 1:
-                self.stdout.write(post.pk)
-                self.stdout.write(collected)
-                raise ValueError(f"Object has related objects: {collected}")
+            if not options["dry-run"]:
+                # Check we didn't miss any related objects before deleting post
+                collector = NestedObjects(using="default")
+                collector.collect([post])
+                collected = collector.nested()
+                if len(collected) > 1:
+                    print(post.pk)
+                    print(collected)
+                    raise ValueError(f"Object has related objects: {collected}")
+
+
+                self.stdout.write(f"Deleting post {post.pk}")
+                post.delete()
 
         for post in posts_with_no_replacement:
             self.stderr.write(
