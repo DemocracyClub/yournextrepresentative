@@ -50,19 +50,6 @@ class Command(BaseCommand):
                     .order_by("-created")
                     .first()
                 )
-            # Special case naw.a
-
-            if (
-                "Assembly" in post.label
-                and post.identifier
-                and post.identifier.startswith("gss:W0")
-            ):
-                return (
-                    Post.objects.filter(elections__slug__startswith="naw.a.")
-                    .filter(created__gt=post.created)
-                    .order_by("-created")
-                    .first()
-                )
 
             label = post.label
             label = label.replace("Member of Parliament for ", "")
