@@ -10,6 +10,14 @@ from popolo.models import Post
 
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--dry-run",
+            action="store_true",
+            dest="dry-run",
+            help="Do not delete any objects, just print what would be deleted.",
+        )
+
     def guess_replacement_post(self, post) -> Optional[Post]:
         def guess(post, related_obj, object_attr="posts", exclude_kwargs=None):
             self.stdout.write(f"Guessing for post {post.pk} and {related_obj}")
@@ -116,15 +124,19 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **options):
         qs = Post.objects.filter(ballot=None)
+        self.stdout.write(f"Found {qs.count()} orphan posts")
+        if options["dry-run"]:
+            self.stdout.write("Dry run, not deleting anything")
 
         for post in qs:
-            # We can remove PostIdentifiers relating to this Post
-            post.postidentifier_set.all().delete()
+            if not options["dry-run"]:
+                # We can remove PostIdentifiers relating to this Post
+                post.postidentifier_set.all().delete()
 
-            # Set related Membership IDs to None (Membership->Post FK is deprecated)
-            for membership in post.memberships.all():
-                membership.post = None
-                membership.save()
+                # Set related Membership IDs to None (Membership->Post FK is deprecated)
+                for membership in post.memberships.all():
+                    membership.post = None
+                    membership.save()
 
             replacement_post = self.guess_replacement_post(post)
             replacement_failed = False
@@ -137,10 +149,11 @@ class Command(BaseCommand):
                     )
                     replacement_failed = True
                     continue
+                if not options["dry-run"]:
+                    resultevent.post = replacement_post
+                    resultevent.save()
 
-                resultevent.post = replacement_post
-                resultevent.save()
-
+            # Attempt to move LoggedAction objects to the correct post
             for loggedaction in post.loggedaction_set.all():
                 if not replacement_post:
                     self.stderr.write(
@@ -148,9 +161,19 @@ class Command(BaseCommand):
                     )
                     replacement_failed = True
                     continue
+                if not options["dry-run"]:
+                    loggedaction.post = replacement_post
+                    loggedaction.save()
 
-                loggedaction.post = replacement_post
-                loggedaction.save()
+            if options["dry-run"] and replacement_post:
+                if post.loggedaction_set.exists():
+                    self.stdout.write(
+                        f"Would move {post.loggedaction_set.count()} LoggedActions from Post {post.pk} to replacement {replacement_post.pk}"
+                    )
+                if post.resultevent_set.exists():
+                    self.stdout.write(
+                        f"Would move {post.resultevent_set.count()} ResultEvents from Post {post.pk} to replacement {replacement_post.pk}"
+                    )
 
             if replacement_failed:
                 continue
