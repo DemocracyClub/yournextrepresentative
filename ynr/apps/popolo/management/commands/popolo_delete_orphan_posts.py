@@ -116,6 +116,8 @@ class Command(BaseCommand):
         if options["dry-run"]:
             self.stdout.write("Dry run, not deleting anything")
 
+        posts_with_no_replacement = []
+
         for post in qs:
             if not options["dry-run"]:
                 # We can remove PostIdentifiers relating to this Post
@@ -164,6 +166,7 @@ class Command(BaseCommand):
                     )
 
             if replacement_failed:
+                posts_with_no_replacement.append(post)
                 continue
 
             collector = NestedObjects(using="default")
@@ -173,3 +176,8 @@ class Command(BaseCommand):
                 self.stdout.write(post.pk)
                 self.stdout.write(collected)
                 raise ValueError(f"Object has related objects: {collected}")
+
+        for post in posts_with_no_replacement:
+            self.stderr.write(
+                f"Failed to find replacement Post for objects related to {post.pk} ({post.label}), please check manually."
+            )
