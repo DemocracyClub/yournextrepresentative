@@ -68,6 +68,7 @@ class Command(BaseCommand):
             label = label.replace("Member of Parliament for ", "")
             label = label.replace("Member of the Scottish Parliament for ", "")
             label = label.replace("Assembly Member for ", "")
+            label = label.replace("Member of the Legislative Assembly for ", "")
             label = re.sub(
                 r"\bward\b$", "", label, flags=re.IGNORECASE
             ).rstrip()
