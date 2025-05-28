@@ -43,6 +43,34 @@ class YnrStack(Stack):
                             "/dc/ynr/dev/1/web/DJANGO_SETTINGS_MODULE",
                         )
                     ),
+                    "YNR_AWS_S3_MEDIA_BUCKET": ecs.Secret.from_ssm_parameter(
+                        ssm.StringParameter.from_string_parameter_name(
+                            self,
+                            "MediaBucketName",
+                            "/dc/ynr/dev/1/YNR_AWS_S3_MEDIA_BUCKET",
+                        )
+                    ),
+                    "YNR_AWS_S3_MEDIA_REGION": ecs.Secret.from_ssm_parameter(
+                        ssm.StringParameter.from_string_parameter_name(
+                            self,
+                            "MediaBucketRegion",
+                            "/dc/ynr/dev/1/YNR_AWS_S3_MEDIA_REGION",
+                        )
+                    ),
+                    "YNR_AWS_S3_SOPN_BUCKET": ecs.Secret.from_ssm_parameter(
+                        ssm.StringParameter.from_string_parameter_name(
+                            self,
+                            "SopnBucketName",
+                            "/dc/ynr/dev/1/YNR_AWS_S3_SOPN_BUCKET",
+                        )
+                    ),
+                    "YNR_AWS_S3_SOPN_REGION": ecs.Secret.from_ssm_parameter(
+                        ssm.StringParameter.from_string_parameter_name(
+                            self,
+                            "SopnBucketRegion",
+                            "/dc/ynr/dev/1/YNR_AWS_S3_SOPN_REGION",
+                        )
+                    ),
                     "POSTGRES_USERNAME": ecs.Secret.from_ssm_parameter(
                         ssm.StringParameter.from_secure_string_parameter_attributes(
                             self,
