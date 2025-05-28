@@ -27,6 +27,7 @@ class YnrStack(Stack):
             cpu=512,
             memory_limit_mib=1024,
             desired_count=2,
+            enable_execute_command=True,
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
                 image=ecs.ContainerImage.from_registry(
                     "public.ecr.aws/h3q9h5r7/dc-test/ynr:v3"
