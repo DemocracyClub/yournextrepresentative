@@ -175,10 +175,9 @@ class Command(BaseCommand):
                 collector.collect([post])
                 collected = collector.nested()
                 if len(collected) > 1:
-                    print(post.pk)
-                    print(collected)
-                    raise ValueError(f"Object has related objects: {collected}")
-
+                    raise ValueError(
+                        f"Post {post.pk} has related objects: {collected}"
+                    )
 
                 self.stdout.write(f"Deleting post {post.pk}")
                 post.delete()
