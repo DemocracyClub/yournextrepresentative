@@ -101,6 +101,20 @@ jobs:
       - store_artifacts:
           path: test-results
 
+  db_migrate:
+    docker:
+      - image: cimg/python:3.8.15
+    steps:
+      - aws-cli/setup
+      - run:
+          name: Run any outstanding migrations
+          command: |
+            curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "/tmp/session-manager-plugin.deb"
+            sudo dpkg -i /tmp/session-manager-plugin.deb
+            sudo apt update
+            sudo apt install expect
+            aws ecs list-tasks --cluster $(aws ecs list-clusters | jq -r  .clusterArns[0]) | jq -r '.taskArns[0]|split("/")| "unbuffer aws ecs execute-command --cluster " + .[1] + " --command \"python manage.py migrate\" --interactive --task " + .[2]' | sh
+
   deploy:
     docker:
       - image: cimg/python:3.8.15
@@ -219,6 +233,9 @@ workflows:
   container:
     jobs:
     - container_build
+    - db_migrate:
+        context: [ deployment-ecs-development-ynr ]
+        filters: { branches: { only: [ "matt/wip" ] } }
   cdk:
     jobs:
     - cdk_test:
