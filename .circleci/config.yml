@@ -218,7 +218,9 @@ workflows:
         context: [ deployment-production-ynr, slack-secrets ]
   container:
     jobs:
-    - container_build
+    - container_build:
+        context: [ deployment-ecs-development-ynr ]
   cdk:
     jobs:
-    - cdk_test
+    - cdk_test:
+        context: [ deployment-ecs-development-ynr ]
