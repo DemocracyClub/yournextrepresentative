@@ -221,4 +221,5 @@ workflows:
     - container_build
   cdk:
     jobs:
-    - cdk_test
+    - cdk_test:
+        context: [ deployment-ecs-development-ynr ]
