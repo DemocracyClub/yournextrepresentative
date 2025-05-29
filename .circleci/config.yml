@@ -101,6 +101,16 @@ jobs:
       - store_artifacts:
           path: test-results
 
+  db_migrate:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - aws-cli/setup
+      - run:
+          name: Run any outstanding migrations
+          command: |
+            ./scripts/dbmigrate-from-container.sh
   deploy:
     docker:
       - image: cimg/python:3.8.15
@@ -219,6 +229,8 @@ workflows:
   container:
     jobs:
     - container_build:
+        context: [ deployment-ecs-development-ynr ]
+    - db_migrate:
         context: [ deployment-ecs-development-ynr ]
   cdk:
     jobs:
