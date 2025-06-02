@@ -81,9 +81,9 @@ class Command(BaseCommand):
                         f"Too many results {matches.values('label', 'sim')}"
                     )
                 self.stdout.write("At most one match found")
-                with contextlib.suppress(post.DoesNotExist):
+                with contextlib.suppress(Post.DoesNotExist):
                     return matches.get()
-            except post.MultipleObjectsReturned:
+            except Post.MultipleObjectsReturned:
                 self.stdout.write(f"more than one post matches {label}")
                 return (
                     qs.filter(
