@@ -113,7 +113,7 @@ class Command(BaseCommand):
             user_input = input("Pick a number to match or enter 's' to skip: ")
             if user_input == "s":
                 return None
-            if user_input.isdigit() and 1 >= int(user_input) <= matches.count():
+            if user_input.isdigit() and 1 <= int(user_input) <= matches.count():
                 user_choice = int(user_input)
             else:
                 self.stdout.write("Invalid input, please try again")
