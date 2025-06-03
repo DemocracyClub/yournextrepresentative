@@ -109,6 +109,17 @@ class Command(BaseCommand):
         self.stdout.write("no guess")
         return None
 
+    def move_related_objects(self, post, replacement_post):
+        # Attempt to move ResultEvent objects to the correct post
+        for resultevent in post.resultevent_set.all():
+            resultevent.post = replacement_post
+            resultevent.save()
+
+        # Attempt to move LoggedAction objects to the correct post
+        for loggedaction in post.loggedaction_set.all():
+            loggedaction.post = replacement_post
+            loggedaction.save()
+
     @transaction.atomic
     def handle(self, *args, **options):
         qs = Post.objects.filter(ballot=None)
@@ -128,46 +139,24 @@ class Command(BaseCommand):
                     membership.post = None
                     membership.save()
 
-            replacement_post = self.guess_replacement_post(post)
-            replacement_failed = False
-
-            # Attempt to move ResultEvent objects to the correct post
-            for resultevent in post.resultevent_set.all():
+            replacement_post = None
+            if post.loggedaction_set.exists() or post.resultevent_set.exists():
+                replacement_post = self.guess_replacement_post(post)
                 if not replacement_post:
-                    self.stderr.write(
-                        f"{post.pk} has resultevent, but no replacement guess found"
-                    )
-                    replacement_failed = True
+                    posts_with_no_replacement.append(post)
                     continue
-                if not options["dry-run"]:
-                    resultevent.post = replacement_post
-                    resultevent.save()
 
-            # Attempt to move LoggedAction objects to the correct post
-            for loggedaction in post.loggedaction_set.all():
-                if not replacement_post:
-                    self.stderr.write(
-                        f"{post.pk}: post has loggedaction, but no replacement guess found"
-                    )
-                    replacement_failed = True
-                    continue
-                if not options["dry-run"]:
-                    loggedaction.post = replacement_post
-                    loggedaction.save()
-
-            if options["dry-run"] and replacement_post:
-                if post.loggedaction_set.exists():
-                    self.stdout.write(
-                        f"Would move {post.loggedaction_set.count()} LoggedActions from Post {post.pk} to replacement {replacement_post.pk}"
-                    )
-                if post.resultevent_set.exists():
-                    self.stdout.write(
-                        f"Would move {post.resultevent_set.count()} ResultEvents from Post {post.pk} to replacement {replacement_post.pk}"
-                    )
-
-            if replacement_failed:
-                posts_with_no_replacement.append(post)
-                continue
+                if options["dry-run"]:
+                    if post.loggedaction_set.exists():
+                        self.stdout.write(
+                            f"Would move {post.loggedaction_set.count()} LoggedActions from Post {post.pk} to replacement {replacement_post.pk}"
+                        )
+                    if post.resultevent_set.exists():
+                        self.stdout.write(
+                            f"Would move {post.resultevent_set.count()} ResultEvents from Post {post.pk} to replacement {replacement_post.pk}"
+                        )
+                else:
+                    self.move_related_objects(post, replacement_post)
 
             if not options["dry-run"]:
                 # Check we didn't miss any related objects before deleting post
