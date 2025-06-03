@@ -168,6 +168,7 @@ jobs:
           POSTGRES_DB: ynr
     steps:
       - checkout
+      - aws-cli/setup
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -192,6 +193,12 @@ jobs:
               \
               ynr:test \
               pytest -x
+      - run:
+          name: Tag and push the image
+          command: |
+              docker tag ynr:prod public.ecr.aws/h3q9h5r7/dc-test/ynr:${CIRCLE_BRANCH//\//-}-${CIRCLE_BUILD_NUM}
+              aws ecr-public get-login-password --profile default --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/h3q9h5r7/dc-test/ynr
+              docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:${CIRCLE_BRANCH//\//-}-${CIRCLE_BUILD_NUM}
 
   cdk_test:
     docker:
