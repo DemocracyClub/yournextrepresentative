@@ -65,24 +65,22 @@ class Command(BaseCommand):
 
             try:
                 self.stdout.write(f"Finding an exact match for {label}")
-                return qs.filter(
-                    label=label,
-                ).get()
+                return qs.filter(label=label).get()
             except Post.DoesNotExist:
-                self.stdout.write("Exact match not found, trying trigram")
+                self.stdout.write(
+                    f"Failed to find an exact match for {label}, trying trigram similarity"
+                )
                 matches = (
                     qs.annotate(sim=TrigramSimilarity("label", label))
                     .filter(sim__gt=0.6)
                     .exclude(pk=post.pk)
                 )
-                if matches.count() > 1:
-                    self.stdout.write("more than one match found")
-                    raise ValueError(
-                        f"Too many results {matches.values('label', 'sim')}"
-                    )
-                self.stdout.write("At most one match found")
-                with contextlib.suppress(Post.DoesNotExist):
-                    return matches.get()
+                if matches.exists():
+                    self.stdout.write("Is it one of these?")
+                    for i, match in enumerate(matches, start=1):
+                        self.stdout.write(f"\t {i}. {match.label}")
+
+                    return self.prompt_user_for_match(matches)
             except Post.MultipleObjectsReturned:
                 self.stdout.write(f"more than one post matches {label}")
                 return (
@@ -108,6 +106,22 @@ class Command(BaseCommand):
                 )
         self.stdout.write("no guess")
         return None
+
+    def prompt_user_for_match(self, matches):
+        user_input = None
+        while not user_input:
+            user_input = input("Pick a number to match or enter 's' to skip: ")
+            if user_input == "s":
+                return None
+            if user_input.isdigit() and 1 >= int(user_input) <= matches.count():
+                user_choice = int(user_input)
+            else:
+                self.stdout.write("Invalid input, please try again")
+                user_input = None
+
+        match = matches[user_choice - 1]
+        self.stdout.write(f"You picked {match.label}")
+        return match
 
     def move_related_objects(self, post, replacement_post):
         # Attempt to move ResultEvent objects to the correct post
