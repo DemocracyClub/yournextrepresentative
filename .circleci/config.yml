@@ -157,7 +157,7 @@ jobs:
           event: fail
           template: basic_fail_1
 
-  container_build:
+  container_build_and_push:
     working_directory: ~/repo
     docker:
       - image: cimg/base:current
@@ -196,10 +196,24 @@ jobs:
       - run:
           name: Tag and push the image
           command: |
-              docker tag ynr:prod public.ecr.aws/h3q9h5r7/dc-test/ynr:${CIRCLE_BRANCH//\//-}-${CIRCLE_BUILD_NUM}
+              TAG="${CIRCLE_SHA1:0:7}"
+              echo Using the tag ${TAG}
+              docker tag ynr:prod public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
               aws ecr-public get-login-password --profile default --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/h3q9h5r7/dc-test/ynr
-              docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:${CIRCLE_BRANCH//\//-}-${CIRCLE_BUILD_NUM}
+              docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
 
+  service_update:
+    working_directory: ~/repo
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - aws-cli/setup
+      - run:
+          name: Update the task definition to the newly pushed image
+          command: |
+              IMAGE_TAG="${CIRCLE_SHA1:0:7}"
+              ./scripts/update-ecs-task.sh $IMAGE_TAG
   cdk_test:
     docker:
       - image: cimg/python:3.8.15-node
@@ -235,10 +249,14 @@ workflows:
         context: [ deployment-production-ynr, slack-secrets ]
   container:
     jobs:
-    - container_build:
-        context: [ deployment-ecs-development-ynr ]
-    - db_migrate:
-        context: [ deployment-ecs-development-ynr ]
+      - container_build_and_push:
+          context: [ deployment-ecs-development-ynr ]
+      - service_update:
+          requires:
+            - container_build_and_push
+          context: [ deployment-ecs-development-ynr ]
+      - db_migrate:
+          context: [ deployment-ecs-development-ynr ]
   cdk:
     jobs:
     - cdk_test:
