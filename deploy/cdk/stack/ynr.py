@@ -1,4 +1,4 @@
-from aws_cdk import Stack
+from aws_cdk import Stack, Tags
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
@@ -19,7 +19,7 @@ class YnrStack(Stack):
         cluster = ecs.Cluster(self, "YnrCluster", vpc=vpc)
         encryption_key = kms.Alias.from_alias_name(self, "SSMKey", "alias/aws/ssm")
 
-        ecs_patterns.ApplicationLoadBalancedFargateService(
+        service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
             "YnrService",
             cluster=cluster,
@@ -102,3 +102,5 @@ class YnrStack(Stack):
             ),
             public_load_balancer=True,
         )
+        Tags.of(cluster).add("app", "ynr")
+        Tags.of(service).add("role", "web")
