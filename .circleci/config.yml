@@ -161,7 +161,7 @@ jobs:
           event: fail
           template: basic_fail_1
 
-  container_build:
+  container_build_and_push:
     working_directory: ~/repo
     docker:
       - image: cimg/base:current
@@ -200,9 +200,51 @@ jobs:
       - run:
           name: Tag and push the image
           command: |
-              docker tag ynr:prod public.ecr.aws/h3q9h5r7/dc-test/ynr:${CIRCLE_BRANCH//\//-}-${CIRCLE_BUILD_NUM}
+              TAG="${CIRCLE_BRANCH//\//-}-<< pipeline.number >>"
+              echo Using the tag ${TAG}
+              docker tag ynr:prod public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
               aws ecr-public get-login-password --profile default --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/h3q9h5r7/dc-test/ynr
-              docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:${CIRCLE_BRANCH//\//-}-${CIRCLE_BUILD_NUM}
+              docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
+
+  service_update:
+    working_directory: ~/repo
+    docker:
+      - image: cimg/base:current
+    steps:
+      # - checkout -- No code needed here
+      - aws-cli/setup
+      - run:
+          name: Update the task definition to the newly pushed image
+          command: |
+            set -ex
+            IMAGE_NAME=ynr
+            CLUSTER_APP_TAG=ynr
+            SERVICE_ROLE_TAG=web
+            REGION=eu-west-2
+            VERSION="${CIRCLE_BRANCH//\//-}-<< pipeline.number >>"
+            REPO="public.ecr.aws/h3q9h5r7/dc-test"
+            echo "Using Repo: ${REPO}, Image: ${IMAGE_NAME}, Tag: ${VERSION}"
+
+            CLUSTER_LIST=$(aws ecs list-clusters | jq -r '.clusterArns|map(split("/")[1])[]')
+
+            # Force an error if we have a count of matching clusters that differs from 1
+            CLUSTER_NAME=$(aws ecs describe-clusters --include TAGS --cluster ${CLUSTER_LIST} | jq -r --arg TAG "${CLUSTER_APP_TAG}" '.clusters|map(.tags = (.tags|from_entries)) | map(select(.tags.app == $TAG and  .status == "ACTIVE" ))|map(.clusterName)| if .|length != 1 then halt_error else .[0] end ')
+            SERVICE_LIST=$(aws ecs list-services  --cluster ${CLUSTER_NAME} | jq -r '.serviceArns|map(split("/")[2])[]')
+
+            # Force an error if we have a count of matching services that differs from 1
+            SERVICE_NAME=$(aws ecs describe-services  --cluster ${CLUSTER_NAME} --service ${SERVICE_LIST} --include TAGS | jq -r --arg TAG "${SERVICE_ROLE_TAG}" '.services|map(.tags = (.tags|from_entries)) | map(select(.tags.role == $TAG ))|map(.serviceName)| if .|length != 1 then halt_error else .[0] end ')
+
+            NEW_IMAGE="${REPO}/$IMAGE_NAME:$VERSION"
+            TASK_NAME=$(aws ecs describe-services --cluster ${CLUSTER_NAME} --services ${SERVICE_NAME} | jq -r '.services[0].taskDefinition|split("/")[1]|split(":")[0]')
+            TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "$TASK_NAME" --region "$REGION")
+            NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --arg IMAGE "$NEW_IMAGE" '.taskDefinition | .containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)')
+            NEW_REVISION=$(aws ecs register-task-definition --region "$REGION" --cli-input-json "$NEW_TASK_DEFINITION")
+            NEW_REVISION_DATA=$(echo $NEW_REVISION | jq '.taskDefinition.revision')
+
+            aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $TASK_NAME --force-new-deployment
+
+            echo "done"
+            echo "${TASK_NAME}, Revision: ${NEW_REVISION_DATA}, Image: ${NEW_IMAGE}"
 
   cdk_test:
     docker:
@@ -239,11 +281,16 @@ workflows:
         context: [ deployment-production-ynr, slack-secrets ]
   container:
     jobs:
-    - container_build:
-        context: [ deployment-ecs-development-ynr ]
-    - db_migrate:
-        context: [ deployment-ecs-development-ynr ]
-        filters: { branches: { only: [ "matt/wip" ] } }
+      - container_build_and_push:
+          context: [ deployment-ecs-development-ynr ]
+      - service_update:
+          requires:
+            - container_build_and_push
+          context: [ deployment-ecs-development-ynr ]
+          filters: { branches: { only: [ "/^matt/.*/" ] } }
+      - db_migrate:
+          context: [ deployment-ecs-development-ynr ]
+          filters: { branches: { only: [ "/^matt/.*/" ] } }
   cdk:
     jobs:
     - cdk_test:
