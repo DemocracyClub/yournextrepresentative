@@ -336,7 +336,7 @@ class TestAPI(
             result["results"],
             {
                 "num_turnout_reported": 900,
-                "turnout_percentage": 90.0,
+                "turnout_percentage": 90.00,
                 "num_spoilt_ballots": 100,
                 "source": "Example ResultSet for testing",
                 "total_electorate": 1000,

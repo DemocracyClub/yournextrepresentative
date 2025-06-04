@@ -67,12 +67,21 @@ class ResultsBot(object):
         ballot = division.local_area
 
         with transaction.atomic():
+            defaults = {
+                "source": source,
+                "num_spoilt_ballots": division.spoiled_votes,
+                "turnout_percentage": division.turnout_percentage,
+                "total_electorate": division.electorate,
+            }
+            # Only include num_turnout_reported if it was reported in Modgov
+            if division.numballotpapersissued > 0:
+                defaults[
+                    "num_turnout_reported"
+                ] = division.numballotpapersissued
+
             instance, _ = ResultSet.objects.update_or_create(
                 ballot=ballot,
-                defaults={
-                    "source": source,
-                    "num_spoilt_ballots": division.spoiled_votes,
-                },
+                defaults=defaults,
             )
             instance.user = self.user
             instance.save()
@@ -100,9 +109,13 @@ class ResultsBot(object):
 
             for candidate in candidate_list:
                 membership = candidate.ynr_membership
+                rank = self.get_candidate_rank(candidate.votes, candidate_list)
                 instance.candidate_results.update_or_create(
                     membership=membership,
-                    defaults={"num_ballots": candidate.votes},
+                    defaults={
+                        "num_ballots": candidate.votes,
+                        "rank": rank,
+                    },
                 )
                 membership.elected = bool(membership in winners.values())
                 membership.save()
@@ -118,3 +131,20 @@ class ResultsBot(object):
                     ballot=instance.ballot,
                     edit_type=EditType.BOT.name,
                 )
+
+    def get_candidate_rank(self, num_votes, candidate_list):
+        """
+        Determine the rank of a candidate in the candidate list based on the number of votes.
+        """
+        sorted_candidates = sorted(
+            candidate_list,
+            reverse=True,
+            key=lambda candidate: candidate.votes,
+        )
+
+        total_candidates = len(candidate_list)
+
+        for i, candidate in enumerate(sorted_candidates, start=1):
+            if num_votes == candidate.votes:
+                return i
+        return total_candidates + 1

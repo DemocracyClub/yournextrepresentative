@@ -9,6 +9,13 @@ from resultsbot.importers.modgov import ModGovImporter
 
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--re-import-current",
+            action="store_true",
+            help="Re-imports data from current ballots",
+        )
+
     def handle(self, **options):
         id_to_url = {}
 
@@ -34,7 +41,7 @@ class Command(BaseCommand):
                 hasattr(ballot, "resultset")
                 for ballot in importer.election.ballot_set.all()
             ]
-            if all(ballot_with_result):
+            if all(ballot_with_result) and not options["re_import_current"]:
                 continue
             importer.get_data()
             for div in importer.divisions():
@@ -60,7 +67,10 @@ class Command(BaseCommand):
                 ):
                     continue
 
-                if hasattr(div.local_area, "resultset"):
+                if (
+                    hasattr(div.local_area, "resultset")
+                    and not options["re_import_current"]
+                ):
                     continue
 
                 candidates = list(importer.candidates(div))

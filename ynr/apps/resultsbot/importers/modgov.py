@@ -7,6 +7,7 @@ from elections.models import Election
 from resultsbot.matchers.candidate import CandidateMatcher
 from resultsbot.matchers.mappings import SavedMapping
 from resultsbot.matchers.party import PartyMatacher
+from uk_results.utils import calculate_turnout_percentage
 
 from .base import BaseCandidate, BaseDivision, BaseImporter
 
@@ -74,20 +75,38 @@ class ModGovDivision(BaseDivision):
         for attr in ATTRS:
             soup_attr = getattr(soup, attr)
             if soup_attr:
-                setattr(self, attr, soup_attr.get_text(strip=True))
+                value = soup_attr.get_text(strip=True)
+                if attr.startswith("num") or attr == "electorate":
+                    value = int(value)
+                setattr(self, attr, value)
 
     @property
     def spoiled_votes(self):
-        for spoiled in self.soup.find_all("spoiledvote"):
+        if not self.soup.spoiledvotes:
+            return None
+
+        spoiled_vote_count = 0
+
+        for spoiled_vote in self.soup.spoiledvotes.find_all("spoiledvote"):
             try:
-                if (
-                    spoiled.description
-                    and spoiled.description.get_text(strip=True) == "Rejected"
-                ):
-                    return int(spoiled.numvotes.get_text(strip=True))
+                if spoiled_vote.numvotes:
+                    spoiled_vote_count += int(
+                        spoiled_vote.numvotes.get_text(strip=True)
+                    )
             except ValueError:
                 pass
-        return None
+
+        if not spoiled_vote_count:
+            return None
+        return spoiled_vote_count
+
+    @property
+    def turnout_percentage(self):
+        if not all([self.numballotpapersissued, self.electorate]):
+            return None
+        return calculate_turnout_percentage(
+            self.numballotpapersissued, self.electorate
+        )
 
 
 class ModGovImporter(BaseImporter):
