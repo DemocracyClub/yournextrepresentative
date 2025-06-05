@@ -196,25 +196,25 @@ class Command(BaseCommand):
 
         for post in qs:
             if post.loggedaction_set.exists() or post.resultevent_set.exists():
-                replacement_post = None
-                replacement_post = self.guess_replacement_post(post)
+                repl_post = None
+                repl_post = self.guess_replacement_post(post)
 
-                if not replacement_post:
+                if not repl_post:
                     posts_with_no_replacements.append(post)
                     continue
 
-                posts_with_replacements.append((post, replacement_post))
+                posts_with_replacements.append((post, repl_post))
             else:
                 true_orphan_posts.append(post)
 
             if options["dry-run"] and options["with-repl"]:
                 if post.loggedaction_set.exists():
                     self.stdout.write(
-                        f"Would move {post.loggedaction_set.count()} LoggedActions from Post {post.pk} ({post.label}) to replacement {replacement_post.pk} ({replacement_post.label})"
+                        f"Would move {post.loggedaction_set.count()} LoggedActions from Post {post.pk} ({post.label}) to replacement {repl_post.pk} ({repl_post.label})"
                     )
                 if post.resultevent_set.exists():
                     self.stdout.write(
-                        f"Would move {post.resultevent_set.count()} ResultEvents from Post {post.pk} ({post.label}) to replacement {replacement_post.pk} ({replacement_post.label})"
+                        f"Would move {post.resultevent_set.count()} ResultEvents from Post {post.pk} ({post.label}) to replacement {repl_post.pk} ({repl_post.label})"
                     )
 
         for post in posts_with_no_replacements:
