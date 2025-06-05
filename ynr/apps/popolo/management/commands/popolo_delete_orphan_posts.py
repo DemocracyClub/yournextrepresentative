@@ -39,7 +39,9 @@ class Command(BaseCommand):
 
     def guess_replacement_post(self, post) -> Optional[Post]:
         def guess(post, related_obj, object_attr="posts", exclude_kwargs=None):
-            self.stdout.write(f"Guessing for post {post.pk} and {related_obj}")
+            self.stdout.write(
+                f"Guessing replacement for post {post.pk} ({post.label}) using {related_obj}"
+            )
             # special case PCCs
             if "Police and Crime Commissioner for " in post.label:
                 return (
@@ -83,7 +85,6 @@ class Command(BaseCommand):
                 qs = qs.exclude(**exclude_kwargs)
 
             try:
-                self.stdout.write(f"Finding an exact match for {label}")
                 return qs.filter(label=label).get()
             except Post.DoesNotExist:
                 self.stdout.write(
@@ -101,7 +102,7 @@ class Command(BaseCommand):
 
                     return self.prompt_user_for_match(matches)
             except Post.MultipleObjectsReturned:
-                self.stdout.write(f"more than one post matches {label}")
+                self.stdout.write(f"More than one post matches {label}")
                 return (
                     qs.filter(
                         label=label,
@@ -123,7 +124,6 @@ class Command(BaseCommand):
                 return guess(
                     post, post.organization, exclude_kwargs={"ballot": None}
                 )
-        self.stdout.write("no guess")
         return None
 
     def prompt_user_for_match(self, matches):
@@ -210,11 +210,11 @@ class Command(BaseCommand):
             if options["dry-run"] and options["with-repl"]:
                 if post.loggedaction_set.exists():
                     self.stdout.write(
-                        f"Would move {post.loggedaction_set.count()} LoggedActions from Post {post.pk} to replacement {replacement_post.pk}"
+                        f"Would move {post.loggedaction_set.count()} LoggedActions from Post {post.pk} ({post.label}) to replacement {replacement_post.pk} ({replacement_post.label})"
                     )
                 if post.resultevent_set.exists():
                     self.stdout.write(
-                        f"Would move {post.resultevent_set.count()} ResultEvents from Post {post.pk} to replacement {replacement_post.pk}"
+                        f"Would move {post.resultevent_set.count()} ResultEvents from Post {post.pk} ({post.label}) to replacement {replacement_post.pk} ({replacement_post.label})"
                     )
 
         for post in posts_with_no_replacements:
