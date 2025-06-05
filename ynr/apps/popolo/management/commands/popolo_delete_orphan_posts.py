@@ -10,6 +10,19 @@ from popolo.models import Post
 
 
 class Command(BaseCommand):
+    help = """
+    A command to delete orphan posts in the database.
+
+    There are three categories of posts:
+    1. True orphan posts: no related objects at all.
+    2. Posts with related objects for which we're able to guess a replacement.
+    3. Posts with related objects for which we weren't able to guess a replacement.
+
+    The base command will only delete true orphan posts.
+
+    Passing --with-repl will also delete the second category and move their related objects to the replacement.
+"""
+
     def add_arguments(self, parser):
         parser.add_argument(
             "--dry-run",
