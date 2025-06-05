@@ -54,7 +54,11 @@ class Command(BaseCommand):
                 hasattr(ballot, "resultset")
                 for ballot in importer.election.ballot_set.all()
             ]
-            if all(ballot_with_result) and not options["re_import_current"]:
+            if (
+                all(ballot_with_result)
+                and not options["re_import_current"]
+                and not election_ids
+            ):
                 continue
             importer.get_data()
             for div in importer.divisions():
