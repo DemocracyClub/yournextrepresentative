@@ -15,10 +15,15 @@ class Command(BaseCommand):
             action="store_true",
             help="Re-imports data from current ballots",
         )
+        parser.add_argument(
+            "--election-ids",
+            nargs="+",
+            help="List of election IDs to import (space separated). Only these will be processed if provided.",
+        )
 
     def handle(self, **options):
         id_to_url = {}
-
+        election_ids = options.get("election_ids")
         path = os.path.join(
             os.path.dirname(resultsbot.__file__), "election_id_to_url.csv"
         )
@@ -29,12 +34,20 @@ class Command(BaseCommand):
                     continue
                 id_to_url[line[0]] = line[1]
 
+        if election_ids:
+            # Only keep those in id_to_url that match the provided IDs
+            id_to_url = {
+                k: v for k, v in id_to_url.items() if k in election_ids
+            }
         all_candidates = []
 
         for election_id, url in id_to_url.items():
             election = Election.objects.get(slug=election_id)
-            if not election.current:
+            # Only skip non-current if not using --election-ids
+
+            if not election.current and not election_ids:
                 continue
+
             print(election_id, url)
             importer = ModGovImporter(election_id, url=url)
             ballot_with_result = [
@@ -70,6 +83,7 @@ class Command(BaseCommand):
                 if (
                     hasattr(div.local_area, "resultset")
                     and not options["re_import_current"]
+                    and not election_ids
                 ):
                     continue
 
