@@ -17,6 +17,12 @@ class Command(BaseCommand):
             dest="dry-run",
             help="Do not delete any objects, just print what would be deleted.",
         )
+        parser.add_argument(
+            "--with-repl",
+            action="store_true",
+            dest="with-repl",
+            help="Also delete posts with related objects where we've been able to guess a replacement.",
+        )
 
     def guess_replacement_post(self, post) -> Optional[Post]:
         def guess(post, related_obj, object_attr="posts", exclude_kwargs=None):
@@ -134,58 +140,84 @@ class Command(BaseCommand):
             loggedaction.post = replacement_post
             loggedaction.save()
 
+    def check_for_related_objects(self, post):
+        collector = NestedObjects(using="default")
+        collector.collect([post])
+        collected = collector.nested()
+        if len(collected) > 1:
+            raise ValueError(f"Post {post.pk} has related objects: {collected}")
+
     @transaction.atomic
+    def delete_orphan_posts(self, posts):
+        for post in posts:
+            self.delete_post(post)
+
+    @transaction.atomic
+    def delete_posts_with_replacements(self, posts):
+        for post, replacement_post in posts:
+            self.move_related_objects(post, replacement_post)
+            self.delete_post(post)
+
+    def delete_post(self, post):
+        # We can remove PostIdentifiers relating to this Post
+        post.postidentifier_set.all().delete()
+
+        # Set related Membership IDs to None (Membership->Post FK is deprecated)
+        for membership in post.memberships.all():
+            membership.post = None
+            membership.save()
+
+        # Check we didn't miss any related objects before deleting post
+        self.check_for_related_objects(post)
+        post.delete()
+
     def handle(self, *args, **options):
         qs = Post.objects.filter(ballot=None)
         self.stdout.write(f"Found {qs.count()} orphan posts")
         if options["dry-run"]:
             self.stdout.write("Dry run, not deleting anything")
 
-        posts_with_no_replacement = []
+        true_orphan_posts = []
+        posts_with_replacements = []
+        posts_with_no_replacements = []
 
         for post in qs:
-            if not options["dry-run"]:
-                # We can remove PostIdentifiers relating to this Post
-                post.postidentifier_set.all().delete()
-
-                # Set related Membership IDs to None (Membership->Post FK is deprecated)
-                for membership in post.memberships.all():
-                    membership.post = None
-                    membership.save()
-
-            replacement_post = None
             if post.loggedaction_set.exists() or post.resultevent_set.exists():
+                replacement_post = None
                 replacement_post = self.guess_replacement_post(post)
+
                 if not replacement_post:
-                    posts_with_no_replacement.append(post)
+                    posts_with_no_replacements.append(post)
                     continue
 
-                if options["dry-run"]:
-                    if post.loggedaction_set.exists():
-                        self.stdout.write(
-                            f"Would move {post.loggedaction_set.count()} LoggedActions from Post {post.pk} to replacement {replacement_post.pk}"
-                        )
-                    if post.resultevent_set.exists():
-                        self.stdout.write(
-                            f"Would move {post.resultevent_set.count()} ResultEvents from Post {post.pk} to replacement {replacement_post.pk}"
-                        )
-                else:
-                    self.move_related_objects(post, replacement_post)
+                posts_with_replacements.append((post, replacement_post))
+            else:
+                true_orphan_posts.append(post)
 
-            if not options["dry-run"]:
-                # Check we didn't miss any related objects before deleting post
-                collector = NestedObjects(using="default")
-                collector.collect([post])
-                collected = collector.nested()
-                if len(collected) > 1:
-                    raise ValueError(
-                        f"Post {post.pk} has related objects: {collected}"
+            if options["dry-run"] and options["with-repl"]:
+                if post.loggedaction_set.exists():
+                    self.stdout.write(
+                        f"Would move {post.loggedaction_set.count()} LoggedActions from Post {post.pk} to replacement {replacement_post.pk}"
+                    )
+                if post.resultevent_set.exists():
+                    self.stdout.write(
+                        f"Would move {post.resultevent_set.count()} ResultEvents from Post {post.pk} to replacement {replacement_post.pk}"
                     )
 
-                self.stdout.write(f"Deleting post {post.pk}")
-                post.delete()
-
-        for post in posts_with_no_replacement:
+        for post in posts_with_no_replacements:
             self.stderr.write(
                 f"Failed to find replacement Post for objects related to {post.pk} ({post.label}), please check manually."
             )
+
+        if options["dry-run"]:
+            self.stdout.write(
+                f"Would delete {len(true_orphan_posts)} true orphan posts"
+            )
+            if options["with-repl"]:
+                self.stdout.write(
+                    f"Would delete {len(posts_with_replacements)} posts with replacements"
+                )
+        else:
+            self.delete_orphan_posts(true_orphan_posts)
+            if options["with-repl"]:
+                self.delete_posts_with_replacements(posts_with_replacements)
