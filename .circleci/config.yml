@@ -211,7 +211,7 @@ jobs:
     docker:
       - image: cimg/base:current
     steps:
-      # - checkout -- No code needed here
+      - checkout
       - aws-cli/setup
       - run:
           name: Update the task definition to the newly pushed image
