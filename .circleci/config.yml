@@ -225,7 +225,7 @@ jobs:
           command: |
             python -m venv ./deploy/cdk/venv
             . ./deploy/cdk/venv/bin/activate
-            pip install -r ./deploy/cdk/requirements.txt
+            pip install -r requirements/cdk.txt
             npm install --save=false ./deploy/cdk
       - run:
           name: Check that CDK stacks synthesise
