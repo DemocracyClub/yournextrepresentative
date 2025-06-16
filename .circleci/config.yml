@@ -256,6 +256,8 @@ workflows:
             - container_build_and_push
           context: [ deployment-ecs-development-ynr ]
       - db_migrate:
+          requires:
+            - service_update
           context: [ deployment-ecs-development-ynr ]
   cdk:
     jobs:
