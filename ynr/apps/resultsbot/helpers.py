@@ -71,13 +71,15 @@ class ResultsBot(object):
                 "source": source,
                 "num_spoilt_ballots": division.spoiled_votes,
                 "turnout_percentage": division.turnout_percentage,
-                "total_electorate": division.electorate,
             }
             # Only include num_turnout_reported if it was reported in Modgov
             if division.numballotpapersissued > 0:
                 defaults[
                     "num_turnout_reported"
                 ] = division.numballotpapersissued
+            # Same for total electorate
+            if division.electorate > 0:
+                defaults["total_electorate"] = division.electorate
 
             instance, _ = ResultSet.objects.update_or_create(
                 ballot=ballot,
