@@ -1,6 +1,6 @@
 {
-  "app": "python3 deploy/cdk/app.py",
-  "output": "deploy/cdk/out",
+  "app": "python3 cdk/app.py",
+  "output": "cdk/out",
   "context": {
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,

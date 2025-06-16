@@ -223,20 +223,20 @@ jobs:
       - run:
           name: Create CDK venv and install Python and Node dependencies
           command: |
-            python -m venv ./deploy/cdk/venv
-            . ./deploy/cdk/venv/bin/activate
+            python -m venv ./cdk/venv
+            . ./cdk/venv/bin/activate
             pip install -r requirements/cdk.txt
-            npm install --save=false ./deploy/cdk
+            npm install --save=false .
       - run:
           name: Check that CDK stacks synthesise
           command: |
-            . ./deploy/cdk/venv/bin/activate
+            . ./cdk/venv/bin/activate
             npx cdk synth
       - run:
           name: Run CDK tests
           command: |
-            . ./deploy/cdk/venv/bin/activate
-            pytest ./deploy/cdk
+            . ./cdk/venv/bin/activate
+            pytest ./cdk
 
 workflows:
   test_build_deploy:
