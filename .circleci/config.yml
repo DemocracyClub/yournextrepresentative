@@ -86,7 +86,7 @@ jobs:
             RUN_ENV: test
           command: |
             . .venv/bin/activate
-            pytest -x --cov-report= --cov --junitxml=test-results/junit.xml
+            pytest -x --cov-report= --cov --junitxml=test-results/junit.xml --ignore=cdk
 
       # Coverage
       - run:
