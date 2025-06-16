@@ -36,3 +36,10 @@ deploy/.env
 # CDK
 ## This accumulates semi-secret info. Ignore for now.
 cdk.context.json
+
+# The CDK asset staging directory
+/cdk/.cdk.staging
+# The venv used when we interact with the CDK
+/cdk/venv
+# The CDK's generated output
+/cdk/out
