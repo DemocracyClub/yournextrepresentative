@@ -157,6 +157,32 @@ jobs:
           event: fail
           template: basic_fail_1
 
+  static_tests:
+    working_directory: ~/repo
+    docker:
+      - image: cimg/python:3.8.15-node
+    steps:
+      - checkout
+      - run:
+          name: Create venv and install Python and Node dependencies
+          command: |
+            python -m venv .venv
+            . .venv/bin/activate
+            pip install -r requirements/testing.txt
+            npm install --save=false .
+      - run:
+          name: Pre test checks
+          environment:
+            CIRCLECI: true
+            RUN_ENV: test
+          command: |
+            . .venv/bin/activate
+            pip check
+            ruff .
+            ruff format .
+            python manage.py check
+            python manage.py makemigrations --check
+
   container_build_and_push:
     working_directory: ~/repo
     docker:
@@ -257,9 +283,12 @@ workflows:
     jobs:
       - cdk_test_and_deploy:
           context: [ deployment-ecs-development-ynr ]
+      - static_tests:
+          context: [ deployment-ecs-development-ynr ]
       - container_build_and_push:
           requires:
             - cdk_test_and_deploy
+            - static_tests
           context: [ deployment-ecs-development-ynr ]
       - service_update:
           requires:
