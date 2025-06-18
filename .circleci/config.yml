@@ -265,6 +265,11 @@ jobs:
             . ./cdk/venv/bin/activate
             pytest ./cdk
       - run:
+          name: Show changes in the stack
+          command: |
+            . ./cdk/venv/bin/activate
+            npx cdk diff
+      - run:
           name: Deploy CDK stack infra
           command: |
             . ./cdk/venv/bin/activate
