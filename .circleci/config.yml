@@ -192,7 +192,7 @@ jobs:
               -e CIRCLECI=true \
               \
               ynr:test \
-              pytest -x
+              pytest -x --ignore=node_modules
       - run:
           name: Tag and push the image
           command: |
