@@ -214,7 +214,8 @@ jobs:
           command: |
               IMAGE_TAG="${CIRCLE_SHA1:0:7}"
               ./scripts/update-ecs-task.sh $IMAGE_TAG
-  cdk_test:
+
+  cdk_test_and_deploy:
     docker:
       - image: cimg/python:3.8.15-node
     working_directory: ~/repo/
@@ -237,6 +238,11 @@ jobs:
           command: |
             . ./cdk/venv/bin/activate
             pytest ./cdk
+      - run:
+          name: Deploy CDK stack infra
+          command: |
+            . ./cdk/venv/bin/activate
+            npx cdk deploy --verbose --require-approval never --progress events
 
 workflows:
   test_build_deploy:
@@ -249,7 +255,11 @@ workflows:
         context: [ deployment-production-ynr, slack-secrets ]
   container:
     jobs:
+      - cdk_test_and_deploy:
+          context: [ deployment-ecs-development-ynr ]
       - container_build_and_push:
+          requires:
+            - cdk_test_and_deploy
           context: [ deployment-ecs-development-ynr ]
       - service_update:
           requires:
@@ -259,7 +269,3 @@ workflows:
           requires:
             - service_update
           context: [ deployment-ecs-development-ynr ]
-  cdk:
-    jobs:
-    - cdk_test:
-        context: [ deployment-ecs-development-ynr ]
