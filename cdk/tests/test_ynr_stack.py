@@ -17,6 +17,14 @@ def test_template_components():
     # We're managing the ECS Cluster in-stack, instead of taking a cluster ID
     # as an input param - so it needs to exist.
     template.resource_count_is('AWS::ECS::Cluster', 1)
+    template.resource_count_is('AWS::ECS::Service', 1)
+    template.has_resource_properties('AWS::ECS::Service', {
+        'Tags': assertions.Match.array_with([{ 'Key': 'role', 'Value': 'web' }]),
+    })
+
+    template.has_resource_properties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        'Scheme': 'internet-facing',
+    })
 
     # NAT Gateways cost ~0.05USD/hour. To avoid this cost, we currently locate
     # ECS tasks in a public subnet, and give each task instance a public IP
@@ -29,3 +37,6 @@ def test_template_components():
     # (i.e. per AWS AZ), as public IP addresses are charged at 0.005USD/hour.
     # For now, we simply ensure that zero NAT Gateways exist in the stack.
     template.resource_count_is('AWS::EC2::NatGateway', 0)
+
+    # One for ingress, one for egress
+    template.resource_count_is('AWS::EC2::SecurityGroup', 2)
