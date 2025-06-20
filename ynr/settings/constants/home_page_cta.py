@@ -6,7 +6,7 @@ from datetime import date
 # RESULTS_PROGRESS
 # DATA_DOWNLOAD
 # BY_ELECTIONS
-FRONT_PAGE_CTA = "RESULTS_PROGRESS"
+FRONT_PAGE_CTA = "BY_ELECTIONS"
 SOPN_TRACKER_INFO = {
     "election_date": "2025-05-01",
     "election_name": "2025 local elections",
