@@ -183,7 +183,7 @@ jobs:
             python manage.py check
             python manage.py makemigrations --check
 
-  container_build_and_push:
+  container_test_build_and_push:
     working_directory: ~/repo
     docker:
       - image: cimg/base:current
@@ -294,14 +294,14 @@ workflows:
           context: [ deployment-ecs-development-ynr ]
       - static_tests:
           context: [ deployment-ecs-development-ynr ]
-      - container_build_and_push:
+      - container_test_build_and_push:
           requires:
             - cdk_test_and_deploy
             - static_tests
           context: [ deployment-ecs-development-ynr ]
       - service_update:
           requires:
-            - container_build_and_push
+            - container_test_build_and_push
           context: [ deployment-ecs-development-ynr ]
       - db_migrate:
           requires:
