@@ -205,6 +205,7 @@ jobs:
       - run:
           name: Check that compose is happy
           command: |
+            docker compose version
             docker compose config
             # No-op, due to a shared layer cache with earlier image builds.
             docker compose build
