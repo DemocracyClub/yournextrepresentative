@@ -241,6 +241,9 @@ jobs:
           command: |
               IMAGE_TAG="${CIRCLE_SHA1:0:7}"
               ./scripts/update-ecs-task.sh $IMAGE_TAG
+      - run:
+          name: Wait for the service to stabilise
+          command: ./scripts/wait-for-stable-ecs-service.sh
 
   cdk_test_and_deploy:
     docker:

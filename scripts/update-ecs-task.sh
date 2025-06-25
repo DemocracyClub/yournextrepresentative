@@ -2,6 +2,15 @@
 
 set -ex
 
+if [[ $# -eq 0 ]]; then
+    cat <<EOT
+Usage: $0 <image_tag>
+
+    <image_tag> is the tag for the container image to be used for the new service definition.
+EOT
+    exit 1
+fi
+
 IMAGE_NAME=ynr
 CLUSTER_APP_TAG=ynr
 SERVICE_ROLE_TAG=web
