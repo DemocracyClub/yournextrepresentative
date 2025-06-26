@@ -110,7 +110,7 @@ jobs:
       - run:
           name: Run any outstanding migrations
           command: |
-            ./scripts/dbmigrate-from-container.sh
+            ./scripts/ci/dbmigrate.sh
   deploy:
     docker:
       - image: cimg/python:3.8.15
@@ -240,10 +240,10 @@ jobs:
           name: Update the task definition to the newly pushed image
           command: |
               IMAGE_TAG="${CIRCLE_SHA1:0:7}"
-              ./scripts/update-ecs-task.sh $IMAGE_TAG
+              ./scripts/ci/update-ecs-task.sh $IMAGE_TAG
       - run:
           name: Wait for the service to stabilise
-          command: ./scripts/wait-for-stable-ecs-service.sh
+          command: ./scripts/ci/wait-for-stable-ecs-service.sh
 
   cdk_test_and_deploy:
     docker:
