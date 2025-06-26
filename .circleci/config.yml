@@ -290,14 +290,15 @@ workflows:
         context: [ deployment-production-ynr, slack-secrets ]
   container:
     jobs:
-      - cdk_test_and_deploy:
-          context: [ deployment-ecs-development-ynr ]
       - static_tests:
           context: [ deployment-ecs-development-ynr ]
+      - cdk_test_and_deploy:
+          context: [ deployment-ecs-development-ynr ]
+          requires:
+            - static_tests
       - container_test_build_and_push:
           requires:
             - cdk_test_and_deploy
-            - static_tests
           context: [ deployment-ecs-development-ynr ]
       - service_update:
           requires:
