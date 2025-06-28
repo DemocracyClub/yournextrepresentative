@@ -244,6 +244,9 @@ jobs:
       - run:
           name: Wait for the service to stabilise
           command: ./scripts/ci/wait-for-stable-ecs-service.sh
+      - run:
+          name: Prune old task definitions
+          command: ./scripts/ci/prune-old-task-definitions.sh
 
   cdk_test_and_deploy:
     docker:
