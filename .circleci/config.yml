@@ -182,6 +182,11 @@ jobs:
             ruff format .
             python manage.py check
             python manage.py makemigrations --check
+      - run:
+          name: Run shellcheck
+          command: |
+            apt install -y shellcheck
+            find scripts/ -type f -name *.sh -o -name *.bash -print0 | xargs -r0 shellcheck
 
   container_test_build_and_push:
     working_directory: ~/repo
