@@ -5,6 +5,28 @@ orbs:
 version: 2.1
 
 jobs:
+  post_deploy_checks:
+    docker:
+      - image: cimg/base:current
+    parameters:
+        dc-environment:
+          type: enum
+          enum: [ development, staging, production ]
+    environment:
+      DC_ENVIRONMENT: "<<parameters.dc-environment>>"
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+         name: Run hurl tests
+         command: |
+            VERSION=6.1.1
+            sudo apt-add-repository -y ppa:lepapareil/hurl
+            sudo apt install -y jq hurl="${VERSION}"*
+            cd hurl-tests
+            hurl --test -m 10 --variable host=$(jq -r '.YnrStack|to_entries|map(select(.key|startswith("YnrServiceServiceURL"))|.value)[0]' ../ynr-${DC_ENVIRONMENT}-stack-out.json) *.hurl
+
   build_and_test:
     docker:
       # specify the version you desire here
@@ -280,7 +302,7 @@ jobs:
           name: Deploy CDK stack infra
           command: |
             . ./cdk/venv/bin/activate
-            npx cdk deploy --verbose --require-approval never --progress events
+            npx cdk deploy --verbose --require-approval never --progress events --outputs-file ynr-<<parameters.dc-environment>>-stack-out.json
       # Because we use stable image tags we need to force a redeploy of the
       # service when the container is updated
       - run:
@@ -291,6 +313,11 @@ jobs:
       - run:
           name: Wait for the service to stabilise
           command: ./scripts/ci/wait-for-stable-ecs-service.sh
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ynr-<<parameters.dc-environment>>-stack-out.json
 
   container_push_and_tag:
     docker:
@@ -414,6 +441,12 @@ workflows:
             - DEV cdk deploy
           context: [ deployment-ecs-development-ynr ]
           filters: { branches: { only: [ "ci/test"] } }
+      - post_deploy_checks:
+          name: DEV post deploy checks
+          requires:
+            - DEV db migrate
+          dc-environment: development
+          filters: { branches: { only: [ "ci/test"] } }
 
       #########
       # Staging
@@ -442,4 +475,10 @@ workflows:
           requires:
             - STAGING cdk deploy
           context: [ deployment-ecs-staging-ynr ]
+          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
+      - post_deploy_checks:
+          name: STAGING post deploy checks
+          requires:
+            - STAGING db migrate
+          dc-environment: staging
           filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
