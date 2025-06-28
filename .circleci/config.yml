@@ -183,6 +183,11 @@ jobs:
             ruff format . --check
             DJANGO_SECRET_KEY=fake python manage.py check
             DJANGO_SECRET_KEY=fake python manage.py makemigrations --check
+      - run:
+          name: Run shellcheck
+          command: |
+            sudo apt install -y shellcheck
+            find scripts/ -type f -name *.sh -o -name *.bash -print0 | xargs -r0 shellcheck
 
   container_test_build_and_push:
     working_directory: ~/repo
