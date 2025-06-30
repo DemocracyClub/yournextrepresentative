@@ -250,6 +250,12 @@ jobs:
     docker:
       - image: cimg/python:3.8.15-node
     working_directory: ~/repo/
+    parameters:
+        dc-environment:
+          type: enum
+          enum: [ development, staging, production ]
+    environment:
+      DC_ENVIRONMENT: "<<parameters.dc-environment>>"
     steps:
       - checkout
       - run:
@@ -309,6 +315,7 @@ workflows:
           requires:
             - static_tests
           filters: { branches: { only: [ "ci/test"] } }
+          dc-environment: development
       - container_test_build_and_push:
           requires:
             - cdk_test_and_deploy
