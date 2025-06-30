@@ -5,7 +5,26 @@ import os
 import aws_cdk as cdk
 from stack.ynr import YnrStack
 
-app = cdk.App()
+valid_environments = (
+    "development",
+    "staging",
+    "production",
+)
+
+app_wide_context = {}
+if dc_env := os.environ.get("DC_ENVIRONMENT"):
+    app_wide_context["dc-environment"] = dc_env
+
+app = cdk.App(context=app_wide_context)
+
+# Set the DC Environment early on. This is important to be able to conditionally
+# change the stack configurations
+dc_environment = app.node.try_get_context("dc-environment") or None
+assert (
+    dc_environment in valid_environments
+), f"context `dc-environment` must be one of {valid_environments}"
+
+
 YnrStack(
     app,
     "YnrStack",
