@@ -13,5 +13,5 @@ YnrStack(
         account=os.getenv("CDK_DEFAULT_ACCOUNT"), region=os.getenv("CDK_DEFAULT_REGION")
     ),
 )
-
+cdk.Tags.of(app).add("dc-product", "ynr")
 app.synth()
