@@ -33,4 +33,7 @@ YnrStack(
     ),
 )
 
+cdk.Tags.of(app).add("dc-product", "ynr")
+cdk.Tags.of(app).add("dc-environment", dc_environment)
+
 app.synth()
