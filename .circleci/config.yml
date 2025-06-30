@@ -86,7 +86,7 @@ jobs:
             RUN_ENV: test
           command: |
             . .venv/bin/activate
-            pytest -x --cov-report= --cov --junitxml=test-results/junit.xml
+            pytest -x --cov-report= --cov --junitxml=test-results/junit.xml --ignore=cdk
 
       # Coverage
       - run:
@@ -101,6 +101,16 @@ jobs:
       - store_artifacts:
           path: test-results
 
+  db_migrate:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - aws-cli/setup
+      - run:
+          name: Run any outstanding migrations
+          command: |
+            ./scripts/ci/dbmigrate.sh
   deploy:
     docker:
       - image: cimg/python:3.8.15
@@ -147,7 +157,33 @@ jobs:
           event: fail
           template: basic_fail_1
 
-  container_build:
+  static_tests:
+    working_directory: ~/repo
+    docker:
+      - image: cimg/python:3.8.15-node
+    steps:
+      - checkout
+      - run:
+          name: Create venv and install Python and Node dependencies
+          command: |
+            python -m venv .venv
+            . .venv/bin/activate
+            pip install -r requirements/testing.txt
+            npm install --save=false .
+      - run:
+          name: Pre test checks
+          environment:
+            CIRCLECI: true
+            RUN_ENV: test
+          command: |
+            . .venv/bin/activate
+            pip check
+            ruff .
+            ruff format .
+            python manage.py check
+            python manage.py makemigrations --check
+
+  container_test_build_and_push:
     working_directory: ~/repo
     docker:
       - image: cimg/base:current
@@ -158,6 +194,7 @@ jobs:
           POSTGRES_DB: ynr
     steps:
       - checkout
+      - aws-cli/setup
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -168,6 +205,7 @@ jobs:
       - run:
           name: Check that compose is happy
           command: |
+            docker compose version
             docker compose config
             # No-op, due to a shared layer cache with earlier image builds.
             docker compose build
@@ -181,7 +219,65 @@ jobs:
               -e CIRCLECI=true \
               \
               ynr:test \
-              pytest -x
+              pytest -x --ignore=node_modules
+      - run:
+          name: Tag and push the image
+          command: |
+              TAG="${CIRCLE_SHA1:0:7}"
+              echo Using the tag ${TAG}
+              docker tag ynr:prod public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
+              aws ecr-public get-login-password --profile default --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/h3q9h5r7/dc-test/ynr
+              docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
+
+  service_update:
+    working_directory: ~/repo
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - aws-cli/setup
+      - run:
+          name: Update the task definition to the newly pushed image
+          command: |
+              IMAGE_TAG="${CIRCLE_SHA1:0:7}"
+              ./scripts/ci/update-ecs-task.sh $IMAGE_TAG
+      - run:
+          name: Wait for the service to stabilise
+          command: ./scripts/ci/wait-for-stable-ecs-service.sh
+
+  cdk_test_and_deploy:
+    docker:
+      - image: cimg/python:3.8.15-node
+    working_directory: ~/repo/
+    steps:
+      - checkout
+      - run:
+          name: Create CDK venv and install Python and Node dependencies
+          command: |
+            python -m venv ./cdk/venv
+            . ./cdk/venv/bin/activate
+            pip install -r requirements/cdk.txt
+            npm install --save=false .
+      - run:
+          name: Check that CDK stacks synthesise
+          command: |
+            . ./cdk/venv/bin/activate
+            npx cdk synth
+      - run:
+          name: Run CDK tests
+          command: |
+            . ./cdk/venv/bin/activate
+            pytest ./cdk
+      - run:
+          name: Show changes in the stack
+          command: |
+            . ./cdk/venv/bin/activate
+            npx cdk diff
+      - run:
+          name: Deploy CDK stack infra
+          command: |
+            . ./cdk/venv/bin/activate
+            npx cdk deploy --verbose --require-approval never --progress events
 
 workflows:
   test_build_deploy:
@@ -194,4 +290,21 @@ workflows:
         context: [ deployment-production-ynr, slack-secrets ]
   container:
     jobs:
-    - container_build
+      - static_tests:
+          context: [ deployment-ecs-development-ynr ]
+      - cdk_test_and_deploy:
+          context: [ deployment-ecs-development-ynr ]
+          requires:
+            - static_tests
+      - container_test_build_and_push:
+          requires:
+            - cdk_test_and_deploy
+          context: [ deployment-ecs-development-ynr ]
+      - service_update:
+          requires:
+            - container_test_build_and_push
+          context: [ deployment-ecs-development-ynr ]
+      - db_migrate:
+          requires:
+            - service_update
+          context: [ deployment-ecs-development-ynr ]
