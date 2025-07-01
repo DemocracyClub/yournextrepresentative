@@ -295,16 +295,25 @@ workflows:
         context: [ deployment-production-ynr, slack-secrets ]
   container:
     jobs:
+      ##########
+      # All envs
+      ##########
       - static_tests:
           context: [ deployment-ecs-development-ynr ]
+
+      #############
+      # Development
+      #############
       - cdk_test_and_deploy:
           context: [ deployment-ecs-development-ynr ]
           requires:
             - static_tests
+          filters: { branches: { only: [ "ci/test"] } }
       - container_test_build_and_push:
           requires:
             - cdk_test_and_deploy
           context: [ deployment-ecs-development-ynr ]
+          filters: { branches: { only: [ "ci/test"] } }
       - service_update:
           requires:
             - container_test_build_and_push
