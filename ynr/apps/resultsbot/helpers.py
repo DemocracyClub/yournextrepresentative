@@ -91,21 +91,14 @@ class ResultsBot(object):
             winner_count = ballot.winner_count
 
             if winner_count:
-                winners = dict(
-                    sorted(
-                        [
-                            (
-                                "{}-{}".format(
-                                    c.votes, c.ynr_membership.person.id
-                                ),
-                                c.ynr_membership,
-                            )
-                            for c in candidate_list
-                        ],
-                        reverse=True,
-                        key=lambda votes: int(votes[0].split("-")[0]),
-                    )[:winner_count]
+                # Select the top N candidates by votes as winners
+                sorted_candidates = sorted(
+                    candidate_list, key=lambda c: c.votes, reverse=True
                 )
+                winners = {
+                    f"{candidate.votes}-{candidate.ynr_membership.person.id}": candidate.ynr_membership
+                    for candidate in sorted_candidates[:winner_count]
+                }
             else:
                 winners = {}
 
