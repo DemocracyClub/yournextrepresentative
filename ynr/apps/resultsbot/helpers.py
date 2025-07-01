@@ -99,26 +99,43 @@ class ResultsBot(object):
                     f"{candidate.votes}-{candidate.ynr_membership.person.id}": candidate.ynr_membership
                     for candidate in sorted_candidates[:winner_count]
                 }
+                last_place_winner = sorted_candidates[winner_count - 1]
+                runner_up = (
+                    sorted_candidates[winner_count]
+                    if len(sorted_candidates) > winner_count
+                    else None
+                )
             else:
                 winners = {}
 
-            for candidate in candidate_list:
-                membership = candidate.ynr_membership
-                rank = self.get_candidate_rank(candidate.votes, candidate_list)
-                instance.candidate_results.update_or_create(
-                    membership=membership,
-                    defaults={
-                        "num_ballots": candidate.votes,
-                        "rank": rank,
-                    },
+            tied_vote = False
+            if runner_up and runner_up.votes == last_place_winner.votes:
+                print(
+                    "Coin flip (tied vote count) detected so skipping candidate results entry"
                 )
-                membership.elected = bool(membership in winners.values())
-                membership.save()
+                tied_vote = True
+
+            if not tied_vote:
+                for candidate in candidate_list:
+                    membership = candidate.ynr_membership
+                    rank = self.get_candidate_rank(
+                        candidate.votes, candidate_list
+                    )
+                    instance.candidate_results.update_or_create(
+                        membership=membership,
+                        defaults={
+                            "num_ballots": candidate.votes,
+                            "rank": rank,
+                        },
+                    )
+                    membership.elected = bool(membership in winners.values())
+                    membership.save()
 
             versions, changed = instance.record_version()
 
             if changed:
-                self._mark_candidates_as_winner(instance)
+                if not tied_vote:
+                    self._mark_candidates_as_winner(instance)
                 LoggedAction.objects.create(
                     user=instance.user,
                     action_type=ActionType.ENTERED_RESULTS_DATA,
