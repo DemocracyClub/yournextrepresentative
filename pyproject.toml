@@ -39,6 +39,7 @@ addopts =[
     "--ignore=.download-cache",
     "--ignore=democracy_club/settings/local.py",
     "--ignore=lib",
+    "--ignore=cdk",
     "--ruff",
 ]
 FAIL_INVALID_TEMPLATE_VARS = 1
