@@ -1,11 +1,17 @@
 import os
 
-import aws_cdk as core
-import aws_cdk.assertions as assertions
-from stack.ynr import YnrStack
+import pytest
 
 
+@pytest.mark.skipif(
+    "RUN_INFRA_TESTS" not in os.environ,
+    reason="'RUN_INFRA_TESTS' not set in environment"
+)
 def test_template_components():
+    import aws_cdk as core
+    import aws_cdk.assertions as assertions
+    from stack.ynr import YnrStack
+
     app = core.App()
     stack = YnrStack(app, "YnrStack",
         env={
