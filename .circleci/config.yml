@@ -3,6 +3,7 @@ orbs:
   aws-cli: circleci/aws-cli@4.1.3
   slack: circleci/slack@4.13.3
 version: 2.1
+
 jobs:
   build_and_test:
     docker:
@@ -269,15 +270,19 @@ jobs:
             . ./cdk/venv/bin/activate
             pytest ./cdk
       - run:
-          name: Show changes in the stack
+          name: Show would-be changes in the stack
           command: |
             . ./cdk/venv/bin/activate
             npx cdk diff
-      - run:
-          name: Deploy CDK stack infra
-          command: |
-            . ./cdk/venv/bin/activate
-            npx cdk deploy --verbose --require-approval never --progress events
+      - when:
+          condition:
+            equal: [ "ci/test", << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: Deploy CDK stack infra
+                command: |
+                  . ./cdk/venv/bin/activate
+                  npx cdk deploy --verbose --require-approval never --progress events
 
 workflows:
   test_build_deploy:
@@ -290,21 +295,32 @@ workflows:
         context: [ deployment-production-ynr, slack-secrets ]
   container:
     jobs:
+      ##########
+      # All envs
+      ##########
       - static_tests:
           context: [ deployment-ecs-development-ynr ]
+
+      #############
+      # Development
+      #############
       - cdk_test_and_deploy:
           context: [ deployment-ecs-development-ynr ]
           requires:
             - static_tests
+          filters: { branches: { only: [ "ci/test"] } }
       - container_test_build_and_push:
           requires:
             - cdk_test_and_deploy
           context: [ deployment-ecs-development-ynr ]
+          filters: { branches: { only: [ "ci/test"] } }
       - service_update:
           requires:
             - container_test_build_and_push
           context: [ deployment-ecs-development-ynr ]
+          filters: { branches: { only: [ "ci/test"] } }
       - db_migrate:
           requires:
             - service_update
           context: [ deployment-ecs-development-ynr ]
+          filters: { branches: { only: [ "ci/test"] } }
