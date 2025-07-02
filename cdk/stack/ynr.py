@@ -15,6 +15,11 @@ class YnrStack(Stack):
         vpc = ec2.Vpc.from_lookup(self, "YnrVpc",
             vpc_id = ssm.StringParameter.value_from_lookup(self, "/dc/ynr/dev/1/vpcid")
         )
+        image_tag = ssm.StringParameter.value_from_lookup(self, "/ynr/image_tag", default_value='')
+        if image_tag == '':
+            image_url = "amazon/amazon-ecs-sample"
+        else:
+            image_url = f"public.ecr.aws/h3q9h5r7/dc-test/ynr:{image_tag}"
 
         cluster = ecs.Cluster(self, "YnrCluster", vpc=vpc)
         encryption_key = kms.Alias.from_alias_name(self, "SSMKey", "alias/aws/ssm")
@@ -32,9 +37,7 @@ class YnrStack(Stack):
                 subnet_type=ec2.SubnetType.PUBLIC,
             ),
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
-                image=ecs.ContainerImage.from_registry(
-                    "public.ecr.aws/h3q9h5r7/dc-test/ynr:v3"
-                ),
+                image=ecs.ContainerImage.from_registry(image_tag),
                 # Secrets aren't necessarily "secret", but are created as
                 # environment variables that are looked up at ECS task
                 # instantiation.

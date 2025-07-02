@@ -245,6 +245,9 @@ jobs:
       - run:
           name: Wait for the service to stabilise
           command: ./scripts/ci/wait-for-stable-ecs-service.sh
+      - run:
+          name: Update the stable tag for the stack definition
+          command: aws ssm put-parameter --name /ynr/image_tag --value "${IMAGE_TAG}" --type String --overwrite
 
   cdk_test_and_deploy:
     docker:
@@ -274,6 +277,7 @@ jobs:
           command: |
             . ./cdk/venv/bin/activate
             npx cdk diff
+
       - when:
           condition:
             equal: [ "ci/test", << pipeline.git.branch >> ]
