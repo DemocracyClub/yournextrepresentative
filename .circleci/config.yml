@@ -221,24 +221,66 @@ jobs:
               \
               ynr:test \
               pytest -x --ignore=node_modules
+
       - run:
-          name: Tag and push the image
+          name: Save the deterministic tag for later
           command: |
-              TAG="${CIRCLE_SHA1:0:7}"
+            echo "Determine the tag"
+            docker inspect --format="{{index .RepoDigests 0}}" ynr:prod | cut -d: -f 2 | tee manifest-tag
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - manifest-tag
+
+      - run:
+          name: Push the image with a deterministic tag
+          command: |
+              TAG=$(cat manifest-tag)
               echo Using the tag ${TAG}
               docker tag ynr:prod public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
               aws ecr-public get-login-password --profile default --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/h3q9h5r7/dc-test/ynr
               docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
 
-  service_update:
-    working_directory: ~/repo
+  deploy_cdk_environment:
     docker:
-      - image: cimg/base:current
+      - image: cimg/python:3.8.15-node
+    working_directory: ~/repo/
+    parameters:
+        dc-environment:
+          type: enum
+          enum: [ development, staging, production ]
+    environment:
+      DC_ENVIRONMENT: "<<parameters.dc-environment>>"
     steps:
       - checkout
       - aws-cli/setup
       - run:
-          name: Update the task definition to the newly pushed image
+          name: Create CDK venv and install Python and Node dependencies
+          command: |
+            python -m venv ./cdk/venv
+            . ./cdk/venv/bin/activate
+            pip install -r requirements/cdk.txt
+            npm install --save=false .
+      - run:
+          name: Show would-be changes in the stack
+          command: |
+            . ./cdk/venv/bin/activate
+            npx cdk diff
+
+      - when:
+          condition:
+            equal: [ "ci/test", << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: Deploy CDK stack infra
+                command: |
+                  . ./cdk/venv/bin/activate
+                  npx cdk deploy --verbose --require-approval never --progress events
+      # Because we use stable image tags we need to force a redeploy of the
+      # service when the container is updated
+      - run:
+          name: Force deploy the service to pick up the new image
           command: |
               IMAGE_TAG="${CIRCLE_SHA1:0:7}"
               ./scripts/ci/update-ecs-task.sh $IMAGE_TAG
@@ -246,7 +288,35 @@ jobs:
           name: Wait for the service to stabilise
           command: ./scripts/ci/wait-for-stable-ecs-service.sh
 
-  cdk_test_and_deploy:
+  tag_container_for_environment:
+    docker:
+      - image: cimg/python:3.8.15-node
+    working_directory: ~/repo/
+    parameters:
+        dc-environment:
+          type: enum
+          enum: [ development, staging, production ]
+    environment:
+      DC_ENVIRONMENT: "<<parameters.dc-environment>>"
+    steps:
+      - checkout
+      - aws-cli/setup
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - attach_workspace:
+          at: .
+
+      - run:
+          name: Push the image with a stable tag for the environment
+          command: |
+              TAG=$(cat manifest-tag)
+              docker pull public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
+              docker tag public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG} public.ecr.aws/h3q9h5r7/dc-test/ynr:<< parameters.dc-environment>>
+              aws ecr-public get-login-password --profile default --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/h3q9h5r7/dc-test/ynr
+              docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:<< parameters.dc-environment>>
+
+  cdk_test:
     docker:
       - image: cimg/python:3.8.15-node
     working_directory: ~/repo/
@@ -275,20 +345,7 @@ jobs:
           command: |
             . ./cdk/venv/bin/activate
             pytest ./cdk
-      - run:
-          name: Show would-be changes in the stack
-          command: |
-            . ./cdk/venv/bin/activate
-            npx cdk diff
-      - when:
-          condition:
-            equal: [ "ci/test", << pipeline.git.branch >> ]
-          steps:
-            - run:
-                name: Deploy CDK stack infra
-                command: |
-                  . ./cdk/venv/bin/activate
-                  npx cdk deploy --verbose --require-approval never --progress events
+
 
 workflows:
   test_build_deploy:
@@ -306,28 +363,33 @@ workflows:
       ##########
       - static_tests:
           context: [ deployment-ecs-development-ynr ]
+      - cdk_test:
+          context: [ deployment-ecs-development-ynr ]
+          dc-environment: development
 
       #############
       # Development
       #############
-      - cdk_test_and_deploy:
-          context: [ deployment-ecs-development-ynr ]
-          requires:
-            - static_tests
-          filters: { branches: { only: [ "ci/test"] } }
-          dc-environment: development
       - container_test_build_and_push:
           requires:
-            - cdk_test_and_deploy
+            - static_tests
           context: [ deployment-ecs-development-ynr ]
           filters: { branches: { only: [ "ci/test"] } }
-      - service_update:
+      - tag_container_for_environment:
+          context: [ deployment-ecs-development-ynr ]
           requires:
             - container_test_build_and_push
-          context: [ deployment-ecs-development-ynr ]
           filters: { branches: { only: [ "ci/test"] } }
+          dc-environment: development
+      - deploy_cdk_environment:
+          context: [ deployment-ecs-development-ynr ]
+          requires:
+            - cdk_test
+            - tag_container_for_environment
+          filters: { branches: { only: [ "ci/test"] } }
+          dc-environment: development
       - db_migrate:
           requires:
-            - service_update
+            - deploy_cdk_environment
           context: [ deployment-ecs-development-ynr ]
           filters: { branches: { only: [ "ci/test"] } }
