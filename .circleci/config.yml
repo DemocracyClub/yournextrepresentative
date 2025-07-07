@@ -371,25 +371,60 @@ workflows:
       # Development
       #############
       - container_test_build_and_push:
+          name: "DEV build container"
           requires:
             - static_tests
           context: [ deployment-ecs-development-ynr ]
           filters: { branches: { only: [ "ci/test"] } }
       - tag_container_for_environment:
+          name: DEV container tag
           context: [ deployment-ecs-development-ynr ]
           requires:
-            - container_test_build_and_push
+            - DEV build container
           filters: { branches: { only: [ "ci/test"] } }
           dc-environment: development
       - deploy_cdk_environment:
+          name: DEV cdk deploy
           context: [ deployment-ecs-development-ynr ]
           requires:
             - cdk_test
-            - tag_container_for_environment
+            - DEV container tag
           filters: { branches: { only: [ "ci/test"] } }
           dc-environment: development
       - db_migrate:
+          name: DEV db migrate
           requires:
-            - deploy_cdk_environment
+            - DEV cdk deploy
           context: [ deployment-ecs-development-ynr ]
           filters: { branches: { only: [ "ci/test"] } }
+
+      #########
+      # Staging
+      #########
+      - container_test_build_and_push:
+          name: "STAGING build container"
+          requires:
+            - static_tests
+          context: [ deployment-ecs-staging-ynr ]
+          filters: { branches: { only: [ "staging"] } }
+      - tag_container_for_environment:
+          name: STAGING container tag
+          context: [ deployment-ecs-staging-ynr ]
+          requires:
+            - STAGING build container
+          filters: { branches: { only: [ "staging"] } }
+          dc-environment: staging
+      - deploy_cdk_environment:
+          name: STAGING cdk deploy
+          context: [ deployment-ecs-staging-ynr ]
+          requires:
+            - cdk_test
+            - STAGING container tag
+          filters: { branches: { only: [ "staging"] } }
+          dc-environment: staging
+      - db_migrate:
+          name: STAGING db migrate
+          requires:
+            - STAGING cdk deploy
+          context: [ deployment-ecs-staging-ynr ]
+          filters: { branches: { only: [ "staging"] } }
