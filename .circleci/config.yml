@@ -406,13 +406,13 @@ workflows:
           requires:
             - static_tests
           context: [ deployment-ecs-staging-ynr ]
-          filters: { branches: { only: [ "staging"] } }
+          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
       - tag_container_for_environment:
           name: STAGING container tag
           context: [ deployment-ecs-staging-ynr ]
           requires:
             - STAGING build container
-          filters: { branches: { only: [ "staging"] } }
+          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
           dc-environment: staging
       - deploy_cdk_environment:
           name: STAGING cdk deploy
@@ -420,11 +420,11 @@ workflows:
           requires:
             - cdk_test
             - STAGING container tag
-          filters: { branches: { only: [ "staging"] } }
+          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
           dc-environment: staging
       - db_migrate:
           name: STAGING db migrate
           requires:
             - STAGING cdk deploy
           context: [ deployment-ecs-staging-ynr ]
-          filters: { branches: { only: [ "staging"] } }
+          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
