@@ -405,11 +405,17 @@ workflows:
           name: "STAGING build container"
           requires:
             - static_tests
-          context: [ deployment-ecs-staging-ynr ]
+          # One might expect to see the staging context here, but the
+          # development one is required because that's the account where the
+          # AWS ECR registry is found
+          context: [ deployment-ecs-development-ynr ]
           filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
       - tag_container_for_environment:
           name: STAGING container tag
-          context: [ deployment-ecs-staging-ynr ]
+          # One might expect to see the staging context here, but the
+          # development one is required because that's the account where the
+          # AWS ECR registry is found
+          context: [ deployment-ecs-development-ynr ]
           requires:
             - STAGING build container
           filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
