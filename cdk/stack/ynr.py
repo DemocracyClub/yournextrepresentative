@@ -1,3 +1,5 @@
+import os
+
 from aws_cdk import Stack, Tags
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
@@ -5,6 +7,19 @@ from aws_cdk import aws_ecs_patterns as ecs_patterns
 from aws_cdk import aws_kms as kms
 from aws_cdk import aws_ssm as ssm
 from constructs import Construct
+
+
+def tag_for_environment():
+    """ Return a string representing a stable image tag based on the env var
+        DC_ENVIRONMENT, or the value 'latest' if it is not set.
+
+        The file app.py (which imports this module) forces one of a set of
+        known values, for when it is set.
+    """
+    if dc_env := os.environ.get("DC_ENVIRONMENT"):
+      return dc_env
+
+    return 'latest'
 
 
 class YnrStack(Stack):
@@ -18,6 +33,7 @@ class YnrStack(Stack):
 
         cluster = ecs.Cluster(self, "YnrCluster", vpc=vpc)
         encryption_key = kms.Alias.from_alias_name(self, "SSMKey", "alias/aws/ssm")
+        image_ref = f"public.ecr.aws/h3q9h5r7/dc-test/ynr:{tag_for_environment()}"
 
         service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
@@ -32,9 +48,7 @@ class YnrStack(Stack):
                 subnet_type=ec2.SubnetType.PUBLIC,
             ),
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
-                image=ecs.ContainerImage.from_registry(
-                    "public.ecr.aws/h3q9h5r7/dc-test/ynr:v3"
-                ),
+                image=ecs.ContainerImage.from_registry(image_ref),
                 # Secrets aren't necessarily "secret", but are created as
                 # environment variables that are looked up at ECS task
                 # instantiation.
