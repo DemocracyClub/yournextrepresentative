@@ -225,6 +225,10 @@ jobs:
       - run:
           name: Save the deterministic tag for later
           command: |
+            echo "Show which ynr-related images we have"
+            docker images ynr
+            echo "Show info about the prod image"
+            docker inspect ynr:prod
             echo "Determine the tag"
             docker inspect --format="{{index .RepoDigests 0}}" ynr:prod | cut -d: -f 2 | tee manifest-tag
 
