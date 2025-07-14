@@ -225,6 +225,10 @@ jobs:
       - run:
           name: Save the deterministic tag for later
           command: |
+            # We need to push the image in order for the digest to be calculated
+            docker tag ynr:prod public.ecr.aws/h3q9h5r7/dc-test/ynr:temp
+            aws ecr-public get-login-password --profile default --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/h3q9h5r7/dc-test/ynr
+            docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:temp
             echo "Determine the tag"
             docker inspect --format="{{index .RepoDigests 0}}" ynr:prod | cut -d: -f 2 | tee manifest-tag
 
