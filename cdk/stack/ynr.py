@@ -27,11 +27,9 @@ class YnrStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
 
-        vpc = ec2.Vpc.from_lookup(self, "YnrVpc",
-            vpc_id = ssm.StringParameter.value_from_lookup(self, "vpcid")
-        )
+        default_vpc = ec2.Vpc.from_lookup(self, "YnrVpc", is_default=True)
 
-        cluster = ecs.Cluster(self, "YnrCluster", vpc=vpc)
+        cluster = ecs.Cluster(self, "YnrCluster", vpc=default_vpc)
         encryption_key = kms.Alias.from_alias_name(self, "SSMKey", "alias/aws/ssm")
         image_ref = f"public.ecr.aws/h3q9h5r7/dc-test/ynr:{tag_for_environment()}"
 
