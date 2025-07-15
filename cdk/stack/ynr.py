@@ -26,11 +26,9 @@ class YnrStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        vpc = ec2.Vpc.from_lookup(self, "YnrVpc",
-            vpc_id = ssm.StringParameter.value_from_lookup(self, "vpcid")
-        )
+        default_vpc = ec2.Vpc.from_lookup(self, "YnrVpc", is_default=True)
+        cluster = ecs.Cluster(self, "YnrCluster", vpc=default_vpc)
 
-        cluster = ecs.Cluster(self, "YnrCluster", vpc=vpc)
         encryption_key = kms.Alias.from_alias_name(
             self, "SSMKey", "alias/aws/ssm"
         )
