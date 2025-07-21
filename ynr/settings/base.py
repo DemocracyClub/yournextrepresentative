@@ -467,16 +467,4 @@ except ImportError:
         )
     )
 
-
-def _is_running_tests():
-    if len(sys.argv) > 1 and sys.argv[1] in ["test"]:
-        return True
-    if os.environ.get("RUN_ENV") == "test":
-        return True
-    return False
-
-
-if _is_running_tests():
-    from .testing import *  # noqa
-else:
-    RUNNING_TESTS = False
+RUNNING_TESTS = False
