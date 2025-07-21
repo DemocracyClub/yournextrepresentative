@@ -79,6 +79,8 @@ jobs:
             ruff .
             ruff format . # TODO: fixme
             python manage.py check
+            pip show uk-election-ids
+            pip show django-model-utils
             python manage.py makemigrations --check
       - run:
           name: run tests
