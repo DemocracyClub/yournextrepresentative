@@ -78,7 +78,7 @@ jobs:
             pip check
             ruff .
             ruff format . # TODO: fixme
-            python manage.py check
+            DJANGO_SECRET_KEY=fake python manage.py check
             python manage.py makemigrations --check
       - run:
           name: run tests
