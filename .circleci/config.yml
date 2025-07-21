@@ -79,10 +79,7 @@ jobs:
             ruff .
             ruff format . # TODO: fixme
             python manage.py check
-            python manage.py makemigrations --check -v3
-            python manage.py makemigrations --check candidates
-            python manage.py makemigrations --check duplicates
-            python manage.py showmigrations
+            python manage.py makemigrations --check
       - run:
           name: run tests
           environment:

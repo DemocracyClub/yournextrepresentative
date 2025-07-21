@@ -470,8 +470,10 @@ except ImportError:
 
 def _is_running_tests():
     if len(sys.argv) > 1 and sys.argv[1] in ["test"]:
+        print('condition 1')
         return True
     if os.environ.get("RUN_ENV") == "test":
+        print('condition 2')
         return True
     return False
 
