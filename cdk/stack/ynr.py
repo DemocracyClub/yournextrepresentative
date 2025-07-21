@@ -10,30 +10,37 @@ from constructs import Construct
 
 
 def tag_for_environment():
-    """ Return a string representing a stable image tag based on the env var
-        DC_ENVIRONMENT, or the value 'latest' if it is not set.
+    """Return a string representing a stable image tag based on the env var
+    DC_ENVIRONMENT, or the value 'latest' if it is not set.
 
-        The file app.py (which imports this module) forces one of a set of
-        known values, for when it is set.
+    The file app.py (which imports this module) forces one of a set of
+    known values, for when it is set.
     """
     if dc_env := os.environ.get("DC_ENVIRONMENT"):
-      return dc_env
+        return dc_env
 
-    return 'latest'
+    return "latest"
 
 
 class YnrStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-
-        vpc = ec2.Vpc.from_lookup(self, "YnrVpc",
-            vpc_id = ssm.StringParameter.value_from_lookup(self, "/dc/ynr/dev/1/vpcid")
+        vpc = ec2.Vpc.from_lookup(
+            self,
+            "YnrVpc",
+            vpc_id=ssm.StringParameter.value_from_lookup(
+                self, "/dc/ynr/dev/1/vpcid"
+            ),
         )
 
         cluster = ecs.Cluster(self, "YnrCluster", vpc=vpc)
-        encryption_key = kms.Alias.from_alias_name(self, "SSMKey", "alias/aws/ssm")
-        image_ref = f"public.ecr.aws/h3q9h5r7/dc-test/ynr:{tag_for_environment()}"
+        encryption_key = kms.Alias.from_alias_name(
+            self, "SSMKey", "alias/aws/ssm"
+        )
+        image_ref = (
+            f"public.ecr.aws/h3q9h5r7/dc-test/ynr:{tag_for_environment()}"
+        )
 
         service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
