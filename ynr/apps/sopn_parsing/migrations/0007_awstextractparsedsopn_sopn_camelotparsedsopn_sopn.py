@@ -10,10 +10,7 @@ class Migration(migrations.Migration):
             "sopn_parsing",
             "0006_rename_sopn_awstextractparsedsopn_official_document_and_more",
         ),
-        (
-            "official_documents",
-            "0033_ballotsopnhistory_ballotsopn"
-        ),
+        ("official_documents", "0033_ballotsopnhistory_ballotsopn"),
     ]
 
     operations = [

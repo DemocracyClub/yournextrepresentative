@@ -77,9 +77,9 @@ jobs:
             . .venv/bin/activate
             pip check
             ruff .
-            ruff format .
-            python manage.py check
-            python manage.py makemigrations --check
+            ruff format . --check
+            DJANGO_SECRET_KEY=fake python manage.py check
+            DJANGO_SECRET_KEY=fake python manage.py makemigrations --check
       - run:
           name: run tests
           environment:
@@ -180,9 +180,9 @@ jobs:
             . .venv/bin/activate
             pip check
             ruff .
-            ruff format .
-            python manage.py check
-            python manage.py makemigrations --check
+            ruff format . --check
+            DJANGO_SECRET_KEY=fake python manage.py check
+            DJANGO_SECRET_KEY=fake python manage.py makemigrations --check
 
   container_test_build_and_push:
     working_directory: ~/repo

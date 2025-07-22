@@ -22,7 +22,7 @@ class LoginForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if settings.HCAPTCHA_SITEKEY and settings.HCAPTCHA_SECRET:
-            self.fields['hcaptcha'] = hCaptchaField()
+            self.fields["hcaptcha"] = hCaptchaField()
 
 
 class UserProfileForm(forms.ModelForm):

@@ -443,7 +443,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
 
 
 HCAPTCHA_SITEKEY = os.environ.get("HCAPTCHA_SITEKEY", None)
-HCAPTCHA_SECRET = os.environ.get('HCAPTCHA_SECRET', None)
+HCAPTCHA_SECRET = os.environ.get("HCAPTCHA_SECRET", None)
 
 # import application constants
 from .constants.needs_review import *  # noqa
@@ -467,16 +467,4 @@ except ImportError:
         )
     )
 
-
-def _is_running_tests():
-    if len(sys.argv) > 1 and sys.argv[1] in ["test"]:
-        return True
-    if os.environ.get("RUN_ENV") == "test":
-        return True
-    return False
-
-
-if _is_running_tests():
-    from .testing import *  # noqa
-else:
-    RUNNING_TESTS = False
+RUNNING_TESTS = False

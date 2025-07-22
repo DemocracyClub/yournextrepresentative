@@ -60,7 +60,7 @@ DEFAULT_EMBLEMS = {
     "PP504": 8345,
     # Independent Network
     "PP1951": 8015,
-    #Propel
+    # Propel
     "PP12731": 7769,
     # Chesterfield And North Derbyshire Independents (CANDI)
     "PP2883": 4670,
