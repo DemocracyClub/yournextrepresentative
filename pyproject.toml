@@ -40,6 +40,7 @@ addopts =[
     "--ignore=democracy_club/settings/local.py",
     "--ignore=lib",
     "--ignore=cdk",
+    "--ignore=node_modules",
     "--ruff",
 ]
 FAIL_INVALID_TEMPLATE_VARS = 1
