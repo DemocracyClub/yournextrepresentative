@@ -579,6 +579,7 @@ class EE_ImporterTest(WebTest):
             slug="wester-ross-strathpeffer-and-lochalsh.by",
             label="Councillor",
             organization=org,
+            territory_code="SCT",
         )
 
         self.assertEqual(Ballot.objects.all().count(), 1)

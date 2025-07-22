@@ -167,6 +167,13 @@ class Organization(Dateframeable, TimeStampedModel, models.Model):
         return self.name
 
 
+class TerritoryCode(models.TextChoices):
+    ENG = ("ENG", "England")
+    NIR = ("NIR", "Northern Ireland")
+    SCT = ("SCT", "Scotland")
+    WLS = ("WLS", "Wales")
+
+
 class Post(EEModifiedMixin, Dateframeable, models.Model):
     """
     A position that exists independent of the person holding it
@@ -234,11 +241,12 @@ class Post(EEModifiedMixin, Dateframeable, models.Model):
 
     territory_code = models.CharField(
         max_length=10,
-        blank=True,
+        blank=False,
         help_text="""
         The territory within Great Britain that this post is in.
         One of SCT, WLS, ENG, NIR
         """,
+        choices=TerritoryCode.choices,
     )
 
     objects = PostQuerySet.as_manager()

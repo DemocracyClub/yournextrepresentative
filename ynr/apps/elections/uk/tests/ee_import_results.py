@@ -196,7 +196,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -249,7 +249,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -302,7 +302,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -355,7 +355,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -408,7 +408,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -461,7 +461,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -514,7 +514,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -567,7 +567,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -620,7 +620,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -673,7 +673,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -726,7 +726,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -779,7 +779,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -832,7 +832,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -941,7 +941,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -994,7 +994,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1047,7 +1047,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1100,7 +1100,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1153,7 +1153,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1206,7 +1206,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1259,7 +1259,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1312,7 +1312,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1365,7 +1365,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1418,7 +1418,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1471,7 +1471,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1524,7 +1524,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1577,7 +1577,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1630,7 +1630,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1683,7 +1683,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1736,7 +1736,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1789,7 +1789,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1842,7 +1842,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -1895,7 +1895,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -2786,7 +2786,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -2839,7 +2839,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -2892,7 +2892,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -2945,7 +2945,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -2998,7 +2998,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -3051,7 +3051,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 3,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -3104,7 +3104,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -3157,7 +3157,7 @@ current_elections = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -12320,7 +12320,7 @@ local_highland = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -12468,7 +12468,7 @@ duplicate_post_names = json.loads(
                 "division_subtype": "",
                 "division_election_sub_type": "",
                 "seats_total": 2,
-                "territory_code": ""
+                "territory_code": "ENG"
             },
             "voting_system": {
                 "slug": "FPTP",
@@ -12571,7 +12571,7 @@ duplicate_post_names = json.loads(
                 "division_subtype": "",
                 "division_election_sub_type": "",
                 "seats_total": 2,
-                "territory_code": ""
+                "territory_code": "ENG"
             },
             "voting_system": {
                 "slug": "FPTP",
@@ -12724,7 +12724,7 @@ def get_changing_identifier_code_result(identifier):
                 "division_subtype": "",
                 "division_election_sub_type": "",
                 "seats_total": 2,
-                "territory_code": ""
+                "territory_code": "ENG"
             },
             "voting_system": {
                 "slug": "FPTP",
@@ -12880,7 +12880,7 @@ replaced_election = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -13031,7 +13031,7 @@ duplicate_post_and_election = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
@@ -13089,7 +13089,7 @@ duplicate_post_and_election = json.loads(
         "division_subtype": "",
         "division_election_sub_type": "",
         "seats_total": 4,
-        "territory_code": ""
+        "territory_code": "SCT"
       },
       "voting_system": {
         "slug": "STV",
