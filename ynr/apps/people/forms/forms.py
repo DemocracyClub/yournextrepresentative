@@ -1,4 +1,5 @@
-import sentry_sdk
+import contextlib
+
 from candidates.models import PartySet
 from candidates.models.popolo_extra import Ballot
 from django import forms
@@ -189,16 +190,19 @@ class PersonIdentifierForm(forms.ModelForm):
         return email
 
     def save(self, commit=True):
-        # TMP: this is added to help debug a problem with
-        # duplicate IDs being writtien to the database.
-        # Use the class ID to not duplicate context IDs between more than
-        # one PersonIdentifier form.
-        prefix = id(self)
-        sentry_sdk.set_context(f"{prefix}_cleaned_data", self.cleaned_data)
-        sentry_sdk.set_context(f"{prefix}_initial", self.initial)
-        sentry_sdk.set_context(f"{prefix}_instance", self.instance.__dict__)
+        data = self.cleaned_data
+        value_type = data["value_type"]
+        # Check "new" pids are not duplicates
+        if not data["id"] and data["DELETE"] is False:
+            with contextlib.suppress(PersonIdentifier.DoesNotExist):
+                pid = PersonIdentifier.objects.get(
+                    person=data["person"], value_type=value_type
+                )
+                data["id"] = pid.id
+                self.instance = pid
+
         ret = super().save(commit=commit)
-        if commit and self.cleaned_data["value_type"].startswith("facebook"):
+        if commit and value_type.startswith("facebook"):
             extract_fb_page_id.delay(self.instance.pk)
         return ret
 
