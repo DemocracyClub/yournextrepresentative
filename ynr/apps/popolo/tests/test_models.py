@@ -39,15 +39,23 @@ class OrganizationTestCase(DateframeableTests, TestCase):
 
     def test_add_post(self):
         o = Organization.objects.create(name=faker.company())
-        o.add_post(label="CEO", identifier="123")
+        o.add_post(label="CEO", identifier="123", territory_code="ENG")
         self.assertEqual(o.posts.count(), 1)
 
     def test_add_posts(self):
         o = Organization.objects.create(name=faker.company())
         o.add_posts(
             [
-                {"label": "Presidente", "identifier": 123},
-                {"label": "Vicepresidente", "identifier": 456},
+                {
+                    "label": "Presidente",
+                    "identifier": 123,
+                    "territory_code": "ENG",
+                },
+                {
+                    "label": "Vicepresidente",
+                    "identifier": 456,
+                    "territory_code": "ENG",
+                },
             ]
         )
         self.assertEqual(o.posts.count(), 2)

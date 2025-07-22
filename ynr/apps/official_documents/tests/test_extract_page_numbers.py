@@ -73,6 +73,7 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
                 label=post_name,
                 organization=self.local_council,
                 identifier=post_name,
+                territory_code="ENG",
             )
             Ballot.objects.create(
                 ballot_paper_id="local.{}.2019-05-02".format(
@@ -118,6 +119,7 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
                 label=post_name,
                 organization=self.local_council,
                 identifier=post_name,
+                territory_code="ENG",
             )
             Ballot.objects.create(
                 ballot_paper_id="local.{}.2019-05-02".format(post_name.lower()),

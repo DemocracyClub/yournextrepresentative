@@ -71,6 +71,7 @@ class PostFactory(factory.django.DjangoModelFactory):
     organization = factory.SubFactory(
         "candidates.tests.factories.OrganizationFactory"
     )
+    territory_code = "ENG"
 
     @factory.post_generation
     def elections(self, create, extracted, **kwargs):
