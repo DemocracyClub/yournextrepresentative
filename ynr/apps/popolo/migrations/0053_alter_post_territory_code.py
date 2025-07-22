@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("popolo", "0052_auto_20250721_1557"),
+        ("popolo", "0052_fix_territory"),
     ]
 
     operations = [
