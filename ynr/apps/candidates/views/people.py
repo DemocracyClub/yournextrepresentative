@@ -457,10 +457,12 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
         membership_formset = all_forms["memberships_formset"]
 
         with transaction.atomic():
-            person = context["person"]
+            # Lock the person record to prevent race conditions
+            person = Person.objects.select_for_update().get(
+                id=context["person"].id
+            )
             identifiers_formset.instance = person
             identifiers_formset.save()
-
             membership_formset.save()
             person = form.save(user=self.request.user)
             change_metadata = get_change_metadata(
