@@ -243,4 +243,9 @@
     {{ form.source }}
   </p>
 </div>
-<input type="submit" class="button" value="Save changes">
+<input
+  type="submit"
+  class="button"
+  onclick="this.disabled=true;this.form.submit();this.value='Submitting...';"
+  value="Save changes"
+/>
