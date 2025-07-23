@@ -272,15 +272,11 @@ jobs:
             . ./cdk/venv/bin/activate
             npx cdk diff
 
-      - when:
-          condition:
-            equal: [ "ci/test", << pipeline.git.branch >> ]
-          steps:
-            - run:
-                name: Deploy CDK stack infra
-                command: |
-                  . ./cdk/venv/bin/activate
-                  npx cdk deploy --verbose --require-approval never --progress events
+      - run:
+          name: Deploy CDK stack infra
+          command: |
+            . ./cdk/venv/bin/activate
+            npx cdk deploy --verbose --require-approval never --progress events
       # Because we use stable image tags we need to force a redeploy of the
       # service when the container is updated
       - run:
