@@ -267,6 +267,11 @@ jobs:
             pip install -r requirements/cdk.txt
             npm install --save=false .
       - run:
+          name: Bootstrap the CDK environment
+          command: |
+            . ./cdk/venv/bin/activate
+            npx cdk bootstrap
+      - run:
           name: Show would-be changes in the stack
           command: |
             . ./cdk/venv/bin/activate
