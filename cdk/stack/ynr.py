@@ -1,10 +1,15 @@
 import os
 
 from aws_cdk import Stack, Tags
+from aws_cdk import aws_certificatemanager as acm
+from aws_cdk import aws_cloudfront as cloudfront
+from aws_cdk import aws_cloudfront_origins as origins
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
 from aws_cdk import aws_kms as kms
+from aws_cdk import aws_route53 as route_53
+from aws_cdk import aws_route53_targets as route_53_target
 from aws_cdk import aws_ssm as ssm
 from constructs import Construct
 
@@ -25,6 +30,8 @@ def tag_for_environment():
 class YnrStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+        self.dc_environment = self.node.try_get_context("dc-environment")
 
         default_vpc = ec2.Vpc.from_lookup(self, "YnrVpc", is_default=True)
         cluster = ecs.Cluster(self, "YnrCluster", vpc=default_vpc)
@@ -122,3 +129,62 @@ class YnrStack(Stack):
         )
         Tags.of(cluster).add("app", "ynr")
         Tags.of(service).add("role", "web")
+
+        # Create CloudFront and related DNS records
+        self.create_cloudfront(service)
+
+    def create_cloudfront(
+        self, service: ecs_patterns.ApplicationLoadBalancedFargateService
+    ):
+        # Hard code the ARN due to a bug with CDK that means we can't run synth
+        # with the placeholder values the SSM interface produces :(
+        cert_arns = {
+            "development": "arn:aws:acm:us-east-1:539247459606:certificate/e7949af6-5abd-425d-af45-43d86058542f",
+            "staging": "TODO",
+            "production": "TODO",
+        }
+        cert = acm.Certificate.from_certificate_arn(
+            self,
+            "CertArn",
+            certificate_arn=cert_arns.get(self.dc_environment),
+        )
+
+        fqdn = ssm.StringParameter.value_from_lookup(
+            self,
+            "FQDN",
+        )
+
+        app_origin = origins.LoadBalancerV2Origin(
+            service.load_balancer,
+            http_port=80,
+            protocol_policy=cloudfront.OriginProtocolPolicy.HTTP_ONLY,
+            custom_headers={
+                "X-Forwarded-Host": fqdn,
+                "X-Forwarded-Proto": "https",
+            },
+        )
+
+        cloudfront_dist = cloudfront.Distribution(
+            self,
+            "YNRCloudFront",
+            default_behavior=cloudfront.BehaviorOptions(
+                origin=app_origin,
+                allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL,
+                cache_policy=cloudfront.CachePolicy.CACHING_DISABLED,
+            ),
+            certificate=cert,
+            domain_names=[fqdn],
+            price_class=cloudfront.PriceClass.PRICE_CLASS_100,
+        )
+
+        hosted_zone = route_53.HostedZone.from_lookup(
+            self, "YNRDomain", domain_name=fqdn, private_zone=False
+        )
+        route_53.ARecord(
+            self,
+            "FQDN_A_RECORD_TO_CF",
+            zone=hosted_zone,
+            target=route_53.RecordTarget.from_alias(
+                route_53_target.CloudFrontTarget(cloudfront_dist)
+            ),
+        )
