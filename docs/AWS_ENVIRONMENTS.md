@@ -102,6 +102,7 @@ Add parameter store (https://eu-west-2.console.aws.amazon.com/systems-manager/pa
 * `postgres_host`, type SecureString - the RDS instance, as previous section
 * `postgres_username` type SecureString - be sure to use the app credentials and not the master postgres role
 * `postgres_password` type SecureString
+* `FQDN`: type String - The domain name to use for this environment
 
 # Environment build / update
 
@@ -111,3 +112,16 @@ Deployments go to an environment depending on the branch name being used.
 
 * `ci/test` - this goes to the development environment.
 * `staging` - this goes to the staging environment.
+
+
+# Domains and certificates 
+
+For each new environment we need to manually create a hosted zone that 
+matches the `FQDN` value in the parameter store. 
+
+This domain needs an ACM certificate to be manually created in the `us-east-1` 
+region. Once created, add the ARN against the environment to the `cert_arns` 
+dict in cdk/stack/ynr.py.
+
+A new deployment will create a CloudFront distribution and set up the 
+required DNS. 
