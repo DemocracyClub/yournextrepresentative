@@ -1,20 +1,16 @@
-import os
-
-import aws_cdk as core
 import aws_cdk.assertions as assertions
-from stack.ynr import YnrStack
 
 
-def test_template_components():
-    app = core.App()
-    stack = YnrStack(
-        app,
-        "YnrStack",
-        env={
-            "account": os.getenv("CDK_DEFAULT_ACCOUNT"),
-            "region": os.getenv("CDK_DEFAULT_REGION"),
-        },
-    )
+def test_template_components(monkeypatch):
+    monkeypatch.setenv("DC_ENVIRONMENT", "development")
+    monkeypatch.setenv("CDK_DEFAULT_ACCOUNT", "123")
+    monkeypatch.setenv("CDK_DEFAULT_REGION", "eu-west-2")
+
+    # Import here to ensure env is patched
+    from app import app
+
+    stack = app.node.find_child("YnrStack")
+
     template = assertions.Template.from_stack(stack)
 
     # We're managing the ECS Cluster in-stack, instead of taking a cluster ID

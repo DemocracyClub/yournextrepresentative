@@ -31,7 +31,7 @@ class YnrStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        self.dc_environment = self.node.try_get_context("dc-environment")
+        self.dc_environment = self.node.get_context("dc-environment")
 
         default_vpc = ec2.Vpc.from_lookup(self, "YnrVpc", is_default=True)
         cluster = ecs.Cluster(self, "YnrCluster", vpc=default_vpc)
