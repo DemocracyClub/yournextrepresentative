@@ -225,6 +225,10 @@ jobs:
       - run:
           name: Save the deterministic tag for later
           command: |
+            # We need to push the image in order for the digest to be calculated
+            docker tag ynr:prod public.ecr.aws/h3q9h5r7/dc-test/ynr:temp
+            aws ecr-public get-login-password --profile default --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/h3q9h5r7/dc-test/ynr
+            docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:temp
             echo "Determine the tag"
             docker inspect --format="{{index .RepoDigests 0}}" ynr:prod | cut -d: -f 2 | tee manifest-tag
 
@@ -263,20 +267,21 @@ jobs:
             pip install -r requirements/cdk.txt
             npm install --save=false .
       - run:
+          name: Bootstrap the CDK environment
+          command: |
+            . ./cdk/venv/bin/activate
+            npx cdk bootstrap
+      - run:
           name: Show would-be changes in the stack
           command: |
             . ./cdk/venv/bin/activate
             npx cdk diff
 
-      - when:
-          condition:
-            equal: [ "ci/test", << pipeline.git.branch >> ]
-          steps:
-            - run:
-                name: Deploy CDK stack infra
-                command: |
-                  . ./cdk/venv/bin/activate
-                  npx cdk deploy --verbose --require-approval never --progress events
+      - run:
+          name: Deploy CDK stack infra
+          command: |
+            . ./cdk/venv/bin/activate
+            npx cdk deploy --verbose --require-approval never --progress events
       # Because we use stable image tags we need to force a redeploy of the
       # service when the container is updated
       - run:
@@ -371,25 +376,66 @@ workflows:
       # Development
       #############
       - container_test_build_and_push:
+          name: "DEV build container"
           requires:
             - static_tests
           context: [ deployment-ecs-development-ynr ]
           filters: { branches: { only: [ "ci/test"] } }
       - tag_container_for_environment:
+          name: DEV container tag
           context: [ deployment-ecs-development-ynr ]
           requires:
-            - container_test_build_and_push
+            - DEV build container
           filters: { branches: { only: [ "ci/test"] } }
           dc-environment: development
       - deploy_cdk_environment:
+          name: DEV cdk deploy
           context: [ deployment-ecs-development-ynr ]
           requires:
             - cdk_test
-            - tag_container_for_environment
+            - DEV container tag
           filters: { branches: { only: [ "ci/test"] } }
           dc-environment: development
       - db_migrate:
+          name: DEV db migrate
           requires:
-            - deploy_cdk_environment
+            - DEV cdk deploy
           context: [ deployment-ecs-development-ynr ]
           filters: { branches: { only: [ "ci/test"] } }
+
+      #########
+      # Staging
+      #########
+      - container_test_build_and_push:
+          name: "STAGING build container"
+          requires:
+            - static_tests
+          # One might expect to see the staging context here, but the
+          # development one is required because that's the account where the
+          # AWS ECR registry is found
+          context: [ deployment-ecs-development-ynr ]
+          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
+      - tag_container_for_environment:
+          name: STAGING container tag
+          # One might expect to see the staging context here, but the
+          # development one is required because that's the account where the
+          # AWS ECR registry is found
+          context: [ deployment-ecs-development-ynr ]
+          requires:
+            - STAGING build container
+          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
+          dc-environment: staging
+      - deploy_cdk_environment:
+          name: STAGING cdk deploy
+          context: [ deployment-ecs-staging-ynr ]
+          requires:
+            - cdk_test
+            - STAGING container tag
+          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
+          dc-environment: staging
+      - db_migrate:
+          name: STAGING db migrate
+          requires:
+            - STAGING cdk deploy
+          context: [ deployment-ecs-staging-ynr ]
+          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
