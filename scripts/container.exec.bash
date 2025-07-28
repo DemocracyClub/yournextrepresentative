@@ -3,6 +3,9 @@ set -euo pipefail
 
 # container.exec.bash invokes a command in a "frontend" container.
 # The container must be running before running this script (see README.md).
+
+# Note that the AWS-hosted environments do not have a container called
+# "frontend"; this script is likely only of use with local development.
 #
 # Usage:
 #    scripts/container.exec.bash echo hello world
@@ -16,9 +19,9 @@ set -euo pipefail
 
 # The command being invoked does not need to be quoted, unless it contains
 # shell meta-characters or similar. Multiple words are fine, without quotes.
-command=$*
+cmd=("$@")
 
 # Change to the directory above the directory containing this script.
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/.."
 
-podman compose exec frontend "$command"
+podman compose exec frontend "${cmd[@]}"
