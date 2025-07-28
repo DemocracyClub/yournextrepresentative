@@ -113,6 +113,17 @@ Deployments go to an environment depending on the branch name being used.
 * `ci/test` - this goes to the development environment.
 * `staging` - this goes to the staging environment.
 
+# Local invocation of CDK tests
+
+The CDK tests (in `cdk/tests`) run as part of the CircleCI workflow
+configuration. If you want to run them locally you will need to specify a
+couple of extra environment variables:
+
+`CDK_DEFAULT_ACCOUNT=533333333333 CDK_DEFAULT_REGION=eu-west-2 pytest ./cdk/tests/`
+
+Use the AWS Account ID for the environment in question; it will be different on
+a per-environment basis.
+
 
 # Domains and certificates 
 
