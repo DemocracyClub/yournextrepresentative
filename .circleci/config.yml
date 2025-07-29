@@ -112,6 +112,7 @@ jobs:
           name: Run any outstanding migrations
           command: |
             ./scripts/ci/dbmigrate.sh
+
   deploy:
     docker:
       - image: cimg/python:3.8.15
@@ -189,7 +190,7 @@ jobs:
             sudo apt install -y shellcheck
             find scripts/ -type f -name *.sh -o -name *.bash -print0 | xargs -r0 shellcheck
 
-  container_test_build_and_push:
+  container_build_and_test:
     working_directory: ~/repo
     docker:
       - image: cimg/base:current
@@ -228,28 +229,15 @@ jobs:
               pytest -x --ignore=node_modules
 
       - run:
-          name: Save the deterministic tag for later
+          name: Save the image for later so we can tag it for the env and subsequently deploy it
           command: |
-            # We need to push the image in order for the digest to be calculated
-            docker tag ynr:prod public.ecr.aws/h3q9h5r7/dc-test/ynr:temp
-            aws ecr-public get-login-password --profile default --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/h3q9h5r7/dc-test/ynr
-            docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:temp
-            echo "Determine the tag"
-            docker inspect --format="{{index .RepoDigests 0}}" ynr:prod | cut -d: -f 2 | tee manifest-tag
+            mkdir -p images
+            docker image save -o "images/dc-ynr-${CIRCLE_SHA1}" ynr:prod
 
       - persist_to_workspace:
           root: .
           paths:
-            - manifest-tag
-
-      - run:
-          name: Push the image with a deterministic tag
-          command: |
-              TAG=$(cat manifest-tag)
-              echo Using the tag ${TAG}
-              docker tag ynr:prod public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
-              aws ecr-public get-login-password --profile default --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/h3q9h5r7/dc-test/ynr
-              docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
+            - images
 
   deploy_cdk_environment:
     docker:
@@ -298,7 +286,7 @@ jobs:
           name: Wait for the service to stabilise
           command: ./scripts/ci/wait-for-stable-ecs-service.sh
 
-  tag_container_for_environment:
+  container_push_and_tag:
     docker:
       - image: cimg/python:3.8.15-node
     working_directory: ~/repo/
@@ -309,7 +297,7 @@ jobs:
     environment:
       DC_ENVIRONMENT: "<<parameters.dc-environment>>"
     steps:
-      - checkout
+      #- checkout
       - aws-cli/setup
       - setup_remote_docker:
           docker_layer_caching: true
@@ -318,13 +306,30 @@ jobs:
           at: .
 
       - run:
+          name: Load the previously saved image
+          command: |
+            docker image load < "images/dc-ynr-${CIRCLE_SHA1}"
+
+      - run:
+          name: Validate the saved image
+          command: |
+            docker image ls
+
+      - run:
           name: Push the image with a stable tag for the environment
           command: |
-              TAG=$(cat manifest-tag)
-              docker pull public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
-              docker tag public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG} public.ecr.aws/h3q9h5r7/dc-test/ynr:<< parameters.dc-environment>>
+              docker tag ynr:prod public.ecr.aws/h3q9h5r7/dc-test/ynr:<< parameters.dc-environment>>
               aws ecr-public get-login-password --profile default --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/h3q9h5r7/dc-test/ynr
               docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:<< parameters.dc-environment>>
+
+      - run:
+          name: Push the image with a content-deterministic tag
+          command: |
+              docker inspect --format="{{index .RepoDigests 0}}" public.ecr.aws/h3q9h5r7/dc-test/ynr:<< parameters.dc-environment>> | cut -d: -f 2 | tee manifest-tag
+              TAG=$(cat manifest-tag)
+              echo Using the tag ${TAG}
+              docker tag ynr:prod public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
+              docker push public.ecr.aws/h3q9h5r7/dc-test/ynr:${TAG}
 
   cdk_test:
     docker:
@@ -376,21 +381,17 @@ workflows:
       - cdk_test:
           context: [ deployment-ecs-development-ynr ]
           dc-environment: development
+      - container_build_and_test
 
       #############
       # Development
       #############
-      - container_test_build_and_push:
-          name: "DEV build container"
+      - container_push_and_tag:
+          name: "DEV push container"
           requires:
             - static_tests
+            - container_build_and_test
           context: [ deployment-ecs-development-ynr ]
-          filters: { branches: { only: [ "ci/test"] } }
-      - tag_container_for_environment:
-          name: DEV container tag
-          context: [ deployment-ecs-development-ynr ]
-          requires:
-            - DEV build container
           filters: { branches: { only: [ "ci/test"] } }
           dc-environment: development
       - deploy_cdk_environment:
@@ -398,7 +399,7 @@ workflows:
           context: [ deployment-ecs-development-ynr ]
           requires:
             - cdk_test
-            - DEV container tag
+            - DEV push container
           filters: { branches: { only: [ "ci/test"] } }
           dc-environment: development
       - db_migrate:
@@ -411,23 +412,15 @@ workflows:
       #########
       # Staging
       #########
-      - container_test_build_and_push:
-          name: "STAGING build container"
+      - container_push_and_tag:
+          name: "STAGING push container"
           requires:
             - static_tests
+            - container_build_and_test
           # One might expect to see the staging context here, but the
           # development one is required because that's the account where the
           # AWS ECR registry is found
           context: [ deployment-ecs-development-ynr ]
-          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
-      - tag_container_for_environment:
-          name: STAGING container tag
-          # One might expect to see the staging context here, but the
-          # development one is required because that's the account where the
-          # AWS ECR registry is found
-          context: [ deployment-ecs-development-ynr ]
-          requires:
-            - STAGING build container
           filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
           dc-environment: staging
       - deploy_cdk_environment:
@@ -435,7 +428,7 @@ workflows:
           context: [ deployment-ecs-staging-ynr ]
           requires:
             - cdk_test
-            - STAGING container tag
+            - STAGING push container
           filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
           dc-environment: staging
       - db_migrate:
