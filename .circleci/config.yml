@@ -228,16 +228,22 @@ jobs:
               ynr:test \
               pytest -x --ignore=node_modules
 
-      - run:
-          name: Save the image for later so we can tag it for the env and subsequently deploy it
-          command: |
-            mkdir -p images
-            docker image save -o "images/dc-ynr-${CIRCLE_SHA1}" ynr:prod
+      - when:
+          condition:
+            or:
+              - equal: [ "ci/test", << pipeline.git.branch >> ]
+              - equal: [ "staging", << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: Save the image for later so we can tag it for the env and subsequently deploy it
+                command: |
+                  mkdir -p images
+                  docker image save -o "images/dc-ynr-${CIRCLE_SHA1}" ynr:prod
 
-      - persist_to_workspace:
-          root: .
-          paths:
-            - images
+            - persist_to_workspace:
+                root: .
+                paths:
+                  - images
 
   deploy_cdk_environment:
     docker:
