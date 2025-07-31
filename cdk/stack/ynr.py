@@ -140,7 +140,7 @@ class YnrStack(Stack):
         # with the placeholder values the SSM interface produces :(
         cert_arns = {
             "development": "arn:aws:acm:us-east-1:539247459606:certificate/e7949af6-5abd-425d-af45-43d86058542f",
-            "staging": "TODO",
+            "staging": "arn:aws:acm:eu-north-1:523256396133:certificate/1923e57e-e029-40ad-8af7-71716e0ba99f",
             "production": "TODO",
         }
         cert = acm.Certificate.from_certificate_arn(
