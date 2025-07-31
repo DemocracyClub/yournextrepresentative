@@ -104,6 +104,24 @@ Add parameter store (https://eu-west-2.console.aws.amazon.com/systems-manager/pa
 * `postgres_password` type SecureString
 * `FQDN`: type String - The domain name to use for this environment
 
+# Pre-build environment validation
+
+Not yet as part of the CI, but there is a convenience script to be run locally
+from a development machine: `scripts/environment-prevalidation.sh`
+
+This performs a series of lightweight read-only operations on the AWS
+environment to help identify possible configuration issues *prior to the
+initial build*.
+
+It uses the `aws` CLI tool, so if you have multiple credential sets in
+`~/.aws/credentials` then you can set the environment variable `AWS_PROFILE` to
+select the correct one. E.g.
+
+```shell
+AWS_PROFILE=staging ./scripts/environment-prevalidation.sh
+```
+
+
 # Environment build / update
 
 Initial build and update are done in the same way as each other.
