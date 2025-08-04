@@ -108,6 +108,7 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     "django.contrib.postgres",
     "django_extensions",
+    "django_q",
     "pipeline",
     "sorl.thumbnail",
     "rest_framework",
