@@ -43,7 +43,75 @@ class YnrStack(Stack):
             f"public.ecr.aws/h3q9h5r7/dc-test/ynr:{tag_for_environment()}"
         )
 
-        service = ecs_patterns.ApplicationLoadBalancedFargateService(
+        # Secrets aren't necessarily "secret", but are created as
+        # environment variables that are looked up at ECS task
+        # instantiation.
+        common_secrets = {
+            "DJANGO_SETTINGS_MODULE": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "DSM",
+                    "DJANGO_SETTINGS_MODULE",
+                )
+            ),
+            "YNR_AWS_S3_MEDIA_BUCKET": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "MediaBucketName",
+                    "YNR_AWS_S3_MEDIA_BUCKET",
+                )
+            ),
+            "YNR_AWS_S3_MEDIA_REGION": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "MediaBucketRegion",
+                    "YNR_AWS_S3_MEDIA_REGION",
+                )
+            ),
+            "YNR_AWS_S3_SOPN_BUCKET": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "SopnBucketName",
+                    "YNR_AWS_S3_SOPN_BUCKET",
+                )
+            ),
+            "YNR_AWS_S3_SOPN_REGION": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "SopnBucketRegion",
+                    "YNR_AWS_S3_SOPN_REGION",
+                )
+            ),
+            "POSTGRES_USERNAME": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_secure_string_parameter_attributes(
+                    self,
+                    "DBUSER",
+                    encryption_key=encryption_key,
+                    parameter_name="postgres_username",
+                )
+            ),
+            "POSTGRES_PASSWORD": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_secure_string_parameter_attributes(
+                    self,
+                    "DBPASSWD",
+                    encryption_key=encryption_key,
+                    parameter_name="postgres_password",
+                )
+            ),
+            "POSTGRES_HOST": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_secure_string_parameter_attributes(
+                    self,
+                    "DBHOST",
+                    encryption_key=encryption_key,
+                    parameter_name="postgres_host",
+                )
+            ),
+        }
+        common_env_vars = {
+            "YNR_DJANGO_SECRET_KEY": "insecure",
+        }
+
+        web_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
             "YnrService",
             cluster=cluster,
@@ -57,81 +125,16 @@ class YnrStack(Stack):
             ),
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
                 image=ecs.ContainerImage.from_registry(image_ref),
-                # Secrets aren't necessarily "secret", but are created as
-                # environment variables that are looked up at ECS task
-                # instantiation.
-                secrets={
-                    "DJANGO_SETTINGS_MODULE": ecs.Secret.from_ssm_parameter(
-                        ssm.StringParameter.from_string_parameter_name(
-                            self,
-                            "DSM",
-                            "DJANGO_SETTINGS_MODULE",
-                        )
-                    ),
-                    "YNR_AWS_S3_MEDIA_BUCKET": ecs.Secret.from_ssm_parameter(
-                        ssm.StringParameter.from_string_parameter_name(
-                            self,
-                            "MediaBucketName",
-                            "YNR_AWS_S3_MEDIA_BUCKET",
-                        )
-                    ),
-                    "YNR_AWS_S3_MEDIA_REGION": ecs.Secret.from_ssm_parameter(
-                        ssm.StringParameter.from_string_parameter_name(
-                            self,
-                            "MediaBucketRegion",
-                            "YNR_AWS_S3_MEDIA_REGION",
-                        )
-                    ),
-                    "YNR_AWS_S3_SOPN_BUCKET": ecs.Secret.from_ssm_parameter(
-                        ssm.StringParameter.from_string_parameter_name(
-                            self,
-                            "SopnBucketName",
-                            "YNR_AWS_S3_SOPN_BUCKET",
-                        )
-                    ),
-                    "YNR_AWS_S3_SOPN_REGION": ecs.Secret.from_ssm_parameter(
-                        ssm.StringParameter.from_string_parameter_name(
-                            self,
-                            "SopnBucketRegion",
-                            "YNR_AWS_S3_SOPN_REGION",
-                        )
-                    ),
-                    "POSTGRES_USERNAME": ecs.Secret.from_ssm_parameter(
-                        ssm.StringParameter.from_secure_string_parameter_attributes(
-                            self,
-                            "DBUSER",
-                            encryption_key=encryption_key,
-                            parameter_name="postgres_username",
-                        )
-                    ),
-                    "POSTGRES_PASSWORD": ecs.Secret.from_ssm_parameter(
-                        ssm.StringParameter.from_secure_string_parameter_attributes(
-                            self,
-                            "DBPASSWD",
-                            encryption_key=encryption_key,
-                            parameter_name="postgres_password",
-                        )
-                    ),
-                    "POSTGRES_HOST": ecs.Secret.from_ssm_parameter(
-                        ssm.StringParameter.from_secure_string_parameter_attributes(
-                            self,
-                            "DBHOST",
-                            encryption_key=encryption_key,
-                            parameter_name="postgres_host",
-                        )
-                    ),
-                },
-                environment={
-                    "YNR_DJANGO_SECRET_KEY": "insecure",
-                },
+                secrets=common_secrets,
+                environment=common_env_vars,
             ),
             public_load_balancer=True,
         )
         Tags.of(cluster).add("app", "ynr")
-        Tags.of(service).add("role", "web")
+        Tags.of(web_service).add("role", "web")
 
         # Create CloudFront and related DNS records
-        self.create_cloudfront(service)
+        self.create_cloudfront(web_service)
 
     def create_cloudfront(
         self, service: ecs_patterns.ApplicationLoadBalancedFargateService
