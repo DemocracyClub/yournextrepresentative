@@ -111,6 +111,30 @@ class YnrStack(Stack):
             "YNR_DJANGO_SECRET_KEY": "insecure",
         }
 
+        queue_task_definition = ecs.FargateTaskDefinition(self, "QueueTaskDef")
+        queue_task_definition.add_container(
+            "queue",
+            image=ecs.ContainerImage.from_registry(image_ref),
+            secrets=common_secrets,
+            memory_limit_mib=512,
+            environment=common_env_vars,
+            entry_point=["python", "manage.py", "qcluster"],
+        )
+
+        queue_service = ecs.FargateService(
+            self,
+            "QueueService",
+            cluster=cluster,
+            task_definition=queue_task_definition,
+            desired_count=1,
+            min_healthy_percent=100,
+            capacity_provider_strategies=[
+                ecs.CapacityProviderStrategy(
+                    capacity_provider="FARGATE", weight=1
+                )
+            ],
+        )
+
         web_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
             "YnrService",
@@ -132,6 +156,7 @@ class YnrStack(Stack):
         )
         Tags.of(cluster).add("app", "ynr")
         Tags.of(web_service).add("role", "web")
+        Tags.of(queue_service).add("role", "queue")
 
         # Create CloudFront and related DNS records
         self.create_cloudfront(web_service)
