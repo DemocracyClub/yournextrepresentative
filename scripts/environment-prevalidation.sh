@@ -41,12 +41,13 @@ echo VPC ID is "${DEFAULT_VPC_ID}"
 echo
 
 echo Checking for a single RDS instance
-if ! INSTANCE_COUNT=$(aws rds describe-db-instances | jq -r --arg VPC_ID "${DEFAULT_VPC_ID}"  '.DBInstances |map(select(.DBSubnetGroup.VpcId!=$VPC_ID)) |length'); then
+if ! INSTANCE_COUNT=$(aws rds describe-db-instances | jq -r --arg VPC_ID "${DEFAULT_VPC_ID}"  '.DBInstances |map(select(.DBSubnetGroup.VpcId==$VPC_ID)) |length'); then
         echo "Could not get RDS instance info"
         exit 1
 fi
+echo "$INSTANCE_COUNT"
 if [[ ${INSTANCE_COUNT} -ne 1 ]]; then
-        echo "WARNING: Expected exactly one RDS instance. Found {$INSTANCE_COUNT}. Unable to perform tag checks"
+        echo "WARNING: Expected exactly one RDS instance. Found $INSTANCE_COUNT. Unable to perform tag checks"
 else
         echo OK: Found exactly 1 RDS instance in the VPC
         echo Getting RDS instance tag info
