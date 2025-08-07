@@ -401,7 +401,7 @@ workflows:
     - deploy:
         requires:
         - build_and_test
-        filters: { branches: { only: [ main, master, deployment-upgrades] } }
+        filters: { branches: { only: [ main, master] } }
         context: [ deployment-production-ynr, slack-secrets ]
   container:
     jobs:
@@ -459,7 +459,7 @@ workflows:
           # development one is required because that's the account where the
           # AWS ECR registry is found
           context: [ deployment-ecs-development-ynr ]
-          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
+          filters: { branches: { only: [ "staging" ] } }
           dc-environment: staging
       - deploy_cdk_environment:
           name: STAGING cdk deploy
@@ -467,17 +467,17 @@ workflows:
           requires:
             - cdk_test
             - STAGING push container
-          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
+          filters: { branches: { only: [ "staging" ] } }
           dc-environment: staging
       - db_migrate:
           name: STAGING db migrate
           requires:
             - STAGING cdk deploy
           context: [ deployment-ecs-staging-ynr ]
-          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
+          filters: { branches: { only: [ "staging" ] } }
       - post_deploy_checks:
           name: STAGING post deploy checks
           requires:
             - STAGING db migrate
           dc-environment: staging
-          filters: { branches: { only: [ "staging", "feature/create_staging_env" ] } }
+          filters: { branches: { only: [ "staging" ] } }
