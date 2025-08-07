@@ -254,6 +254,7 @@ jobs:
             or:
               - equal: [ "ci/test", << pipeline.git.branch >> ]
               - equal: [ "staging", << pipeline.git.branch >> ]
+              - equal: [ "master", << pipeline.git.branch >> ]
           steps:
             - run:
                 name: Save the image for later so we can tag it for the env and subsequently deploy it
@@ -481,3 +482,38 @@ workflows:
             - STAGING db migrate
           dc-environment: staging
           filters: { branches: { only: [ "staging" ] } }
+
+      ############
+      # Production
+      ############
+      - container_push_and_tag:
+          name: "PRODUCTION push container"
+          requires:
+            - static_tests
+            - container_build_and_test
+          # One might expect to see the prod context here, but the
+          # development one is required because that's the account where the
+          # AWS ECR registry is found
+          context: [ deployment-ecs-development-ynr ]
+          filters: { branches: { only: [ "master" ] } }
+          dc-environment: production
+      - deploy_cdk_environment:
+          name: PRODUCTION cdk deploy
+          context: [ deployment-ecs-production-ynr ]
+          requires:
+            - cdk_test
+            - PRODUCTION push container
+          filters: { branches: { only: [ "master" ] } }
+          dc-environment: production
+      - db_migrate:
+          name: PRODUCTION db migrate
+          requires:
+            - PRODUCTION cdk deploy
+          context: [ deployment-ecs-production-ynr ]
+          filters: { branches: { only: [ "master" ] } }
+      - post_deploy_checks:
+          name: PRODUCTION post deploy checks
+          requires:
+            - PRODUCTION db migrate
+          dc-environment: production
+          filters: { branches: { only: [ "master" ] } }
