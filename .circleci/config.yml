@@ -21,9 +21,8 @@ jobs:
       - run:
          name: Run hurl tests
          command: |
-            VERSION=6.1.1
             sudo apt-add-repository -y ppa:lepapareil/hurl
-            sudo apt install -y jq hurl="${VERSION}"*
+            sudo apt install -y jq hurl
             cd hurl-tests
             hurl --test -m 10 --variable host=$(jq -r '.YnrStack|to_entries|map(select(.key|startswith("YnrServiceServiceURL"))|.value)[0]' ../ynr-${DC_ENVIRONMENT}-stack-out.json) *.hurl
 
