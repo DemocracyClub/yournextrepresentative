@@ -126,6 +126,7 @@ class YnrStack(Stack):
             "QueueService",
             cluster=cluster,
             task_definition=queue_task_definition,
+            assign_public_ip=True,
             desired_count=1,
             min_healthy_percent=100,
             capacity_provider_strategies=[
