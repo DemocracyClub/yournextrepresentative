@@ -37,3 +37,8 @@ def deep_sort(obj):
         _sorted = obj
 
     return _sorted
+
+
+def test_task():
+    print("Queue alive")
+    return 1234

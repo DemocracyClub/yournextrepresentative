@@ -108,6 +108,7 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     "django.contrib.postgres",
     "django_extensions",
+    "django_q",
     "pipeline",
     "sorl.thumbnail",
     "rest_framework",
@@ -336,6 +337,16 @@ DATABASES = {
         "HOST": os.environ.get("POSTGRES_HOST", ""),
         "CONN_MAX_AGE": 0,
     }
+}
+
+Q_CLUSTER = {
+    "name": "DjangORM",
+    "workers": 4,
+    "timeout": 90,
+    "retry": 120,
+    "queue_limit": 50,
+    "bulk": 10,
+    "orm": "default",
 }
 
 CACHES = {

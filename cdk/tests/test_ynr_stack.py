@@ -16,12 +16,20 @@ def test_template_components(monkeypatch):
     # We're managing the ECS Cluster in-stack, instead of taking a cluster ID
     # as an input param - so it needs to exist.
     template.resource_count_is("AWS::ECS::Cluster", 1)
-    template.resource_count_is("AWS::ECS::Service", 1)
+    template.resource_count_is("AWS::ECS::Service", 2)
     template.has_resource_properties(
         "AWS::ECS::Service",
         {
             "Tags": assertions.Match.array_with(
                 [{"Key": "role", "Value": "web"}]
+            ),
+        },
+    )
+    template.has_resource_properties(
+        "AWS::ECS::Service",
+        {
+            "Tags": assertions.Match.array_with(
+                [{"Key": "role", "Value": "queue"}]
             ),
         },
     )
@@ -45,5 +53,7 @@ def test_template_components(monkeypatch):
     # For now, we simply ensure that zero NAT Gateways exist in the stack.
     template.resource_count_is("AWS::EC2::NatGateway", 0)
 
-    # One for ingress, one for egress
-    template.resource_count_is("AWS::EC2::SecurityGroup", 2)
+    # 1) Load balancer
+    # 2) web task(s)
+    # 3) queue task(s)
+    template.resource_count_is("AWS::EC2::SecurityGroup", 3)
