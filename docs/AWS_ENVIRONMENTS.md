@@ -92,17 +92,8 @@ by that role (called e.g. `ynr`)
 
 # Parameter store
 
-Add parameter store (https://eu-west-2.console.aws.amazon.com/systems-manager/parameters) entries as follows:
-
-* `DJANGO_SETTINGS_MODULE`, type String - the value `ynr.settings.deploy`
-* `YNR_AWS_S3_MEDIA_BUCKET`, type String - the name of the bucket being used for images etc
-* `YNR_AWS_S3_MEDIA_REGION`, type String - the region for this bucket
-* `YNR_AWS_S3_SOPN_BUCKET`, type String - the bucket used for SOPN uploads
-* `YNR_AWS_S3_SOPN_REGION`, type String - the region for this bucket
-* `postgres_host`, type SecureString - the RDS instance, as previous section
-* `postgres_username` type SecureString - be sure to use the app credentials and not the master postgres role
-* `postgres_password` type SecureString
-* `FQDN`: type String - The domain name to use for this environment
+Add parameter store (https://eu-west-2.console.aws.amazon.com/systems-manager/parameters)
+entries for required env vars.
 
 # Pre-build environment validation
 
