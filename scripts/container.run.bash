@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # container.run.bash invokes a command in a newly instantiated "frontend"
-# container.
+# container. This script is likely only of use with local development.
+# For AWS command invocation, see the command called scripts/aws-container-exec.sh
 #
 # The container and its filesystem are removed after the user's command exits.
 # Only changes made inside bind-mounted filesystems are persisted (see
