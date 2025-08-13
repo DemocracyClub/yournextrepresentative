@@ -199,6 +199,7 @@ class YnrStack(Stack):
             "YNRCloudFront",
             default_behavior=cloudfront.BehaviorOptions(
                 origin=app_origin,
+                viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                 allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL,
                 cache_policy=cloudfront.CachePolicy.CACHING_DISABLED,
             ),
