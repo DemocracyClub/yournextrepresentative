@@ -59,7 +59,7 @@ that the database remains in the event of stack deletion.
 
 The simplest approach (from a networking point of view) is to create the RDS
 instance where the app will be, i.e. inside the default VPC.  If you create the
-datbase elsewhere (or perhaps have an existing database but wish to create a
+database elsewhere (or perhaps have an existing database but wish to create a
 CDK-driven application layer) then you will need to configure VPC peering and
 ensure that there are relevant security group rules to allow the app to connect.
 
