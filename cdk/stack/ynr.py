@@ -82,6 +82,13 @@ class YnrStack(Stack):
                     "YNR_AWS_S3_SOPN_REGION",
                 )
             ),
+            "FQDN": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "FQDN",
+                    "FQDN",
+                )
+            ),
             "POSTGRES_USERNAME": ecs.Secret.from_ssm_parameter(
                 ssm.StringParameter.from_secure_string_parameter_attributes(
                     self,
