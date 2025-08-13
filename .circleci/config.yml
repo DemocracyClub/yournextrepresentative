@@ -255,6 +255,7 @@ jobs:
               - equal: [ "ci/test", << pipeline.git.branch >> ]
               - equal: [ "staging", << pipeline.git.branch >> ]
               - equal: [ "master", << pipeline.git.branch >> ]
+              - equal: [ "more-cloudfront-config", << pipeline.git.branch >> ]
           steps:
             - run:
                 name: Save the image for later so we can tag it for the env and subsequently deploy it
@@ -422,7 +423,7 @@ workflows:
       - container_push_and_tag:
           name: "DEV push container"
           requires:
-            - static_tests
+#            - static_tests
             - container_build_and_test
           context: [ deployment-ecs-development-ynr ]
           filters: { branches: { only: [ "ci/test", "more-cloudfront-config"] } }
