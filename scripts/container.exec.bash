@@ -6,6 +6,7 @@ set -euo pipefail
 
 # Note that the AWS-hosted environments do not have a container called
 # "frontend"; this script is likely only of use with local development.
+# For AWS command invocation, see the command called scripts/aws-container-exec.sh
 #
 # Usage:
 #    scripts/container.exec.bash echo hello world
