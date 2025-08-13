@@ -34,3 +34,8 @@ CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
 # Certain errors are very noisy (obscuring the real problem) if this list is
 # empty. FIXME: figure out a principled fix to this issue.
 ADMINS = [("Dummy Admin", "dummy@example.com")]
+
+
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{os.environ.get('FQDN')}",
+]
