@@ -1,6 +1,6 @@
 import os
 
-from aws_cdk import Stack, Tags
+from aws_cdk import Duration, Stack, Tags
 from aws_cdk import aws_certificatemanager as acm
 from aws_cdk import aws_cloudfront as cloudfront
 from aws_cdk import aws_cloudfront_origins as origins
@@ -209,10 +209,88 @@ class YnrStack(Stack):
                 viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                 allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL,
                 cache_policy=cloudfront.CachePolicy.CACHING_DISABLED,
+                compress=True,
             ),
             certificate=cert,
             domain_names=[fqdn],
             price_class=cloudfront.PriceClass.PRICE_CLASS_100,
+        )
+
+        # Standard cache policy that allows CSRF headers and
+        # doesn't do much else. Caps cache at 5 minutes, to ensure
+        # we don't end up caching things for too long.
+        short_ttl_forward_headers = cloudfront.CachePolicy(
+            self,
+            "short_ttl_forward_headers",
+            default_ttl=Duration.minutes(0),
+            min_ttl=Duration.minutes(0),
+            max_ttl=Duration.minutes(5),
+            enable_accept_encoding_brotli=True,
+            enable_accept_encoding_gzip=True,
+            cookie_behavior=cloudfront.CacheCookieBehavior.all(),
+            query_string_behavior=cloudfront.CacheQueryStringBehavior.all(),
+            header_behavior=cloudfront.CacheHeaderBehavior.allow_list(
+                "x-csrfmiddlewaretoken",
+                "X-CSRFToken",
+                "Accept",
+                "Authorization",
+                "Cache-Control",
+                "Referer",
+                "Origin",
+            ),
+        )
+
+        # Short cache ideal for API endpoints and CSV builder that
+        # we want to cahce to prevent hammering, but not for longs
+        short_cache = cloudfront.CachePolicy(
+            self,
+            "short_cache",
+            default_ttl=Duration.minutes(2),
+            min_ttl=Duration.minutes(0),
+            max_ttl=Duration.minutes(10),
+            enable_accept_encoding_brotli=True,
+            enable_accept_encoding_gzip=True,
+            cookie_behavior=cloudfront.CacheCookieBehavior.all(),
+            query_string_behavior=cloudfront.CacheQueryStringBehavior.all(),
+            header_behavior=cloudfront.CacheHeaderBehavior.allow_list(
+                "x-csrfmiddlewaretoken",
+                "X-CSRFToken",
+                "Accept",
+                "Authorization",
+                "Cache-Control",
+                "Referer",
+                "Origin",
+            ),
+        )
+
+        # Behaviours for different paths
+        cloudfront_dist.add_behavior(
+            "/admin/*",
+            app_origin,
+            viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL,
+            cache_policy=short_ttl_forward_headers,
+            compress=True,
+        )
+
+        cloudfront_dist.add_behavior(
+            "/static/*",
+            app_origin,
+            viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+            cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
+            compress=True,
+        )
+
+        cloudfront_dist.add_behavior(
+            "/data/export_csv/*",
+            app_origin,
+            viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+            cache_policy=short_cache,
+            # Enable CORS for CSV downloads
+            response_headers_policy=cloudfront.ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT_AND_SECURITY_HEADERS,
+            compress=True,
         )
 
         hosted_zone = route_53.HostedZone.from_lookup(
