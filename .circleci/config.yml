@@ -209,7 +209,7 @@ jobs:
           name: Run shellcheck
           command: |
             sudo apt install -y shellcheck
-            find scripts/ -type f -name *.sh -o -name *.bash -print0 | xargs -r0 shellcheck
+            find scripts/ -type f \( -name *.sh -o -name *.bash \) -print0 | xargs -r0 shellcheck
 
   container_build_and_test:
     working_directory: ~/repo
