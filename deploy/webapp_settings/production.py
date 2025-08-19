@@ -16,8 +16,6 @@ except requests.exceptions.RequestException:
     pass
 
 
-CELERY_BROKER_URL = "redis://localhost:6379/0"
-
 SITE_WIDE_MESSAGES = [
     {
         "message": """
@@ -84,9 +82,6 @@ EMAIL_HOST_PASSWORD = os.environ.get("SMTP_PASSWORD")
 
 SLACK_TOKEN = os.environ.get("SLACK_TOKEN")
 
-CELERY_IMPORTS = [
-    "ynr.apps.sopn_parsing.tasks",
-]
 ALWAYS_ALLOW_RESULT_RECORDING = True
 EDITS_ALLOWED = True
 
