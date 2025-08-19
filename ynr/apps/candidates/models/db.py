@@ -326,7 +326,7 @@ class LoggedAction(models.Model):
             and self.person
             and self.edit_type == "USER"
         ):
-            transaction.on_commit(post_action_to_slack.s(self.pk).delay)
+            transaction.on_commit(lambda: post_action_to_slack(self.pk))
 
 
 class PersonRedirect(TimeStampedModel):

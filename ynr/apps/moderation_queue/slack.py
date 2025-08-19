@@ -2,7 +2,6 @@ import datetime
 import json
 
 import requests
-from celery import shared_task
 from django.conf import settings
 from utils.slack import SlackHelper
 
@@ -266,7 +265,7 @@ class FlaggedEditSlackReplyer:
         requests.post(self.payload["response_url"], json=message)
 
 
-@shared_task
+# TODO: Convert to Q2 task
 def post_action_to_slack(pk):
     if getattr(settings, "RUNNING_TESTS", False):
         # Never do anything when we're running tests
