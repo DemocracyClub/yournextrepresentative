@@ -346,13 +346,7 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
         "LOCATION": "127.0.0.1:11211",
         "KEY_PREFIX": DATABASES["default"]["NAME"],
-    },
-    "thumbnails": {
-        "TIMEOUT": 60 * 60 * 24 * 2,  # expire after two days
-        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
-        "LOCATION": "127.0.0.1:11211",
-        "KEY_PREFIX": DATABASES["default"]["NAME"] + "-thumbnails",
-    },
+    }
 }
 
 # sorl-thumbnail settings:
