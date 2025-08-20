@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, validate_email
 from django.utils import timezone
 from django.utils.functional import cached_property
-from facebook_data.tasks import extract_fb_page_id
 from official_documents.models import BallotSOPN
 from parties.forms import (
     PartyIdentifierField,
@@ -201,10 +200,7 @@ class PersonIdentifierForm(forms.ModelForm):
                 data["id"] = pid.id
                 self.instance = pid
 
-        ret = super().save(commit=commit)
-        if commit and value_type.startswith("facebook"):
-            extract_fb_page_id.delay(self.instance.pk)
-        return ret
+        return super().save(commit=commit)
 
 
 class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
