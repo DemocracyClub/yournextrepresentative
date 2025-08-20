@@ -66,6 +66,12 @@
         virtualenv: "{{ project_root }}/env"
       when: (application_git_repo.changed) or (application_config.changed)
 
+    - name: Create django cache table
+      django_manage:
+        command: createcachetable
+        app_path: "{{ project_root }}/code"
+        virtualenv: "{{ project_root }}/env"
+
     - name: Install packages based on package.json.
       npm:
         path: "{{ project_root }}/code"
