@@ -37,9 +37,8 @@ INTERNAL_IPS = [
 CACHES = {
     "default": {
         "TIMEOUT": None,  # cache keys never expire; we invalidate them
-        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
-        "LOCATION": "127.0.0.1:11211",
-        "KEY_PREFIX": DATABASES["default"]["NAME"],  # noqa
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "ynr_cache",
     }
 }
 
