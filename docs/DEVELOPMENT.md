@@ -25,6 +25,8 @@ a containerised database as follows:
    ```
 1. Apply any pending migrations:
    `./scripts/container.run.bash python manage.py migrate`
+1. Ensure the cache table exists:
+   `./scripts/container.manage-py.bash createcachetable`
 1. Shut down the database container:
    `podman compose down`
 
