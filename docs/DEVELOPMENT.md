@@ -211,3 +211,27 @@ index).
 ```
 ./scripts/container.image.build.bash test --no-cache
 ```
+
+
+# Podman [compose] fails
+
+If there are problems using the `podman compose` (with space) command, first 
+check you have `podman-compose==v1.2.0` installed:
+
+`podman-compose --version`
+
+If you're still having problems, one 
+option is to burn everything down and start again:
+
+```shell
+podman down
+podman system migrate
+podman system reset
+podman system disable
+systemctl stop podman.socket
+systemctl disable podman.socket
+systemctl --user start podman.socket
+systemctl --user start podman
+```
+
+Once this is done, try running the `podman compose` commands again.
