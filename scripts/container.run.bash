@@ -22,10 +22,10 @@ set -euo pipefail
 
 # The command being invoked does not need to be quoted, unless it contains
 # shell meta-characters or similar. Multiple words are fine, without quotes.
-command=$*
+command=("$@")
 
 # Change to the directory above the directory containing this script.
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/.."
 
-podman compose run --rm --no-deps --name tmp-fe-$$ frontend "$command" \
+podman compose run --rm --no-deps --name tmp-fe-$$ frontend "${command[@]}" \
   2> >( grep -v "Error: adding pod to state.*pod already exists" >&2 )
