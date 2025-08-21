@@ -11,9 +11,9 @@ set -euo pipefail
 
 # The command being invoked does not need to be quoted, unless it contains
 # shell meta-characters or similar. Multiple words are fine, without quotes.
-command=$*
+command=("$@")
 
 # Change to the directory above the directory containing this script.
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/.."
 
-./scripts/container.exec.bash pytest "$command"
+./scripts/container.exec.bash pytest "${command[@]}"

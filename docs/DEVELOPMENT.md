@@ -40,7 +40,7 @@ a containerised database as follows:
    `podman compose logs --follow` (you can safely CTRL-C this process at any time).
 1. (**If your active `ynr/settings/...` file does NOT include `DEBUG = True`**) \
    Collect the static assets:
-   `./scripts/container.manage-py.bash collectstatic --no-input`
+   `./scripts/container.run.bash python manage.py collectstatic --no-input`
 1. Browse to [http://localhost:8080](http://localhost:8080)
 1. Changes made inside `ynr/` will be immediately available to the app, which
    will be auto-reloaded.
