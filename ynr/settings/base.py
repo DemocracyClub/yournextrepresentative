@@ -128,7 +128,6 @@ INSTALLED_APPS = (
     "corsheaders",
     "uk_results",
     "bulk_adding",
-    "celery",
     "parties",
     "candidatebot",
     "resultsbot",
@@ -140,7 +139,6 @@ INSTALLED_APPS = (
     "wombles",
     "frontend",
     "sopn_parsing",
-    "django_celery_results",
     "facebook_data",
     "search",
     "duplicates",
@@ -150,13 +148,6 @@ INSTALLED_APPS = (
 )
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
-
-CELERY_RESULT_BACKEND = "django-db"
-# Set ALWAYS_EAGER so that by default tasks blocking when running and
-# always return the value. This essentially disabled Celery unless it's enabled.
-# This is useful for testing and local development, and we enable it in
-# production
-CELERY_TASK_ALWAYS_EAGER = True
 
 MIDDLEWARE = (
     "whitenoise.middleware.WhiteNoiseMiddleware",

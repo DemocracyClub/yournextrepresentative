@@ -56,8 +56,6 @@ SOPN_DATES = [
     ("Northern Ireland", date(year=2022, month=4, day=8)),
 ]
 
-CELERY_TASK_ALWAYS_EAGER = True
-CELERY_TASK_EAGER_PROPAGATES = True
 
 # update these settings from the aws management console
 TEXTRACT_S3_BUCKET_NAME = "test-sopns"
