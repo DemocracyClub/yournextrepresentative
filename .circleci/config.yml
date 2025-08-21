@@ -132,7 +132,7 @@ jobs:
       - run:
           name: Run any outstanding migrations
           command: |
-            ./scripts/ci/dbmigrate.sh
+            ./scripts/ci/dbmigrate.bash
 
   deploy:
     docker:
@@ -309,10 +309,10 @@ jobs:
           name: Force deploy the service to pick up the new image
           command: |
               IMAGE_TAG="${CIRCLE_SHA1:0:7}"
-              ./scripts/ci/update-ecs-task.sh $IMAGE_TAG
+              ./scripts/ci/update-ecs-task.bash $IMAGE_TAG
       - run:
           name: Wait for the service to stabilise
-          command: ./scripts/ci/wait-for-stable-ecs-service.sh
+          command: ./scripts/ci/wait-for-stable-ecs-service.bash
 
       - persist_to_workspace:
           root: .

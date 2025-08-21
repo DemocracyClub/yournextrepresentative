@@ -9,9 +9,9 @@
 # developer's preference.
 #
 # e.g.
-# ./scripts/aws-container-exec.sh web "echo test"
+# ./scripts/aws-container-exec.bash web "echo test"
 # or
-# ./scripts/aws-container-exec.sh web echo test
+# ./scripts/aws-container-exec.bash web echo test
 
 set -ex
 
