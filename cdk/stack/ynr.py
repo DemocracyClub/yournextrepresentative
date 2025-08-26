@@ -1,12 +1,13 @@
 import os
 
-from aws_cdk import Stack, Tags
+from aws_cdk import CfnOutput, Duration, Stack, Tags
 from aws_cdk import aws_certificatemanager as acm
 from aws_cdk import aws_cloudfront as cloudfront
 from aws_cdk import aws_cloudfront_origins as origins
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
+from aws_cdk import aws_elasticloadbalancingv2 as elbv2
 from aws_cdk import aws_kms as kms
 from aws_cdk import aws_route53 as route_53
 from aws_cdk import aws_route53_targets as route_53_target
@@ -41,6 +42,12 @@ class YnrStack(Stack):
         )
         image_ref = (
             f"public.ecr.aws/h3q9h5r7/dc-test/ynr:{tag_for_environment()}"
+        )
+
+        FQDN = ssm.StringParameter.from_string_parameter_name(
+            self,
+            "FQDN",
+            "FQDN",
         )
 
         # Secrets aren't necessarily "secret", but are created as
@@ -82,6 +89,7 @@ class YnrStack(Stack):
                     "YNR_AWS_S3_SOPN_REGION",
                 )
             ),
+            "FQDN": ecs.Secret.from_ssm_parameter(FQDN),
             "POSTGRES_USERNAME": ecs.Secret.from_ssm_parameter(
                 ssm.StringParameter.from_secure_string_parameter_attributes(
                     self,
@@ -110,6 +118,16 @@ class YnrStack(Stack):
         common_env_vars = {
             "YNR_DJANGO_SECRET_KEY": "insecure",
         }
+
+        # `alb_basic_auth_token` prevents anyone from accessing the ALB without
+        # passing this header. We use it to limit hosts to valid hostnames
+        # and to ensure no one can access the ALB directly.
+
+        self.alb_basic_auth_token = (
+            ssm.StringParameter.value_for_string_parameter(
+                self, "alb_basic_auth_token"
+            )
+        )
 
         queue_task_definition = ecs.FargateTaskDefinition(self, "QueueTaskDef")
         queue_task_definition.add_container(
@@ -156,12 +174,46 @@ class YnrStack(Stack):
             ),
             public_load_balancer=True,
         )
+
+        # If the X-ALB-Auth is set and valid, forward the request
+        web_service.listener.add_action(
+            "AllowCloudFrontOnly",
+            priority=1,
+            conditions=[
+                elbv2.ListenerCondition.http_header(
+                    name="X-ALB-Auth",
+                    values=[self.alb_basic_auth_token],  # exact match
+                ),
+            ],
+            action=elbv2.ListenerAction.forward([web_service.target_group]),
+        )
+
+        # if the X-ALB-Auth isn't set or is invalid, raise a 403.
+        web_service.listener.add_action(
+            "DenyAllOthers",
+            priority=2,
+            conditions=[elbv2.ListenerCondition.path_patterns(["*"])],
+            action=elbv2.ListenerAction.fixed_response(
+                status_code=403,
+                content_type="text/plain",
+                message_body="Forbidden",
+            ),
+        )
+
         Tags.of(cluster).add("app", "ynr")
         Tags.of(web_service).add("role", "web")
         Tags.of(queue_service).add("role", "queue")
 
         # Create CloudFront and related DNS records
         self.create_cloudfront(web_service)
+
+        # Add the FQDN to the CDK output
+        CfnOutput(
+            self,
+            "AppFQDN",
+            value=FQDN.string_value,
+            description="The FQDN for the CloudFront distribution",
+        )
 
     def create_cloudfront(
         self, service: ecs_patterns.ApplicationLoadBalancedFargateService
@@ -191,6 +243,7 @@ class YnrStack(Stack):
             custom_headers={
                 "X-Forwarded-Host": fqdn,
                 "X-Forwarded-Proto": "https",
+                "X-ALB-Auth": self.alb_basic_auth_token,
             },
         )
 
@@ -199,12 +252,91 @@ class YnrStack(Stack):
             "YNRCloudFront",
             default_behavior=cloudfront.BehaviorOptions(
                 origin=app_origin,
+                viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                 allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL,
                 cache_policy=cloudfront.CachePolicy.CACHING_DISABLED,
+                compress=True,
             ),
             certificate=cert,
             domain_names=[fqdn],
             price_class=cloudfront.PriceClass.PRICE_CLASS_100,
+        )
+
+        # Standard cache policy that allows CSRF headers and
+        # doesn't do much else. Caps cache at 5 minutes, to ensure
+        # we don't end up caching things for too long.
+        short_ttl_forward_headers = cloudfront.CachePolicy(
+            self,
+            "short_ttl_forward_headers",
+            default_ttl=Duration.minutes(0),
+            min_ttl=Duration.minutes(0),
+            max_ttl=Duration.minutes(5),
+            enable_accept_encoding_brotli=True,
+            enable_accept_encoding_gzip=True,
+            cookie_behavior=cloudfront.CacheCookieBehavior.all(),
+            query_string_behavior=cloudfront.CacheQueryStringBehavior.all(),
+            header_behavior=cloudfront.CacheHeaderBehavior.allow_list(
+                "x-csrfmiddlewaretoken",
+                "X-CSRFToken",
+                "Accept",
+                "Authorization",
+                "Cache-Control",
+                "Referer",
+                "Origin",
+            ),
+        )
+
+        # Short cache ideal for API endpoints and CSV builder that
+        # we want to cahce to prevent hammering, but not for longs
+        short_cache = cloudfront.CachePolicy(
+            self,
+            "short_cache",
+            default_ttl=Duration.minutes(2),
+            min_ttl=Duration.minutes(0),
+            max_ttl=Duration.minutes(10),
+            enable_accept_encoding_brotli=True,
+            enable_accept_encoding_gzip=True,
+            cookie_behavior=cloudfront.CacheCookieBehavior.all(),
+            query_string_behavior=cloudfront.CacheQueryStringBehavior.all(),
+            header_behavior=cloudfront.CacheHeaderBehavior.allow_list(
+                "x-csrfmiddlewaretoken",
+                "X-CSRFToken",
+                "Accept",
+                "Authorization",
+                "Cache-Control",
+                "Referer",
+                "Origin",
+            ),
+        )
+
+        # Behaviours for different paths
+        cloudfront_dist.add_behavior(
+            "/admin/*",
+            app_origin,
+            viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL,
+            cache_policy=short_ttl_forward_headers,
+            compress=True,
+        )
+
+        cloudfront_dist.add_behavior(
+            "/static/*",
+            app_origin,
+            viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+            cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
+            compress=True,
+        )
+
+        cloudfront_dist.add_behavior(
+            "/data/export_csv/*",
+            app_origin,
+            viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+            cache_policy=short_cache,
+            # Enable CORS for CSV downloads
+            response_headers_policy=cloudfront.ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT_AND_SECURITY_HEADERS,
+            compress=True,
         )
 
         hosted_zone = route_53.HostedZone.from_lookup(
