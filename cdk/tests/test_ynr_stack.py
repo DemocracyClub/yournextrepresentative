@@ -29,7 +29,7 @@ def test_template_components(monkeypatch):
         "AWS::ECS::Service",
         {
             "Tags": assertions.Match.array_with(
-                [{"Key": "role", "Value": "queue"}]
+                [{"Key": "role", "Value": "worker"}]
             ),
         },
     )
@@ -55,5 +55,5 @@ def test_template_components(monkeypatch):
 
     # 1) Load balancer
     # 2) web task(s)
-    # 3) queue task(s)
+    # 3) worker task(s)
     template.resource_count_is("AWS::EC2::SecurityGroup", 3)

@@ -1,10 +1,10 @@
 #!/usr/bin/bash
 
 # This is a utility script, similar to scripts/container.exec.bash . Use it to
-# run a command in a remote container, either queue or web.
+# run a command in a remote container, either worker or web.
 
 # Give the script two or more parameters. The first is the word "web" or the
-# word "queue".  The remainder comprise the command to run including any
+# word "worker".  The remainder comprise the command to run including any
 # parameters. The command can be quoted as a string or not, as per the
 # developer's preference.
 #
@@ -18,7 +18,7 @@ set -ex
 role="$1"; shift
 cmd=$*
 
-if ! [[ "$role" =~ ^(web|queue)$ ]]; then
+if ! [[ "$role" =~ ^(web|worker)$ ]]; then
         echo "Given role was not recognised: $role"
         exit 1
 fi

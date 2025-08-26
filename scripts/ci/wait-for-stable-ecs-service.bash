@@ -12,10 +12,10 @@ mapfile -t SERVICE_LIST < <(aws ecs list-services  --cluster "${CLUSTER_NAME}" |
 
 services_info=$(aws ecs describe-services  --cluster "${CLUSTER_NAME}" --services "${SERVICE_LIST[@]}" --include TAGS | jq '.services|map({name: .serviceName, tags: (.tags // [] |from_entries) })')
 web_service_name=$(echo "$services_info" | jq -r --arg ROLE_TAG "web" 'map(select(.tags.role == $ROLE_TAG ))|map(.name) | if .|length != 1 then halt_error else .[0] end')
-queue_service_name=$(echo "$services_info" | jq -r --arg ROLE_TAG "queue" 'map(select(.tags.role == $ROLE_TAG ))|map(.name) | if .|length != 1 then halt_error else .[0] end')
+worker_service_name=$(echo "$services_info" | jq -r --arg ROLE_TAG "worker" 'map(select(.tags.role == $ROLE_TAG ))|map(.name) | if .|length != 1 then halt_error else .[0] end')
 
 echo "web service name: ${web_service_name}"
-echo "queue service name: ${queue_service_name}"
+echo "worker service name: ${worker_service_name}"
 
 echo Waiting for the two services.
 # Waiting is (intentionally) a blocking action. We can't wait for both at the
@@ -24,4 +24,4 @@ echo Waiting for the two services.
 # neglible.
 
 aws ecs wait services-stable --cluster "$CLUSTER_NAME" --service "${web_service_name}"
-aws ecs wait services-stable --cluster "$CLUSTER_NAME" --service "${queue_service_name}"
+aws ecs wait services-stable --cluster "$CLUSTER_NAME" --service "${worker_service_name}"
