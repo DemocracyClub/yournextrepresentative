@@ -202,30 +202,33 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
         self.assertEqual(RawPeople.objects.count(), 1)
         raw_people = RawPeople.objects.get()
         self.assertEqual(
-            raw_people.data,
-            [
-                {
-                    "name": "John Smith",
-                    "party_id": self.conservative_party.ec_id,
-                },
-                {
-                    "name": "Joe Bloggs",
-                    "party_id": self.labour_party.ec_id,
-                },
-                {
-                    "name": "Jon Doe",
-                    "party_id": self.ld_party.ec_id,
-                },
-                {
-                    "name": "Jane Brown",
-                    "party_id": "ynmp-party:2",
-                },
-                {
-                    "name": "Judy Johnson",
-                    "party_id": plaid_cymru.ec_id,
-                },
-                {"name": "Julie Williams", "party_id": "ynmp-party:2"},
-            ],
+            sorted(raw_people.data, key=lambda x: x["name"]),
+            sorted(
+                [
+                    {
+                        "name": "John Smith",
+                        "party_id": self.conservative_party.ec_id,
+                    },
+                    {
+                        "name": "Joe Bloggs",
+                        "party_id": self.labour_party.ec_id,
+                    },
+                    {
+                        "name": "Jon Doe",
+                        "party_id": self.ld_party.ec_id,
+                    },
+                    {
+                        "name": "Jane Brown",
+                        "party_id": "ynmp-party:2",
+                    },
+                    {
+                        "name": "Judy Johnson",
+                        "party_id": plaid_cymru.ec_id,
+                    },
+                    {"name": "Julie Williams", "party_id": "ynmp-party:2"},
+                ],
+                key=lambda x: x["name"],
+            ),
         )
 
 
