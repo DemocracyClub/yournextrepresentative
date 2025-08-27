@@ -6,41 +6,41 @@ volumes:
   psql-data:
 
 services:
-  frontend: &service_defaults
-    image: ynr:test
+  frontend:
+    <<: &service_defaults
+      image: ynr:test
+      env_file:
+        - path: env/frontend.env
+          required: false
+      environment:
+        PGHOST: dbpsql
+      volumes:
+        - ./ynr/:/dc/ynr/code/ynr/
+        - ./data/:/dc/ynr/code/data/
+        - ./requirements/:/dc/ynr/code/requirements/
+        - ./requirements.txt:/dc/ynr/code/requirements.txt
+        - ./manage.py:/dc/ynr/code/manage.py
+        - ./Makefile:/dc/ynr/code/Makefile
+        - ./scripts/:/dc/ynr/code/scripts/
+        - ./gulpfile.js:/dc/ynr/code/gulpfile.js
+        - ./package.json:/dc/ynr/code/package.json
+        - ./package-lock.json:/dc/ynr/code/package-lock.json
+        - ./pyproject.toml:/dc/ynr/code/pyproject.toml
+      depends_on:
+        dbpsql:
+          condition: service_healthy
+      pull_policy: never
+      build:
+        dockerfile: container/build/Containerfile
+        # Context is relative to this docker-compose.yml file.
+        context: .
+        target: test
     command: gunicorn --reload --log-level=debug ynr.wsgi
-    env_file:
-      - path: env/frontend.env
-        required: false
-    environment:
-      PGHOST: dbpsql
-    volumes:
-      - ./ynr/:/dc/ynr/code/ynr/
-      - ./data/:/dc/ynr/code/data/
-      - ./requirements/:/dc/ynr/code/requirements/
-      - ./requirements.txt:/dc/ynr/code/requirements.txt
-      - ./manage.py:/dc/ynr/code/manage.py
-      - ./Makefile:/dc/ynr/code/Makefile
-      - ./scripts/:/dc/ynr/code/scripts/
-      - ./gulpfile.js:/dc/ynr/code/gulpfile.js
-      - ./package.json:/dc/ynr/code/package.json
-      - ./package-lock.json:/dc/ynr/code/package-lock.json
-      - ./pyproject.toml:/dc/ynr/code/pyproject.toml
     ports:
       - "8080:80"
-    depends_on:
-      dbpsql:
-        condition: service_healthy
-    pull_policy: never
-    build:
-      dockerfile: container/build/Containerfile
-      # Context is relative to this docker-compose.yml file.
-      context: .
-      target: test
   worker:
     <<: *service_defaults
     command: python manage.py qcluster
-    ports: []
 
   dbpsql:
     image: public.ecr.aws/docker/library/postgres:16.4

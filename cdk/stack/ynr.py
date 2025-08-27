@@ -129,9 +129,11 @@ class YnrStack(Stack):
             )
         )
 
-        queue_task_definition = ecs.FargateTaskDefinition(self, "QueueTaskDef")
-        queue_task_definition.add_container(
-            "queue",
+        worker_task_definition = ecs.FargateTaskDefinition(
+            self, "WorkerTaskDef"
+        )
+        worker_task_definition.add_container(
+            "worker",
             image=ecs.ContainerImage.from_registry(image_ref),
             secrets=common_secrets,
             memory_limit_mib=512,
@@ -139,11 +141,11 @@ class YnrStack(Stack):
             entry_point=["python", "manage.py", "qcluster"],
         )
 
-        queue_service = ecs.FargateService(
+        worker_service = ecs.FargateService(
             self,
-            "QueueService",
+            "WorkerService",
             cluster=cluster,
-            task_definition=queue_task_definition,
+            task_definition=worker_task_definition,
             assign_public_ip=True,
             desired_count=1,
             enable_execute_command=True,
@@ -155,6 +157,10 @@ class YnrStack(Stack):
             ],
         )
 
+        web_desired_count = 1
+        if self.dc_environment == "production":
+            web_desired_count = 2
+
         web_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
             "YnrService",
@@ -162,7 +168,7 @@ class YnrStack(Stack):
             assign_public_ip=True,
             cpu=512,
             memory_limit_mib=1024,
-            desired_count=2,
+            desired_count=web_desired_count,
             enable_execute_command=True,
             task_subnets=ec2.SubnetSelection(
                 subnet_type=ec2.SubnetType.PUBLIC,
@@ -202,7 +208,7 @@ class YnrStack(Stack):
 
         Tags.of(cluster).add("app", "ynr")
         Tags.of(web_service).add("role", "web")
-        Tags.of(queue_service).add("role", "queue")
+        Tags.of(worker_service).add("role", "worker")
 
         # Create CloudFront and related DNS records
         self.create_cloudfront(web_service)
