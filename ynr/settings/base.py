@@ -171,6 +171,7 @@ MIDDLEWARE = (
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "candidates.middleware.DisableCachingForAuthenticatedUsers",
     "wombles.middleware.CheckProfileDetailsMiddleware",
+    "ynr_refactoring.middleware.BasicAuthMiddleware",
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -181,6 +182,10 @@ AUTHENTICATION_BACKENDS = (
 SESAME_MAX_AGE = 60 * 60  # 1 hour
 SESAME_ONE_TIME = False
 SESAME_TOKEN_NAME = "login_token"
+
+BASIC_AUTH_ALLOWLIST = [
+    "/",  # load balancer health check
+]
 
 LOGIN_REDIRECT_URL = "/"
 
