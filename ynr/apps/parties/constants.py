@@ -64,6 +64,8 @@ DEFAULT_EMBLEMS = {
     "PP12731": 7769,
     # Chesterfield And North Derbyshire Independents (CANDI)
     "PP2883": 4670,
+    # Sovereignty party
+    "PP12666": 8481,
 }
 
 JOINT_DESCRIPTION_REGEX = r"^(.*?) \(joint descriptions? with\s?(.*)\)"
