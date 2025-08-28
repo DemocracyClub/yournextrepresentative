@@ -8,7 +8,6 @@ from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
 from aws_cdk import aws_elasticloadbalancingv2 as elbv2
-from aws_cdk import aws_kms as kms
 from aws_cdk import aws_route53 as route_53
 from aws_cdk import aws_route53_targets as route_53_target
 from aws_cdk import aws_ssm as ssm
@@ -37,9 +36,6 @@ class YnrStack(Stack):
         default_vpc = ec2.Vpc.from_lookup(self, "YnrVpc", is_default=True)
         cluster = ecs.Cluster(self, "YnrCluster", vpc=default_vpc)
 
-        encryption_key = kms.Alias.from_alias_name(
-            self, "SSMKey", "alias/aws/ssm"
-        )
         image_ref = (
             f"public.ecr.aws/h3q9h5r7/dc-test/ynr:{tag_for_environment()}"
         )
@@ -57,67 +53,125 @@ class YnrStack(Stack):
             "DJANGO_SETTINGS_MODULE": ecs.Secret.from_ssm_parameter(
                 ssm.StringParameter.from_string_parameter_name(
                     self,
-                    "DSM",
+                    "DJANGO_SETTINGS_MODULE",
                     "DJANGO_SETTINGS_MODULE",
                 )
             ),
-            "YNR_AWS_S3_MEDIA_BUCKET": ecs.Secret.from_ssm_parameter(
+            "DJANGO_SECRET_KEY": ecs.Secret.from_ssm_parameter(
                 ssm.StringParameter.from_string_parameter_name(
                     self,
-                    "MediaBucketName",
-                    "YNR_AWS_S3_MEDIA_BUCKET",
+                    "DJANGO_SECRET_KEY",
+                    "DJANGO_SECRET_KEY",
                 )
             ),
-            "YNR_AWS_S3_MEDIA_REGION": ecs.Secret.from_ssm_parameter(
+            "DC_ENVIRONMENT": ecs.Secret.from_ssm_parameter(
                 ssm.StringParameter.from_string_parameter_name(
                     self,
-                    "MediaBucketRegion",
-                    "YNR_AWS_S3_MEDIA_REGION",
+                    "DC_ENVIRONMENT",
+                    "DC_ENVIRONMENT",
                 )
             ),
-            "YNR_AWS_S3_SOPN_BUCKET": ecs.Secret.from_ssm_parameter(
+            "S3_MEDIA_BUCKET": ecs.Secret.from_ssm_parameter(
                 ssm.StringParameter.from_string_parameter_name(
                     self,
-                    "SopnBucketName",
-                    "YNR_AWS_S3_SOPN_BUCKET",
+                    "S3_MEDIA_BUCKET",
+                    "S3_MEDIA_BUCKET",
                 )
             ),
-            "YNR_AWS_S3_SOPN_REGION": ecs.Secret.from_ssm_parameter(
+            "S3_MEDIA_REGION": ecs.Secret.from_ssm_parameter(
                 ssm.StringParameter.from_string_parameter_name(
                     self,
-                    "SopnBucketRegion",
-                    "YNR_AWS_S3_SOPN_REGION",
+                    "S3_MEDIA_REGION",
+                    "S3_MEDIA_REGION",
+                )
+            ),
+            "S3_SOPN_BUCKET": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "S3_SOPN_BUCKET",
+                    "S3_SOPN_BUCKET",
+                )
+            ),
+            "S3_SOPN_REGION": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "S3_SOPN_REGION",
+                    "S3_SOPN_REGION",
                 )
             ),
             "FQDN": ecs.Secret.from_ssm_parameter(FQDN),
-            "POSTGRES_USERNAME": ecs.Secret.from_ssm_parameter(
-                ssm.StringParameter.from_secure_string_parameter_attributes(
+            "SENTRY_DSN": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
                     self,
-                    "DBUSER",
-                    encryption_key=encryption_key,
-                    parameter_name="postgres_username",
+                    "SENTRY_DSN",
+                    "SENTRY_DSN",
+                )
+            ),
+            "MASTODON_APP_ONLY_BEARER_TOKEN": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "MASTODON_APP_ONLY_BEARER_TOKEN",
+                    "MASTODON_APP_ONLY_BEARER_TOKEN",
+                )
+            ),
+            "OPEN_AI_API_KEY": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "OPEN_AI_API_KEY",
+                    "OPEN_AI_API_KEY",
+                )
+            ),
+            "SOPN_UPDATE_NOTIFICATION_EMAILS": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "SOPN_UPDATE_NOTIFICATION_EMAILS",
+                    "SOPN_UPDATE_NOTIFICATION_EMAILS",
+                )
+            ),
+            "HCAPTCHA_SITEKEY": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "HCAPTCHA_SITEKEY",
+                    "HCAPTCHA_SITEKEY",
+                )
+            ),
+            "HCAPTCHA_SECRET": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "HCAPTCHA_SECRET",
+                    "HCAPTCHA_SECRET",
+                )
+            ),
+            "POSTGRES_USERNAME": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "POSTGRES_USERNAME",
+                    "POSTGRES_USERNAME",
                 )
             ),
             "POSTGRES_PASSWORD": ecs.Secret.from_ssm_parameter(
-                ssm.StringParameter.from_secure_string_parameter_attributes(
+                ssm.StringParameter.from_string_parameter_name(
                     self,
-                    "DBPASSWD",
-                    encryption_key=encryption_key,
-                    parameter_name="postgres_password",
+                    "POSTGRES_PASSWORD",
+                    "POSTGRES_PASSWORD",
                 )
             ),
             "POSTGRES_HOST": ecs.Secret.from_ssm_parameter(
-                ssm.StringParameter.from_secure_string_parameter_attributes(
+                ssm.StringParameter.from_string_parameter_name(
                     self,
-                    "DBHOST",
-                    encryption_key=encryption_key,
-                    parameter_name="postgres_host",
+                    "POSTGRES_HOST",
+                    "POSTGRES_HOST",
                 )
             ),
         }
-        common_env_vars = {
-            "YNR_DJANGO_SECRET_KEY": "insecure",
-        }
+        if self.dc_environment == "production":
+            common_secrets["SLACK_TOKEN"] = ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "SLACK_TOKEN",
+                    "SLACK_TOKEN",
+                )
+            )
 
         # `alb_basic_auth_token` prevents anyone from accessing the ALB without
         # passing this header. We use it to limit hosts to valid hostnames
@@ -137,7 +191,6 @@ class YnrStack(Stack):
             image=ecs.ContainerImage.from_registry(image_ref),
             secrets=common_secrets,
             memory_limit_mib=512,
-            environment=common_env_vars,
             entry_point=["python", "manage.py", "qcluster"],
         )
 
@@ -176,7 +229,6 @@ class YnrStack(Stack):
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
                 image=ecs.ContainerImage.from_registry(image_ref),
                 secrets=common_secrets,
-                environment=common_env_vars,
             ),
             public_load_balancer=True,
         )
