@@ -46,6 +46,9 @@ services:
         # Whilst runnning gunicorn
         'gunicorn',
         '--log-level', 'DEBUG',
+        '--log-file', '-',
+        '--error-logfile', '-',
+        '--access-logfile','-',
         'ynr.wsgi',
     ]
     ports:
