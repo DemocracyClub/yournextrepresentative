@@ -35,7 +35,19 @@ services:
         # Context is relative to this docker-compose.yml file.
         context: .
         target: test
-    command: gunicorn --reload --log-level=debug ynr.wsgi
+    command: [
+        # Watch for updates to files
+        'watchmedo',
+        'auto-restart',
+        '--directory=/dc/ynr/code/ynr',
+        '--patterns', '*.py;*.html;*.csv;*.json;*.md;*.txt',
+        '--recursive',
+        '--',
+        # Whilst runnning gunicorn
+        'gunicorn',
+        '--log-level', 'DEBUG',
+        'ynr.wsgi',
+    ]
     ports:
       - "8080:80"
   worker:
