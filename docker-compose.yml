@@ -40,7 +40,19 @@ services:
       - "8080:80"
   worker:
     <<: *service_defaults
-    command: python manage.py qcluster
+    command: [
+        # Watch for updates to python files
+        'watchmedo',
+        'auto-restart',
+        '--directory=/dc/ynr/code/ynr',
+        '--patterns=*.py',
+        '--recursive',
+        '--',
+        # Whilst runnning django-q worker
+        'python',
+        'manage.py',
+        'qcluster',
+    ]
 
   dbpsql:
     image: public.ecr.aws/docker/library/postgres:16.4
