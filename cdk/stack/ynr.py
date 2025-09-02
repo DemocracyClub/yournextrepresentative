@@ -265,7 +265,7 @@ class YnrStack(Stack):
 
         s3_policy_statement = iam.PolicyStatement(
             actions=["s3:*"],
-            resources=["*"],
+            resources=["arn:aws:s3:::ynr-*"],
             effect=iam.Effect.ALLOW,
         )
         worker_service.task_definition.task_role.add_to_policy(
