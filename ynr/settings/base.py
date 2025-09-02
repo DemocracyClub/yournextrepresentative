@@ -47,13 +47,15 @@ SUPPORT_EMAIL = "candidates@democracyclub.org.uk"
 # The From: address for all emails except error emails
 DEFAULT_FROM_EMAIL = "candidates@democracyclub.org.uk"
 
+DC_ENVIRONMENT = os.environ.get("DC_ENVIRONMENT", "local")
+
 # Sentry config
 sentry_sdk.init(
     dsn=os.environ.get("SENTRY_DSN"),
     integrations=[
         django.DjangoIntegration(),
     ],
-    environment=os.environ.get("DC_ENVIRONMENT"),
+    environment=DC_ENVIRONMENT,
     traces_sample_rate=0,
     profiles_sample_rate=0,
 )
