@@ -443,6 +443,8 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
 HCAPTCHA_SITEKEY = os.environ.get("HCAPTCHA_SITEKEY", None)
 HCAPTCHA_SECRET = os.environ.get("HCAPTCHA_SECRET", None)
 
+ENABLE_SCHEDULED_JOBS = False
+
 # import application constants
 from .constants.needs_review import *  # noqa
 from .constants.csv_fields import *  # noqa
