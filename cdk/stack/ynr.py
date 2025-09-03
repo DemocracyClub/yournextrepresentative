@@ -263,9 +263,19 @@ class YnrStack(Stack):
         Tags.of(web_service).add("role", "web")
         Tags.of(worker_service).add("role", "worker")
 
+        s3_resources = ["arn:aws:s3:::ynr-*"]
+        if self.dc_environment == "production":
+            s3_resources = [
+                "arn:aws:s3:::ynr-*",
+                "arn:aws:s3:::public-sopns",
+                "arn:aws:s3:::public-sopns/*",
+                "arn:aws:s3:::static-candidates.democracyclub.org.uk",
+                "arn:aws:s3:::static-candidates.democracyclub.org.uk/*",
+            ]
+
         s3_policy_statement = iam.PolicyStatement(
             actions=["s3:*"],
-            resources=["arn:aws:s3:::ynr-*"],
+            resources=s3_resources,
             effect=iam.Effect.ALLOW,
         )
         worker_service.task_definition.task_role.add_to_policy(
