@@ -1,7 +1,16 @@
 from django.conf import settings
-from django.core.management import call_command
+from django.core.management import CommandError
+from django.core.management import call_command as core_call_command
 from django_q.models import Schedule
 from django_q_registry import register_task
+
+
+def call_command(*args, **kwargs):
+    if settings.ENABLE_SCHEDULED_JOBS:
+        try:
+            core_call_command(*args, **kwargs)
+        except SystemExit as e:
+            raise CommandError("Management Command Exited unexpectedly") from e
 
 
 @register_task(
@@ -10,8 +19,7 @@ from django_q_registry import register_task
     cron="* * * * *",
 )
 def moderation_queue_process_queued_images():
-    if settings.ENABLE_SCHEDULED_JOBS:
-        call_command("moderation_queue_process_queued_images")
+    call_command("moderation_queue_process_queued_images")
 
 
 @register_task(
@@ -20,8 +28,7 @@ def moderation_queue_process_queued_images():
     cron="* * * * *",
 )
 def sopn_parsing_process_unparsed():
-    if settings.ENABLE_SCHEDULED_JOBS:
-        call_command("sopn_parsing_process_unparsed")
+    call_command("sopn_parsing_process_unparsed")
 
 
 @register_task(
@@ -30,8 +37,7 @@ def sopn_parsing_process_unparsed():
     cron="6 2 * * *",
 )
 def parties_import_from_ec():
-    if settings.ENABLE_SCHEDULED_JOBS:
-        call_command("parties_import_from_ec", post_to_slack=True)
+    call_command("parties_import_from_ec", post_to_slack=True)
 
 
 @register_task(
@@ -40,11 +46,10 @@ def parties_import_from_ec():
     cron="*/5 * * * *",
 )
 def uk_create_elections_from_every_election_recently_updated():
-    if settings.ENABLE_SCHEDULED_JOBS:
-        call_command(
-            "uk_create_elections_from_every_election",
-            recently_updated=True,
-        )
+    call_command(
+        "uk_create_elections_from_every_election",
+        recently_updated=True,
+    )
 
 
 @register_task(
@@ -53,10 +58,7 @@ def uk_create_elections_from_every_election_recently_updated():
     cron="23 23 * * *",
 )
 def uk_create_elections_from_every_election_check_current():
-    if settings.ENABLE_SCHEDULED_JOBS:
-        call_command(
-            "uk_create_elections_from_every_election", check_current=True
-        )
+    call_command("uk_create_elections_from_every_election", check_current=True)
 
 
 @register_task(
@@ -65,12 +67,11 @@ def uk_create_elections_from_every_election_check_current():
     cron="23 23 * * *",
 )
 def uk_create_elections_from_every_election_mop_up():
-    if settings.ENABLE_SCHEDULED_JOBS:
-        call_command(
-            "uk_create_elections_from_every_election",
-            recently_updated=True,
-            recently_updated_delta=25,
-        )
+    call_command(
+        "uk_create_elections_from_every_election",
+        recently_updated=True,
+        recently_updated_delta=25,
+    )
 
 
 @register_task(
@@ -79,5 +80,4 @@ def uk_create_elections_from_every_election_mop_up():
     cron="*/5 * * * *",
 )
 def update_data_export_view():
-    if settings.ENABLE_SCHEDULED_JOBS:
-        call_command("update_data_export_view")
+    call_command("update_data_export_view")
