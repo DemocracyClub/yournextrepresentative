@@ -336,11 +336,15 @@ DATABASES = {
 Q_CLUSTER = {
     "name": "DjangORM",
     "workers": 4,
-    "timeout": None,
-    "retry": 120,
     "queue_limit": 50,
     "bulk": 10,
     "orm": "default",
+    # schedule-friendly settings
+    # TODO: review once we have proper background tasks
+    "catch_up": False,
+    "timeout": 240,
+    "max_attempts": 1,  # no retries
+    "retry": 300,  # irrelevant, but this must be a number greater than timeout
 }
 
 CACHES = {
