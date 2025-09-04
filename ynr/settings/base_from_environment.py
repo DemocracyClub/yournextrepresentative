@@ -46,6 +46,9 @@ TEXTRACT_S3_BUCKET_REGION = os.environ["S3_SOPN_REGION"]
 TEXTRACT_S3_BUCKET_URL = f"https://{TEXTRACT_S3_BUCKET_NAME}.s3.{TEXTRACT_S3_BUCKET_REGION}.amazonaws.com"
 
 
+ENABLE_SCHEDULED_JOBS = str_bool_to_bool(os.environ["ENABLE_SCHEDULED_JOBS"])  # noqa: F405
+
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_PORT = 587
 EMAIL_HOST = "email-smtp.eu-west-2.amazonaws.com"

@@ -142,6 +142,18 @@ start the stack. If you need to delete the database's contents completely, run
 some of the docs aren't perfect. Here's a summary of the commands you might
 run:
 
+## Scheduled Tasks
+
+In production, we run scheduled jobs with
+
+- [django-q2](https://github.com/django-q2/django-q2)
+- [django-q-registry](https://github.com/westerveltco/django-q-registry)
+
+If you want to set your dev copy up to run scheduled tasks:
+
+1. Run `./scripts/container.manage-py.bash setup_periodic_tasks`. This will create DB records for the scheduled tasks we define in code. If we change the content of the `@register_task` decorator we need to re-run this to update the DB. Changing the code inside the decorated function doesn't require running `setup_periodic_tasks`.
+2. Set `ENABLE_SCHEDULED_JOBS = True`. This is disabled by default because we usually don't want our local copy ruuning scheduled tasks
+
 <!-- The &nbsp; HTML entities force the Command column to be wide enough in the
 GitHub-rendered view so that command strings don't line-wrap. -->
 | Command&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Purpose | Notes
