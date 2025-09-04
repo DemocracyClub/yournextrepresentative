@@ -16,7 +16,7 @@ def call_command(*args, **kwargs):
 @register_task(
     name="Process images in moderation queue",
     schedule_type=Schedule.CRON,
-    cron="* * * * *",
+    cron="*/5 * * * *",
 )
 def moderation_queue_process_queued_images():
     call_command("moderation_queue_process_queued_images")
@@ -25,7 +25,7 @@ def moderation_queue_process_queued_images():
 @register_task(
     name="Parse raw data from SOPNs",
     schedule_type=Schedule.CRON,
-    cron="* * * * *",
+    cron="*/5 * * * *",
 )
 def sopn_parsing_process_unparsed():
     call_command("sopn_parsing_process_unparsed")
