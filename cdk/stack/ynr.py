@@ -8,6 +8,7 @@ from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
 from aws_cdk import aws_elasticloadbalancingv2 as elbv2
+from aws_cdk import aws_iam as iam
 from aws_cdk import aws_route53 as route_53
 from aws_cdk import aws_route53_targets as route_53_target
 from aws_cdk import aws_ssm as ssm
@@ -261,6 +262,26 @@ class YnrStack(Stack):
         Tags.of(cluster).add("app", "ynr")
         Tags.of(web_service).add("role", "web")
         Tags.of(worker_service).add("role", "worker")
+
+        s3_resources = ["arn:aws:s3:::ynr-*"]
+        if self.dc_environment == "production":
+            s3_resources = [
+                "arn:aws:s3:::ynr-*",
+                "arn:aws:s3:::public-sopns",
+                "arn:aws:s3:::public-sopns/*",
+                "arn:aws:s3:::static-candidates.democracyclub.org.uk",
+                "arn:aws:s3:::static-candidates.democracyclub.org.uk/*",
+            ]
+
+        s3_policy_statement = iam.PolicyStatement(
+            actions=["s3:*"],
+            resources=s3_resources,
+            effect=iam.Effect.ALLOW,
+        )
+        worker_service.task_definition.task_role.add_to_policy(
+            s3_policy_statement
+        )
+        web_service.task_definition.task_role.add_to_policy(s3_policy_statement)
 
         # Create CloudFront and related DNS records
         self.create_cloudfront(web_service)
