@@ -15,6 +15,12 @@ import sentry_sdk
 from sentry_sdk.integrations import django
 
 
+def str_bool_to_bool(str_bool):
+    if not str_bool:
+        return False
+    return str_bool in ["1", "True", "true", "TRUE"]
+
+
 # PATH vars
 def here(*path):
     return join(abspath(dirname(__file__)), *path)

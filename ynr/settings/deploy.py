@@ -32,11 +32,6 @@ LOGGING = {
 # empty. FIXME: figure out a principled fix to this issue.
 ADMINS = [("Dummy Admin", "dummy@example.com")]
 
-
-# Always run scheduled jobs in deployed environments
-ENABLE_SCHEDULED_JOBS = True
-
-
 CSRF_TRUSTED_ORIGINS = [
     f"https://{os.environ.get('FQDN')}",
 ]
