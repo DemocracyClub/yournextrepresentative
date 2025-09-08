@@ -143,6 +143,13 @@ class YnrStack(Stack):
                     "HCAPTCHA_SECRET",
                 )
             ),
+            "ENABLE_SCHEDULED_JOBS": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "ENABLE_SCHEDULED_JOBS",
+                    "ENABLE_SCHEDULED_JOBS",
+                )
+            ),
             "POSTGRES_USERNAME": ecs.Secret.from_ssm_parameter(
                 ssm.StringParameter.from_string_parameter_name(
                     self,

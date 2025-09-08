@@ -15,6 +15,12 @@ import sentry_sdk
 from sentry_sdk.integrations import django
 
 
+def str_bool_to_bool(str_bool):
+    if not str_bool:
+        return False
+    return str_bool in ["1", "True", "true", "TRUE"]
+
+
 # PATH vars
 def here(*path):
     return join(abspath(dirname(__file__)), *path)
@@ -111,6 +117,7 @@ INSTALLED_APPS = (
     "django.contrib.postgres",
     "django_extensions",
     "django_q",
+    "django_q_registry",
     "pipeline",
     "sorl.thumbnail",
     "rest_framework",
@@ -335,11 +342,15 @@ DATABASES = {
 Q_CLUSTER = {
     "name": "DjangORM",
     "workers": 4,
-    "timeout": 90,
-    "retry": 120,
     "queue_limit": 50,
     "bulk": 10,
     "orm": "default",
+    # schedule-friendly settings
+    # TODO: review once we have proper background tasks
+    "catch_up": False,
+    "timeout": 240,
+    "max_attempts": 1,  # no retries
+    "retry": 300,  # irrelevant, but this must be a number greater than timeout
 }
 
 CACHES = {
@@ -441,6 +452,8 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
 
 HCAPTCHA_SITEKEY = os.environ.get("HCAPTCHA_SITEKEY", None)
 HCAPTCHA_SECRET = os.environ.get("HCAPTCHA_SECRET", None)
+
+ENABLE_SCHEDULED_JOBS = False
 
 # import application constants
 from .constants.needs_review import *  # noqa

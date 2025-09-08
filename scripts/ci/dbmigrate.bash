@@ -11,4 +11,4 @@ CLUSTER=$(aws ecs list-clusters | jq -r  .clusterArns[0])
 TASK_LIST=$(aws ecs list-tasks --cluster "${CLUSTER}" | jq -r .taskArns[])
 
 # Pick one of the web containers
-aws ecs describe-tasks --include TAGS --cluster "${CLUSTER}" --tasks "${TASK_LIST}" | jq -r '.tasks|map({arn: .containers[].taskArn, role: .overrides.containerOverrides[].name}) | map(select(.role == "web"))[0].arn|split("/") | "unbuffer aws ecs execute-command --cluster " + .[1] + " --command \"python manage.py migrate && python manage.py createcachetable\" --interactive --task " + .[2]' | sh
+aws ecs describe-tasks --include TAGS --cluster "${CLUSTER}" --tasks "${TASK_LIST}" | jq -r '.tasks|map({arn: .containers[].taskArn, role: .overrides.containerOverrides[].name}) | map(select(.role == "web"))[0].arn|split("/") | "unbuffer aws ecs execute-command --cluster " + .[1] + " --command \"python manage.py migrate && python manage.py createcachetable && python manage.py setup_periodic_tasks\" --interactive --task " + .[2]' | sh

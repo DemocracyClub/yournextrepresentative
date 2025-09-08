@@ -32,7 +32,6 @@ LOGGING = {
 # empty. FIXME: figure out a principled fix to this issue.
 ADMINS = [("Dummy Admin", "dummy@example.com")]
 
-
 CSRF_TRUSTED_ORIGINS = [
     f"https://{os.environ.get('FQDN')}",
 ]
