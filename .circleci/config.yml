@@ -24,7 +24,11 @@ jobs:
             sudo apt-add-repository -y ppa:lepapareil/hurl
             sudo apt install -y jq hurl
             cd hurl-tests
-            hurl --test -m 10 --variable host=https://$(jq -r '.YnrStack|to_entries|map(select(.key|startswith("AppFQDN"))|.value)[0]' ../ynr-${DC_ENVIRONMENT}-stack-out.json) *.hurl
+            AUTH_ARGS=""
+            if [ "$DC_ENVIRONMENT" = "development" ] || [ "$DC_ENVIRONMENT" = "staging" ]; then
+              AUTH_ARGS="-u dc:dc"
+            fi
+            hurl --test -m 10 --variable host=https://$(jq -r '.YnrStack|to_entries|map(select(.key|startswith("AppFQDN"))|.value)[0]' ../ynr-${DC_ENVIRONMENT}-stack-out.json) $AUTH_ARGS *.hurl
 
   build_and_test:
     docker:
