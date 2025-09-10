@@ -727,6 +727,7 @@ class TestEEElection:
                     "cancelled": False,
                     "replaces": None,
                     "tags": {},
+                    "by_election_reason": "",
                     "voting_system": "FPTP",
                     "ee_modified": modified,
                 },
