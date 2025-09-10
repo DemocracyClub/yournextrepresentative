@@ -140,6 +140,7 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
             "results",
             "voting_system",
             "tags",
+            "by_election_reason",
         )
 
     replaces = serializers.SlugRelatedField(
