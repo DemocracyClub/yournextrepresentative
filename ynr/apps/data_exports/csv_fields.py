@@ -109,6 +109,12 @@ csv_fields["by_election"] = CSVField(
     value_group="election",
     label="By-election (boolean)",
 )
+csv_fields["by_election_reason"] = CSVField(
+    value=F("ballot_paper__by_election_reason"),
+    type="expr",
+    value_group="election",
+    label="By-election reason",
+)
 csv_fields["party_name"] = CSVField(
     value="party_name",
     type="attr",

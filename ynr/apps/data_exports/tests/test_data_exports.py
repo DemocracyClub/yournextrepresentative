@@ -201,6 +201,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
                 "cancelled_poll",
                 "seats_contested",
                 "by_election",
+                "by_election_reason",
                 "gss",
                 "post_id",
                 "candidates_locked",

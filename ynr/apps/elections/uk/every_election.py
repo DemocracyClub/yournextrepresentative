@@ -270,6 +270,7 @@ class EEElection(dict):
             "cancelled": self["cancelled"],
             "replaces": self.get_replaced_ballot(),
             "tags": self.get("tags", {}),
+            "by_election_reason": self.get("by_election_reason", ""),
             "voting_system": voting_system.get("slug", ""),
             "ee_modified": self.get("modified"),
         }
