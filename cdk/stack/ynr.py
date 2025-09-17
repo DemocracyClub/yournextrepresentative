@@ -266,6 +266,11 @@ class YnrStack(Stack):
             ),
         )
 
+        web_service.target_group.configure_health_check(
+            path="/status_check/",
+            healthy_http_codes="200",
+        )
+
         Tags.of(cluster).add("app", "ynr")
         Tags.of(web_service).add("role", "web")
         Tags.of(worker_service).add("role", "worker")

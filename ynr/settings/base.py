@@ -184,7 +184,7 @@ SESAME_ONE_TIME = False
 SESAME_TOKEN_NAME = "login_token"
 
 BASIC_AUTH_ALLOWLIST = [
-    "/",  # load balancer health check
+    "/status_check/",  # load balancer health check
     "/api/next/*",  # Allow next API
 ]
 
