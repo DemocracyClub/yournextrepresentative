@@ -72,12 +72,7 @@ class EEElection(dict):
             self.election_created = False
             self.election_object = ELECTION_CACHE[self["election_id"]]
         else:
-            party_lists_in_use = False
-            election_type = self["election_id"].split(".")[0]
-            if self["voting_system"]:
-                party_lists_in_use = self["voting_system"]["uses_party_lists"]
-            elif election_type in ALWAYS_USES_LISTS:
-                party_lists_in_use = True
+            party_lists_in_use = self._set_party_lists_in_use()
 
             election_obj, created = YNRElection.objects.update_or_create(
                 slug=self["election_id"],
@@ -97,6 +92,16 @@ class EEElection(dict):
             self.election_created = created
             ELECTION_CACHE[self["election_id"]] = election_obj
         return (self.election_object, self.election_created)
+
+    def _set_party_lists_in_use(self):
+        election_type = self["election_id"].split(".")[0]
+        if election_type in ALWAYS_USES_LISTS:
+            return True
+
+        if self["voting_system"]:
+            return self["voting_system"]["uses_party_lists"]
+
+        return False
 
     def get_or_create_partyset(self):
         """

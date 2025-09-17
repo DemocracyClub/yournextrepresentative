@@ -209,6 +209,22 @@ class EE_ImporterTest(WebTest):
         )
         self.assertTrue(election.organization_created)
 
+    def test_set_party_lists_in_use_voting_system_does_not_use_lists(self):
+        election = self.ee_importer.election_tree[self.parent_id]
+        election["voting_system"] = {"uses_party_lists": False}
+
+        result = election._set_party_lists_in_use()
+
+        self.assertFalse(result)
+
+    def test_set_party_lists_in_use_voting_system_uses_lists(self):
+        election = self.ee_importer.election_tree[self.parent_id]
+        election["voting_system"] = {"uses_party_lists": True}
+
+        result = election._set_party_lists_in_use()
+
+        self.assertTrue(result)
+
     def test_create_organization_from_election_dict(self):
         election = self.ee_importer.election_tree[self.parent_id]
 
