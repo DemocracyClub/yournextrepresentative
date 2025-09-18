@@ -470,3 +470,17 @@ class EveryElectionImporter(object):
             self.election_tree.update(new_importer.election_tree)
 
         return self.election_tree[child.parent]
+
+    def get_children(self, election_id):
+        parent = self.election_tree[election_id]
+        children = []
+
+        for child_id in parent["children"]:
+            if child_id not in self.election_tree:
+                new_importer = EveryElectionImporter(election_id=child_id)
+                new_importer.build_election_tree()
+                self.election_tree.update(new_importer.election_tree)
+            self.election_tree[child_id]
+            children.append(self.election_tree[child_id])
+
+        return children
