@@ -71,10 +71,15 @@ class Command(BaseCommand):
 
         ee_importer = EveryElectionImporter(query_args)
         ee_importer.build_election_tree()
-
         for ballot_id, election_dict in ee_importer.ballot_ids.items():
             try:
                 parent = ee_importer.get_parent(ballot_id)
+                if not parent["voting_system"]:
+                    children = ee_importer.get_children(parent["election_id"])
+                    parent["voting_system"] = self.determine_voting_system(
+                        children
+                    )
+
             except KeyError as e:
                 # raise the exception if this is not a recent update
                 if not recently_updated_timestamp:
@@ -87,6 +92,23 @@ class Command(BaseCommand):
                 parent = None
 
             election_dict.get_or_create_ballot(parent=parent)
+
+    def determine_voting_system(self, children):
+        """
+        Some ballots have a parent that is a top-level election (senedd, nia, parl).
+        We don't set voting_system for top-level elections in the EE API
+        so we need to determine it by looking at the voting systems of their children.
+        """
+        voting_systems = set()
+        for child in children:
+            if child["voting_system"]:
+                voting_systems.add(child["voting_system"]["slug"])
+        if len(voting_systems) > 1:
+            parent = children[0]["group"]
+            # No election_id one level up from a ballot should have multiple voting systems.
+            error = f"Multiple voting systems found for {parent}. Imports won't work until this is resolved. Try checking the children of {parent} in EE."
+            raise ValueError(error)
+        return children[0]["voting_system"]
 
     def check_local_current_against_remote(self):
         """
