@@ -5,13 +5,10 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 from sesame.views import LoginView as SesameLoginView
-
-
-def trigger_error(request):
-    return 1 / 0
-
+from utils.views import status_check, trigger_error
 
 urlpatterns = [
+    re_path(r"^status_check/$", status_check, name="status_check"),
     re_path(r"^parties/", include("parties.urls")),
     re_path(r"^", include("api.urls")),
     re_path(r"^", include("elections.urls")),
