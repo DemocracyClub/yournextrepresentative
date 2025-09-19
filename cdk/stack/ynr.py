@@ -200,6 +200,7 @@ class YnrStack(Stack):
             secrets=common_secrets,
             memory_limit_mib=512,
             entry_point=["python", "manage.py", "qcluster"],
+            logging=ecs.LogDrivers.aws_logs(stream_prefix="YnrService"),
         )
 
         worker_service = ecs.FargateService(
