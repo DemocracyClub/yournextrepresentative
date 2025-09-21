@@ -51,10 +51,12 @@ ENABLE_SCHEDULED_JOBS = str_bool_to_bool(os.environ["ENABLE_SCHEDULED_JOBS"])  #
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_PORT = 587
-EMAIL_HOST = "email-smtp.eu-west-2.amazonaws.com"
+EMAIL_HOST = os.environ["EMAIL_HOST"]
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "TODO"  # TODO os.environ["SMTP_USERNAME"]
-EMAIL_HOST_PASSWORD = "TODO"  # TODO os.environ["SMTP_PASSWORD"]
+EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
+
 
 if DC_ENVIRONMENT == "production":  # noqa: F405
     SLACK_TOKEN = os.environ["SLACK_TOKEN"]

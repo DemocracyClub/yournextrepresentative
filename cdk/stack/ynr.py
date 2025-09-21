@@ -171,6 +171,34 @@ class YnrStack(Stack):
                     "POSTGRES_HOST",
                 )
             ),
+            "EMAIL_HOST": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "EMAIL_HOST",
+                    "EMAIL_HOST",
+                )
+            ),
+            "EMAIL_HOST_USER": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "EMAIL_HOST_USER",
+                    "EMAIL_HOST_USER",
+                )
+            ),
+            "EMAIL_HOST_PASSWORD": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "EMAIL_HOST_PASSWORD",
+                    "EMAIL_HOST_PASSWORD",
+                )
+            ),
+            "DEFAULT_FROM_EMAIL": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "DEFAULT_FROM_EMAIL",
+                    "DEFAULT_FROM_EMAIL",
+                )
+            ),
         }
         if self.dc_environment == "production":
             common_secrets["SLACK_TOKEN"] = ecs.Secret.from_ssm_parameter(
