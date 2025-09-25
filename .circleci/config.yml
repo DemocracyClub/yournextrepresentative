@@ -256,6 +256,7 @@ jobs:
       - when:
           condition:
             or:
+              - equal: [ "email-config", << pipeline.git.branch >> ]
               - equal: [ "ci/test", << pipeline.git.branch >> ]
               - equal: [ "staging", << pipeline.git.branch >> ]
               - equal: [ "master", << pipeline.git.branch >> ]
@@ -429,7 +430,7 @@ workflows:
             - static_tests
             - container_build_and_test
           context: [ deployment-ecs-development-ynr ]
-          filters: { branches: { only: [ "ci/test"] } }
+          filters: { branches: { only: [ "ci/test", "email-config"] } }
           dc-environment: development
       - deploy_cdk_environment:
           name: DEV cdk deploy
@@ -437,20 +438,20 @@ workflows:
           requires:
             - cdk_test
             - DEV push container
-          filters: { branches: { only: [ "ci/test"] } }
+          filters: { branches: { only: [ "ci/test", "email-config"] } }
           dc-environment: development
       - db_migrate:
           name: DEV db migrate
           requires:
             - DEV cdk deploy
           context: [ deployment-ecs-development-ynr ]
-          filters: { branches: { only: [ "ci/test"] } }
+          filters: { branches: { only: [ "ci/test", "email-config"] } }
       - post_deploy_checks:
           name: DEV post deploy checks
           requires:
             - DEV db migrate
           dc-environment: development
-          filters: { branches: { only: [ "ci/test"] } }
+          filters: { branches: { only: [ "ci/test", "email-config"] } }
 
       #########
       # Staging
