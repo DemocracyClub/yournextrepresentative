@@ -296,6 +296,27 @@ class YnrStack(Stack):
         )
         web_service.task_definition.task_role.add_to_policy(s3_policy_statement)
 
+        worker_service.task_definition.task_role.add_managed_policy(
+            iam.ManagedPolicy.from_aws_managed_policy_name(
+                "AmazonRekognitionFullAccess"
+            )
+        )
+        worker_service.task_definition.task_role.add_managed_policy(
+            iam.ManagedPolicy.from_aws_managed_policy_name(
+                "AmazonTextractFullAccess"
+            )
+        )
+        web_service.task_definition.task_role.add_managed_policy(
+            iam.ManagedPolicy.from_aws_managed_policy_name(
+                "AmazonRekognitionFullAccess"
+            )
+        )
+        web_service.task_definition.task_role.add_managed_policy(
+            iam.ManagedPolicy.from_aws_managed_policy_name(
+                "AmazonTextractFullAccess"
+            )
+        )
+
         # Create CloudFront and related DNS records
         self.create_cloudfront(web_service)
 
