@@ -25,6 +25,11 @@ LOGGING = {
             "level": os.getenv("YNR_DJANGO_LOG_LEVEL", "INFO"),
             "propagate": False,
         },
+        "django-q": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
     },
 }
 
