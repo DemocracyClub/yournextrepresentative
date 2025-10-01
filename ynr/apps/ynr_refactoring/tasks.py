@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.core.management import CommandError
 from django.core.management import call_command as core_call_command
 from django_q.models import Schedule
 from django_q_registry import register_task
@@ -7,10 +6,7 @@ from django_q_registry import register_task
 
 def call_command(*args, **kwargs):
     if settings.ENABLE_SCHEDULED_JOBS:
-        try:
-            core_call_command(*args, **kwargs)
-        except SystemExit as e:
-            raise CommandError("Management Command Exited unexpectedly") from e
+        core_call_command(*args, **kwargs)
 
 
 @register_task(
