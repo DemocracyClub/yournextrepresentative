@@ -345,19 +345,38 @@ DATABASES = {
     }
 }
 
-Q_CLUSTER = {
-    "name": "DjangORM",
-    "workers": 4,
-    "queue_limit": 50,
-    "bulk": 10,
-    "orm": "default",
-    # schedule-friendly settings
-    # TODO: review once we have proper background tasks
-    "catch_up": False,
-    "timeout": 240,
-    "max_attempts": 1,  # no retries
-    "retry": 300,  # irrelevant, but this must be a number greater than timeout
-}
+
+def get_qcluster_settings(minimum_cron_interval_seconds):
+    # kill jobs if they haven't completed in $TIMEOUT seconds
+    TIMEOUT = 240
+    # retry must be a number greater than timeout
+    # and less than minimum_cron_interval_seconds.
+    # We can't't have scheduled tasks that run
+    # more frequently than every $RETRY seconds
+    RETRY = TIMEOUT + (minimum_cron_interval_seconds - TIMEOUT) / 2
+
+    assert TIMEOUT < RETRY < minimum_cron_interval_seconds
+
+    return {
+        "name": "DjangORM",
+        "workers": 2,
+        "queue_limit": 50,
+        "bulk": 10,
+        "orm": "default",
+        # schedule-friendly settings
+        # TODO: review once we have proper background tasks
+        "catch_up": False,
+        "timeout": TIMEOUT,
+        "max_attempts": 1,  # no retries
+        "retry": RETRY,
+    }
+
+
+# MINIMUM_CRON_INTERVAL is the most frequently we're allowed to
+# run a scheduled job. So if we set this to 5
+# then */5 is the most often we're allowed to run a scheduled job
+MINIMUM_CRON_INTERVAL_MINUTES = 5
+Q_CLUSTER = get_qcluster_settings(MINIMUM_CRON_INTERVAL_MINUTES * 60)
 
 CACHES = {
     "default": {
