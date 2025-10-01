@@ -10,6 +10,18 @@ def call_command(*args, **kwargs):
 
 
 @register_task(
+    name="Look for recent changes in EE",
+    schedule_type=Schedule.CRON,
+    cron="*/5 * * * *",
+)
+def uk_create_elections_from_every_election_recently_updated():
+    call_command(
+        "uk_create_elections_from_every_election",
+        recently_updated=True,
+    )
+
+
+@register_task(
     name="Process images in moderation queue",
     schedule_type=Schedule.CRON,
     cron="*/5 * * * *",
@@ -28,24 +40,21 @@ def sopn_parsing_process_unparsed():
 
 
 @register_task(
+    name="Update materialized view",
+    schedule_type=Schedule.CRON,
+    cron="*/5 * * * *",
+)
+def update_data_export_view():
+    call_command("update_data_export_view")
+
+
+@register_task(
     name="Update parties from EC",
     schedule_type=Schedule.CRON,
     cron="6 2 * * *",
 )
 def parties_import_from_ec():
     call_command("parties_import_from_ec", post_to_slack=True)
-
-
-@register_task(
-    name="Look for recent changes in EE",
-    schedule_type=Schedule.CRON,
-    cron="*/5 * * * *",
-)
-def uk_create_elections_from_every_election_recently_updated():
-    call_command(
-        "uk_create_elections_from_every_election",
-        recently_updated=True,
-    )
 
 
 @register_task(
@@ -68,12 +77,3 @@ def uk_create_elections_from_every_election_mop_up():
         recently_updated=True,
         recently_updated_delta=25,
     )
-
-
-@register_task(
-    name="Update materialized view",
-    schedule_type=Schedule.CRON,
-    cron="*/5 * * * *",
-)
-def update_data_export_view():
-    call_command("update_data_export_view")
