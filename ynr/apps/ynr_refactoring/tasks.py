@@ -12,7 +12,7 @@ def call_command(*args, **kwargs):
 @register_task(
     name="Look for recent changes in EE",
     schedule_type=Schedule.CRON,
-    cron="*/5 * * * *",
+    cron="0-59/5 * * * *",
 )
 def uk_create_elections_from_every_election_recently_updated():
     call_command(
@@ -24,7 +24,7 @@ def uk_create_elections_from_every_election_recently_updated():
 @register_task(
     name="Process images in moderation queue",
     schedule_type=Schedule.CRON,
-    cron="*/5 * * * *",
+    cron="1-59/5 * * * *",
 )
 def moderation_queue_process_queued_images():
     call_command("moderation_queue_process_queued_images")
@@ -33,7 +33,7 @@ def moderation_queue_process_queued_images():
 @register_task(
     name="Parse raw data from SOPNs",
     schedule_type=Schedule.CRON,
-    cron="*/5 * * * *",
+    cron="2-59/5 * * * *",
 )
 def sopn_parsing_process_unparsed():
     call_command("sopn_parsing_process_unparsed")
@@ -42,7 +42,7 @@ def sopn_parsing_process_unparsed():
 @register_task(
     name="Update materialized view",
     schedule_type=Schedule.CRON,
-    cron="*/5 * * * *",
+    cron="3-59/5 * * * *",
 )
 def update_data_export_view():
     call_command("update_data_export_view")
