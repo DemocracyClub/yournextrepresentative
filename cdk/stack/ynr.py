@@ -220,13 +220,15 @@ class YnrStack(Stack):
         )
 
         worker_task_definition = ecs.FargateTaskDefinition(
-            self, "WorkerTaskDef"
+            self,
+            "WorkerTaskDef",
+            cpu=1024,
+            memory_limit_mib=2048,
         )
         worker_task_definition.add_container(
             "worker",
             image=ecs.ContainerImage.from_registry(image_ref),
             secrets=common_secrets,
-            memory_limit_mib=512,
             entry_point=["python", "manage.py", "qcluster"],
             logging=ecs.LogDrivers.aws_logs(stream_prefix="YnrService"),
         )
