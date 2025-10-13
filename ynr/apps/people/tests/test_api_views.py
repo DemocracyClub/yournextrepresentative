@@ -1,3 +1,4 @@
+from candidates.models import PersonRedirect
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.test import TestCase
@@ -118,3 +119,18 @@ class TestPersonViewSet(UK2015ExamplesMixin, TestCase):
         data = response.json()
         self.assertTrue("delisted" in data)
         self.assertTrue(data["delisted"])
+
+    def test_person_redirect_filter(self):
+        PersonRedirect.objects.create(old_person_id=1, new_person_id=2)
+
+        pr = PersonRedirect.objects.create(old_person_id=3, new_person_id=4)
+        response = self.client.get("/api/next/person_redirects/")
+        data = response.json()
+        self.assertEqual(data["count"], 2)
+        pr.created = "2020-01-01"
+        pr.save()
+        response = self.client.get(
+            "/api/next/person_redirects/?created=2022-01-01"
+        )
+        data = response.json()
+        self.assertEqual(data["count"], 1)
