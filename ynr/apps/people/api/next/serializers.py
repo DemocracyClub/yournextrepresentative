@@ -157,6 +157,7 @@ class PersonRedirectSerializer(serializers.HyperlinkedModelSerializer):
             "old_person_id",
             "new_person_id",
             "new_person_url",
+            "created",
         )
 
     url = serializers.HyperlinkedIdentityField(
