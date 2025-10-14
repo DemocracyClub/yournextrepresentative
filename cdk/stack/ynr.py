@@ -258,8 +258,8 @@ class YnrStack(Stack):
             "YnrService",
             cluster=cluster,
             assign_public_ip=True,
-            cpu=512,
-            memory_limit_mib=1024,
+            cpu=1024,
+            memory_limit_mib=2048,
             desired_count=web_desired_count,
             enable_execute_command=True,
             task_subnets=ec2.SubnetSelection(
