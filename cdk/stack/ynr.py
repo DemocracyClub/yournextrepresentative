@@ -366,7 +366,7 @@ class YnrStack(Stack):
         cert_arns = {
             "development": "arn:aws:acm:us-east-1:539247459606:certificate/e7949af6-5abd-425d-af45-43d86058542f",
             "staging": "arn:aws:acm:us-east-1:523256396133:certificate/9f2cb412-cc62-424b-8d8d-392a6844d564",
-            "production": "arn:aws:acm:us-east-1:399683337428:certificate/85e51cc3-acd9-4ae7-b27f-28161df07ef9",
+            "production": "arn:aws:acm:us-east-1:399683337428:certificate/d0f8d2a5-d0ab-41b7-a0ed-76073317c57c",
         }
         cert = acm.Certificate.from_certificate_arn(
             self,
