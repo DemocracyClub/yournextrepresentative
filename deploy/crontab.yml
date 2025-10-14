@@ -22,10 +22,10 @@
       job: "nice -n 19 ionice -c 3 output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py moderation_queue_process_queued_images"
       disabled: no
 
-  - cron:
-      name: "Parse raw data from SOPNs"
-      job: "/usr/bin/flock -n /tmp/sopn-parse-cron.lockfile output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py sopn_parsing_process_unparsed"
-      disabled: no
+  # - cron:
+  #     name: "Parse raw data from SOPNs"
+  #     job: "/usr/bin/flock -n /tmp/sopn-parse-cron.lockfile output-on-error {{project_root}}/env/bin/python {{project_root}}/code/manage.py sopn_parsing_process_unparsed"
+  #     disabled: no
 
   # - cron:
   #     name: "Import elections from EE"
