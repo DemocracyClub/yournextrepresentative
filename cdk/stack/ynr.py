@@ -251,7 +251,7 @@ class YnrStack(Stack):
 
         web_desired_count = 1
         if self.dc_environment == "production":
-            web_desired_count = 2
+            web_desired_count = 3
 
         web_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
