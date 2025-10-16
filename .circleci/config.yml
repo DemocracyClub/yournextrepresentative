@@ -73,7 +73,7 @@ jobs:
             sudo apt install -y shellcheck
             find scripts/ -type f \( -name *.sh -o -name *.bash \) -print0 | xargs -r0 shellcheck
 
-  container_build_and_test:
+  build_and_test:
     working_directory: ~/repo
     docker:
       - image: cimg/base:current
@@ -191,7 +191,7 @@ jobs:
           paths:
             - ynr-<<parameters.dc-environment>>-stack-out.json
 
-  container_push_and_tag:
+  push_and_tag:
     docker:
       - image: cimg/python:3.8.15-node
     working_directory: ~/repo/
@@ -269,7 +269,7 @@ jobs:
 
 workflows:
 
-  container:
+  build:
     jobs:
       ##########
       # All envs
@@ -279,16 +279,16 @@ workflows:
       - cdk_test:
           context: [ deployment-ecs-development-ynr ]
           dc-environment: development
-      - container_build_and_test
+      - build_and_test
 
       #############
       # Development
       #############
-      - container_push_and_tag:
+      - push_and_tag:
           name: "DEV push container"
           requires:
             - static_tests
-            - container_build_and_test
+            - build_and_test
           context: [ deployment-ecs-development-ynr ]
           filters: { branches: { only: [ "ci/test"] } }
           dc-environment: development
@@ -316,11 +316,11 @@ workflows:
       #########
       # Staging
       #########
-      - container_push_and_tag:
+      - push_and_tag:
           name: "STAGING push container"
           requires:
             - static_tests
-            - container_build_and_test
+            - build_and_test
           # One might expect to see the staging context here, but the
           # development one is required because that's the account where the
           # AWS ECR registry is found
@@ -351,11 +351,11 @@ workflows:
       ############
       # Production
       ############
-      - container_push_and_tag:
+      - push_and_tag:
           name: "PRODUCTION push container"
           requires:
             - static_tests
-            - container_build_and_test
+            - build_and_test
           # One might expect to see the prod context here, but the
           # development one is required because that's the account where the
           # AWS ECR registry is found
