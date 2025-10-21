@@ -10,10 +10,8 @@ services:
     <<: &service_defaults
       image: ynr:test
       env_file:
-        - path: env/frontend.env
+        - path: .env
           required: false
-      environment:
-        PGHOST: dbpsql
       volumes:
         - ./ynr/:/dc/ynr/code/ynr/
         - ./data/:/dc/ynr/code/data/

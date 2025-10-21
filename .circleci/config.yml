@@ -105,7 +105,6 @@ jobs:
             net="$(docker network inspect $(docker network ls -q -f "label=task-network") --format '{{.Name}}')"
             container_id=$(docker create \
               --net="$net" \
-              -e PGHOST=dbpsql \
               -e CIRCLECI=true \
               ynr:test pytest -x --cov-report xml --cov --junitxml=junit.xml --ignore=node_modules)
             docker start -ai $container_id
