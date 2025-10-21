@@ -1,9 +1,12 @@
+# deploy.py
+# Set things here that we want to be true in ALL deployed environments
+# but don't make sense in local dev
+
 import os
 
-from .base_from_environment import *  # noqa
+from .base import *  # noqa
 
-# TODO: constrain the values allowed in the env.
-DEBUG = os.getenv("YNR_DEBUG", False)
+DEBUG = False
 
 # Log to stdout. Adapted from
 # https://docs.djangoproject.com/en/4.2/topics/logging/#id4.
@@ -37,6 +40,52 @@ LOGGING = {
 # empty. FIXME: figure out a principled fix to this issue.
 ADMINS = [("Dummy Admin", "dummy@example.com")]
 
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 CSRF_TRUSTED_ORIGINS = [
-    f"https://{os.environ.get('FQDN')}",
+    f"https://{os.environ['FQDN']}",
 ]
+USE_X_FORWARDED_HOST = True
+
+STATICFILES_STORAGE = "ynr.storages.StaticStorage"
+DEFAULT_FILE_STORAGE = "ynr.storages.MediaStorage"
+AWS_STORAGE_BUCKET_NAME = os.environ["S3_MEDIA_BUCKET"]
+AWS_S3_REGION_NAME = os.environ["S3_MEDIA_REGION"]
+STATICFILES_LOCATION = "static"
+MEDIAFILES_LOCATION = "media"
+AWS_DEFAULT_ACL = "public-read"
+AWS_BUCKET_ACL = AWS_DEFAULT_ACL
+AWS_QUERYSTRING_AUTH = False
+
+
+TEXTRACT_S3_BUCKET_NAME = os.environ["S3_SOPN_BUCKET"]
+TEXTRACT_S3_BUCKET_REGION = os.environ["S3_SOPN_REGION"]
+TEXTRACT_S3_BUCKET_URL = f"https://{TEXTRACT_S3_BUCKET_NAME}.s3.{TEXTRACT_S3_BUCKET_REGION}.amazonaws.com"
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_PORT = 587
+EMAIL_HOST = os.environ["EMAIL_HOST"]
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
+
+
+if DC_ENVIRONMENT == "production":  # noqa: F405
+    # TODO: remove this hack and make an ENABLE_SLACK_NOTIFICATIONS setting
+    # this exists because we can't set a var to empty string in param store
+    SLACK_TOKEN = os.environ["SLACK_TOKEN"]
+    if SLACK_TOKEN == "DISABLED":
+        SLACK_TOKEN = None
+else:
+    SLACK_TOKEN = None
+
+
+ALWAYS_ALLOW_RESULT_RECORDING = True
+EDITS_ALLOWED = True
+
+# If set to False, new users won't be allowed to make accounts
+# Useful for pre-election anti-vandalism
+NEW_USER_ACCOUNT_CREATION_ALLOWED = True
