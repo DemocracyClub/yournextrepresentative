@@ -2,6 +2,7 @@ orbs:
   aws-sg-white-list-circleci-ip: inokappa/aws-sg-white-list-circleci-ip@0.0.3
   aws-cli: circleci/aws-cli@4.1.3
   slack: circleci/slack@4.13.3
+  coveralls: coveralls/coveralls@2.2.5
 version: 2.1
 
 jobs:
@@ -30,103 +31,6 @@ jobs:
             fi
             hurl --test -m 10 --variable host=https://$(jq -r '.YnrStack|to_entries|map(select(.key|startswith("AppFQDN"))|.value)[0]' ../ynr-${DC_ENVIRONMENT}-stack-out.json) $AUTH_ARGS *.hurl
 
-  build_and_test:
-    docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: cimg/python:3.8.15
-        environment:
-          CIRCLECI: true
-          PGHOST: 127.0.0.1
-          RUN_ENV: test
-      - image: cimg/postgres:12.15
-        environment:
-          POSTGRES_USER: ynr
-          POSTGRES_DB: ynr
-      - image: cimg/redis:6.2.6
-
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-           keys:
-             - v6-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
-      - run:
-          name: Install APT packages
-          command: |
-            sudo rm -rf /var/lib/apt/lists/*
-            sudo apt-get update
-            sudo apt-get install python-tk ghostscript
-      - run:
-          name: Install pandoc
-          command: |
-            wget https://github.com/jgm/pandoc/releases/download/2.17.1.1/pandoc-2.17.1.1-1-amd64.deb
-            sudo dpkg -i pandoc-2.17.1.1-1-amd64.deb
-            sudo apt install texlive-latex-base texlive-latex-extra
-      - run:
-          name: Create venv
-          command: |
-            python -m venv .venv
-            . .venv/bin/activate
-            pip install -U pip
-      - run:
-          name: Install Coveralls
-          command: |
-            . .venv/bin/activate
-            pip install coveralls
-      - run:
-          name: install dependencies
-          command: |
-            . .venv/bin/activate
-            pip install -r requirements/testing.txt
-
-      - save_cache:
-          paths:
-            - .venv
-          key: v6-dependencies-{{ checksum "requirements/base.txt" }}-{{ checksum "requirements/sopn_parsing.txt" }}-{{ checksum "requirements/testing.txt" }}
-
-      - run:
-          name: Pre test checks
-          environment:
-            CIRCLECI: true
-            RUN_ENV: test
-          command: |
-            . .venv/bin/activate
-            pip check
-            ruff .
-            ruff format . --check
-            DJANGO_SECRET_KEY=fake python manage.py check
-            DJANGO_SECRET_KEY=fake python manage.py makemigrations --check
-      - run:
-          name: run tests
-          environment:
-            CIRCLECI: true
-            RUN_ENV: test
-          command: |
-            . .venv/bin/activate
-            pytest -x --cov-report= --cov --junitxml=test-results/junit.xml
-
-      # Coverage
-      - run:
-          name: Update Coveralls
-          command: |
-            . .venv/bin/activate
-            coveralls
-
-      - store_test_results:
-          path: test-results
-
-      - store_artifacts:
-          path: test-results
-
   db_migrate:
     docker:
       - image: cimg/base:current
@@ -137,52 +41,6 @@ jobs:
           name: Run any outstanding migrations
           command: |
             ./scripts/ci/dbmigrate.bash
-
-  deploy:
-    docker:
-      - image: cimg/python:3.8.15
-        environment:
-          CIRCLECI: true
-          PGHOST: 127.0.0.1
-          RUN_ENV: test
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - aws-cli/setup
-      - restore_cache:
-          keys:
-            - v1-deploy-{{ checksum "requirements/deploy.txt" }}
-      - run:
-          name: Create venv
-          command: |
-            python -m venv .venv
-            . .venv/bin/activate
-            pip install -U pip
-      - run:
-          name: install dependencies
-          command: |
-            . .venv/bin/activate
-            pip install -r requirements/deploy.txt
-      - aws-sg-white-list-circleci-ip/add:
-          group-id: sg-807bc0e9
-          port: 22
-      - run:
-          name: Ansible Deploy
-          command: |
-            . .venv/bin/activate
-            cd deploy
-            ansible-playbook deploy.yml -e branch=$CIRCLE_SHA1
-      - aws-sg-white-list-circleci-ip/del:
-          group-id: sg-807bc0e9
-          port: 22
-      - save_cache:
-          paths:
-            - .venv
-          key: v1-deploy-{{ checksum "requirements/deploy.txt" }}
-                        
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
 
   static_tests:
     working_directory: ~/repo
@@ -215,7 +73,7 @@ jobs:
             sudo apt install -y shellcheck
             find scripts/ -type f \( -name *.sh -o -name *.bash \) -print0 | xargs -r0 shellcheck
 
-  container_build_and_test:
+  build_and_test:
     working_directory: ~/repo
     docker:
       - image: cimg/base:current
@@ -245,13 +103,17 @@ jobs:
           name: Run app tests
           command: |
             net="$(docker network inspect $(docker network ls -q -f "label=task-network") --format '{{.Name}}')"
-            docker run -it --rm \
+            container_id=$(docker create \
               --net="$net" \
               -e PGHOST=dbpsql \
               -e CIRCLECI=true \
-              \
-              ynr:test \
-              pytest -x --ignore=node_modules
+              ynr:test pytest -x --cov-report xml --cov --junitxml=junit.xml --ignore=node_modules)
+            docker start -ai $container_id
+            mkdir test-results
+            docker cp $container_id:/dc/ynr/code/coverage.xml .
+            docker cp $container_id:/dc/ynr/code/junit.xml test-results/junit.xml
+            docker rm $container_id
+      - coveralls/upload
 
       - when:
           condition:
@@ -270,6 +132,12 @@ jobs:
                 root: .
                 paths:
                   - images
+
+      - store_test_results:
+          path: test-results
+
+      - store_artifacts:
+          path: test-results
 
   deploy_cdk_environment:
     docker:
@@ -323,7 +191,7 @@ jobs:
           paths:
             - ynr-<<parameters.dc-environment>>-stack-out.json
 
-  container_push_and_tag:
+  push_and_tag:
     docker:
       - image: cimg/python:3.8.15-node
     working_directory: ~/repo/
@@ -400,15 +268,8 @@ jobs:
 
 
 workflows:
-  test_build_deploy:
-    jobs:
-    - build_and_test
-    - deploy:
-        requires:
-        - build_and_test
-        filters: { branches: { only: [ main, master] } }
-        context: [ deployment-production-ynr, slack-secrets ]
-  container:
+
+  build:
     jobs:
       ##########
       # All envs
@@ -418,16 +279,16 @@ workflows:
       - cdk_test:
           context: [ deployment-ecs-development-ynr ]
           dc-environment: development
-      - container_build_and_test
+      - build_and_test
 
       #############
       # Development
       #############
-      - container_push_and_tag:
+      - push_and_tag:
           name: "DEV push container"
           requires:
             - static_tests
-            - container_build_and_test
+            - build_and_test
           context: [ deployment-ecs-development-ynr ]
           filters: { branches: { only: [ "ci/test"] } }
           dc-environment: development
@@ -455,11 +316,11 @@ workflows:
       #########
       # Staging
       #########
-      - container_push_and_tag:
+      - push_and_tag:
           name: "STAGING push container"
           requires:
             - static_tests
-            - container_build_and_test
+            - build_and_test
           # One might expect to see the staging context here, but the
           # development one is required because that's the account where the
           # AWS ECR registry is found
@@ -490,11 +351,11 @@ workflows:
       ############
       # Production
       ############
-      - container_push_and_tag:
+      - push_and_tag:
           name: "PRODUCTION push container"
           requires:
             - static_tests
-            - container_build_and_test
+            - build_and_test
           # One might expect to see the prod context here, but the
           # development one is required because that's the account where the
           # AWS ECR registry is found
