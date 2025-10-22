@@ -7,6 +7,8 @@ from .base import *  # noqa: F403
 
 RUNNING_TESTS = True
 
+DC_ENVIRONMENT = "testing"
+
 
 class DisableMigrations(object):
     def __contains__(self, item):
@@ -41,7 +43,6 @@ FRONT_PAGE_CTA = "BY_ELECTIONS"
 
 
 # override these settings to safe values if they are set from the env
-DC_ENVIRONMENT = "testing"
 TWITTER_APP_ONLY_BEARER_TOKEN = None
 OPEN_AI_API_KEY = None
 MASTODON_APP_ONLY_BEARER_TOKEN = None

@@ -10,6 +10,8 @@ from .base import *  # noqa: F403
 # Only set DEBUG to True in development environments
 DEBUG = True
 
+DC_ENVIRONMENT = "local"
+
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 SECRET_KEY = "django-insecure-fake"

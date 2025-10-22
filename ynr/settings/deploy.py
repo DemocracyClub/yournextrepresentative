@@ -11,6 +11,8 @@ from .base import *  # noqa: F403
 
 DEBUG = False
 
+DC_ENVIRONMENT = os.environ["DC_ENVIRONMENT"]
+
 # Log to stdout. Adapted from
 # https://docs.djangoproject.com/en/4.2/topics/logging/#id4.
 LOGGING = {
@@ -76,7 +78,7 @@ EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
 DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
 
 
-if DC_ENVIRONMENT == "production":  # noqa: F405
+if DC_ENVIRONMENT == "production":
     # TODO: remove this hack and make an ENABLE_SLACK_NOTIFICATIONS setting
     # this exists because we can't set a var to empty string in param store
     SLACK_TOKEN = os.environ["SLACK_TOKEN"]
@@ -101,7 +103,7 @@ sentry_sdk.init(
     integrations=[
         django.DjangoIntegration(),
     ],
-    environment=DC_ENVIRONMENT,  # noqa: F405
+    environment=DC_ENVIRONMENT,
     traces_sample_rate=0,
     profiles_sample_rate=0,
 )

@@ -52,8 +52,6 @@ SUPPORT_EMAIL = "candidates@democracyclub.org.uk"
 # The From: address for all emails except error emails
 DEFAULT_FROM_EMAIL = "candidates@democracyclub.org.uk"
 
-DC_ENVIRONMENT = os.environ.get("DC_ENVIRONMENT", "local")
-
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", None)
 
 TEMPLATES = [
