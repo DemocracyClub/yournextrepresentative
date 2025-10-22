@@ -39,18 +39,14 @@ DEBUG_TOOLBAR_PANELS = [
 INSTALLED_APPS += ["debug_toolbar"]  # noqa: F405
 MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]  # noqa: F405
 
-# This unpleasantness adds the container's internal IP to the list of those IPs
-# permitted to access the Django debug toolbar, which allows it to be enabled.
-# We believe the container's own IP needs to be in this list because of
-# something to do with the container networking, or the HTTP server gunicorn's
-# reverse-proxy setup, or both.
-# TODO: Replace with a better method, either here or by changing the
-# container/gunicorn setup. https://pypi.org/project/netifaces/ also exists,
-# but might not be considered "better".
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.connect(("8.8.8.8", 80))
-INTERNAL_IPS = ["127.0.0.1", str(s.getsockname()[0])]
-s.close()
+# Add the container's internal IPs to the list of those IPs permitted
+# to access the Django debug toolbar, which allows it to be enabled.
+INTERNAL_IPS = [
+    "127.0.0.1",
+    socket.gethostbyname(socket.gethostname()),
+]
+with contextlib.suppress(socket.gaierror):
+    INTERNAL_IPS.append(socket.gethostbyname("host.docker.internal"))
 
 
 with contextlib.suppress(ImportError):
