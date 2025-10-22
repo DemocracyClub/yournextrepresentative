@@ -5,7 +5,7 @@
 import contextlib
 import socket
 
-from .base import *  # noqa
+from .base import *  # noqa: F403
 
 # Only set DEBUG to True in development environments
 DEBUG = True
@@ -54,4 +54,4 @@ s.close()
 
 
 with contextlib.suppress(ImportError):
-    from .local import *  # noqa
+    from .local import *  # noqa: F403

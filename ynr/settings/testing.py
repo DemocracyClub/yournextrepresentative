@@ -3,7 +3,7 @@
 
 from tempfile import mkdtemp
 
-from .base import *  # noqa
+from .base import *  # noqa: F403
 
 RUNNING_TESTS = True
 
@@ -22,7 +22,7 @@ MIGRATION_MODULES = DisableMigrations()
 
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
 
-REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {"anon": "1000/minute"}  # noqa
+REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {"anon": "1000/minute"}  # noqa: F405
 
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
