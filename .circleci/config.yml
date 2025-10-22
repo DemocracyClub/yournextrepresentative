@@ -58,8 +58,6 @@ jobs:
       - run:
           name: Pre test checks
           environment:
-            CIRCLECI: true
-            RUN_ENV: test
             POSTGRES_DBNAME: ynr
             DJANGO_SETTINGS_MODULE: ynr.settings.dev
           command: |
