@@ -9,6 +9,7 @@ from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
 from aws_cdk import aws_elasticloadbalancingv2 as elbv2
 from aws_cdk import aws_iam as iam
+from aws_cdk import aws_logs as logs
 from aws_cdk import aws_route53 as route_53
 from aws_cdk import aws_route53_targets as route_53_target
 from aws_cdk import aws_ssm as ssm
@@ -232,12 +233,16 @@ class YnrStack(Stack):
             cpu=1024,
             memory_limit_mib=2048,
         )
+
         worker_task_definition.add_container(
             "worker",
             image=ecs.ContainerImage.from_registry(image_ref),
             secrets=common_secrets,
             entry_point=["python", "manage.py", "qcluster"],
-            logging=ecs.LogDrivers.aws_logs(stream_prefix="YnrService"),
+            logging=ecs.LogDrivers.aws_logs(
+                stream_prefix="YnrService",
+                log_retention=logs.RetentionDays.THREE_MONTHS,
+            ),
         )
 
         worker_service = ecs.FargateService(
@@ -275,6 +280,10 @@ class YnrStack(Stack):
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
                 image=ecs.ContainerImage.from_registry(image_ref),
                 secrets=common_secrets,
+                log_driver=ecs.LogDrivers.aws_logs(
+                    stream_prefix="YnrService",
+                    log_retention=logs.RetentionDays.THREE_MONTHS,
+                ),
             ),
             public_load_balancer=True,
         )
