@@ -4,6 +4,9 @@
 
 import os
 
+import sentry_sdk
+from sentry_sdk.integrations import django
+
 from .base import *  # noqa: F403
 
 DEBUG = False
@@ -89,3 +92,16 @@ EDITS_ALLOWED = True
 # If set to False, new users won't be allowed to make accounts
 # Useful for pre-election anti-vandalism
 NEW_USER_ACCOUNT_CREATION_ALLOWED = True
+
+
+# Sentry config
+SENTRY_DSN = os.environ["SENTRY_DSN"]
+sentry_sdk.init(
+    dsn=SENTRY_DSN,
+    integrations=[
+        django.DjangoIntegration(),
+    ],
+    environment=DC_ENVIRONMENT,  # noqa: F405
+    traces_sample_rate=0,
+    profiles_sample_rate=0,
+)

@@ -3,9 +3,6 @@ import sys
 from os.path import abspath, dirname, join
 from pathlib import Path
 
-import sentry_sdk
-from sentry_sdk.integrations import django
-
 
 def str_bool_to_bool(str_bool):
     if not str_bool:
@@ -56,19 +53,6 @@ SUPPORT_EMAIL = "candidates@democracyclub.org.uk"
 DEFAULT_FROM_EMAIL = "candidates@democracyclub.org.uk"
 
 DC_ENVIRONMENT = os.environ.get("DC_ENVIRONMENT", "local")
-
-# Sentry config
-if sentry_dsn := os.environ.get("SENTRY_DSN"):
-    sentry_sdk.init(
-        dsn=sentry_dsn,
-        integrations=[
-            django.DjangoIntegration(),
-        ],
-        environment=DC_ENVIRONMENT,
-        traces_sample_rate=0,
-        profiles_sample_rate=0,
-    )
-
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", None)
 
