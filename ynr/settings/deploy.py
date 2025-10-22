@@ -13,6 +13,8 @@ DEBUG = False
 
 DC_ENVIRONMENT = os.environ["DC_ENVIRONMENT"]
 
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+
 # Log to stdout. Adapted from
 # https://docs.djangoproject.com/en/4.2/topics/logging/#id4.
 LOGGING = {
