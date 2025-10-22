@@ -60,13 +60,15 @@ jobs:
           environment:
             CIRCLECI: true
             RUN_ENV: test
+            POSTGRES_DBNAME: ynr
+            DJANGO_SETTINGS_MODULE: ynr.settings.dev
           command: |
             . .venv/bin/activate
             pip check
             ruff .
             ruff format . --check
-            DJANGO_SECRET_KEY=fake python manage.py check
-            DJANGO_SECRET_KEY=fake python manage.py makemigrations --check
+            python manage.py check
+            python manage.py makemigrations --check
       - run:
           name: Run shellcheck
           command: |
