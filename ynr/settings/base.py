@@ -312,7 +312,7 @@ EE_CACHE_SECONDS = 86400
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DATABASE_NAME", ""),
+        "NAME": os.environ.get("POSTGRES_DBNAME", ""),
         "USER": os.environ.get("POSTGRES_USERNAME", ""),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
         "HOST": os.environ.get("POSTGRES_HOST", ""),
