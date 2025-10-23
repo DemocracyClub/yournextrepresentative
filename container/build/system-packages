@@ -20,6 +20,7 @@ libyaml-dev
 npm
 opencv-data
 postgis
+poppler-utils
 python-is-python3
 python-tk
 python3-dev
