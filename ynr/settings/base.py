@@ -418,9 +418,6 @@ CANDIDATE_BOT_USERNAME = "CandidateBot"
 RESULTS_BOT_USERNAME = "ResultsBot"
 TWITTER_BOT_USERNAME = "TwitterBot"
 
-SOPN_UPDATE_NOTIFICATION_EMAILS = os.environ.get(
-    "SOPN_UPDATE_NOTIFICATION_EMAILS", "developers@democracyclub.org.uk"
-).split(",")
 
 # The maximum number of fields that can be uploaded in a single request.
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000

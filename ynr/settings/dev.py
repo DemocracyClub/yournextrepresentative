@@ -14,6 +14,8 @@ DC_ENVIRONMENT = "local"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
+SOPN_UPDATE_NOTIFICATION_EMAILS = ["developers@democracyclub.org.uk"]
+
 SECRET_KEY = "django-insecure-fake"
 
 # TODO: should we actually just use DB cache in dev too?

@@ -79,6 +79,10 @@ EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
 EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
 DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
 
+SOPN_UPDATE_NOTIFICATION_EMAILS = os.environ[
+    "SOPN_UPDATE_NOTIFICATION_EMAILS"
+].split(",")
+
 
 if DC_ENVIRONMENT == "production":
     # TODO: remove this hack and make an ENABLE_SLACK_NOTIFICATIONS setting

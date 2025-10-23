@@ -41,6 +41,8 @@ MEDIA_ROOT = mkdtemp()
 
 FRONT_PAGE_CTA = "BY_ELECTIONS"
 
+SOPN_UPDATE_NOTIFICATION_EMAILS = ["developers@democracyclub.org.uk"]
+
 
 # override these settings to safe values if they are set from the env
 TWITTER_APP_ONLY_BEARER_TOKEN = None
@@ -58,5 +60,4 @@ EMAIL_HOST_USER = None
 EMAIL_HOST_PASSWORD = None
 SLACK_TOKEN = None
 DEFAULT_FROM_EMAIL = "candidates@example.com"
-SOPN_UPDATE_NOTIFICATION_EMAILS = ["developers@democracyclub.org.uk"]
 ENABLE_SCHEDULED_JOBS = False
