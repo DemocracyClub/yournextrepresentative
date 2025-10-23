@@ -234,6 +234,20 @@ class YnrStack(Stack):
             memory_limit_mib=2048,
         )
 
+        # Add X-Ray daemon sidecar for worker
+        worker_task_definition.add_container(
+            "xray-daemon-worker",
+            image=ecs.ContainerImage.from_registry(
+                "public.ecr.aws/xray/aws-xray-daemon:latest"
+            ),
+            cpu=32,
+            memory_limit_mib=256,
+            logging=ecs.LogDrivers.aws_logs(
+                stream_prefix="YnrXRayWorker",
+                log_retention=logs.RetentionDays.THREE_MONTHS,
+            ),
+        )
+
         worker_task_definition.add_container(
             "worker",
             image=ecs.ContainerImage.from_registry(image_ref),
@@ -286,6 +300,20 @@ class YnrStack(Stack):
                 ),
             ),
             public_load_balancer=True,
+        )
+
+        # Add X-Ray daemon sidecar to web service
+        web_service.task_definition.add_container(
+            "xray-daemon-web",
+            image=ecs.ContainerImage.from_registry(
+                "public.ecr.aws/xray/aws-xray-daemon:latest"
+            ),
+            cpu=32,
+            memory_limit_mib=256,
+            logging=ecs.LogDrivers.aws_logs(
+                stream_prefix="YnrXRayWeb",
+                log_retention=logs.RetentionDays.THREE_MONTHS,
+            ),
         )
 
         # If the X-ALB-Auth is set and valid, forward the request
@@ -361,6 +389,25 @@ class YnrStack(Stack):
             iam.ManagedPolicy.from_aws_managed_policy_name(
                 "AmazonTextractFullAccess"
             )
+        )
+
+        # Add X-Ray permissions for both web and worker services
+        xray_policy_statement = iam.PolicyStatement(
+            actions=[
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+                "xray:GetSamplingStatisticSummaries",
+            ],
+            resources=["*"],
+            effect=iam.Effect.ALLOW,
+        )
+        worker_service.task_definition.task_role.add_to_policy(
+            xray_policy_statement
+        )
+        web_service.task_definition.task_role.add_to_policy(
+            xray_policy_statement
         )
 
         # Create CloudFront and related DNS records
