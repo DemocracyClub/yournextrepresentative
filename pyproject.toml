@@ -43,6 +43,7 @@ addopts =[
     "--ruff",
     "--ds=ynr.settings.testing"
 ]
+
 FAIL_INVALID_TEMPLATE_VARS = 1
 
-env = "RUN_ENV=test"
+env_files = [".env"]

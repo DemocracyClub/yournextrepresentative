@@ -101,14 +101,14 @@ CMD ["ynr.wsgi"]
 # Invoke a lightweight, post-build test that proves the container reaches a
 # baseline level of correctness, whilst also generating .pyc files for faster
 # app startup.
-RUN DJANGO_SECRET_KEY=insecure python manage.py check
+RUN DJANGO_SETTINGS_MODULE=ynr.settings.dev python manage.py check
 
 ###########
 ## Assets #
 ###########
 RUN date \
  && npm run build \
- && DJANGO_SECRET_KEY=insecure python manage.py collectstatic --no-input \
+ && DJANGO_SETTINGS_MODULE=ynr.settings.dev python manage.py collectstatic --no-input \
  && date
 
 ###########################################################################

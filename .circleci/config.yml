@@ -58,15 +58,15 @@ jobs:
       - run:
           name: Pre test checks
           environment:
-            CIRCLECI: true
-            RUN_ENV: test
+            POSTGRES_DBNAME: ynr
+            DJANGO_SETTINGS_MODULE: ynr.settings.dev
           command: |
             . .venv/bin/activate
             pip check
             ruff .
             ruff format . --check
-            DJANGO_SECRET_KEY=fake python manage.py check
-            DJANGO_SECRET_KEY=fake python manage.py makemigrations --check
+            python manage.py check
+            python manage.py makemigrations --check
       - run:
           name: Run shellcheck
           command: |
@@ -105,8 +105,10 @@ jobs:
             net="$(docker network inspect $(docker network ls -q -f "label=task-network") --format '{{.Name}}')"
             container_id=$(docker create \
               --net="$net" \
-              -e PGHOST=dbpsql \
-              -e CIRCLECI=true \
+              -e POSTGRES_HOST=dbpsql \
+              -e POSTGRES_DBNAME=ynr \
+              -e POSTGRES_USERNAME=ynr \
+              -e DJANGO_SETTINGS_MODULE=ynr.settings.dev \
               ynr:test pytest -x --cov-report xml --cov --junitxml=junit.xml --ignore=node_modules)
             docker start -ai $container_id
             mkdir test-results

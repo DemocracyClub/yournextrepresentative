@@ -7,6 +7,7 @@ from bulk_adding.models import RawPeople
 from candidates.models import Ballot, LoggedAction
 from candidates.models.db import ActionType, EditType
 from candidates.views.version_data import get_client_ip
+from django.conf import settings
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import F
@@ -20,7 +21,7 @@ from official_documents.views import get_add_from_document_cta_flash_message
 from parties.models import Party
 from people.models import Person
 
-from ynr.settings import SOPNParsingBackends
+SOPNParsingBackends = settings.SOPN_PARSING_BACKENDS
 
 
 class BulkAddSOPNRedirectView(RedirectView):

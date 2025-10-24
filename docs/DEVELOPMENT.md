@@ -32,10 +32,7 @@ a containerised database as follows:
 
 ### Running the app
 
-1. Add or update any environment variables in `env/frontend.env` as required.
-1. Incorporate the settings from
-   [`ynr/settings/local.py.container.example`](../ynr/settings/local.py.container.example)
-   into your gitignored `ynr/settings/local.py` file.
+1. Add or update any environment variables in `.env` as required.
 1. Start the compose stack:
    `podman compose up -d`
 1. (In a separate terminal) Start tailing the stack's logs:
@@ -84,7 +81,7 @@ general `container.run.bash` script instead).
 
 Run a Django management command:
 
-1. Add or update any environment variables in `env/frontend.env` as required.
+1. Add or update any environment variables in `.env` as required.
 1. Start the compose stack:
    `podman compose up -d`
 1. Use the `container.manage-py.bash` script to invoke the command:

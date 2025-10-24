@@ -1,8 +1,6 @@
 import json
 from typing import Optional
 
-import boto3
-from botocore.config import Config
 from django.conf import settings
 from django.db import IntegrityError
 from official_documents.models import BallotSOPN
@@ -14,11 +12,6 @@ from sopn_parsing.models import (
 from textractor import Textractor
 from textractor.data.constants import TextractAPI, TextractFeatures
 from textractor.entities.lazy_document import LazyDocument
-
-config = Config(retries={"max_attempts": 5})
-textract_client = boto3.client(
-    "textract", region_name=settings.TEXTRACT_S3_BUCKET_REGION, config=config
-)
 
 
 class NotUsingAWSException(ValueError):

@@ -20,7 +20,7 @@ ynr/media/*
 .pytest_cache
 *.css.map
 test-results
-/env/*.env
+.env
 node_modules/
 .vscode/
 /test-env
@@ -29,8 +29,6 @@ node_modules/
 # PyCharm
 .idea/
 
-deploy/.vault_pass.txt
-deploy/.env
 .dev
 
 # CDK
