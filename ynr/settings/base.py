@@ -66,6 +66,7 @@ sentry_sdk.init(
     profiles_sample_rate=0,
 )
 
+
 # aws
 TEXTRACT_S3_BUCKET_NAME = "public-sopns"
 TEXTRACT_S3_BUCKET_REGION = "eu-west-2"
@@ -158,7 +159,7 @@ INSTALLED_APPS = (
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-MIDDLEWARE = (
+MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -172,7 +173,7 @@ MIDDLEWARE = (
     "candidates.middleware.DisableCachingForAuthenticatedUsers",
     "wombles.middleware.CheckProfileDetailsMiddleware",
     "ynr_refactoring.middleware.BasicAuthMiddleware",
-)
+]
 
 AUTHENTICATION_BACKENDS = (
     "sesame.backends.ModelBackend",
