@@ -138,7 +138,8 @@ def clean_database():
 
 def get_filename():
     return FILENAME_FORMAT.format(
-        PREFIX=PREFIX, CURRENT_TIME=datetime.now().isoformat().replace(":", "-")
+        PREFIX=PREFIX,
+        CURRENT_TIME_STR=datetime.now().isoformat().replace(":", "-"),
     )
 
 
