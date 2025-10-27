@@ -1,18 +1,7 @@
-"""
-Default settings for YNR.
-
-Settings in this file should only be changed if making an edit to the project,
-not if just installing the project. For overriding settings per environment
-set up a `local.py` file by following `local.example.py`.
-"""
-
 import os
 import sys
 from os.path import abspath, dirname, join
 from pathlib import Path
-
-import sentry_sdk
-from sentry_sdk.integrations import django
 
 
 def str_bool_to_bool(str_bool):
@@ -37,7 +26,17 @@ BASE_DIR = root("..")
 
 DEBUG = False
 
-ALLOWED_HOSTS = [os.environ.get("FQDN", None)]
+INTERNAL_IPS = [
+    "127.0.0.1",
+    "localhost",
+]
+
+# In an AWS-ECS-behind-ALB context, the ALB's health checks don't yet arrive
+# with a meaningful HTTP host header. We currently rely on the ALB to route
+# only appropriate requests to the webapp, and can therefore nullify Django's
+# protections as they no longer apply in any deployed environment.
+# This also does not matter in local dev
+ALLOWED_HOSTS = ["*"]
 
 SITE_ID = 1
 SITE_NAME = "Democracy Club Candidates"
@@ -52,32 +51,6 @@ SUPPORT_EMAIL = "candidates@democracyclub.org.uk"
 
 # The From: address for all emails except error emails
 DEFAULT_FROM_EMAIL = "candidates@democracyclub.org.uk"
-
-DC_ENVIRONMENT = os.environ.get("DC_ENVIRONMENT", "local")
-
-# Sentry config
-sentry_sdk.init(
-    dsn=os.environ.get("SENTRY_DSN"),
-    integrations=[
-        django.DjangoIntegration(),
-    ],
-    environment=DC_ENVIRONMENT,
-    traces_sample_rate=0,
-    profiles_sample_rate=0,
-)
-
-# aws
-TEXTRACT_S3_BUCKET_NAME = "public-sopns"
-TEXTRACT_S3_BUCKET_REGION = "eu-west-2"
-TEXTRACT_S3_BUCKET_URL = f"https://{TEXTRACT_S3_BUCKET_NAME}.s3.{TEXTRACT_S3_BUCKET_REGION}.amazonaws.com"
-AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", None)
-AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", None)
-AWS_SESSION_TOKEN = os.environ.get("AWS_SESSION_TOKEN", None)
-
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", None)
 
 TEMPLATES = [
     {
@@ -105,7 +78,7 @@ TEMPLATES = [
     }
 ]
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -130,7 +103,6 @@ INSTALLED_APPS = (
     "cached_counts",
     "moderation_queue",
     "auth_helpers",
-    "debug_toolbar",
     "template_timings_panel",
     "official_documents",
     "results",
@@ -154,13 +126,12 @@ INSTALLED_APPS = (
     "data_exports",
     "django_svelte",
     "hcaptcha",
-)
+]
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-MIDDLEWARE = (
+MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -172,7 +143,7 @@ MIDDLEWARE = (
     "candidates.middleware.DisableCachingForAuthenticatedUsers",
     "wombles.middleware.CheckProfileDetailsMiddleware",
     "ynr_refactoring.middleware.BasicAuthMiddleware",
-)
+]
 
 AUTHENTICATION_BACKENDS = (
     "sesame.backends.ModelBackend",
@@ -192,23 +163,6 @@ LOGIN_REDIRECT_URL = "/"
 
 ROOT_URLCONF = "ynr.urls"
 WSGI_APPLICATION = "ynr.wsgi.application"
-
-# Django Debug Toolbar settings:
-DEBUG_TOOLBAR_PATCH_SETTINGS = (False,)
-DEBUG_TOOLBAR_PANELS = [
-    "debug_toolbar.panels.versions.VersionsPanel",
-    "debug_toolbar.panels.timer.TimerPanel",
-    "debug_toolbar.panels.settings.SettingsPanel",
-    "debug_toolbar.panels.headers.HeadersPanel",
-    "debug_toolbar.panels.request.RequestPanel",
-    "debug_toolbar.panels.sql.SQLPanel",
-    "debug_toolbar.panels.staticfiles.StaticFilesPanel",
-    "debug_toolbar.panels.templates.TemplatesPanel",
-    "debug_toolbar.panels.cache.CachePanel",
-    "debug_toolbar.panels.signals.SignalsPanel",
-    "debug_toolbar.panels.redirects.RedirectsPanel",
-]
-INTERNAL_IPS = ["127.0.0.1"]
 
 # Language settings (calculated above):
 LANGUAGES = [("en-gb", "British English")]
@@ -332,12 +286,13 @@ SOURCE_HINTS = """
     Please don't quote third-party candidate sites \u2014 we prefer URLs of
     news stories or official candidate pages."""
 
-# By default, cache successful results from MapIt for a day
+# By default, cache successful results from Every Election for a day
 EE_CACHE_SECONDS = 86400
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DATABASE_NAME", "ynr"),
+        "NAME": os.environ.get("POSTGRES_DBNAME", ""),
         "USER": os.environ.get("POSTGRES_USERNAME", ""),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
         "HOST": os.environ.get("POSTGRES_HOST", ""),
@@ -392,7 +347,6 @@ THUMBNAIL_DEBUG = DEBUG
 
 # Settings for restricting user activity to reduce abuse:
 
-
 # If this is set to false, then no edits of people are allowed.
 EDITS_ALLOWED = True
 
@@ -413,6 +367,7 @@ OPEN_AI_API_KEY = os.environ.get("OPEN_AI_API_KEY", None)
 MASTODON_APP_ONLY_BEARER_TOKEN = os.environ.get(
     "MASTODON_APP_ONLY_BEARER_TOKEN", None
 )
+
 
 # Django Rest Framework settings:
 REST_FRAMEWORK = {
@@ -463,13 +418,6 @@ CANDIDATE_BOT_USERNAME = "CandidateBot"
 RESULTS_BOT_USERNAME = "ResultsBot"
 TWITTER_BOT_USERNAME = "TwitterBot"
 
-TEXTRACT_CONCURRENT_QUOTA = 30
-TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA = 1
-TEXTRACT_BACKOFF_TIME = 10
-
-SOPN_UPDATE_NOTIFICATION_EMAILS = os.environ.get(
-    "SOPN_UPDATE_NOTIFICATION_EMAILS", "hello@democracyclub.org.uk"
-).split(",")
 
 # The maximum number of fields that can be uploaded in a single request.
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
@@ -478,7 +426,9 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
 HCAPTCHA_SITEKEY = os.environ.get("HCAPTCHA_SITEKEY", None)
 HCAPTCHA_SECRET = os.environ.get("HCAPTCHA_SECRET", None)
 
-ENABLE_SCHEDULED_JOBS = False
+ENABLE_SCHEDULED_JOBS = str_bool_to_bool(
+    os.environ.get("ENABLE_SCHEDULED_JOBS", False)
+)
 
 # import application constants
 from .constants.needs_review import *  # noqa
@@ -489,17 +439,5 @@ from .constants.home_page_cta import *  # noqa
 
 from ynr_refactoring.settings import *  # noqa
 
-# .local.py overrides all the common settings.
-try:
-    from .local import *  # noqa
-except ImportError:
-    from django.utils.termcolors import colorize
-
-    print(
-        colorize(
-            "WARNING: no local settings file found. See local.py.example",
-            fg="red",
-        )
-    )
 
 RUNNING_TESTS = False

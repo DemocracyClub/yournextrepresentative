@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 import os
 import sys
-import warnings
 
 import dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 if __name__ == "__main__":
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        dotenv.read_dotenv()
+    dotenv.load_dotenv()
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ynr.settings")
+    if not os.environ.get("DJANGO_SETTINGS_MODULE"):
+        raise ImproperlyConfigured(
+            "You must explicitly set DJANGO_SETTINGS_MODULE"
+        )
 
     from django.core.management import execute_from_command_line
 

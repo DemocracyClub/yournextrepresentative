@@ -11,7 +11,7 @@ and to get closer to the intended future state of the application's
 ### Install and test containerisation prerequisites
 
 1. Clone this repository:
-   `git clone --branch jcm/wip https://github.com/DemocracyClub/yournextrepresentative`
+   `git clone https://github.com/DemocracyClub/yournextrepresentative`
 1. Install the `podman` command: https://podman.io/docs/installation.
    These installation mechanisms have been tested:
    - System package on Ubuntu 24.04 LTS
@@ -39,15 +39,7 @@ and to get closer to the intended future state of the application's
 1. Pull any 3rd-party container images used by the compose stack:
    `podman compose pull`
 1. Set up your development envvars as needed, by placing keys and values in
-   `env/frontend.env`, using `env/frontend.env.example` as a template.
-    In general, the only envar you should need is this:
-   ```
-   DJANGO_SETTINGS_MODULE=ynr.settings
-   ```
-1. Copy `ynr/settings/local.py.container.example` to `ynr/settings/local.py`.
-   If you already have a `ynr/settings/local.py` file, incorporate the example
-   file's settings. **If you don't use most of the example file's settings, you
-   *will* experience problems interacting with the app, later**.
+   `.env`, using `.env.example` as a template.
 1. Test that the compose stack can be stood up:
    ```bash
    podman compose up -d # NB Space between "podman" and "compose"!

@@ -150,6 +150,13 @@ class YnrStack(Stack):
                     "ENABLE_SCHEDULED_JOBS",
                 )
             ),
+            "POSTGRES_DBNAME": ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "POSTGRES_DBNAME",
+                    "POSTGRES_DBNAME",
+                )
+            ),
             "POSTGRES_USERNAME": ecs.Secret.from_ssm_parameter(
                 ssm.StringParameter.from_string_parameter_name(
                     self,
