@@ -14,7 +14,7 @@ set -euxo
 LAMBDA_FUNCTION_NAME="ynr-data-exporter"
 
 # Check for required tools
-REQUIRED_TOOLS="aws dropdb createdb pg_restore wget"
+REQUIRED_TOOLS="aws dropdb createdb pg_restore curl"
 for tool in $REQUIRED_TOOLS; do
   if ! command -v "$tool" >/dev/null 2>&1; then
     echo "Error: $tool is required but not installed." >&2
@@ -58,4 +58,4 @@ echo "Creating DB"
 createdb --host 127.0.0.1 --port 54321 --username ynr ynr
 
 echo "Downloading and restoring DB"
-wget -qO- "$URL" | pg_restore --dbname ynr --host 127.0.0.1 --port 54321 --username ynr --format c --no-owner --no-privileges
+curl --fail --silent --show-error --location "$URL" | pg_restore --dbname ynr --host 127.0.0.1 --port 54321 --username ynr --format c --no-owner --no-privileges
