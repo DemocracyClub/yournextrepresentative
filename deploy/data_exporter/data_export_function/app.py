@@ -132,6 +132,8 @@ def clean_database():
         )
         print("Cleaning sessions")
         cur.execute("""TRUNCATE TABLE django_session;""")
+        print("Cleaning queued tasks")
+        cur.execute("""TRUNCATE TABLE django_q_ormq;""")
 
 
 def get_filename():
