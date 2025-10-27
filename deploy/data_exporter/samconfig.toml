@@ -18,7 +18,7 @@ confirm_changeset = true
 resolve_s3 = true
 s3_prefix = "ynr-data-exporter"
 region = "eu-west-2"
-image_repositories = ["DataExportFunction=929325949831.dkr.ecr.eu-west-2.amazonaws.com/ynrdataexporter736bb2dc/dataexportfunctionb95e9e19repo"]
+image_repositories = ["DataExportFunction=399683337428.dkr.ecr.eu-west-2.amazonaws.com/ynrdataexporter736bb2dc/dataexportfunctionb95e9e19repo"]
 
 [default.package.parameters]
 resolve_s3 = true

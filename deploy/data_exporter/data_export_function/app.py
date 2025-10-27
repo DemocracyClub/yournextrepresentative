@@ -8,7 +8,7 @@ from psycopg import sql
 
 ssm = boto3.client("ssm")
 s3 = boto3.client("s3", region_name="eu-west-1")
-BUCKET_NAME = "dc-ynr-short-term-backups"
+BUCKET_NAME = "ynr-short-term-backups-production"
 PREFIX = "ynr-export"
 FILENAME_FORMAT = "{PREFIX}-{CURRENT_TIME_STR}.dump"
 

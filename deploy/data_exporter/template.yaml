@@ -31,8 +31,8 @@ Resources:
               Action:
                 - s3:*
               Resource:
-                - 'arn:aws:s3:::dc-ynr-short-term-backups'
-                - 'arn:aws:s3:::dc-ynr-short-term-backups/*'
+                - 'arn:aws:s3:::ynr-short-term-backups-production'
+                - 'arn:aws:s3:::ynr-short-term-backups-production/*'
             - Sid: SSM
               Effect: Allow
               Action:
