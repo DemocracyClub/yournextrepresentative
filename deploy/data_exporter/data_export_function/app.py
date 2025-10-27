@@ -18,11 +18,11 @@ def get_parameter(name):
     return response["Parameter"]["Value"]
 
 
-SOURCE_DATABASE = "ynr"
+SOURCE_DATABASE = get_parameter("/POSTGRES_DBNAME")
 TMP_DATABASE_NAME = "ynr-for-dev-export"
-DB_HOST = get_parameter("/ynr/production/POSTGRES_HOST")
-DB_USER = get_parameter("/ynr/production/POSTGRES_USERNAME")
-DB_PASSWORD = get_parameter("/ynr/production/POSTGRES_PASSWORD")
+DB_HOST = get_parameter("/POSTGRES_HOST")
+DB_USER = get_parameter("/POSTGRES_USERNAME")
+DB_PASSWORD = get_parameter("/POSTGRES_PASSWORD")
 DB_PORT = "5432"
 os.environ["PGPASSWORD"] = DB_PASSWORD
 

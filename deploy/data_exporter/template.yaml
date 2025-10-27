@@ -38,7 +38,7 @@ Resources:
               Action:
                 - ssm:*
               Resource:
-                - 'arn:aws:ssm:*:*:parameter/ynr/*'
+                - 'arn:aws:ssm:*:*:parameter/*'
 
 Outputs:
   DataExportFunction:
