@@ -4,10 +4,13 @@ from datetime import datetime, timedelta, timezone
 
 import boto3
 import psycopg
+from botocore.client import Config
 from psycopg import sql
 
 ssm = boto3.client("ssm")
-s3 = boto3.client("s3", region_name="eu-west-1")
+s3 = boto3.client(
+    "s3", region_name="eu-west-2", config=Config(signature_version="s3v4")
+)
 BUCKET_NAME = "ynr-short-term-backups-production"
 PREFIX = "ynr-export"
 FILENAME_FORMAT = "{PREFIX}-{CURRENT_TIME_STR}.dump"
