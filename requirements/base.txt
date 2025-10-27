@@ -55,6 +55,7 @@ jsonpointer==2.3
 libsass==0.22.0
 lxml==4.9.2
 Markdown==3.4.3
+markdown-it-py==3.0.0
 markupsafe==2.0.1
 mock==5.0.1
 moto[s3]==4.2.11
