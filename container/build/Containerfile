@@ -1,14 +1,14 @@
 ###########################################################################
 ## Production image #######################################################
 ###########################################################################
-FROM public.ecr.aws/lts/ubuntu:20.04 AS prod
+FROM public.ecr.aws/lts/ubuntu:24.04 AS prod
 
 #########################
 ## Build-time arguments #
 #########################
 # Increase this arbitary number to force all image layers to be rebuilt.
 # This is designed to invalidate the layer cache inside CI, not locally.
-ARG invalidate_all_cached_layers=202412030000
+ARG invalidate_all_cached_layers=202510240000
 # Base path for the app install build process.
 ARG APP_ROOT=/dc/ynr
 # Path for the app's virtualenv.
