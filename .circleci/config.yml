@@ -45,13 +45,13 @@ jobs:
   static_tests:
     working_directory: ~/repo
     docker:
-      - image: cimg/python:3.8.15-node
+      - image: cimg/python:3.12-node
     steps:
       - checkout
       - run:
           name: Create venv and install Python and Node dependencies
           command: |
-            python -m venv .venv
+            python3 -m venv .venv
             . .venv/bin/activate
             pip install -r requirements/testing.txt
             npm install --save=false .
@@ -143,7 +143,7 @@ jobs:
 
   deploy_cdk_environment:
     docker:
-      - image: cimg/python:3.8.15-node
+      - image: cimg/python:3.12-node
     working_directory: ~/repo/
     parameters:
         dc-environment:
@@ -157,7 +157,7 @@ jobs:
       - run:
           name: Create CDK venv and install Python and Node dependencies
           command: |
-            python -m venv ./cdk/venv
+            python3 -m venv ./cdk/venv
             . ./cdk/venv/bin/activate
             pip install -r requirements/cdk.txt
             npm install --save=false .
@@ -195,7 +195,7 @@ jobs:
 
   push_and_tag:
     docker:
-      - image: cimg/python:3.8.15-node
+      - image: cimg/python:3.12-node
     working_directory: ~/repo/
     parameters:
         dc-environment:
@@ -240,7 +240,7 @@ jobs:
 
   cdk_test:
     docker:
-      - image: cimg/python:3.8.15-node
+      - image: cimg/python:3.12-node
     working_directory: ~/repo/
     parameters:
         dc-environment:
@@ -253,7 +253,7 @@ jobs:
       - run:
           name: Create CDK venv and install Python and Node dependencies
           command: |
-            python -m venv ./cdk/venv
+            python3 -m venv ./cdk/venv
             . ./cdk/venv/bin/activate
             pip install -r requirements/cdk.txt
             npm install --save=false .
