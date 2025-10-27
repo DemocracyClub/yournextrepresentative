@@ -42,8 +42,8 @@ Resources:
 
 Outputs:
   DataExportFunction:
-    Description: Hello World Lambda Function ARN
+    Description: Data Export Lambda Function ARN
     Value: !GetAtt DataExportFunction.Arn
   DataExportFunctionIamRole:
-    Description: Implicit IAM Role created for Hello World function
+    Description: Implicit IAM Role created for Data Export function
     Value: !GetAtt DataExportFunctionRole.Arn
