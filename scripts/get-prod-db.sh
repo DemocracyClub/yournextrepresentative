@@ -3,21 +3,15 @@ set -euxo
 
 # This script invokes an AWS Lambda function to retrieve a URL for downloading
 # a cleaned version of the production database and then restores
-# that data locally. By default the db name is "ynr-prod" but you can change the
-# local name by passing it as the first argument to the script.
+# that data locally.
 #
 # This script requires access to the YNR production AWS account
 #
 # Usage:
-#   ./scripts/get-prod-db.sh [LOCAL_DB_NAME]
-#
-# Arguments:
-#   LOCAL_DB_NAME: Optional. Name of the local database to restore data to.
-#                  Defaults to 'ynr-prod' if not specified.
+#   ./scripts/get-prod-db.sh
 
 # Configurable variables
 LAMBDA_FUNCTION_NAME="ynr-data-exporter"
-LOCAL_DB_NAME="${1:-ynr-prod}"
 
 # Check for required tools
 REQUIRED_TOOLS="aws dropdb createdb pg_restore wget"
@@ -27,10 +21,6 @@ for tool in $REQUIRED_TOOLS; do
     exit 1
   fi
 done
-
-# Check the DB URL and get the cleaned $_SCRIPT_DATABASE_URL
-. ./scripts/check-database-url.sh
-
 
 # Create a temporary file and set up clean up on script exit
 TEMP_FILE=$(mktemp)
@@ -62,10 +52,10 @@ case "$URL" in
         ;;
 esac
 
-echo "Dropping DB $(_SCRIPT_DATABASE_URL)"
-dropdb --if-exists "$_SCRIPT_DATABASE_URL"
-echo "Creating DB $(_SCRIPT_DATABASE_URL)"
-createdb "$_SCRIPT_DATABASE_URL"
+echo "Dropping DB"
+dropdb --if-exists --host 127.0.0.1 --port 54321 --username ynr ynr
+echo "Creating DB"
+createdb --host 127.0.0.1 --port 54321 --username ynr ynr
 
-echo "Downloading and restoring DB $(_SCRIPT_DATABASE_URL)"
-wget -qO- "$URL" | pg_restore -d "$_SCRIPT_DATABASE_URL" -Fc --no-owner --no-privileges
+echo "Downloading and restoring DB"
+wget -qO- "$URL" | pg_restore --dbname ynr --host 127.0.0.1 --port 54321 --username ynr --format c --no-owner --no-privileges
