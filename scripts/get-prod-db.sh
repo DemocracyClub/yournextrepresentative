@@ -3,7 +3,7 @@ set -euxo
 
 # This script invokes an AWS Lambda function to retrieve a URL for downloading
 # a cleaned version of the production database and then restores
-# that data locally.
+# that data locally into the dbpsql container.
 #
 # This script requires access to the YNR production AWS account
 #
