@@ -49,6 +49,9 @@ class HomePageView(ContributorsMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["front_page_cta"] = getattr(settings, "FRONT_PAGE_CTA", None)
+        context["show_data_download"] = getattr(
+            settings, "SHOW_DATA_DOWNLOAD", None
+        )
         context["postcode_form"] = kwargs.get("form") or PostcodeForm()
         context["show_postcode_form"] = True
         context["show_name_form"] = False

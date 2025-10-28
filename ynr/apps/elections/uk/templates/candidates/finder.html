@@ -75,7 +75,6 @@
   </div>
 
   {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}
-
     <div class="finder__forms cta-{{ front_page_cta }}">
       <div class="finder__forms__container">
         {% sopn_import_progress %}
@@ -85,11 +84,13 @@
     </div> 
   {% endif %}
 
-  <div class="finder__forms cta-{{ front_page_cta }}">
-    <div class="finder__forms__container">
-      {% data_download %}
+  {% if show_data_download %}
+    <div class="finder__forms cta-{{ front_page_cta }}">
+      <div class="finder__forms__container">
+        {% data_download %}
+      </div>
     </div>
-  </div>
+  {% endif %}
 
   {% if front_page_cta == "BY_ELECTIONS" %}
     <div class="finder__forms cta-{{ front_page_cta }}">
