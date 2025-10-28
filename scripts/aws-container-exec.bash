@@ -28,5 +28,5 @@ mapfile -t TASK_LIST < <(aws ecs list-tasks --cluster "${CLUSTER}" | jq -r .task
 
 
 # Pick one of the web containers
-remote_exec=$(aws ecs describe-tasks --include TAGS --cluster "${CLUSTER}" --tasks "${TASK_LIST[@]}" | jq --arg CMD "${cmd}" --arg ROLE "${role}" -r '.tasks|map({arn: .containers[].taskArn, role: .overrides.containerOverrides[].name}) | map(select(.role == $ROLE))[0].arn|split("/") | "aws ecs execute-command --cluster " + .[1] + " --command \"" + $CMD + "\" --interactive --task " + .[2]')
+remote_exec=$(aws ecs describe-tasks --include TAGS --cluster "${CLUSTER}" --tasks "${TASK_LIST[@]}" | jq --arg CMD "${cmd}" --arg ROLE "${role}" -r '.tasks|map({arn: .containers[].taskArn, role: .overrides.containerOverrides[].name}) | map(select(.role == $ROLE))[0].arn|split("/") | "aws ecs execute-command --cluster " + .[1] + " --command \"" + $CMD + "\" --interactive --task " + .[2] + " --container ${role}"')
 eval "${remote_exec}"
