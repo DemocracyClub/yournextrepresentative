@@ -116,7 +116,7 @@ sentry_sdk.init(
 
 
 # AWS X-Ray config
-from aws_xray_sdk.core import patch_all, xray_recorder  # noqa
+from aws_xray_sdk.core import patch_all, xray_recorder  # noqa: E402
 
 XRAY_SAMPLING_RULES = {
     "version": 2,
@@ -142,4 +142,4 @@ xray_recorder.configure(
 )
 
 patch_all()
-MIDDLEWARE.insert(0, "aws_xray_sdk.ext.django.middleware.XRayMiddleware")  # noqa
+MIDDLEWARE.insert(0, "aws_xray_sdk.ext.django.middleware.XRayMiddleware")  # noqa: F405
