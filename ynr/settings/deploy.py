@@ -113,3 +113,33 @@ sentry_sdk.init(
     traces_sample_rate=0,
     profiles_sample_rate=0,
 )
+
+
+# AWS X-Ray config
+from aws_xray_sdk.core import patch_all, xray_recorder  # noqa: E402
+
+XRAY_SAMPLING_RULES = {
+    "version": 2,
+    "rules": [
+        {
+            "description": "YNR - Trace all requests at 100% for debugging",
+            "host": "*",
+            "http_method": "*",
+            "url_path": "*",
+            "fixed_target": 1,
+            "rate": 1.0,
+        }
+    ],
+    "default": {"fixed_target": 1, "rate": 1.0},
+}
+
+xray_recorder.configure(
+    service="YNR-Django",
+    sampling=True,  # Use sampling rules
+    sampling_rules=XRAY_SAMPLING_RULES,
+    context_missing="LOG_ERROR",
+    daemon_address=os.environ.get("AWS_XRAY_DAEMON_ADDRESS", "127.0.0.1:2000"),
+)
+
+patch_all()
+MIDDLEWARE.insert(0, "aws_xray_sdk.ext.django.middleware.XRayMiddleware")  # noqa: F405

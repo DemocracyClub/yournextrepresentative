@@ -93,7 +93,10 @@ WORKDIR $APP_CODE
 ENV PORT=80
 # Set the default but overridable command the container executes on startup.
 ENTRYPOINT ["gunicorn"]
-CMD ["ynr.wsgi"]
+# the default log format
+# https://docs.gunicorn.org/en/stable/settings.html#access-log-format
+# with response_time=%(M)s appended
+CMD ["--access-logfile", "-", "--access-logformat", "%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s \"%(f)s\" \"%(a)s\" response_time=%(M)s", "ynr.wsgi"]
 
 ###########
 ## Checks #
