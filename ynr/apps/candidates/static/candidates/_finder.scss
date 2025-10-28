@@ -22,6 +22,11 @@
     display: block;
     margin-top: 1em;
   }
+
+  ul {
+    display: inline-block;
+    text-align: left;
+  }
 }
 
 .finder__description {
