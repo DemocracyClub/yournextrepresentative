@@ -40,6 +40,39 @@
 {% endblock %}
 
 {% block content %}
+  <div class="finder__forms cta-{{ front_page_cta }}">
+    <div class="finder__forms__container" style="top:-1em">
+      {#      <h3>Can you find contact info for your local&nbsp;parties?</h3>#}
+      {#      <p>In order to get the most information on candidates in the May 2019 local#}
+      {#      elections we want to contact the political parties’ local branches. Can you help us find contact info for them all?</p>#}
+      {#      <a href="https://docs.google.com/spreadsheets/d/17x7lxujgkB570VY8eohZj4qQrBbeBmGFHjSVnGWifHk/edit#gid=0" class="button">#}
+      {#        Enter details#}
+      {#      </a>#}
+      {#      <h4>or</h4>#}
+
+      <form id="form-postcode" action="{% url 'person-search' %}" method="get"
+            {% if show_name_form %}style="display: none"{% endif %}>
+        {{ postcode_form.as_p }}
+        <input type="submit" class="button" value="Help add information!"/>
+      </form>
+    </div>
+  </div>
+
+  <div class="finder__forms cta-{{ front_page_cta }}">
+    <div class="finder__forms__container">
+      <h2> A database of every UK election candidate</h2>
+      <p>Democracy Club Candidates offers:</p>
+      <ul>
+        <li>A profile for every candidate to promote themselves to voters. </li>
+        <li>Election results, including the electoral history of each candidate.</li>
+        <li>Free data downloads for researchers and journalists.</li>
+      </ul>
+
+      <p>The site covers all elections except for town, parish, and community councils. The data powers our public-facing voter information website, <a href="https://whocanivotefor.co.uk">Who Can I Vote For?</a>, which is used by millions of UK voters every year.</p>
+      <h3>How to contribute to this site</h3>
+      <p>This database is edited by both unaffiliated volunteers and political candidates. Anyone can help improve it: simply create an account. <a href="{% url 'volunteer-view' %}">Learn more about how to contribute.</a></p>
+    </div>
+  </div>
 
   {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}
 
@@ -58,29 +91,13 @@
     </div>
   </div>
 
-  <div class="finder__forms cta-{{ front_page_cta }}">
-    <div class="finder__forms__container" style="top:-1em">
-      {#      <h3>Can you find contact info for your local&nbsp;parties?</h3>#}
-      {#      <p>In order to get the most information on candidates in the May 2019 local#}
-      {#      elections we want to contact the political parties’ local branches. Can you help us find contact info for them all?</p>#}
-      {#      <a href="https://docs.google.com/spreadsheets/d/17x7lxujgkB570VY8eohZj4qQrBbeBmGFHjSVnGWifHk/edit#gid=0" class="button">#}
-      {#        Enter details#}
-      {#      </a>#}
-      {#      <h4>or</h4>#}
-
-      <form id="form-postcode" action="{% url 'person-search' %}" method="get"
-            {% if show_name_form %}style="display: none"{% endif %}>
-        {{ postcode_form.as_p }}
-        <input type="submit" class="button" value="Help add information!"/>
-      </form>
-    </div>
-    {% if front_page_cta == "BY_ELECTIONS" %}
+  {% if front_page_cta == "BY_ELECTIONS" %}
+    <div class="finder__forms cta-{{ front_page_cta }}">
       <div class="finder__forms__container" style="margin-top:3em">
         {% by_election_ctas %}
       </div>
-    {% endif %}
-
-  </div>
+    </div>
+  {% endif %}
 
   <div class="finder__activity">
     <div class="finder__activity__changes">
