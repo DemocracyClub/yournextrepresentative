@@ -68,7 +68,7 @@ Sentry is used to report errors in production. We have added a url for `sentry-d
 ### Enable Candidate Leaderboard
 
 The candidate leaderboard shows the most active contributors to the site.
-It is a way of encouraging volunteers to add more information about candidates and elections.
+It is a way of encouraging contributors to add more information about candidates and elections.
 
 We take a slice of edits in YNR and assign them to a election leaderboard. 
 This is defined in [`ynr/apps/candidates/views/mixins.py`](ynr/apps/candidates/views/mixins.py#L20).

@@ -1,6 +1,6 @@
 # Contributing
 
-At [DemocracyClub](https://democracyclub.org.uk/) we value contributions to our projects from volunteers and contirbutors. Please read and follow our [Code of Conduct](https://democracyclub.org.uk/code-of-conduct/).
+At [DemocracyClub](https://democracyclub.org.uk/) we value contributions to our projects from volunteers and contributors. Please read and follow our [Code of Conduct](https://democracyclub.org.uk/code-of-conduct/).
 
 If you are interested in helping out, feel free to
 [contact us](https://democracyclub.org.uk/contact/)

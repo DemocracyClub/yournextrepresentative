@@ -8,5 +8,5 @@ class TestVolunteerPage(WebTest):
         self.assertEqual(200, response.status_code)
         self.assertContains(
             response,
-            "Democracy needs you! How to Volunteer: collect candidate information",
+            "Democracy needs you! How to Contribute: collect candidate information",
         )

@@ -655,7 +655,7 @@ class GenderSplitWinners(GenderSplitByDate):
 class NamesAndGenderGuessOnly(BaseReport):
     """
     Filters the membership QS to only include candidates where a gender value
-    was not entered by a volunteer/user, then return the name of each candidate
+    was not entered by a user, then return the name of each candidate
     and the gender that was guessed using the "people_guess_gender" management
     command.
     Originally requested by Fawcett Society.

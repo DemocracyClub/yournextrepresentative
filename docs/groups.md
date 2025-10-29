@@ -31,7 +31,7 @@ At some point in collecting data you may have enough confidence
 in the list of candidates for a post that you want to 'lock' the
 post. (For example, in the UK, we would do this after the
 official nomination lists were published and the candidates for
-a post had been hand-checked by a volunteer.) A user in the
+a post had been hand-checked by a contributor.) A user in the
 'Trusted To Lock' group not only has the option to lock a post,
 but may also continue to add and remove candidates from a post
 even after the post is locked, to let them correct any mistakes
