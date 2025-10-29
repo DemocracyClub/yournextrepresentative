@@ -1,25 +1,21 @@
 from django import template
-from django.conf import settings
 from django.contrib.humanize.templatetags.humanize import ordinal
-from django.db.models import Prefetch
 from django.utils.safestring import mark_safe
 from popolo.models import Membership
-from uk_results.models import CandidateResult
 
 register = template.Library()
 
 
 def get_candidacy(person, election):
     try:
-        if "uk_results" in settings.INSTALLED_APPS:
-            memberships_qs = person.memberships.prefetch_related(
-                Prefetch(
-                    "result",
-                    CandidateResult.objects.select_related("result_set"),
-                )
-            )
-        else:
-            memberships_qs = person.memberships.all()
+        memberships_qs = person.memberships.select_related(
+            "ballot__post",
+            "party",
+            "result",
+        ).prefetch_related(
+            "previous_party_affiliations",
+            "ballot__membership_set",
+        )
         return memberships_qs.get(ballot__election=election)
     except Membership.DoesNotExist:
         return None
