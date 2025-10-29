@@ -1,114 +1,128 @@
 {% extends "base.html" %}
-{% load markdown_filter %}
+
+
+{% block title %} How to Contribute {% endblock %}
+
+
+{% block hero %}
+  <h1>How to Contribute</h1>
+{% endblock %}
+
 {% block content %}
-{% filter markdown%}
 
-# Democracy needs you! How to Contribute: collect candidate information
+<h2>Democracy needs you!</h2>
 
-We need your help collecting candidate information. Read this guide to understand how you can help!
+<p>We need your help collecting candidate information. Read this guide to understand how you can help!</p>
 
-Democracy Club Candidates is an open-source database of all candidates standing in UK elections. Its data powers
-Democracy Club's [Who Can I Vote For?](https://whocanivotefor.co.uk/), and is regularly used by a wide range of
-organisations, including [The Electoral Commission](https://www.electoralcommission.org.uk/), social media
-companies, and national newspapers.
+<p>Democracy Club Candidates is an open-source database of all candidates standing in UK elections.
+Its data powers Democracy Club's <a href="https://whocanivotefor.co.uk/">Who Can I Vote For?</a>, and is regularly used by a wide range of organisations, including <a href="https://www.electoralcommission.org.uk/">The Electoral Commission</a>, social media
+companies, and national newspapers.</p>
 
-## You can help crowdsource candidates
+<h3>You can help crowdsource candidates</h3>
 
-Elections in the UK are run on a local level by individual councils. This means that the state does not collect a
-central list of candidates in a given election. This site aims to fill that gap. Hundreds of brilliant volunteers,
-like you, come together to make this data available.
+<p>Elections in the UK are run on a local level by individual councils. This means that the state does not collect a
+central list of candidates in a given election. This site aims to fill that gap. Hundreds of brilliant contributors,
+like you, come together to make this data available.</p>
 
-First you must [create your account](https://candidates.democracyclub.org.uk/accounts/login/). User accounts are 
+<p>First you must <a href="{% url 'wombles:login' %}">create your account</a>. User accounts are
 necessary for transparency and security of the database - all edits are logged and recorded on each candidate profile. 
-Edits are reviewed by Democracy Club staff, and users will be banned if vandalism is suspected.
+Edits are reviewed by Democracy Club staff, and users will be banned if vandalism is suspected.</p>
 
-Now you need to find a candidate. You can find an existing candidate profile using the search function. Please make
-sure you have checked to see whether a profile already exists before creating a new candidate.
+<p>Now you need to find a candidate. You can find an existing candidate profile using the search function. Please make
+sure you have checked to see whether a profile already exists before creating a new candidate.</p>
 
-When on a candidate page, you can use the View [candidate's] page on WhoCanIVoteFor.co.uk link to see the public-facing
+<p>When on a candidate page, you can use the View [candidate's] page on WhoCanIVoteFor.co.uk link to see the public-facing
 profile. Edits to Democracy Club Candidates can take between a few minutes and a couple of hours to update on
-WhoCanIVoteFor, depending on current site traffic.
+WhoCanIVoteFor, depending on current site traffic.</p>
 
-## Adding candidates to an election
+<h3>Adding candidates to an election</h3>
 
-You can add candidates to forthcoming elections on the candidate's profile, or add an existing or new candidate
+<p>You can add candidates to forthcoming elections on the candidate's profile, or add an existing or new candidate
 directly to the relevant ballot, selected from the ballot column on the
-[list of upcoming elections](https://candidates.democracyclub.org.uk/elections/). Alternatively, you can 'bulk add'
+<a href="{% url 'election_list_view' %}">list of upcoming elections</a>. Alternatively, you can 'bulk add'
 all candidates for a single party by using the “add candidates for a single party” feature, accessed by selecting the
-relevant election from the election column.
+relevant election from the election column.</p>
 
-## Editing candidate profiles
-Each candidate profile contains a list of fields which can be edited. Some points to bear in mind:
+<h3 >Editing candidate profiles</h3>
 
-### Links
-When entering web addresses, please include the entire URL. For example:
-https://democracyclub.org.uk/ not democracyclub.org.uk
-https://www.facebook.com/democracyclub/ not facebook.com/democracyclub (or @democracyclub)
+<p>Each candidate profile contains a list of fields which can be edited. Some points to bear in mind:</p>
 
-### Names
-Names should be written in the style: Firstname Lastname. Where possible try to enter the name exactly as it appears
-on the nomination papers. Alternative names are automatically added when the main name field is changed.
+<h4>Links</h4>
 
-### Political Parties
-At present we only store the registered name of a political party, not alternative descriptors. For example, all
-Conservative candidates are listed as Conservative and Unionist Party.
+<p>When entering web addresses, please include the entire URL. For example:
+<a href="https://democracyclub.org.uk/">https://democracyclub.org.uk/</a> not democracyclub.org.uk
+<a href="https://www.facebook.com/democracyclub/">https://www.facebook.com/democracyclub/</a> not facebook.com/democracyclub (or @democracyclub)</p>
 
-### Statement to voters
-The statement to voters should be taken from a candidate's official webpage or leaflet, and be directly relevant
-to the upcoming election.
+<h4 >Names</h4>
 
-### Favourite biscuit
-Please only edit this field if you are the candidate, or have a
-[cast-iron source](https://www.mumsnet.com/politics/politicians-best-answers-mumsnet-biscuit-question). As a strictly
-non-partisan organisation, Democracy Club does not have a position regarding the status of Jaffa Cakes.
+<p>Names should be written in the style: Firstname Lastname. Where possible try to enter the name exactly as it appears
+on the nomination papers. Alternative names are automatically added when the main name field is changed.</p>
 
-### Candidate Photos
-[Photos must be a clear, recent, colour headshot of the candidate.](https://candidates.democracyclub.org.uk/help/photo-policy)
+<h4>Political Parties</h4>
 
-All photo uploads will be moderated by a Democracy Club staff member or experienced volunteer before they appear on the
-profile. 
+<p>At present we only store the registered name of a political party, not alternative descriptors. For example, all
+Conservative candidates are listed as Conservative and Unionist Party.</p>
 
-## Citing sources
-Please provide a link to a primary source whenever editing a profile. Ideally, this will be a link to a candidate's
-party webpage or specific social media post. Unsourced edits are liable to be removed.
+<h4>Statement to voters</h4>
 
-## SOPNs and ballot locking
-Candidates are officially confirmed as standing only when the Statement of Persons Nominated (SOPN) is published on
+<p>The statement to voters should be taken from a candidate's official webpage or leaflet, and be directly relevant
+to the upcoming election.</p>
+
+<h4>Favourite biscuit</h4>
+
+<p>Please only edit this field if you are the candidate, or have a
+<a href="https://www.mumsnet.com/politics/politicians-best-answers-mumsnet-biscuit-question">cast-iron source</a>.
+As a strictly non-partisan organisation, Democracy Club does not have a position regarding the status of Jaffa Cakes.</p>
+
+<h4>Candidate Photos</h4>
+
+<p>Photos must be a clear, recent, colour headshot of the candidate. <a href="{% url 'help-photo-policy' %}">See our photo policy for more details.</a></p>
+
+<p>All photo uploads will be moderated by a Democracy Club staff member or experienced contributor before they appear on the
+profile. </p>
+
+<h3>Citing sources</h3>
+
+<p>Please provide a link to a primary source whenever editing a profile. Ideally, this will be a link to a candidate's
+party webpage or specific social media post. Unsourced edits are liable to be removed.</p>
+
+<h3>SOPNs and ballot locking</h3>
+
+<p>Candidates are officially confirmed as standing only when the Statement of Persons Nominated (SOPN) is published on
 the relevant council website (this varies depending on the nation and election type, but is between 16 and 23 working
-days before the poll).
+days before the poll).</p>
 
-Democracy Club Candidates archives all SOPNs and makes them accessible from the relevant ballot page. Once a SoPN is
-published, you can add it to a ballot by selecting ‘Upload SOPN' and adding the PDF file from your computer.
+<p>Democracy Club Candidates archives all SOPNs and makes them accessible from the relevant ballot page. Once a SoPN is
+published, you can add it to a ballot by selecting ‘Upload SOPN' and adding the PDF file from your computer.</p>
 
-Once the SOPN is uploaded, please add any remaining candidates and remove those not nominated. Then select ‘suggest
-locking'. This will add the ballot to a queue to be double checked by a member of the Democracy Club team or a experienced volunteer.
+<p>Once the SOPN is uploaded, please add any remaining candidates and remove those not nominated. Then select ‘suggest
+locking'. This will add the ballot to a queue to be double checked by a member of the Democracy Club team or a experienced contributor.</p>
 
-Once this final process is complete, the ballot will be ‘locked' and no new candidates can be added.
+<p>Once this final process is complete, the ballot will be ‘locked' and no new candidates can be added.</p>
 
-### Automation
-Democracy Club Candidates automates certain tasks:
+<h4>Automation</h4>
 
-We have a script to assist with the transcription of SOPNs during major elections. In this case, the volunteer
-task is to review these automated transcriptions.
+<p>Democracy Club Candidates automates certain tasks:</p>
 
-## Data publication and deletion
+<p>We have a script to assist with the transcription of SOPNs during major elections. In this case, the contributor
+task is to review these automated transcriptions.</p>
 
-The following fields are not displayed on WhoCanIVoteFor.co.uk: Title / pre-nominal honorific, post-nominal letters,
-alternative names, and all demographic data.
+<h3>Data publication and deletion</h3>
 
-All changes to profiles are saved in the changelog, which can be viewed at the bottom of each candidate profile
-(logged in users only).
+<p>The following fields are not displayed on WhoCanIVoteFor.co.uk: Title / pre-nominal honorific, post-nominal letters,
+alternative names, and all demographic data.</p>
 
-If you wish Democracy Club to remove any data we hold on your own profile (including in the changelog), please email
+<p>All changes to profiles are saved in the changelog, which can be viewed at the bottom of each candidate profile
+(logged in users only).</p>
+
+<p>If you wish Democracy Club to remove any data we hold on your own profile (including in the changelog), please email
 candidates@democracyclub.org.uk with the details. We retain name, party, and election information as these are
-matters of public record.
+matters of public record.</p>
 
-## Reporting problems and bugs
-
-To report an issue with the site (including duplicate candidate profiles or missing elections), please email
-candidates@democracyclub.org.uk or join our Slack group.
-
-
-{% endfilter %}
+<h3>Reporting problems and bugs</h3>
+{% with email=settings.SUPPORT_EMAIL%}
+    <p>To report an issue with the site (including duplicate candidate profiles or missing elections), please email
+    <a href="mailto:{{ email }}">{{ email }}</a> or <a href="https://slack.democracyclub.org.uk/">join our Slack</a> group.</p>
+{% endwith %}
 
 {% endblock %}
