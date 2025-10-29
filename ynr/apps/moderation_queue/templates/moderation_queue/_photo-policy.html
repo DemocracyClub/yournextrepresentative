@@ -3,12 +3,11 @@
 <h2>Photo policy</h2>
 
 <strong>The photo must be a clear, recent, colour headshot of the candidate.</strong>
-<details>
-  <summary>Read more</summary>
-  <p>
-    No text or party logos may be included in the photo, unless an unavoidable
-    part of the background or a small rosette/badge that doesn’t interfere with
-    the rule above. Any photo containing party text or logos should be replaced
-    by a plain photo whenever one is available.
-  </p>
-</details>
+{% if no_detail%}
+  {% include 'moderation_queue/includes/_photo-policy-text.html' %}
+{% else %}
+  <details>
+    <summary>Read more</summary>
+    {% include 'moderation_queue/includes/_photo-policy-text.html' %}
+  </details>
+{% endif %}
