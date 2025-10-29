@@ -99,29 +99,29 @@
       </div>
     </div>
   {% endif %}
-
-  <div class="finder__activity">
-    <div class="finder__activity__changes">
-      <h2><a href="{% url 'recent-changes' %}">Recent changes</a></h2>
-      <ol>
-        {% for action in recent_actions %}
-            <li>{{ action.friendly_description }}</li>
-            <span class="when">{{ action.created|timesince }} ago</span></li>
-        {% endfor %}
-      </ol>
-      <p class="more"><a href="{% url 'recent-changes' %}">Show more changes…</a></p>
+  {% if user.is_authenticated %}
+    <div class="finder__activity">
+      <div class="finder__activity__changes">
+        <h2><a href="{% url 'recent-changes' %}">Recent changes</a></h2>
+        <ol>
+          {% for action in recent_actions %}
+              <li>{{ action.friendly_description }}</li>
+              <span class="when">{{ action.created|timesince }} ago</span></li>
+          {% endfor %}
+        </ol>
+        <p class="more"><a href="{% url 'recent-changes' %}">Show more changes…</a></p>
+      </div>
+      <div class="finder__activity__leaderboard">
+        <h2><a href="{% url 'leaderboard' %}">Democracy Heroes</a></h2>
+        <h3 style="text-align:center;font-size:0.9rem"><a href="{% url 'leaderboard' %}">This week</a></h3>
+        <ol>
+          {% for row in top_users %}
+            <li><strong>{{ row.username }}</strong> <span
+            class="edits">{{ row.edit_count }} edit{{ row.edit_count|pluralize }}</span></li>
+          {% endfor %}
+        </ol>
+        <p class="more"><a href="{% url 'leaderboard' %}">Show full leaderboard…</a></p>
+      </div>
     </div>
-    <div class="finder__activity__leaderboard">
-      <h2><a href="{% url 'leaderboard' %}">Democracy Heroes</a></h2>
-      <h3 style="text-align:center;font-size:0.9rem"><a href="{% url 'leaderboard' %}">This week</a></h3>
-      <ol>
-        {% for row in top_users %}
-          <li><strong>{{ row.username }}</strong> <span
-          class="edits">{{ row.edit_count }} edit{{ row.edit_count|pluralize }}</span></li>
-        {% endfor %}
-      </ol>
-      <p class="more"><a href="{% url 'leaderboard' %}">Show full leaderboard…</a></p>
-    </div>
-  </div>
-
+  {% endif %}
 {% endblock %}
