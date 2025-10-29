@@ -15,18 +15,26 @@
 {% with email=settings.SUPPORT_EMAIL %}
 
 <div class="help-about">
+  <h3> What this site is </h3>
 
-  <p>Democracy Club Candidates is an open source platform for crowdsourcing information about candidates standing for
-    political office in the UK.</p>
+  <p>
+  Democracy Club Candidates is an open-source database of all candidates standing in UK elections. Its data powers
+  Democracy Club's <a href="https://whocanivotefor.co.uk/">Who Can I Vote For?</a>, and is regularly used by a wide range of
+  organisations, including <a href="https://www.electoralcommission.org.uk/">The Electoral Commission</a>,
+  social media companies, and national newspapers.
+  </p>
 
-  <p>The resulting data is open for anyone to use. This website powers Democracy Club's <a
-  href="https://whocanivotefor.co.uk">WhoCanIVoteFor.co.uk</a>, and the data has been used by The Electoral Commission
-    and many other sources.</p>
+  <p>
+  The core data collected by Democracy Club Candidates includes who is standing, what party they’re standing for,
+  their contact details and social media accounts. The software requires that each change is submitted with a source,
+  so that the collected information can be independently checked.
+  </p>
 
-  <p>The core data collected by Democracy Club Candidates includes who is standing, what party they’re standing for,
-    their contact details and social media accounts. The software requires that each change is submitted with a source,
-    so that the collected information can be independently checked.</p>
-
+  <p>
+  The database includes UK general elections from 2010, other scheduled elections from 2014/2015, and by-elections
+  (including council by-elections) from May 2017. You can see a list of all elections in the database on the
+  <a href="{% url 'reports_home' %}">'Numbers' page</a>.
+  </p>
 
   <p>
   Please email <a href="mailto:{{ email }}">{{ email }}</a>
@@ -35,7 +43,38 @@
   suggest that you <a href="https://slack.democracyclub.org.uk/">join our Slack</a>.
   </p>
 
+  <p>
+  The site supports the following types of elections:
+  </p>
+
+  <ul>
+    <li> District, County, and Unitary councils (including the City of London Corporation and Isles of Scilly Council) </li>
+    <li> Directly elected mayors (Local Authority and Combined Authority) </li>
+    <li> Police and Crime Commissioners </li>
+    <li> London Assembly and Mayor of London </li>
+    <li> Northern Ireland Assembly </li>
+    <li> Scottish Parliament </li>
+    <li> Senedd Cymru/Welsh Parliament </li>
+    <li> UK Parliament </li>
+  </ul>
+
+
+<h3> What this site is not </h3>
+
+<p>
+This site is a database of candidates only, and should not be regarded as an accurate list of current elected
+representatives. If an elected official leaves office or changes political party, this will not be recorded unless
+they subsequently stand for election under the new label. This also applies to the weblinks, statements, and other
+information attached to candidate profiles.
+</p>
+
+
+
   <h3>Making contributions</h3>
+  <p>
+  Anyone can sign up for an account and contribute to the database. Learn more about this on our <a href="{% url 'volunteer-view' %}">Contributing page</a>.
+  </p>
+
   <p>By signing up and contributing to this site, you agree to give copyright of the
   edit to Democracy Club. This doesn't apply to uploaded photos, but does apply to all other
   contributions.</p>
