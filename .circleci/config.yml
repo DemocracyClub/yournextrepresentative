@@ -5,6 +5,11 @@ orbs:
   coveralls: coveralls/coveralls@2.2.5
 version: 2.1
 
+commands:
+  install_uv:
+    steps:
+      - run: pip install --upgrade uv"==0.8.*"
+
 jobs:
   post_deploy_checks:
     docker:
@@ -48,12 +53,13 @@ jobs:
       - image: cimg/python:3.12-node
     steps:
       - checkout
+      - install_uv
       - run:
           name: Create venv and install Python and Node dependencies
           command: |
-            python3 -m venv .venv
+            uv venv --no-python-downloads --verbose
             . .venv/bin/activate
-            pip install -r requirements/testing.txt
+            uv pip install -r requirements/testing.txt
             npm install --save=false .
       - run:
           name: Pre test checks
@@ -154,12 +160,13 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup
+      - install_uv
       - run:
           name: Create CDK venv and install Python and Node dependencies
           command: |
-            python3 -m venv ./cdk/venv
+            uv venv --no-python-downloads --verbose
             . ./cdk/venv/bin/activate
-            pip install -r requirements/cdk.txt
+            uv pip install -r requirements/cdk.txt
             npm install --save=false .
       - run:
           name: Bootstrap the CDK environment
@@ -250,22 +257,23 @@ jobs:
       DC_ENVIRONMENT: "<<parameters.dc-environment>>"
     steps:
       - checkout
+      - install_uv
       - run:
           name: Create CDK venv and install Python and Node dependencies
           command: |
-            python3 -m venv ./cdk/venv
-            . ./cdk/venv/bin/activate
-            pip install -r requirements/cdk.txt
+            uv venv --no-python-downloads --verbose
+            . .venv/bin/activate
+            uv pip install -r requirements/cdk.txt
             npm install --save=false .
       - run:
           name: Check that CDK stacks synthesise
           command: |
-            . ./cdk/venv/bin/activate
+            . .venv/bin/activate
             npx cdk synth
       - run:
           name: Run CDK tests
           command: |
-            . ./cdk/venv/bin/activate
+            . .venv/bin/activate
             pytest ./cdk
 
 
