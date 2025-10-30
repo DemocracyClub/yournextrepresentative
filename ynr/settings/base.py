@@ -342,7 +342,7 @@ CACHES = {
 }
 
 # sorl-thumbnail settings:
-THUMBNAIL_CACHE = "thumbnails"
+THUMBNAIL_CACHE = "default"
 THUMBNAIL_DEBUG = DEBUG
 
 # Settings for restricting user activity to reduce abuse:
