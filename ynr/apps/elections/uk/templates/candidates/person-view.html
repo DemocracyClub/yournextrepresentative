@@ -71,6 +71,7 @@
 {% endblock %}
 
 {% block content %}
+{% url 'person-update' person_id=person.id as person_edit_url %}
 
 {% if election_to_show %}
   {% if person|election_decision_known:election_to_show %}
@@ -85,17 +86,17 @@
 {% endif %}
 
 <div class="person__details">
-
-    {% if not has_current_elections %}
-    <div class="missing_field">
-        {% url 'person-update' person_id=person.id as person_edit_url %}
-        <h4 class="panel">
-          These are the last details we have for this candidate.
-          They may not be current. Please <a href="{{ person_edit_url }} ">edit the details</a>
-          if you have new information.
-        </h4>
-    </div>
-    {% endif %}
+    <p class="panel">
+      This is {{ person.name }}’s entry in Democracy Club’s candidate database.
+      {% if not has_current_elections %}
+            These are the last details we have for {{ person.name }}.
+            They may not be current. Please <a href="{{ person_edit_url }} ">edit the details</a>
+            if you have new information.
+      {% else %}
+          It can be <a href="{{ person_edit_url }} "> edited </a> to include {{ person.name }}’s
+          social media links, election statement, photograph, and other details.
+      {% endif %}
+    </p>
   <h2>Personal details:</h2>
 
   <dl>
