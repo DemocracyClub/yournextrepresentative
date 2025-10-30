@@ -838,7 +838,7 @@ class Person(TimeStampedModel, models.Model):
         """
         if self.person_image:
             try:
-                return get_thumbnail(self.person_image.file, "x64").url
+                return get_thumbnail(self.person_image, "x64").url
             except FileNotFoundError:
                 pass
 
