@@ -40,6 +40,11 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
+        "aws_xray_sdk": {
+            "handlers": ["console"],
+            "level": "CRITICAL",
+            "propagate": False,
+        },
     },
 }
 
