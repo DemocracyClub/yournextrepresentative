@@ -12,6 +12,7 @@ from aws_cdk import aws_iam as iam
 from aws_cdk import aws_logs as logs
 from aws_cdk import aws_route53 as route_53
 from aws_cdk import aws_route53_targets as route_53_target
+from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_ssm as ssm
 from constructs import Construct
 
@@ -51,7 +52,7 @@ class YnrStack(Stack):
         # Secrets aren't necessarily "secret", but are created as
         # environment variables that are looked up at ECS task
         # instantiation.
-        common_secrets = {
+        self.common_secrets = {
             "DJANGO_SETTINGS_MODULE": ecs.Secret.from_ssm_parameter(
                 ssm.StringParameter.from_string_parameter_name(
                     self,
@@ -209,7 +210,7 @@ class YnrStack(Stack):
             ),
         }
         if self.dc_environment == "production":
-            common_secrets["SLACK_TOKEN"] = ecs.Secret.from_ssm_parameter(
+            self.common_secrets["SLACK_TOKEN"] = ecs.Secret.from_ssm_parameter(
                 ssm.StringParameter.from_string_parameter_name(
                     self,
                     "SLACK_TOKEN",
@@ -251,7 +252,7 @@ class YnrStack(Stack):
         worker_task_definition.add_container(
             "worker",
             image=ecs.ContainerImage.from_registry(image_ref),
-            secrets=common_secrets,
+            secrets=self.common_secrets,
             entry_point=["python", "manage.py", "qcluster"],
             logging=ecs.LogDrivers.aws_logs(
                 stream_prefix="YnrService",
@@ -293,7 +294,7 @@ class YnrStack(Stack):
             ),
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
                 image=ecs.ContainerImage.from_registry(image_ref),
-                secrets=common_secrets,
+                secrets=self.common_secrets,
                 log_driver=ecs.LogDrivers.aws_logs(
                     stream_prefix="YnrService",
                     log_retention=logs.RetentionDays.THREE_MONTHS,
@@ -453,6 +454,20 @@ class YnrStack(Stack):
             },
         )
 
+        S3_MEDIA_BUCKET = ssm.StringParameter.from_string_parameter_name(
+            self,
+            "S3_MEDIA_BUCKET_TEST",
+            "S3_MEDIA_BUCKET",
+        )
+
+        s3_media_origin = origins.S3BucketOrigin(
+            bucket=s3.Bucket.from_bucket_name(
+                self,
+                "ynr-media-bucket",
+                bucket_name=S3_MEDIA_BUCKET.string_value,
+            ),
+        )
+
         cloudfront_dist = cloudfront.Distribution(
             self,
             "YNRCloudFront",
@@ -547,6 +562,14 @@ class YnrStack(Stack):
         cloudfront_dist.add_behavior(
             "/static/*",
             app_origin,
+            viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+            cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
+            compress=True,
+        )
+        cloudfront_dist.add_behavior(
+            "/media/*",
+            s3_media_origin,
             viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
             allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
             cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
