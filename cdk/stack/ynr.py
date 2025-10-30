@@ -454,9 +454,17 @@ class YnrStack(Stack):
             },
         )
 
+        S3_MEDIA_BUCKET = ssm.StringParameter.from_string_parameter_name(
+            self,
+            "S3_MEDIA_BUCKET_TEST",
+            "S3_MEDIA_BUCKET",
+        )
+
         s3_media_origin = origins.S3BucketOrigin(
             bucket=s3.Bucket.from_bucket_name(
-                self.common_secrets["S3_MEDIA_BUCKET"]
+                self,
+                "ynr-media-bucket",
+                bucket_name=S3_MEDIA_BUCKET.string_value,
             ),
         )
 
