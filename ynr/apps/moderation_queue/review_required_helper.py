@@ -288,7 +288,7 @@ class OpenAIModerationReview(BaseReviewRequiredDecider):
         try:
             client = openai.OpenAI(api_key=api_key)
             response = client.moderations.create(
-                input=statement, model="text-moderation-latest"
+                input=statement, model="omni-moderation-latest"
             )
         except openai.APIStatusError:
             sentry_sdk.capture_exception()
