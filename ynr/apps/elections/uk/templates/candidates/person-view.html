@@ -225,6 +225,7 @@
     {% if user_can_edit and person_edits_allowed %}
       <p>Our database is built by people like you.</p>
       <p>Please add extra details about this candidate – it only takes a moment.</p>
+      <p> <a href="{% url 'volunteer-view'%}">Learn more about editing candidates.</a> </p>
       {% if user.is_authenticated %}
         <a href="{% url 'person-update' person_id=person.id %}" class="button">Edit candidate</a>
         {% if person.queued_image %}
