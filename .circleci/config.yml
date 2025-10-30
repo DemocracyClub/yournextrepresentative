@@ -165,24 +165,24 @@ jobs:
           name: Create CDK venv and install Python and Node dependencies
           command: |
             uv venv --no-python-downloads --verbose
-            . ./cdk/venv/bin/activate
+            . .venv/bin/activate
             uv pip install -r requirements/cdk.txt
             npm install --save=false .
       - run:
           name: Bootstrap the CDK environment
           command: |
-            . ./cdk/venv/bin/activate
+            . .venv/bin/activate
             npx cdk bootstrap
       - run:
           name: Show would-be changes in the stack
           command: |
-            . ./cdk/venv/bin/activate
+            . .venv/bin/activate
             npx cdk diff
 
       - run:
           name: Deploy CDK stack infra
           command: |
-            . ./cdk/venv/bin/activate
+            . .venv/bin/activate
             npx cdk deploy --verbose --require-approval never --progress events --outputs-file ynr-<<parameters.dc-environment>>-stack-out.json
       # Because we use stable image tags we need to force a redeploy of the
       # service when the container is updated
