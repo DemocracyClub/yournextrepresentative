@@ -85,15 +85,6 @@
 {% endif %}
 
 <div class="person__details">
-    {% if not person.get_email %}
-    <div class="missing_field">
-        {% url 'person-update' person_id=person.id as url %}
-        <h4>
-          We don’t have an email address for {{ person.name }},
-          <a href="{{ url }}">help out by adding one</a>!
-        </h4>
-    </div>
-    {% endif %}
 
     {% if not has_current_elections %}
     <div class="missing_field">
