@@ -20,10 +20,12 @@ from elections.filters import (
     region_choices,
 )
 from elections.tests.data_timeline_helper import DataTimelineHTMLAssertions
+from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from parties.tests.factories import PartyFactory
-from people.models import Person
+from people.models import Person, PersonImage
 from people.tests.factories import PersonFactory
 from popolo.models import Membership
+from sorl.thumbnail import get_thumbnail
 from uk_results.models import CandidateResult, ResultSet
 from utils.dict_io import BufferDictReader
 from utils.testing_utils import FuzzyInt
@@ -214,6 +216,25 @@ class TestBallotView(
         self.assertContains(
             response, self.membership.previous_party_affiliations.all()[0].name
         )
+
+    def test_person_photo_shown(self):
+        self.create_memberships(self.ballot, self.parties)
+        person = self.ballot.membership_set.first().person
+        im = PersonImage.objects.create_from_file(
+            filename=EXAMPLE_IMAGE_FILENAME,
+            new_filename="images/imported.jpg",
+            defaults={
+                "person": person,
+                "md5sum": "md5sum",
+                "copyright": "example-license",
+                "uploading_user": self.user,
+                "user_notes": "Here's an image...",
+                "source": "Found on the candidate's Flickr feed",
+            },
+        )
+        expected_url = get_thumbnail(im.image, "x64").url
+        response = self.app.get(self.ballot.get_absolute_url())
+        response.mustcontain(expected_url)
 
     def test_any_constituency_csv(self):
         self.create_memberships(self.ballot, self.parties)
