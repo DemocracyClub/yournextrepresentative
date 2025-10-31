@@ -48,7 +48,7 @@ html5lib==1.1
 idna==3.4
 ipdb==0.13.13
 ipython==8.12.3
-jsonpatch==1.32
+jsonpatch==1.33
 jsonpointer==2.3
 libsass==0.22.0
 lxml==6.0.2
