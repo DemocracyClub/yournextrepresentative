@@ -14,13 +14,36 @@ set -euxo
 LAMBDA_FUNCTION_NAME="ynr-data-exporter"
 
 # Check for required tools
-REQUIRED_TOOLS="aws dropdb createdb pg_restore curl"
+REQUIRED_TOOLS="aws dropdb createdb pg_restore curl podman"
 for tool in $REQUIRED_TOOLS; do
   if ! command -v "$tool" >/dev/null 2>&1; then
     echo "Error: $tool is required but not installed." >&2
     exit 1
   fi
 done
+
+# Check the applicable containers are running/stopped
+dbpsql_lines=$(podman ps --filter "name=dbpsql" | wc -l)
+frontend_lines=$(podman ps --filter "name=frontend" | wc -l)
+worker_lines=$(podman ps --filter "name=worker" | wc -l)
+
+if [ "$dbpsql_lines" -lt "2" ]; then
+  echo "Error: DB container is not running. The dbpsql container must be running so we have a database to restore into." >&2
+  echo "Hint: podman-compose up -d dbpsql" >&2
+  exit 1
+fi
+
+if [ "$frontend_lines" -gt "1" ]; then
+  echo "Error: Frontend container is running. Shut down the web and worker containers to ensure the DB is not in use when we try to drop it." >&2
+  echo "Hint: podman-compose down && podman-compose up -d dbpsql" >&2
+  exit 1
+fi
+
+if [ "$worker_lines" -gt "1" ]; then
+  echo "Error: Frontend container is running. Shut down the web and worker containers to ensure the DB is not in use when we try to drop it." >&2
+  echo "Hint: podman-compose down && podman-compose up -d dbpsql" >&2
+  exit 1
+fi
 
 # Create a temporary file and set up clean up on script exit
 TEMP_FILE=$(mktemp)
