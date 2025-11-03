@@ -84,9 +84,16 @@ dependencies = [
 ]
 
 [dependency-groups]
-cdk = []
+cdk = [
+    "aws-cdk-lib==2.178.0",
+    "constructs==10.4.2",
+    "pytest==7.2.2",
+]
 production = []
-dev = []
+dev = [
+    "responses==0.25.0",
+    "watchdog==4.0.2",
+]
 
 [tool.uv]
 package = false
