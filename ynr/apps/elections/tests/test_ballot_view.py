@@ -120,7 +120,7 @@ class TestBallotView(
         )
         self.assertContains(
             response,
-            '<a href="/upload_document/{}/" class="button">Upload SOPN</a>'.format(
+            '<a href="/upload_document/{}/" class="button">Upload Statement of Persons Nominated (SOPN)</a>'.format(
                 self.ballot.ballot_paper_id
             ),
         )

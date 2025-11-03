@@ -64,8 +64,8 @@
     {% endif %}
 
     {% if ballot.candidates_locked and candidates.exists %}
-      <p>These {{ ballot.num_candidates }} candidates have been confirmed by the official "nomination papers"
-          from the council. </p>
+      <p>These {{ ballot.num_candidates }} candidates have been confirmed by the official Statement of Persons Nominated
+          from the council. The ballot is ‘locked’, which means that no new candidates may be added.</p>
     {% endif %}
 
     {% include "elections/includes/_ballot_sopn_links.html" %}
@@ -176,6 +176,7 @@
         <p>
           <strong>Oh no!</strong>
           We don’t know of any candidates in {{ ballot.post.label }} for the {{ ballot.election.name }} yet.
+          We expect the official list of candidates to be published on or after {{ ballot.expected_sopn_date }}.
         </p>
       </div>
     {% endif %}
