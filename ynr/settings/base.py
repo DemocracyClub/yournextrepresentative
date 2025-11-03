@@ -103,7 +103,6 @@ INSTALLED_APPS = [
     "cached_counts",
     "moderation_queue",
     "auth_helpers",
-    "template_timings_panel",
     "official_documents",
     "results",
     "corsheaders",
