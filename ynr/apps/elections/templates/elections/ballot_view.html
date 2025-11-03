@@ -76,6 +76,9 @@
           <tr>
             <th>Name</th>
             <th>Party</th>
+            {% if ballot.election.party_lists_in_use %}
+            <th>List Position</th>
+            {% endif %}
             {% if ballot.is_welsh_run %}
             <th>Previous Party Affiliations</th>
             {% endif %}
@@ -107,6 +110,12 @@
               <br>({{ candidate.party_description_text }})
               {% endif %}
             </td>
+
+            {% if ballot.election.party_lists_in_use %}
+              <td>
+                {{ candidate.party_list_position }}
+              </td>
+            {% endif %}
 
             {% if ballot.is_welsh_run %}
               <td>
