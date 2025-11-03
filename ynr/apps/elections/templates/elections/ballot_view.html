@@ -41,6 +41,11 @@
 {% block content %}
 <div class="row">
   <div class="columns large-9">
+    <div class="panel">
+        <h4>
+          This ballot is part of the <a href="{% url 'election_view' ballot.election.slug %}">{{ ballot.election.name }}</a>
+        </h4>
+    </div>
     {% if ballot.cancelled %}
     <div class="panel">
       ❌ The poll for this election was cancelled
