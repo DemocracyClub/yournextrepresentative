@@ -19,6 +19,7 @@
 !/package.json
 !/package-lock.json
 !/pyproject.toml
+!/uv.lock
 !/.coveragerc
 
 # Paths overriding earlier re-inclusions.

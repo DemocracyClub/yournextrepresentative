@@ -1,3 +1,101 @@
+[project]
+name = "yournextrepresentative"
+version = "0.0.0"
+description = "A website for crowd-sourcing structured election candidate data"
+readme = "README.md"
+requires-python = "==3.12.*"
+dependencies = [
+    "aws-xray-sdk==2.14.0",
+    "amazon-textract-textractor[pdf]==1.9.2",
+    "beautifulsoup4==4.12.0",
+    "blessed==1.20.0", # needed by django-q2
+    "croniter==6.0.0", # needed by django-q2
+    "nh3==0.2.21",
+    "boto3==1.34.105",
+    "django-braces==1.15.0", # TODO: bin and replace with django.contrib.auth.mixins.LoginRequiredMixin
+    "django-cors-headers==3.14.0",
+    "django-date-extensions==3.1.2",
+    "django-debug-toolbar-template-timings==0.9",
+    "django-debug-toolbar==4.2.0",
+    "python-dotenv==1.0.1",
+    "django-extensions==3.2.1",
+    "django-filter==23.1",
+    "django-hCaptcha==0.2.0",
+    "django-model-utils==4.3.1",
+    "django-pipeline==4.1.0", # TODO: remove when we migrate to dc_django_utils
+    "django-q2==1.7.6",
+    "django-q-registry==0.4.0",
+    "django-sesame==3.2.2",
+    "django-storages==1.13.2",
+    "django-svelte==0.2.1",
+    "django-webtest==1.9.10",
+    "Django==4.2.16",
+    "djangorestframework-jsonp==1.0.2",
+    "djangorestframework-csv==2.1.1",
+    "djangorestframework==3.15.2",
+    "drf-yasg==1.21.11",
+    "uk-election-timetables==4.2.3",
+    "uk-election-ids==0.9.1",
+    "factory-boy==3.2.1",
+    "Faker==19.2.0",
+    "freezegun==1.2.2",
+    "gender-detector==0.1.0",
+    "gunicorn==23.0.0",
+    "ipdb==0.13.13",
+    "ipython==8.12.3",
+    "jsonpatch==1.32",
+    "jsonpointer==2.3",
+    "libsass==0.22.0", # TODO: remove when we migrate to dc_django_utils
+    "lxml==6.0.2",
+    "Markdown==3.4.3",
+    "mock==5.0.1", # TODO: bin and replace with unittest.mock
+    "moto[s3]==4.2.11",
+    "nameparser==1.1.2",
+    "ndg-httpsclient==0.5.1",
+    "openai==1.30.3", # TODO: pin httpx==0.27.0 in lockfile
+    "Pillow==10.3.0",
+    "psycopg==3.1.12",
+    "pytest==7.2.2",
+    "pytest-dotenv==0.5.2",
+    "pytest-cov==4.0.0",
+    "pytest-django==4.5.2",
+    "pytest-freezegun==0.4.2",
+    "python-dateutil==2.8.2",
+    "pytest-subtests==0.13.1",
+    "pytest-ruff==0.2.1",
+    "python-magic==0.4.27",
+    "python-slugify==8.0.1",
+    "requests==2.31.0",
+    "ruff==0.2.2",
+    "sentry-sdk[django]==2.18.0",
+    "sorl-thumbnail==12.11.0",
+    "WebTest==3.0.0",
+    "whitenoise==6.5.0",
+    "sorl-thumbnail-serializer-field",
+    "slacker2",
+
+    # SOPN parsing
+    "pdfminer.six==20201018",
+    "camelot-py[cv]==0.8.2",
+    "pypandoc_binary==1.14",
+    "PyPDF2==2.12.1",
+    "amazon-textract-response-parser==1.0.3",
+    "amazon-textract-helper==0.0.35",
+]
+
+[dependency-groups]
+cdk = []
+production = []
+dev = []
+
+[tool.uv]
+package = false
+required-version = "==0.8.*"
+
+[tool.uv.sources]
+sorl-thumbnail-serializer-field = { git = "https://github.com/dessibelle/sorl-thumbnail-serializer-field.git", tag = "0.2" }
+slacker2 = { git = "https://github.com/symroe/slacker.git", rev = "447cc8ca" }
+
 [tool.ruff]
 line-length = 80
 lint.ignore = ["E501"]
