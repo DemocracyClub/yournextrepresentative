@@ -47,32 +47,25 @@
         </h4>
     </div>
     {% if ballot.cancelled %}
-    <div class="panel">
       ❌ The poll for this election was cancelled
       {% if ballot.replaced_by %}
       and <a href="{{ ballot.replaced_by.get_absolute_url }}">replaced by {{ ballot.replaced_by.ballot_paper_id }}</a>
       {% endif %}
-    </div>
     {% endif %}
+
     {% if ballot.replaces %}
-      <div class="panel">
-        🔄 This ballot replaces a <a href="{{ ballot.replaces.get_absolute_url }}">previously cancelled ballot</a>
-      </div>
+      🔄 This ballot replaces a <a href="{{ ballot.replaces.get_absolute_url }}">previously cancelled ballot</a>
     {% endif %}
 
     {% if not ballot.candidates_locked and candidates.exists %}
-    <div class="panel">
-        <p>These candidates will not be confirmed until the council publishes the official candidate list on {{ballot.expected_sopn_date}}. 
-        Once nomination papers are published, we will manually verify each candidate.
-        </p> 
-    </div>
+      <p>These candidates will not be confirmed until the council publishes the official candidate list on {{ballot.expected_sopn_date}}.
+      Once nomination papers are published, we will manually verify each candidate.
+      </p>
     {% endif %}
 
     {% if ballot.candidates_locked and candidates.exists %}
-    <div class="panel">
-        <p>These {{ ballot.num_candidates }} candidates have been confirmed by the official "nomination papers"
-            from the council. </p>
-    </div>
+      <p>These {{ ballot.num_candidates }} candidates have been confirmed by the official "nomination papers"
+          from the council. </p>
     {% endif %}
 
     {% include "elections/includes/_ballot_sopn_links.html" %}
