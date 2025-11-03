@@ -82,7 +82,7 @@
             {% if ballot.has_results %}
             <th>Results</th>
             {% endif %}
-            {% if ballot.has_results %}
+            {% if ballot.has_results and not ballot.election.party_lists_in_use %}
             <th>Rank</th>
             {% endif %}
             {% if user.is_authenticated %}
@@ -125,7 +125,7 @@
             </td>
             {% endif %}
 
-            {% if ballot.has_results %}
+            {% if ballot.has_results and not ballot.election.party_lists_in_use %}
             <td>
               {{ candidate.result.rank }}
             </td>
