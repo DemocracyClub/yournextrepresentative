@@ -1,16 +1,13 @@
-import json
 from typing import Tuple, Type
 
 from candidates.models import Ballot
 from data_exports.models import MaterializedMemberships
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, F
-from django.http import Http404, HttpResponse
-from django.views.generic import DetailView, TemplateView
+from django.http import Http404
+from django.views.generic import DetailView, ListView, TemplateView
 from elections.mixins import ElectionMixin
-from elections.models import Election
 from parties.models import Party
-from popolo.models import Membership
 from ynr_refactoring.settings import PersonIdentifierFields
 
 from .filters import CompletenessFilter
@@ -36,51 +33,18 @@ from .report_helpers import (
 )
 
 
-def get_counts(for_json=True):
-    election_id_to_candidates = {}
-    qs = (
-        Membership.objects.all()
-        .values("ballot__election")
-        .annotate(count=Count("ballot__election"))
-        .order_by()
-    )
-
-    for d in qs:
-        election_id_to_candidates[d["ballot__election"]] = d["count"]
-
-    grouped_elections = Election.group_and_order_elections(for_json=for_json)
-    for era_data in grouped_elections:
-        for date, elections in era_data["dates"].items():
-            for role_data in elections:
-                for election_data in role_data["elections"]:
-                    e = election_data["election"]
-                    total = election_id_to_candidates.get(e.id, 0)
-                    election_counts = {
-                        "id": e.slug,
-                        "html_id": e.slug.replace(".", "-"),
-                        "name": e.name,
-                        "total": total,
-                    }
-                    election_data.update(election_counts)
-                    del election_data["election"]
-    return grouped_elections
-
-
-class ReportsHomeView(TemplateView):
+class ReportsHomeView(ListView):
     template_name = "reports.html"
+    paginate_by = 20
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["all_elections"] = get_counts()
-        return context
-
-    def get(self, *args, **kwargs):
-        if self.request.GET.get("format") == "json":
-            return HttpResponse(
-                json.dumps(get_counts(for_json=True)),
-                content_type="application/json",
+    def get_queryset(self, **kwargs):
+        return (
+            MaterializedMemberships.objects.all()
+            .values(
+                "election_date", "election_name", "ballot_paper__election__slug"
             )
-        return super().get(*args, **kwargs)
+            .annotate(candidates=Count("person_id"))
+        )
 
 
 class PartyCountsView(ElectionMixin, TemplateView):
