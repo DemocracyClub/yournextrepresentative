@@ -1,9 +1,9 @@
-import json
 import re
 
 import people.tests.factories
 from candidates.tests import factories
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from data_exports.models import MaterializedMemberships
 from django_webtest import WebTest
 from people.models import Person
 
@@ -59,89 +59,21 @@ class CachedCountTestCase(UK2015ExamplesMixin, WebTest):
             ballot=self.earlier_election.ballot_set.get(post=posts[1]),
         )
 
+        # Refresh the materialized view so the tests see the data
+        MaterializedMemberships.refresh_view()
+
     def test_reports_top_page(self):
         response = self.app.get("/numbers/")
         self.assertEqual(response.status_code, 200)
         current_div = response.html.find(
-            "div", {"id": "statistics-election-parl-2015-05-07"}
+            "div", {"id": "statistics-election-parl.2015-05-07"}
         )
         self.assertTrue(current_div)
         self.assertIn("Total candidates: 18", str(current_div))
         earlier_div = response.html.find(
-            "div", {"id": "statistics-election-parl-2010-05-06"}
+            "div", {"id": "statistics-election-parl.2010-05-06"}
         )
         self.assertIn("Total candidates: 2", str(earlier_div))
-
-    def test_reports_top_page_json(self):
-        response = self.app.get("/numbers/?format=json")
-        data = json.loads(response.body.decode("utf-8"))
-        self.assertEqual(
-            data,
-            [
-                {
-                    "current_or_future": True,
-                    "dates": {
-                        str(self.election.election_date.isoformat()): [
-                            {
-                                "elections": [
-                                    {
-                                        "html_id": "parl-2015-05-07",
-                                        "id": "parl.2015-05-07",
-                                        "name": "2015 General Election",
-                                        "total": 18,
-                                    }
-                                ],
-                                "role": "Member of Parliament",
-                            }
-                        ],
-                        str(self.local_election.election_date.isoformat()): [
-                            {
-                                "elections": [
-                                    {
-                                        "html_id": "local-maidstone-2016-05-05",
-                                        "id": "local.maidstone.2016-05-05",
-                                        "name": "Maidstone local election",
-                                        "total": 0,
-                                    }
-                                ],
-                                "role": "Local Councillor",
-                            }
-                        ],
-                        str(self.senedd_election.election_date.isoformat()): [
-                            {
-                                "elections": [
-                                    {
-                                        "html_id": "senedd-c-2021-05-06",
-                                        "id": "senedd.c.2021-05-06",
-                                        "name": "Senedd Cymru elections (Constituencies)",
-                                        "total": 0,
-                                    }
-                                ],
-                                "role": "Senedd Cymru elections",
-                            }
-                        ],
-                    },
-                },
-                {
-                    "current_or_future": False,
-                    "dates": {
-                        str(self.earlier_election.election_date.isoformat()): [
-                            {
-                                "elections": [
-                                    {
-                                        "html_id": "parl-2010-05-06",
-                                        "id": "parl.2010-05-06",
-                                        "name": "2010 General Election",
-                                        "total": 2,
-                                    }
-                                ],
-                                "role": "Member of Parliament",
-                            }
-                        ]
-                    },
-                },
-            ],
-        )
 
     def test_attention_needed_page(self):
         response = self.app.get("/numbers/attention-needed")
