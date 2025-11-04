@@ -59,7 +59,7 @@ jobs:
           command: |
             uv venv --no-python-downloads --verbose
             . .venv/bin/activate
-            uv pip install -r requirements/testing.txt
+            uv sync --all-groups
             npm install --save=false .
       - run:
           name: Pre test checks
@@ -68,7 +68,7 @@ jobs:
             DJANGO_SETTINGS_MODULE: ynr.settings.dev
           command: |
             . .venv/bin/activate
-            pip check
+            uv lock --locked
             ruff .
             ruff format . --check
             python manage.py check
@@ -166,7 +166,7 @@ jobs:
           command: |
             uv venv --no-python-downloads --verbose
             . .venv/bin/activate
-            uv pip install -r requirements/cdk.txt
+            uv sync --only-group cdk
             npm install --save=false .
       - run:
           name: Bootstrap the CDK environment
@@ -263,7 +263,7 @@ jobs:
           command: |
             uv venv --no-python-downloads --verbose
             . .venv/bin/activate
-            uv pip install -r requirements/cdk.txt
+            uv sync --only-group cdk
             npm install --save=false .
       - run:
           name: Check that CDK stacks synthesise
