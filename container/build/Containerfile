@@ -60,18 +60,31 @@ WORKDIR $APP_CODE
 # Set up a virtualenv to avoid interactions with system packages,
 # and install/upgrade some common pre-reqs.
 COPY --from=ghcr.io/astral-sh/uv:0.8 /uv /usr/local/bin/uv
-ENV UV_PROJECT_ENVIRONMENT=$APP_VENV
+
+ENV PATH="$APP_VENV/bin:$PATH" \
+    VIRTUAL_ENV="$APP_VENV/bin:$PATH" \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_PROJECT_ENVIRONMENT=$APP_VENV \
+    UV_COMPILE_BYTECODE=1 \
+    UV_FROZEN=1 \
+    UV_LINK_MODE=copy \
+    UV_NO_MANAGED_PYTHON=1 \
+    UV_PYTHON_DOWNLOADS=never \
+    UV_REQUIRE_HASHES=1 \
+    UV_VERIFY_HASHES=1 \
+    UV_CACHE_DIR=/app/.cache/uv
+
 RUN date \
  && uv venv \
  && date
-# Use the virtualenv without explicit activation.
-ENV PATH="$APP_VENV/bin:$PATH"
 # Copy dependency manifests into the container image.
 COPY pyproject.toml $APP_CODE/
 COPY uv.lock        $APP_CODE/
 # Install dependencies.
-RUN date \
- && uv sync --no-dev --group production \
+RUN --mount=type=cache,target=/app/.cache/uv \
+ date && \
+ uv sync --no-dev --group production \
  && date
 
 #############
@@ -125,7 +138,8 @@ ARG APP_ROOT=/dc/ynr
 ARG APP_CODE=$APP_ROOT/code
 
 # Install additional test dependencies.
-RUN date \
+RUN --mount=type=cache,target=/app/.cache/uv \
+ date \
  && uv sync --all-groups \
  && date
 
