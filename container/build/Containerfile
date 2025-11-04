@@ -71,7 +71,7 @@ COPY pyproject.toml $APP_CODE/
 COPY uv.lock        $APP_CODE/
 # Install dependencies.
 RUN date \
- && uv sync --no-dev --group cdk --group production \
+ && uv sync --no-dev --group production \
  && date
 
 #############
