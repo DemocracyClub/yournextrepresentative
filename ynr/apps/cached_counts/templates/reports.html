@@ -19,47 +19,50 @@
         candidates</a>.
   </p>
 
-  {% for era in all_elections %}
-    <div class="statistics-elections {% if era.current %}current{% else %}past{% endif %}">
-      <h2>{% if era.current_or_future %}
-        Current or Future Elections
-      {% else %}
-        Past Elections
-      {% endif %}</h2>
+{% regroup object_list by election_date as object_list_by_date %}
 
-      {% for date, elections in era.dates.items %}
-        <h3>{{ date }}</h3>
-        {% for role_data in elections %}
-          <h4>{{ role_data.role }}</h4>
-          {% for election in role_data.elections %}
-            <div id="statistics-election-{{ election.html_id }}">
-              {% with election_name=election.name %}
-                <h4>Statistics for the {{ election_name }}</h4>
-                <ul>
-                    <li>Total candidates: {{ election.total }}</li>
-                    <li><a href="{% url "posts_counts" election=election.id %}">Candidates per post</a></li>
-                    <li>
-                        <a href="{% url "parties_counts" election=election.id %}">Candidates per party</a>
-                    </li>
-                    <li>
-                        <a href="{% url "constituencies-unlocked" election=election.id %}">
-                            See progress towards locking all posts
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url "candidate_completeness" election=election.id %}">
-                            Candidate profile completeness
-                        </a>
-                    </li>
-                </ul>
-              {% endwith %}
-            </div>
-          {% endfor %}
-
-        {% endfor %}
-      {% endfor %}
-
-    </div>
+  {% for election_date, elections in object_list_by_date %}
+    <h3> {{ election_date }}</h3>
+    {% for election in elections %}
+    {% with election_slug=election.ballot_paper__election__slug %}
+      <div id="statistics-election-{{ election_slug }}">
+        <h4>Statistics for {{ election.election_name }} on {{ election.election_date }}</h4>
+        <ul>
+          <li>Total candidates: {{ election.candidates }}</li>
+          <li><a href="{% url "posts_counts" election=election_slug %}">Candidates per post</a></li>
+          <li><a href="{% url "parties_counts" election=election_slug %}">Candidates per party</a></li>
+          <li>
+            <a href="{% url "constituencies-unlocked" election=election_slug %}">
+                See progress towards locking all posts
+            </a>
+          </li>
+          <li>
+            <a href="{% url "candidate_completeness" election=election_slug %}">
+                Candidate profile completeness
+            </a>
+          </li>
+          {% endwith %}
+        </ul>
+      </div>
+    {% endfor %}
   {% endfor %}
+
+  <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+          <a href="?page=1&q={{ query }}">&laquo; first</a>
+          <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}">previous</a>
+        {% endif %}
+
+      <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}">last &raquo;</a>
+      {% endif %}
+    </span>
+  </div>
 
 {% endblock content %}
