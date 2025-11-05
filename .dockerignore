@@ -10,8 +10,6 @@
 # docker-compose.yml file.
 !/ynr/
 !/data/
-!/requirements/
-!/requirements.txt
 !/manage.py
 !/Makefile
 !/scripts/
@@ -19,6 +17,7 @@
 !/package.json
 !/package-lock.json
 !/pyproject.toml
+!/uv.lock
 !/.coveragerc
 
 # Paths overriding earlier re-inclusions.

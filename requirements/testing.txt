@@ -1,4 +1,0 @@
--r base.txt
--r sopn_parsing.txt
-responses==0.25.0
-watchdog==4.0.2

@@ -51,25 +51,40 @@ RUN date \
  && npm cache clean --force \
  && date
 
+# Set the working directory for the container entrypoint.
+WORKDIR $APP_CODE
+
 ########################
 ## Python dependencies #
 ########################
 # Set up a virtualenv to avoid interactions with system packages,
 # and install/upgrade some common pre-reqs.
+COPY --from=ghcr.io/astral-sh/uv:0.8 /uv /usr/local/bin/uv
+
+ENV PATH="$APP_VENV/bin:$PATH" \
+    VIRTUAL_ENV="$APP_VENV/bin:$PATH" \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_PROJECT_ENVIRONMENT=$APP_VENV \
+    UV_COMPILE_BYTECODE=1 \
+    UV_FROZEN=1 \
+    UV_LINK_MODE=copy \
+    UV_NO_MANAGED_PYTHON=1 \
+    UV_PYTHON_DOWNLOADS=never \
+    UV_REQUIRE_HASHES=1 \
+    UV_VERIFY_HASHES=1 \
+    UV_CACHE_DIR=/app/.cache/uv
+
 RUN date \
- && python -m venv $APP_VENV \
- && $APP_VENV/bin/pip install --upgrade pip wheel setuptools \
+ && uv venv \
  && date
-# Use the virtualenv without explicit activation.
-ENV PATH="$APP_VENV/bin:$PATH"
 # Copy dependency manifests into the container image.
-COPY requirements.txt $APP_CODE/
-COPY requirements/    $APP_CODE/requirements/
+COPY pyproject.toml $APP_CODE/
+COPY uv.lock        $APP_CODE/
 # Install dependencies.
-# Instruct pip not to use a cache directory to inprove container-image-level
-# cache effectiveness.
-RUN date \
- && pip install --no-cache-dir -r $APP_CODE/requirements/sopn_parsing.txt \
+RUN --mount=type=cache,target=/app/.cache/uv \
+ date && \
+ uv sync --no-dev --group production \
  && date
 
 #############
@@ -87,8 +102,6 @@ COPY . $APP_CODE/
 # that the dev-visible directory will be populated by some containerised
 # process.
 RUN mkdir $APP_CODE/vendor_assets/
-# Set the working directory for the container entrypoint.
-WORKDIR $APP_CODE
 # Set the default but overridable port that the default command listens on.
 ENV PORT=80
 # Set the default but overridable command the container executes on startup.
@@ -104,14 +117,14 @@ CMD ["--access-logfile", "-", "--access-logformat", "%(h)s %(l)s %(u)s %(t)s \"%
 # Invoke a lightweight, post-build test that proves the container reaches a
 # baseline level of correctness, whilst also generating .pyc files for faster
 # app startup.
-RUN DJANGO_SETTINGS_MODULE=ynr.settings.dev python manage.py check
+RUN DJANGO_SETTINGS_MODULE=ynr.settings.testing python manage.py check
 
 ###########
 ## Assets #
 ###########
 RUN date \
  && npm run build \
- && DJANGO_SETTINGS_MODULE=ynr.settings.dev python manage.py collectstatic --no-input \
+ && DJANGO_SETTINGS_MODULE=ynr.settings.testing python manage.py collectstatic --no-input \
  && date
 
 ###########################################################################
@@ -125,8 +138,9 @@ ARG APP_ROOT=/dc/ynr
 ARG APP_CODE=$APP_ROOT/code
 
 # Install additional test dependencies.
-RUN date \
- && pip install --no-cache-dir -r $APP_CODE/requirements/testing.txt \
+RUN --mount=type=cache,target=/app/.cache/uv \
+ date \
+ && uv sync --all-groups \
  && date
 
 # Override the prod container image's not-dev-env-friendly entrypoint and cmd.
