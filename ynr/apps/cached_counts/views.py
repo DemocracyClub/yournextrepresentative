@@ -1,9 +1,9 @@
 import json
 from typing import Tuple, Type
 
-from braces.views import LoginRequiredMixin
 from candidates.models import Ballot
 from data_exports.models import MaterializedMemberships
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, F
 from django.http import Http404, HttpResponse
 from django.views.generic import DetailView, TemplateView
