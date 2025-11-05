@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  data_exporter
+
+  Exports data from the prod database, cleans it and puts the resulting dump in an S3 bucket
+
+Globals:
+  Function:
+    Timeout: 600  # 10 minutes
+    MemorySize: 1024
+
+    LoggingConfig:
+      LogFormat: JSON
+Resources:
+  DataExportFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ynr-data-exporter
+      PackageType: Image
+      ImageUri: data_export_function
+      # Needs to be at least as big as the DB export, currently at around 350mb
+      EphemeralStorage:
+        Size: 1024
+      # Don't allow more than one export job to run at a time
+      ReservedConcurrentExecutions: 1
+      Policies:
+        - Statement:
+            - Sid: S3Access
+              Effect: Allow
+              Action:
+                - s3:*
+              Resource:
+                - 'arn:aws:s3:::ynr-short-term-backups-production'
+                - 'arn:aws:s3:::ynr-short-term-backups-production/*'
+            - Sid: SSM
+              Effect: Allow
+              Action:
+                - ssm:*
+              Resource:
+                - 'arn:aws:ssm:*:*:parameter/*'
+
+Outputs:
+  DataExportFunction:
+    Description: Data Export Lambda Function ARN
+    Value: !GetAtt DataExportFunction.Arn
+  DataExportFunctionIamRole:
+    Description: Implicit IAM Role created for Data Export function
+    Value: !GetAtt DataExportFunctionRole.Arn

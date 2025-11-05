@@ -13,15 +13,14 @@ able to run the commands described in this guide.
 
 ### Restoring data
 
-If you have access to a database dump from a YNR instance you can restore it to
-a containerised database as follows:
+If you have access to the YNR prod AWS account, you can grab an anonymised
+dump from prod and restore it to a containerised database as follows:
 
 1. Start the database container:
    `podman compose up -d dbpsql`
 1. Restore the database dump:
    ```
-   cat path/to/database.dump \
-   | podman compose exec -T dbpsql pg_restore -d ynr -U ynr --no-owner
+   AWS_PROFILE=ynr-prod ./scripts/get-prod-db.sh
    ```
 1. Apply any pending migrations:
    `./scripts/container.run.bash python manage.py migrate`
