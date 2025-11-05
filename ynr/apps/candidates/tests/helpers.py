@@ -80,8 +80,12 @@ def equal_call_args(args1, args2):
 
 
 @override_settings(
-    STATICFILES_STORAGE="django.contrib.staticfiles.storage.StaticFilesStorage",
-    DEFAULT_FILE_STORAGE="ynr.storages.TestMediaStorage",
+    STORAGES={
+        "default": {"BACKEND": "ynr.storages.TestMediaStorage"},
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+        },
+    },
     MEDIA_ROOT=mkdtemp(),
 )
 class TmpMediaRootMixin(TestCase):

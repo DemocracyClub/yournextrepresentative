@@ -36,7 +36,7 @@ SHOW_RESULTS_PROGRESS = False
 
 ALWAYS_ALLOW_RESULT_RECORDING = False
 
-DEFAULT_FILE_STORAGE = "ynr.storages.TestMediaStorage"
+STORAGES["default"]["BACKEND"] = "ynr.storages.TestMediaStorage"  # noqa: F405
 MEDIA_ROOT = mkdtemp()
 
 FRONT_PAGE_CTA = "BY_ELECTIONS"

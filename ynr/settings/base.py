@@ -188,7 +188,15 @@ STATICFILES_DIRS = (
 
 STATICFILES_LOCATION = "static"
 MEDIAFILES_LOCATION = "media"
-STATICFILES_STORAGE = "ynr.storages.StaticStorage"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "ynr.storages.StaticStorage",
+    },
+}
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
