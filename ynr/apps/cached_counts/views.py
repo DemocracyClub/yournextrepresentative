@@ -10,7 +10,7 @@ from elections.mixins import ElectionMixin
 from parties.models import Party
 from ynr_refactoring.settings import PersonIdentifierFields
 
-from .filters import CompletenessFilter
+from .filters import CompletenessFilter, ReportsFilter
 from .models import ElectionReport, get_attention_needed_posts
 from .report_helpers import (
     BallotsContestedPerParty,
@@ -45,6 +45,20 @@ class ReportsHomeView(ListView):
             )
             .annotate(candidates=Count("person_id"))
         )
+
+    def get_context_data(self, **kwargs):
+        context = {}
+
+        f = ReportsFilter(self.request.GET, queryset=self.get_queryset())
+        context["filter"] = f
+        context["object_list"] = f.qs
+
+        params = self.request.GET.copy()
+        if "page" in params:
+            del params["page"]
+        context["filter_params"] = params.urlencode()
+
+        return super().get_context_data(**context)
 
 
 class PartyCountsView(ElectionMixin, TemplateView):
