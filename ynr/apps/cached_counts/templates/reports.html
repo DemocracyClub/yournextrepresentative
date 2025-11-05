@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load humanize i18n %}
+{% load static %}
 
 {% block hero %}
   <div class="person__hero">
@@ -18,6 +19,32 @@
       <a href="{{ url }}">ordered starting with those with the fewest
         candidates</a>.
   </p>
+
+  <aside class="ds-filter" aria-labelledby="filter-label">
+    <form method="get" action="">
+      <details {% if filter.data %}open=""{% endif %}>
+        <summary>Filters</summary>
+        <div class="ds-advanced-filters">
+          <div class="ds-filter-cluster">
+              {% for field in filter.form %}
+              <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+                <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">
+                {{ field.label }}:
+
+                {{ field }}
+                {% if field.help_text %}
+                <p class="help_text">{{ field.help_text }}</p>
+                {% endif %}
+                </li>
+              </ul>
+                {% endfor %}
+          </div>
+        </div>
+      <button type="submit">Filter</button>
+      </details>
+      <script src="{% static 'js/filter_form_date_input.js' %}"></script>
+    </form>
+  </aside>
 
 {% regroup object_list by election_date as object_list_by_date %}
 
@@ -50,8 +77,8 @@
   <div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
-          <a href="?page=1&q={{ query }}">&laquo; first</a>
-          <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}">previous</a>
+          <a href="?page=1&{{ filter_params }}">&laquo; first</a>
+          <a href="?page={{ page_obj.previous_page_number }}&{{ filter_params }}">previous</a>
         {% endif %}
 
       <span class="current">
@@ -59,8 +86,8 @@
         </span>
 
       {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}">next</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}">last &raquo;</a>
+        <a href="?page={{ page_obj.next_page_number }}&{{ filter_params }}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&{{ filter_params }}">last &raquo;</a>
       {% endif %}
     </span>
   </div>
