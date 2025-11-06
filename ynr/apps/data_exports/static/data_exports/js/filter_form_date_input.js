@@ -77,19 +77,30 @@ filter_form.addEventListener('submit', function (e) {
   }
 
 
-  // Us JS to submit the form, removing empty values
-  const params = new URLSearchParams();
+  // Create a new URLSearchParams object from the existing query parameters
+  const existingParams = new URLSearchParams(window.location.search);
+  var newParams = new URLSearchParams(existingParams);
+
   const formData = new FormData(filter_form);
-  // …then drop any blank values
+
+  // Remove 'page' param if it exists
+  newParams.delete('page');
+
+  // Update newParams with form data (overwriting or adding)
   for (const [key, value] of formData.entries()) {
-    if (value.toString().trim() !== '') {
-      params.append(key, value);
+    newParams.set(key, value);
+  }
+
+  // Remove any params with empty values
+  for (const [key, value] of Array.from(newParams.entries())) {
+    if (value.toString().trim() === '') {
+      newParams.delete(key);
     }
   }
 
-  // finally navigate to the cleaned URL
+  // Build the new URL and navigate
   const url = new URL(filter_form.action, location.href);
-  url.search = params.toString();
+  url.search = newParams.toString();
   window.location.href = url.toString();
 
 });
