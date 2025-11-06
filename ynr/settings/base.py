@@ -396,6 +396,8 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_THROTTLE_CLASSES": ("rest_framework.throttling.AnonRateThrottle",),
     "DEFAULT_THROTTLE_RATES": {"anon": "10/minute"},
+    # Tell DRF that it's behind CloudFront _and_ an ALB
+    "NUM_PROXIES": 2,
 }
 
 # CORS config
