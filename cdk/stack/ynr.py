@@ -456,7 +456,7 @@ class YnrStack(Stack):
 
         S3_MEDIA_BUCKET = ssm.StringParameter.from_string_parameter_name(
             self,
-            "S3_MEDIA_BUCKET_TEST",
+            "S3_MEDIA_BUCKET_PARAM",
             "S3_MEDIA_BUCKET",
         )
 
