@@ -17,7 +17,7 @@ class TestPartyChoices(
         self.assertEqual(
             party_choices,
             [
-                ("", {"label": ""}),
+                ("", ""),
                 (
                     self.conservative_party.ec_id,
                     {"label": "Conservative Party", "register": "GB"},
@@ -66,7 +66,7 @@ class TestPartyChoices(
         self.assertEqual(
             party_choices,
             [
-                ("", {"label": ""}),
+                ("", ""),
                 (
                     self.labour_party.ec_id,
                     {"label": "Labour Party", "register": "GB"},
@@ -116,7 +116,7 @@ class TestPartyChoices(
         self.assertEqual(
             party_choices,
             [
-                ("", {"label": ""}),
+                ("", ""),
                 (
                     self.ld_party.ec_id,
                     {"label": "Liberal Democrats", "register": "GB"},
@@ -168,7 +168,7 @@ class TestPartyChoices(
         self.assertEqual(
             party_choices,
             [
-                ("", {"label": ""}),
+                ("", ""),
                 (
                     "Liberal Democrats",
                     [
@@ -233,7 +233,7 @@ class TestPartyChoices(
         self.assertEqual(
             party_choices,
             [
-                ("", {"label": ""}),
+                ("", ""),
                 (
                     self.conservative_party.ec_id,
                     {"label": "Conservative Party", "register": "GB"},

@@ -95,7 +95,7 @@ class PartyQuerySet(models.QuerySet):
                 "descriptions"
             )
 
-        result = [("", {"label": ""})]
+        result = [("", "")]
 
         for party in parties_current_qs:
             if (
