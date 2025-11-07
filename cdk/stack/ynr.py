@@ -421,6 +421,12 @@ class YnrStack(Stack):
             value=FQDN.string_value,
             description="The FQDN for the CloudFront distribution",
         )
+        CfnOutput(
+            self,
+            "CloudFrontDistributionId",
+            value=self.cloudfront_dist.distribution_id,
+            export_name="YnrCloudFrontDistributionId",
+        )
 
     def create_cloudfront(
         self, service: ecs_patterns.ApplicationLoadBalancedFargateService
@@ -437,6 +443,8 @@ class YnrStack(Stack):
             "CertArn",
             certificate_arn=cert_arns.get(self.dc_environment),
         )
+
+        web_acl_arn = self.node.try_get_context("webAclArn")
 
         fqdn = ssm.StringParameter.value_from_lookup(
             self,
@@ -468,9 +476,10 @@ class YnrStack(Stack):
             ),
         )
 
-        cloudfront_dist = cloudfront.Distribution(
+        self.cloudfront_dist = cloudfront.Distribution(
             self,
             "YNRCloudFront",
+            web_acl_id=web_acl_arn,
             default_behavior=cloudfront.BehaviorOptions(
                 origin=app_origin,
                 viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -550,7 +559,7 @@ class YnrStack(Stack):
         )
 
         # Behaviours for different paths
-        cloudfront_dist.add_behavior(
+        self.cloudfront_dist.add_behavior(
             "/admin/*",
             app_origin,
             viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -559,7 +568,7 @@ class YnrStack(Stack):
             compress=True,
         )
 
-        cloudfront_dist.add_behavior(
+        self.cloudfront_dist.add_behavior(
             "/static/*",
             app_origin,
             viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -567,7 +576,7 @@ class YnrStack(Stack):
             cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
             compress=True,
         )
-        cloudfront_dist.add_behavior(
+        self.cloudfront_dist.add_behavior(
             "/media/*",
             s3_media_origin,
             viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -576,7 +585,7 @@ class YnrStack(Stack):
             compress=True,
         )
 
-        cloudfront_dist.add_behavior(
+        self.cloudfront_dist.add_behavior(
             "/data/export_csv/*",
             app_origin,
             viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -595,6 +604,6 @@ class YnrStack(Stack):
             "FQDN_A_RECORD_TO_CF",
             zone=hosted_zone,
             target=route_53.RecordTarget.from_alias(
-                route_53_target.CloudFrontTarget(cloudfront_dist)
+                route_53_target.CloudFrontTarget(self.cloudfront_dist)
             ),
         )
