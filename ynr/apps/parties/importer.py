@@ -4,7 +4,6 @@ import re
 from datetime import datetime
 from tempfile import NamedTemporaryFile
 from typing import Dict
-from urllib.parse import urlencode
 
 import dateutil.parser
 import httpx
@@ -82,6 +81,7 @@ class ECPartyImporter:
             # as other types like 'Referendum participant' or 'Non-party
             # campaigner' can't field candidates
             "et": ["pp", "ppm"],
+            "sort": "RegulatedEntityName",
             # For an unknown reason some parties don't have a register.
             # We assume 'GB' in that case, but need to select them here.
             "register": ["gb", "ni", "none"],
@@ -124,9 +124,10 @@ class ECPartyImporter:
     def get_party_list(self, start):
         params = self.params
         params["start"] = start
-        url = "{}?{}".format(self.base_url, urlencode(params, doseq=True))
         client = httpx.Client()
-        req = client.get(url, timeout=300, follow_redirects=True)
+        req = client.get(
+            self.base_url, params=params, timeout=300, follow_redirects=True
+        )
         req.raise_for_status()
         return req.json()
 
