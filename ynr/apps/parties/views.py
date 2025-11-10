@@ -33,8 +33,10 @@ class CandidatesByElectionForPartyView(TemplateView):
         party = Party.objects.get(ec_id__iexact=party_id)
 
         candidates_qs = party.membership_set.select_related(
-            "ballot", "person", "ballot__post"
-        )
+            "ballot",
+            "person",
+            "ballot__post",
+        ).prefetch_related("person__tmp_person_identifiers")
 
         try:
             election = Election.objects.get(slug=kwargs["election"])
