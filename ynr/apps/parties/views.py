@@ -1,4 +1,5 @@
 from candidates.models import Ballot
+from django.db.models import F
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from elections.models import Election
@@ -32,12 +33,15 @@ class CandidatesByElectionForPartyView(TemplateView):
         party_id = kwargs["party_id"]
         party = Party.objects.get(ec_id__iexact=party_id)
 
-        candidates_qs = party.membership_set.select_related(
-            "ballot",
-            "person",
-            "ballot__post",
-        ).prefetch_related("person__tmp_person_identifiers")
-
+        candidates_qs = (
+            party.membership_set.select_related(
+                "ballot",
+                "person",
+                "ballot__post",
+            )
+            .prefetch_related("person__tmp_person_identifiers")
+            .annotate(person_image_modified=F("person__image__modified"))
+        )
         try:
             election = Election.objects.get(slug=kwargs["election"])
             candidates_qs = candidates_qs.filter(ballot__election=election)
