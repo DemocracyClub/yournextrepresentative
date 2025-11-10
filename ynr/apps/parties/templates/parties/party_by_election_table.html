@@ -12,9 +12,9 @@
           <td>Name</td>
           <td>Ward</td>
           <td>Email</td>
-          <td>Twitter</td>
           <td>Facebook</td>
           <td>Statement</td>
+          <td>Image Last Modified</td>
           <td>Edit link</td>
         </tr>
       </thead>
@@ -28,9 +28,9 @@
             </td>
             <td>{{ membership.ballot.post.label }}</td>
             <td>{% include "parties/_row_item.html" with item=membership.person.get_email %}</td>
-            <td>{% include "parties/_row_item.html" with item=membership.person.get_twitter_username|urlize type="twitter" %}</td>
             <td>{% include "parties/_row_item.html" with item=membership.person.get_facebook_personal_url|urlize %}</td>
             <td>{% include "parties/_row_item.html" with item=membership.person.biography|truncatechars:30 %}</td>
+            <td>{% include "parties/_row_item.html" with item=membership.person_image_modified|date:"SHORT_DATE_FORMAT" %}</td>
             <td><a href="{% url "person-update" membership.person.pk %}" class="button tiny">Edit</a></td>
           </tr>
         {% endfor %}
