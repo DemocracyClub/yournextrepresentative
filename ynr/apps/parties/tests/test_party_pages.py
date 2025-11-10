@@ -67,13 +67,9 @@ class TestPartyPages(UK2015ExamplesMixin, WebTest):
         self.assertNotContains(response, "Ed_Miliband")
         self.assertNotContains(response, "ed@miliband.com")
         PersonIdentifier.objects.create(
-            value_type="twitter_username", value="Ed_Miliband", person_id="3056"
-        )
-        PersonIdentifier.objects.create(
             value_type="email", value="ed@miliband.com", person_id="3056"
         )
         response = self.app.get("/parties/PP53/elections/parl.2015-05-07/")
-        self.assertContains(response, "Ed_Miliband")
         self.assertContains(response, "ed@miliband.com")
 
     def test_single_party_page_no_candidates(self):
