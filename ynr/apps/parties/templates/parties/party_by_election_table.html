@@ -4,7 +4,7 @@
 
 
   {% if candidates %}
-    <h2>All candidates for {{ party.name }} in the {{ election.name }}</h2>
+    <h2>All candidates for {{ party.name }} in the <a href="{{ election.get_absolute_url }}">{{ election.name }}</a></h2>
 
     <table>
       <thead>
