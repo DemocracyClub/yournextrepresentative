@@ -151,7 +151,7 @@ class Command(BaseCommand):
 
         ee_importer = EveryElectionImporter(params)
 
-        # TODO account for -recently-updated flag herw?
+        # TODO account for -recently-updated flag here?
         ee_importer.build_election_tree(deleted=True)
 
         for ballot_id, election_dict in ee_importer.ballot_ids.items():
