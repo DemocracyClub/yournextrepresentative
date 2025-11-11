@@ -1,9 +1,11 @@
-from bulk_adding.fields import PersonIdentifierFieldSet
+from bulk_adding.fields import (
+    PersonIdentifierFieldSet,
+    PersonSuggestionModelChoiceField,
+    PersonSuggestionRadioSelect,
+)
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db.models import Prefetch
-from django.utils.safestring import SafeText, mark_safe
-from elections.models import Election
+from django.db.models import Prefetch, Value
 from parties.forms import (
     PartyIdentifierField,
     PopulatePartiesMixin,
@@ -100,96 +102,51 @@ class BulkAddFormSet(BaseBulkAddFormSet):
 
 
 class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
-    def suggested_people(self, person_name):
+    def suggested_people(
+        self,
+        person_name,
+        new_party,
+        new_election,
+        new_name,
+    ):
         if person_name:
-            qs = search_person_by_name(
-                person_name, synonym=True
-            ).prefetch_related(
-                Prefetch(
-                    "memberships",
-                    queryset=Membership.objects.select_related(
-                        "party",
-                        "ballot",
-                        "ballot__election",
-                        "ballot__election__organization",
+            qs = (
+                search_person_by_name(person_name, synonym=True)
+                .prefetch_related(
+                    Prefetch(
+                        "memberships",
+                        queryset=Membership.objects.select_related(
+                            "party",
+                            "ballot",
+                            "ballot__election",
+                            "ballot__election__organization",
+                        ),
                     ),
-                ),
+                )
+                .annotate(
+                    new_party=Value(new_party),
+                    new_organisation=Value(new_election.organization.pk),
+                    new_name=Value(new_name),
+                )
             )
             return qs[:5]
         return None
-
-    def format_value(
-        self,
-        suggestion,
-        new_party=None,
-        new_election: Election = None,
-        new_name=None,
-    ):
-        """
-        Turn the whole form in to a value string
-        """
-        name = suggestion.name
-        if name == new_name:
-            name = mark_safe(f"<strong>{name}</strong>")
-        suggestion_dict = {"name": name, "object": suggestion}
-
-        candidacies = (
-            suggestion.memberships.select_related(
-                "ballot__post", "ballot__election", "party"
-            )
-            .select_related("ballot__sopn")
-            .order_by("-ballot__election__election_date")[:3]
-        )
-
-        if candidacies:
-            suggestion_dict["previous_candidacies"] = []
-
-        for candidacy in candidacies:
-            party = candidacy.party
-            party_str = f"{party.name}"
-            if new_party == party.ec_id:
-                party_str = f"<strong>{party.name}</strong>"
-
-            election = candidacy.ballot.election
-            election_str = f"{election.name}"
-            if new_election.organization == election.organization:
-                election_str = f"<strong>{election.name}</strong>"
-
-            text = """{election}: {post} – {party}""".format(
-                post=candidacy.ballot.post.short_label,
-                election=election_str,
-                party=party_str,
-            )
-            sopn = candidacy.ballot.officialdocument_set.first()
-            if sopn:
-                text += ' (<a href="{0}">SOPN</a>)'.format(
-                    sopn.get_absolute_url()
-                )
-            suggestion_dict["previous_candidacies"].append(SafeText(text))
-
-        return [suggestion.pk, suggestion_dict]
 
     def add_fields(self, form, index):
         super().add_fields(form, index)
         if not form["name"].value():
             return
-        suggestions = self.suggested_people(form["name"].value())
-
-        CHOICES = [("_new", "Add new person")]
-        if suggestions:
-            CHOICES += [
-                self.format_value(
-                    suggestion,
-                    new_party=form.initial.get("party"),
-                    new_election=self.ballot.election,
-                    new_name=form.initial.get("name"),
-                )
-                for suggestion in suggestions
-            ]
-        form.fields["select_person"] = forms.ChoiceField(
-            choices=CHOICES, widget=forms.RadioSelect()
+        suggestions = self.suggested_people(
+            form["name"].value(),
+            new_party=form.initial.get("party"),
+            new_election=self.ballot.election,
+            new_name=form.initial.get("name"),
         )
-        form.fields["select_person"].initial = "_new"
+        form.fields["select_person"] = PersonSuggestionModelChoiceField(
+            queryset=suggestions,
+            empty_label="Add new person",
+            widget=PersonSuggestionRadioSelect,
+        )
 
         form.fields["party"] = forms.CharField(
             widget=forms.HiddenInput(
