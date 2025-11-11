@@ -408,34 +408,24 @@ class EE_ImporterTest(WebTest):
     def test_delete_elections_invalid_input_insert_and_delete(
         self, mock_requests
     ):
-        # import some data
-        # just so we've got a non-empty DB
-        mock_requests.get.side_effect = (
-            fake_requests_each_type_of_election_on_one_day
-        )
-        call_command("uk_create_elections_from_every_election")
-        self.assertEqual(every_election.Ballot.objects.all().count(), 15)
-        self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
+        self.assertEqual(every_election.Ballot.objects.all().count(), 0)
+        self.assertEqual(every_election.YNRElection.objects.all().count(), 0)
 
         # this simulates a situation where EE reports
         # the same election/s as deleted and not deleted
         # this makes no sense and shouldn't happen but
-        # if it does we should not delete anything
+        # if it does it should essentially be a no-op
         mock_requests.get.side_effect = create_mock_with_fixtures(
             {"poll_open_date__gte": "2018-01-03"},
             local_highland_parent,
             [local_highland],
             deleted=local_highland,
         )
+        call_command("uk_create_elections_from_every_election")
 
-        # make sure we throw an exception
-        with self.assertRaises(Exception):
-            call_command("uk_create_elections_from_every_election")
-
-        # we should also roll back the whole transaction
-        # so nothing is inserted or deleted
-        self.assertEqual(every_election.Ballot.objects.all().count(), 15)
-        self.assertEqual(every_election.YNRElection.objects.all().count(), 10)
+        # we're back where we started
+        self.assertEqual(every_election.Ballot.objects.all().count(), 0)
+        self.assertEqual(every_election.YNRElection.objects.all().count(), 0)
 
     @patch("elections.uk.every_election.requests")
     @freeze_time("2018-02-02")

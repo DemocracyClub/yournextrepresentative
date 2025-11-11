@@ -229,11 +229,6 @@ class Election(EEModifiedMixin, models.Model):
         return result
 
     def safe_delete(self):
-        if self.current:
-            raise self.UnsafeToDelete(
-                "Can't delete 'current' election {}".format(self.slug)
-            )
-
         collector = NestedObjects(using=connection.cursor().db.alias)
         collector.collect([self])
         if len(collector.nested()) > 1:
