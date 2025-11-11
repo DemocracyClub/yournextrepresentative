@@ -5,7 +5,7 @@ from bulk_adding.fields import (
 )
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db.models import Prefetch, Value
+from django.db.models import CharField, IntegerField, Prefetch, Value
 from parties.forms import (
     PartyIdentifierField,
     PopulatePartiesMixin,
@@ -110,6 +110,15 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         new_name,
     ):
         if person_name:
+            annotations = {
+                "new_party": Value(new_party, output_field=CharField()),
+                "new_organisation": Value(
+                    new_election.organization.pk if new_election else None,
+                    output_field=IntegerField(),
+                ),
+                "new_name": Value(new_name, output_field=CharField()),
+            }
+
             qs = (
                 search_person_by_name(person_name, synonym=True)
                 .prefetch_related(
@@ -123,11 +132,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
                         ),
                     ),
                 )
-                .annotate(
-                    new_party=Value(new_party),
-                    new_organisation=Value(new_election.organization.pk),
-                    new_name=Value(new_name),
-                )
+                .annotate(**annotations)
             )
             return qs[:5]
         return None
