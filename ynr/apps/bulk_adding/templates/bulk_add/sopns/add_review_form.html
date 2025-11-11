@@ -61,7 +61,7 @@
           <tbody>
             {% for choice in form.select_person %}
 
-              <tr {% if choice.data.value == '' %}class="selected_action"{% endif %}>
+              <tr {% if choice.data.value == '_new' %}class="selected_action"{% endif %}>
                 <td class="multiple-choice" style="margin-left:1em">
                   {{ choice.tag }}
                     <label>{{ choice.choice_label }}</label>

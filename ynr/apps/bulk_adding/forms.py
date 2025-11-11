@@ -6,6 +6,7 @@ from bulk_adding.fields import (
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import CharField, IntegerField, Prefetch, Value
+from django.utils.safestring import SafeText
 from parties.forms import (
     PartyIdentifierField,
     PopulatePartiesMixin,
@@ -23,6 +24,8 @@ from search.utils import search_person_by_name
 
 
 class BaseBulkAddFormSet(forms.BaseFormSet):
+    renderer = None
+
     def __init__(self, *args, **kwargs):
         if "source" in kwargs:
             self.source = kwargs["source"]
@@ -49,11 +52,16 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
         ):
             # No extra forms exist, meaning no new people were added
             return super().clean()
-        if (
-            hasattr(self, "cleaned_data")
-            and not any(self.cleaned_data)
-            and not self.ballot.membership_set.exists()
-        ):
+
+        # Check if any forms have data
+        has_data = any(
+            form.is_valid()
+            and form.cleaned_data
+            and not form.cleaned_data.get("DELETE", False)
+            for form in self.forms
+        )
+
+        if not has_data and not self.ballot.membership_set.exists():
             raise ValidationError("At least one person required on this ballot")
 
         return super().clean()
@@ -149,9 +157,16 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         )
         form.fields["select_person"] = PersonSuggestionModelChoiceField(
             queryset=suggestions,
-            empty_label="Add new person",
             widget=PersonSuggestionRadioSelect,
         )
+
+        form.fields["select_person"].choices = [
+            (
+                "_new",
+                SafeText(f'Add a new profile "{form.initial.get("name")}"'),
+            )
+        ] + list(form.fields["select_person"].choices)
+        form.fields["select_person"].initial = "_new"
 
         form.fields["party"] = forms.CharField(
             widget=forms.HiddenInput(
@@ -169,8 +184,10 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             raise ValidationError(
                 "Candidates have already been locked for this ballot"
             )
-
-        for form_data in self.cleaned_data:
+        for form in self.forms:
+            if not form.is_valid():
+                continue
+            form_data = form.cleaned_data
             if (
                 "select_person" in form_data
                 and form_data["select_person"] == "_new"
@@ -330,6 +347,8 @@ BulkAddReviewFormSet = forms.formset_factory(
 
 
 class BaseBulkAddByPartyFormset(forms.BaseFormSet):
+    renderer = None
+
     def __init__(self, *args, **kwargs):
         self.ballot = kwargs["ballot"]
         kwargs["prefix"] = self.ballot.pk
@@ -427,10 +446,10 @@ class SelectPartyForm(forms.Form):
     def clean(self):
         form_data = self.cleaned_data
         if len([v for v in form_data.values() if v]) != 1:
-            self.cleaned_data = {}
             raise forms.ValidationError("Select one and only one party")
 
         form_data["party"] = [v for v in form_data.values() if v][0]
+        return form_data
 
 
 class AddByPartyForm(forms.Form):

@@ -29,31 +29,22 @@
           </thead>
           <tbody>
             {% for choice in form.select_person %}
+
               <tr {% if choice.data.value == '_new' %}class="selected_action"{% endif %}>
                 <td class="multiple-choice" style="margin-left:1em">
                   {{ choice.tag }}
-                  {% if choice.data.value == '_new' %}
-                    <label>Add a new profile "{{ form.name.value }}"</label>
-                  {% else %}
-                    <label>Same as
-                      <a href="{{ choice.choice_label.object.get_absolute_url }}"
-                         target="_blank">{{ choice.choice_label.name }}</a>
-                    {{ choice.choice_label.object }}
-                    {% if choice.choice_label.object.other_names.exists %}
-                        Also known as
-                        <ul>
-                        {% for other_name in choice.choice_label.object.other_names.all %}
-                        {{ other_name.name }}
-                        {% endfor %}
-
-                        </ul>
-                    {% endif %}
-
-                    </label>
-                  {% endif %}
+                    <label>{{ choice.choice_label }}</label>
                 </td>
                 <td>
-                  {% for candidacy in choice.choice_label.previous_candidacies %}
+                    {% if choice.data.instance.other_names.exists %}
+                        {% for other_name in choice.data.instance.other_names.all %}
+                            <small>{{ other_name.name }}</small><br>
+                        {% endfor %}
+
+                    {% endif %}
+                </td>
+                <td>
+                  {% for candidacy in choice.data.previous_candidacies %}
                     <li>{{ candidacy }}</li>
                   {% endfor %}
                 </td>

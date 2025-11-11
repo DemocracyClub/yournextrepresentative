@@ -172,6 +172,8 @@ class PersonSuggestionRadioSelect(forms.RadioSelect):
         option = super().create_option(
             name, value, label, selected, index, subindex=subindex, attrs=attrs
         )
+        if value == "_new":
+            return option
         option["instance"] = value.instance
         option["other_names"] = value.instance.other_names.all()
         option["previous_candidacies"] = self.get_previous_candidacies(
