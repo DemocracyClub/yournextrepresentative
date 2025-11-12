@@ -3,7 +3,7 @@
 {% block content %}
 <h2>{{ election_obj.name }}: {{ party }} candidates</h2>
 
-<form method=POST>
+<form method="POST" id="bulk-add-review">
 {% csrf_token %}
 
 {% for formset in formsets %}
