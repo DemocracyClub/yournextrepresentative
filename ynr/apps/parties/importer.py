@@ -134,6 +134,10 @@ class ECPartyImporter:
     def do_import(self):
         start = 0
         party_list = self.get_party_list(start)
+        if len(party_list["Result"]) < 50:
+            raise ValueError(
+                "First page contains fewer than 50 results, something is wrong."
+            )
         while start <= int(party_list["Total"]):
             for party_dict in party_list["Result"]:
                 party = ECParty(party_dict)

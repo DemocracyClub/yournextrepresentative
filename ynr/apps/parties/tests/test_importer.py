@@ -49,7 +49,7 @@ FAKE_PARTY_DICT = {
     ],
 }
 
-FAKE_RESULTS_DICT = {"Total": 1, "Result": [FAKE_PARTY_DICT]}
+FAKE_RESULTS_DICT = {"Total": 1, "Result": [FAKE_PARTY_DICT for i in range(50)]}
 
 
 def make_tmp_file_from_source(source):
