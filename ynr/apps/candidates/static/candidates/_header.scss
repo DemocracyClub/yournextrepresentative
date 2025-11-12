@@ -67,9 +67,27 @@
   padding: 0 0.5em;
   display: block;
   list-style: none;
-
 }
 
+form.logout-form {
+  border: 0;
+  background: none;
+  padding: 0;
+  display: inline-block;
+}
+
+form.logout-form button {
+  all: unset;
+  cursor: pointer;
+  color: #fff;
+}
+
+form.logout-form button:hover,
+form.logout-form button:focus {
+  display: inline-block;
+  border-bottom: 1px solid mix($header-background-color, #fff, 50%);
+  margin-bottom: -1px;
+}
 
 .header__nav__search {
   input {
