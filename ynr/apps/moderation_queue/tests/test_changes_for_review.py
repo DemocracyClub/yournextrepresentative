@@ -467,7 +467,7 @@ class TestNeedsReviewFeed(UK2015ExamplesMixin, TestUserMixin, WebTest):
         response = self.app.get(
             "/person/{}/update/".format(person.pk), user=self.user
         )
-        form = response.forms[1]
+        form = response.forms["person-details"]
 
         form["biography"] = """
                 Now, this is a story all about how

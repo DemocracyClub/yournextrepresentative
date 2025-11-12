@@ -49,7 +49,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         resp = self.app.get(url, user=self.user_who_can_record_results)
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, r'pattern="[0-9\s\.]*"')
-        form = resp.forms[1]
+        form = resp.forms["ballot_paper_results_form"]
         form["memberships_13"] = 1000
         form["memberships_14"] = 2000
         form["memberships_15"] = 3000
@@ -69,7 +69,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         )
         resp = self.app.get(url, user=self.user_who_can_record_results)
         self.assertEqual(resp.status_code, 200)
-        form = resp.forms[1]
+        form = resp.forms["ballot_paper_results_form"]
         form["memberships_13"] = 1000
         form["memberships_14"] = 2000
         form["memberships_15"] = ""
@@ -89,7 +89,7 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         )
         resp = self.app.get(url, user=self.user_who_can_record_results)
         self.assertEqual(resp.status_code, 200)
-        form = resp.forms[1]
+        form = resp.forms["ballot_paper_results_form"]
         form["memberships_13"] = 1000
         form["memberships_14"] = 2000
         form["memberships_15"] = 3000

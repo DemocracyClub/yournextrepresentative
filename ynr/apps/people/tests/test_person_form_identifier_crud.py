@@ -40,7 +40,7 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
             user=self.user,
         )
 
-        form = resp.forms[1]
+        form = resp.forms["person-details"]
         form["source"] = "Adding a home page"
         form["tmp_person_identifiers-1-value"] = "https://democracyclub.org.uk"
         form["tmp_person_identifiers-1-value_type"] = "homepage_url"
@@ -68,7 +68,7 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
             user=self.user,
         )
 
-        form = resp.forms[1]
+        form = resp.forms["person-details"]
         form["source"] = "They changed their username"
         form["tmp_person_identifiers-0-value"] = "@democracyclub"
         form.submit()
@@ -86,7 +86,7 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
             user=self.user,
         )
 
-        form = resp.forms[1]
+        form = resp.forms["person-details"]
         form["source"] = "They deleted their account"
         form["tmp_person_identifiers-0-value"] = ""
         form.submit()
@@ -102,7 +102,7 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
             user=self.user,
         )
 
-        form = resp.forms[1]
+        form = resp.forms["person-details"]
         form["source"] = "Just picking something from the dropdown"
         form["tmp_person_identifiers-1-value_type"] = "twitter_username"
         resp = form.submit()
@@ -126,7 +126,7 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
             user=self.user,
         )
 
-        form = resp.forms[1]
+        form = resp.forms["person-details"]
         form["source"] = "Just picking something from the dropdown"
         form["tmp_person_identifiers-0-value_type"] = "youtube_profile"
         resp = form.submit()
@@ -146,7 +146,7 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
             user=self.user,
         )
 
-        form = resp.forms[1]
+        form = resp.forms["person-details"]
         form["source"] = "They changed their username"
         form["tmp_person_identifiers-0-value_type"] = value_type
         form["tmp_person_identifiers-0-value"] = value
@@ -324,7 +324,7 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
             user=self.user,
         )
 
-        form = resp.forms[1]
+        form = resp.forms["person-details"]
         form["source"] = "They changed their username"
         form["tmp_person_identifiers-0-value"] = "democracyclub"
         form.submit()
@@ -367,7 +367,7 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
             value="https://www.facebook.com/example",
         )
 
-        form = resp.forms[1]
+        form = resp.forms["person-details"]
         form["source"] = "They changed their username"
         form["tmp_person_identifiers-0-value_type"] = "email"
         form["tmp_person_identifiers-0-value"] = "person@example.com"
