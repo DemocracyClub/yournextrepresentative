@@ -32,7 +32,11 @@
             <a class="button tiny js-toggle-source-confirmation delete-other-name">Delete</a>
 
             <div class="source-confirmation source-confirmation-delete-other-name">
-            <form method="post" action="{% url 'person-other-name-delete' pk=other_name.id person_id=person.id %}">
+            <form
+              method="post"
+              action="{% url 'person-other-name-delete' pk=other_name.id person_id=person.id %}"
+              id="other-name-delete-reason-{{ other_name.id }}"
+            >
               {% csrf_token %}
               <label for="id_source">Before we delete this other name, can you tell us how you know it's not valid? {{ settings.SOURCE_HINTS }}</label>
               <input type="text" name="source" id="id_source" maxlength="512" required="required"/>

@@ -56,7 +56,11 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_delete_other_name_authenticated_works(self):
         # Get the page so we'll have a CSRF token:
         response = self.app.get("/person/5678/other-names", user=self.user)
-        form = response.forms[1]
+
+        other_name_id = self.person_other_names.other_names.all()[0].id
+        form_id = f"other-name-delete-reason-{other_name_id}"
+        form = response.forms[form_id]
+
         form["source"] = "Some good reasons for deleting this name"
         response = form.submit()
 
