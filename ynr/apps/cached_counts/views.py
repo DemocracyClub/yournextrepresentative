@@ -53,11 +53,6 @@ class ReportsHomeView(ListView):
         context["filter"] = f
         context["object_list"] = f.qs
 
-        params = self.request.GET.copy()
-        if "page" in params:
-            del params["page"]
-        context["filter_params"] = params.urlencode()
-
         return super().get_context_data(**context)
 
 
