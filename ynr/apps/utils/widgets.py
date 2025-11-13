@@ -54,7 +54,7 @@ def choices_to_context_choices(choices):
                         ChoiceOptionWithContext.from_dict(sub_choice[1]),
                     )
                 )
-            context_choices.append(sub_choices)
+            context_choices.append((value, sub_choices))
         if isinstance(choice_data, str):
             context_choices.append((value, choice_data))
     return context_choices
