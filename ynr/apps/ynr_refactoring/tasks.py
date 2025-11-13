@@ -60,7 +60,7 @@ def parties_import_from_ec():
 @register_task(
     name="Check for current elections",
     schedule_type=Schedule.CRON,
-    cron="23 23 * * *",
+    cron="43 23 * * *",
 )
 def uk_create_elections_from_every_election_check_current():
     call_command("uk_create_elections_from_every_election", check_current=True)
