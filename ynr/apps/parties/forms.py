@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from parties.models import Party
 from people.forms.fields import BallotInputWidget
-from utils.widgets import SelectWithAttrs
+from utils.widgets import SelectWithAttrs, choices_to_context_choices
 
 
 def party_and_description_dict_from_string(value):
@@ -133,9 +133,22 @@ class PartyIdentifierField(forms.MultiValueField):
             PartyIdentifierInput(required=False),
         )
         super().__init__(fields, *args, **kwargs)
-        self.widget = PartySelectField(choices=choices)
-        self.widget.widgets[0].choices = choices
-        self.fields[0].choices = choices
+
+        """
+        We need our finished HTML to include a 'register' attribute.
+
+        This is later used by JavaScript to filter the list parties a user can
+        select for a given ballot.
+        
+        Django 5+ assumes that a dict should be converted to an optgroup, 
+        so we get around this by converting all labels into a 
+        `ChoiceOptionWithContext` object.
+        """
+        party_choice_options = choices_to_context_choices(choices)
+
+        self.widget = PartySelectField(choices=party_choice_options)
+        self.widget.widgets[0].choices = party_choice_options
+        self.fields[0].choices = party_choice_options
 
     def to_python(self, value):
         if not value:
