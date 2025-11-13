@@ -15,8 +15,6 @@ services:
       volumes:
         - ./ynr/:/dc/ynr/code/ynr/
         - ./data/:/dc/ynr/code/data/
-        - ./requirements/:/dc/ynr/code/requirements/
-        - ./requirements.txt:/dc/ynr/code/requirements.txt
         - ./manage.py:/dc/ynr/code/manage.py
         - ./Makefile:/dc/ynr/code/Makefile
         - ./scripts/:/dc/ynr/code/scripts/
@@ -24,6 +22,7 @@ services:
         - ./package.json:/dc/ynr/code/package.json
         - ./package-lock.json:/dc/ynr/code/package-lock.json
         - ./pyproject.toml:/dc/ynr/code/pyproject.toml
+        - ./uv.lock:/dc/ynr/code/uv.lock
       depends_on:
         dbpsql:
           condition: service_healthy
