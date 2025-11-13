@@ -31,8 +31,10 @@ class ChoiceOptionWithContext:
         if isinstance(choice, str):
             return cls(label=choice)
         # Label is required
-        label = choice.pop("label")
-        return cls(label=label, attrs=choice)
+        label = choice.get("label")
+        return cls(
+            label=label, attrs={k: v for k, v in choice.items() if k != "label"}
+        )
 
 
 def choices_to_context_choices(choices):
@@ -53,6 +55,8 @@ def choices_to_context_choices(choices):
                     )
                 )
             context_choices.append(sub_choices)
+        if isinstance(choice_data, str):
+            context_choices.append((value, choice_data))
     return context_choices
 
 

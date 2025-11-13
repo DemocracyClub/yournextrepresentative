@@ -16,6 +16,7 @@ from parties.tests.fixtures import DefaultPartyFixtures
 from people.forms.fields import CurrentUnlockedBallotsField
 from people.forms.forms import PersonMembershipForm
 from people.tests.factories import PersonFactory
+from utils.widgets import ChoiceOptionWithContext
 
 
 class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
@@ -72,7 +73,12 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
             field.fields[0].choices,
             [
                 ("", ""),
-                ("PP12", [("label", "New party"), ("register", "GB")]),
+                (
+                    "PP12",
+                    ChoiceOptionWithContext(
+                        label="New party", attrs={"register": "GB"}
+                    ),
+                ),
             ],
         )
 
@@ -159,7 +165,12 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
             field.fields[0].choices,
             [
                 ("", ""),
-                ("PP12", [("label", "New party"), ("register", "GB")]),
+                (
+                    "PP12",
+                    ChoiceOptionWithContext(
+                        label="New party", attrs={"register": "GB"}
+                    ),
+                ),
             ],
         )
 
