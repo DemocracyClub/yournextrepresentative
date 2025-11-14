@@ -28,7 +28,7 @@ class WafStack(Stack):
                     action=wafv2.CfnWebACL.RuleActionProperty(block={}),
                     statement=wafv2.CfnWebACL.StatementProperty(
                         rate_based_statement=wafv2.CfnWebACL.RateBasedStatementProperty(
-                            limit=1000,
+                            limit=500,
                             aggregate_key_type="IP",
                         )
                     ),
@@ -48,7 +48,6 @@ class WafStack(Stack):
                         managed_rule_group_statement=wafv2.CfnWebACL.ManagedRuleGroupStatementProperty(
                             vendor_name="AWS",
                             name="AWSManagedRulesCommonRuleSet",
-                            # 👇 correct field name (plural)
                             excluded_rules=[
                                 wafv2.CfnWebACL.ExcludedRuleProperty(
                                     name="SizeRestrictions_BODY"
