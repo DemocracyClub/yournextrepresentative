@@ -60,8 +60,14 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 USE_X_FORWARDED_HOST = True
 
-STATICFILES_STORAGE = "ynr.storages.StaticStorage"
-DEFAULT_FILE_STORAGE = "ynr.storages.MediaStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "ynr.storages.MediaStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "ynr.storages.StaticStorage",
+    },
+}
 AWS_STORAGE_BUCKET_NAME = os.environ["S3_MEDIA_BUCKET"]
 AWS_S3_REGION_NAME = os.environ["S3_MEDIA_REGION"]
 STATICFILES_LOCATION = "static"

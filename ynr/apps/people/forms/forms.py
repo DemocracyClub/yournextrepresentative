@@ -195,7 +195,7 @@ class PersonIdentifierForm(forms.ModelForm):
         if not data["id"] and data["DELETE"] is False:
             with contextlib.suppress(PersonIdentifier.DoesNotExist):
                 pid = PersonIdentifier.objects.get(
-                    person=data["person"], value_type=value_type
+                    person_id=data["person"].id, value_type=value_type
                 )
                 data["id"] = pid.id
                 self.instance = pid

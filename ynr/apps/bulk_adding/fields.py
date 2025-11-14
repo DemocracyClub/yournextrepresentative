@@ -3,6 +3,8 @@ import json
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, validate_email
+from django.template.loader import render_to_string
+from django.utils.safestring import SafeText, mark_safe
 from people.helpers import (
     clean_instagram_url,
     clean_linkedin_url,
@@ -161,3 +163,76 @@ class PersonIdentifierFieldSet(forms.MultiValueField):
             if pi:
                 person_identifiers.update(pi)
         return json.dumps(person_identifiers)
+
+
+class PersonSuggestionRadioSelect(forms.RadioSelect):
+    def create_option(
+        self, name, value, label, selected, index, subindex=None, attrs=None
+    ):
+        option = super().create_option(
+            name, value, label, selected, index, subindex=subindex, attrs=attrs
+        )
+        if value == "_new":
+            return option
+        option["instance"] = value.instance
+        option["other_names"] = value.instance.other_names.all()
+        option["previous_candidacies"] = self.get_previous_candidacies(
+            value.instance
+        )
+        return option
+
+    def get_previous_candidacies(self, person):
+        previous = []
+        candidacies = (
+            person.memberships.select_related(
+                "ballot__post", "ballot__election", "party"
+            )
+            .select_related("ballot__sopn")
+            .order_by("-ballot__election__election_date")[:3]
+        )
+
+        for candidacy in candidacies:
+            party = candidacy.party
+            party_str = f"{party.name}"
+            if person.new_party == party.ec_id:
+                party_str = f"<strong>{party.name}</strong>"
+
+            election = candidacy.ballot.election
+            election_str = f"{election.name}"
+            if person.new_organisation == election.organization.pk:
+                election_str = f"<strong>{election.name}</strong>"
+
+            text = """{election}: {post} – {party}""".format(
+                post=candidacy.ballot.post.short_label,
+                election=election_str,
+                party=party_str,
+            )
+            sopn = candidacy.ballot.officialdocument_set.first()
+            if sopn:
+                text += ' (<a href="{0}">SOPN</a>)'.format(
+                    sopn.get_absolute_url()
+                )
+            previous.append(SafeText(text))
+        return previous
+
+
+class PersonSuggestionModelChoiceField(forms.ModelChoiceField):
+    """
+    For use on the review page to show each suggested person as a radio field.
+    """
+
+    def label_from_instance(self, obj):
+        # Render using a template fragment per object
+        html = render_to_string(
+            "bulk_add/widgets/person_suggestion_choice_label.html",
+            {"object": obj},
+        )
+        return mark_safe(html)
+
+    def to_python(self, value):
+        if value == "_new":
+            return value
+        for model in self.queryset:
+            if str(model.pk) == value:
+                return model.pk
+        return super().to_python(value)

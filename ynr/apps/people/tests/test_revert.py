@@ -261,7 +261,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.dulwich_post_ballot_earlier.save()
 
         response = self.app.get(person.get_edit_url(), user=self.user)
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["source"] = "made up"
         form.submit()
 

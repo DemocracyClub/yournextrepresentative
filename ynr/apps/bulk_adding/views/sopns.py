@@ -1,6 +1,5 @@
 from typing import Optional
 
-from braces.views import LoginRequiredMixin
 from bulk_adding import forms, helpers
 from bulk_adding.forms import QuickAddSinglePersonForm
 from bulk_adding.models import RawPeople
@@ -9,6 +8,7 @@ from candidates.models.db import ActionType, EditType
 from candidates.views.version_data import get_client_ip
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.db.models import F
 from django.http import HttpResponseRedirect

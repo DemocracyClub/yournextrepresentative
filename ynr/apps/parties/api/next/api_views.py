@@ -87,12 +87,20 @@ class AllPartiesJSONView(View):
                         }
                     )
             else:
-                # This party doesn't have descriptions
-                item = {
-                    "id": party[0],
-                    "text": party[1]["label"],
-                    "register": party[1].get("register", "all"),
-                }
+                if party == ("", ""):
+                    # special case for the empty party
+                    item = {
+                        "id": "",
+                        "text": "",
+                        "register": "all",
+                    }
+                else:
+                    # This party doesn't have descriptions
+                    item = {
+                        "id": party[0],
+                        "text": party[1]["label"],
+                        "register": party[1].get("register", "all"),
+                    }
 
             ret["items"].append(item)
 

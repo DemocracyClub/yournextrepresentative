@@ -4,7 +4,6 @@ from candidates.tests.factories import (
     BallotPaperFactory,
     ElectionFactory,
     MembershipFactory,
-    OrganizationFactory,
     PostFactory,
 )
 from candidates.tests.uk_examples import UK2015ExamplesMixin
@@ -26,7 +25,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/",
             user=self.user_who_can_upload_documents,
-        ).forms[1]
+        ).forms["party-select"]
         form["party_GB_1"] = ""
         form["party_GB_0"] = ""
         response = form.submit()
@@ -44,7 +43,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/",
             user=self.user_who_can_upload_documents,
-        ).forms[1]
+        ).forms["party-select"]
         form["party_GB_1"] = "PP63"
         response = form.submit()
         self.assertEqual(response.status_code, 302)
@@ -53,7 +52,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/",
             user=self.user_who_can_upload_documents,
-        ).forms[1]
+        ).forms["party-select"]
         form["party_GB_1"] = self.conservative_party.ec_id
         response = form.submit().follow()
 
@@ -78,7 +77,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/PP52/",
             user=self.user_who_can_upload_documents,
-        ).forms[1]
+        ).forms["candidates-add"]
 
         form["{}-0-name".format(ballot.pk)] = "Pemphero Pasternak"
 
@@ -90,7 +89,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/PP52/",
             user=self.user_who_can_upload_documents,
-        ).forms[1]
+        ).forms["candidates-add"]
 
         form["source"] = "https://example.com/candidates/"
 
@@ -107,7 +106,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/PP52/", user=self.user
-        ).forms[1]
+        ).forms["candidates-add"]
 
         self.assertEqual(len(form.fields), 79)
 
@@ -120,7 +119,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response, '<label>Add a new profile "Pemphero Pasternak"</label>'
         )
 
-        form = response.forms[1]
+        form = response.forms["bulk-add-review"]
         # Now submit the valid form
         with self.assertNumQueries(FuzzyInt(55, 60)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
@@ -145,7 +144,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/PP52/", user=self.user
-        ).forms[1]
+        ).forms["candidates-add"]
 
         self.assertEqual(len(form.fields), 79)
 
@@ -161,7 +160,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response, '<label>Add a new profile "Pemphero Pasternak"</label>'
         )
 
-        form = response.forms[1]
+        form = response.forms["bulk-add-review"]
         # Now submit the valid form
         with self.assertNumQueries(FuzzyInt(50, 60)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
@@ -188,7 +187,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         form = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/PP52/", user=self.user
-        ).forms[1]
+        ).forms["candidates-add"]
 
         self.assertEqual(len(form.fields), 79)
 
@@ -209,7 +208,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response, '<label>Add a new profile "Pemphero Pasternak"</label>'
         )
 
-        form = response.forms[1]
+        form = response.forms["bulk-add-review"]
         # Now submit the valid form
         with self.assertNumQueries(FuzzyInt(75, 80)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
@@ -230,7 +229,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/PP52/",
             user=self.user_who_can_upload_documents,
-        ).forms[1]
+        ).forms["candidates-add"]
 
         form["source"] = "https://example.com/candidates/"
 
@@ -246,7 +245,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/PP52/",
             user=self.user_who_can_upload_documents,
-        ).forms[1]
+        ).forms["candidates-add"]
 
         form["source"] = "https://example.com/candidates/"
 
@@ -262,7 +261,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = self.app.get(
             "/bulk_adding/party/parl.2015-05-07/PP52/",
             user=self.user_who_can_upload_documents,
-        ).forms[1]
+        ).forms["candidates-add"]
 
         form["source"] = "https://example.com/candidates/"
 
@@ -277,7 +276,9 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_bulk_add_with_100_ballots(self):
         # Create an election with 100 ballots, 100 posts
         election = ElectionFactory(
-            slug="parl.2025-05-07", name="General Election 2025"
+            slug="parl.2025-05-07",
+            name="General Election 2025",
+            organization=self.commons,
         )
         party = PartyFactory(ec_id="PP99", name="Test Party")
         ballots = [
@@ -285,10 +286,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 election=election,
                 post=PostFactory(
                     label=f"Constituency {i + 1}",
-                    organization=OrganizationFactory(
-                        name=f"org {i + 1}",
-                        slug=f"org-slug-{i + 1}",
-                    ),
+                    organization=self.commons,
                 ),
                 ballot_paper_id=f"parl.2025-05-07.constituency-{i + 1}",
             )
@@ -298,7 +296,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Access the form
         form = self.app.get(
             f"/bulk_adding/party/{election.slug}/{party.ec_id}/", user=self.user
-        ).forms[1]
+        ).forms["candidates-add"]
 
         # Fill in all fields for each ballot
         form["source"] = "https://example.com/candidates/"
@@ -325,7 +323,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Submit the form
 
         response = form.submit().follow()
-        form = response.forms[1]
+        form = response.forms["bulk-add-review"]
         # Select add new person for each ballot
         for ballot in ballots:
             form[f"{ballot.pk}-0-select_person"] = "_new"

@@ -1,8 +1,8 @@
 import contextlib
 from datetime import date
 
-from braces.views import LoginRequiredMixin
 from candidates.models import Ballot
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse

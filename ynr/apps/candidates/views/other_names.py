@@ -1,6 +1,6 @@
-from braces.views import LoginRequiredMixin
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.http import JsonResponse

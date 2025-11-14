@@ -1,10 +1,10 @@
 import json
 
-from braces.views import LoginRequiredMixin
 from bulk_adding import forms, helpers
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType
 from candidates.views.version_data import get_client_ip
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -31,7 +31,7 @@ class BasePartyBulkAddView(LoginRequiredMixin, TemplateView):
         return Party.objects.get(ec_id=self.kwargs["party_id"])
 
     def get_ballot_qs(self, election):
-        qs = election.ballot_set.all()
+        qs = election.ballot_set.all().select_related("post")
         return qs.order_by("post__label")
 
 

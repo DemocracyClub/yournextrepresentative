@@ -1,8 +1,8 @@
 from auth_helpers.views import user_in_group
-from braces.views import LoginRequiredMixin
 from candidates.models import raise_if_unsafe_to_delete
 from candidates.models.constraints import check_no_candidancy_for_election
 from candidates.models.db import ActionType
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404

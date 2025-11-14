@@ -17,7 +17,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             "/person/{}/update".format(self.person.pk), user=self.user
         )
 
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["favourite_biscuit"] = "Ginger nut"
         form["source"] = "Mumsnet"
         form.submit()
@@ -48,7 +48,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             "/person/{}/update".format(self.person.pk), user=self.user
         )
 
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["birth_date"] = "1962"
         form["source"] = "BBC News"
         response = form.submit().follow()
@@ -64,7 +64,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             "/person/{}/update".format(self.person.pk), user=self.user
         )
 
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["birth_date"] = "1962"
         form["source"] = "BBC News"
         response = form.submit().follow()
@@ -100,7 +100,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
 
         # confirm the original name prior to edits
         self.assertEqual(self.person.name, "Tessa Jowell")
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["name"] = "Tessa Palmer"
         # make a change to another field to ensure that edit is saved
         # regardless of name change
@@ -140,7 +140,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
 
         # check on the name that is currently set
         self.assertEqual(self.person.name, "Tessa Jowell")
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["name"] = "Tessa Palmer"
         # make a change to another field to ensure that change occurs regardless of name change
         form["birth_date"] = 1950
@@ -168,7 +168,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
 
         # check on the name that is currently set
         self.assertEqual(self.person.name, "Tessa Jowell")
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["name"] = "Tessa Palmer"
         # make a change to another field to ensure that change occurs regardless of name change
         form["birth_date"] = 1950
@@ -192,7 +192,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
 
         # check on the name that is currently set
         self.assertEqual(self.person.name, "Tessa Jowell")
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["name"] = "TeSSa  JoweLL"
         # make a change to another field to ensure that change occurs regardless of name change
         form["source"] = "Mumsnet"
@@ -208,7 +208,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         response = self.app.get(
             "/person/{}/update/".format(self.person.pk), user=self.user
         )
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["name"] = "Tessa Palmer"
         form["source"] = "Mumsnet"
         self.person.edit_limitations = (
@@ -287,7 +287,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             "/person/{}/update".format(self.person.pk), user=self.user
         )
 
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["favourite_biscuit"] = "Ginger nut"
         form["source"] = "Mumsnet"
         form.submit()
@@ -300,7 +300,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             "/person/{}/update".format(self.person.pk), user=self.user
         )
 
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["favourite_biscuit"] = "Something else"
         form["source"] = "Somewhere else"
 
@@ -322,7 +322,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             "/person/{}/update".format(self.person.pk), user=self.user
         )
 
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["tmp_person_identifiers-0-value"] = "https://facebook.com/example/"
         form["tmp_person_identifiers-0-value_type"] = "facebook_page_url"
 
@@ -346,7 +346,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             ballot_paper_id="parl.foo.2050-01-01",
         )
 
-        form = response.forms[1]
+        form = response.forms["person-details"]
         extra_fields = [
             ("extra_election_id", "parl.2050-01-01"),
             ("party_GB_parl.2050-01-01", self.labour_party.ec_id),
@@ -380,7 +380,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             "/person/{}/update".format(self.person.pk), user=self.user
         )
 
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["memberships-0-party_identifier_0"].select(self.green_party.ec_id)
         form["memberships-0-party_identifier_1"].value = self.green_party.ec_id
         form["source"] = "http://example.com"
@@ -426,7 +426,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         )
 
         self.assertEqual(self.person.name, "Tessa Jowell")
-        form = response.forms[1]
+        form = response.forms["person-details"]
         form["name"] = " Tessa   Palmer   "
         form["source"] = "Testing spaces are stripped out of person name"
         form.submit()
@@ -453,7 +453,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             biography_update_response = self.app.get(
                 "/person/{}/update".format(self.person.pk), user=self.user
             )
-            form = biography_update_response.forms[1]
+            form = biography_update_response.forms["person-details"]
             form["biography"] = "This is a new test biography"
             form["source"] = "Mumsnet"
             form.submit()
@@ -487,7 +487,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             candidacy_update_response = self.app.get(
                 "/person/{}/update".format(self.person.pk), user=self.user
             )
-            form = candidacy_update_response.forms[1]
+            form = candidacy_update_response.forms["person-details"]
             form["memberships-0-party_identifier_0"].select(
                 self.green_party.ec_id
             )

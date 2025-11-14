@@ -9,7 +9,7 @@
 
 <h3>{{ election_obj.name }}</h3>
 
-<form method=post>
+<form method="post" id="party-select">
   {% csrf_token %}
   {{ form.non_field_errors }}
   {% for field in form %}

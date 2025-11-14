@@ -3,8 +3,9 @@
 {% block content %}
 <h2>Add {{ party.name }} candidates for the {{ election_obj.name }}</h2>
 
-<form method=post>
-{{ form }}
+<form method="post" id="candidates-add">
+  {{ form.as_table }}
+
   {% csrf_token %}
   {% for post_info in posts %}
     <div>

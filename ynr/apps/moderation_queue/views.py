@@ -5,12 +5,12 @@ from urllib.parse import quote
 
 import nh3
 from auth_helpers.views import GroupRequiredMixin
-from braces.views import LoginRequiredMixin
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.models.db import ActionType
 from candidates.views.version_data import get_client_ip
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import Count, Q

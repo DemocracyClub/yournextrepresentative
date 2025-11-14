@@ -2,10 +2,10 @@ import re
 from urllib.parse import quote
 
 from auth_helpers.views import GroupRequiredMixin, user_in_group
-from braces.views import LoginRequiredMixin
 from candidates.models.db import ActionType
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import (

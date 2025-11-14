@@ -16,6 +16,7 @@ from parties.tests.fixtures import DefaultPartyFixtures
 from people.forms.fields import CurrentUnlockedBallotsField
 from people.forms.forms import PersonMembershipForm
 from people.tests.factories import PersonFactory
+from utils.widgets import ChoiceOptionWithContext
 
 
 class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
@@ -71,8 +72,13 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
         self.assertEqual(
             field.fields[0].choices,
             [
-                ("", {"label": ""}),
-                ("PP12", {"label": "New party", "register": "GB"}),
+                ("", ""),
+                (
+                    "PP12",
+                    ChoiceOptionWithContext(
+                        label="New party", attrs={"register": "GB"}
+                    ),
+                ),
             ],
         )
 
@@ -158,8 +164,13 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
         self.assertEqual(
             field.fields[0].choices,
             [
-                ("", {"label": ""}),
-                ("PP12", {"label": "New party", "register": "GB"}),
+                ("", ""),
+                (
+                    "PP12",
+                    ChoiceOptionWithContext(
+                        label="New party", attrs={"register": "GB"}
+                    ),
+                ),
             ],
         )
 
@@ -173,11 +184,14 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
         self.assertEqual(
             form["party"].field.fields[0].choices,
             [
-                ("", {"label": ""}),
-                ("PP12", {"label": "New party", "register": "GB"}),
+                ("", ""),
+                ("PP12", [("label", "New party"), ("register", "GB")]),
                 (
                     "PP13",
-                    {"label": "New party without candidates", "register": "GB"},
+                    [
+                        ("label", "New party without candidates"),
+                        ("register", "GB"),
+                    ],
                 ),
             ],
         )
@@ -196,7 +210,7 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
         form = PersonMembershipForm(instance=membership)
         self.assertEqual(
             form["party_identifier"].field.fields[0].choices[1],
-            ("PP12", {"label": "New party", "register": "GB"}),
+            ("PP12", [("label", "New party"), ("register", "GB")]),
         )
 
 

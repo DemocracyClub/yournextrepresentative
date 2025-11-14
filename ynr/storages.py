@@ -1,13 +1,14 @@
 import os
+from tempfile import SpooledTemporaryFile
 
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from pipeline.storage import PipelineMixin
-from storages.backends.s3boto3 import S3Boto3Storage, SpooledTemporaryFile
+from storages.backends.s3 import S3Storage
 from whitenoise.storage import CompressedStaticFilesStorage
 
 
-class PatchedS3Boto3Storage(S3Boto3Storage):
+class PatchedS3Boto3Storage(S3Storage):
     def _save_content(self, obj, content, parameters):
         """
         We create a clone of the content file as when this is passed to boto3
