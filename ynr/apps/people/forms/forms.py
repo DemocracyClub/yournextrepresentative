@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, validate_email
 from django.utils import timezone
 from django.utils.functional import cached_property
+from django.utils.safestring import mark_safe
 from official_documents.models import BallotSOPN
 from parties.forms import (
     PartyIdentifierField,
@@ -346,11 +347,24 @@ class BasePersonForm(forms.ModelForm):
         label="Statement to voters",
         required=False,
         widget=forms.Textarea,
-        help_text="""This must be a message from the candidate to the
-                    electorate. Ideally this message will be uploaded by the
-                    candidate or their agent, but crowdsourcers may find such
-                    a statement on a candidate's 'About' webpage, or on
-                    campaign literature.""",
+        help_text=mark_safe(
+            """<p class="help_text">
+            This must be a message from the candidate to the
+            electorate. Ideally this message will be uploaded by the
+            candidate or their agent, but crowdsourcers may find such
+            a statement on a candidate's 'About' webpage, or on
+            campaign literature.</p>
+            <p class="help_text">
+            Candidate statements may contain **bold text** and _italic text_. You can also use
+            <br /><br />
+            - bullet<br />
+            - point<br />
+            - lists<br /><br />
+            and<br /><br />
+            1. numbered<br />
+            2. lists
+            </p>"""
+        ),
     )
 
     favourite_biscuit = StrippedCharField(

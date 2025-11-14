@@ -39,6 +39,7 @@ dependencies = [
     "libsass==0.22.0", # TODO: remove when we migrate to dc_django_utils
     "lxml==6.0.2",
     "Markdown==3.4.3",
+    "markdown-it-py==4.0.0",
     "nameparser==1.1.2",
     "ndg-httpsclient==0.5.1",
     "openai==1.30.3",
