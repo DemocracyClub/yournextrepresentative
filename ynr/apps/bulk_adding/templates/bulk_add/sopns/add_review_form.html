@@ -81,11 +81,11 @@
                 </td>
               </tr>
             {% endfor %}
-            {{ form.name }}
-            {{ form.source }}
-            {{ form.party }}
-            {{ form.party_description }}
-            {{ form.previous_party_affiliations }}
+
+            {% for field in form.hidden_fields %}
+                {{ field }}
+            {% endfor %}
+
           </tbody>
         </table>
       </div>
