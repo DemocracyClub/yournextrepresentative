@@ -31,7 +31,7 @@ class BasePartyBulkAddView(LoginRequiredMixin, TemplateView):
         return Party.objects.get(ec_id=self.kwargs["party_id"])
 
     def get_ballot_qs(self, election):
-        qs = election.ballot_set.all()
+        qs = election.ballot_set.all().select_related("post")
         return qs.order_by("post__label")
 
 
