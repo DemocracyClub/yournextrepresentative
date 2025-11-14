@@ -118,10 +118,15 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         new_name,
     ):
         if person_name:
+            org_id = (
+                new_election.organization.pk
+                if new_election and new_election.organization
+                else None
+            )
             annotations = {
                 "new_party": Value(new_party, output_field=CharField()),
                 "new_organisation": Value(
-                    new_election.organization.pk if new_election else None,
+                    org_id,
                     output_field=IntegerField(),
                 ),
                 "new_name": Value(new_name, output_field=CharField()),

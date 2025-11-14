@@ -4,7 +4,6 @@ from candidates.tests.factories import (
     BallotPaperFactory,
     ElectionFactory,
     MembershipFactory,
-    OrganizationFactory,
     PostFactory,
 )
 from candidates.tests.uk_examples import UK2015ExamplesMixin
@@ -277,7 +276,9 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_bulk_add_with_100_ballots(self):
         # Create an election with 100 ballots, 100 posts
         election = ElectionFactory(
-            slug="parl.2025-05-07", name="General Election 2025"
+            slug="parl.2025-05-07",
+            name="General Election 2025",
+            organization=self.commons,
         )
         party = PartyFactory(ec_id="PP99", name="Test Party")
         ballots = [
@@ -285,10 +286,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 election=election,
                 post=PostFactory(
                     label=f"Constituency {i + 1}",
-                    organization=OrganizationFactory(
-                        name=f"org {i + 1}",
-                        slug=f"org-slug-{i + 1}",
-                    ),
+                    organization=self.commons,
                 ),
                 ballot_paper_id=f"parl.2025-05-07.constituency-{i + 1}",
             )
