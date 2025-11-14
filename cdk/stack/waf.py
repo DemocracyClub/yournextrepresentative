@@ -42,7 +42,7 @@ class WafStack(Stack):
                     name="AWSCommonRuleSet",
                     priority=100,
                     override_action=wafv2.CfnWebACL.OverrideActionProperty(
-                        none={}
+                        count={}
                     ),
                     statement=wafv2.CfnWebACL.StatementProperty(
                         managed_rule_group_statement=wafv2.CfnWebACL.ManagedRuleGroupStatementProperty(
