@@ -3,6 +3,7 @@
 import os
 
 import aws_cdk as cdk
+from stack.waf import WafStack
 from stack.ynr import YnrStack
 
 valid_environments = (
@@ -33,6 +34,13 @@ YnrStack(
         region=os.getenv("CDK_DEFAULT_REGION"),
     ),
 )
+
+WafStack(
+    app,
+    "WafStack",
+    env=cdk.Environment(region="us-east-1"),
+)
+
 
 cdk.Tags.of(app).add("dc-product", "ynr")
 cdk.Tags.of(app).add("dc-environment", dc_environment)
