@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% load humanize i18n %}
+{% load static %}
+{% load get_query %}
 
 {% block hero %}
   <div class="person__hero">
-    <h1>Numbers</h1>
+    <h1>Statistics</h1>
   </div>
 {% endblock hero %}
 
@@ -19,47 +21,76 @@
         candidates</a>.
   </p>
 
-  {% for era in all_elections %}
-    <div class="statistics-elections {% if era.current %}current{% else %}past{% endif %}">
-      <h2>{% if era.current_or_future %}
-        Current or Future Elections
-      {% else %}
-        Past Elections
-      {% endif %}</h2>
+  <aside class="ds-filter" aria-labelledby="filter-label">
+    <form method="get" action="">
+      <details {% if filter.data %}open=""{% endif %}>
+        <summary>Filters</summary>
+        <div class="ds-advanced-filters">
+          <div class="ds-filter-cluster">
+              {% for field in filter.form %}
+              <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+                <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">
+                {{ field.label }}:
 
-      {% for date, elections in era.dates.items %}
-        <h3>{{ date }}</h3>
-        {% for role_data in elections %}
-          <h4>{{ role_data.role }}</h4>
-          {% for election in role_data.elections %}
-            <div id="statistics-election-{{ election.html_id }}">
-              {% with election_name=election.name %}
-                <h4>Statistics for the {{ election_name }}</h4>
-                <ul>
-                    <li>Total candidates: {{ election.total }}</li>
-                    <li><a href="{% url "posts_counts" election=election.id %}">Candidates per post</a></li>
-                    <li>
-                        <a href="{% url "parties_counts" election=election.id %}">Candidates per party</a>
-                    </li>
-                    <li>
-                        <a href="{% url "constituencies-unlocked" election=election.id %}">
-                            See progress towards locking all posts
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url "candidate_completeness" election=election.id %}">
-                            Candidate profile completeness
-                        </a>
-                    </li>
-                </ul>
-              {% endwith %}
-            </div>
-          {% endfor %}
+                {{ field }}
+                {% if field.help_text %}
+                <p class="help_text">{{ field.help_text }}</p>
+                {% endif %}
+                </li>
+              </ul>
+                {% endfor %}
+          </div>
+        </div>
+      <button type="submit">Filter</button>
+      </details>
+      <script src="{% static 'js/filter_form_date_input.js' %}"></script>
+    </form>
+  </aside>
 
-        {% endfor %}
-      {% endfor %}
+{% regroup object_list by election_date as object_list_by_date %}
 
-    </div>
+  {% for election_date, elections in object_list_by_date %}
+    <h3> {{ election_date }}</h3>
+    {% for election in elections %}
+    {% with election_slug=election.ballot_paper__election__slug %}
+      <div id="statistics-election-{{ election_slug }}">
+        <h4>Statistics for {{ election.election_name }} on {{ election.election_date }}</h4>
+        <ul>
+          <li>Total candidates: {{ election.candidates }}</li>
+          <li><a href="{% url "posts_counts" election=election_slug %}">Candidates per post</a></li>
+          <li><a href="{% url "parties_counts" election=election_slug %}">Candidates per party</a></li>
+          <li>
+            <a href="{% url "constituencies-unlocked" election=election_slug %}">
+                See progress towards locking all posts
+            </a>
+          </li>
+          <li>
+            <a href="{% url "candidate_completeness" election=election_slug %}">
+                Candidate profile completeness
+            </a>
+          </li>
+          {% endwith %}
+        </ul>
+      </div>
+    {% endfor %}
   {% endfor %}
+
+  <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+          <a href="{% query_string request.GET page=1 %}">&laquo; first</a>
+          <a href="{% query_string request.GET page=page_obj.previous_page_number %}">previous</a>
+        {% endif %}
+
+      <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+      {% if page_obj.has_next %}
+        <a href="{% query_string request.GET page=page_obj.next_page_number %}">next</a>
+        <a href="{% query_string request.GET page=page_obj.paginator.num_pages %}">last &raquo;</a>
+      {% endif %}
+    </span>
+  </div>
 
 {% endblock content %}

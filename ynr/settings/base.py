@@ -257,6 +257,10 @@ PIPELINE = {
             "source_filenames": ("official_documents/js/sopn_viewer.js",),
             "output_filename": "js/sopn_viewer.js",
         },
+        "custom_builder": {
+            "source_filenames": ("data_exports/js/filter_form_date_input.js",),
+            "output_filename": "js/filter_form_date_input.js",
+        },
         "all": {
             "source_filenames": (
                 "js/jquery.js",

@@ -1,5 +1,6 @@
 import django_filters
 from data_exports.filters import BallotPaperText
+from data_exports.models import MaterializedMemberships
 from django import forms
 from django.db.models import CharField, F, Q, Value
 from django.db.models.functions import Cast, Concat
@@ -67,3 +68,42 @@ class CompletenessFilter(django_filters.FilterSet):
                 | Q(**{f"{name}_filterfield__isnull": True})
             )
         return queryset
+
+
+class ReportsFilter(django_filters.FilterSet):
+    filter_by_region = django_filters.ChoiceFilter(
+        widget=DSLinkWidget(),
+        method="region_filter",
+        label="Filter by region",
+        choices=region_choices,
+    )
+
+    current = django_filters.ChoiceFilter(
+        widget=DSLinkWidget(),
+        method="is_current_filter",
+        field_name="ballot_paper__election__current",
+        label="current",
+        choices=[(1, "Yes"), (0, "No")],
+    )
+
+    election_date = django_filters.CharFilter(
+        lookup_expr="regex",
+        field_name="election_date",
+        label="Election date",
+        help_text="Blank fields will match anything",
+    )
+
+    def region_filter(self, queryset, name, value):
+        """
+        Filter queryset by region using the NUTS1 code
+        """
+        return queryset.filter(ballot_paper__tags__NUTS1__key=value)
+
+    def is_current_filter(self, queryset, name, value):
+        if int(value):
+            return queryset.exclude(ballot_paper__election__current=False)
+        return queryset.exclude(ballot_paper__election__current=True)
+
+    class Meta:
+        model = MaterializedMemberships
+        fields = []

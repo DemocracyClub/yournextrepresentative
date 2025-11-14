@@ -111,6 +111,9 @@ class DSLinkWidget(LinkWidget):
         data = self.data.copy()
         data[name] = option_value
         selected = data == self.data or option_value in selected_choices
+        # remove page param from query string
+        if data.get("page"):
+            del data["page"]
         try:
             url = data.urlencode()
         except AttributeError:
