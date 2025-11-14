@@ -228,3 +228,11 @@ class PersonSuggestionModelChoiceField(forms.ModelChoiceField):
             {"object": obj},
         )
         return mark_safe(html)
+
+    def to_python(self, value):
+        if value == "_new":
+            return value
+        for model in self.queryset:
+            if str(model.pk) == value:
+                return model.pk
+        return super().to_python(value)
