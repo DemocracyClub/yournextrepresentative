@@ -24,8 +24,6 @@ test-results
 node_modules/
 .vscode/
 /test-env
-/ynr/apps/sopn_parsing/tests/data/sopn_baseline.json
-/ynr/apps/sopn_parsing/tests/data/sopn_baseline_copy.json
 # PyCharm
 .idea/
 
