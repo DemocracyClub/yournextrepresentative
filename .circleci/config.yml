@@ -173,6 +173,7 @@ jobs:
           command: |
             . .venv/bin/activate
             npx cdk bootstrap
+            AWS_REGION=us-east-1 npx cdk bootstrap
       - run:
           name: Show would-be changes in the stack
           command: |
@@ -180,10 +181,16 @@ jobs:
             npx cdk diff
 
       - run:
-          name: Deploy CDK stack infra
+          name: Deploy WAF
           command: |
             . .venv/bin/activate
-            npx cdk deploy --verbose --require-approval never --progress events --outputs-file ynr-<<parameters.dc-environment>>-stack-out.json
+            npx cdk deploy WafStack --verbose --require-approval never --progress events --outputs-file ynr-<<parameters.dc-environment>>-waf-stack-out.json
+      - run:
+          name: Deploy YNR CDK stack infra
+          command: |
+            . .venv/bin/activate
+            WAF_ARN=$(jq -r '.WafStack.WebAclArn' ynr-<<parameters.dc-environment>>-waf-stack-out.json)
+            npx cdk deploy YnrStack --context webAclArn=$WAF_ARN --verbose --require-approval never --progress events --outputs-file ynr-<<parameters.dc-environment>>-stack-out.json
       # Because we use stable image tags we need to force a redeploy of the
       # service when the container is updated
       - run:
