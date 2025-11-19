@@ -87,7 +87,7 @@
   <p>
     {{ form.biography.label_tag }}
     {% if form.biography.help_text %}
-      <p class="help_text">{{ form.biography.help_text }}</p>
+      {{ form.biography.help_text }}
     {% endif %}
   {{ form.biography }}
   </p>
