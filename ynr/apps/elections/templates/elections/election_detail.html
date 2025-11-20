@@ -17,20 +17,20 @@
 
     <div class="row">
         <div class="columns large-9">
-
-            {% for ballot in ballots %}
+            {% regroup memberships by ballot as ballot_list %}
+            {% for ballot_group in ballot_list %}
                 <h3>
-                    <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}
+                    <a href="{{ ballot_group.grouper.get_absolute_url }}">{{ ballot_group.grouper.post.label }}
                         on {{ object.election_date|date:"j F Y" }}</a>
-                    {{ ballot.cancelled_status_html }}
-                    {{ ballot.locked_status_html }}
+                    {{ ballot_group.grouper.cancelled_status_html }}
+                    {{ ballot_group.grouper.locked_status_html }}
                 </h3>
                 <p>
                     {{ ballot.winner_count }} seat{{ ballot.winner_count|pluralize }} up for election.
                     {{ ballot.membership_set.count }} candidates known.
                 </p>
 
-                {% if ballot.membership_set.exists %}
+                {% if ballot_group.list %}
                     <table>
                         <thead>
                         <tr>
@@ -47,7 +47,8 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for membership in ballot.membership_set.all %}
+                        {% for membership in ballot_group.list %}
+
                             <tr>
                                 <td><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>
                                 </td>

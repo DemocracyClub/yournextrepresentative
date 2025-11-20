@@ -37,29 +37,21 @@ class ElectionView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["ballots"] = (
-            Ballot.objects.filter(election=self.object)
-            .order_by("post__label")
-            .select_related("post")
-            .select_related("election")
-            .select_related("resultset")
-            .prefetch_related("suggestedpostlock_set")
-            .prefetch_related(
-                Prefetch(
-                    "membership_set",
-                    Membership.objects.select_related(
-                        "party", "person", "result"
-                    )
-                    .annotate(last_name=LastWord("person__name"))
-                    .annotate(
-                        name_for_ordering=Coalesce(
-                            NullIfBlank("person__sort_name"), "last_name"
-                        )
-                    )
-                    .order_by(
-                        "-elected", "-result__num_ballots", "name_for_ordering"
-                    ),
+
+        context["memberships"] = (
+            Membership.objects.filter(ballot__election=self.object)
+            .select_related("ballot", "ballot__post", "ballot__resultset", "person", "party", "result")
+            .annotate(last_name=LastWord("person__name"))
+            .annotate(
+                name_for_ordering=Coalesce(
+                    NullIfBlank("person__sort_name"), "last_name"
                 )
+            )
+            .order_by(
+                "ballot__post__label",
+                "-elected",
+                "-result__num_ballots",
+                "name_for_ordering"
             )
         )
 
