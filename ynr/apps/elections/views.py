@@ -11,7 +11,7 @@ from candidates.models.db import ActionType
 from candidates.views.version_data import get_client_ip
 from django.contrib import messages
 from django.db import transaction
-from django.db.models import Count, Prefetch, Q
+from django.db.models import Count, Q
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -40,7 +40,14 @@ class ElectionView(DetailView):
 
         context["memberships"] = (
             Membership.objects.filter(ballot__election=self.object)
-            .select_related("ballot", "ballot__post", "ballot__resultset", "person", "party", "result")
+            .select_related(
+                "ballot",
+                "ballot__post",
+                "ballot__resultset",
+                "person",
+                "party",
+                "result",
+            )
             .annotate(last_name=LastWord("person__name"))
             .annotate(
                 name_for_ordering=Coalesce(
@@ -51,7 +58,7 @@ class ElectionView(DetailView):
                 "ballot__post__label",
                 "-elected",
                 "-result__num_ballots",
-                "name_for_ordering"
+                "name_for_ordering",
             )
         )
 
