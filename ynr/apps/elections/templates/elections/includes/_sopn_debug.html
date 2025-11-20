@@ -7,27 +7,11 @@
         <ul>
             <li>Pages matched: {% if object.sopn.get_pages %}Yes (matched pages: {{ object.sopn.get_pages|join:", " }}
                 ){% else %}No{% endif %}</li>
-            <li>Camelot tables extracted: {% if object.sopn.camelotparsedsopn %}Yes{% else %}No{% endif %}</li>
             <li>Raw Person Data: {% if object.rawpeople %}Yes{% else %}No{% endif %}</li>
             <li>AWS Textract Data: {% if textract_parsed.raw_data %}Yes{% else %}No{% endif %}</li>
             <li>AWS Textract Parsed? {% if textract_parsed.parsed_data %}Yes{% else %}
                 No{% endif %}</li>
         </ul>
-
-        <h3>Camelot raw Data</h3>
-        {% if object.sopn.camelotparsedsopn.raw_data %}
-            <pre>{{ object.sopn.camelotparsedsopn.as_pandas.to_dict|pprint }}</pre>
-        {% else %}
-            N/A
-        {% endif %}
-
-        <h3>Camelot table Data</h3>
-        {% if object.sopn.camelotparsedsopn.data_as_html %}
-            {{ object.sopn.camelotparsedsopn.data_as_html|safe }}
-        {% else %}
-            N/A
-        {% endif %}
-        <br/>
 
 
         {% if textract_parsed and textract_parsed.as_textractor_document %}

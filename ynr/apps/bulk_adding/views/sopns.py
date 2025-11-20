@@ -123,12 +123,8 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
         return super().get(request, *args, **kwargs)
 
     def get_active_parser(self) -> Optional[SOPNParsingBackends]:
-        if self.request.GET.get("v1_parser"):
-            return SOPNParsingBackends.CAMELOT
         if self.ballot.rawpeople.textract_data:
             return SOPNParsingBackends.TEXTRACT
-        if self.ballot.rawpeople.data:
-            return SOPNParsingBackends.CAMELOT
         return None
 
     def get_context_data(self, **kwargs):
