@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {% if ballot.candidates_locked %}
+    {% if ballot_group.grouper.candidates_locked %}
         Candidates for each ballot in the {{ object.name }} on {{ object.election_date|date:"j F Y" }}
     {% else %}
         Known candidates for each ballot in the {{ object.name }} on {{ object.election_date|date:"j F Y" }}
@@ -26,8 +26,8 @@
                     {{ ballot_group.grouper.locked_status_html }}
                 </h3>
                 <p>
-                    {{ ballot.winner_count }} seat{{ ballot.winner_count|pluralize }} up for election.
-                    {{ ballot.membership_set.count }} candidates known.
+                    {{ ballot_group.grouper.winner_count }} seat{{ ballot_group.grouper.winner_count|pluralize }} up for election.
+                    {{ ballot_group.grouper.membership_set.count }} candidates known.
                 </p>
 
                 {% if ballot_group.list %}
@@ -39,7 +39,7 @@
                                 <th>List position</th>
                             {% endif %}
                             <th>Party</th>
-                            {% if ballot.resultset %}
+                            {% if ballot_group.grouper.resultset %}
                                 <th>Votes</th>
                                 <th>Elected?</th>
                             {% endif %}
@@ -57,7 +57,7 @@
                                 {% endif %}
 
                                 <td>{{ membership.party.name }}</td>
-                                {% if ballot.resultset %}
+                                {% if ballot_group.grouper.resultset %}
                                     <td>{{ membership.result.num_ballots }}</td>
                                     <td>{{ membership.elected|yesno|title }}</td>
                                 {% endif %}
@@ -67,14 +67,14 @@
                     </table>
                 {% endif %}
 
-                {% if not ballot.cancelled %}
-                    <a class="button tiny" href="{{ ballot.get_absolute_url }}">Add candidates</a>
-                    {% if ballot.election.in_past %}
-                        {% if ballot.resultset %}
-                            <a class="button tiny" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">Edit
+                {% if not ballot_group.grouper.cancelled %}
+                    <a class="button tiny" href="{{ ballot_group.grouper.get_absolute_url }}">Add candidates</a>
+                    {% if ballot_group.grouper.election.in_past %}
+                        {% if ballot_group.grouper.resultset %}
+                            <a class="button tiny" href="{% url "ballot_paper_results_form" ballot_group.grouper.ballot_paper_id %}">Edit
                                 Results</a>
                         {% else %}
-                            <a class="button tiny" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">Add
+                            <a class="button tiny" href="{% url "ballot_paper_results_form" ballot_group.grouper.ballot_paper_id %}">Add
                                 Results</a>
                         {% endif %}
                     {% endif %}
