@@ -50,6 +50,22 @@ class ElectionView(DetailView):
                     Membership.objects.select_related(
                         "party", "person", "result"
                     )
+                    # Only request the fields we need to render the template
+                    # fetching a lot of unnecessary fields can making rendering
+                    # elections with a lot of ballots (e.g: a general election)
+                    # very slow. Add any new fields we add to the template here
+                    # to avoid introducing N+1 issues
+                    .only(
+                        "party_list_position",
+                        "elected",
+                        "ballot_id",
+                        "person_id",
+                        "party_id",
+                        "person__name",
+                        "person__sort_name",
+                        "party__name",
+                        "result__num_ballots",
+                    )
                     .annotate(last_name=LastWord("person__name"))
                     .annotate(
                         name_for_ordering=Coalesce(
