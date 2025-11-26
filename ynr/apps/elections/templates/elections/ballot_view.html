@@ -242,7 +242,7 @@
     {% include "elections/includes/_ballot_results_table.html" with results=ballot.resultset %}
   {% endif %}
 
-  {% if user.is_authenticated %}
+  {% if user.is_authenticated and logged_actions %}
     <h2>History for this ballot</h2>
     {% for action in logged_actions %}
       <div class="version">
