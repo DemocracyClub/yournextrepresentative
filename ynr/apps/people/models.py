@@ -1,5 +1,6 @@
 import contextlib
 from datetime import date
+from datetime import timezone as dt_timezone
 from enum import Enum, unique
 from urllib.parse import quote_plus, urljoin
 
@@ -7,6 +8,7 @@ from auth_helpers.views import user_in_group
 from candidates.diffs import get_version_diffs
 from candidates.models.db import ActionType, LoggedAction
 from candidates.models.popolo_extra import Ballot
+from dateutil.parser import parse
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.indexes import GinIndex
@@ -25,6 +27,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+from django.utils.timezone import make_aware
 from django_extensions.db.models import TimeStampedModel
 from people.helpers import person_names_equal
 from people.managers import (
@@ -45,6 +48,19 @@ def person_image_path(instance, filename):
     filename = filename[:400]
     # Upload images in a directory per person
     return f"images/people/{instance.person_id}/{filename}"
+
+
+def get_biography_last_updated(versions):
+    diffs = get_version_diffs(versions)
+    if not diffs:
+        return None
+    for diff in diffs:
+        if diff["data"].get("biography"):
+            parent_diff = diff["diffs"][0]["parent_diff"]
+            for change in parent_diff:
+                if change["path"] == "biography":
+                    return make_aware(parse(diff["timestamp"]), dt_timezone.utc)
+    return None
 
 
 @unique
@@ -274,9 +290,6 @@ class Person(TimeStampedModel, models.Model):
         blank=True,
         help_text="An extended account of a person's life",
     )
-    biography_last_updated = models.DateTimeField(
-        "biography last updated", null=True, blank=True
-    )
     national_identity = models.CharField(
         "national identity",
         max_length=128,
@@ -327,6 +340,10 @@ class Person(TimeStampedModel, models.Model):
         )
 
     objects = PersonQuerySet.as_manager()
+
+    @property
+    def biography_last_updated(self):
+        return get_biography_last_updated(self.versions)
 
     @property
     def has_locked_and_current_ballots(self):

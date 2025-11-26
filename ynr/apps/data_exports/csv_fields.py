@@ -25,6 +25,7 @@ from django.db.models.functions import Concat, Substr
 from django.template.defaultfilters import truncatechars
 from django.urls import reverse
 from django.utils.safestring import SafeString
+from people.models import get_biography_last_updated
 from ynr_refactoring.settings import PersonIdentifierFields
 
 
@@ -321,6 +322,7 @@ csv_fields["favourite_biscuit"] = CSVField(
     value_group="person",
     label="Favourite Biscuit",
 )
+
 csv_fields["statement_to_voters"] = CSVField(
     type="expr",
     value=F("person__biography"),
@@ -331,9 +333,10 @@ csv_fields["statement_to_voters"] = CSVField(
 
 csv_fields["statement_last_updated"] = CSVField(
     type="expr",
-    value=F("person__biography_last_updated"),
+    value=F("person__versions"),
     value_group="person",
     label="Statement last updated",
+    formatter=get_biography_last_updated,
 )
 
 csv_fields["person_last_updated"] = CSVField(
