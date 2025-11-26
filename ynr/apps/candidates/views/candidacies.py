@@ -47,6 +47,7 @@ class CandidacyView(ElectionMixin, LoginRequiredMixin, FormView):
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version=change_metadata["version_id"],
                 person=person,
+                ballot=self.ballot,
                 source=change_metadata["information_source"],
             )
 
@@ -91,6 +92,7 @@ class CandidacyDeleteView(ElectionMixin, LoginRequiredMixin, FormView):
                 action_type=ActionType.CANDIDACY_DELETE,
                 ip_address=get_client_ip(self.request),
                 popit_person_new_version=change_metadata["version_id"],
+                ballot=self.ballot,
                 person=person,
                 source=change_metadata["information_source"],
             )

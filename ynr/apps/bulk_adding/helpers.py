@@ -119,6 +119,7 @@ def update_person(
     LoggedAction.objects.create(
         user=request.user,
         person=person,
+        ballot=ballot,
         action_type=ActionType.CANDIDACY_CREATE,
         ip_address=get_client_ip(request),
         popit_person_new_version=change_metadata["version_id"],
