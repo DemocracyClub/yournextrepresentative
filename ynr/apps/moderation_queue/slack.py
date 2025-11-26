@@ -3,6 +3,7 @@ import json
 
 import requests
 from django.conf import settings
+from django.utils.text import Truncator
 from utils.slack import SlackHelper
 
 
@@ -211,6 +212,24 @@ with the source: \n> {source}
             message.append(message_removed_header)
             message.extend(message_removed_section)
         message.extend([message_divider, message_actions])
+
+        """
+        Slack will reject any text blocks greater than 3000 chars
+        Go through the whole thing and truncate down anything which is too long
+        Potentially this could cause markdown rendering issues
+        (e.g: if we open a tag and stip the closing chars)
+        but at least we won't throw trying to POST the object to Slack's API
+        """
+        for item in message:
+            if (
+                item.get("text")
+                and item["text"].get("text")
+                and len(item["text"]["text"]) >= 3000
+            ):
+                item["text"]["text"] = Truncator(item["text"]["text"]).chars(
+                    2995
+                )
+
         self.message = json.dumps(message, indent=4)
         return self.message
 
