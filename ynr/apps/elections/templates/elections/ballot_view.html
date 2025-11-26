@@ -241,9 +241,24 @@
   {% if ballot.has_results and ballot.resultset %}
     {% include "elections/includes/_ballot_results_table.html" with results=ballot.resultset %}
   {% endif %}
+
+  {% if user.is_authenticated %}
+    <h2>History for this ballot</h2>
+    {% for action in logged_actions %}
+      <div class="version">
+        <dl>
+          <dt>Description</dt>
+          <dd>{{ action.friendly_description }}</dd>
+          <dt>Timestamp</dt>
+          <dd>{{ action.created }}</dd>
+        </dl>
+      </div>
+    {% endfor %}
+  {% endif %}
+
   </div>
   <div class="columns large-3">
-      {% include "uk/data_timeline.html" %}
+    {% include "uk/data_timeline.html" %}
   </div>
 </div>
 

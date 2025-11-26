@@ -212,6 +212,13 @@ class BallotPaperView(TemplateView):
                     exclude_people_qs=context["people_not_standing"],
                 )
 
+        context["logged_actions"] = (
+            LoggedAction.objects.all()
+            .select_related("user")
+            .filter(ballot=ballot)
+            .order_by("-created")
+        )
+
         return context
 
     def get_context_data(self, **kwargs):
