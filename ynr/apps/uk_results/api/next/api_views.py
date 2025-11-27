@@ -14,6 +14,8 @@ class ResultViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_url_kwarg = "ballot_paper_id"
     queryset = (
         ResultSet.objects.select_related("ballot")
+        .prefetch_related("candidate_results__membership__person")
+        .prefetch_related("candidate_results__membership__party")
         .prefetch_related("ballot__membership_set")
         .order_by("-ballot__election__election_date", "ballot__ballot_paper_id")
     )
