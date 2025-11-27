@@ -6,7 +6,6 @@ from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, validate_email
-from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from official_documents.models import BallotSOPN
@@ -316,7 +315,6 @@ class BasePersonForm(forms.ModelForm):
             "summary",
             "national_identity",
             "name_search_vector",
-            "biography_last_updated",
             "death_date",
         )
 
@@ -418,14 +416,6 @@ class BasePersonForm(forms.ModelForm):
                 initial_name=initial_name,
                 user=user,
             )
-
-        initial_biography = self.initial.get("biography", None)
-        biography_updated = (
-            "biography" in self.changed_data
-            and initial_biography != self.cleaned_data["biography"]
-        )
-        if biography_updated:
-            self.instance.biography_last_updated = timezone.now()
 
         return super().save(commit)
 
