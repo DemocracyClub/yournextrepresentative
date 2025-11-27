@@ -59,7 +59,7 @@ WORKDIR $APP_CODE
 ########################
 # Set up a virtualenv to avoid interactions with system packages,
 # and install/upgrade some common pre-reqs.
-COPY --from=ghcr.io/astral-sh/uv:0.8 /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.9 /uv /usr/local/bin/uv
 
 ENV PATH="$APP_VENV/bin:$PATH" \
     VIRTUAL_ENV="$APP_VENV/bin:$PATH" \
