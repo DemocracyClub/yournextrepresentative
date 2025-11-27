@@ -8,7 +8,7 @@ version: 2.1
 commands:
   install_uv:
     steps:
-      - run: pip install --upgrade uv"==0.8.*"
+      - run: pip install --upgrade uv"==0.9.*"
 
 jobs:
   post_deploy_checks:
