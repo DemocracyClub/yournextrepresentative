@@ -83,6 +83,9 @@ TEXTRACT_S3_BUCKET_REGION = os.environ["S3_SOPN_REGION"]
 TEXTRACT_S3_BUCKET_URL = f"https://{TEXTRACT_S3_BUCKET_NAME}.s3.{TEXTRACT_S3_BUCKET_REGION}.amazonaws.com"
 
 
+BASE_URL = f"https://{os.environ['FQDN']}"
+
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_PORT = 587
 EMAIL_HOST = os.environ["EMAIL_HOST"]

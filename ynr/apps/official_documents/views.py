@@ -26,8 +26,8 @@ from .models import (
     BallotSOPN,
     PageMatchingMethods,
     add_ballot_sopn,
-    send_ballot_sopn_update_notification,
 )
+from .notifications import send_ballot_sopn_update_notification
 
 
 class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):

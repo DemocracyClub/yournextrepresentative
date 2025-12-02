@@ -443,6 +443,8 @@ ENABLE_SCHEDULED_JOBS = str_bool_to_bool(
     os.environ.get("ENABLE_SCHEDULED_JOBS", False)
 )
 
+BASE_URL = f"http://{os.environ.get('FQDN', 'localhost:8080')}"
+
 # import application constants
 from .constants.needs_review import *  # noqa
 from .constants.csv_fields import *  # noqa
