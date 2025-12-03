@@ -486,8 +486,14 @@ class PersonNameEditReviewListView(GroupRequiredMixin, ListView):
 
     def approve_name_change(self, other_name):
         person = other_name.content_object
-        person.edit_name(other_name.name, person.name, user=self.request.user)
+        person.edit_name(
+            suggested_name=other_name.name,
+            initial_name=person.name,
+            user=self.request.user,
+        )
         person.save()
+        # Note: We don't need to explicitly send a notification here
+        # it will be handled in person.edit_name()
 
     def delete_name_change(self, other_name):
         other_name.delete()

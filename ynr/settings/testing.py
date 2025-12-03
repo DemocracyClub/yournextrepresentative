@@ -43,6 +43,9 @@ FRONT_PAGE_CTA = "BY_ELECTIONS"
 
 SOPN_UPDATE_NOTIFICATION_EMAILS = ["developers@democracyclub.org.uk"]
 
+# execute all background tasks immediately under test
+Q_CLUSTER["sync"] = True  # noqa: F405
+
 
 # override these settings to safe values if they are set from the env
 TWITTER_APP_ONLY_BEARER_TOKEN = None

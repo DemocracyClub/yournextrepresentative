@@ -21,6 +21,7 @@ from django.views.decorators.cache import cache_control, cache_page
 from django.views.generic import DetailView, TemplateView, UpdateView
 from elections.mixins import ElectionMixin
 from elections.models import Election
+from elections.notifications import send_ballot_lock_notification
 from moderation_queue.forms import SuggestedPostLockForm
 from official_documents.models import BallotSOPN
 from parties.models import Party
@@ -311,6 +312,19 @@ class LockBallotView(GroupRequiredMixin, UpdateView):
                 ballot=ballot,
                 source=message,
             )
+
+            if action_type == ActionType.CONSTITUENCY_LOCK:
+                previously_locked = (
+                    LoggedAction.objects.filter(
+                        action_type=action_type, ballot=ballot
+                    ).count()
+                    > 1
+                )
+                if previously_locked:
+                    send_ballot_lock_notification(
+                        ballot, self.request.user.username
+                    )
+
         if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"locked": ballot.candidates_locked})
         return HttpResponseRedirect(ballot.get_absolute_url())
