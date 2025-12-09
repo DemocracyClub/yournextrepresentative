@@ -25,3 +25,4 @@ echo Waiting for the two services.
 
 aws ecs wait services-stable --cluster "$CLUSTER_NAME" --service "${web_service_name}"
 aws ecs wait services-stable --cluster "$CLUSTER_NAME" --service "${worker_service_name}"
+echo Services stable
