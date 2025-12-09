@@ -1,5 +1,5 @@
-from django.db import connection
-from django.db.utils import OperationalError
+# from django.db import connection
+# from django.db.utils import OperationalError
 from django.http import HttpResponse
 
 
@@ -8,9 +8,10 @@ def trigger_error(request):
 
 
 def status_check(request):
-    try:
-        connection.cursor()
-    except OperationalError:
-        return HttpResponse("service unavailable", status=503)
+    # try:
+    #     connection.cursor()
+    # except OperationalError:
+    #     return HttpResponse("service unavailable", status=503)
 
-    return HttpResponse("OK", status=200)
+    # return HttpResponse("OK", status=200)
+    return HttpResponse("service unavailable", status=503)
