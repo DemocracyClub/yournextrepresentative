@@ -347,6 +347,12 @@ class YnrStack(Stack):
             healthy_http_codes="200",
         )
 
+        # See https://github.com/aws/aws-cdk/issues/31529
+        # When that issue is addressed we will be able to configure the web_service/target_group directly
+        web_service.target_group.set_attribute(
+            "deregistration_delay.timeout_seconds", "60"
+        )
+
         Tags.of(cluster).add("app", "ynr")
         Tags.of(web_service).add("role", "web")
         Tags.of(worker_service).add("role", "worker")
