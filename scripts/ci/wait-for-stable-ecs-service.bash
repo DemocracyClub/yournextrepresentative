@@ -18,11 +18,8 @@ echo "web service name: ${web_service_name}"
 echo "worker service name: ${worker_service_name}"
 
 echo Waiting for the two services.
-# Waiting is (intentionally) a blocking action. We can't wait for both at the
-# same time in one command, but our workaround is to wait for one and then the
-# other. If they finish in the other order then the second 'wait' will be
-# neglible.
-
-aws ecs wait services-stable --cluster "$CLUSTER_NAME" --service "${web_service_name}"
-aws ecs wait services-stable --cluster "$CLUSTER_NAME" --service "${worker_service_name}"
+# Waiting is (intentionally) a blocking action.
+# There is no output during the wait itself. If waiting takes too long then the
+# CI will error due to a timeout. By default with CircleCI this is 10 minutes.
+aws ecs wait services-stable --cluster "$CLUSTER_NAME" --service "${web_service_name}" "${worker_service_name}"
 echo Services stable
