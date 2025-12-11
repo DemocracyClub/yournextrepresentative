@@ -288,6 +288,7 @@ class YnrStack(Stack):
             cpu=1024,
             memory_limit_mib=2048,
             desired_count=web_desired_count,
+            circuit_breaker={"rollback": True},
             enable_execute_command=True,
             task_subnets=ec2.SubnetSelection(
                 subnet_type=ec2.SubnetType.PUBLIC,
