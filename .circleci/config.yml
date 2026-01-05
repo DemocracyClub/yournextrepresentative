@@ -17,7 +17,7 @@ jobs:
     parameters:
         dc-environment:
           type: enum
-          enum: [ development, staging, production ]
+          enum: [ development, staging, production, training ]
     environment:
       DC_ENVIRONMENT: "<<parameters.dc-environment>>"
     steps:
@@ -31,7 +31,7 @@ jobs:
             sudo apt install -y jq hurl
             cd hurl-tests
             AUTH_ARGS=""
-            if [ "$DC_ENVIRONMENT" = "development" ] || [ "$DC_ENVIRONMENT" = "staging" ]; then
+            if [ "$DC_ENVIRONMENT" = "development" ] || [ "$DC_ENVIRONMENT" = "staging" ] || [ "$DC_ENVIRONMENT" = "training" ]; then
               AUTH_ARGS="-u dc:dc"
             fi
             hurl --test -m 10 --variable host=https://$(jq -r '.YnrStack|to_entries|map(select(.key|startswith("AppFQDN"))|.value)[0]' ../ynr-${DC_ENVIRONMENT}-stack-out.json) $AUTH_ARGS *.hurl
@@ -129,6 +129,7 @@ jobs:
               - equal: [ "ci/test", << pipeline.git.branch >> ]
               - equal: [ "staging", << pipeline.git.branch >> ]
               - equal: [ "master", << pipeline.git.branch >> ]
+              - equal: [ "test-training20260105", << pipeline.git.branch >> ]
           steps:
             - run:
                 name: Save the image for later so we can tag it for the env and subsequently deploy it
@@ -154,7 +155,7 @@ jobs:
     parameters:
         dc-environment:
           type: enum
-          enum: [ development, staging, production ]
+          enum: [ development, staging, production, training ]
     environment:
       DC_ENVIRONMENT: "<<parameters.dc-environment>>"
     steps:
@@ -214,7 +215,7 @@ jobs:
     parameters:
         dc-environment:
           type: enum
-          enum: [ development, staging, production ]
+          enum: [ development, staging, production, training ]
     environment:
       DC_ENVIRONMENT: "<<parameters.dc-environment>>"
     steps:
@@ -259,7 +260,7 @@ jobs:
     parameters:
         dc-environment:
           type: enum
-          enum: [ development, staging, production ]
+          enum: [ development, staging, production, training ]
     environment:
       DC_ENVIRONMENT: "<<parameters.dc-environment>>"
     steps:
@@ -342,7 +343,7 @@ workflows:
           # development one is required because that's the account where the
           # AWS ECR registry is found
           context: [ deployment-ecs-development-ynr ]
-          filters: { branches: { only: [ "master" ] } }
+          filters: { branches: { only: [ "master", "test-training20260105" ] } }
           dc-environment: staging
       - deploy_cdk_environment:
           name: STAGING cdk deploy
@@ -350,20 +351,20 @@ workflows:
           requires:
             - cdk_test
             - STAGING push container
-          filters: { branches: { only: [ "master" ] } }
+          filters: { branches: { only: [ "master", "test-training20260105" ] } }
           dc-environment: staging
       - db_migrate:
           name: STAGING db migrate
           requires:
             - STAGING cdk deploy
           context: [ deployment-ecs-staging-ynr ]
-          filters: { branches: { only: [ "master" ] } }
+          filters: { branches: { only: [ "master", "test-training20260105" ] } }
       - post_deploy_checks:
           name: STAGING post deploy checks
           requires:
             - STAGING db migrate
           dc-environment: staging
-          filters: { branches: { only: [ "master" ] } }
+          filters: { branches: { only: [ "master", "test-training20260105" ] } }
 
       ############
       # Production
@@ -400,3 +401,40 @@ workflows:
             - PRODUCTION db migrate
           dc-environment: production
           filters: { branches: { only: [ "master" ] } }
+
+
+      ############
+      # Production
+      ############
+      - push_and_tag:
+          name: "TRAINING push container"
+          requires:
+            - static_tests
+            - build_and_test
+          # One might expect to see the training context here, but the
+          # development one is required because that's the account where the
+          # AWS ECR registry is found
+          context: [ deployment-ecs-development-ynr ]
+          filters: { branches: { only: [ "master", "test-training20260105" ] } }
+          dc-environment: training
+      - deploy_cdk_environment:
+          name: TRAINING cdk deploy
+          context: [ deployment-ecs-training-ynr ]
+          requires:
+            - cdk_test
+            - STAGING post deploy checks
+            - TRAINING push container
+          filters: { branches: { only: [ "master", "test-training20260105" ] } }
+          dc-environment: training
+      - db_migrate:
+          name: TRAINING db migrate
+          requires:
+            - TRAINING cdk deploy
+          context: [ deployment-ecs-training-ynr ]
+          filters: { branches: { only: [ "master", "test-training20260105" ] } }
+      - post_deploy_checks:
+          name: TRAINING post deploy checks
+          requires:
+            - TRAINING db migrate
+          dc-environment: training
+          filters: { branches: { only: [ "master", "test-training20260105" ] } }

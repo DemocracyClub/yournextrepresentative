@@ -10,6 +10,7 @@ valid_environments = (
     "development",
     "staging",
     "production",
+    "training",
 )
 
 app_wide_context = {}
