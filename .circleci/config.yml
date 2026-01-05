@@ -129,7 +129,6 @@ jobs:
               - equal: [ "ci/test", << pipeline.git.branch >> ]
               - equal: [ "staging", << pipeline.git.branch >> ]
               - equal: [ "master", << pipeline.git.branch >> ]
-              - equal: [ "test-training20260105", << pipeline.git.branch >> ]
           steps:
             - run:
                 name: Save the image for later so we can tag it for the env and subsequently deploy it
@@ -343,7 +342,7 @@ workflows:
           # development one is required because that's the account where the
           # AWS ECR registry is found
           context: [ deployment-ecs-development-ynr ]
-          filters: { branches: { only: [ "master", "test-training20260105" ] } }
+          filters: { branches: { only: [ "master" ] } }
           dc-environment: staging
       - deploy_cdk_environment:
           name: STAGING cdk deploy
@@ -351,20 +350,20 @@ workflows:
           requires:
             - cdk_test
             - STAGING push container
-          filters: { branches: { only: [ "master", "test-training20260105" ] } }
+          filters: { branches: { only: [ "master" ] } }
           dc-environment: staging
       - db_migrate:
           name: STAGING db migrate
           requires:
             - STAGING cdk deploy
           context: [ deployment-ecs-staging-ynr ]
-          filters: { branches: { only: [ "master", "test-training20260105" ] } }
+          filters: { branches: { only: [ "master" ] } }
       - post_deploy_checks:
           name: STAGING post deploy checks
           requires:
             - STAGING db migrate
           dc-environment: staging
-          filters: { branches: { only: [ "master", "test-training20260105" ] } }
+          filters: { branches: { only: [ "master" ] } }
 
       ############
       # Production
@@ -415,7 +414,7 @@ workflows:
           # development one is required because that's the account where the
           # AWS ECR registry is found
           context: [ deployment-ecs-development-ynr ]
-          filters: { branches: { only: [ "master", "test-training20260105" ] } }
+          filters: { branches: { only: [ "master" ] } }
           dc-environment: training
       - deploy_cdk_environment:
           name: TRAINING cdk deploy
@@ -424,17 +423,17 @@ workflows:
             - cdk_test
             - STAGING post deploy checks
             - TRAINING push container
-          filters: { branches: { only: [ "master", "test-training20260105" ] } }
+          filters: { branches: { only: [ "master" ] } }
           dc-environment: training
       - db_migrate:
           name: TRAINING db migrate
           requires:
             - TRAINING cdk deploy
           context: [ deployment-ecs-training-ynr ]
-          filters: { branches: { only: [ "master", "test-training20260105" ] } }
+          filters: { branches: { only: [ "master" ] } }
       - post_deploy_checks:
           name: TRAINING post deploy checks
           requires:
             - TRAINING db migrate
           dc-environment: training
-          filters: { branches: { only: [ "master", "test-training20260105" ] } }
+          filters: { branches: { only: [ "master" ] } }
