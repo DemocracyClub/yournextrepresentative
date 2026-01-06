@@ -23,7 +23,7 @@ class BasicAuthMiddleware:
         self.auth_enabled = getattr(
             settings,
             "BASIC_AUTH_ENABLED",
-            dc_environment in ("staging", "development"),
+            dc_environment in ("staging", "development", "training"),
         )
 
         self.get_response = get_response
