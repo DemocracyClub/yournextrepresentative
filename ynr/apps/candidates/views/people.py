@@ -126,12 +126,16 @@ class PersonView(TemplateView):
     def get(self, request, *args, **kwargs):
         person_id = self.kwargs["person_id"]
         try:
-            self.person = Person.objects.prefetch_related(
-                "memberships__ballot",
-                "memberships__ballot__post",
-                "memberships__ballot__election",
-                "tmp_person_identifiers",
-            ).get(pk=person_id)
+            self.person = (
+                Person.objects.with_biography_last_updated()
+                .prefetch_related(
+                    "memberships__ballot",
+                    "memberships__ballot__post",
+                    "memberships__ballot__election",
+                    "tmp_person_identifiers",
+                )
+                .get(pk=person_id)
+            )
         except Person.DoesNotExist:
             try:
                 return self.get_person_redirect(person_id)

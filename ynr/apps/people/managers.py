@@ -4,6 +4,7 @@ from candidates.management.images import get_file_md5sum
 from candidates.models import PersonRedirect
 from django.core.files import File
 from django.db import connection, models
+from django.db.models.expressions import RawSQL
 from ynr_refactoring.settings import PersonIdentifierFields
 
 
@@ -107,6 +108,34 @@ NAME_SEARCH_TRIGGER_SQL = """
         ON people_person FOR EACH ROW EXECUTE PROCEDURE people_person_search_trigger();
 """
 
+BIOGRAPHY_LAST_UPDATED_SQL = """
+CASE
+WHEN biography = '' THEN NULL
+ELSE (
+    WITH expanded AS (
+        SELECT
+            (elem->>'timestamp')::timestamptz AS ts,
+            elem->'data'->>'biography' AS bio
+        FROM jsonb_array_elements(versions) AS elem
+    ),
+    ordered AS (
+        SELECT
+            ts,
+            bio,
+            LAG(bio) OVER (ORDER BY ts) AS prev_bio
+        FROM expanded
+    )
+    SELECT ts
+    FROM ordered
+    WHERE prev_bio IS DISTINCT FROM bio
+    AND bio IS NOT NULL
+    AND bio <> ''
+    ORDER BY ts DESC
+    LIMIT 1
+)
+END
+"""
+
 
 class PersonQuerySet(models.query.QuerySet):
     def alive_now(self):
@@ -134,3 +163,8 @@ class PersonQuerySet(models.query.QuerySet):
 
     def update_name_search_trigger(self):
         self._run_sql(NAME_SEARCH_TRIGGER_SQL)
+
+    def with_biography_last_updated(self):
+        return self.annotate(
+            biography_last_updated=RawSQL(BIOGRAPHY_LAST_UPDATED_SQL, [])
+        )
