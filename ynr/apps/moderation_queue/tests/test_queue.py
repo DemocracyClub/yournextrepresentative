@@ -214,7 +214,6 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
         self.assertContains(response, "Photo policy")
 
     @patch("moderation_queue.forms.send_mail")
-    @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     def test_photo_review_upload_approved_privileged(self, mock_send_mail):
         with self.settings(SITE_ID=1):
             review_url = reverse(
@@ -237,9 +236,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             mock_send_mail.assert_called_once_with(
                 "example.com image upload approved",
                 "Thank you for submitting a photo to example.com. It has been\nuploaded to the candidate page here:\n\n  http://testserver/person/2009/tessa-jowell\n\nMany thanks from the example.com volunteers\n",
-                "admins@example.com",
                 ["john@example.com"],
-                fail_silently=False,
             )
 
             person = Person.objects.get(id=2009)
@@ -267,7 +264,6 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             )
 
     @patch("moderation_queue.forms.send_mail")
-    @override_settings(DEFAULT_FROM_EMAIL="admins@example.com")
     @override_settings(SUPPORT_EMAIL="support@example.com")
     def test_photo_review_upload_rejected_privileged(self, mock_send_mail):
         with self.settings(SITE_ID=1):
@@ -300,9 +296,7 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
                 "Thank-you for uploading a photo of Tessa Jowell to example.com,\nbut unfortunately we can't use that image because:\n\n  There's no clear source or copyright statement\n\nYou can just reply to this email if you want to discuss that\nfurther, or you can try uploading a photo with a different\nreason or justification for its use using this link:\n\n  http://testserver/moderation/photo/upload/2009\n\nMany thanks from the example.com volunteers\n\n--\nFor administrators' use: http://testserver/moderation/photo/review/{}\n".format(
                     self.q1.id
                 ),
-                "admins@example.com",
                 ["john@example.com", "support@example.com"],
-                fail_silently=False,
             )
 
             self.assertEqual(

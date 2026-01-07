@@ -9,7 +9,6 @@ from django import forms
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
-from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.urls import reverse
 from moderation_queue.helpers import (
@@ -17,6 +16,7 @@ from moderation_queue.helpers import (
 )
 from people.forms.forms import StrippedCharField
 from PIL import Image as PILImage
+from utils.mail import send_mail
 
 from .models import CopyrightOptions, QueuedImage, SuggestedPostLock
 
@@ -277,9 +277,7 @@ class PhotoReviewForm(forms.Form):
         return send_mail(
             subject,
             message,
-            settings.DEFAULT_FROM_EMAIL,
             recipients,
-            fail_silently=False,
         )
 
 

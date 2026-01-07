@@ -32,6 +32,7 @@ from people.managers import (
     PersonImageManager,
     PersonQuerySet,
 )
+from people.notifications import send_name_change_notification
 from popolo.models import Membership, VersionNotFound
 from slugify import slugify
 from sorl.thumbnail import delete as sorl_delete
@@ -345,10 +346,10 @@ class Person(TimeStampedModel, models.Model):
         and send it to the moderation queue for review.
         """
 
-        qs = self.memberships.filter(
+        memberships_qs = self.memberships.filter(
             ballot__election__current=True, ballot__candidates_locked=True
         )
-        name_edit_restricted = qs.exists()
+        name_edit_restricted = memberships_qs.exists()
 
         user_can_edit = (
             user_in_group(user, TRUSTED_TO_EDIT_NAME)
@@ -365,6 +366,14 @@ class Person(TimeStampedModel, models.Model):
             other_name, _ = self.other_names.get_or_create(name=initial_name)
             other_name.needs_review = needs_review
             other_name.save()
+            if name_edit_restricted:
+                send_name_change_notification(
+                    self,
+                    initial_name,
+                    suggested_name,
+                    (m.ballot for m in memberships_qs),
+                    user.username,
+                )
         else:
             self.name = initial_name
 

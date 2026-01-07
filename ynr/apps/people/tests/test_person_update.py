@@ -1,6 +1,10 @@
+import textwrap
+from unittest.mock import patch
+
 from candidates.tests.factories import BallotPaperFactory, ElectionFactory
 from candidates.views.version_data import get_change_metadata
 from django.contrib.auth.models import User
+from django.test.utils import override_settings
 from django.urls import reverse
 from django.utils import timezone
 from freezegun import freeze_time
@@ -89,7 +93,10 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         )
         self.assertContains(response, "Review person name suggestions")
 
-    def test_change_name_by_untrusted_user_no_locked_ballots(self):
+    @patch("people.models.send_name_change_notification")
+    def test_change_name_by_untrusted_user_no_locked_ballots(
+        self, mock_send_name_change_notification
+    ):
         # Test that a user who is not in the TRUSTED_TO_EDIT_NAME group
         # makes a change to a person's name (who does not have current, locked ballots),
         # the change is saved directly and an other name is created and not
@@ -112,8 +119,12 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         # check that the suggested name has not been created
         self.assertEqual(self.person.other_names.count(), 1)
         self.assertEqual(self.person.other_names.first().needs_review, False)
+        mock_send_name_change_notification.assert_not_called()
 
-    def test_change_name_by_untrusted_user_with_locked_ballots(self):
+    @patch("people.models.send_name_change_notification")
+    def test_change_name_by_untrusted_user_with_locked_ballots(
+        self, mock_send_name_change_notification
+    ):
         # Test that a user who is not in the TRUSTED_TO_EDIT_NAME group
         # makes a change to a person's name (who has current, locked ballots),
         # but the change is not saved and the suggested name is flagged for review
@@ -152,15 +163,50 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         # check that the name has been added to the other names and needs review
         self.assertEqual(self.person.other_names.first().name, "Tessa Palmer")
         self.assertEqual(self.person.other_names.first().needs_review, True)
+        mock_send_name_change_notification.assert_not_called()
 
-    def test_change_name_by_trusted_user(self):
+    @patch("people.notifications.send_mail")
+    @override_settings(SOPN_UPDATE_NOTIFICATION_EMAILS=["fred@example.com"])
+    @override_settings(BASE_URL="https://candidates.example.com")
+    def test_change_name_by_trusted_user_with_locked_ballots(
+        self, mock_send_mail
+    ):
         # Test that a user who is in the TRUSTED_TO_EDIT_NAME group
         # makes a change to a person's name,
         # the change is saved directly and an other_name is created,
         # but the other_name is not flagged for review
+        # even though they are standing in a locked/current ballot
         self.assertEqual(len(self.person.other_names.all()), 0)
         # get the test user in the TRUSTED_TO_EDIT_NAME group
         self.user = User.objects.get(username="george")
+
+        current_election = ElectionFactory(
+            election_date="2023-05-05", slug="parl.2023-05-05", current=True
+        )
+        ballot = BallotPaperFactory(
+            election=current_election,
+            post=self.dulwich_post,
+            ballot_paper_id="parl.foo.2023-05-05",
+            candidates_locked=True,
+        )
+
+        self.person.memberships.create(
+            ballot=ballot,
+            post=self.dulwich_post,
+            party=self.green_party,
+            label="Test Membership",
+        )
+
+        expected_mail_body = textwrap.dedent(
+            """\
+            Hello,
+
+            The user george changed the name of https://candidates.example.com/person/2009/tessa-palmer from Tessa Jowell to Tessa Palmer.
+
+            This candidate is currently standing in the following ballots:
+            - https://candidates.example.com/elections/parl.foo.2023-05-05/
+            """
+        )
 
         response = self.app.get(
             "/person/{}/update".format(self.person.pk), user=self.user
@@ -180,6 +226,11 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         # check an other_names has been created
         self.assertEqual(len(self.person.other_names.all()), 1)
         self.assertEqual(self.person.other_names.first().needs_review, False)
+        mock_send_mail.assert_called_once_with(
+            "Name for candidate updated",
+            expected_mail_body,
+            ["fred@example.com"],
+        )
 
     def test_case_change_doesnt_make_other_name(self):
         self.assertEqual(len(self.person.other_names.all()), 0)

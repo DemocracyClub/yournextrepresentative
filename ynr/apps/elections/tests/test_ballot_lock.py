@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot
 from candidates.tests.auth import TestUserMixin
@@ -61,7 +63,8 @@ class TestBallotLockAndUnlock(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
             self.assertTrue("Invalid data POSTed" in context.exception)
 
-    def test_constituency_lock(self):
+    @patch("elections.views.send_ballot_lock_notification")
+    def test_constituency_lock(self, mock_send_ballot_lock_notification):
         post = Post.objects.get(id=self.post_id)
         ballot = update_lock(post, self.election, False)
         self.assertEqual(False, ballot.candidates_locked)
@@ -93,8 +96,10 @@ class TestBallotLockAndUnlock(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             response.location, self.dulwich_post_ballot.get_absolute_url()
         )
+        mock_send_ballot_lock_notification.assert_not_called()
 
-    def test_constituency_unlock(self):
+    @patch("elections.views.send_ballot_lock_notification")
+    def test_constituency_unlock(self, mock_send_ballot_lock_notification):
         MembershipFactory(
             ballot=self.dulwich_post_ballot,
             person=PersonFactory(),
@@ -123,12 +128,65 @@ class TestBallotLockAndUnlock(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             response.location, self.dulwich_post_ballot.get_absolute_url()
         )
+        mock_send_ballot_lock_notification.assert_not_called()
 
     def test_constituencies_unlocked_list(self):
         response = self.app.get("/elections/parl.2015-05-07/unlocked/")
         self.assertEqual(response.status_code, 200)
         self.assertIn("Dulwich", response.text)
         self.assertNotIn("Camberwell", response.text)
+
+    @patch("elections.views.send_ballot_lock_notification")
+    def test_constituency_re_lock(self, mock_send_ballot_lock_notification):
+        post = Post.objects.get(id=self.post_id)
+        ballot = update_lock(post, self.election, False)
+        self.assertEqual(False, ballot.candidates_locked)
+
+        RawPeople.objects.create(ballot=ballot, data={})
+
+        self.app.get(
+            self.dulwich_post_ballot.get_absolute_url(),
+            user=self.user_who_can_lock,
+        )
+        csrftoken = self.app.cookies["csrftoken"]
+
+        # lock
+        self.app.post(
+            reverse(
+                "constituency-lock",
+                kwargs={"ballot_id": ballot.ballot_paper_id},
+            ),
+            params={"csrfmiddlewaretoken": csrftoken},
+            user=self.user_who_can_lock,
+            expect_errors=False,
+        )
+        # unlock
+        self.app.post(
+            reverse(
+                "constituency-lock",
+                kwargs={"ballot_id": ballot.ballot_paper_id},
+            ),
+            params={"csrfmiddlewaretoken": csrftoken},
+            user=self.user_who_can_lock,
+            expect_errors=False,
+        )
+        # re-lock
+        self.app.post(
+            reverse(
+                "constituency-lock",
+                kwargs={"ballot_id": ballot.ballot_paper_id},
+            ),
+            params={"csrfmiddlewaretoken": csrftoken},
+            user=self.user_who_can_lock,
+            expect_errors=False,
+        )
+
+        ballot = Ballot.objects.get(ballot_paper_id="parl.65808.2015-05-07")
+
+        self.assertEqual(True, ballot.candidates_locked)
+        mock_send_ballot_lock_notification.assert_called_once_with(
+            ballot, "charles"
+        )
 
 
 class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
