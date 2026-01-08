@@ -363,6 +363,18 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
     previous_party_affiliations = models.ManyToManyField(
         to="parties.Party", related_name="alliated_memberships", blank=True
     )
+    sopn_last_name = models.CharField(
+        max_length=255,
+        help_text="The person's last name, exactly as it is printed on the SOPN",
+        blank=True,
+        default="",
+    )
+    sopn_first_names = models.CharField(
+        max_length=512,
+        help_text="The person's first names, exactly as they are printed on the SOPN",
+        blank=True,
+        default="",
+    )
 
     deselected = models.BooleanField(
         null=True,
