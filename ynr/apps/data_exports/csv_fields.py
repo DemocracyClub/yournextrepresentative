@@ -20,11 +20,19 @@ from typing import Callable, Dict, Literal, Optional, Union
 
 from django.core.files.storage import default_storage
 from django.db.models import BooleanField, CharField, Expression
-from django.db.models.expressions import Case, Combinable, F, Value, When
+from django.db.models.expressions import (
+    Case,
+    Combinable,
+    F,
+    RawSQL,
+    Value,
+    When,
+)
 from django.db.models.functions import Concat, Substr
 from django.template.defaultfilters import truncatechars
 from django.urls import reverse
 from django.utils.safestring import SafeString
+from people.managers import BIOGRAPHY_LAST_UPDATED_SQL
 from ynr_refactoring.settings import PersonIdentifierFields
 
 
@@ -321,6 +329,7 @@ csv_fields["favourite_biscuit"] = CSVField(
     value_group="person",
     label="Favourite Biscuit",
 )
+
 csv_fields["statement_to_voters"] = CSVField(
     type="expr",
     value=F("person__biography"),
@@ -331,7 +340,7 @@ csv_fields["statement_to_voters"] = CSVField(
 
 csv_fields["statement_last_updated"] = CSVField(
     type="expr",
-    value=F("person__biography_last_updated"),
+    value=RawSQL(BIOGRAPHY_LAST_UPDATED_SQL, []),
     value_group="person",
     label="Statement last updated",
 )

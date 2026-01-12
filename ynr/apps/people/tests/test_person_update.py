@@ -8,7 +8,7 @@ from django.test.utils import override_settings
 from django.urls import reverse
 from django.utils import timezone
 from freezegun import freeze_time
-from people.models import EditLimitationStatuses
+from people.models import EditLimitationStatuses, Person
 from people.tests.test_person_view import PersonViewSharedTestsMixin
 from webtest import Text
 
@@ -509,15 +509,17 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             form["source"] = "Mumsnet"
             form.submit()
 
-            self.person.refresh_from_db()
+            person = Person.objects.with_biography_last_updated().get(
+                pk=self.person.pk
+            )
 
-            self.assertEqual(len(self.person.versions), 1)
+            self.assertEqual(len(person.versions), 1)
             person_response_one = self.app.get(
-                "/person/{}/".format(self.person.pk), user=self.user
+                "/person/{}/".format(person.pk), user=self.user
             )
 
             biography_update_timestamp = (
-                self.person.biography_last_updated.astimezone()
+                person.biography_last_updated.astimezone()
             )
             # format into a string to compare with the response
             biography_update_timestamp = biography_update_timestamp.strftime(
@@ -536,7 +538,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             # the biography timestamp has not changed
         with freeze_time(later_timestamp):
             candidacy_update_response = self.app.get(
-                "/person/{}/update".format(self.person.pk), user=self.user
+                "/person/{}/update".format(person.pk), user=self.user
             )
             form = candidacy_update_response.forms["person-details"]
             form["memberships-0-party_identifier_0"].select(
@@ -552,25 +554,27 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             form["source"] = "http://example.com"
 
             form.submit()
-            self.person.refresh_from_db()
+            person = Person.objects.with_biography_last_updated().get(
+                pk=self.person.pk
+            )
 
-            candidacy = self.person.memberships.first()
+            candidacy = person.memberships.first()
             self.assertEqual(candidacy.party, self.green_party)
             self.assertEqual(candidacy.party_name, self.green_party.name)
 
             candidacy_update_timestamp = (
-                self.person.biography_last_updated.astimezone()
+                person.biography_last_updated.astimezone()
             )
             candidacy_update_timestamp = candidacy_update_timestamp.strftime(
                 "%-d %B %Y %H:%M"
             )
 
             person_response_one = self.app.get(
-                "/person/{}/".format(self.person.pk), user=self.user
+                "/person/{}/".format(person.pk), user=self.user
             )
 
-            self.assertEqual(len(self.person.versions), 2)
-            self.assertNotEqual(self.person.biography_last_updated, None)
+            self.assertEqual(len(person.versions), 2)
+            self.assertNotEqual(person.biography_last_updated, None)
             # assert that timestamp in the first update and second update are the same
             # because the biography should not have been updated in the second update
             self.assertEqual(
