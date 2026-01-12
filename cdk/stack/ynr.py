@@ -278,15 +278,15 @@ class YnrStack(Stack):
 
         web_desired_count = 1
         if self.dc_environment == "production":
-            web_desired_count = 3
+            web_desired_count = 2
 
         web_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
             "YnrService",
             cluster=cluster,
             assign_public_ip=True,
-            cpu=512,
-            memory_limit_mib=1024,
+            cpu=1024,
+            memory_limit_mib=2048,
             desired_count=web_desired_count,
             enable_execute_command=True,
             task_subnets=ec2.SubnetSelection(
