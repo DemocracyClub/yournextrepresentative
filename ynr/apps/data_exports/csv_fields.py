@@ -128,6 +128,18 @@ csv_fields["party_description_text"] = CSVField(
     value_group="candidacy",
     label="Party description",
 )
+csv_fields["sopn_last_name"] = CSVField(
+    value=F("membership__sopn_last_name"),
+    type="expr",
+    value_group="candidacy",
+    label="SOPN Last Name",
+)
+csv_fields["sopn_first_names"] = CSVField(
+    value=F("membership__sopn_first_names"),
+    type="expr",
+    value_group="candidacy",
+    label="SOPN First Names",
+)
 csv_fields["legacy_party_id"] = CSVField(
     value=F("party__legacy_slug"),
     type="expr",
