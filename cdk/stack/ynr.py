@@ -288,6 +288,7 @@ class YnrStack(Stack):
             cpu=1024,
             memory_limit_mib=2048,
             desired_count=web_desired_count,
+            circuit_breaker={"rollback": True},
             enable_execute_command=True,
             task_subnets=ec2.SubnetSelection(
                 subnet_type=ec2.SubnetType.PUBLIC,
@@ -345,6 +346,12 @@ class YnrStack(Stack):
         web_service.target_group.configure_health_check(
             path="/status_check/",
             healthy_http_codes="200",
+        )
+
+        # See https://github.com/aws/aws-cdk/issues/31529
+        # When that issue is addressed we will be able to configure the web_service/target_group directly
+        web_service.target_group.set_attribute(
+            "deregistration_delay.timeout_seconds", "60"
         )
 
         Tags.of(cluster).add("app", "ynr")
