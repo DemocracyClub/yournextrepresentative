@@ -10,6 +10,20 @@ from popolo.models import Membership, Organization, Post
 
 
 class Command(BaseCommand):
+    """
+    Create data for training sessions.
+
+    This script assumes the existence of:
+
+    - `Organization` object for `local-authority:havering`
+    - `Post` objects for the 2022-onwards wards of Havering
+    - `Party` objects for:
+        - Conservative Party (PP52)
+        - Labour Party (PP53)
+        - Labour & Co-op Party (joint-party:53-119)
+    - Various `Person` objects
+    """
+
     help = "Create data for training sessions"
 
     def create_membership(self, person_id, party, ballot_id, org):
