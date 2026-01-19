@@ -1,5 +1,6 @@
 from datetime import date
 
+from candidates.models import PersonRedirect
 from candidates.models.popolo_extra import Ballot
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -25,6 +26,14 @@ class Command(BaseCommand):
     """
 
     help = "Create data for training sessions"
+
+    def resolve_person_id(self, person_id):
+        try:
+            return PersonRedirect.objects.get(
+                old_person_id=person_id
+            ).new_person_id
+        except PersonRedirect.DoesNotExist:
+            return person_id
 
     def create_membership(self, person_id, party, ballot_id, org):
         post = (
@@ -160,12 +169,18 @@ class Command(BaseCommand):
 
         for ballot_id, person_id in conservatives:
             self.create_membership(
-                person_id, conservative_party, ballot_id, org
+                self.resolve_person_id(person_id),
+                conservative_party,
+                ballot_id,
+                org,
             )
 
         for ballot_id, person_id in labour_and_coop:
             self.create_membership(
-                person_id, labour_and_coop_party, ballot_id, org
+                self.resolve_person_id(person_id),
+                labour_and_coop_party,
+                ballot_id,
+                org,
             )
 
         # invalid candidates
@@ -173,7 +188,7 @@ class Command(BaseCommand):
         # This person is standing for this party, but they are really
         # standing in St Alban's, not St Andrew's. Whoopsie
         self.create_membership(
-            person_id=43037,
+            person_id=self.resolve_person_id(43037),
             party=conservative_party,
             ballot_id=f"local.havering.st-andrews.{polling_day_text}",
             org=org,
@@ -184,7 +199,7 @@ class Command(BaseCommand):
         # whereas they are actually standing for Labour Party (PP53).
         # Easy mistake, but we will need to fix it.
         self.create_membership(
-            person_id=91518,
+            person_id=self.resolve_person_id(91518),
             party=labour_and_coop_party,
             ballot_id=f"local.havering.st-andrews.{polling_day_text}",
             org=org,
@@ -192,7 +207,7 @@ class Command(BaseCommand):
 
         # This person is not standing in this election at all
         self.create_membership(
-            person_id=4012,
+            person_id=self.resolve_person_id(4012),
             party=labour_party,
             ballot_id=f"local.havering.st-andrews.{polling_day_text}",
             org=org,
