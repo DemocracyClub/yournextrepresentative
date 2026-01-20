@@ -3,9 +3,11 @@
 <h2>Photo policy</h2>
 
 <strong>The photo must be a clear, recent, colour headshot of the candidate.</strong>
+<p>
 {% if no_detail%}
   {% include 'moderation_queue/includes/_photo-policy-text.html' %}
 {% else %}
+</p>
   <details>
     <summary>Read more</summary>
     {% include 'moderation_queue/includes/_photo-policy-text.html' %}
