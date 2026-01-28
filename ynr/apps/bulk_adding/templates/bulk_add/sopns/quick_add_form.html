@@ -1,8 +1,9 @@
 {% with data as form %}
+    {% for field in form.hidden_fields %}
+        {{ field }}
+    {% endfor %}
+
     <table class="table sopn_adding_table">
-        {% for field in form.hidden_fields %}
-            {{ field }}
-        {% endfor %}
         <thead>
         <tr>
             <th colspan="2" {% if form.has_error %}class="form-error-summary"{% endif %}>

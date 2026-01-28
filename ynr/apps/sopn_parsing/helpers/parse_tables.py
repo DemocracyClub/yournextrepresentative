@@ -30,22 +30,23 @@ LAST_NAME_FIELDS = [
     "last name",
     "surname / cyfenw",
 ]
-WELSH_NAME_FIELDS = [
+WELSH_COMBINED_NAME_FIELDS = [
     "enwr ymgeisydd",
     "enwr ymgeisydd candidate name",
     "enwr ymgeisydd name of candidate",
 ]
+ENGLISH_COMBINED_NAME_FIELDS = [
+    "name of candidate",
+    "names of candidate",
+    "candidate name",
+    "surname other names",
+    "surname other names in full",
+]
 NAME_FIELDS = (
     FIRST_NAME_FIELDS
     + LAST_NAME_FIELDS
-    + [
-        "name of candidate",
-        "names of candidate",
-        "candidate name",
-        "surname other names",
-        "surname other names in full",
-    ]
-    + WELSH_NAME_FIELDS
+    + ENGLISH_COMBINED_NAME_FIELDS
+    + WELSH_COMBINED_NAME_FIELDS
 )
 
 INDEPENDENT_VALUES = ["independent", "", "annibynnol", "independents"]
@@ -144,14 +145,7 @@ def guess_previous_party_affiliations_field(data, sopn):
     return field_value
 
 
-def clean_name(name):
-    """
-    - Strips some special characters from the name string
-    - Splits the string in to a list, removing any empty strings
-    - Build a string to represent the last name by looking for all words that are in all caps
-    - Build a string to represent the other names by looking for all words not in all caps
-    - Strip whitespace in case last_names is empty and return string titleized
-    """
+def base_clean_name(name):
     name = name.replace("\n", " ")
     name = name.replace("`", "'")
     name = name.replace("\u2013", "\u002d")
@@ -160,6 +154,19 @@ def clean_name(name):
     # this can leave extra whitespace after special chars so remove these
     name = name.replace("- ", "-")
     name = name.replace("' ", "'")
+
+    return name.strip()
+
+
+def clean_name(name):
+    """
+    - Strips some special characters from the name string
+    - Splits the string in to a list, removing any empty strings
+    - Build a string to represent the last name by looking for all words that are in all caps
+    - Build a string to represent the other names by looking for all words not in all caps
+    - Strip whitespace in case last_names is empty and return string titleized
+    """
+    name = base_clean_name(name)
 
     if "commonly known as" in name:
         name = name.replace(")", "")
@@ -325,13 +332,45 @@ def get_party(description_model, description_str, sopn):
     return party_obj
 
 
-def get_name(row, name_fields):
+def get_ynr_name(row, name_fields):
     """
     Takes a list of name fields and returns a string of the values of each of
     the name fields in the row
     """
     name = " ".join([row[field] for field in name_fields])
     return clean_name(name)
+
+
+def split_name(name):
+    name = name.strip()
+
+    # Case 1: "Last names, First names"
+    if "," in name:
+        last, first = name.split(",", 1)
+        return base_clean_name(last), base_clean_name(first)
+
+    # Case 2: "LAST NAMES first names"
+    # Last name must be ALL CAPS (allowing spaces, apostrophes and hyphens)
+    match = re.match(r"^([A-Z][A-Z' -]+)\s+(.+)$", name)
+    if match:
+        last, first = match.groups()
+        return base_clean_name(last), base_clean_name(first)
+
+    # If we didn't match either of those cases give up
+    return "", name
+
+
+def get_sopn_names(row, name_fields):
+    if len(name_fields) == 1:
+        return split_name(row[name_fields[0]])
+
+    if len(name_fields) == 2:
+        return (
+            base_clean_name(row[name_fields[1]]),
+            base_clean_name(row[name_fields[0]]),
+        )
+
+    return ("", "")
 
 
 def add_previous_party_affiliations(party_str, raw_data, sopn):
@@ -369,7 +408,8 @@ def parse_table(sopn, data):
 
     ballot_data = []
     for row in iter_rows(data):
-        name = get_name(row, name_fields)
+        name = get_ynr_name(row, name_fields)
+        last_name, first_name = get_sopn_names(row, name_fields)
         # if we couldnt parse a candidate name skip this row
         if not name:
             continue
@@ -385,7 +425,12 @@ def parse_table(sopn, data):
         if not party_obj:
             continue
 
-        data = {"name": name, "party_id": party_obj.ec_id}
+        data = {
+            "sopn_last_name": last_name,
+            "sopn_first_names": first_name,
+            "name": name,
+            "party_id": party_obj.ec_id,
+        }
         if description_obj:
             data["description_id"] = description_obj.pk
 
