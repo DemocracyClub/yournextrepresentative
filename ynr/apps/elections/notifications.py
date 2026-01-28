@@ -6,9 +6,12 @@ from utils.mail import send_mail
 
 
 def get_ballot_lock_notification_message(ballot, username):
+    prefix = ""
+    if settings.DC_ENVIRONMENT not in ["production", "testing"]:
+        prefix = f"This email was sent from the {settings.DC_ENVIRONMENT.upper()} environment.\n\n"
     return textwrap.dedent(
         f"""\
-        Hello,
+        {prefix}Hello,
         
         The user {username} re-locked the ballot {ballot.ballot_paper_id}.
         
@@ -19,8 +22,13 @@ def get_ballot_lock_notification_message(ballot, username):
 
 
 def send_ballot_lock_notification(ballot, username):
+    prefix = ""
+    if settings.DC_ENVIRONMENT not in ["production", "testing"]:
+        prefix = f"[{settings.DC_ENVIRONMENT.upper()}] "
+    subject = f"{prefix}Ballot re-locked"
+
     return send_mail(
-        "Ballot re-locked",
+        subject,
         get_ballot_lock_notification_message(ballot, username),
         settings.SOPN_UPDATE_NOTIFICATION_EMAILS,
     )

@@ -7,9 +7,13 @@ from .models import BallotSOPN
 
 
 def send_ballot_sopn_update_notification(ballot_sopn: BallotSOPN, request):
+    message_prefix = ""
+    if settings.DC_ENVIRONMENT not in ["production", "testing"]:
+        message_prefix = f"This email was sent from the {settings.DC_ENVIRONMENT.upper()} environment.\n\n"
+
     message = textwrap.dedent(
         f"""\
-    Hello,
+    {message_prefix}Hello,
     
     The user {request.user.username} has updated the SOPN for the ballot with ID {ballot_sopn.ballot.ballot_paper_id}.
     
@@ -24,8 +28,15 @@ def send_ballot_sopn_update_notification(ballot_sopn: BallotSOPN, request):
     """
     )
 
+    subject_prefix = ""
+    if settings.DC_ENVIRONMENT not in ["production", "testing"]:
+        subject_prefix = f"[{settings.DC_ENVIRONMENT.upper()}] "
+    subject = (
+        f"{subject_prefix}SOPN for {ballot_sopn.ballot.ballot_paper_id} updated"
+    )
+
     send_mail(
-        f"SOPN for {ballot_sopn.ballot.ballot_paper_id} updated",
+        subject,
         message,
         settings.SOPN_UPDATE_NOTIFICATION_EMAILS,
     )
