@@ -8,11 +8,14 @@ from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
 from aws_cdk import aws_elasticloadbalancingv2 as elbv2
+from aws_cdk import aws_events as events
+from aws_cdk import aws_events_targets as events_targets
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_logs as logs
 from aws_cdk import aws_route53 as route_53
 from aws_cdk import aws_route53_targets as route_53_target
 from aws_cdk import aws_s3 as s3
+from aws_cdk import aws_sns as sns
 from aws_cdk import aws_ssm as ssm
 from constructs import Construct
 
@@ -434,6 +437,40 @@ class YnrStack(Stack):
             value=self.cloudfront_dist.distribution_id,
             export_name="YnrCloudFrontDistributionId",
         )
+
+        # Alerting / notification
+        if self.dc_environment == "development":
+            ALERT_EMAIL_RECIPIENT = (
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "ALERT_EMAIL_RECIPIENT",
+                    "ALERT_EMAIL_RECIPIENT",
+                )
+            )
+            topic = sns.Topic(self, "email", display_name="email notification")
+            sns.Subscription(
+                self,
+                "EmailSubscription",
+                topic=topic,
+                endpoint=ALERT_EMAIL_RECIPIENT.string_value,
+                protocol=sns.SubscriptionProtocol.EMAIL,
+            )
+            # default_bus = events.EventBus.from_event_bus_name(self, "EventBus", "default")
+            events.Rule(
+                self,
+                "email-notify",
+                rule_name="email-notify",
+                event_pattern=events.EventPattern(
+                    source=["aws.ecs", "test.ecs"],
+                    detail_type=[
+                        "ECS Deployment State Change",
+                        "ECS Service Action",
+                        "ECS Task State Change",
+                        "ECS Container Instance State Change",
+                    ],
+                ),
+                targets=[events_targets.SnsTopic(topic)],
+            )
 
     def create_cloudfront(
         self, service: ecs_patterns.ApplicationLoadBalancedFargateService
