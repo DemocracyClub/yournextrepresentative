@@ -69,7 +69,15 @@ class MembershipAdmin(admin.ModelAdmin):
     form = MembershipAdminForm
     model = models.Membership
     list_display = ("person", "party", "get_ballot", "deselected")
-    fields = ("person", "party", "ballot", "deselected", "deselected_source")
+    fields = (
+        "person",
+        "party",
+        "ballot",
+        "deselected",
+        "deselected_source",
+        "sopn_last_name",
+        "sopn_first_names",
+    )
     readonly_fields = ("person", "party", "ballot")
     list_filter = ("deselected",)
 

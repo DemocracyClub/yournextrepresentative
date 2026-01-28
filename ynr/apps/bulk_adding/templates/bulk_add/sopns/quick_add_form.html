@@ -54,5 +54,26 @@
                 </td>
             {% endif %}
         </tr>
+
+        <tr>
+          <th>
+                {{ form.sopn_last_name.errors }}
+                <label for="{{ form.sopn_last_name.id_for_label }}">{{ form.sopn_last_name.label }}</label>
+          </th>
+          <th>
+                {{ form.sopn_first_names.errors }}
+                <label for="{{ form.sopn_first_names.id_for_label }}">{{ form.sopn_first_names.label }}</label>
+          </th>
+          <th>&nbsp;</th>
+        </tr>
+        <tr>
+          <td>
+                {{ form.sopn_last_name }}
+          </td>
+          <td>
+                {{ form.sopn_first_names }}
+          </td>
+          <td>&nbsp;</td>
+        </tr>
     </table>
 {% endwith %}

@@ -84,6 +84,8 @@ class RawPeople(TimeStampedModel):
             initial.append(
                 {
                     "name": candidacy["name"],
+                    "sopn_last_name": candidacy["sopn_last_name"],
+                    "sopn_first_names": candidacy["sopn_first_names"],
                     "party": [party_id, party_id],
                     "source": self.source,
                     "previous_party_affiliations": candidacy.get(
