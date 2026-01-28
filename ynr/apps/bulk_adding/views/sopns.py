@@ -186,6 +186,8 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             description_id = form_data["party"]["description_id"]
             candidate_data = {
                 "name": form_data["name"],
+                "sopn_last_name": form_data["sopn_last_name"],
+                "sopn_first_names": form_data["sopn_first_names"],
                 "party_id": party_id,
                 "description_id": description_id,
             }
@@ -240,6 +242,8 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
             form["name"] = candidacy["name"]
             form["party"] = party.ec_id
             form["source"] = context["ballot_sopn"].source_url
+            form["sopn_last_name"] = candidacy["sopn_last_name"]
+            form["sopn_first_names"] = candidacy["sopn_first_names"]
 
             if candidacy.get("previous_party_affiliations"):
                 form["previous_party_affiliations"] = ",".join(
@@ -287,6 +291,8 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     source=data["source"],
                     party_description=data["party_description"],
                     previous_party_affiliations=previous_party_affiliations,
+                    sopn_last_name=data["sopn_last_name"],
+                    sopn_first_names=data["sopn_first_names"],
                     data=data,
                 )
 
