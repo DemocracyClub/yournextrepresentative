@@ -455,11 +455,14 @@ class YnrStack(Stack):
                 endpoint=ALERT_EMAIL_RECIPIENT.string_value,
                 protocol=sns.SubscriptionProtocol.EMAIL,
             )
-            # default_bus = events.EventBus.from_event_bus_name(self, "EventBus", "default")
+            default_bus = events.EventBus.from_event_bus_name(
+                self, "EventBus", "default"
+            )
             events.Rule(
                 self,
                 "email-notify",
                 rule_name="email-notify",
+                event_bus=default_bus,
                 event_pattern=events.EventPattern(
                     source=["aws.ecs", "test.ecs"],
                     detail_type=[
