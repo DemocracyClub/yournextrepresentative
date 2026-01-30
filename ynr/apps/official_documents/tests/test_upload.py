@@ -114,7 +114,6 @@ class TestModels(TestUserMixin, WebTest):
         with open(self.example_image_filename, "rb") as f:
             form["uploaded_file"] = Upload("pilot.jpg", f.read())
 
-
         response = form.submit()
         self.assertEqual(response.status_code, 302)
 

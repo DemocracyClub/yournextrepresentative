@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import List
 
 from candidates.models import Ballot
-from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator
 from django.db import models
