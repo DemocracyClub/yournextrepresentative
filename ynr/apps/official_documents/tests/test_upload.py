@@ -2,7 +2,6 @@ import json
 import textwrap
 from os.path import dirname, join, realpath
 from pathlib import Path
-from unittest import skipIf
 
 from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
@@ -27,7 +26,6 @@ from official_documents.tests.paths import (
     EXAMPLE_DOCX_FILENAME,
     EXAMPLE_HTML_FILENAME,
 )
-from sopn_parsing.tests import should_skip_conversion_tests
 from webtest import Upload
 
 TEST_MEDIA_ROOT = realpath(
@@ -143,9 +141,6 @@ class TestModels(TestUserMixin, WebTest):
         )
         self.assertInHTML("Update SOPN", response.text)
 
-    @skipIf(
-        should_skip_conversion_tests(), "Required conversion libs not installed"
-    )
     def test_docx_upload_form_validation(self):
         self.assertFalse(LoggedAction.objects.exists())
         response = self.app.get(
@@ -174,9 +169,6 @@ class TestModels(TestUserMixin, WebTest):
         self.assertEqual(BallotSOPN.objects.count(), 1)
         self.assertEqual(response.location, self.ballot.get_sopn_url())
 
-    @skipIf(
-        should_skip_conversion_tests(), "Required conversion libs not installed"
-    )
     def test_html_upload_form_validation(self):
         self.assertFalse(LoggedAction.objects.exists())
         response = self.app.get(
@@ -205,9 +197,6 @@ class TestModels(TestUserMixin, WebTest):
             response.text,
         )
 
-    @skipIf(
-        should_skip_conversion_tests(), "Required conversion libs not installed"
-    )
     def test_jpg_form_validation(self):
         self.assertFalse(LoggedAction.objects.exists())
         response = self.app.get(
@@ -232,9 +221,6 @@ class TestModels(TestUserMixin, WebTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(BallotSOPN.objects.count(), 1)
 
-    @skipIf(
-        should_skip_conversion_tests(), "Required conversion libs not installed"
-    )
     def test_update_existing_sopn(self):
         self.assertFalse(LoggedAction.objects.exists())
         response = self.app.get(
