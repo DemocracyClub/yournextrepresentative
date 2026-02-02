@@ -5,12 +5,3 @@ def should_skip_pdf_tests():
         return False
     except ImportError:
         return True
-
-
-def should_skip_conversion_tests():
-    try:
-        import pypandoc  # noqa
-
-        return False
-    except ImportError:
-        return True
