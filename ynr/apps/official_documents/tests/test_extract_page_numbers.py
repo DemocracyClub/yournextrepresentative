@@ -1,5 +1,4 @@
 from pathlib import Path
-from unittest import skipIf
 
 from candidates.models import Ballot
 from candidates.tests.uk_examples import UK2015ExamplesMixin
@@ -14,10 +13,8 @@ from official_documents.tests.paths import (
     EXAMPLE_HTML_FILENAME,
 )
 from popolo.models import Post
-from sopn_parsing.tests import should_skip_pdf_tests
 
 
-@skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
 class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
     example_docx_filename = EXAMPLE_DOCX_FILENAME
     example_html_filename = EXAMPLE_HTML_FILENAME

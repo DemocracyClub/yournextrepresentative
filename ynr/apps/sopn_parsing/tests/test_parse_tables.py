@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from unittest import skipIf
 from unittest.mock import patch
 
 from bulk_adding.models import RawPeople
@@ -15,7 +14,6 @@ from parties.tests.factories import PartyFactory
 from parties.tests.fixtures import DefaultPartyFixtures
 from sopn_parsing.helpers import parse_tables
 from sopn_parsing.models import CamelotParsedSOPN
-from sopn_parsing.tests import should_skip_pdf_tests
 from sopn_parsing.tests.data.welsh_sopn_data import welsh_sopn_data
 
 from ynr.apps.sopn_parsing.management.commands.sopn_parsing_parse_tables import (
@@ -29,7 +27,6 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
         with connection.cursor() as cursor:
             cursor.execute("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;")
 
-    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_basic_parsing(self):
         self.assertFalse(RawPeople.objects.exists())
         doc = BallotSOPN.objects.create(
@@ -111,7 +108,6 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
             ],
         )
 
-    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_welsh_run_sopn(self):
         """
         Test that if the ballot is welsh run and previous party affiliations
@@ -185,7 +181,6 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
             ],
         )
 
-    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_match_complex_descriptions(self):
         self.assertFalse(RawPeople.objects.exists())
         doc = BallotSOPN.objects.create(
