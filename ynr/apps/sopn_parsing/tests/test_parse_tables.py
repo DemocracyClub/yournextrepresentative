@@ -84,10 +84,30 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
         self.assertEqual(
             raw_people.data,
             [
-                {"name": "Andrew John Bradbury", "party_id": "PP63"},
-                {"name": "Dave Collins", "party_id": "ynmp-party:2"},
-                {"name": "Peter John Harvey", "party_id": "PP85"},
-                {"name": "Melanie Jenner", "party_id": "PP53"},
+                {
+                    "name": "Andrew John Bradbury",
+                    "party_id": "PP63",
+                    "sopn_last_name": "BRADBURY",
+                    "sopn_first_names": "Andrew John",
+                },
+                {
+                    "name": "Dave Collins",
+                    "party_id": "ynmp-party:2",
+                    "sopn_last_name": "COLLINS",
+                    "sopn_first_names": "Dave",
+                },
+                {
+                    "name": "Peter John Harvey",
+                    "party_id": "PP85",
+                    "sopn_last_name": "HARVEY",
+                    "sopn_first_names": "Peter John",
+                },
+                {
+                    "name": "Melanie Jenner",
+                    "party_id": "PP53",
+                    "sopn_last_name": "JENNER",
+                    "sopn_first_names": "Melanie",
+                },
             ],
         )
 
@@ -126,24 +146,42 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
                     "name": "John Smith",
                     "party_id": self.conservative_party.ec_id,
                     "previous_party_affiliations": [self.ld_party.ec_id],
+                    "sopn_last_name": "SMITH",
+                    "sopn_first_names": "John",
                 },
                 {
                     "name": "Joe Bloggs",
                     "party_id": self.labour_party.ec_id,
                     "previous_party_affiliations": ["ynmp-party:2"],
+                    "sopn_last_name": "BLOGGS",
+                    "sopn_first_names": "Joe",
                 },
-                {"name": "Jon Doe", "party_id": self.ld_party.ec_id},
+                {
+                    "name": "Jon Doe",
+                    "party_id": self.ld_party.ec_id,
+                    "sopn_last_name": "DOE",
+                    "sopn_first_names": "Jon",
+                },
                 {
                     "name": "Jane Brown",
                     "party_id": "ynmp-party:2",
                     "previous_party_affiliations": [plaid_cymru.ec_id],
+                    "sopn_last_name": "BROWN",
+                    "sopn_first_names": "Jane",
                 },
                 {
                     "name": "Judy Johnson",
                     "party_id": plaid_cymru.ec_id,
                     "previous_party_affiliations": [self.labour_party.ec_id],
+                    "sopn_last_name": "JOHNSON",
+                    "sopn_first_names": "Judy",
                 },
-                {"name": "Julie Williams", "party_id": "ynmp-party:2"},
+                {
+                    "name": "Julie Williams",
+                    "party_id": "ynmp-party:2",
+                    "sopn_last_name": "WILLIAMS",
+                    "sopn_first_names": "Julie",
+                },
             ],
         )
 
@@ -208,24 +246,39 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
                     {
                         "name": "John Smith",
                         "party_id": self.conservative_party.ec_id,
+                        "sopn_last_name": "SMITH",
+                        "sopn_first_names": "John",
                     },
                     {
                         "name": "Joe Bloggs",
                         "party_id": self.labour_party.ec_id,
+                        "sopn_last_name": "BLOGGS",
+                        "sopn_first_names": "Joe",
                     },
                     {
                         "name": "Jon Doe",
                         "party_id": self.ld_party.ec_id,
+                        "sopn_last_name": "DOE",
+                        "sopn_first_names": "Jon",
                     },
                     {
                         "name": "Jane Brown",
                         "party_id": "ynmp-party:2",
+                        "sopn_last_name": "BROWN",
+                        "sopn_first_names": "Jane",
                     },
                     {
                         "name": "Judy Johnson",
                         "party_id": plaid_cymru.ec_id,
+                        "sopn_last_name": "JOHNSON",
+                        "sopn_first_names": "Judy",
                     },
-                    {"name": "Julie Williams", "party_id": "ynmp-party:2"},
+                    {
+                        "name": "Julie Williams",
+                        "party_id": "ynmp-party:2",
+                        "sopn_last_name": "WILLIAMS",
+                        "sopn_first_names": "Julie",
+                    },
                 ],
                 key=lambda x: x["name"],
             ),
@@ -350,23 +403,51 @@ class TestParseTablesUnitTests(UK2015ExamplesMixin, TestCase):
             },
         ]
 
-    def test_get_name_single_field(self):
+    def test_get_ynr_name_single_field(self):
         for case in self.get_single_name_field_cases():
             row = Series(case["row"])
             name_fields = case["name_fields"]
             with self.subTest(name_fields=name_fields):
                 assert len(case["name_fields"]) == 1
-                name = parse_tables.get_name(row=row, name_fields=name_fields)
+                name = parse_tables.get_ynr_name(
+                    row=row, name_fields=name_fields
+                )
                 assert name == "Elaine Sheila Bagshaw"
 
-    def test_get_name_two_fields(self):
+    def test_get_sopn_names_single_field(self):
+        for case in self.get_single_name_field_cases():
+            row = Series(case["row"])
+            name_fields = case["name_fields"]
+            with self.subTest(name_fields=name_fields):
+                assert len(case["name_fields"]) == 1
+                last_name, first_names = parse_tables.get_sopn_names(
+                    row=row, name_fields=name_fields
+                )
+                assert last_name == "BAGSHAW"
+                assert first_names == "Elaine Sheila"
+
+    def test_get_ynr_name_two_fields(self):
         for case in self.get_two_name_field_cases():
             row = Series(case["row"])
             name_fields = case["name_fields"]
             with self.subTest(name_fields=name_fields):
                 assert len(case["name_fields"]) == 2
-                name = parse_tables.get_name(row=row, name_fields=name_fields)
+                name = parse_tables.get_ynr_name(
+                    row=row, name_fields=name_fields
+                )
                 assert name == case["expected_name"]
+
+    def test_get_sopn_names_two_fields(self):
+        for case in self.get_two_name_field_cases():
+            row = Series(case["row"])
+            name_fields = case["ordered_name_fields"]
+            with self.subTest(name_fields=name_fields):
+                assert len(case["name_fields"]) == 2
+                last_name, first_names = parse_tables.get_sopn_names(
+                    row=row, name_fields=name_fields
+                )
+                assert last_name == "BAGSHAW"
+                assert first_names == "Elaine Sheila"
 
     def test_get_name_fields_single(self):
         for case in self.get_single_name_field_cases():
