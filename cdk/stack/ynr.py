@@ -465,12 +465,17 @@ class YnrStack(Stack):
                 event_bus=default_bus,
                 event_pattern=events.EventPattern(
                     source=["aws.ecs", "test.ecs"],
-                    detail_type=[
-                        "ECS Deployment State Change",
-                        "ECS Service Action",
-                        "ECS Task State Change",
-                        "ECS Container Instance State Change",
-                    ],
+                    detail_type=["ECS Task State Change"],
+                    detail={
+                        "stoppedReason": [
+                            {"exists": False},
+                            {
+                                "anything-but": {
+                                    "prefix": "Scaling activity initiated by (deployment ecs-svc/"
+                                }
+                            },
+                        ]
+                    },
                 ),
                 targets=[events_targets.SnsTopic(topic)],
             )
