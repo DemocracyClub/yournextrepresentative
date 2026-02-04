@@ -5,7 +5,7 @@ from django import forms
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import path, reverse
-from django.utils.html import mark_safe
+from django.utils.html import format_html, mark_safe
 from django.views.generic import TemplateView
 from people.data_removal_helpers import DataRemover
 from people.models import (
@@ -48,12 +48,28 @@ class MembershipInline(admin.StackedInline):
     extra = 0
     can_delete = False
     model = Membership
-    fields = ("party", "get_ballot", "deselected", "deselected_source")
-    readonly_fields = ("party", "get_ballot")
+    fields = (
+        "admin_link",
+        "party",
+        "get_ballot",
+        "deselected",
+        "deselected_source",
+    )
+    readonly_fields = ("admin_link", "party", "get_ballot")
 
     @admin.display(description="Ballot")
     def get_ballot(self, obj):
         return obj.ballot.ballot_paper_id
+
+    @admin.display(description="Membership object")
+    def admin_link(self, obj):
+        if not obj.pk:
+            return "-"
+        url = reverse(
+            "admin:popolo_membership_change",
+            args=[obj.pk],
+        )
+        return format_html('<a href="{}">Open</a>', url)
 
     def has_add_permission(self, request, obj=None):
         return False
