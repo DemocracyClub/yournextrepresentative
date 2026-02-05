@@ -40,7 +40,12 @@ class YnrStack(Stack):
         self.dc_environment = self.node.get_context("dc-environment")
 
         default_vpc = ec2.Vpc.from_lookup(self, "YnrVpc", is_default=True)
-        cluster = ecs.Cluster(self, "YnrCluster", vpc=default_vpc)
+        cluster = ecs.Cluster(
+            self,
+            "YnrCluster",
+            vpc=default_vpc,
+            container_insights_v2=ecs.ContainerInsights.ENABLED,
+        )
 
         image_ref = (
             f"public.ecr.aws/h3q9h5r7/dc-test/ynr:{tag_for_environment()}"
