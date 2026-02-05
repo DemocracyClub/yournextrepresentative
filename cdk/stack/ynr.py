@@ -46,7 +46,14 @@ class YnrStack(Stack):
             monitor_this_env = False
 
         default_vpc = ec2.Vpc.from_lookup(self, "YnrVpc", is_default=True)
-        cluster = ecs.Cluster(self, "YnrCluster", vpc=default_vpc)
+        cluster = ecs.Cluster(
+            self,
+            "YnrCluster",
+            vpc=default_vpc,
+            container_insights_v2=ecs.ContainerInsights.ENABLED
+            if monitor_this_env
+            else ecs.ContainerInsights.DISABLED,
+        )
 
         image_ref = (
             f"public.ecr.aws/h3q9h5r7/dc-test/ynr:{tag_for_environment()}"
