@@ -179,6 +179,14 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             ),
             required=False,
         )
+        form.fields["sopn_last_name"] = StrippedCharField(
+            widget=forms.HiddenInput(attrs={"readonly": "readonly"}),
+            required=False,
+        )
+        form.fields["sopn_first_names"] = StrippedCharField(
+            widget=forms.HiddenInput(attrs={"readonly": "readonly"}),
+            required=False,
+        )
 
     def clean(self):
         errors = []
@@ -229,6 +237,14 @@ class NameOnlyPersonForm(forms.Form):
     )
     ballot = ValidBallotField(
         widget=BallotInputWidget(attrs={"type": "hidden"})
+    )
+    sopn_last_name = StrippedCharField(
+        widget=forms.HiddenInput(attrs={"readonly": "readonly"}),
+        required=False,
+    )
+    sopn_first_names = StrippedCharField(
+        widget=forms.HiddenInput(attrs={"readonly": "readonly"}),
+        required=False,
     )
 
 
