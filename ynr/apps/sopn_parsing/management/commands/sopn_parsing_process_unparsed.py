@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.core.management.base import BaseCommand
 from sopn_parsing.helpers.parse_tables import parse_raw_data_for_ballot
 from sopn_parsing.helpers.textract_helpers import (
@@ -8,7 +7,6 @@ from sopn_parsing.helpers.textract_helpers import (
 from sopn_parsing.models import (
     AWSTextractParsedSOPN,
     AWSTextractParsedSOPNStatus,
-    CamelotParsedSOPN,
 )
 
 
@@ -21,22 +19,16 @@ class Command(BaseCommand):
 
     This script picks up where `parse` left off. It manages two cases:
 
-    # Camelot
-
-    We expect to have made a `CamelotParsedSOPN` with `raw_data` populated. This will only have
-    happened if the file is a PDF readable by Camelot.
-
-    We need to parse the `raw_data` into `parsed_data` and then make a `RawData` object for bulk adding.
-
     # AWS Textract
 
-    We should have made a `AWSTextractParsedSOPN` with `job_id` populated. Textract is async,
-    so the initial `parse` just submits the data to AWS and gets a job_id.
+    We should have made a `AWSTextractParsedSOPN` with `job_id` populated.
+    Textract is async, so the initial `parse` just submits the data to AWS and
+    gets a job_id.
 
     We need to check if the job ID has finished and pull in the data to `raw_data`.
 
-    We're then in the same state as the Camelot method above, we need to parse the `raw_data` into
-    `parsed_data` and makr a `RawData` object for bulk adding.
+    We need to parse the `raw_data` into `parsed_data` and makr a `RawData`
+    object for bulk adding.
     """
 
     def handle(self, *args, **options):
@@ -44,15 +36,6 @@ class Command(BaseCommand):
             "sopn__ballot__election__current": True,
             "sopn__ballot__candidates_locked": False,
         }
-
-        if getattr(settings, "CAMELOT_ENABLED", False):
-            # Camelot first
-            qs = (
-                CamelotParsedSOPN.objects.filter(parsed_data=None)
-                .exclude(raw_data="")
-                .filter(**current_ballot_kwargs)
-            )
-            self.parse_tables_for_qs(qs)
 
         # Textract
         qs = AWSTextractParsedSOPN.objects.exclude(
