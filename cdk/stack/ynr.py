@@ -4,6 +4,8 @@ from aws_cdk import CfnOutput, Duration, Stack, Tags
 from aws_cdk import aws_certificatemanager as acm
 from aws_cdk import aws_cloudfront as cloudfront
 from aws_cdk import aws_cloudfront_origins as origins
+from aws_cdk import aws_cloudwatch as cloudwatch
+from aws_cdk import aws_cloudwatch_actions as cloudwatch_actions
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
@@ -452,11 +454,92 @@ class YnrStack(Stack):
                     "ALERT_EMAIL_RECIPIENT",
                 )
             )
-            topic = sns.Topic(self, "email", display_name="email notification")
+            # container_topic = sns.Topic(
+            #    self,
+            #    "containerevent",
+            #    display_name="raw container event handler",
+            # )
+            metric_topic = sns.Topic(
+                self, "metricalert", display_name="raw metric alert handler"
+            )
+            email_topic = sns.Topic(
+                self, "email", display_name="email notification"
+            )
+            for service_info in [
+                {"name": web_service.service.service_name, "id": 0},
+                {"name": worker_service.service_name, "id": 1},
+            ]:
+                cpu_alarm = cloudwatch.Alarm(
+                    self,
+                    f"ECSCpuUtilizationAlarm{service_info['id']}",
+                    alarm_name=f"{service_info['name']}-cpu-high",
+                    alarm_description=f"CPU utilization is high for ECS service {service_info['name']}",
+                    # Metric configuration
+                    metric=cloudwatch.Metric(
+                        namespace="AWS/ECS",
+                        metric_name="CPUUtilization",
+                        dimensions_map={
+                            "ServiceName": service_info["name"],
+                            "ClusterName": cluster.cluster_name,
+                        },
+                        statistic="Average",
+                        period=Duration.minutes(5),
+                    ),
+                    threshold=80.0,
+                    comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+                    evaluation_periods=3,
+                    datapoints_to_alarm=2,
+                    treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
+                    actions_enabled=True,
+                )
+                cpu_alarm.add_alarm_action(
+                    cloudwatch_actions.SnsAction(metric_topic)
+                )
+
+                cpu_alarm.add_ok_action(
+                    cloudwatch_actions.SnsAction(metric_topic)
+                )
+
+                memory_alarm = cloudwatch.Alarm(
+                    self,
+                    f"ECSMemoryUtilizationAlarm{service_info['id']}",
+                    alarm_name=f"{service_info['name']}-memory-high",
+                    alarm_description=f"High memory utilization detected for ECS service {service_info['name']}",
+                    # Metric configuration
+                    metric=cloudwatch.Metric(
+                        namespace="AWS/ECS",
+                        metric_name="MemoryUtilization",
+                        dimensions_map={
+                            "ServiceName": service_info["name"],
+                            "ClusterName": cluster.cluster_name,
+                        },
+                        statistic="Average",
+                        period=Duration.minutes(5),
+                    ),
+                    # Alarm conditions
+                    threshold=85.0,  # 85% memory usage
+                    comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+                    evaluation_periods=2,  # Check for 2 periods (10 minutes total)
+                    datapoints_to_alarm=2,  # Both datapoints must breach threshold
+                    treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
+                    # Enable actions
+                    actions_enabled=True,
+                )
+
+                # Add SNS notification actions
+                memory_alarm.add_alarm_action(
+                    cloudwatch_actions.SnsAction(metric_topic)
+                )
+
+                # Optional: Add OK action for recovery notifications
+                memory_alarm.add_ok_action(
+                    cloudwatch_actions.SnsAction(metric_topic)
+                )
+
             sns.Subscription(
                 self,
                 "EmailSubscription",
-                topic=topic,
+                topic=email_topic,
                 endpoint=ALERT_EMAIL_RECIPIENT.string_value,
                 protocol=sns.SubscriptionProtocol.EMAIL,
             )
@@ -482,7 +565,7 @@ class YnrStack(Stack):
                         ]
                     },
                 ),
-                targets=[events_targets.SnsTopic(topic)],
+                targets=[events_targets.SnsTopic(email_topic)],
             )
 
     def create_cloudfront(
