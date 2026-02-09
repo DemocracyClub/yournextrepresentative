@@ -55,3 +55,5 @@ with contextlib.suppress(socket.gaierror):
 
 with contextlib.suppress(ImportError):
     from .local import *  # noqa: F403
+
+USE_DUMMY_PDF_EXTRACTOR = True

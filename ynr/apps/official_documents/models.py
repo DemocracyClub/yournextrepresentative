@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import List
 
 from candidates.models import Ballot
-from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -258,7 +257,6 @@ class BallotSOPN(BaseBallotSOPN):
 
         """
 
-        from sopn_parsing.helpers.extract_tables import extract_ballot_table
         from sopn_parsing.helpers.textract_helpers import (
             NotUsingAWSException,
             TextractSOPNHelper,
@@ -273,12 +271,6 @@ class BallotSOPN(BaseBallotSOPN):
             # Start detection isn't going to populate anything for a while.
             # There's a cron job that should pick up the result and carry on parsing later.
             textract_helper.start_detection()
-
-        if getattr(
-            settings, "CAMELOT_ENABLED", False
-        ) and self.uploaded_file.name.endswith(".pdf"):
-            # Camelot
-            extract_ballot_table(self.ballot)
 
 
 class BallotSOPNHistory(BaseBallotSOPN):

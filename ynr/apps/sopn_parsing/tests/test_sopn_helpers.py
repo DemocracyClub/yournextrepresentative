@@ -20,7 +20,7 @@ from mock import Mock
 from official_documents.models import BallotSOPN, ElectionSOPN
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
 from sopn_parsing.helpers.textract_helpers import (
-    TextractSOPNHelper,
+    get_extractor_class,
 )
 from sopn_parsing.models import AWSTextractParsedSOPN
 from sopn_parsing.tests import should_skip_pdf_tests
@@ -242,7 +242,7 @@ def textract_sopn_helper(db):
             ),
             uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file.read()),
         )
-    yield TextractSOPNHelper(
+    yield get_extractor_class()(
         ballot_sopn=ballot_sopn, upload_path="s3://fake_bucket/"
     )
 

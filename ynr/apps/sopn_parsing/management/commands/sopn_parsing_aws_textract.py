@@ -6,8 +6,8 @@ from django.utils import timezone
 from official_documents.models import BallotSOPN
 from sopn_parsing.helpers.command_helpers import BaseSOPNParsingCommand
 from sopn_parsing.helpers.textract_helpers import (
-    TextractSOPNHelper,
     TextractSOPNParsingHelper,
+    get_extractor_class,
 )
 from sopn_parsing.models import AWSTextractParsedSOPN
 
@@ -42,8 +42,9 @@ class Command(BaseSOPNParsingCommand):
             created__gt=time_window,
             status__in=["NOT_STARTED", "IN_PROGRESS"],
         )
-
-        if count := processing.count() > settings.TEXTRACT_CONCURRENT_QUOTA:
+        if count := processing.count() > getattr(
+            settings, "TEXTRACT_CONCURRENT_QUOTA", 100
+        ):
             print(f"Processing: {count}")
             return True
         return False
@@ -61,7 +62,7 @@ class Command(BaseSOPNParsingCommand):
         if qs:
             print(f"Checking {qs.count()} documents")
             for document in qs:
-                textract_helper = TextractSOPNHelper(document.sopn)
+                textract_helper = get_extractor_class()(document.sopn)
                 textract_helper.update_job_status(blocking=False)
 
     def handle(self, *args, **options):
@@ -79,19 +80,20 @@ class Command(BaseSOPNParsingCommand):
                     f"Starting analysis for {ballot.ballot_paper_id}"
                 )
                 ballot_sopn: BallotSOPN = ballot.sopn
+                TEXTRACT_BACKOFF_TIME = getattr(settings, "TEXTRACT_BACKOFF_TIME", 60)
                 if self.queue_full():
                     self.stdout.write(
-                        f"Queue full, sleeping {settings.TEXTRACT_BACKOFF_TIME}"
+                        f"Queue full, sleeping {TEXTRACT_BACKOFF_TIME}"
                     )
                     self.check_all_documents(options)
-                    sleep(settings.TEXTRACT_BACKOFF_TIME)
-                textract_helper = TextractSOPNHelper(
+                    sleep(TEXTRACT_BACKOFF_TIME)
+                textract_helper = get_extractor_class()(
                     ballot_sopn, upload_path=options["upload_path"]
                 )
                 # TO DO: add logging here
                 if getattr(ballot_sopn, "textract_result", None):
                     continue
-                sleep(settings.TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA)
+                sleep(getattr(settings, "TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA", 1))
                 textract_helper.start_detection(ballot_sopn)
         if options["get_results"]:
             qs = qs.filter(sopn__awstextractparsedsopn__isnull=False)
@@ -102,7 +104,7 @@ class Command(BaseSOPNParsingCommand):
                 ballot_sopn: BallotSOPN = ballot.sopn
                 print(ballot_sopn)
 
-                textract_helper = TextractSOPNHelper(ballot_sopn)
+                textract_helper = get_extractor_class()(ballot_sopn)
                 textract_helper.update_job_status(
                     blocking=options["blocking"], reparse=options["reparse"]
                 )

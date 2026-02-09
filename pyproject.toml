@@ -41,12 +41,10 @@ dependencies = [
     "markdown-it-py==4.0.0",
     "nameparser==1.1.2",
     "ndg-httpsclient==0.5.1",
-
     "openai==1.30.3",
     # for compatibility with openai==1.30.3
     # TODO: review/remove when we upgrade openai package
     "httpx==0.27.0",
-
     "Pillow==10.3.0",
     "psycopg==3.1.12",
     "python-dateutil==2.8.2",
@@ -58,14 +56,13 @@ dependencies = [
     "whitenoise==6.5.0",
     "sorl-thumbnail-serializer-field",
     "slacker2",
-
     # SOPN parsing
     "pdfminer.six==20201018",
-    "camelot-py[cv]==0.8.2",
     "pypandoc_binary==1.14",
     "PyPDF2==2.12.1",
     "amazon-textract-response-parser==1.0.3",
     "amazon-textract-helper==0.0.35",
+    "pandas>=3.0.0",
 ]
 
 [dependency-groups]

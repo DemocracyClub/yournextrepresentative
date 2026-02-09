@@ -1,5 +1,3 @@
-from unittest import skipIf
-
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
@@ -13,12 +11,8 @@ from sopn_parsing.helpers.convert_pdf import (
     PandocConversionError,
     convert_docx_to_pdf,
 )
-from sopn_parsing.tests import should_skip_conversion_tests
 
 
-@skipIf(
-    should_skip_conversion_tests(), "Required conversion libs not installed"
-)
 class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
     example_docx_filename = EXAMPLE_DOCX_FILENAME
     example_html_filename = EXAMPLE_HTML_FILENAME

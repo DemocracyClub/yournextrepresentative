@@ -1,5 +1,9 @@
+from __future__ import annotations  # To allow 'self' type annotations in 3.12
+
+import abc
 import json
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Type
 
 from django.conf import settings
 from django.db import IntegrityError
@@ -8,6 +12,7 @@ from PIL import Image
 from sopn_parsing.models import (
     AWSTextractParsedSOPN,
     AWSTextractParsedSOPNImage,
+    AWSTextractParsedSOPNStatus,
 )
 from textractor import Textractor
 from textractor.data.constants import TextractAPI, TextractFeatures
@@ -21,7 +26,69 @@ class NotUsingAWSException(ValueError):
     """
 
 
-class TextractSOPNHelper:
+class BaseSOPNParser(abc.ABC):
+    def __init__(self, ballot_sopn: BallotSOPN, *args, **kwargs):
+        self.ballot_sopn = ballot_sopn
+
+    @abc.abstractmethod
+    def start_detection(self, replace=False) -> Optional[BaseSOPNParser]:
+        """
+        Parse, or initiate parsing, of a given PDF
+
+        """
+        ...
+
+    @abc.abstractmethod
+    def update_job_status(
+        self, blocking=False, reparse=False
+    ) -> Optional[dict]:
+        """
+        Fetch the raw JSON from the backend and store it on the model.
+
+        This is only needed for 'async' backends (Textract) that don't return
+        the parsed JSON as soon as `self.start_detection` is called
+        """
+
+        ...
+
+
+class DummySOPNParser(BaseSOPNParser):
+    """
+    Used for local dev in situations where we don't need Textract to
+    actually parse anything
+    """
+
+    def __init__(self, ballot_sopn: BallotSOPN, *args, **kwargs):
+        super().__init__(ballot_sopn, *args, **kwargs)
+        self.textract_response_path = (
+            Path(__file__).parent.parent
+            / "tests/data/textract_responses/"
+            / "local.rushmoor.aldershot-park.2023-05-04.json"
+        )
+        self.textract_response_json = json.loads(
+            self.textract_response_path.read_text()
+        )
+
+    def start_detection(self, replace=False) -> Optional[BaseSOPNParser]:
+        print("starting dummy detection")
+        self.textract_result, _ = AWSTextractParsedSOPN.objects.update_or_create(
+            sopn=self.ballot_sopn,
+            defaults={
+                "raw_data": self.textract_response_json,
+                "job_id": "1234",
+                "status": AWSTextractParsedSOPNStatus.SUCCEEDED
+            },
+        )
+
+        return self.textract_result
+
+    def update_job_status(
+        self, blocking=False, reparse=False
+    ) -> Optional[dict]:
+        return self.textract_response_json
+
+
+class TextractSOPNHelper(BaseSOPNParser):
     """Get the AWS Textract results for a given SOPN."""
 
     def __init__(
@@ -30,6 +97,7 @@ class TextractSOPNHelper:
         bucket_name: str = None,
         upload_path: str = None,
     ):
+        super().__init__(ballot_sopn, bucket_name, upload_path)
         self.ballot_sopn = ballot_sopn
         self.bucket_name = bucket_name or getattr(
             settings, "AWS_STORAGE_BUCKET_NAME", None
@@ -156,3 +224,16 @@ class TextractSOPNParsingHelper:
         self.parsed_sopn.parse_raw_data()
         self.parsed_sopn.save()
         return self.parsed_sopn
+
+
+def get_extractor_class() -> Type[BaseSOPNParser]:
+    """
+    Return the backend that we use for converting raw documents
+    into JSON. This is normally AWS Textract, but can be the dummy
+    backend e.g in testing environments.
+
+    """
+    if getattr(settings, "USE_DUMMY_PDF_EXTRACTOR", False):
+        return DummySOPNParser
+
+    return TextractSOPNHelper
