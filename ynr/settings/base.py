@@ -179,6 +179,7 @@ MEDIA_URL = "/media/"
 SOPN__MATCHER_PATH = (
     Path(str(PROJECT_ROOT)) / "apps/official_documents/SOPNMatcherInterface"
 )
+USE_DUMMY_PDF_EXTRACTOR = os.environ.get("USE_DUMMY_PDF_EXTRACTOR", False)
 STATIC_URL = "/static/"
 STATIC_ROOT = root("static")
 STATICFILES_DIRS = (
